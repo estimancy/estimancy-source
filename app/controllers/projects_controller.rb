@@ -270,11 +270,11 @@ class ProjectsController < ApplicationController
     @is_model = params[:is_model]
     if @is_model
       authorize! :manage_estimation_models, Project
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models")
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('new_project_from') => ""
       set_page_title I18n.t(:new_estimation_model)
     else
       authorize! :create_project_from_scratch, Project
-      set_breadcrumbs I18n.t(:estimate) => organization_estimations_path(@current_organization)
+      set_breadcrumbs I18n.t(:estimate) => organization_estimations_path(@current_organization), I18n.t('new_project') => ""
       set_page_title I18n.t(:new_estimation_model)
     end
 
@@ -353,7 +353,7 @@ class ProjectsController < ApplicationController
 
     #For group
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first.value
-    defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
+    defaut_group = AdminSetting.where(key: "Groupe using estimatiodef editn").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
     defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first.id
     defaut_group_ps.project_security_level = full_control_security_level
@@ -2096,7 +2096,7 @@ public
     @organization = Organization.find(params[:organization_id])
     @estimation_models = @organization.projects.where(:is_model => true)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
 
   #Set the checkout version
