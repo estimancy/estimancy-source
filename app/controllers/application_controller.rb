@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
   require 'socket'
 
-  #if Rails.env == "production"
+  if Rails.env == "production"
 
     rescue_from StandardError do |exception|
       if exception.class == CanCan::AccessDenied
@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
         render :template => "layouts/500.html", :status => 500
       end
     end
-  #end
+  end
 
   helper_method :root_url
   helper_method :browser
