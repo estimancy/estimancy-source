@@ -132,7 +132,7 @@ gem 'whenever', :require => false
 gem 'time_diff', '~> 0.3.0'
 
 # Licence finder gem
-gem 'license_finder'
+# gem 'license_finder'
 
 gem 'tinymce-rails'
 

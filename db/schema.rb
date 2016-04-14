@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160323111858) do
+ActiveRecord::Schema.define(:version => 20160411081634) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "organization_id"
+    t.integer  "copy_id"
   end
 
   add_index "acquisition_categories", ["record_status_id"], :name => "index_acquisition_categories_on_record_status_id"
@@ -475,14 +476,17 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.float    "coeff_a"
     t.float    "coeff_b"
     t.integer  "organization_id"
-    t.string   "effort_unit"
+    t.string   "input_size_unit"
+    t.string   "output_size_unit"
+    t.string   "input_effort_unit"
+    t.string   "output_effort_unit"
     t.boolean  "three_points_estimation"
-    t.float    "standard_unit_coefficient"
-    t.string   "size_unit"
+    t.float    "output_effort_standard_unit_coefficient"
+    t.float    "input_effort_standard_unit_coefficient"
     t.boolean  "enabled_input"
     t.boolean  "modify_theorical_effort"
     t.integer  "copy_id"
-    t.integer  "copy_number",               :default => 0
+    t.integer  "copy_number",                             :default => 0
     t.string   "p_calculation_method"
     t.string   "s_calculation_method"
     t.string   "c_calculation_method"
@@ -660,14 +664,14 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -1160,6 +1164,7 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "organization_id"
+    t.integer  "copy_id"
   end
 
   add_index "platform_categories", ["record_status_id"], :name => "index_platform_categories_on_record_status_id"
@@ -1220,6 +1225,7 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "organization_id"
+    t.integer  "copy_id"
   end
 
   add_index "project_areas", ["record_status_id"], :name => "index_project_areas_on_record_status_id"
@@ -1253,6 +1259,7 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "organization_id"
+    t.integer  "copy_id"
   end
 
   add_index "project_categories", ["record_status_id"], :name => "index_project_categories_on_record_status_id"
@@ -1597,7 +1604,7 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1649,6 +1656,8 @@ ActiveRecord::Schema.define(:version => 20160323111858) do
     t.boolean  "from_initial_view"
     t.boolean  "is_label_widget"
     t.text     "comment"
+    t.boolean  "is_kpi_widget"
+    t.text     "equation"
   end
 
   create_table "wbs_activities", :force => true do |t|

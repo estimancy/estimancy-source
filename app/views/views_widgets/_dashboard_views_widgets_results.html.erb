@@ -13,14 +13,15 @@
 
           <div class='<%= "span#{span_size}" %>'> <!-- div for X position -->
             <div class="widget-box collapsible">  <!-- One widget-box by module -->
-              <div class="widget-title" title='<%= I18n.t(:used_view, value: module_project.view.nil? ? '-' : module_project.view.name) %>' style="background-color: <%= module_project.color.nil? ? "lightgrey" : "#{module_project.color}" %>; border-bottom: 1px solid <%="##{module_project.color}"%>;">
+              <div class="widget-title" title='<%= I18n.t(:used_view, value: module_project.view.nil? ? '-' : module_project.view.name) %>' style="background-color: <%= module_project.color.nil? ? "#1BA1E2" : "#{module_project.color}" %>; border-bottom: 1px solid <%="##{module_project.color}"%>; color: white;">
                 <div class="view_header_data">
                   <h5 class="view_title"><%= "#{module_project}" %></h5>
-                  <div class="pull-right">
+                  <div class="pull-right" style="margin: 6px 10px 0 0;">
                     <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-plus", title: I18n.t(:label_add_new_view_widget), remote: true %>
                       <%= link_to "", edit_module_project_view_config_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-cog", title: I18n.t(:label_add_new_view_widget), remote: true %>
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true), class: "icon icon-comment", title: I18n.t(:label_add_new_widget_comment), remote: true %>
+                      <%# link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true), class: "icon icon-tasks", title: I18n.t(:label_add_new_widget_comment), remote: true %>
                     <% end %>
                   </div>
                 </div>
@@ -34,6 +35,8 @@
                           <% module_project_view_widgets.each do |view_widget| %>
                             <% if view_widget.is_label_widget? %>
                               <% view_widget_data = get_label_widget_data(view_widget.id) %>
+                            <% elsif view_widget.is_kpi_widget? %>
+                              <% view_widget_data = get_kpi_widget_data(view_widget.id) %>
                             <% else %>
                               <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
                                 <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
@@ -77,11 +80,12 @@
                                     <% if view_widget.icon_class.empty? %>
                                       <span class="fa">
                                         <% if view_widget.show_name? %>
-                                          <span id="<%= "widget_name_#{view_widget.id}" %>" class="widget_name"><%= view_widget.name %></span>
+                                          <span id="<%= "widget_name_#{view_widget.id}" %>" style="font-size: 13px; margin-left: 10px;" class="widget_name"><%= view_widget.name %></span>
                                         <% end %>
                                       </span>
                                     <% else %>
-                                      <span id="<%= "icon_size_#{view_widget.id}" %>" class="fa <%= view_widget.icon_class %> icon_size" style="font-size: <%=view_widget_font_size%>em">
+                                      <!--<span id="<%# "icon_size_#{view_widget.id}" %>" class="fa <%# view_widget.icon_class %> icon_size" style="font-size: <%#view_widget_font_size%>em">-->
+                                      <span id="<%= "icon_size_#{view_widget.id}" %>" class="fa <%= view_widget.icon_class %> icon_size" style="font-size: 13px">
                                         <% if view_widget.show_name? %>
                                           <span id="<%= "widget_name_#{view_widget.id}" %>" class="widget_name"><%= view_widget.name %></span>
                                         <% end %>
@@ -104,7 +108,7 @@
                                   <!--Show the selected Ratio name-->
                                   <% if view_widget.show_wbs_activity_ratio %>
                                     <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity, module_project_id: view_widget.module_project_id).first %>
-                                    <span class="widget_name">
+                                    <span class="widget_name" style="margin-left: 5px;">
                                       <%= "#{I18n.t(:ratio)}:" %>  <%= wa_input.nil? ? "-" : wa_input.wbs_activity_ratio %>
                                     </span>
                                   <% end %>
@@ -118,8 +122,8 @@
                                       </span>
 
                                       <span>
-                                        <span id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; float: right"><%= view_widget_data[:max_value_text] %></span><br>
-                                        <span id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; float: right"><%= view_widget_data[:min_value_text] %></span>
+                                        <div id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; position: absolute; bottom: 6px; right: -3px; font-size: 11px;"><%= view_widget_data[:max_value_text] %></div>
+                                        <div id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; position: absolute; bottom: -8px; right: 0px; font-size: 11px;"><%= view_widget_data[:min_value_text] %></div>
                                       </span>
                                     </span>
                                   <% else %>
@@ -129,7 +133,7 @@
                                   <% end %>
 
                                   <% unless view_widget.project_fields.empty? %>
-                                    <span class="fa fa-asterisk" style="position: absolute; bottom: 0; left: 0"></span>
+                                    <span class="fa fa-asterisk" style="position: absolute; bottom: 4px; left: 4px; font-size: 11px;"></span>
                                   <% end %>
                                 </span>
                             </li>
@@ -147,7 +151,7 @@
                                     //$("li.without_min_max").fitText(0.7, { minFontSize: '5px', maxFontSize: '30px' });
 //                                    $("li.with_min_max").fitText(0.7, { minFontSize: '9px', maxFontSize: '20px' });
 //                                    $("li.no_estimation_value").fitText(2, { minFontSize: '12px', maxFontSize: '12px' });
-                                    $(".widget_name").fitText(0.8, { minFontSize: '12px', maxFontSize: '15px' });
+//                                    $(".widget_name").fitText(0.8, { minFontSize: '12px', maxFontSize: '15px' });
                                     $("li.widget_text").fitText(1.2, { minFontSize: '12px', maxFontSize: '20px' });
 //                                    $(".min_max").fitText(1.2, { minFontSize: '<%#= ft_minMax_minFontSize %>', maxFontSize: '<%#= ft_minMax_maxFontSize %>' });
 

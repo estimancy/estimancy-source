@@ -22,11 +22,13 @@
 class UserMailer < ActionMailer::Base
   OLD_LOCALE = I18n.locale
 
-  def crash_log(exception, user)
+  def crash_log(exception, user, orga, project)
     if Rails.env == "production"
       @exception = exception
       @backtrace = exception.backtrace
       @user = user
+      @current_organization = orga
+      @project = project
       mail(:to => ["no-reply@estimancy.com"], :from => "Estimancy <no-reply@estimancy.com>", :subject => "[ESTIMANCY] - Crash logs #{Time.now}")
     end
   end

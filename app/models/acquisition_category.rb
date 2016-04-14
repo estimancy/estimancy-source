@@ -23,14 +23,17 @@
 class AcquisitionCategory < ActiveRecord::Base
   attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :organization_id
 
-  has_and_belongs_to_many :project_areas
+  # has_and_belongs_to_many :project_areas
 
   validates_presence_of :description
   validates :name, :presence => true
 
   amoeba do
     enable
-    exclude_association [:projects]
+    include_association []
+    customize(lambda { |original_acquisition_category, new_acquisition_category|
+                new_acquisition_category.copy_id = original_acquisition_category.id
+              })
   end
 
   #Search fields

@@ -64,11 +64,31 @@
         </div>
 
         <div class="row-fluid">
-          <div class="span2"> <%= f.input :size_unit, label: I18n.t(:retained_size_unit_2) %></div>
-          <div class="span2"> <%= f.input :effort_unit, label: I18n.t(:Wording_of_the_module_unit_effort_2) %></div>
+          <div class="span1 blue">
+            <label class="checkbox"></label>
+            <%=  label_tag I18n.t(:input_output_size) %>
+          </div>
+          <div class="span2"> <%= f.input :input_size_unit, label: I18n.t(:input_size_unit) %></div>
+          <div class="span2"> <%= f.input :output_size_unit, label: I18n.t(:output_size_unit) %></div>
         </div>
 
-        <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
+        <div class="row-fluid">
+          <div class="span1 blue">
+            <label class="checkbox"></label>
+            <%=  label_tag I18n.t(:input_effort) %>
+          </div>
+          <div class="span2"> <%= f.input :input_effort_unit, label: I18n.t(:input_effort_unit) %></div>
+          <div class="span4"> <%= f.input :input_effort_standard_unit_coefficient, label: I18n.t(:input_effort_standard_coef_conv) %></div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span1 blue">
+            <label class="checkbox"></label>
+            <%=  label_tag I18n.t(:output_effort) %>
+          </div>
+          <div class="span2"> <%= f.input :output_effort_unit, label: I18n.t(:output_effort_unit) %></div>
+          <div class="span4"> <%= f.input :output_effort_standard_unit_coefficient, label: I18n.t(:output_effort_standard_coef_conv) %></div>
+        </div>
       </div>
 
       <% if can? :manage_modules_instances, ModuleProject %>

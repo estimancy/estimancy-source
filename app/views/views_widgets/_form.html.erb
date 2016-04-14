@@ -1,83 +1,73 @@
-<div class="tabs">
-  <!--<ul>-->
-    <!--<li><a href="#tabs-1"><%#= I18n.t(:views_widgets) %> </a></li>-->
-  <!--</ul>-->
+<%= simple_form_for(@views_widget, :remote => true) do |f| %>
+  <%= f.error_notification %>
+  <div class="form-inputs">
+    <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+    <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+    <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+    <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
-  <div id="tabs-1">
-
-    <%= simple_form_for(@views_widget, :remote => true) do |f| %>
-      <%= f.error_notification %>
-      <div class="form-inputs">
-        <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
-        <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
-        <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
-        <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
-
-        <table>
-          <!--<tr><td><%#= f.association :widget, label: I18n.t(:label_widget) %></td></tr>-->
-          <tr>
-            <td><%= f.input :name, label: I18n.t(:name) %></td>
-            <td>
-              <label class="checkbox"></label>
-              <%= f.input :show_name, label: I18n.t(:show_name) %>
-            </td>
-          </tr>
-          <!--<tr>-->
-              <!--<td><%#= f.input :is_label_widget, label: I18n.t(:Is_it_of_a_title_thumbnail), disabled: !@views_widget.new_record? %></td>-->
-          <!--</tr>-->
-          <tr>
-            <td><%= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @pbs_project_element_id, include_blank: false, input_html:{class: "inline_attr"}  %></td>
-            <td>
-              <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
-              <% else %>
-                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
-            <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr"}, include_blank: false %></td>
-          </tr>
-          <tr>
-            <td>
-              <!-- Color is using the JS Spectrum library -->
-              <% if @views_widget.new_record? %>
-                <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
-                <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-              <% else %>
-                <%= f.input :color, label: I18n.t(:status_color) %>
-              <% end %>
-            </td>
-            <td><%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %></td>
-            <td><div id="view_icon_class_image"></div></td>
-          </tr>
-          <tr>
-            <td>
-              <label class="checkbox"></label>
-              <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-              <% if @module_project.wbs_activity %>
-                <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio) %>
-              <% end %>
-            </td>
-            <td>
-              <label><%= I18n.t :fields %></label>
-              <% selected = @views_widget.project_fields.first %>
-              <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="actions">
-        <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
-            <%= submit_tag I18n.t('save'), :class => 'btn' %>
-        <% end %>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-      </div>
-    <% end %>
+    <table>
+      <!--<tr><td><%#= f.association :widget, label: I18n.t(:label_widget) %></td></tr>-->
+      <tr>
+        <td><%= f.input :name, label: I18n.t(:name) %></td>
+        <td>
+          <label class="checkbox"></label>
+          <%= f.input :show_name, label: I18n.t(:show_name) %>
+        </td>
+      </tr>
+      <!--<tr>-->
+          <!--<td><%#= f.input :is_label_widget, label: I18n.t(:Is_it_of_a_title_thumbnail), disabled: !@views_widget.new_record? %></td>-->
+      <!--</tr>-->
+      <tr>
+        <td><%= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @pbs_project_element_id, include_blank: false, input_html:{class: "inline_attr"}  %></td>
+        <td>
+          <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+            <%= f.association :module_project, label: "Modules", collection: @project.module_projects.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
+          <% else %>
+            <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
+        <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr"}, include_blank: false %></td>
+      </tr>
+      <tr>
+        <td>
+          <!-- Color is using the JS Spectrum library -->
+          <% if @views_widget.new_record? %>
+            <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+          <% else %>
+            <%= f.input :color, label: I18n.t(:status_color) %>
+          <% end %>
+        </td>
+        <td><%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %></td>
+        <td><div id="view_icon_class_image"></div></td>
+      </tr>
+      <tr>
+        <td>
+          <label class="checkbox"></label>
+          <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
+          <% if @module_project.wbs_activity %>
+            <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio) %>
+          <% end %>
+        </td>
+        <td>
+          <label><%= I18n.t :fields %></label>
+          <% selected = @views_widget.project_fields.first %>
+          <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
+        </td>
+      </tr>
+    </table>
   </div>
-</div>
+
+  <div class="actions">
+    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
+        <%= submit_tag I18n.t('save'), :class => 'btn' %>
+    <% end %>
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+  </div>
+<% end %>
 
 <script>
 

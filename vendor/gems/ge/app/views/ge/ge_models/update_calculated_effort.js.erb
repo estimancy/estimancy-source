@@ -1,12 +1,12 @@
 
 <% if @ge_model.three_points_estimation? %>
-    $("#number_effort_low").val(<%= convert_with_standard_unit_coefficient(@calculated["low"], @ge_model.standard_unit_coefficient, user_number_precision) %>);
+    $("#number_effort_low").val(<%= convert_with_standard_unit_coefficient(@calculated["low"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
 <% end %>
 
-$("#number_effort_most_likely").val(<%= convert_with_standard_unit_coefficient(@calculated["most_likely"], @ge_model.standard_unit_coefficient, user_number_precision) %>);
+$("#number_effort_most_likely").val(<%= convert_with_standard_unit_coefficient(@calculated["most_likely"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
 
 <% if @ge_model.three_points_estimation? %>
-    $("#number_effort_most_high").val(<%= convert_with_standard_unit_coefficient(@calculated["high"], @ge_model.standard_unit_coefficient, user_number_precision) %>);
+    $("#number_effort_most_high").val(<%= convert_with_standard_unit_coefficient(@calculated["high"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
 <% end %>
 
 //console.log("success");

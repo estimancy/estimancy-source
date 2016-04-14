@@ -37,6 +37,8 @@ module ApplicationHelper
         tmp = "acquisition_category"
     end
 
-    project.send(tmp)
+    unless tmp.nil?
+      project.send(tmp)
+    end
   end
 end

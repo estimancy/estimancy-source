@@ -140,3 +140,12 @@ caption {
 	cursor: pointer;
 	background-color: #e6bf99;
 }
+
+.with_min_max{
+    margin-left: 25px;
+}
+.min_max{
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 2px;
+}

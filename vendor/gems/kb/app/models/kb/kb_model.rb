@@ -24,7 +24,7 @@ module Kb
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
-    validates :date_max, :presence => true
+    # validates :date_max, :presence => true
 
     belongs_to :organization
 

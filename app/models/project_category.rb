@@ -26,7 +26,7 @@ class ProjectCategory < ActiveRecord::Base
   #include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
 
   has_many :projects
-  has_and_belongs_to_many :project_areas
+  # has_and_belongs_to_many :project_areas
 
   #belongs_to :record_status
   #belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
@@ -40,7 +40,10 @@ class ProjectCategory < ActiveRecord::Base
 
   amoeba do
     enable
-    exclude_association [:projects]
+    include_association []
+    customize(lambda { |original_project_category, new_project_category|
+                new_project_category.copy_id = original_project_category.id
+              })
   end
 
   #Search fields

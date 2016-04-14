@@ -7,7 +7,7 @@
     <th rowspan="2"><%= I18n.t(:total_ratio_per_activity) %></th>
   </tr>
   <tr>
-    <th>Ordre</th>
+    <th><%= I18n.t(:order) %></th>
     <th><%= I18n.t(:name) %></th>
     <% if @wbs_organization_profiles.length > 0 %>
         <% @wbs_organization_profiles.each do |profile| %>
@@ -25,7 +25,10 @@
 
     <% total_percentage_activity = 0 %>
     <tr>
-      <td><%= activity.wbs_activity_element.dotted_id %></td>
+      <td>
+        <% elt_position = activity.wbs_activity_element.position %>
+        <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+      </td>
       <td style="padding-left:<%=gap+(activity.wbs_activity_element.depth*2)%>em"><%= activity.wbs_activity_element.name %></td>
       <% if @wbs_organization_profiles.length > 0 %>
           <% @wbs_organization_profiles.each do |profile| %>

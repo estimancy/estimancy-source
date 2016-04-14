@@ -190,8 +190,7 @@
                     // loop through all collected checkbox objects
                     for (i = 0; i < checkbox_objects.length; i++) {
 
-                        //========== TEST =======
-
+                        //========== Update checked node list =======
                         //update the hidden field value for all checked node
                         //console.log("avant : "+all_checked_node_ids);
                         if (checkbox_objects[i].checked === true) {
@@ -204,8 +203,7 @@
                         }
                         $('#checked_nodes').val(all_checked_node_ids);
                         //console.log("après : "+all_checked_node_ids);
-
-                        //========== TEST =======
+                        //========== Update checked node list =======
 
                         // if input object is checkbox and checkbox is checked then ... for promote
                         if (checkbox_objects[i].dataset['node_state'] in states_to_confirm && checkbox_objects[i].checked === true) {

@@ -53,7 +53,6 @@ class LanguagesController < ApplicationController
     authorize! :manage_master_data, :all
 
     @language = Language.new(params[:language])
-    @language.record_status = @proposed_status
     if @language.save
       flash[:notice] = I18n.t (:notice_language_successful_created)
       redirect_to redirect_apply(nil, new_language_path(), languages_path)

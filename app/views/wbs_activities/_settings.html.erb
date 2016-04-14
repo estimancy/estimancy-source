@@ -1,6 +1,8 @@
-<h3>
-  <%= I18n.t(:wbs_activities) %>
-</h3>
+<h5>
+  <strong>
+    <%= I18n.t(:wbs_activities) %>
+  </strong>
+</h5>
 
 <% effort = PeAttribute.find_by_alias("effort") %>
 <% ratio = PeAttribute.find_by_alias("ratio") %>
@@ -71,7 +73,7 @@
             <%= text_field_tag "", convert_with_precision(v_low, user_number_precision, true), disabled: true %>
           </td>
         <% else %>
-          <td><%= number_field_tag "values[low]", v_low, step: "any" %></td>
+          <td><%= number_field_tag "values[low]", v_low, step: "any", style: "width: 100px;" %></td>
         <% end %>
       <% end %>
 
@@ -81,7 +83,7 @@
           <%= text_field_tag "", convert_with_precision(v_ml, user_number_precision, true), disabled: true %>
         </td>
       <% else %>
-        <td><%= number_field_tag "values[most_likely]", v_ml, step: "any" %></td>
+        <td><%= number_field_tag "values[most_likely]", v_ml, step: "any", style: "width: 100px;" %></td>
       <% end %>
 
 
@@ -92,7 +94,7 @@
             <%= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
           </td>
         <% else %>
-          <td><%= number_field_tag "values[most_likely]", v_high, step: "any" %></td>
+          <td><%= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %></td>
         <% end %>
       <% end %>
 
@@ -134,7 +136,6 @@
           </strong>
         </td>
       <% end %>
-
 
       <td>
         <strong>

@@ -331,12 +331,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
-        (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*)) *
-        tcplx_value
+        (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
 
     guw_unit_of_work.cost = guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
-        (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*)) *
-        tcplx_value
+        (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
 
     guw_unit_of_work.save
 
@@ -510,13 +508,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       guw_unit_of_work.save
 
-      guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size *
-          (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*)) *
-          tcplx_value
+      guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
+          (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
 
       guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
-          (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*)) *
-          tcplx_value
+          (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
 
       if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
         guw_unit_of_work.flagged = true

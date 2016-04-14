@@ -129,7 +129,7 @@ module WbsActivityElementsHelper
         element.children.each do |e|
           if show_hidden == 'true'
             tree << "
-                     <li style='margin-left:-#{gap+element.depth}px;' >
+                     <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                       <div class='block_label'>
                         #{show_element_name(e)}
                       </div>
@@ -142,7 +142,7 @@ module WbsActivityElementsHelper
           else
             unless e.exclude
               tree << "
-                       <li style='margin-left:-#{gap+element.depth}px;' >
+                       <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                         <div class='block_label'>
                           #{show_element_name(e)}
                         </div>
@@ -161,11 +161,19 @@ module WbsActivityElementsHelper
     tree
   end
 
+  # Show the wbs_activity_element position in front of the name
+  def show_element_position(element)
+    if element.position.nil?
+      "-"
+    else
+      h "%g" % (element.position)
+    end
+  end
 
   def show_element_name(element)
     if element.attributes.has_key? 'record_status_id'
       if element.is_root?
-        "<span class='#{h element.record_status.to_s }'>#{h element.name} </span>"
+        "<span class='#{h element.record_status.to_s } root_bolder'>#{h element.name} </span>"
       else
         element_wbs_root = element.root
         if params[:wbs_activity_ratio_id]
@@ -180,7 +188,7 @@ module WbsActivityElementsHelper
           end
           "<span class='#{h element.record_status.to_s } #{strong_class}'> #{h element.name} </span> <span class='darkseagreen'>#{corresponding_ratio_element.nil? ? '' : '(' + element_ratio_value.to_s + '%)'}</span> "
         else
-          "<span class='#{h element.record_status.to_s }'> #{h element.name} </span>"
+          "<span class='#{h element.record_status.to_s }' title='#{I18n.t(:position)} = #{show_element_position(element)}'> #{h element.name} </span>"
         end
 
       end

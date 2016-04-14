@@ -2,6 +2,8 @@
 <div>
   <% if params[:is_label_widget] == "true"  %>
     <%= render 'comment_form' %>
+  <% elsif params[:is_kpi_widget] == "true"  %>
+    <%= render 'kpi_form' %>
   <% else %>
     <%= render 'form' %>
   <% end %>

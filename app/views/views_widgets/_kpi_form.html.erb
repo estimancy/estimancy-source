@@ -1,0 +1,157 @@
+<%= simple_form_for(@views_widget, is_label_widget: true, :remote => true) do |f| %>
+  <%= f.error_notification %>
+  <div class="form-inputs">
+    <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+    <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+    <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+    <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+    <%= f.input :is_kpi_widget, as: :hidden, :input_html => { value: true } %>
+    <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
+
+    <div class="row-fluid">
+      <div class="span6">
+        <%= f.input :name, label: I18n.t(:name) %>
+      </div>
+      <div class="span6">
+        <label class="checkbox"></label>
+        <%= f.input :show_name, label: I18n.t(:show_name) %>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span5">
+        <!-- Color is using the JS Spectrum library -->
+        <% if @views_widget.new_record? %>
+          <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
+          <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+        <% else %>
+          <%= f.input :color, label: I18n.t(:status_color) %>
+        <% end %>
+      </div>
+      <div class="span5">
+        <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+      </div>
+      <div id="view_icon_class_image" class="span1"></div>
+    </div>
+
+    <% ["A", "B", "C", "D", "E"].each do |letter| %>
+      <div class="row-fluid">
+        <div class="span12">
+          <h5>
+            Variable <%= letter.upcase %>
+          </h5>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span5">
+          <%= select_tag "module_project[#{letter}]", options_for_select([@module_project].map{|i| [i, i.id]}, selected: @module_project.id), class: "inline_attr" %>
+        </div>
+        <div class="span5">
+          <%= select_tag "#{letter}", options_for_select(@module_project.estimation_values.map{|i| [i, i.id]}, selected: @views_widget.equation[letter]), class: "inline_attr" %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="row-fluid">
+      <div class="span5">
+        <h5>
+          Formule
+        </h5>
+        <%= text_field_tag "formula", @views_widget.nil? ? '' : @views_widget.equation["formula"] %>
+      </div>
+
+      <div class="span5">
+        <h5>
+          <%= I18n.t :fields %>
+        </h5>
+        <% selected = @views_widget.project_fields.first %>
+        <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] },
+                                                   selected: selected.nil? ? '' : selected.field.id),
+                       prompt: "None",
+                       disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
+      </div>
+    </div>
+
+    <div class="actions">
+      <% if can?(:alter_estimation_plan, @project)%>
+          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+      <% end %>
+      <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+    </div>
+  </div>
+<% end %>
+
+<script>
+
+$("#views_widget_color").spectrum({
+    showPaletteOnly: true,
+    showPalette:true,
+    hideAfterPaletteSelect:true,
+    showInitial: true,
+    preferredFormat: "hex",
+    replacerClassName: 'mycolorpicker',
+    //color: 'blanchedalmond',
+    <% if @views_widget.new_record? %>
+    color: 'blanchedalmond',
+    <% end %>
+
+    palette: [
+        ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+        ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+        ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+        ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+    ]
+});
+
+    // Update the view_widget show_min_max attribute according to the selected widget_type
+    var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",
+        "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
+
+    var widget_type = $("#views_widget_widget_type").val();
+    if (widget_type !== ""){
+        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
+        }
+        else{
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+    }
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_module_project_id").change(function() {
+        if ($(this).val() !== ""){
+            return $.ajax({
+                url: "/update_widget_module_project_data",
+                method: "GET",
+                data: "module_project_id=" + $(this).val()
+            });
+        }
+    });
+
+    $("#views_widget_widget_type").change(function() {
+        var widget_type = $(this).val();
+        if (widget_type !== ""){
+            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+                $('#views_widget_show_min_max').attr('disabled','disabled');
+                $("#views_widget_widget_type").value = 0;
+            } else{
+                $('#views_widget_show_min_max').removeAttr('disabled');
+            }
+        }
+    });
+
+
+    //manage the label widget
+    $("#views_widget_is_label_widget").change(function(){
+        if($(this).is(':checked')){
+            //alert(1);
+            //$("#new_views_widget").closest("tr").find(":input.inline_attr").attr("disabled", 'disabled');
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").attr("disabled", 'disabled');
+        } else{
+            //alert(0);
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").removeAttr('disabled');
+        }
+    });
+
+</script>

@@ -35,12 +35,6 @@ class ViewsWidgetsController < ApplicationController
     #end
   end
 
-  # Get the module_project attributes grouped by Input and Ouput
-  def get_module_project_attributes_input_output(module_project)
-    estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
-  end
-
-
   def new
     authorize! :manage_estimation_widgets, @project
 
@@ -54,8 +48,6 @@ class ViewsWidgetsController < ApplicationController
 
     # Get the possible attribute grouped by type (input, output)
     @module_project_attributes = get_module_project_attributes_input_output(@module_project)
-    #@module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-    #@module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
 
     #the view_widget type
     if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
@@ -129,15 +121,22 @@ class ViewsWidgetsController < ApplicationController
     #new widget with the default positions
     @views_widget = ViewsWidget.new(params[:views_widget].merge(:view_id => current_view.id, :position_x => position_x, :position_y => position_y, :width => 3, :height => 3))
 
+    if params[:views_widget][:is_kpi_widget].present?
+      @views_widget.is_kpi_widget = true
+      equation = Hash.new
+      equation["formula"] = params[:formula].upcase
+      ["A", "B", "C", "D", "E"].each do |letter|
+        equation[letter] = params[letter.to_sym].upcase
+      end
+      @views_widget.equation = equation
+    end
+
     respond_to do |format|
       if @views_widget.save
-
         unless params["field"].blank?
           ProjectField.create( project_id: @project.id, field_id: params["field"], views_widget_id: @views_widget.id,
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
-
-        #flash[:notice] = "Widget ajouté avec succès"
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
       else
         flash[:error] = "Erreur d'ajout de Vignette"
@@ -166,10 +165,20 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    if @views_widget.is_label_widget?
+    if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
       project = @project
     else
       project = @views_widget.estimation_value.module_project.project
+    end
+
+    if params[:views_widget][:is_kpi_widget].present?
+      @views_widget.is_kpi_widget = true
+      equation = Hash.new
+      equation["formula"] = params[:formula].upcase
+      ["A", "B", "C", "D", "E"].each do |letter|
+        equation[letter] = params[letter.to_sym].upcase
+      end
+      @views_widget.equation = equation
     end
 
     if params["field"].blank?
@@ -354,32 +363,35 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        ratio = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first.wbs_activity_ratio
-        activity.wbs_activity_elements.each do |element|
-          my_len_2 = element.name.length < my_len_2 ? my_len_2 : element.name.length
-          worksheet.change_column_width(4, my_len_2)
-          element.wbs_activity_ratio_elements.where(wbs_activity_ratio_id: ratio.id).each do |ware|
-            ware.organization_profiles.each do |profil|
-              worksheet.add_cell(ind_y, 0, @project.title)
-              worksheet.add_cell(ind_y, 1, @project.version)
-              #worksheet.add_cell(ind_y, 2, I18n.l(@project.start_date))
-              tab_date = @project.start_date.to_s.split("-")
-              worksheet.add_cell(ind_y, 2, '', "DATE(#{tab_date[0]},#{tab_date[1]},#{tab_date[2]})").set_number_format 'dd/mm/yy'
-              worksheet.add_cell(ind_y, 3, current_component)
-              worksheet.add_cell(ind_y, 4, element.name)
-              worksheet.add_cell(ind_y, 5, profil.name)
-              my_len = profil.name.length < my_len ? my_len : profil.name.length
-              worksheet.change_column_width(5, my_len)
+        ratio = WbsActivityInput.where(wbs_activity_id: activity.id,
+                                       module_project_id: widget.module_project.id).first.wbs_activity_ratio
+        unless ratio.nil?
+          activity.wbs_activity_elements.each do |element|
+            my_len_2 = element.name.length < my_len_2 ? my_len_2 : element.name.length
+            worksheet.change_column_width(4, my_len_2)
+            element.wbs_activity_ratio_elements.where(wbs_activity_ratio_id: ratio.id).each do |ware|
+              ware.organization_profiles.each do |profil|
+                worksheet.add_cell(ind_y, 0, @project.title)
+                worksheet.add_cell(ind_y, 1, @project.version)
+                #worksheet.add_cell(ind_y, 2, I18n.l(@project.start_date))
+                tab_date = @project.start_date.to_s.split("-")
+                worksheet.add_cell(ind_y, 2, '', "DATE(#{tab_date[0]},#{tab_date[1]},#{tab_date[2]})").set_number_format 'dd/mm/yy'
+                worksheet.add_cell(ind_y, 3, current_component)
+                worksheet.add_cell(ind_y, 4, element.name)
+                worksheet.add_cell(ind_y, 5, profil.name)
+                my_len = profil.name.length < my_len ? my_len : profil.name.length
+                worksheet.change_column_width(5, my_len)
 
-              begin
-                worksheet.add_cell(ind_y, 6, widget.estimation_value.string_data_probable[current_component.id][element.id]["profiles"]["profile_id_#{profil.id}"]["ratio_id_#{ratio.id}"][:value]).set_number_format('.##')
-                worksheet.add_cell(ind_y, 7, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
-              rescue
-                worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
-                worksheet.add_cell(ind_y, 7, "")
-              end
-              ind_y += 1
-           end
+                begin
+                  worksheet.add_cell(ind_y, 6, widget.estimation_value.string_data_probable[current_component.id][element.id]["profiles"]["profile_id_#{profil.id}"]["ratio_id_#{ratio.id}"][:value]).set_number_format('.##')
+                  worksheet.add_cell(ind_y, 7, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+                rescue
+                  worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
+                  worksheet.add_cell(ind_y, 7, "")
+                end
+                ind_y += 1
+             end
+            end
           end
         end
       end
@@ -387,6 +399,11 @@ class ViewsWidgetsController < ApplicationController
 
     send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version}(#{("A".."B").to_a[widget.module_project.position_x - 1]},#{widget.module_project.position_y})-Effort-Phases-Profils-#{widget.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
 
+  end
+
+  # Get the module_project attributes grouped by Input and Ouput
+  def get_module_project_attributes_input_output(module_project)
+    estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
 end

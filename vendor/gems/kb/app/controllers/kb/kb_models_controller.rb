@@ -32,15 +32,16 @@ class Kb::KbModelsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
     kb_model_datas = @kb_model.kb_datas
-    default_attributs = [I18n.t(:size), I18n.t(:effort_import), I18n.t(:project_area)]
+    default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:project_area)]
 
     if !kb_model_datas.nil? && !kb_model_datas.empty?
       kb_model_datas.each_with_index do |kb_data, index|
         worksheet.add_cell(index + 1, 0, kb_data.size).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 1, kb_data.effort).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 2, kb_data.project_date).change_horizontal_alignment('center')
         kb_data.custom_attributes.each_with_index  do |(custom_attr_k, custom_attr_v),index_2|
-          worksheet.add_cell(index + 1, index_2 + 2, custom_attr_v).change_horizontal_alignment('center')
-          if index_2 + 2 > 2
+          worksheet.add_cell(index + 1, index_2 + 3, custom_attr_v).change_horizontal_alignment('center')
+          if index_2 + 3 > 2
             default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
           end
         end
@@ -161,7 +162,9 @@ class Kb::KbModelsController < ApplicationController
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
     @kb_model.filter_a = params["filter_a"]
     @kb_model.filter_b = params["filter_b"]
-    @kb_model.save
+    @kb_model.filter_c = params["filter_c"]
+    @kb_model.filter_d = params["filter_d"]
+    @kb_model.save(validate: false)
     redirect_to kb.edit_kb_model_path(@kb_model)
   end
 
@@ -223,10 +226,15 @@ class Kb::KbModelsController < ApplicationController
 
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
     @kb_input = @kb_model.kb_inputs.where(module_project_id: current_module_project.id).first_or_create
-    if @kb_model.n_max.nil?
-      @kb_datas = @kb_model.kb_datas.where("project_date >= ? AND project_date <= ?", @kb_model.date_min.to_s, @kb_model.date_max.to_s)
+
+    if @kb_model.date_min.nil? || @kb_model.date_max.nil?
+      @kb_datas = @kb_model.kb_datas
     else
-      @kb_datas = @kb_model.kb_datas.where("project_date >= ? AND project_date <= ?", @kb_model.date_min.to_s, @kb_model.date_max.to_s).take(@kb_model.n_max.to_i)
+      if @kb_model.n_max.nil?
+        @kb_datas = @kb_model.kb_datas.where("project_date >= ? AND project_date <= ?", @kb_model.date_min.to_s, @kb_model.date_max.to_s)
+      else
+        @kb_datas = @kb_model.kb_datas.where("project_date >= ? AND project_date <= ?", @kb_model.date_min.to_s, @kb_model.date_max.to_s).take(@kb_model.n_max.to_i)
+      end
     end
 
     @project_list = Array.new

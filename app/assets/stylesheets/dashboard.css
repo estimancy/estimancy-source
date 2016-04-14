@@ -73,7 +73,7 @@ div.actions-tabs {
 
 .widget-title, .modal-header {
     background-color: #1BA1E2;
-    border-bottom: 1px solid #74CAE3;
+    border-bottom: 1px solid #1BA1E2;
     height: 36px;
 }
 
@@ -121,7 +121,7 @@ div.actions-tabs {
     color: white;
     float: left;
     font-size: 13px;
-    font-weight: inherit;
+    /*font-weight: inherit;*/
     padding: 12px;
     line-height: 12px;
     margin: 0;
@@ -130,7 +130,7 @@ div.actions-tabs {
     color: white;
     float: right;
     font-size: 13px;
-    font-weight: inherit;
+    /*font-weight: inherit;*/
     padding: 12px;
     line-height: 12px;
     margin: 0;
@@ -151,7 +151,7 @@ div.actions-tabs {
     float: right;
     margin: 9px 15px 0 0;
     box-shadow: 0 1px 2px rgba(0,0,0,0.3) inset, 0 1px 0 #ffffff;
-    font-weight: 300;
+    /*font-weight: 300;*/
 }
 .widget-content {
     padding: 12px 15px;
@@ -252,7 +252,7 @@ input::-webkit-inner-spin-button {
 }
 
 .login{
-    /*background: url('/assets/login_bg1.png') repeat-x;*/
+    background-color: #eee;
 }
 
 .login_background{
@@ -260,17 +260,20 @@ input::-webkit-inner-spin-button {
     width: 572px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
+    background-color: white;
 }
 
 .login_window{
-    border: 2px solid lightgrey;
+    border: 1px solid lightgrey;
+    height: 360px;
 }
 
 .login_wrapper{
-    background: url('/assets/login_bg2.png') no-repeat;
-    margin: 0 auto;
-    height: 148px;
+    background: url('/assets/login_bg22.png') no-repeat;
+    background-size: 568px 148px;
     width: 568px;
+    height: 148px;
+    margin-left: 22px;
 }
 
 .login_information{
@@ -291,14 +294,6 @@ input::-webkit-inner-spin-button {
 
 .login_username{
     line-height: 40px;
-}
-
-.login_right{
-    float:left;
-}
-
-.login_remember_me{
-    margin-left: 25px;
 }
 
 .login_bottom_other{
@@ -405,13 +400,18 @@ ul{
     min-width:150px;
 }
 
+
 .table-estimation{
     border: none;
+    text-align:center;
+    vertical-align:middle;
 }
 
 .table-estimation td{
     vertical-align: middle;
+    text-align: center;
     border: none;
+    margin: 5px;
 }
 
 
@@ -451,10 +451,44 @@ ul{
     max-width: 140px;
     margin-left:auto;
     margin-right:auto;
+}
+
+.module_project_save{
+    /*border: 1px solid #ddd;*/
+    padding: 10px;
+
+    background: #3498db;
+    background: -moz-linear-gradient(top,#3498db 0%,#2980b9 100%);
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#3498db),color-stop(100%,#2980b9));
+    background: -webkit-linear-gradient(top,#3498db 0%,#2980b9 100%);
+    background: -o-linear-gradient(top,#3498db 0%,#2980b9 100%);
+    background: -ms-linear-gradient(top,#3498db 0%,#2980b9 100%);
+    background: linear-gradient(to bottom,#3498db 0%,#2980b9 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3498db',endColorstr='#2980b9',GradientType=0);
+
+    display: block;
+    color: white;
+
+    box-shadow: 0px 0px 3   px rgba(0, 0, 0, 0.51);
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+
+    z-index: 20;
 
     /* ajout pour jsplumb draggable*/
-    /*position: absolute;*/
+    position: absolute;
+    /*left: 0;  right: 0;*/
+
+    /*max-width: 140px;*/
+    width: 140px;
+    height: auto;
+
     /* fin ajout */
+
+    /*margin-left:auto;*/
+    /*margin-right:auto;*/
 }
 
 .dropdown-menu {
@@ -498,6 +532,7 @@ ul{
     vertical-align: middle;
     height: 130px;
     width: 160px;
+
 }
 
 .inner-well{
@@ -546,7 +581,7 @@ ul{
 h1, h2, h3, h4, h5, h6 {
     margin: 10px 0;
     font-family: inherit;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1;
     color: inherit;
     text-rendering: optimizelegibility;
@@ -985,11 +1020,6 @@ span .min_max {
     /*white-space: nowrap;*/
 }
 
-h5.view_title{
-    font-size: large;
-    color: #000000;
-}
-
 .widget_icon_edit{
     position: relative;
     top: 0px;
@@ -1161,4 +1191,14 @@ tr.conversion_factor, td.conversion_factor {
 
 #organization_projects{
     margin-top: 10px;
+}
+
+.root_bolder{
+    font-weight: bolder;
+
+}
+.element_position{
+    font-weight: bold;
+    float: left;
+    clear: both;
 }

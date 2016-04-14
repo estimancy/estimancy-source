@@ -71,9 +71,9 @@ class Project < ActiveRecord::Base
 
   #Search fields
   scoped_search :on => [:title, :alias, :description, :start_date, :created_at, :updated_at]
-  scoped_search :in => :organization, :on => :name
-  scoped_search :in => :pbs_project_elements, :on => :name
-  scoped_search :in => :wbs_project_elements, :on => [:name, :description]
+  # scoped_search :in => :organization, :on => :name
+  # scoped_search :in => :pbs_project_elements, :on => :name
+  # scoped_search :in => :wbs_project_elements, :on => [:name, :description]
 
   amoeba do
     enable

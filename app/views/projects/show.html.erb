@@ -173,10 +173,10 @@
         </tr>
       </table>
 
-      <%= f.input :project_area_id, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_areas, @project) ) %>
-      <%= f.input :acquisition_category_id, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project) ) %>
-      <%= f.input :platform_category_id, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_platform_categories, @project) ) %>
-      <%= f.input :project_category_id, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_categories, @project) ) %>
+      <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_areas, @project) ) %>
+      <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project) ) %>
+      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_platform_categories, @project) ) %>
+      <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_categories, @project) ) %>
 
       <div class="actions-tabs">
         <% if can_alter_estimation?(@project) %>

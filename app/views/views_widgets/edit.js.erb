@@ -1,6 +1,8 @@
 $("#notifications").html("");
 <% if @views_widget.is_label_widget? %>
     $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/comment_form") %>");
+<% elsif @views_widget.is_kpi_widget? %>
+    $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/kpi_form") %>");
 <% else %>
     $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/form") %>");
 <% end %>

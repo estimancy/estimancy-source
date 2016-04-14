@@ -16,7 +16,10 @@
   <% gap = 1 %>
   <% @wbs_activity_ratio_elements.each_with_index do |wbs_activity_ratio_element, i| %>
     <tr>
-      <td><%= wbs_activity_ratio_element.wbs_activity_element.dotted_id %></td>
+      <td>
+        <% elt_position =  wbs_activity_ratio_element.wbs_activity_element.position %>
+        <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+      </td>
       <td style="padding-left:<%=gap+(wbs_activity_ratio_element.wbs_activity_element.depth*2)%>em"><%= wbs_activity_ratio_element.wbs_activity_element.name %></td>
       <td><%= wbs_activity_ratio_element.wbs_activity_element.description %></td>
 

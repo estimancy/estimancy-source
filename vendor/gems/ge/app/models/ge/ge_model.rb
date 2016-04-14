@@ -23,8 +23,9 @@ module Ge
   class GeModel < ActiveRecord::Base
     #validates_presence_of :name####, :organization_id
     validates :name, :presence => true
-    validates :standard_unit_coefficient, :presence => true
-    validates :effort_unit, :presence => true
+    validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
+    validates :input_effort_unit, :output_effort_unit, :presence => true
+    validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
     validates :coeff_a, :coeff_b, :numericality => {:allow_nil => true}
 
     belongs_to :organization
@@ -56,6 +57,7 @@ module Ge
     end
 
     # display input size or effort according to pe_attribute
+    # For input attribute: so we are going to use the : input_effort_standard_unit_coefficient
     def self.display_size(p, c, level, component_id, ge_model)
       begin
         if c.send("string_data_#{level}")[component_id].nil?
@@ -63,7 +65,7 @@ module Ge
             #p.send("string_data_#{level}")[component_id]
             case p.pe_attribute.alias
               when "effort"
-                p.send("string_data_#{level}")[component_id].to_f / ge_model.standard_unit_coefficient.to_f
+                p.send("string_data_#{level}")[component_id].to_f / ge_model.input_effort_standard_unit_coefficient.to_f
               when "retained_size"
                 p.send("string_data_#{level}")[component_id]
             end
@@ -74,7 +76,7 @@ module Ge
           #c.send("string_data_#{level}")[component_id]
           case c.pe_attribute.alias
             when "effort"
-              c.send("string_data_#{level}")[component_id].to_f / ge_model.standard_unit_coefficient.to_f
+              c.send("string_data_#{level}")[component_id].to_f / ge_model.input_effort_standard_unit_coefficient.to_f
             when "retained_size"
               c.send("string_data_#{level}")[component_id]
           end

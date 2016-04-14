@@ -174,13 +174,13 @@
         </tr>
       </table>
 
-      <%= f.input :project_area_id, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :acquisition_category_id, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :platform_category_id, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :project_category_id, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'} %>
 
       <br>
 
@@ -222,8 +222,7 @@
             <div class="row-fluid">
               <div class="span12">
                 <%= I18n.t(:label_add_a_module_to_project) %>
-                <%= select_tag 'select_module', grouped_options_for_select({"Modules d'estimation génériques" => @modules_selected,
-                                                                            "Base de connaissance" => @kb_models,
+                <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
                                                                             "Modules d'opération" => @operation_models,
                                                                             "Modules de Jugement d'Expert" => @ej_modules,
                                                                             "Modules Activités / Profils" => @wbs_instances,
@@ -246,6 +245,7 @@
                           success: function(data) {
                             //return alert("success");
                             //jsPlumb.repaintEverything();
+                            //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
                           },
                           error: function(XMLHttpRequest, textStatus, errorThrown) {
                             return alert("Error! :" + textStatus + ";" + errorThrown );
@@ -268,7 +268,7 @@
           <% end %>
         <% end %>
         <br>
-        <div class="module_box"  style=" width: auto; overflow-x:auto;">
+        <div class="module_box" style="width: auto; overflow-x:auto;">
           <%= render :partial => 'module_projects/estimation_plan', :locals => { :module_projects => @project.module_projects } %>
         </div>
       </div>

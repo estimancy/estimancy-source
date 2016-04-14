@@ -61,7 +61,7 @@
 
     <% if action_name.in?(%w(edit update)) %>
         <div id="tabs-2">
-          <div class="well component_tree">
+          <div class="well component_tree" style="background-color: transparent">
             <%#= raw generate_activity_element_tree(@wbs_activity_elements.first, '') %>
             <%= raw generate_activity_as_subtree(@wbs_activity_elements_list.first.root, @wbs_activity_elements, '') %>
           </div>

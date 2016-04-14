@@ -25,12 +25,14 @@ class SearchesController < ApplicationController
   #Display search result
   # Search with the "scoped_search " gem
   def results
+    set_page_title "Résultats de la recherche"
+
     #No authorize required since everyone can search
     if params[:search].class == Array
       classes = params[:search][:classes].map { |i| String::keep_clean_space(i).camelcase.constantize }
     else
-      classes = [Project, ProjectArea, PlatformCategory, ProjectCategory, AcquisitionCategory, WbsActivity, Pemodule, PeAttribute, WorkElementType,
-                 Organization, User, Group, OrganizationProfile, Field, ProjectField, EstimationStatus, OrganizationTechnology, Guw::GuwModel, Staffing::StaffingModel]
+      classes = [Project, ProjectArea, PlatformCategory, ProjectCategory, AcquisitionCategory, WbsActivity, User, Group, OrganizationProfile, Field, EstimationStatus,
+                 OrganizationTechnology, Guw::GuwModel, Staffing::StaffingModel, Kb::KbModel, Ge::GeModel]
     end
 
     # Get the current_user Organization
@@ -50,19 +52,19 @@ class SearchesController < ApplicationController
           case params[:search_option]
 
             when "search_all_words"
-              res = class_name.search_for(query)
+              res = class_name.search_for(query).where(organization_id: @current_organization).all
 
             when "search_any_words"
-              res = class_name.search_for(query.gsub(" ", " OR "))
+              res = class_name.search_for(query.gsub(" ", " OR ")).where(organization_id: @current_organization).all
 
             when "search_phrase"
-              res = class_name.search_for(" \"#{query}\" ")
+              res = class_name.search_for(" \"#{query}\" ").where(organization_id: @current_organization).all
 
             when "search_query"
-              res = class_name.search_for(query)
+              res = class_name.search_for(query).where(organization_id: @current_organization).all
 
             else
-              res = class_name.search_for(query)
+              res = class_name.search_for(query).where(organization_id: @current_organization).all
           end
         rescue
           next

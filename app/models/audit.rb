@@ -56,7 +56,6 @@ class Audit < ActiveRecord::Base
     return changes
   end
 
-
   def customize_user_id
     user_login = ""
     begin

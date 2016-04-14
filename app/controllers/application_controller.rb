@@ -29,7 +29,6 @@ class ApplicationController < ActionController::Base
   require 'socket'
 
   if Rails.env == "production"
-
     rescue_from StandardError do |exception|
       if exception.class == CanCan::AccessDenied
         flash[:error] = I18n.t(:error_access_denied)
@@ -42,7 +41,7 @@ class ApplicationController < ActionController::Base
         flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
       else
-        UserMailer.crash_log(exception, current_user).deliver
+        UserMailer.crash_log(exception, current_user, @current_organization, @project).deliver
         render :template => "layouts/500.html", :status => 500
       end
     end

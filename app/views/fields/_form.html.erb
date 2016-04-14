@@ -11,7 +11,7 @@
       <div class="form-inputs">
         <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :coefficient, label: I18n.t(:Standard_unit_conversion_factor) %>
-        <%= f.input :organization_id, as: :hidden, input_html: { value: params[:organization_id] } %>
+        <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
       </div>
 
         <div class="actions">

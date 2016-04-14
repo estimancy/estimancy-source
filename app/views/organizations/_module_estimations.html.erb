@@ -242,12 +242,12 @@
                 <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
               </td>
               <td class="center">
-                <%= link_to '', edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'button_attribute_tooltip icon-pencil', :title => I18n.t(:edit) %>
+                <%= link_to '', edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'icon-pencil', :title => I18n.t(:edit) %>
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%#= link_to('', "wbs_activities/#{wbs_activity.id}/duplicate_wbs_activity", :class => 'button_attribute_tooltip icon-copy', :title => 'Duplicate') %>
-                  <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'button_attribute_tooltip icon-copy', :title => I18n.t(:duplicate_module) %>
-                  <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id}, :remote => true, :class => 'button_attribute_tooltip icon-map-marker', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :title => I18n.t(:delete) %>
+                  <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'icon-copy', :title => I18n.t(:duplicate_module) %>
+                  <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id}, :remote => true, :class => 'icon-map-marker', :title => I18n.t('button_find_use')) %>
+                  <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'icon-trash', :title => I18n.t(:delete) %>
                 <% end %>
               </td>
             </tr>

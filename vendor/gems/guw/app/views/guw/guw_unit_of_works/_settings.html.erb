@@ -17,42 +17,42 @@
       <span class="label label-success">
       Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %> :
         <span class="label label-success ajusted_size">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).flatten.map{|i| i.ajusted_size.to_f }}.flatten.sum.to_f.round(3) %>
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).flatten.map{|i| i.ajusted_size.to_f }}.flatten.compact.sum.to_f.round(3) %>
         </span>
       </span>
 
       <span class="label label-success">
         Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated)%> :
         <span class="label label-success theorical_size">
-            <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f }}.flatten.sum.to_f.round(3) %>
+            <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f }}.flatten.compact.sum.to_f.round(3) %>
         </span>
       </span>
 
       <span class="label label-info">
         &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw) %> :
         <span class="label label-info number_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works }.flatten.size %>
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
         &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw_modifies) %>
         <span class="label label-info modified_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size %>
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
         &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw_selected) %> :
         <span class="label label-info selected_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true)}.flatten.size %>
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
         &nbsp;&nbsp;&nbsp;&nbsp; Nombre d'U.O. H.S. :
         <span class="label label-info off_line_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(off_line: true)}.flatten.size %>
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
     </div>
@@ -82,42 +82,42 @@
         </a>
         <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
         <div class="pull-right">
-            <span class="label label-success">
-              Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
-              <span class="<%= uowg.id %>_ajusted">
-                <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.to_f }.flatten.sum.to_f.round(3) %>
-              </span>
+          <span class="label label-success">
+            Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
+            <span class="<%= uowg.id %>_ajusted">
+              <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.to_f }.flatten.sum.to_f.round(3) %>
             </span>
-            <span class="label label-success">
-              Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
-              <span class="<%= uowg.id %>_theorical">
-                <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f}.sum.to_f.round(3) %>
-              </span>
+          </span>
+          <span class="label label-success">
+            Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
+            <span class="<%= uowg.id %>_theorical">
+              <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f}.sum.to_f.round(3) %>
             </span>
-            <span class="label label-info">
-               <%= I18n.t(:numerber_of_uw) %> :
-              <span class="<%= uowg.id %>_number">
-                <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
-              </span>
+          </span>
+          <span class="label label-info">
+             <%= I18n.t(:numerber_of_uw) %> :
+            <span class="<%= uowg.id %>_number">
+              <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
             </span>
-            <span class="label label-info">
-              <%= I18n.t(:numerber_of_uw_modifies) %> :
-              <span class="<%= uowg.id %>_flagged">
-                <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
-              </span>
+          </span>
+          <span class="label label-info">
+            <%= I18n.t(:numerber_of_uw_modifies) %> :
+            <span class="<%= uowg.id %>_flagged">
+              <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
             </span>
-            <span class="label label-info">
-              <%= I18n.t(:numerber_of_uw_selected) %> :
-              <span class="<%= uowg.id %>_selected">
-                <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
-              </span>
+          </span>
+          <span class="label label-info">
+            <%= I18n.t(:numerber_of_uw_selected) %> :
+            <span class="<%= uowg.id %>_selected">
+              <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
             </span>
-            <span class="label label-info">
-              Nombre d'U.O. H.S. :
-              <span class="<%= uowg.id %>_off_line">
-                <%= uowg.guw_unit_of_works.where(off_line: true).map(&:quantity).compact.sum %>
-              </span>
+          </span>
+          <span class="label label-info">
+            Nombre d'U.O. H.S. :
+            <span class="<%= uowg.id %>_off_line">
+              <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
             </span>
+          </span>
         </div>
       </div>
 

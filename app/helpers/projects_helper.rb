@@ -988,7 +988,14 @@ module ProjectsHelper
     if est_val_pe_attribute.alias == "retained_size" || est_val_pe_attribute.alias == "theorical_size"
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
-        "#{convert_with_standard_unit_coefficient(est_val, value.to_f, ge_model.standard_unit_coefficient, precision)} #{ge_model.size_unit}"
+        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+        size_unit = ge_model.output_size_unit
+        if est_val.in_out == "input"
+          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+          size_unit = ge_model.input_size_unit
+        end
+
+        "#{convert_with_standard_unit_coefficient(est_val, value.to_f, effort_standard_unit_coefficient, precision)} #{size_unit}"
       else
         "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
       end
@@ -996,7 +1003,15 @@ module ProjectsHelper
     elsif est_val_pe_attribute.alias == "effort"
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
-        "#{convert_with_standard_unit_coefficient(est_val, value, ge_model.standard_unit_coefficient, precision)} #{ge_model.effort_unit}"
+        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+        effort_unit = ge_model.output_effort_unit
+
+        if est_val.in_out == "input"
+          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+          effort_unit = ge_model.input_effort_unit
+        end
+
+        "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
       else
         "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
       end

@@ -703,7 +703,10 @@ class OrganizationsController < ApplicationController
               new_group = new_organization.groups.where(copy_id: group_role.group_id).first
               estimation_status = new_organization.estimation_statuses.where(copy_id: group_role.estimation_status_id).first
               unless estimation_status.nil?
-                group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
+                begin
+                  group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
+                rescue
+                end
               end
             end
           end
@@ -866,6 +869,28 @@ class OrganizationsController < ApplicationController
 
           #update the project's ancestry
           new_organization.projects.all.each do |project|
+
+            new_project_area = new_organization.project_areas.where(copy_id: project.project_area_id).first
+            unless new_project_area.nil?
+              project.project_area_id = new_project_area.id
+            end
+
+            new_project_category = new_organization.project_categories.where(copy_id: project.project_category_id).first
+            unless new_project_category.nil?
+              project.project_category_id = new_project_category.id
+            end
+
+            new_platform_category = new_organization.platform_categories.where(copy_id: project.platform_category_id).first
+            unless new_platform_category.nil?
+              project.platform_category_id = new_platform_category.id
+            end
+
+            new_acquisition_category = new_organization.acquisition_categories.where(copy_id: project.acquisition_category_id).first
+            unless new_acquisition_category.nil?
+              project.acquisition_category_id = new_acquisition_category.id
+            end
+
+            project.save
 
             unless project.original_model_id.nil?
               new_original_model = new_organization.projects.where(copy_id: project.original_model_id).first

@@ -311,7 +311,6 @@ class WbsActivitiesController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @pbs_project_element = current_component
-    @tmp_results = Hash.new
 
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
 
@@ -323,6 +322,9 @@ class WbsActivitiesController < ApplicationController
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values
     current_pbs_estimations.each do |est_val|
+
+      @tmp_results = Hash.new
+
       if est_val.pe_attribute.alias == "ratio_name"
         ratio_name = @ratio_reference.name
         est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })

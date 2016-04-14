@@ -149,9 +149,12 @@ class Ge::GeModelsController < ApplicationController
                   [I18n.t(:p_factors_calculation_method), @ge_model.p_calculation_method],
                   [I18n.t(:c_factors_calculation_method), @ge_model.c_calculation_method],
                   [I18n.t(:s_factors_calculation_method), @ge_model.s_calculation_method],
-                  [I18n.t(:retained_size_unit), @ge_model.size_unit],
-                  [I18n.t(:Wording_of_the_module_unit_effort_2), @ge_model.effort_unit],
-                  [I18n.t(:hour_coefficient_conversion), @ge_model.standard_unit_coefficient],
+                  [I18n.t(:input_size_unit), @ge_model.input_size_unit],
+                  [I18n.t(:output_size_unit), @ge_model.output_size_unit],
+                  [I18n.t(:input_effort_unit), @ge_model.input_effort_unit],
+                  [I18n.t(:output_effort_unit), @ge_model.output_effort_unit],
+                  [I18n.t(:input_effort_standard_coef_conv), @ge_model.input_effort_standard_unit_coefficient],
+                  [I18n.t(:output_effort_standard_coef_conv), @ge_model.output_effort_standard_unit_coefficient],
                   [I18n.t(:advice_ge), ""]]
 
     first_page.each_with_index do |row, index|
@@ -418,7 +421,7 @@ class Ge::GeModelsController < ApplicationController
           #there is no model, we will create new model from the model attributes data of the file to import
           model_sheet_order = { :"0" => "name", :"1" => "description", :"2" => "three_points_estimation", :"3" => "enabled_input", :"4" => "modify_theorical_effort",
                                 :"5" =>"input_pe_attribute_id", :"6" => "output_pe_attribute_id", :"7" => "coeff_a", :"8" => "coeff_b", :"9" => "p_calculation_method",
-                                :"10" => "c_calculation_method", :"11" => "s_calculation_method", :"12" => "size_unit", :"13" => "effort_unit", :"14" => "standard_unit_coefficient" }
+                                :"10" => "c_calculation_method", :"11" => "s_calculation_method", :"12" => "input_size_unit", :"13" => "output_size_unit", :"14" => "input_effort_unit", :"15" => "output_effort_unit", :"16" => "input_effort_standard_unit_coefficient", :"17" => "output_effort_standard_unit_coefficient" }
           model_worksheet = workbook['Model']
 
           if !model_worksheet.nil?
@@ -826,6 +829,11 @@ class Ge::GeModelsController < ApplicationController
             size = params["retained_size_most_likely"].to_f
           end
 
+          # if input attribute is an effort, we should multiply with the standard_unit_coeff before saving the value in DB
+          if input_pe_attribute.alias == "effort"
+            size = size * @ge_model.input_effort_standard_unit_coefficient.to_f
+          end
+
           input_ev.send("string_data_#{level}")[current_component.id] = size
           input_ev.save
           tmp_prbl << input_ev.send("string_data_#{level}")[current_component.id]
@@ -855,14 +863,14 @@ class Ge::GeModelsController < ApplicationController
 
           if !@ge_model.coeff_a.blank? && !@ge_model.coeff_b.blank?
             taille = @ge_model.coeff_a * size ** @ge_model.coeff_b   #Using "a" and "b" coefficients
-            effort = taille * @ge_model.standard_unit_coefficient.to_f
+            effort = taille * @ge_model.input_effort_standard_unit_coefficient.to_f
             @ge_input.formula = "#{@ge_model.coeff_a} X ^ #{@ge_model.coeff_b}"
             @ge_input.save
           else
             #The effort value will be calculated as : Effort = p * Taille^s
             # with: s = sum of scale factors and  p = multiply of prod factors
             taille = prod_factor_product * ((size * conversion_factor_product) ** scale_factor_sum)
-            effort = taille * @ge_model.standard_unit_coefficient.to_f
+            effort = taille * @ge_model.input_effort_standard_unit_coefficient.to_f
           end
 
           output_calculated_value = effort
@@ -931,52 +939,54 @@ class Ge::GeModelsController < ApplicationController
       end
 
 
-      #Introduced defects
-      introduced_defect_attribute = PeAttribute.find_by_alias("introduced_defects")
+      begin
+        #Introduced defects
+        introduced_defect_attribute = PeAttribute.find_by_alias("introduced_defects")
 
-      unless introduced_defect_attribute.nil?
-        introduced_defect_output_ev = EstimationValue.where(module_project_id: current_module_project.id,
-                                          pe_attribute_id: introduced_defect_attribute.id,
+        unless introduced_defect_attribute.nil?
+          introduced_defect_output_ev = EstimationValue.where(module_project_id: current_module_project.id,
+                                            pe_attribute_id: introduced_defect_attribute.id,
+                                            in_out: "output").first
+          unless introduced_defect_output_ev.nil?
+            tmp_prbl = Array.new
+            total_defects = params["retained_size_most_likely"].to_f * scale_factor_sum * conversion_factor_product
+            ["low", "most_likely", "high"].each do |level|
+              introduced_defect_output_ev.send("string_data_#{level}")[current_component.id] = total_defects
+              introduced_defect_output_ev.save
+              tmp_prbl << introduced_defect_output_ev.send("string_data_#{level}")[current_component.id]
+            end
+            unless @ge_model.three_points_estimation?
+              tmp_prbl[0] = tmp_prbl[1]
+              tmp_prbl[2] = tmp_prbl[1]
+            end
+            introduced_defect_output_ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+          end
+        end
+
+        #Remaining defects
+        remaining_defect_attribute = PeAttribute.find_by_alias("remaining_defects")
+        unless remaining_defect_attribute.nil?
+          remaining_defect_output_ev = EstimationValue.where(module_project_id: current_module_project.id,
+                                          pe_attribute_id: remaining_defect_attribute.id,
                                           in_out: "output").first
-        unless introduced_defect_output_ev.nil?
-          tmp_prbl = Array.new
-          total_defects = params["retained_size_most_likely"].to_f * scale_factor_sum * conversion_factor_product
-          ["low", "most_likely", "high"].each do |level|
-            introduced_defect_output_ev.send("string_data_#{level}")[current_component.id] = total_defects
-            introduced_defect_output_ev.save
-            tmp_prbl << introduced_defect_output_ev.send("string_data_#{level}")[current_component.id]
+          unless remaining_defect_output_ev.nil?
+            tmp_prbl = Array.new
+            # total_remaining_defects = total_defects - (total_defects * prod_factor_product)
+            total_remaining_defects = total_defects * prod_factor_product
+            ["low", "most_likely", "high"].each do |level|
+              remaining_defect_output_ev.send("string_data_#{level}")[current_component.id] = total_remaining_defects
+              remaining_defect_output_ev.save
+              tmp_prbl << remaining_defect_output_ev.send("string_data_#{level}")[current_component.id]
+            end
+            unless @ge_model.three_points_estimation?
+              tmp_prbl[0] = tmp_prbl[1]
+              tmp_prbl[2] = tmp_prbl[1]
+            end
+            remaining_defect_output_ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
           end
-          unless @ge_model.three_points_estimation?
-            tmp_prbl[0] = tmp_prbl[1]
-            tmp_prbl[2] = tmp_prbl[1]
           end
-          introduced_defect_output_ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-        end
+      rescue
       end
-
-      #Remaining defects
-      remaining_defect_attribute = PeAttribute.find_by_alias("remaining_defects")
-      unless remaining_defect_attribute.nil?
-        remaining_defect_output_ev = EstimationValue.where(module_project_id: current_module_project.id,
-                                        pe_attribute_id: remaining_defect_attribute.id,
-                                        in_out: "output").first
-        unless remaining_defect_output_ev.nil?
-          tmp_prbl = Array.new
-          # total_remaining_defects = total_defects - (total_defects * prod_factor_product)
-          total_remaining_defects = total_defects * prod_factor_product
-          ["low", "most_likely", "high"].each do |level|
-            remaining_defect_output_ev.send("string_data_#{level}")[current_component.id] = total_remaining_defects
-            remaining_defect_output_ev.save
-            tmp_prbl << remaining_defect_output_ev.send("string_data_#{level}")[current_component.id]
-          end
-          unless @ge_model.three_points_estimation?
-            tmp_prbl[0] = tmp_prbl[1]
-            tmp_prbl[2] = tmp_prbl[1]
-          end
-          remaining_defect_output_ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-        end
-      end
-
     end
 
     # current_module_project.pemodule.attribute_modules.each do |am|

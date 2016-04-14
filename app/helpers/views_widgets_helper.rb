@@ -21,6 +21,84 @@
 
 module ViewsWidgetsHelper
 
+  def get_kpi_widget_data(view_widget_id)
+    view_widget = ViewsWidget.find(view_widget_id)
+    widget_data = {}
+    initial_width = 60;  initial_height = 60
+    value_to_show = nil
+    ft_maxFontSize_without_mm = 50
+    icon_font_size = 1.7
+
+    height = (initial_height*view_widget.height.to_i) + 5*(view_widget.height.to_i - 1)   #margin is now 5 unless of 10
+    width = (initial_width*view_widget.width.to_i) + 5*(view_widget.width.to_i - 1)
+
+    widget_data[:width] = width
+    widget_data[:height] = height
+
+    case view_widget.height.to_i
+      when 1..2
+        icon_font_size = 1.2 ###2
+        if view_widget.height.to_i == 3
+          icon_font_size = 2.6 ###3
+        end
+        ft_maxFontSize_without_mm = 10###20
+        if view_widget.width.to_i <= 1
+          ft_minMax_minFontSize = 3###3.5
+        else
+          ft_minMax_minFontSize = 5###6.5
+        end
+      when 3
+        icon_font_size = 2.5
+        ft_maxFontSize_without_mm = 10###20
+      else
+        icon_font_size = ((height+width)/2) * 0.025
+        if icon_font_size > 3 && icon_font_size < 6
+          icon_font_size = 3
+        elsif icon_font_size > 6
+          icon_font_size = 4
+        end
+    end
+
+    text_size = ((height+width)/2) * 0.006  # 0.015
+    # get the fitText minFontSize and maxFontSize
+    widget_data[:icon_font_size] = icon_font_size
+    widget_data[:text_size] = text_size
+    widget_data[:ft_maxFontSize_without_mm] = ft_maxFontSize_without_mm
+
+
+    eq = view_widget.equation
+    tmp_formula = eq["formula"].to_s
+
+    unless eq["A"].nil?
+      a_value = EstimationValue.find(eq["A"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["B"].nil?
+      b_value = EstimationValue.find(eq["B"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["C"].nil?
+      c_value = EstimationValue.find(eq["C"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["D"].nil?
+      d_value = EstimationValue.find(eq["D"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["E"].nil?
+      e_value = EstimationValue.find(eq["E"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    begin
+      formula = tmp_formula.gsub("A", a_value).gsub("B", b_value).gsub("C", c_value).gsub("D", d_value).gsub("E", e_value)
+      widget_data[:value_to_show] = eval(formula).round(current_user.number_precision)
+    rescue
+      widget_data[:value_to_show] = "-"
+    end
+
+    widget_data
+  end
+
   # Get the label widget data
   def get_label_widget_data(view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)
@@ -202,8 +280,8 @@ module ViewsWidgetsHelper
           end
         end
 
-        max_value_text = "Max: #{data_high.nil? ? '-' : display_value(data_high, estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-        min_value_text = "Min: #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+        max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high, estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
+        min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
 
         #Update the widget data
         #widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable, max_value_text: max_value_text, min_value_text: min_value_text, probable_value_text: probable_value_text }
@@ -249,7 +327,7 @@ module ViewsWidgetsHelper
                                           {name: I18n.t(:high), data: {Time.new => data_high} } ],  #50
                                           {height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, hAxis: {title: "Level", format: 'MMM y'}, vAxis: {title: chart_vAxis}}})
           when "bar_chart"
-            value_to_show = column_chart(chart_level_values, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+            value_to_show = column_chart(chart_level_values, height: "1000px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
           when "area_chart"
             value_to_show =  line_chart([ {name: I18n.t(:low), data: {Time.new => data_low} },  #10
@@ -322,9 +400,9 @@ module ViewsWidgetsHelper
           when "histogram_effort_per_phase", "histogram_cost_per_phase"
 
             unless estimation_value.in_out == "input"
-              chart_height = height-90
+              chart_height = height+10
               chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
-              value_to_show = column_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
+              value_to_show = column_chart(chart_data, width: "1px", height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
             end
 
           when "pie_chart_effort_per_phase", "pie_chart_cost_per_phase"
@@ -550,8 +628,8 @@ module ViewsWidgetsHelper
       rowspan = 1
     end
 
-    res << " <table class='table table-condensed table-bordered table_effort_per_phase'>
-               <tr><th rowspan=#{rowspan}>Phases</th>"
+    res << "<table class='table table-condensed table-bordered table_effort_per_phase' style='margin-left: 15px;'>
+              <tr><th rowspan=#{rowspan}>Phases</th>"
 
     # Get the module_project probable estimation values for showing element consistency
     probable_est_value_for_consistency = nil
@@ -560,7 +638,7 @@ module ViewsWidgetsHelper
 
     res << "<th colspan='#{colspan}'>
               <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-                #{estimation_value.pe_attribute.name} (#{estimation_value.pe_attribute.alias == "cost" ? @project.organization.currency : ''})
+                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias == "cost" ? "(#{@project.organization.currency})" : ''}
               </span>
             </th>"
 
@@ -592,7 +670,7 @@ module ViewsWidgetsHelper
       title = ""
       res << "<tr>
                 <td>
-                  <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> #{wbs_activity_elt.name} </span>
+                  <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> <strong>#{wbs_activity_elt.name}</strong></span>
                 </td>"
 
       levels.each do |level|

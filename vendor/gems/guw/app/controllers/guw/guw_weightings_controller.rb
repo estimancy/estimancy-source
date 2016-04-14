@@ -33,8 +33,7 @@ class Guw::GuwWeightingsController < ApplicationController
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
-                    @current_organization.to_s => main_app.organization_estimations_path(@current_organization),
-                    @guw_model => guw.edit_guw_model_path(@guw_work_unit.guw_model, organization_id: @guw_weighting.guw_model.organization.id)
+                    @current_organization.to_s => main_app.organization_estimations_path(@current_organization)
 
     set_page_title I18n.t(:Create_a_new_Work_Unit)
   end
@@ -45,7 +44,7 @@ class Guw::GuwWeightingsController < ApplicationController
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization),
-                    @guw_model => guw.edit_guw_model_path(@guw_work_unit.guw_model, organization_id: @guw_weighting.guw_model.organization.id)
+                    @guw_model => guw.edit_guw_model_path(@guw_weighting.guw_model.id, organization_id: @current_organization.id)
 
     set_page_title I18n.t(:Edit_a_new_Work_Unit)
   end
@@ -53,14 +52,14 @@ class Guw::GuwWeightingsController < ApplicationController
   def create
     @guw_weighting = Guw::GuwWeighting.new(params[:guw_weighting])
     @guw_weighting.save
-    redirect_to guw.edit_guw_model_path(@guw_weighting.guw_model, organization_id: @guw_weighting.guw_model.organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_weighting.guw_model.id, organization_id: @current_organization.id, anchor: "tabs-weightings")
   end
 
   def update
     @guw_weighting = Guw::GuwWeighting.find(params[:id])
     @guw_weighting.update_attributes(params[:guw_weighting])
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_weighting.guw_model, organization_id: @guw_weighting.guw_model.organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_weighting.guw_model.id, organization_id: @current_organization.id, anchor: "tabs-weightings")
   end
 
   def destroy

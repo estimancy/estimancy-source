@@ -2,16 +2,16 @@
   <div class="span3 pbs">
     <div class="widget-box collapsible">
       <div class="widget-title">
-        <a href="#collapseProduct" data-toggle="collapse">
-          <span class="icon">
-            <i class="icon-align-left"></i>
-          </span>
-        </a>
-        <h5><%= I18n.t(:wbs_product) %> - "
+        <!--<a href="#collapseProduct" data-toggle="collapse">-->
+          <!--<span class="icon">-->
+            <!--<i class="icon-eye-open"></i>-->
+          <!--</span>-->
+        <!--</a>-->
+        <h5><%= I18n.t(:wbs_product) %>
           <span class="component_name">
             <%= current_component %>
           </span>
-          "</h5>
+          </h5>
       </div>
       <div class="collapse in" id="collapseProduct">
         <div class="widget-content resizableProduct">
@@ -24,11 +24,11 @@
   <div class="span9 estimation_plan">
     <div class="widget-box collapsible">
       <div class="widget-title">
-        <a href="#collapseActivity" data-toggle="collapse">
-          <span class="icon">
-            <i class="icon-list"></i>
-          </span>
-        </a>
+        <!--<a href="#collapseActivity" data-toggle="collapse">-->
+          <!--<span class="icon">-->
+            <!--<i class="icon-list"></i>-->
+          <!--</span>-->
+        <!--</a>-->
         <h5><%= I18n.t(:estimation_plan) %>
           - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %></h5>
 
@@ -57,11 +57,11 @@
   <div class="span12">
     <div class="widget-box collapsible">
       <div class="widget-title">
-        <a href="#collapseIn" data-toggle="collapse">
-          <span class="icon">
-            <i class="icon-align-left"></i>
-          </span>
-        </a>
+        <!--<a href="#collapseIn" data-toggle="collapse">-->
+          <!--<span class="icon">-->
+            <!--<i class="icon-align-left"></i>-->
+          <!--</span>-->
+        <!--</a>-->
 
         <h5>
           <%= I18n.t(:label_input_data) %> - <%= current_component %> - <%= "#{current_module_project}" %>
