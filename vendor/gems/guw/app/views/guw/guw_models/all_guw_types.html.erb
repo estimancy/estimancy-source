@@ -30,7 +30,7 @@
             <%= link_to(guw_type.name, guw_type) %>
           </td>
           <td>
-            <%= guw_type.description.truncate(100) %>
+            <%= guw_type.description.to_s.truncate(100) %>
           </td>
           <td class="span1">
             <%= guw_type.allow_criteria == true ? "Oui" : "Non" %>
