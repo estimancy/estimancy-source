@@ -123,9 +123,9 @@ public
 
   def edit
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization => "#!", I18n.t(:new_user) => ""
-
     @user = User.find(params[:id])
+
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
