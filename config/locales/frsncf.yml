@@ -1849,6 +1849,8 @@ frsncf:
   work_unit_label: "Nom du coefficient de pondération 1"
   weightings_label: "Nom du coefficient de pondération 2"
   factors_label: "Nom du coefficient de pondération 3"
+  allow_technology: "Allow technologies"
+  see_model: "Voir le modèle"
   sum: "Somme"
   product: "Produit"
   order: "Ordre"
