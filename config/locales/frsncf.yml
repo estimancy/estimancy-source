@@ -1882,3 +1882,5 @@ frsncf:
   input_output_size: "Taille E/S : "
   input_effort: "Effort en entrée : "
   output_effort: "Effort en sortie : "
+  project_not_found: "Projet inexistant !"
+  error_resource_not_found: "La ressource est introuvable !"

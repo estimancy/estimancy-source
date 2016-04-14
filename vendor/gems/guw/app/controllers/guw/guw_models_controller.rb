@@ -737,7 +737,7 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model.organization_id = params[:guw_model][:organization_id].to_i
 
     if @guw_model.save
-      redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), guw.guw_model_path(@guw_model))
+      redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil, guw.guw_model_path(@guw_model))
     else
       render action: :new
     end
