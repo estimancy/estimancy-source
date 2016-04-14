@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
           redirect_to root_path
         end
       elsif exception.class == ActiveRecord::RecordNotFound
+        flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
       else
         UserMailer.crash_log(exception, current_user, @current_organization, @project).deliver

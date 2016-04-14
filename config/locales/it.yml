@@ -1223,4 +1223,6 @@ it:
   used_view: "Display view used : %{value}"
   online_support: "Online support "
   live_chat_support: "Live chat support "
-  see_consultants: "See consultants "
+  see_consultants: "See consultants "  d_factors_calculation_method: "D (Defect) factors calculation method"
+  project_not_found: "Project not found !"
+  error_resource_not_found: "The resource is not found !"
