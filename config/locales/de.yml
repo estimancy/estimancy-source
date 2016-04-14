@@ -1474,3 +1474,5 @@ de:
   c_factors_calculation_method: "C (Conversion) factors calculation method"
   s_factors_calculation_method: "S (Scale) factors calculation method"
   d_factors_calculation_method: "D (Defect) factors calculation method"
+  project_not_found: "Project not found !"
+  error_resource_not_found: "The resource is not found !"

@@ -1549,3 +1549,5 @@ fr1:
   c_factors_calculation_method: "Mode de calcul des facteurs C (conversion)"
   s_factors_calculation_method: "Mode de calcul des facteurs S (échelle)"
   d_factors_calculation_method: "Mode de calcul des facteurs D (défaut)"
+  project_not_found: "Projet inexistant !"
+  error_resource_not_found: "La ressource est introuvable !"

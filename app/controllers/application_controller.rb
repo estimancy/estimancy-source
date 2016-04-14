@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
   require 'socket'
 
-  if Rails.env == "production"
+  #if Rails.env == "production"
 
     rescue_from StandardError do |exception|
       if exception.class == CanCan::AccessDenied
@@ -39,13 +39,14 @@ class ApplicationController < ActionController::Base
           redirect_to root_path
         end
       elsif exception.class == ActiveRecord::RecordNotFound
+        flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
       else
         UserMailer.crash_log(exception, current_user).deliver
         render :template => "layouts/500.html", :status => 500
       end
     end
-  end
+  #end
 
   helper_method :root_url
   helper_method :browser
