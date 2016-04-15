@@ -1017,6 +1017,9 @@ class OrganizationsController < ApplicationController
     #A la sauvegarde, on crée des sous traitants
     if @organization.save
 
+      # Add admin and user groups
+      admin_group = Group.create(name: "*USER", organization_id: @organization.id, description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs")
+
       # Add MasterData Profiles to Organization
       Profile.all.each do |profile|
         op = OrganizationProfile.new(organization_id: @organization.id, name: profile.name, description: profile.description, cost_per_hour: profile.cost_per_hour)

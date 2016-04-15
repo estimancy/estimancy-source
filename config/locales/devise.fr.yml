@@ -15,7 +15,7 @@ fr:
       last_attempt: Il vous reste une chance avant que votre compte soit bloqué.
       locked: Votre compte est verrouillé.
       not_found_in_database: Courriel ou mot de passe incorrect.
-      timeout: Votre session est périmée, veuillez vous reconnecter pour continuer.
+      timeout: Votre session a expiré, veuillez vous reconnecter pour continuer.
       unauthenticated: '' #Vous devez vous connecter ou vous enregistrer pour continuer.
       unconfirmed: Vous devez confirmer votre compte par courriel.
     mailer:
