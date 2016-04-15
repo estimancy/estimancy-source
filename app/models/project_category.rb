@@ -40,7 +40,7 @@ class ProjectCategory < ActiveRecord::Base
 
   amoeba do
     enable
-    include_association []
+    exclude_association [:projects]
     customize(lambda { |original_project_category, new_project_category|
                 new_project_category.copy_id = original_project_category.id
               })
