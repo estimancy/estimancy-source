@@ -291,11 +291,13 @@ class ProjectsController < ApplicationController
     @is_model = params[:project][:is_model]
     if @is_model == "true"
       authorize! :manage_estimation_models, Project
+      set_page_title I18n.t(:new_estimation_model)
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models")
     else
       authorize! :create_project_from_scratch, Project
+      set_page_title I18n.t(:new_project)
+      set_breadcrumbs I18n.t(:estimate) => organization_estimations_path(@current_organization)
     end
-
-    set_page_title I18n.t(:new_project)
 
     @project_title = params[:project][:title]
     @project = Project.new(params[:project])
@@ -356,7 +358,7 @@ class ProjectsController < ApplicationController
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first.value
     defaut_group = AdminSetting.where(key: "Groupe using estimatiodef editn").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
-    defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first.id
+    defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
     defaut_group_ps.project_security_level = full_control_security_level
     defaut_group_ps.is_model_permission = false
     defaut_group_ps.is_estimation_permission = true
@@ -423,7 +425,8 @@ class ProjectsController < ApplicationController
           redirect_to redirect_apply(edit_project_path(@project)), notice: "#{I18n.t(:notice_project_successful_created)}"
         else
           flash[:error] = "#{I18n.t(:error_project_creation_failed)}"
-          render action: :new
+          params[:is_model] ||= params[:project][:is_model]
+          render(action: :new, is_model: params[:project][:is_model])
         end
 
         #raise ActiveRecord::Rollback
