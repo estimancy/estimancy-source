@@ -1,250 +1,249 @@
-fr:
+frsncf_isi:
   direction: ltr
   date:
-    abbr_day_names:
-      - dim
-      - lun
-      - mar
-      - mer
-      - jeu
-      - ven
-      - sam
-    # Don't forget the nil at the beginning; there's no such thing as a 0th month
-    abbr_month_names:
-      - ~
-      - jan.
-      - fév.
-      - mar.
-      - avr.
-      - mai
-      - juin
-      - juil.
-      - août
-      - sept.
-      - oct.
-      - nov.
-      - déc.
-    day_names:
-      - dimanche
-      - lundi
-      - mardi
-      - mercredi
-      - jeudi
-      - vendredi
-      - samedi
-    formats:
-      # Use the strftime parameters for formats.
-      # When no format has been given, it uses default.
-      # You can provide other formats here if you like!
-      default: "%d/%m/%Y"
-      long: "%e %B %Y"
-      short: "%e %b"
-    # Don't forget the nil at the beginning; there's no such thing as a 0th month
-    month_names:
-      - ~
-      - janvier
-      - février
-      - mars
-      - avril
-      - mai
-      - juin
-      - juillet
-      - août
-      - septembre
-      - octobre
-      - novembre
-      - décembre
-    # Used in date_select and datime_select.
-    order:
-      - :day
-      - :month
-      - :year
+   abbr_day_names:
+     - dim
+     - lun
+     - mar
+     - mer
+     - jeu
+     - ven
+     - sam
+   # Don't forget the nil at the beginning; there's no such thing as a 0th month
+   abbr_month_names:
+     - ~
+     - jan.
+     - fév.
+     - mar.
+     - avr.
+     - mai
+     - juin
+     - juil.
+     - août
+     - sept.
+     - oct.
+     - nov.
+     - déc.
+   day_names:
+     - dimanche
+     - lundi
+     - mardi
+     - mercredi
+     - jeudi
+     - vendredi
+     - samedi
+   formats:
+     # Use the strftime parameters for formats.
+     # When no format has been given, it uses default.
+     # You can provide other formats here if you like!
+     default: "%d/%m/%Y"
+     long: "%e %B %Y"
+     short: "%e %b"
+   # Don't forget the nil at the beginning; there's no such thing as a 0th month
+   month_names:
+     - ~
+     - janvier
+     - février
+     - mars
+     - avril
+     - mai
+     - juin
+     - juillet
+     - août
+     - septembre
+     - octobre
+     - novembre
+     - décembre
+   # Used in date_select and datime_select.
+   order:
+     - :day
+     - :month
+     - :year
 
   datetime:
-    distance_in_words:
-      about_x_hours:
-        one:   "environ une heure"
-        other: "environ %{count} heures"
-      about_x_months:
-        one:   "environ un mois"
-        other: "environ %{count} mois"
-      about_x_years:
-        one:   "environ un an"
-        other: "environ %{count} ans"
-      almost_x_years:
-        one:   "presqu'un an"
-        other: "presque %{count} ans"
-      half_a_minute: "une demi-minute"
-      less_than_x_minutes:
-        zero:  "moins d'une minute"
-        one:   "moins d'une minute"
-        other: "moins de %{count} minutes"
-      less_than_x_seconds:
-        zero:  "moins d'une seconde"
-        one:   "moins d'une seconde"
-        other: "moins de %{count} secondes"
-      over_x_years:
-        one:   "plus d'un an"
-        other: "plus de %{count} ans"
-      x_months:
-        one: "1 mois"
-        other: ! '%{count} mois'
-      x_weeks:
-        one: "1 semaine"
-        other: ! '%{count} semaines'
-      x_hours:
-        one: 1 heure
-        other: ! '%{count} heures'
-      x_days:
-        one:   "1 jour"
-        other: "%{count} jours"
-      x_minutes:
-        one:   "1 minute"
-        other: "%{count} minutes"
-      x_months:
-        one:   "1 mois"
-        other: "%{count} mois"
-      x_seconds:
-        one:   "1 seconde"
-        other: "%{count} secondes"
-    prompts:
-      year:   "Année"
-      month:  "Mois"
-      day:    "Jour"
-      hour:   "Heure"
-      minute: "Minute"
-      second: "Seconde"
-      week:   "Semaine"
+   distance_in_words:
+     about_x_hours:
+       one:   "environ une heure"
+       other: "environ %{count} heures"
+     about_x_months:
+       one:   "environ un mois"
+       other: "environ %{count} mois"
+     about_x_years:
+       one:   "environ un an"
+       other: "environ %{count} ans"
+     almost_x_years:
+       one:   "presqu'un an"
+       other: "presque %{count} ans"
+     half_a_minute: "une demi-minute"
+     less_than_x_minutes:
+       zero:  "moins d'une minute"
+       one:   "moins d'une minute"
+       other: "moins de %{count} minutes"
+     less_than_x_seconds:
+       zero:  "moins d'une seconde"
+       one:   "moins d'une seconde"
+       other: "moins de %{count} secondes"
+     over_x_years:
+       one:   "plus d'un an"
+       other: "plus de %{count} ans"
+     x_months:
+       one: "1 mois"
+       other: ! '%{count} mois'
+     x_weeks:
+       one: "1 semaine"
+       other: ! '%{count} semaines'
+     x_hours:
+       one: 1 heure
+       other: ! '%{count} heures'
+     x_days:
+       one:   "1 jour"
+       other: "%{count} jours"
+     x_minutes:
+       one:   "1 minute"
+       other: "%{count} minutes"
+     x_months:
+       one:   "1 mois"
+       other: "%{count} mois"
+     x_seconds:
+       one:   "1 seconde"
+       other: "%{count} secondes"
+   prompts:
+     year:   "Année"
+     month:  "Mois"
+     day:    "Jour"
+     hour:   "Heure"
+     minute: "Minute"
+     second: "Seconde"
+     week:   "Semaine"
 
   time:
-    formats:
-      default: ! "%d/%m/%Y %H:%M"
-      time: "%H:%M"
-      short: ! '%d %b %H:%M'
-      long: ! '%A %d %B %Y %H:%M'
-    am: am
-    pm: pm
+   formats:
+     default: ! "%d/%m/%Y %H:%M"
+     time: "%H:%M"
+     short: ! '%d %b %H:%M'
+     long: ! '%A %d %B %Y %H:%M'
+   am: am
+   pm: pm
 
   number:
-    format:
-      separator: ","
-      delimiter: " "
-      precision: 3
-      significant: false
-      strip_insignificant_zeros: false
-    currency:
-      format:
-        format: "%n %u"
-        unit: "€"
-        separator: ","
-        delimiter: " "
-        precision: 2
-        significant: false
-        strip_insignificant_zeros: false
-    percentage:
-      format:
-        delimiter: ""
-    precision:
-      format:
-        delimiter: ""
-    human:
-      decimal_units:
-        format: "%n %u"
-        units:
-          unit: ""
-          thousand: "millier"
-          million: "million"
-          billion: "milliard"
-          trillion: "billion"
-          quadrillion: "million de milliards"
-      format:
-        delimiter: ""
-        precision: 2
-        significant: true
-        strip_insignificant_zeros: true
-      storage_units:
-        format: "%n %u"
-        units:
-          byte:
-            one:   "octet"
-            other: "octets"
-          kb: "ko"
-          mb: "Mo"
-          gb: "Go"
-          tb: "To"
+   format:
+     separator: ","
+     delimiter: " "
+     precision: 3
+     significant: false
+     strip_insignificant_zeros: false
+   currency:
+     format:
+       format: "%n %u"
+       unit: "€"
+       separator: ","
+       delimiter: " "
+       precision: 2
+       significant: false
+       strip_insignificant_zeros: false
+   percentage:
+     format:
+       delimiter: ""
+   precision:
+     format:
+       delimiter: ""
+   human:
+     decimal_units:
+       format: "%n %u"
+       units:
+         unit: ""
+         thousand: "millier"
+         million: "million"
+         billion: "milliard"
+         trillion: "billion"
+         quadrillion: "million de milliards"
+     format:
+       delimiter: ""
+       precision: 2
+       significant: true
+       strip_insignificant_zeros: true
+     storage_units:
+       format: "%n %u"
+       units:
+         byte:
+           one:   "octet"
+           other: "octets"
+         kb: "ko"
+         mb: "Mo"
+         gb: "Go"
+         tb: "To"
 
   support:
-    array:
-      words_connector: ", "
-      two_words_connector: " et "
-      last_word_connector: " et "
+   array:
+     words_connector: ", "
+     two_words_connector: " et "
+     last_word_connector: " et "
 
   errors: &errors
-    format: "%{attribute} %{message}"
-    messages: &errors_messages
-      inclusion: "n'est pas inclus(e) dans la liste"
-      exclusion: "n'est pas disponible"
-      invalid: "n'est pas valide"
-      confirmation: "ne concorde pas avec la confirmation"
-      accepted: "doit être accepté(e)"
-      empty: "doit être rempli(e)"
-      blank: "doit être rempli(e)"
-      not_a_number: "n'est pas un nombre"
-      not_an_integer: "doit être un nombre entier"
-      greater_than: "doit être supérieur à %{count}"
-      greater_than_or_equal_to: "doit être supérieur ou égal à %{count}"
-      equal_to: "doit être égal à %{count}"
-      less_than: "doit être inférieur à %{count}"
-      less_than_or_equal_to: "doit être inférieur ou égal à %{count}"
-      odd: "doit être impair"
-      even: "doit être pair"
-      taken: "est déjà utilisé par un autre utilisateur"
-      record_invalid: "La validation a échoué : %{errors}"
-      too_long:
-        one: "est trop long (pas plus d'un caractère)"
-        other: "est trop long (pas plus de %{count} caractères)"
-      too_short:
-        one: "est trop court (au moins un caractère)"
-        other: "est trop court (au moins %{count} caractères)"
-      wrong_length:
-        one: "ne fait pas la bonne longueur (doit comporter un seul caractère)"
-        other: "ne fait pas la bonne longueur (doit comporter %{count} caractères)"
-    template: &errors_template
-      body: "Veuillez vérifier les champs suivants : "
-      header:
-        one:   "Impossible d'enregistrer ce(tte) %{model} : 1 erreur"
-        other: "Impossible d'enregistrer ce(tte) %{model} : %{count} erreurs"
+   format: "%{attribute} %{message}"
+   messages: &errors_messages
+     inclusion: "n'est pas inclus(e) dans la liste"
+     exclusion: "n'est pas disponible"
+     invalid: "n'est pas valide"
+     confirmation: "ne concorde pas avec la confirmation"
+     accepted: "doit être accepté(e)"
+     empty: "doit être rempli(e)"
+     blank: "doit être rempli(e)"
+     not_a_number: "n'est pas un nombre"
+     not_an_integer: "doit être un nombre entier"
+     greater_than: "doit être supérieur à %{count}"
+     greater_than_or_equal_to: "doit être supérieur ou égal à %{count}"
+     equal_to: "doit être égal à %{count}"
+     less_than: "doit être inférieur à %{count}"
+     less_than_or_equal_to: "doit être inférieur ou égal à %{count}"
+     odd: "doit être impair"
+     even: "doit être pair"
+     taken: "est déjà utilisé par un autre utilisateur"
+     record_invalid: "La validation a échoué : %{errors}"
+     too_long:
+       one: "est trop long (pas plus d'un caractère)"
+       other: "est trop long (pas plus de %{count} caractères)"
+     too_short:
+       one: "est trop court (au moins un caractère)"
+       other: "est trop court (au moins %{count} caractères)"
+     wrong_length:
+       one: "ne fait pas la bonne longueur (doit comporter un seul caractère)"
+       other: "ne fait pas la bonne longueur (doit comporter %{count} caractères)"
+   template: &errors_template
+     body: "Veuillez vérifier les champs suivants : "
+     header:
+       one:   "Impossible d'enregistrer ce(tte) %{model} : 1 erreur"
+       other: "Impossible d'enregistrer ce(tte) %{model} : %{count} erreurs"
 
   helpers:
-    select:
-      prompt: "Veuillez sélectionner"
-    submit:
-      create: "Créer un(e) %{model}"
-      update: "Modifier ce(tte) %{model}"
-      submit: "Enregistrer ce(tte) %{model}"
+   select:
+     prompt: "Veuillez sélectionner"
+   submit:
+     create: "Créer un(e) %{model}"
+     update: "Modifier ce(tte) %{model}"
+     submit: "Enregistrer ce(tte) %{model}"
 
   # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
   activemodel:
-    errors:
-      <<: *errors
+   errors:
+     <<: *errors
   activerecord:
-    attributes:
-      organization:
-        limit1: "Affichage de l'effort en jour à partir de"
-        limit2: "Affichage de l'effort en semaine à partir de"
-        limit3: "Affichage de l'effort en mois à partir de"
-    errors:
-      <<: *errors
-  #  Menu
+   attributes:
+     organization:
+       limit1: "Affichage de l'effort en jour à partir de"
+       limit2: "Affichage de l'effort en semaine à partir de"
+       limit3: "Affichage de l'effort en mois à partir de"
+   errors:
+     <<: *errors
   projects: "Projets"
   label_menu_projects: "Projets"
   project: "Projet"
   recent_project: "Projets récents"
-  home: "Ma dernière estimation"
-  all_projects: "Toutes les estimations"
-  create_new_project: "Nouvelle estimation"
-  label_user_security_resume: "Gestion des droits utilisateurs de l'estimation"
-  label_group_security_resume: "Gestion des droits des groupes de l'estimation"
+  home: "Mon dernier devis"
+  all_projects: "Toutes les devis"
+  create_new_project: "Nouvelle devis"
+  label_user_security_resume: "Gestion des droits utilisateurs du devis"
+  label_group_security_resume: "Gestion des droits des groupes du devis"
 
   label_menu_organization: "Organisations"
   project_global_setting: "Paramètres projets"
@@ -277,8 +276,6 @@ fr:
   work_element: "Eléments de travail"
   security_level: "Niveaux de sécurité"
   languages: "Langues"
-  add_language: "Ajouter langue"
-  Edit_language: "Editer language"
   label_language: "Langue"
   translations: "Traductions"
   community: "Communauté"
@@ -292,7 +289,6 @@ fr:
 
   #attributes
   name: "Nom"
-  send_all_users: "Envoyer à tous les utilisateurs de la base"
   category: "Catégorie"
   description: "Description"
   alias: "Alias"
@@ -348,29 +344,29 @@ fr:
   acquisition_categories: "Catégories d'acquisitions"
   platform_categories: "Catégories de plates-formes"
   project_categories: "Catégories de projets"
-  project_areas: "Secteurs de projets"
+  project_areas: "Domaine"
   acquisition_category: "Catégorie d'acquisition"
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de projet"
-  project_area: "Secteur de projets"
+  project_area: "Domaine"
   label_acquisition: "Acquisition"
   label_platform: "Plateforme"
   label_version: "Vers."
 
   #Project areas
-  edit_project_area: "Editer le secteur de projet \"%{value}\""
-  new_project_area: "Créer un secteur de projet"
+  edit_project_area: "Editer domaine \"%{value}\" ..."
+  new_project_area: "Créer un domaine"
 
   #Project categories
-  edit_project_category: "Editer la catégorie de projet \"%{value}\""
+  edit_project_category: "Editer la catégorie de projet \"%{value}\" ..."
   new_project_category: "Créer une catégorie de projet"
 
   #Platform categories
-  edit_platform_category: "Editer la catégorie de plateforme \"%{value}\""
+  edit_platform_category: "Editer la catégorie de plateforme \"%{value}\" ..."
   new_platform_category: "Créer une catégorie de plateforme"
 
   #Acquisition categories
-  edit_acquisition_category: "Editer la catégorie d'acquisition \"%{value}\""
+  edit_acquisition_category: "Editer la catégorie d'acquisition \"%{value}\" ..."
   new_acquisition_category: "Créer une catégorie d'acquisition"
   notice_acquisition_category_successful_created: "Une nouvelle catégorie d'activité a été créée avec succès."
   notice_acquisition_category_successful_destroyed: "Cette catégorie d'activité a été supprimée avec succès"
@@ -378,7 +374,7 @@ fr:
   notice_acquisition_category_successful_updated: "Cette catégorie d'activité a été mise à jour avec succès"
 
   #Admin_settings
-  edit_admin_settings: "Editer le paramètre d'administrations \"%{value}\""
+  edit_admin_settings: "Editer le paramètre d'administrations \"%{value}\" ..."
   new_admin_settings: "Créer un nouveau paramètre d'administration"
   key: "Clé"
   value: "Valeur"
@@ -387,11 +383,10 @@ fr:
   aggregation: "Agrégation"
   validation_options: "Validations et options"
   attributes_type: "Type"
-  edit_pe_attribute: "Editer l'attribut \"%{value}\""
-  edit_attribute_category: "Editer la catégorie \"%{value}\""
+  edit_pe_attribute: "Editer l'attribut \"%{value}\" ..."
+  edit_attribute_category: "Editer la catégorie \"%{value}\" ..."
   new_pe_attribute: "Créer un nouvel attribut"
   new_attribute_category: "Créer une nouvelle catègorie d'attribut"
-  Edit_attribute: "Editer l'attribut"
 
   #auth_method
   server_name: "Nom du serveur"
@@ -409,7 +404,7 @@ fr:
   email_attribute: "Courriel"
   initials_attribute: "Initiales"
   priority_order: "Priorité"
-  edit_auth_method: "Editer la  méthode d'authentification \"%{value}\""
+  edit_auth_method: "Editer la  méthode d'authentification \"%{value}\" ..."
   new_auth_method: "Créer une nouvelle méthode d'authentification"
   encryption: "Méthode d'encryption"
 
@@ -436,15 +431,15 @@ fr:
   #groups
   global: "Global"
   text_group_associated_users: "Utilisateurs membre du groupe \"%{value}\""
-  edit_group: "Editer le groupe \"%{value}\" "
-  new_group: "Créer un nouveau groupe "
+  edit_group: "Editer le groupe \"%{value}\" ... "
+  new_group: "Créer un nouveau groupe ... "
 
   #Labor categories
-  edit_labor_category: "Editer la catégorie de travail \"%{value}\""
+  edit_labor_category: "Editer la catégorie de travail \"%{value}\" ..."
   new_labor_category: "Créer une catégorie de travail"
 
   #languages
-  edit_language: "Editer le langage \"%{value}\""
+  edit_language: "Editer le langage \"%{value}\" ..."
   new_language: "Créer un nouveau langage"
   local: "Local"
 
@@ -457,11 +452,11 @@ fr:
   new_estimation_value: "Créer un nouvel attribut de module de projet"
 
   #module_project
-  edit_module_project: "Editer le module de projet \"%{value}\""
+  edit_module_project: "Editer le module de projet \"%{value}\" ..."
   new_module_project: "Créer un nouveau module de projet"
   related_attributes: "Attributs associés"
   module_ratio_settings: "Paramètrage Ratio"
-  module_links_settings: "Liens entre Modules"
+  module_links_settings: "Liens entre Modules"  
   mandatory: "Obligatoire"
   links_to: "Liens vers"
   current_link: "Liens courant"
@@ -482,7 +477,7 @@ fr:
   currency: "Devise"
   hour_per_day: "Heures par jour"
   days_per_year: "Jours par année"
-  edit_organization_labor_category: "Editer la catégorie de travailleurs organisationnelle \"%{value}\""
+  edit_organization_labor_category: "Editer la catégorie de travailleurs organisationnelle \"%{value}\" ..."
   new_organization_labor_category: "Créer une catégorie de travailleurs de l'organisation"
 
   #Organization
@@ -502,12 +497,12 @@ fr:
   edit_subcontractor: "Editer le sous-traitant \"%{value}\""
   text_subcontractor: "Gérer les sous-traitants de votre organisation"
   productivity_ratio: "Ratio de productivité"
-  new_uow_complexity: "Créer une complexité pour les unientés d'oeuvres"
+  new_uow_complexity: "Créer une complexité pour les unités d'oeuvres"
 
   #Pbs_project_elements
   ancestry: "Ancêtre"
   work_element_type: "Type de l'élément de travail"
-  project_link: "Liens vers une estimation"
+  project_link: "Liens vers un devis"
   add_folder: "Ajouter une dossier"
   add_link: "Ajouter un lien"
   add_component: "Ajouter un composant"
@@ -543,7 +538,6 @@ fr:
   #project_securities
   edit_project_security: "Editer les sécurités sur ce projet"
   new_project_security: "Créer de nouvelle sécurité sur le projet"
-  project_security: "sécurité sur le projet"
   full_control: "Contrôle total"
   define: "Définir"
   modify: "Modifier"
@@ -556,8 +550,8 @@ fr:
 
   #projects
   edit_project: "Editer le projet \"%{value}\""
-  new_project: "Créer une estimation"
-  new_project_from: "Créer une estimation à partir d'un modèle"
+  new_project: "Créer un devis"
+  new_project_from: "Créer un devis à partir d'un modèle"
   wbs_product: "PBS-Projets"
   wbs_activity: "WBS-Activités"
   activity: "Activités"
@@ -579,7 +573,7 @@ fr:
   global_properties: "Propriétés globales"
   text_confirm_project_deletion: "Ëtes-vous Sûr de vouloir supprimer ce projet et les données dépendantes ?"
   warning_need_check_box_confirmation: "Vous devez confirmer la suppression du projet avec la case à cocher"
-  label_project_is_model: "Est un modèle d'estimation"
+  label_project_is_model: "Est un modèle de devis"
   is_model: "Modèle"
   estimate: "Estimations"
 
@@ -625,7 +619,7 @@ fr:
   save_translations: "Sauvegarder les traductions"
 
   #user mailer
-  considered_message:  "Votre demande de création de compte a été bien prise en compte."
+  considered_message: "Votre demande de création de compte a été bien prise en compte."
   your_identifiants_message: "Vos identifiants sont "
   not_active_message: "Votre compte n'est pas encore actif."
   cordialy_message: "Bien cordialement, "
@@ -672,7 +666,6 @@ fr:
   filters: "Filtres"
 
   #wbs activities
-  WBS_activities: "WBS activités"
   edit_wbs_activity: "Editer le wbs activités \"%{value}\""
   new_wbs_activity: "Créer un nouveau wbs activités"
   import_wbs_activity: "Créer un nouveau wbs activities depuis un fichier CSV"
@@ -681,7 +674,7 @@ fr:
   sum_of_ratio_values: "Somme des valeurs des ratios :"
   one_activity_element: "Un activité-élément"
   all_activity_elements: "Tous les activité-éléments"
-  set_of_activity_elements: "Un ensemble d'activité-éléments"
+  set_of_activity_elements: "Un ensemble d'activité-éléments" 
   new_activities: "Nouvelle activité"
   general: "Général"
   file_csv: "Fichier (csv seulement)"
@@ -740,8 +733,6 @@ fr:
   general_csv_separator: ','
   general_csv_decimal_separator: ','
   general_csv_encoding: ISO-8859-1
-  "yes": 'Oui'
-  "no": 'Non'
 
   simple_form:
     "yes": 'Oui'
@@ -791,7 +782,7 @@ fr:
   warning_currency_cant_be_edit: "Cette monnaie ne peut être modifié, les modifications précédentes n'ont pas encore été validé."
   notice_currency_successful_updated: "La monnaie a été correctement mise à jour."
   notice_currency_successful_deleted: "La monnaie a été supprimée avec succès."
-  notice_estimation_value_successful_updated: "La valeur d'estimation a été correctement mis à jour."
+  notice_estimation_value_successful_updated: "La valeur de devis a été correctement mis à jour."
   warning_event_type_cant_be_edit: "Ce type d'événement ne peut pas être modifié, les modifications précédentes n'ont pas encore été validé."
   notice_event_type_successful_updated: "Le type d'événement a été correctement mis à jour."
   notice_event_type_successful_deleted: "Le type d'événement a été supprimé avec succès."
@@ -864,8 +855,8 @@ fr:
   project_successful_updated: "Project a été mis à jour avec succès.."
   notice_project_successful_duplicated: "Project a été dupliqué avec succès"
   error_project_failed_duplicate: "La duplication a échouée: Une erreur est survenue lors de la duplication du projet"
-  project_already_exist: "L'estimation \"%{value}\" existe déja. Veuillez choisir un autre nom d'estimation"
-  confirm_new_branch_project_checkout: "Vous êtes sur le point de créer une nouvelle branche. malgré les difficultés liées à la fusion, voulez-vous continuer cette opération? Si non, cliquez sur le bouton Annuler"
+  project_already_exist: "L'estimation \"%{value}\" existe déja. Veuillez choisir un autre nom de devis"
+  confirm_new_branch_project_checkout: "Vous êtes sur le point de créer une nouvelle branche. malgré les difficultés liées à la fusion, voulez-vous continuer cette opération?"
   notice_project_successful_checkout: "La nouvelle version du projet a été créée avec succès"
   notice_wbs_activity_successful_added: "Wbs-Activity a été ajouté avec succès au projet."
   warning_record_status_cant_be_edit: "Ce statut ne peut être modifié, les modifications précédentes n'ont pas encore été validé."
@@ -883,7 +874,6 @@ fr:
   application: "Application"
   applications: "Applications"
   new_application: "Nouvelle application"
-  edit_application: "Editer application"
   notice_translation_successful_added: "Traduction ajoutée"
   notice_account_successful_created: "Votre compte a été créé avec succès"
   notice_account_successful_updated: "Votre compte a été mis à jour avec succès."
@@ -926,7 +916,7 @@ fr:
   warning_master_data_unauthorized_action: "action non autorisée: vous essayez de restaurer un enregistrement qui n'est pas 'retired'! "
   notice_project_successful_updated: "Le projet a été mis à jour avec succès"
   notice_project_successful_deleted: "Le projet a été supprimé"
-  error_project_creation_failed: "Une erreur est survenue lors de la création de l'estimation"
+  error_project_creation_failed: "Une erreur est survenue lors de la création du devis"
   notice_project_successful_duplicated: "Le projet a été dupliqué avec succès"
   error_project_duplication_failed: "Une erreur est survenue lors de la duplication du projet"
   error_project_checkout_failed: "Une erreur est survenue lors de la création de la nouvelle version du projet"
@@ -1026,8 +1016,8 @@ fr:
   notice_pe_attribute_successful_updated: "Attribut mis à jour avec succès."
   text_index_permissions_guidance: "Liste toutes les permissions globales et projets"
   notice_end_of_estimation_execution: "Fin de l'exécution des modules"
-  label_project_name: "Nom de l'estimation"
-  label_product_name: "Nom du produit"
+  label_project_name: "N° de la demande"
+  label_product_name: "Nom de l'application"
   label_project_version: "Version"
   label_permission_access: "Accès"
   error_group_failed_update: "Une erreur s'est produite lors de la mise à jour."
@@ -1053,12 +1043,12 @@ fr:
   notice_subcontractor_successfully_deleted: "Le sous-traitant a été supprimé avec succès"
 
   label_Project: "Projet"
-  label_filter_on_projects_version: "Filtre sur les versions des estimations"
+  label_filter_on_projects_version: "Filtre sur les versions des devis"
   label_filter_on_project_version_1: "Afficher seulement les feuilles "
   label_filter_on_project_version_2: "Afficher toutes les versions"
   label_filter_on_project_version_3: "Afficher seulement la racine"
   label_filter_on_project_version_4: "Afficher seulement la plus récente"
-  label_ProjectArea: "Secteur Projet"
+  label_ProjectArea: "Domaine"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Projet"
   label_AcquisitionCategory: "Catégorie Acquisition"
@@ -1075,7 +1065,7 @@ fr:
   error_send_feedback_empty: "Merci de bien vouloir renseigner tous les champs du formulaire"
   notice_send_feedback_success: "Votre demande a bien été prise en compte"
   error_send_feedback_failed: "Une erreur s'est produite lors de l'envoi de votre demande"
-  error_validation_project: "les paires 'nom/version' doivent être unique"
+  error_validation_project: "les paires 'nom/version' doivent être unique."
   tooltip_state: "Les enregistrements \"Définie (Defined)\" sont affichés en noir, \"Brouillon (Draft)\" en orange, \"Retiré (Retired)\" en rouge"
   warning_project_state_to_rejected: "si vous continuez cette version du projet sera non modifiable (%{value_b}) et non dérivable (check-out)."
   warning_project_state_to_released: "si vous continuez cette version du projet sera non modifiable (%{value_b})."
@@ -1181,7 +1171,6 @@ fr:
   staffing: "Taille maximale de l'équipe"
   duration: "Durée"
   complexity: "Complexité"
-  edit_complexity: "Editer Complexité"
   staffing_complexity: "Staffing complexity"
   effective_technology: "Effective technology"
   schedule: "Calendrier"
@@ -1206,8 +1195,6 @@ fr:
   profiles: "Profils"
   new_profile: "Nouveau profil"
   edit_profile: "Editer le profil \"%{value}\""
-  update_profile: "Actualiser le profil \"%{value}\" profile"
-  delete_profile: "Supprimer le pofil \"%{value}\""
   warning_profile_cant_be_edit: "Ce profil ne peut pas être modifié, les modifications précédentes n'ont pas encore été validé."
   notice_profile_successful_created: "Le profile a été créé avec succès."
   notice_profile_successful_updated: "Le profile a été mis à jour avec succès."
@@ -1217,19 +1204,15 @@ fr:
   defined_profile_not_deletable: "Impossible de supprimer un profil dans le statut Defined."
   creator: "Créateur"
   organization_profiles: "Profils de l'organization"
-  new_organization_profiles: "Nouveau Profils de l'organization"
-  edit_organization_profiles: "Editer Profils de l'organization"
-  Update_organization_profiles: "Actualiser le Profils de l'organization"
-  Delete_organization_profiles: "Suprimer le Profils de l'organization"
   profils_per_activity: "Profils per activity"
   profils_per_activity: "Profils par activité"
   organization: "Organisation"
   wbs_ratio_per_profile: "Ratio par profil"
   total_ratio_per_activity: "Sum des ratio par activité (%)"
   warning_sum_of_ratio_values_greater_than_100: "Attention : la somme des ratios de l'activité est supérieure à 100 !"
-  no_profiles_for_wbs_activity_organization: "Aucun profil séléctionné dans la WBS activité"
+  no_profiles_for_wbs_activity_organization: "Aucun profil sélectionné dans la WBS activité"
   display_results_with_profiles: "Afficher les résultats par profil"
-  tooltip_results_with_profiles: "Afficher les résultats de l'estimation des Wbs-activités par profil"
+  tooltip_results_with_profiles: "Afficher les résultats du devis des Wbs-activités par profil"
   label_output_data_with_activities_profiles: "Résultat des estimations : activités par profil"
   label_ratio: "un ratio"
   label_wbs_activity: "un WBS-Activité"
@@ -1240,7 +1223,6 @@ fr:
   edit_technology: "Editer la technologie \"%{value}\""
 
   new_factor: "Nouveau facteur d'ajustement"
-  Edit_factor: "Editer facteur d'ajustement"
   new_factor_complexity: "Nouveau facteur d'ajustement"
   complexity_by_factor: "Complexité par facteurs"
   factors: "Facteurs d'ajustement"
@@ -1261,7 +1243,6 @@ fr:
   size_unit: "Unité de taille"
   unit_of_work_complexity: "Complexités unité d'oeuvres"
   factor_complexity: "Complexité des facteurs"
-  new_complexity: "Nouvelle complexité"
   size_unit_type: "Type d'action"
   technology_size_type_abacus: "Convertisseur"
   technology_size_abacus: "SLOC / IFPUG"
@@ -1289,28 +1270,28 @@ fr:
   notice_profile_category_successful_deleted: "Cette catégorie de profil a été supprimée avec succès."
   or_create_new_profile_category: "Créer une nouvelle catégorie de profil"
   select_profile_or_fill_text_fields: "Sélectionner un profil ou veuiller remplir les champs de texte ci-dessous"
-  projects_states: "États des estimations"
-  text_user_associated_projects_states: "États des estimations associés (États des estimations auxquels l'utilisateur a accès)"
-  estimations_statuses: "Statuts des estimations"
-  manage_estimations_statuses_workflow: "Gestion du workflow des statuts des estimations"
-  manage_estimations_statuses_roles: "Gérer les rôles en fonction du statut de l'estimation"
-  new_estimation_status: "Créer un nouveau status d'estimation"
-  edit_estimation_status: "Editer le statut de l'estimation \"%{value}\""
+  projects_states: "États des devis"
+  text_user_associated_projects_states: "États des devis associés (États des devis auxquels l'utilisateur a accès)"
+  estimations_statuses: "Statuts des devis"
+  manage_estimations_statuses_workflow: "Gestion du workflow des statuts des devis"
+  manage_estimations_statuses_roles: "Gérer les rôles en fonction du statut du devis"
+  new_estimation_status: "Créer un nouveau status de devis"
+  edit_estimation_status: "Editer le statut du devis \"%{value}\""
   status_number: "Numéro statut"
-  notice_estimation_status_successful_updated: "Le statut de l'estimation a été mis à jour avec succès"
-  notice_estimation_status_successful_created: "Le statut de l'estimation a été créé avec succès"
-  notice_estimation_status_successful_deleted: "Le statut de l'estimation a été supprimé avec succès"
-  notice_estimation_status_successful_saved: "Le statut de l'estimation a bien été sauvegardé"
+  notice_estimation_status_successful_updated: "Le statut du devis a été mis à jour avec succès"
+  notice_estimation_status_successful_created: "Le statut du devis a été créé avec succès"
+  notice_estimation_status_successful_deleted: "Le statut du devis a été supprimé avec succès"
+  notice_estimation_status_successful_saved: "Le statut du devis a bien été sauvegardé"
   notice_successful_cancelled: "Vos modifications ont bien été annulées"
   text_explain_estimation_status_workflow: "Pour chaque statut en colonne, vous pouvez cocher les statuts pour lesquels la transition est possible vers ce statut"
-  text_explain_estimation_status_group_roles: "Pour chaque groupe d'utilisateurs en colonne, vous pouvez définir des droits d'accès et de modification en fonction du statut de l'estimation"
+  text_explain_estimation_status_group_roles: "Pour chaque groupe d'utilisateurs en colonne, vous pouvez définir des droits d'accès et de modification en fonction du statut du devis"
   label_see_project_status: "Voir"
   label_show_project_status: "Consulter"
   label_edit_project_status: "Modifier"
   label_delete_project_status: "Supprimer"
   status_color: "Couleur associée"
   groups_and_roles: "Groupes et privilèges"
-  text_invalid_status_alias:  "Alias invalide: espace et accent sont interdits"
+  text_invalid_status_alias: "Alias invalide: espace et accent sont interdits"
   warning_estimation_status_cannot_be_deleted: "Impossible de supprimer le status \"%{value}\", car il est utilisé par une ou plusieurs estimations"
   warning_organization_cannot_be_deleted: "Impossible de supprimer l'organisation \"%{value}\", car elle est liée à une ou plusieurs estimations"
   user_need_at_least_one_organization: "Veuillez créer votre première organisation avant de continuer"
@@ -1323,7 +1304,6 @@ fr:
   configure_views_widgets: "configurez les vues et les vignettes pour l'affichage des résultats des estimations"
   new_view: "Nouvelle vue"
   edit_view: "Editer la vue \"%{value}\""
-  edit_view_2: "Editer la vue"
   view_successfully_created: 'La vue a été créée avec succès.'
   view_successfully_updated: 'La vue a été mise à jour avec succès.'
   new_widget: "Nouvelle vignette"
@@ -1351,7 +1331,7 @@ fr:
 
   criteria: "Critères"
   add_new_unit_of_work_group: "Ajouter un nouveau groupe"
-  add_unit_of_work: "Ajout d'unité d'oeuvre"
+  add_unit_of_work: "Add unit of work"
   preview_selected_wbs_activity: "Prévisualisation du WBS-Activity sélectionné"
   fields: "Champs personnalisés"
   most_likely: "Le plus probable"
@@ -1373,10 +1353,9 @@ fr:
   live_chat_support: "Support messagerie instantanée "
   see_consultants: "Voir les conseillers "
 
-
   #label for Search results display
   label_OrganizationProfile: "Profil"
-  label_EstimationStatus: "Statuts des estimations"
+  label_EstimationStatus: "Statuts des devis"
   label_UnitOfWork: "Unités d'oeuvres"
   label_Field: "Champs personnalisés"
   label_OrganizationUowComplexity: "Complexité des unités d'oeuvre"
@@ -1386,8 +1365,7 @@ fr:
   label_SizeUnit: "Unité de taille"
   label_SizeUnitType: "Type d'unité de taille"
   label_Subcontractor: "Sous-traitant"
-  "label_Guw::GuwModel": "Modèle d'unité d'oeuvres génériques"
-  label_Guw_model: "Modèle d'unité d'oeuvres"
+  label_Guw_model: "Modèle d'unité d'oeuvres génériques"
 
   cotation: "Cotation"
   technology: "Technologie"
@@ -1405,7 +1383,7 @@ fr:
   notice_cannot_view_organization_super_admin_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions sur l'organisation"
   notice_cannot_view_global_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions globales"
   notice_cannot_view_master_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions master"
-  notice_cannot_view_estimations_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions des estimations"
+  notice_cannot_view_estimations_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions des devis"
   notice_cannot_view_wbs_activities: "Vous n'avez pas les autorisations nécessaires pour voir les WBS Activités"
   notice_cannot_view_groups: "Vous n'avez pas les autorisations nécessaires pour voir les groupes"
   notice_cannot_view_organization_profiles: "Vous n'avez pas les autorisations nécessaires pour voir les profiles"
@@ -1420,7 +1398,7 @@ fr:
   notice_cannot_view_size_unit_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'unité de taille"
   notice_cannot_view_subcontractors: "Vous n'avez pas les autorisations nécessaires pour voir les sous-traitants"
   notice_cannot_view_factors_complexities: "Vous n'avez pas les autorisations nécessaires pour voir les facteurs d'ajustement"
-  notice_cannot_view_estimation_statuses: "Vous n'avez pas les autorisations nécessaires pour voir les statuts des estimations"
+  notice_cannot_view_estimation_statuses: "Vous n'avez pas les autorisations nécessaires pour voir les statuts des devis"
   notice_cannot_delete_widgets: "Vous n'avez pas les autorisations nécessaires pour supprimer les vignettes"
   notice_cannot_view_organization_users: "Vous n'avez pas les autorisations nécessaires pour voir les utilisateurs"
   notice_cannot_view_modules_permissions: "Vous n'avez pas les autorisations nécessaires pour voir les permissions des instances des modules"
@@ -1439,7 +1417,7 @@ fr:
   label_request_create_organization: "Demande de création d'une organisation à partir d'organisation image"
   object_type: "Type d'objet"
   organization_permissions: "Permissions sur l'organisation"
-  estimations_permissions: "Permissions sur les estimations"
+  estimations_permissions: "Permissions sur les devis"
   modules_permissions: "Permissions sur les modules"
   is_super_admin: "Est super administrator ?"
   text_help_super_admin: "Un utilisateur super administrateur a tous les droits sur toute l'application et sur toutes les organisations"
@@ -1447,33 +1425,33 @@ fr:
                                                   Votre  mot de passe temporaire est « %{password} », vous serez invité à le changer lors de votre première connexion, il vous sera aussi demandé de compléter le paramétrage de d’organisation « %{organization_name} ».\n
                                                    Votre identifiant « %{login_name} » pour l’organisation « %{organization_name} » vient d’être créé, merci de vous connecter avec l’url suivante : %{connexion_url} pour continuer.\n\n  Bonne réception"
 
-  change_estimation_status: "Changer le statut de l'estimation"
+  change_estimation_status: "Changer le statut du devis"
   comment_history: "Historique des commentaires"
-  estimation_models: "Modèles d'estimation"
-  notice_cannot_view_estimation_models: "Vous n'avez pas les autorisations nécessaires pour voir les modèles d'estimation"
-  new_estimation_model: "Créer un modèle d'estimation"
-  estimation_models: "Modèles d'estimation"
+  estimation_models: "Modèles de devis"
+  notice_cannot_view_estimation_models: "Vous n'avez pas les autorisations nécessaires pour voir les modèles de devis"
+  new_estimation_model: "Créer un modèle de devis"
+  estimation_models: "Modèles de devis"
   label_model_name: "Nom du modèle"
-  text_find_use_estimation_model: "Liste des estimations créées à partir du modèle \"%{model_name}\""
-  notice_no_estimation_created_from_model: "Il n'existe pas d'estimation créée à partir du modèle \"%{model_name}\""
-  text_confirm_estimation_model_deletion: "Ëtes-vous Sûr de vouloir supprimer ce modèle d'estimation et les données dépendantes ?"
+  text_find_use_estimation_model: "Liste des devis créées à partir du modèle \"%{model_name}\""
+  notice_no_estimation_created_from_model: "Il n'existe pas de devis créée à partir du modèle \"%{model_name}\""
+  text_confirm_estimation_model_deletion: "Ëtes-vous Sûr de vouloir supprimer ce modèle de devis et les données dépendantes ?"
   label_model_user_security_resume: "Gestion des droits utilisateurs sur le modèle"
   label_model_group_security_resume: "Gestion des droits des groupes sur le modèle"
-  label_from_model_user_security_resume: "Gestion des droits utilisateurs de l'estimation créée à partir de ce modèle"
-  label_from_model_group_security_resume: "Gestion des droits des groupes de l'estimation créée à partir de ce modèle"
-  estimation_creator_from_model: "Créateur de l'estimation qui sera créée à partir de ce modèle"
+  label_from_model_user_security_resume: "Gestion des droits utilisateurs du devis créée à partir de ce modèle"
+  label_from_model_group_security_resume: "Gestion des droits des groupes du devis créée à partir de ce modèle"
+  estimation_creator_from_model: "Créateur du devis qui sera créée à partir de ce modèle"
   text_create_from_model: "Créer une nouvelle estimation à partir du modèle \"%{model_name}\""
-  text_create_from_model_2: "Créer une nouvelle estimation à partir d'un modèle "
+  text_create_from_model_2: "Créer une nouvelle estimation à partir d'un modèle"
   model_securities: "Autorisations sur le modèle"
-  securities_for_generated_project: "Autorisations de l'estimation créée à partir de ce modèle"
+  securities_for_generated_project: "Autorisations du devis créée à partir de ce modèle"
   update_password_first_connexion: "You must change your password during your first connection"
   update_email_login_password: "Modifier email / identifiant / mot de passe"
-  text_your_password_message: "Votre compte: \"%{account}\" vient d'être crée avec le mot de passe suivant \"%{password}\" "
+  text_your_password_message: "Votre compte: \"%{account}\" vient d'être crée avec le mot de passe suivant \"%{password}\". Vous devez le modifier lors de votre première connexion à l'application."
   you_have_no_right_to_continue: "Vous n'avez pas les droits nécessaires pour continuer. \n Merci de contacter l'administrateur de l'application."
   views: "Vues"
   estimation_created_by: "Estimation créée par \"%{username}\" "
   estimation_created_from_model_by: "Estimation créée à partir du modèle \"%{model_name}\" par \"%{username}\". "
-  estimation_created_from_estimation_by: "Estimation créée à partir de l'estimation \"%{estimation_name}\" par \"%{username}\". "
+  estimation_created_from_estimation_by: "Estimation created from the \"%{estimation_name}\" estimation by \"%{username}\" "
   associated_module: "Module associé"
   view_config: "configuration de la vue"
   save_as: "Sauvegarder en tant que"
@@ -1487,7 +1465,7 @@ fr:
   view_description: "Description de la vue"
   current_version: "Version actuelle"
   new_version: "Nouvelle version"
-  change_estimation_version_from_to: "Version changée de \"%{from_version}\" à \"%{to_version}\" par %{current_user_name}\". "
+  change_estimation_version_from_to: "Version changée de \"%{from_version}\" à \"%{to_version}\" par %{current_user_name}\" "
   label_complexity_attributes: "Seuil de complexité des attributs de"
   label_available_columns: "Colonnes disponibles"
   label_selected_columns: "Colonnes sélectionnées"
@@ -1509,8 +1487,8 @@ fr:
   only_one_archive_status_possible: "Il n'est pas possible de définir plus d'un statut d'archive dans une même organisation"
   dont_archive_last_project_versions: "Ne pas archiver les versions précédentes de ce projet ?"
   archive_last_project_versions: "Changement de statut automatique"
-  last_project_versions_will_be_archived: "Si vous cochez cette case, Lorsqu'on crée une nouvelle version d'une estimation, les anciennes versions de cette estimation seront automatiquement dans le statut d'accueil paramétré."
-  warning_edit_instance_module: "Attention: Lorsque vous modifiez la configuration du module, toutes les estimations qui ont été construites avec le module sont susceptibles de recevoir les changements effectués dans le module, même si les estimations sont déjà réalisées et enregistrées."
+  last_project_versions_will_be_archived: "Si vous cochez cette case, Lorsqu'on crée une nouvelle version d'un devis, les anciennes versions de cette estimation seront automatiquement dans le statut d'accueil paramétré."
+  warning_edit_instance_module: "Attention: Lorsque vous modifiez la configuration du module, toutes les devis qui ont été construites avec le module sont susceptibles de recevoir les changements effectués dans le module, même si les devis sont déjà réalisées et enregistrées."
   duplicate_module: "Dupliquer le module"
   staffing_duration: "Durée (%{unit})"
 
@@ -1518,7 +1496,7 @@ fr:
   resend_confirmation_instructions: "Renvoyer les instructions de confirmation"
   Sign_in_with_SAML: "S'inscrire avec SAML"
   add_level: "Ajouter un niveau"
-  Standard_unit_conversion_factor: "Coefficient de conversion de l'effort en unité standard"
+  Standard_unit_conversion_factor: "Coefficient de conversion en unité standard"
   new_UO_model: "Nouveau modèle d'UO"
   new_instance_of_effort: "Nouvelle instance de transformation"
   Edit_instance_of_effort: "Editer l'instance de transformation"
@@ -1541,14 +1519,14 @@ fr:
   Import_user_from_excel: "Importer des utilisateurs depuis Excel"
   Project_name: "Nom de projet"
   title: "Titre"
-  Product_Name: "Nom du produit"
+  Product_Name: "Application"
   application_b: "application"
   Start_date_organizations: "Date de début"
   end_date_organizations: "Date de fin"
   Platform_Categorie_organization: "Categorie de plateforme"
   Project_Category: "Catégorie de projets"
   Category_acquistion: "Catégorie d'acquistion"
-  Estimating_Status: "Statut de l'estimation"
+  Estimating_Status: "Statut du devis"
   with_header: "Avec en-tête"
   Generate_Report: "Générer le rapport"
   Actualize: "Actualiser"
@@ -1581,7 +1559,7 @@ fr:
   my_display: "Poids"
   complexity_threshold: "Seuils de complexité"
   importation_success: "Modèle importé avec succès."
-  importation_sucess_uo: "Unité d'oeuvre importé avec succés."
+  importation_sucess_uo: "Unités d'oeuvres importées avec succés."
   error_warning: "une erreur dans le fichier a causé l'impossibilité d'importer les valeurs dans les onglets suivant merci de vous référer au wiki pour plus d'infomation (http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work): <br/> %{parameter}"
   route_flag_error_1: "Impossible de créer ce modèle, modèle déjà existant."
   route_flag_error_2: "Nom du modèle invalide merci de vérifier le classeur importé."
@@ -1637,6 +1615,7 @@ fr:
   edit_project_element_name: "Edition %{parameter}"
   Edit_Staffing: "Editer Staffing"
   import_from: "import de donnée d'UO depuis un fichier excel"
+
   Attributes_list: "Liste des attributs (critères)"
   Product: "Produit"
   low_border_include: "Borne basse (comprises)"
@@ -1679,7 +1658,7 @@ fr:
   new_acquisition_type: "Nouveau type d'acquisition"
   calculate_duration_and_size: "Calcul de la durée et de la taille des équipes"
   duration_in_week: "Durée(semaine)"
-  initialize_restraint: "Réinitialiser le staffing personnalisé"
+  initialize_restraint: "Aligner le retenu sur le trapèze"
   graphical_output: "Sortie graphique"
   Staffing_distribution: "Répartition du staffing"
   period: "Période"
@@ -1689,17 +1668,16 @@ fr:
   effort_restraint: "Effort retenu : %{parameter}"
   Duration_restraint: "Durée retenu : %{parameter}"
   Staffing_restraint: "Staffing retenu : %{parameter}"
-  update_restraint_effort: "Sauvegarder le staffing personnalisé"
+  update_restraint_effort: "Mettre à jour l'effort retenu"
   Initialize_from_the_Trapeze: "Initialiser à partir du Trapeze"
   theoretical_trapeze: "Trapèze théorique"
   theoretical_rayleigh: "Rayleigh théorique"
-  Number_of_people: "Staffing personnalisé"
+  Number_of_people: "Nombre de personnes"
   Trapeze_maximum_Staffing: "Trapeze maximum Staffing : %{parameter}"
   Trapèze_effort: "Effort Trapèze : %{parameter}"
   Editing_staffing_custom_datum: "Editer"
   Listing_staffing_custom_data: "Liste"
   Method: "Méthode"
-  theoretical_rayleigh: "Rayleigh théorique"
   Staffing_constraint: "Contrainte de staffing"
   Period_unit: "Unité de Période"
   Max_staffing: "Staffing max"
@@ -1708,7 +1686,7 @@ fr:
   New_Staffing_custom_datum: "Nouvelle donnée dotation personnalisé"
   team_model: "Modèle d'Équipe"
   what_he_do: "Le module d'équipe permet de calculer la durée et la taille des équipes du projet. Nous proposons 2 méthodes: <br><b>- Approche linéaire (trapèze) <br>- Courbe de Rayleigh <br></b><br>Si nous ne disposons pas de la durée, nous proposons de la calculer à l'aide de la formule de McDonnell: <br>Durée = <b>coef. * K^n</b><br>Par défaut on a : <b>K</b> = effort (semaines/homme) ; <b>coef</b> = 6 et <b>n</b> = 1/3<br>"
-  prohibited_this: "%{parameter} interdit à ce(s) modèle(s) de cotation d'étre sauvegarder :"
+  prohibited_this: "%{parameter} interdit à ce(s) modèle(s) de dotation d'étre sauvegarder :"
   def_default_value: "Définir les valeurs par défaut des paramètres suivants:"
   what_to_do: "   - <b>(x0, y0)</b> : un report de démarrage x0, et le staffing de démarrage y0 <br>            - <b>x1</b> : à quel moment le max staffing sera atteint<br>            - <b>x2 </b>: à quel moment le staffing va commencer à décroitre<br>            - <b>(x3, y3)</b> : la date de fin et le staffing de fin.<br>              <br>            Pour simplifier ; nous définissons x0, x1, x2, x3 en <b>pourcentage</b> de la <b>durée D</b> du projet, et y0 et y3 en <b>pourcentage de M</b>, le staffing maximum, qui, lui, sera calculé en directe. <br>"
   Listing_staffing_models: "Liste des modèles de dotation"
@@ -1723,7 +1701,7 @@ fr:
   threshold_min_value: "Valeur min. du seuil"
   threshold_max_value: "Valeur max. du seuil"
   convertion_coef_stand: "Coefficient de conversion standard (heure)"
-  effort_unit: "Unité de l'effort"
+  effort_unit: "Libellé de l'unité de l'unité de l'effort"
   module_effort_generique: "Module d'Effort Générique"
   knowledge_base: "Base de connaissance"
   team_module: "Module d'Équipe"
@@ -1733,7 +1711,7 @@ fr:
   Configure: "Configurer"
   Edit_configuration: "Editer configuration"
   Secteur: "Secteur"
-  estimation_status: "Status de l'estimation"
+  estimation_status: "Status du devis"
   Icon_class: "Classe d'icone"
   Color: "Couleur"
   notes: "Notes"
@@ -1747,9 +1725,9 @@ fr:
   effort_formula: "Formule de calcul de l'effort = ax^b ou <b>a</b> = %{parameter_1} et <b>b</b> = %{parameter_2}"
   enter_size_in: "Taille en entrée (en %{parameter})"
   cal_effort_for: "Effort calculé (en %{parameter})"
-  cal_defect_for: "Nombre de défaut introduit"
+  cal_defect_for: "Nombre de défauts introduit"
   Generic_Model_Effort: "Modèle d'éffort générique"
-  simple_text_mess_1: "La méthode générique d'éffort correspond à une méthode de calcul de l'éffort selon la formule a*x^b ou <b>a</b> correspond au facteur d'ajustement et <b>b</b> au facteur d'échelle.<br>Les coefficients <b>a</b> et <b>b</b> peuvent être saisis directement dans le modèle ou être calculés avec les facteurs importés d'un fichier Excel.<br>L'effort E est généré dans l'unité propre au modèle (h.j, h.m, ...). L'utilisateur doit définir le coefficient de conversion en unité standard (des heures)."
+  simple_text_mess_1: "La méthode générique d'éffort correspond à une méthode de calcul de l'éffort selon la formule a*x^b ou <b>a</b> correspond au facteur d'ajustement et <b>b</b> au facteur d'échelle.<br>L'effort E est généré dans l'unité propre au modèle (h.j, h.m etc...). L'utilisateur doit définir le coefficient de conversion en unité standard (des heures)."
   retained_size_unit_2: "Libellé de l'unité de taille"
   Wording_of_the_module_unit_effort_2: "Libellé de l'unité d'effort"
   standard_coef_conv: "Coefficient de conversion en unité standard (heures)"
@@ -1763,6 +1741,7 @@ fr:
   equation: "Equation"
   project_number: "Nombre de projet"
   effort_week_unit: "Nombre d'heures par semaine"
+  theoretical_rayleigh: "Rayleigh théorique"
   effort_week: "Effort(semaine)"
   max_staff_trap: "Staffing maximum(Trapéze)"
   max_staff_rayl: "Staffing maximum (Rayleigh)"
@@ -1788,10 +1767,10 @@ fr:
   expert_judgement: "Judgement d'Expert"
   size_by_group: "Taille par groupe"
   data: "Données"
-  last_update: "Dernière mise à jour"
+  last_update: "Last update"
   project_number: "Nombre de projets: "
-  changing_enter_value: "Modification des valeurs d'entrées"
   Indifferent: "Indifférent"
+  changing_enter_value: "Modification des valeurs d'entrées"
   op_type: "Type d'opération"
   op_mess_1: "La méthode générique d'éffort correspond à une méthode de calcul de l'éffort selon la formule a*x^b ou <b>a</b> correspond au facteur d'ajustement et <b>b</b> au facteur d'échelle."
   op_mess_2: "L'effort E est généré dans l'unité propre au modèle (h.j, h.m etc...). L'utilisateur doit définir le coefficient de conversion en unité standard (des heures)."
@@ -1799,14 +1778,13 @@ fr:
   permission: "Autorisation"
   config_and_setting: "Configuration et paramétrage"
   users_env: "Environnement utilisateur"
-  Current_estimate: "Estimation en cours"
   report: "Rapport"
   import_uo_from_excel: "Importation d'UO depuis excel"
   private_estimation: "Estimation privée"
   launch_calculation: "Lancer le calcul"
   reinitialize_delay_staffing: "Réinitialiser le délai et le staffing"
   private: "Privée"
-  unprivate: "Non Privée"
+  unprivate: "Non privée"
   "Répartition optimal": "Répartition optimal"
   "Vos contraintes": "Vos contraintes"
   "Répartition en trapèze personnalisé": "Répartition en trapèze personnalisé"
@@ -1815,13 +1793,13 @@ fr:
   "Répartition des ressources en fonction du temps": "Répartition des ressources en fonction du temps"
   "periode": "Période"
   "Revenir sur la page précédente": "Revenir sur la page précédente"
-  error_impor_groups: "Groups non importé pour les lignes : %{parameter}"
+  error_impor_groups: "Groupes non importé pour les lignes : %{parameter}"
   error_impor_appli: "Applications non importé pour les lignes : %{parameter}"
   error_impor_project_area: "Secteur de projets non importé pour les lignes : %{parameter}"
   import_data_from: "Importer des données depuis un document excel"
   applied_model: "Modèle appliqué"
   uo_model: "Modèle d'UO"
-  mail_body_befor_end_subscription: "Votre abonnement au service d'Estimency se termine dans %{parameter1} jours, le %{parameter2} pour éviter la suspension de vos services, veuillez prendre contact avec notre équipe via notre plate-forme dediée.</p><p> Nous vous conseillons de renouveler votre abonnement au plus tôt afin de poursuivre l'utilisation de nos services en tout tranquillité"
+  mail_body_befor_end_subscription: "Votre abonnement au service d'Estimency se termine dans %{parameter1} jours, le %{parameter2} pour éviter la suspension de vos services, veuillez prendre contact avec notre équipe via notre plate-forme dediée. Nous vous conseillons de renouveler votre abonnement au plus tôt afin de poursuivre l'utilisation de nos services en tout tranquillité"
   subscription_end: "Expiration d'abonnement"
   mail_body_subscription_end: "Votre abonnement a pris fin aujourd'hui si vous désirez resouscrire à un abonnement contacter nous par le biais de notre plate-forme en"
   effort_retained: "Effort retenu"
@@ -1875,6 +1853,7 @@ fr:
   order: "Ordre"
   widget_type: "Type de vignette"
   enter_effort_in: "Effort en entrée (en %{parameter})"
+  enter_defect_in: "Défaut en entrée (en %{parameter})"
   cal_size_for: "Taille calculée (en %{parameter})"
   label_add_new_widget_comment: "Ajouter un commentaire"
   widget_comment: "Commentaire"
@@ -1902,4 +1881,3 @@ fr:
   output_effort: "Effort en sortie : "
   project_not_found: "Projet inexistant !"
   error_resource_not_found: "La ressource est introuvable !"
-  use_base_100: "Utiliser la base 100"
