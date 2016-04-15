@@ -34,7 +34,7 @@ class PlatformCategory < ActiveRecord::Base
 
   amoeba do
     enable
-    include_association []
+    exclude_association [:projects]
     customize(lambda { |original_platform_category, new_platform_category|
                 new_platform_category.copy_id = original_platform_category.id
               })
