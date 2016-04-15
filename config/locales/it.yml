@@ -951,7 +951,7 @@ it:
   label_delete_project_status: "Delete"
   status_color: "Associated color"
   groups_and_roles: "Groups and roles"
-  text_invalid_status_alias:"Invalid alias: No empty spaces and no accent"
+  text_invalid_status_alias: "Invalid alias: No empty spaces and no accent"
   warning_estimation_status_cannot_be_deleted: "The %{value} status cannot be deleted, it is used by one or more estimations"
   warning_organization_cannot_be_deleted: "The %{value} organization cannot be deleted, it is used by one or more estimations"
   user_need_at_least_one_organization: "Please create your first organization before continue"

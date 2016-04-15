@@ -2,14 +2,12 @@
 <script>
     $(document).ready(function(){
 
-
         jsPlumb.ready(function () {
-
 
             $( ".tabs-project, #tabs-4").tabs({
 
                 beforeActivate: function (event, ui) {
-                    console.log("ID = "+ ui.newPanel.attr('id'));
+                    //console.log("ID = "+ ui.newPanel.attr('id'));
                     if(ui.newPanel.attr('id') == "tabs-4"){
                         window.location.reload(true);
                     }
