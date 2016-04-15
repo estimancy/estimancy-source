@@ -36,6 +36,11 @@
   <% end %>
 </table>
 
+<div class="pull-right" style="margin-right: 30px; margin-bottom: 30px;">
+  <%= check_box :wbs_activity_ratio, :use_base_100 %>
+  <%= I18n.t(:use_base_100) %>
+</div>
+
 <% if can? :manage_modules_instances, ModuleProject %>
   <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn' %>
   <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn' %>

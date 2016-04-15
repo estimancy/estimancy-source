@@ -1884,3 +1884,4 @@ frsncf:
   output_effort: "Effort en sortie : "
   project_not_found: "Projet inexistant !"
   error_resource_not_found: "La ressource est introuvable !"
+  use_base_100: "Utiliser la base 100"

@@ -86,13 +86,6 @@ class WbsActivitiesController < ApplicationController
     #@wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity_elements_list)
     @wbs_activity_elements = @wbs_activity_elements_list.first.root.descendants.arrange(:order => :position)
 
-    #==== Test
-    #@wbs_activity_elements = @wbs_activity_elements_list.first.root.descendants.arrange(:order => :dotted_id)
-    #@wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity_elements_list.arrange(:order => :dotted_id))
-    #@wbs_activity_elements  = WbsActivityElement.sort_by_ancestry(@wbs_activity_elements_list.arrange(:order => :dotted_id)).sort { |x,y| x.dotted_id.to_i <=> y.dotted_id.to_i }
-    #@wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity_elements_list.arrange(order: :position))
-    #==== Fin test
-
     @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
 
     unless @wbs_activity_ratios.empty?
