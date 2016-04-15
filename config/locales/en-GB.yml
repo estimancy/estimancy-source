@@ -237,7 +237,7 @@ en-gb:
         limit3: "Display effort in month from"
     errors:
       <<: *errors
-      
+
  #  Menu
   projects: "Projects"
   label_menu_projects: "Projects"
@@ -460,7 +460,7 @@ en-gb:
   new_module_project: "New module project"
   related_attributes: "Related attributes"
   module_ratio_settings: "Ratio settings"
-  module_links_settings: "Modules links"   
+  module_links_settings: "Modules links"
   mandatory: "Mandatory"
   links_to: "Links to"
   current_link: "Current link"
@@ -752,7 +752,7 @@ en-gb:
           yes_for_output_without_ratio: 'Yes for output without ratio'
           yes_for_input_output_with_ratio: 'Yes for input/output with ratio'
           yes_for_input_output_without_ratio: 'Yes for input/output without ratio'
-  
+
   #Error, warning, notice messages
   warning_wbs_activity_ratio_elt_value_range: "Please, enter value between ]0 - 100]"
   text_master_force_edit: "We don't provide any workflow to modify this table, if you continue you will be editing the 'defined' record itself. Please confirm you accept to continue"
@@ -1522,3 +1522,6 @@ en-gb:
   input_output_size: "Size I/O : "
   input_effort: "Input effort : "
   output_effort: "Output effort : "
+  d_factors_calculation_method: "D (Defect) factors calculation method"
+  project_not_found: "Project not found !"
+  error_resource_not_found: "The resource is not found !"

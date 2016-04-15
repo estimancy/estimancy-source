@@ -14,11 +14,11 @@
       <tr>
         <th>Nom</th>
         <th>Description</th>
-        <th>Description</th>
-        <th>Description</th>
-        <th>Description</th>
-        <th>Description</th>
-        <th>Dénombrement d'attributs</th>
+        <th>Allow Criteria</th>
+        <th><%= @guw_model.coefficient_label.blank? ? '-' : @guw_model.weightings_label.to_s %></th>
+        <th><%= @guw_model.factors_label.blank? ? '-' : @guw_model.factors_label.to_s %></th>
+        <th><%= @guw_model.weightings_label.blank? ? '-' : @guw_model.weightings_label.to_s %></th>
+        <th>Technologies</th>
         <th>Seuils</th>
         <th>Actions</th>
       </tr>
@@ -30,9 +30,9 @@
             <%= link_to(guw_type.name, guw_type) %>
           </td>
           <td>
-            <%= guw_type.description.truncate(100) %>
+            <%= guw_type.description.to_s.truncate(100) %>
           </td>
-          <td class="span1">
+          <td class="span2">
             <%= guw_type.allow_criteria == true ? "Oui" : "Non" %>
           </td>
           <td class="span3">

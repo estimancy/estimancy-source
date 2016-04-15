@@ -1887,3 +1887,6 @@ en:
   input_output_size: "Size I/O : "
   input_effort: "Input effort : "
   output_effort: "Output effort : "
+  d_factors_calculation_method: "D (Defect) factors calculation method"
+  project_not_found: "Project not found !"
+  error_resource_not_found: "The resource is not found !"

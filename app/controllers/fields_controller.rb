@@ -20,6 +20,7 @@
 #############################################################################
 
 class FieldsController < ApplicationController
+
   # GET /fields/new
   # GET /fields/new.json
   def new

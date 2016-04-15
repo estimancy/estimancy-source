@@ -22,7 +22,7 @@
 
 <%= render 'layouts/modal' %>
 
-  <div class="navbar">
+  <div class="nav navbar">
     <div class="navbar-inner">
       <div class="container">
         <div class="pull-left">
@@ -56,29 +56,20 @@
     </div>
   </div>
 
-  <div class="navbar">
+  <div class="nav navbar">
     <div class="navbar-inner">
       <div class="container">
-
         <% if user_signed_in? %>
           <%= render 'layouts/user_account' %>
         <% end %>
-
       </div>
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div class="container-fluid" style="margin-top: 8px; padding-right: 15px; padding-left: 15px;">
     <div class="row-fluid">
       <div class="span12">
         <%= yield %>
-      </div>
-    </div>
-  </div>
-
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12 text-center" style="margin-bottom: 30px ">
       </div>
     </div>
   </div>
