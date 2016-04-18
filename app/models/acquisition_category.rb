@@ -28,9 +28,11 @@ class AcquisitionCategory < ActiveRecord::Base
   validates_presence_of :description
   validates :name, :presence => true
 
+  has_many :projects
+
   amoeba do
     enable
-    include_association []
+    exclude_association [:projects]
     customize(lambda { |original_acquisition_category, new_acquisition_category|
                 new_acquisition_category.copy_id = original_acquisition_category.id
               })
