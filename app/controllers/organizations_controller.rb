@@ -422,6 +422,14 @@ class OrganizationsController < ApplicationController
     if new_prj.save
       old_prj.save #Original project copy number will be incremented to 1
 
+      old_prj.applications.each do |application|
+        app = Application.where(name: application.name, organization_id: new_organization.id).first
+        ap = ApplicationsProjects.create(application_id: app.id,
+                                         project_id: new_prj.id)
+        ap.save
+      end
+
+
       #Managing the component tree : PBS
       pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
 
