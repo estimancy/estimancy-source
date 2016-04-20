@@ -1,5 +1,5 @@
 $("#notifications").html("<%= j(render "layouts/notifications") %>");
-$("#ratio_section").html("<%= j(render(:partial => 'wbs_activities/wbs_activity_ratio_elements', :object => @wbs_activity_ratio_elements)) %>");
+$("#ratio_section").html("<%= j(render(:partial => 'wbs_activities/wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @selected_ratio])) %>");
 
 //Redirect to the correct URL (Apply or SAVE)
 window.location.replace("<%= @redirect_url_apply_or_save_path %>");

@@ -56,6 +56,7 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #Select ratio and elements
     wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+    wbs_activity_ratio.update_attribute(:use_base_100, params[:use_base_100])  ###wbs_activity_ratio.update_attribute(:use_base_100, params[:wbs_activity_ratio][:use_base_100])
 
     #set ratio reference (all to false then one to true)
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |wbs_activity_ratio_element|
