@@ -268,7 +268,7 @@ class OrganizationDuplicateProjectWorker
     end
 
     #rescue
-    #new_prj = nil
+      #new_prj = nil
     #end
 
     new_prj
