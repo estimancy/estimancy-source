@@ -1835,3 +1835,4 @@ es:
   project_not_found: "Project not found !"
   error_resource_not_found: "The resource is not found !"
   use_base_100: "Use the base 100"
+  use_real_base_percentage: "Use the values ​​of real base percentage"

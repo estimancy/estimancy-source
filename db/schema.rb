@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160415132447) do
+ActiveRecord::Schema.define(:version => 20160420150247) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -845,6 +845,12 @@ ActiveRecord::Schema.define(:version => 20160415132447) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1757,16 +1763,16 @@ ActiveRecord::Schema.define(:version => 20160415132447) do
     t.string   "name"
     t.text     "description"
     t.integer  "wbs_activity_id"
-    t.boolean  "use_base_100"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.boolean  "use_real_base_percentage"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_number",      :default => 0
+    t.integer  "copy_number",              :default => 0
     t.integer  "copy_id"
   end
 
