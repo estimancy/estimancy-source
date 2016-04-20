@@ -2,6 +2,13 @@
   <%= I18n.t(:sum_of_ratio_values) %>
   <%= @total %> %
 </div>
+
+<% use_base_100 = (@selected_ratio.nil? ? nil : @selected_ratio.use_base_100) %>
+<label class="checkbox pull-left" style="margin-left: 40px; margin-top: 10px">
+  <%= check_box_tag :use_base_100, 1, use_base_100 %>
+  <%= I18n.t(:use_base_100 ) %>
+</label>
+
 <br>
 
 <table id="table_list_4" class="table table-striped table-bordered table-condensed" style="margin-top:20px;">
@@ -35,11 +42,6 @@
     </tr>
   <% end %>
 </table>
-
-<div class="pull-right" style="margin-right: 30px; margin-bottom: 30px;">
-  <%= check_box :wbs_activity_ratio, :use_base_100 %>
-  <%= I18n.t(:use_base_100) %>
-</div>
 
 <% if can? :manage_modules_instances, ModuleProject %>
   <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn' %>

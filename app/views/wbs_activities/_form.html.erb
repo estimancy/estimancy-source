@@ -141,7 +141,7 @@
 
           <%= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
             <div id="ratio_section">
-              <%= render :partial => 'wbs_activity_ratio_elements', :object => @wbs_activity_ratio_elements %>
+              <%= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_rati] %>
             </div>
           <% end %>
 

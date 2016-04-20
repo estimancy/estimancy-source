@@ -46,6 +46,7 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
     @wbs_activity = @wbs_activity_ratio.wbs_activity
     @wbs_activity_organization = @wbs_activity.organization
+    @selected_ratio = @wbs_activity_ratio
 
     #now only the selected profiles from the WBS'organization profiles list will be used
     @wbs_organization_profiles = @wbs_activity_organization.nil? ? [] : @wbs_activity.organization_profiles  #@wbs_activity_organization.organization_profiles
@@ -87,6 +88,7 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity_elements = @wbs_activity_elements_list.first.root.descendants.arrange(:order => :position)
 
     @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
+    @selected_ratio = @wbs_activity_ratios.first
 
     unless @wbs_activity_ratios.empty?
       @wbs_activity_organization = @wbs_activity_ratios.first.wbs_activity.organization
@@ -111,6 +113,7 @@ class WbsActivitiesController < ApplicationController
 
     @wbs_activity_elements = @wbs_activity.wbs_activity_elements
     @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
+    @selected_ratio = @wbs_activity_ratios.first
     @wbs_activity_organization = @wbs_activity.organization || Organization.find(params[:wbs_activity][:organization_id])
     @wbs_organization_profiles =  @wbs_activity.organization_profiles # @wbs_activity_organization.organization_profiles
     @organization_id = @wbs_activity_organization.id
@@ -146,6 +149,8 @@ class WbsActivitiesController < ApplicationController
       ###redirect_to main_app.organization_module_estimation_path(@organization_id, anchor: "activite")
       redirect_to redirect_apply(main_app.edit_organization_wbs_activity_path(@organization_id, @wbs_activity.id), nil, main_app.organization_module_estimation_path(@organization_id, anchor: "activite"))
     else
+      @organization = @wbs_activity_organization
+      @wbs_activity_elements_list = @wbs_activity.wbs_activity_elements
       render :edit
     end
   end
@@ -161,6 +166,7 @@ class WbsActivitiesController < ApplicationController
   def create
     @wbs_activity = WbsActivity.new(params[:wbs_activity])
     @organization_id = params['wbs_activity']['organization_id']
+    @organization = Organization.find(@organization_id)
 
     if @wbs_activity.save
       @wbs_activity_element = WbsActivityElement.new(:name => @wbs_activity.name, :wbs_activity_id => @wbs_activity.id, :description => 'Root Element', :is_root => true)

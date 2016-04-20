@@ -1796,7 +1796,7 @@ es:
   factors_setting: "Factors setting"
   import_factors_setting: "Import the factors for configuration"
   import_instance_model: "Import an instance of the model"
-  warning_update_wbs_organization_profile: "You have changed the profile list, verify the contribution of profiles per phase in (tab \"Ratio elements\")"
+  warning_update_wbs_organization_profile: "If you have changed the profile list, verify the contribution of profiles per phase in (tab \"Ratio elements\")"
   total_per_phase: "Total per phase"
   simple_text_mess_1: "The effort generic method corresponds to a calculation method of effort according to the formula a * x ^ b or <b>a</b> correspond to the  adjustment factor and <b>b</b> o the scale factor."
   sum: "Sum"
