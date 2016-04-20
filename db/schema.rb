@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160411081634) do
+ActiveRecord::Schema.define(:version => 20160415132447) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -664,14 +664,14 @@ ActiveRecord::Schema.define(:version => 20160411081634) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained"
+    t.boolean  "allow_retained",             :default => true
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria"
+    t.boolean  "allow_criteria",             :default => true
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -1604,7 +1604,7 @@ ActiveRecord::Schema.define(:version => 20160411081634) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
+    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1757,6 +1757,7 @@ ActiveRecord::Schema.define(:version => 20160411081634) do
     t.string   "name"
     t.text     "description"
     t.integer  "wbs_activity_id"
+    t.boolean  "use_base_100"
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
     t.integer  "record_status_id"

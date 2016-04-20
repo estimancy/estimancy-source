@@ -1,0 +1,61 @@
+# Additional translations at https://github.com/plataformatec/devise/wiki/I18n
+
+it:
+  devise:
+    confirmations:
+      confirmed: "Il tuo account è stato correttamente confermato."
+      send_instructions: "Riceverai in pochi minuti una e-mail con le istruzioni per confermare il tuo account."
+      send_paranoid_instructions: "Se la vostra e-mail esiste nel nostro database, si riceverà in pochi minuti un messaggio con le istruzioni per confermare il tuo account."
+      not_receive_confirmation_instructions: "Non hai ricevuto i tuoi dati d'accesso?"
+      not_receive_unlock_instructions: "Non hai ricevuto i tuoi istruzioni per sbloccare il tuo account?"
+    failure:
+      already_authenticated: "Si è già connessi (a)."
+      inactive: "Il tuo account non è ancora attivato."
+      invalid: "Nome utente / e-mail o la password errata."
+      last_attempt: "Avete una possibilità prima che l'account è bloccato."
+      locked: "Il tuo account è bloccato."
+      not_found_in_database: "Email o password errata."
+      timeout: "La sessione è scaduta , si prega di accedere nuovamente per continuare."
+      unauthenticated: ""
+      unconfirmed: "È necessario confermare il tuo account di posta elettronica."
+    mailer:
+      confirmation_instructions:
+        subject: "[Estimancy - stime del management] - Conferma"
+      reset_password_instructions:
+        subject: "Le istruzioni per cambiare la password"
+      unlock_instructions:
+        subject: "Le istruzioni per sbloccare l'account"
+    omniauth_callbacks:
+      failure: "Non possiamo autenticare da %{kind} per il seguente motivo: '%{reason}' '."
+      success: "Autorizzato con successo dal suo account %{kind}."
+    passwords:
+      no_token: "Non è possibile accedere a questa pagina se non si va per una email di reimpostazione password. Se venite a effettuare una tale e-mail, assicurarsi che è stato copiato l'URL in pieno."
+      send_instructions: "Riceverai in pochi minuti una e-mail che ti dice come reimpostare la password."
+      send_paranoid_instructions: "Se la posta elettronica è nel nostro database, si riceverà un link che consente di recuperare la password."
+      updated: "La password è stata modificata correttamente. Ora si è collegati (e)."
+      updated_not_active: "La password è stata modificata correttamente."
+    registrations:
+      destroyed: "Arrivederci! Il tuo account è stato cancellato con successo. Speriamo di vedervi presto."
+      signed_up: "Benvenuto! È iscritto (e) con successo."
+      signed_up_but_inactive: "È iscritto (e) con successo. Tuttavia, non siamo riusciti a connettersi perché il tuo account non è stato attivato."
+      signed_up_but_locked: "È iscritto (e) con successo. Tuttavia, non siamo riusciti a connettersi perché il tuo account è bloccato."
+      signed_up_but_unconfirmed: "Un messaggio con un link di conferma inviato via e-mail. Segui questo link per attivare l'account."
+      update_needs_confirmation: "Hai cambiato il tuo account con successo, ma abbiamo bisogno di verificare il tuo nuovo indirizzo email. Controlla la tua email e clicca sul link di conferma per confermare il nuovo indirizzo."
+      updated: "Il tuo account è stato modificato con successo."
+    sessions:
+      signed_in: " "
+      signed_out: " "
+    unlocks:
+      send_instructions: "Riceverai in pochi minuti una mail con le istruzioni per sbloccare il tuo account."
+      send_paranoid_instructions: "Se la vostra e-mail esiste nel nostro database, si riceverà in pochi minuti un messaggio con le istruzioni per sbloccare il tuo account."
+      unlocked: "Il tuo account è stato sbloccato con successo. Entra."
+  errors:
+    messages:
+      already_confirmed: "è già stato confermato (e)"
+      confirmation_period_expired: "deve essere confermata  %{period}, si prega di chiedere un (a) altro"
+      expired: "è superata, si prega di richiedere un'altra"
+      not_found: "Non è stato trovato (e)"
+      not_locked: "non era chiusa (e)"
+      not_saved:
+        one: "un errore ha impedito questo (o quella) %{resource] vengano registrati (e):"
+        other: "%{Count} errori hanno impedito questo (o quella) %{resource} vengano registrati (e):"

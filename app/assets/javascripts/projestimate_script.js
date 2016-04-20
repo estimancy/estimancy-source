@@ -965,7 +965,7 @@ function update_wbs_activity_ratio_profiles(){
 
             if(sum_of_wbs_ratio != 100){
                 $('td#total_ratio_activity_'+activity_id).addClass('red_color');
-                alert("Attention : le pourcentage de contribution des profils par phase n'est pas à 100%"); //alert("Warning : sum of activity's ratio values is greater than 100 !");
+                //alert("Attention : le pourcentage de contribution des profils par phase n'est pas à 100%"); //alert("Warning : sum of activity's ratio values is greater than 100 !");
             }
             else {
                 $('td#total_ratio_activity_'+activity_id).removeClass('red_color');

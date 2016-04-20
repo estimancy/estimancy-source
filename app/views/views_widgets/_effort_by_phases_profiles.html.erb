@@ -80,6 +80,8 @@
                             </td>
                           <% end %>
                       <% end %>
+                    <% else %>
+                        <td></td>
                     <% end %>
 
                     <% total_per_phase_to_sum <<  effort_per_phase %>
@@ -97,18 +99,21 @@
                   <br />
                   <strong><%= wbs_activity_elt.name %></strong>
                 </td>
-                <% project_organization_profiles.each do |profile| %>
-                  <td style="text-align: right">
-                    <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
-                    <% root_effort_per_phase.nil? ? (root_effort_per_phase = root_effort_per_phase.to_f) : (root_effort_per_phase = root_effort_per_phase) %>
-                    <% root_effort_per_phase +=  root_effort_per_profile %>
-                    <br />
-                    <%= convert_with_precision(convert(root_effort_per_profile, @current_organization), user_number_precision, true) %>
-                  </td>
+                <% if project_organization_profiles.length > 0 %>
+                    <% project_organization_profiles.each do |profile| %>
+                      <td style="text-align: right">
+                        <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
+                        <% root_effort_per_phase.nil? ? (root_effort_per_phase = root_effort_per_phase.to_f) : (root_effort_per_phase = root_effort_per_phase) %>
+                        <% root_effort_per_phase +=  root_effort_per_profile %>
+                        <br />
+                        <%= convert_with_precision(convert(root_effort_per_profile, @current_organization), user_number_precision, true) %>
+                      </td>
+                    <% end %>
+                <% else %>
+                    <td></td>
                 <% end %>
-
                 <td>
-                  <div class="pull-right"><strong><%= convert_with_precision(convert(total_per_phase_to_sum.map(&:to_f).sum.to_f, @current_organization), user_number_precision, true) %></strong></div>
+                  <div class="pull-right"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : convert_with_precision(convert(total_per_phase_to_sum.map(&:to_f).sum.to_f, @current_organization), user_number_precision, true) %></strong></div>
                   <br />
                   <div class="pull-left"><strong><%= root_effort_per_phase.nil? ? "-" : convert_with_precision(convert(root_effort_per_phase, @current_organization), user_number_precision, true) %></strong></div>
                 </td>
