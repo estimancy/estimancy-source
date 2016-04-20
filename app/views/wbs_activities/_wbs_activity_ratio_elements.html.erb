@@ -3,10 +3,10 @@
   <%= @total %> %
 </div>
 
-<% use_base_100 = (@selected_ratio.nil? ? nil : @selected_ratio.use_base_100) %>
+<% use_real_base_percentage = (@selected_ratio.nil? ? nil : @selected_ratio.use_real_base_percentage) %>
 <label class="checkbox pull-left" style="margin-left: 40px; margin-top: 10px">
-  <%= check_box_tag :use_base_100, 1, use_base_100 %>
-  <%= I18n.t(:use_base_100 ) %>
+  <%= check_box_tag :use_real_base_percentage, 1, use_real_base_percentage %>
+  <%= I18n.t(:use_real_base_percentage ) %>
 </label>
 
 <br>

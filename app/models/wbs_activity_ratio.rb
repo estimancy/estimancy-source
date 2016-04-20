@@ -20,7 +20,7 @@
 #############################################################################
 
 class WbsActivityRatio < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :wbs_activity_id, :use_base_100
+  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :wbs_activity_id, :use_real_base_percentage
 
   ###has_many :wbs_project_elements
   has_many :pbs_project_elements
