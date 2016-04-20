@@ -151,7 +151,7 @@
               <th class=""><%= I18n.t :quantity %></th>
 
               <th class=""><%= I18n.t :complexity %></th>
-              <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.empty? %>
+              <% unless @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.empty? %>
                 <th>
                   <%= I18n.t :criteria %>
                 </th>

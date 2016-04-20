@@ -24,7 +24,7 @@ class ApplicationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     if @application.save
-      redirect_to redirect_apply(nil, new_organization_application_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-applications') )
+      redirect_to redirect_apply(nil, new_organization_application_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-applications'))
     else
       render action: 'new'
     end
