@@ -26,15 +26,7 @@
     <div class="navbar-inner">
       <div class="container">
         <div class="pull-left">
-          <% begin %>
-            <% if @project %>
-              <%= link_to(image_tag("/assets/Logo 200x75.png"), main_app.dashboard_path(@project)) %>
-            <% else %>
-              <%= link_to(image_tag("/assets/Logo 200x75.png"), main_app.organization_estimations_path(@organization)) %>
-            <% end %>
-          <% rescue %>
-            <%= link_to(image_tag("/assets/Logo 200x75.png"), main_app.projects_path) %>
-          <% end %>
+          <a target="_blank" href="http://www.estimancy.com"><%= image_tag("/assets/Logo 200x75.png") %></a>
         </div>
 
         <div class="pull-right" style="margin-top:16px; margin-left: 10px">
