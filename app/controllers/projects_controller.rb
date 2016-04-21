@@ -1040,7 +1040,7 @@ class ProjectsController < ApplicationController
 
       #When adding a module in the "timeline", it creates an entry in the table ModuleProject for the current project, at position 2 (the one being reserved for the input module).
       my_module_project = ModuleProject.new(:project_id => @project.id, :pemodule_id => @pemodule.id, :position_y => 1, :position_x => @module_positions_x.to_i + 1,
-                                            :top_position => 100, :left_position => 1400, :creation_order => mp_creation_order+1)
+                                            :top_position => 100, :left_position => 900, :creation_order => mp_creation_order+1)
       my_module_project.save
 
       #si le module est un module generic on l'associe le module project

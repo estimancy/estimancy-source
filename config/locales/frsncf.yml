@@ -1211,7 +1211,7 @@ frsncf:
   profils_per_activity: "Profils par activité"
   organization: "Organisation"
   wbs_ratio_per_profile: "Ratio par profil"
-  total_ratio_per_activity: "Sum des ratio par activité (%)"
+  total_ratio_per_activity: "Somme des ratios par activité (%)"
   warning_sum_of_ratio_values_greater_than_100: "Attention : la somme des ratios de l'activité est supérieure à 100 !"
   no_profiles_for_wbs_activity_organization: "Aucun profil sélectionné dans la WBS activité"
   display_results_with_profiles: "Afficher les résultats par profil"
