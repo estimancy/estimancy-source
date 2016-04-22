@@ -1525,7 +1525,7 @@ fr1:
   import_factors_setting: "Importer les facteurs pour la configuration"
   import_instance_model: "Importer une instance du modèle"
   route_flag_error_17: "Erreur: aucun fichier sélectionné."
-  warning_update_wbs_organization_profile: "Attention!!! Vous avez modifié la liste des profils, vérifier la contribution des profils par phase (onglet \"Elements des Ratios\")."
+  warning_update_wbs_organization_profile: "Attention!!! Si vous avez modifié la liste des profils, vérifier la contribution des profils par phase (onglet \"Elements des Ratios\")."
   total_per_phase: "Total par phase"
   error_message_not_found_2: "Il se peut que le lien utilisé soit rompu ou que vous ayez tapé une adresse (URL) incorrecte."
   work_unit_label: "Nom du coefficient de pondération 1"
@@ -1563,3 +1563,4 @@ fr1:
   output_effort: "Effort en sortie : "
   project_not_found: "Projet inexistant !"
   error_resource_not_found: "La ressource est introuvable !"
+  use_base_100: "Utiliser la base 100"

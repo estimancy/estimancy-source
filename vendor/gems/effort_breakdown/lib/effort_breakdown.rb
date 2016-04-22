@@ -107,32 +107,73 @@ module EffortBreakdown
         referenced_ratio_elements = WbsActivityRatioElement.where('wbs_activity_ratio_id =?', @ratio.id)
       end
 
-      referenced_values_efforts = 0
-      referenced_ratio_elements.each do |reference_value|
-        referenced_values_efforts = referenced_values_efforts + reference_value.ratio_value.to_f
-      end
-
       output_effort = Hash.new
-      wbs_activity_root.children.each do |node|
-        # Sort node subtree by ancestry_depth
-        sorted_node_elements = node.subtree.order('ancestry_depth desc')
-        sorted_node_elements.each do |element|
-          # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
-          unless element.nil?
-            # Element effort is really computed only on leaf element
-            if element.is_childless? || element.has_new_complement_child?
-              # Get the ratio Value of current element
-              corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
-              unless corresponding_ratio_elt.nil?
-                corresponding_ratio_value = corresponding_ratio_elt.ratio_value
-                current_output_effort = @input_effort.nil? ? nil : (@input_effort.to_f * corresponding_ratio_value.to_f / referenced_values_efforts)
-                output_effort[element.id] = current_output_effort
+
+      # If using base-100 percentages
+      if @ratio.use_base_100 == true
+        referenced_values_efforts = 0.0
+        referenced_ratio_elements.each do |reference_value|
+          referenced_values_efforts = referenced_values_efforts + reference_value.ratio_value.to_f
+        end
+
+        #output_effort = Hash.new
+        wbs_activity_root.children.each do |node|
+          # Sort node subtree by ancestry_depth
+          sorted_node_elements = node.subtree.order('ancestry_depth desc')
+          sorted_node_elements.each do |element|
+            # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
+            unless element.nil?
+              # Element effort is really computed only on leaf element
+              if element.is_childless? || element.has_new_complement_child?
+                # Get the ratio Value of current element
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
+                unless corresponding_ratio_elt.nil?
+                  corresponding_ratio_value = corresponding_ratio_elt.ratio_value
+                  current_output_effort = @input_effort.nil? ? nil : (@input_effort.to_f * corresponding_ratio_value.to_f / referenced_values_efforts)
+                  output_effort[element.id] = current_output_effort
+                end
+              else
+                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end
-            else
-              output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
             end
           end
         end
+
+      #The real ratio elements percentages will be use
+      else
+        referenced_values_efforts = 0.0
+        referenced_ratio_activity_element_ids = []
+        referenced_ratio_elements.each do |reference_value|
+          wbs_activity_element_id = reference_value.wbs_activity_element_id
+          referenced_ratio_activity_element_ids << wbs_activity_element_id
+
+          current_output_effort = @input_effort.nil? ? nil : (@input_effort.to_f * reference_value.ratio_value.to_f / 100)
+          output_effort[wbs_activity_element_id] = current_output_effort.to_f
+          referenced_values_efforts = referenced_values_efforts + current_output_effort.to_f
+        end
+
+        wbs_activity_root.children.each do |node|
+          # Sort node subtree by ancestry_depth
+          sorted_node_elements = node.subtree.order('ancestry_depth desc')
+          sorted_node_elements.each do |element|
+            # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
+            unless element.nil? || element.id.in?(referenced_ratio_activity_element_ids)
+              # Element effort is really computed only on leaf element
+              if element.is_childless? || element.has_new_complement_child?
+                # Get the ratio Value of current element
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
+                unless corresponding_ratio_elt.nil?
+                  corresponding_ratio_value = corresponding_ratio_elt.ratio_value
+                  current_output_effort = (referenced_values_efforts.to_f  * corresponding_ratio_value.to_f / 100)
+                  output_effort[element.id] = current_output_effort
+                end
+              else
+                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+              end
+            end
+          end
+        end
+
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
