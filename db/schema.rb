@@ -869,6 +869,9 @@ ActiveRecord::Schema.define(:version => 20160415132447) do
     t.integer  "project_id"
     t.integer  "position_x"
     t.integer  "position_y"
+    t.float    "top_position"
+    t.float    "left_position"
+    t.integer  "creation_order"
     t.integer  "nb_input_attr"
     t.integer  "nb_output_attr"
     t.integer  "copy_id"
@@ -1604,7 +1607,7 @@ ActiveRecord::Schema.define(:version => 20160415132447) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
+    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
