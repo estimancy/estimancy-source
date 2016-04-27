@@ -98,7 +98,7 @@ class Guw::GuwModelsController < ApplicationController
     ind2 = 10
     ind3 = 0
     save_position = 0
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil?# && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       @workbook = RubyXL::Parser.parse(params[:file].path)
       @workbook.each_with_index do |worksheet, index|
        tab = worksheet.extract_data
@@ -686,7 +686,7 @@ class Guw::GuwModelsController < ApplicationController
       ind = 0
       ind3 = 5
     end
-    send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.est", type: "application/vnd.ms-excel")
   end
 
   def show
@@ -906,7 +906,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, 16 + i, guw_attribute.name)
     end
 
-    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.est", type: "application/vnd.ms-excel")
   end
 
   def my_verrif_tab_error(tab_error, indexing_field_error)
@@ -967,8 +967,7 @@ class Guw::GuwModelsController < ApplicationController
     tab_error = [[false], [false], [false], [false], [false]]
     indexing_field_error = [[false],[false],[false],[false]]
 
-    if !params[:file].nil? &&
-        (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil? #&& (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       worksheet =workbook[0]
       tab = worksheet.extract_data
