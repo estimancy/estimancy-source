@@ -36,10 +36,12 @@
               <% if @current_organization.applications.empty? and apps.empty? %>
                 <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
               <% else %>
-                <%= f.association :applications, as: :select,
+                <%= f.association :applications,
+                                  as: :select,
                                   collection: @current_organization.applications,
-                                  :label => I18n.t(:label_product_name),
-                                  :input_html => { :class => 'input-large' },
+                                  selected: @project.application_id,
+                                  label: I18n.t(:label_product_name),
+                                  input_html: { :class => 'input-large' },
                                   include_blank: true %>
               <% end %>
             <% else %>
