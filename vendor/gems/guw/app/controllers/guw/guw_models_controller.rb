@@ -564,16 +564,20 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.sheet_data[ind2 + 2][0].change_font_bold(true)
       worksheet.change_row_bold(ind2 + 3,true)
 
-      j = ind2 + 3
+      # j = ind2 + 3
       # worksheet.add_cell(j, 0, @guw_model.coefficient_label)
-      # worksheet.change_row_bold(j, true)
-
-      k = j + @guw_model.guw_work_units.size.to_i
-      # worksheet.add_cell(k, 0, @guw_model.factors_label)
-      # worksheet.change_row_bold(k, true)
-
-      l = k + @guw_model.guw_factors.size.to_i
-      # worksheet.add_cell(l, 0, @guw_model.weightings_label)
+      # # worksheet.change_row_bold(j, true)
+      #
+      # j = j + @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size - 1
+      # worksheet.add_cell(j, 0, @guw_model.factors_label)
+      # # worksheet.change_row_bold(k, true)
+      #
+      # j = j + @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size - 1
+      # worksheet.add_cell(j, 0, @guw_model.weightings_label)
+      # # worksheet.change_row_bold(l, true)
+      #
+      # j = j + @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size - 1
+      # worksheet.add_cell(j, 0, @guw_model.weightings_label)
       # worksheet.change_row_bold(l, true)
 
 
