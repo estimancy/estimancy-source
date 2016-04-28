@@ -1564,4 +1564,4 @@ fr1:
   project_not_found: "Projet inexistant !"
   error_resource_not_found: "La ressource est introuvable !"
   use_base_100: "Utiliser la base 100"
-  use_real_base_percentage: "Utiliser les valeurs des pourcentages en base réel"
+  use_real_base_percentage: "Utiliser les valeurs des pourcentages réel"
