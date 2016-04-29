@@ -426,6 +426,10 @@ class OrganizationsController < ApplicationController
         app = Application.where(name: application.name, organization_id: new_organization.id).first
         ap = ApplicationsProjects.create(application_id: app.id,
                                          project_id: new_prj.id)
+
+        # new_prj.application_id = app.id
+        # new_prj.save(validate: false)
+
         ap.save
       end
 
@@ -788,7 +792,6 @@ class OrganizationsController < ApplicationController
           #
           #  #=====
           #end
-
 
           # Copy the WBS-Activities modules's Models instances
           organization_image.wbs_activities.each do |old_wbs_activity|
