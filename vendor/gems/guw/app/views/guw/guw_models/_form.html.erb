@@ -13,12 +13,12 @@
       </li>
       <li>
         <a href="#tabs-factors">
-          Gérer les facteurs d'ajustements
+          Configurer les coefficients de pondération
         </a>
       </li>
       <li>
         <a href="#tabs-matrix">
-          Matrice des sorties / facteurs
+          Configurer le calcul des sorties
         </a>
       </li>
     <% end %>
@@ -91,9 +91,15 @@
         <table class="table table-bordered">
           <tr>
             <th></th>
-            <% ["Sortie de taille", "Sortie d'effort (en fonction de la taille)", "Sortie de coût (en fonction de la taille)"].each do |ta| %>
-              <th><%= ta %></th>
-            <% end %>
+            <th>
+              <%= link_to "Taille calculée", "#", title: "Coefficient à prendre en compte dans la taille calculée", class: "attribute_tooltip" %>
+            </th>
+            <th>
+              <%= link_to "Calcul de l'effort", "#", title: "Coefficient à prendre en compte pour le calcul de l'effort à partir de la taille retenue", class: "attribute_tooltip" %>
+            </th>
+            <th>
+              <%= link_to "Calcul du coût", "#", title: "Coefficient à prendre en compte pour le calcul du coût à partir de la taille retenue", class: "attribute_tooltip" %>
+            </th>
           </tr>
 
           <% [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each do |ts| %>
