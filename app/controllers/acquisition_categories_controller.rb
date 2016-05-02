@@ -28,7 +28,9 @@ class AcquisitionCategoriesController < ApplicationController
   def new
     authorize! :manage, AcquisitionCategory
 
-    set_page_title I18n.t (:acquisition_category)
+    set_page_title I18n.t (:acquisition_categories)
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories"), I18n.t('new_acquisition_category') => ""
+
     @acquisition_category = AcquisitionCategory.new
     @organization = Organization.find(params[:organization_id])
   end
@@ -36,9 +38,11 @@ class AcquisitionCategoriesController < ApplicationController
   def edit
     authorize! :show_acquisition_categories, AcquisitionCategory
 
-    set_page_title I18n.t (:acquisition_category)
     @acquisition_category = AcquisitionCategory.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:acquisition_categories)
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories"), I18n.t(:acquisition_category_edition) => ""
   end
 
   def create
@@ -46,6 +50,9 @@ class AcquisitionCategoriesController < ApplicationController
 
     @acquisition_category = AcquisitionCategory.new(params[:acquisition_category])
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t (:acquisition_categories)
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories"), I18n.t('new_acquisition_category') => ""
 
     if @acquisition_category.save
       flash[:notice] = I18n.t (:notice_acquisition_category_successful_created)
@@ -60,6 +67,9 @@ class AcquisitionCategoriesController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
     @acquisition_category = AcquisitionCategory.find(params[:id])
+
+    set_page_title I18n.t(:acquisition_categories)
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories"), I18n.t(:acquisition_category_edition) => ""
 
     if @acquisition_category.update_attributes(params[:acquisition_category])
       flash[:notice] = I18n.t (:notice_acquisition_category_successful_updated)

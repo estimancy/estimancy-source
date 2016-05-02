@@ -35,6 +35,7 @@ class OrganizationTechnologiesController < ApplicationController
     @organization_technology = OrganizationTechnology.find(params[:id])
     @organization = @organization_technology.organization
     set_page_title I18n.t(:edit_technology, value: @organization.name)
+    set_breadcrumbs I18n.t(:technologies) => organization_setting_path(@organization, anchor: "tabs-technology"), I18n.t('technology_edition') => ""
   end
 
   def new
@@ -43,6 +44,7 @@ class OrganizationTechnologiesController < ApplicationController
     @organization_technology = OrganizationTechnology.new
     @organization = Organization.find_by_id(params[:organization_id])
     set_page_title I18n.t(:new_technology)
+    set_breadcrumbs I18n.t(:technology) => organization_setting_path(@organization, anchor: "tabs-technology"), I18n.t('new_technology') => ""
   end
 
   def create
@@ -50,6 +52,9 @@ class OrganizationTechnologiesController < ApplicationController
 
     @organization_technology = OrganizationTechnology.new(params[:organization_technology])
     @organization = Organization.find_by_id(params['organization_technology']['organization_id'])
+
+    set_page_title I18n.t(:new_technology)
+    set_breadcrumbs I18n.t(:technologies) => organization_setting_path(@organization, anchor: "tabs-technology"), I18n.t('new_technology') => ""
 
     if @organization_technology.save
       flash[:notice] = I18n.t (:notice_organization_technology_successful_created)
@@ -64,6 +69,9 @@ class OrganizationTechnologiesController < ApplicationController
 
     @organization_technology = OrganizationTechnology.find(params[:id])
     @organization = @organization_technology.organization
+
+    set_page_title I18n.t(:technology)
+    set_breadcrumbs I18n.t(:technologies) => organization_setting_path(@organization, anchor: "tabs-technology"), I18n.t('technology_edition') => ""
 
     if @organization_technology.update_attributes(params[:organization_technology])
       flash[:notice] = I18n.t (:notice_organization_technology_successful_updated)

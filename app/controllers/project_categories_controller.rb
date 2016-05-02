@@ -30,6 +30,8 @@ class ProjectCategoriesController < ApplicationController
     authorize! :manage, ProjectCategory
 
     set_page_title I18n.t(:label_ProjectCategory)
+    set_breadcrumbs I18n.t(:label_ProjectCategory) => organization_setting_path(@current_organization, anchor: "tabs-project-categories"), I18n.t('new_project_category') => ""
+
     @project_category = ProjectCategory.new
     @organization = Organization.find(params[:organization_id])
   end
@@ -40,10 +42,15 @@ class ProjectCategoriesController < ApplicationController
     set_page_title I18n.t(:label_ProjectCategory)
     @project_category = ProjectCategory.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
+    set_breadcrumbs I18n.t(:label_ProjectCategory) => organization_setting_path(@organization, anchor: "tabs-project-categories"), I18n.t(:project_category_edition) => ""
   end
 
   def create
     authorize! :manage, ProjectCategory
+
+    set_page_title I18n.t(:label_ProjectCategory)
+    set_breadcrumbs I18n.t(:label_ProjectCategory) => organization_setting_path(@current_organization, anchor: "tabs-project-categories"), I18n.t('new_project_category') => ""
 
     @project_category = ProjectCategory.new(params[:project_category])
     @organization = Organization.find(params[:organization_id])
@@ -61,6 +68,9 @@ class ProjectCategoriesController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
     @project_category = ProjectCategory.find(params[:id])
+
+    set_page_title I18n.t(:label_ProjectCategory)
+    set_breadcrumbs I18n.t(:label_ProjectCategory) => organization_setting_path(@organization, anchor: "tabs-project-categories"), I18n.t(:project_category_edition) => ""
 
     if @project_category.update_attributes(params[:project_category])
       flash[:notice] = I18n.t (:notice_project_categories_successful_updated)

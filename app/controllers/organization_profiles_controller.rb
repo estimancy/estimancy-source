@@ -29,6 +29,7 @@ class OrganizationProfilesController < ApplicationController
     set_page_title I18n.t(:new_organization_profiles)
     @organization = Organization.find_by_id(params[:organization_id])
     @organization_profile = OrganizationProfile.new
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('new_profile') => ""
   end
 
   # GET /organization_profiles/1/edit
@@ -38,6 +39,8 @@ class OrganizationProfilesController < ApplicationController
     @organization_profile = OrganizationProfile.find(params[:id])
 
     @organization = @organization_profile.organization
+
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('organization_profiles_edition') => ""
   end
 
   # POST /organization_profiles
@@ -48,6 +51,8 @@ class OrganizationProfilesController < ApplicationController
 
     @organization_profile = OrganizationProfile.new(params[:organization_profile])
     @organization = Organization.find_by_id(params['organization_profile']['organization_id'])
+
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('new_profile') => ""
 
     if @organization_profile.save
       flash[:notice] = I18n.t(:notice_profile_successful_created)
@@ -66,6 +71,7 @@ class OrganizationProfilesController < ApplicationController
 
     @organization_profile = OrganizationProfile.find(params[:id])
     @organization = @organization_profile.organization
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('organization_profiles_edition') => ""
 
     respond_to do |format|
       if @organization_profile.update_attributes(params[:organization_profile])
