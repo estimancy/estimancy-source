@@ -64,10 +64,10 @@
                 <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
               <% else %>
                 <%= f.input :application_id, as: :select,
-                              collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
-                              label: I18n.t(:label_product_name),
-                              input_html: {:class => 'input-large'},
-                              selected: @project.application_id %>
+                            collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
+                            label: I18n.t(:label_product_name),
+                            selected: @project.application_id,
+                            input_html: {:class => 'input-large'} %>
               <% end %>
             <% end %>
           </td>

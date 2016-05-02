@@ -846,12 +846,6 @@ ActiveRecord::Schema.define(:version => 20160407160246) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
