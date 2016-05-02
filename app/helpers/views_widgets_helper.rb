@@ -173,7 +173,35 @@ module ViewsWidgetsHelper
     widget_data[:text_size] = text_size
     widget_data[:ft_maxFontSize_without_mm] = ft_maxFontSize_without_mm
 
+
+    eq = view_widget.equation
+    tmp_formula = eq["formula"].to_s
+
+    unless eq["A"].blank?
+      a_value = EstimationValue.find(eq["A"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["B"].blank?
+      b_value = EstimationValue.find(eq["B"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["C"].blank?
+      c_value = EstimationValue.find(eq["C"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["D"].blank?
+      d_value = EstimationValue.find(eq["D"].to_i).string_data_probable[current_component.id].to_s
+    end
+
+    unless eq["E"].blank?
+      e_value = EstimationValue.find(eq["E"].to_i).string_data_probable[current_component.id].to_s
+    end
+
     begin
+      formula = tmp_formula.gsub("A", a_value).gsub("B", b_value).gsub("C", c_value).gsub("D", d_value).gsub("E", e_value)
+
+      #Regexp a utiliser mais j'y arrive pas [ABCDEF\d{*+\/}]
+      widget_data[:value_to_show] = eval(formula).round(current_user.number_precision) + " #{view_widget.kpi_unit}"
       widget_data[:value_to_show] = get_kpi_value(view_widget)
     rescue
       widget_data[:value_to_show] = "-"

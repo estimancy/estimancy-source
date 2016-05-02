@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160407160246) do
+ActiveRecord::Schema.define(:version => 20160502143035) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -869,9 +869,6 @@ ActiveRecord::Schema.define(:version => 20160407160246) do
     t.integer  "project_id"
     t.integer  "position_x"
     t.integer  "position_y"
-    t.float    "top_position"
-    t.float    "left_position"
-    t.integer  "creation_order"
     t.integer  "nb_input_attr"
     t.integer  "nb_output_attr"
     t.integer  "copy_id"
@@ -1660,6 +1657,8 @@ ActiveRecord::Schema.define(:version => 20160407160246) do
     t.boolean  "is_label_widget"
     t.text     "comment"
     t.boolean  "is_kpi_widget"
+    t.text     "equation"
+    t.string   "kpi_unit"
   end
 
   create_table "wbs_activities", :force => true do |t|
@@ -1759,15 +1758,16 @@ ActiveRecord::Schema.define(:version => 20160407160246) do
     t.string   "name"
     t.text     "description"
     t.integer  "wbs_activity_id"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.boolean  "use_real_base_percentage"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_number",      :default => 0
+    t.integer  "copy_number",              :default => 0
     t.integer  "copy_id"
   end
 
