@@ -126,9 +126,10 @@ class ViewsWidgetsController < ApplicationController
       equation = Hash.new
       equation["formula"] = params[:formula].upcase
       ["A", "B", "C", "D", "E"].each do |letter|
-        equation[letter] = params[letter.to_sym].upcase
+        equation[letter] = params[letter.to_sym].to_s.upcase
       end
       @views_widget.equation = equation
+      @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
     end
 
     respond_to do |format|
@@ -290,7 +291,6 @@ class ViewsWidgetsController < ApplicationController
       end
     end
   end
-
 
   #Update the module_project corresponding data of view
   def update_widget_module_project_data

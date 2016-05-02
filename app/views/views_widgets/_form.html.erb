@@ -36,7 +36,7 @@
         <td>
           <!-- Color is using the JS Spectrum library -->
           <% if @views_widget.new_record? %>
-            <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+            <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
           <% else %>
             <%= f.input :color, label: I18n.t(:status_color) %>
           <% end %>
