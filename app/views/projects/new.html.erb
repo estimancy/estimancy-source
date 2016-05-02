@@ -1,6 +1,4 @@
-<h4 class="ui-widget">&nbsp;<i class="icon-plus icon-large"></i>&nbsp;
-  <b><%= params[:is_model] ? I18n.t(:new_estimation_model) : I18n.t(:new_project) %></b>
+<h4>
+  <%= I18n.t(:new_project) %>
 </h4>
-<div>
-  <%= render 'form' %>
-</div>
+<%= render 'form' %>
