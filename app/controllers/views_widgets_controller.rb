@@ -121,11 +121,13 @@ class ViewsWidgetsController < ApplicationController
     end
 
     #new widget with the default positions
-    @views_widget = ViewsWidget.new(params[:views_widget].merge(:view_id => current_view.id, :position_x => position_x, :position_y => position_y, :width => 3, :height => 3))
+    @views_widget = ViewsWidget.new(params[:views_widget].merge(:view_id => current_view.id,
+                                                                :position_x => position_x,
+                                                                :position_y => position_y,
+                                                                :width => 3,
+                                                                :height => 3))
 
     if params[:views_widget][:is_kpi_widget].present?
-      @views_widget.is_kpi_widget = true
-      @views_widget.module_project_id = @module_project.id
       equation = Hash.new
       equation["formula"] = params[:formula].upcase
       ["A", "B", "C", "D", "E"].each do |letter|
@@ -136,6 +138,8 @@ class ViewsWidgetsController < ApplicationController
       end
       @views_widget.equation = equation
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
+      @views_widget.is_kpi_widget = true
+      @views_widget.module_project_id = @module_project.id
     end
 
     respond_to do |format|

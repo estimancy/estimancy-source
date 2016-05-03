@@ -24,29 +24,30 @@ module ViewsWidgetsHelper
 
   def get_kpi_value(view_widget)
     eq = view_widget.equation
+    ev = view_widget.estimation_value
     formula = eq["formula"].to_s
 
-    unless eq["A"].nil?
+    unless eq["A"].blank?
       a_value = get_ev_value(eq["A"], current_component.id)
       formula = formula.gsub("A", a_value)
     end
 
-    unless eq["B"].nil?
+    unless eq["B"].blank?
       b_value = get_ev_value(eq["B"], current_component.id)
       formula = formula.gsub("B", b_value)
     end
 
-    unless eq["C"].nil?
+    unless eq["C"].blank?
       c_value = get_ev_value(eq["C"], current_component.id)
       formula = formula.gsub("C", c_value)
     end
 
-    unless eq["D"].nil?
+    unless eq["D"].blank?
       d_value = get_ev_value(eq["D"], current_component.id)
       formula = formula.gsub("D", d_value)
     end
 
-    unless eq["E"].nil?
+    unless eq["E"].blank?
       e_value = get_ev_value(eq["E"], current_component.id)
       formula = formula.gsub("E", e_value)
     end
@@ -55,16 +56,19 @@ module ViewsWidgetsHelper
   end
 
   def get_ev_value(ev_id, current_component_id)
-    ev = EstimationValue.find(ev_id.first.to_i)
-    val = ev.string_data_probable[current_component_id]
-    unless ev.nil?
-      if ev.is_a?(Hash)
-        compute_value(val, ev, current_component_id)
+    unless ev_id.to_i == 0
+      ev = EstimationValue.find(ev_id.to_i)
+      val = ev.string_data_probable[current_component_id]
+      unless ev.nil?
+        if ev.is_a?(Hash)
+          compute_value(val, ev, current_component_id)
+          val.to_s
+        else
+          val.to_s
+        end
       else
-        val.to_s
+        nil
       end
-    else
-      nil
     end
   end
 
@@ -173,35 +177,8 @@ module ViewsWidgetsHelper
     widget_data[:text_size] = text_size
     widget_data[:ft_maxFontSize_without_mm] = ft_maxFontSize_without_mm
 
-
-    eq = view_widget.equation
-    tmp_formula = eq["formula"].to_s
-
-    unless eq["A"].blank?
-      a_value = EstimationValue.find(eq["A"].to_i).string_data_probable[current_component.id].to_s
-    end
-
-    unless eq["B"].blank?
-      b_value = EstimationValue.find(eq["B"].to_i).string_data_probable[current_component.id].to_s
-    end
-
-    unless eq["C"].blank?
-      c_value = EstimationValue.find(eq["C"].to_i).string_data_probable[current_component.id].to_s
-    end
-
-    unless eq["D"].blank?
-      d_value = EstimationValue.find(eq["D"].to_i).string_data_probable[current_component.id].to_s
-    end
-
-    unless eq["E"].blank?
-      e_value = EstimationValue.find(eq["E"].to_i).string_data_probable[current_component.id].to_s
-    end
-
     begin
-      formula = tmp_formula.gsub("A", a_value).gsub("B", b_value).gsub("C", c_value).gsub("D", d_value).gsub("E", e_value)
-
       #Regexp a utiliser mais j'y arrive pas [ABCDEF\d{*+\/}]
-      widget_data[:value_to_show] = eval(formula).round(current_user.number_precision) + " #{view_widget.kpi_unit}"
       widget_data[:value_to_show] = get_kpi_value(view_widget)
     rescue
       widget_data[:value_to_show] = "-"
