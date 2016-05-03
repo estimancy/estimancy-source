@@ -52,7 +52,15 @@ module ViewsWidgetsHelper
       formula = formula.gsub("E", e_value)
     end
 
-    eval(formula).round(current_user.number_precision)
+    begin
+      if correct_syntax?(formula)
+        eval(formula).round(current_user.number_precision).to_s + " #{view_widget.kpi_unit.to_s}"
+      else
+        '-'
+      end
+    rescue
+      '-'
+    end
   end
 
   def get_ev_value(ev_id, current_component_id)
@@ -70,6 +78,17 @@ module ViewsWidgetsHelper
         nil
       end
     end
+  end
+
+  private def correct_syntax? code
+    stderr = $stderr
+    $stderr.reopen(IO::NULL)
+    RubyVM::InstructionSequence.compile(code)
+    true
+  rescue Exception
+    false
+  ensure
+    $stderr.reopen(stderr)
   end
 
   #Work In Progress
