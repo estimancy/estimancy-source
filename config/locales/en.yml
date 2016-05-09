@@ -1918,4 +1918,5 @@ en:
   permissions_list: "Permissions list"
   permission_edition: "Edit permission"
   languages_list: "Languages list"
-  language_edition: "Edit language"
+  language_edition: "Edit language"  use_real_base_percentage: "Use the values ​​of real base percentage"
+  kpi_unit: "KPI Unit"
