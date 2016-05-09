@@ -1615,7 +1615,7 @@ fr:
   Unit_of_work: "Unité d'oeuvre"
   Parameters: "Paramètres"
   Audit: "Révision"
-  Authentications_method: "Méthode d'authenfication"
+  Authentications_method: "Méthode d'authentification"
   edit_auth_method: "Editer %{parameter}"
   New_auth_method: "Nouvelle authentification"
   editing: "Edition %{parameter}"
