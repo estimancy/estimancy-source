@@ -42,12 +42,16 @@ class LanguagesController < ApplicationController
   def edit
     authorize! :manage_master_data, :all
     set_page_title I18n.t(:Edit_language)
+    set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('language_edition') => ""
     @language = Language.find(params[:id])
 
   end
 
   def create
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:add_language)
+    set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('new_language') => ""
 
     @language = Language.new(params[:language])
     if @language.save
@@ -61,14 +65,11 @@ class LanguagesController < ApplicationController
   def update
     authorize! :manage_master_data, :all
 
+    set_page_title I18n.t(:Edit_language)
+    set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('language_edition') => ""
+
     @language = nil
-    current_language = Language.find(params[:id])
-    if current_language.is_defined?
-      @language = current_language.amoeba_dup
-      @language.owner_id = current_user.id
-    else
-      @language = current_language
-    end
+    @language = Language.find(params[:id])
 
     if @language.update_attributes(params[:language])
       flash[:notice] = I18n.t (:notice_language_successful_updated)
