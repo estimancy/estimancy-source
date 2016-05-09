@@ -25,6 +25,9 @@ class AdminSettingsController < ApplicationController
   helper_method :admin_setting_selected_status
 
   def maintenances
+    set_page_title I18n.t(:admin_settings)
+    set_breadcrumbs I18n.t(:admin_settings) => admin_settings_path, I18n.t('maintenance_message') => ""
+
     @admin_setting = AdminSetting.where(key: "allow_authentication").first
   end
 
@@ -40,6 +43,7 @@ class AdminSettingsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:Parameters)
+    set_breadcrumbs I18n.t(:Parameters) => admin_settings_path, I18n.t('admin_settings') => ""
     @admin_settings = AdminSetting.all
   end
 
@@ -47,6 +51,7 @@ class AdminSettingsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:Parameters)
+    set_breadcrumbs I18n.t(:Parameters) => admin_settings_path, I18n.t('new_admin_settings') => ""
     @admin_setting = AdminSetting.new
   end
 
@@ -54,10 +59,15 @@ class AdminSettingsController < ApplicationController
     authorize! :manage_master_data, :all
     set_page_title I18n.t(:Parameters)
     @admin_setting = AdminSetting.find(params[:id])
+
+    set_breadcrumbs I18n.t(:Parameters) => admin_settings_path, I18n.t('edit_admin_setting') => ""
   end
 
   def create
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:Parameters)
+    set_breadcrumbs I18n.t(:Parameters) => admin_settings_path, I18n.t('new_admin_settings') => ""
 
     @admin_setting = AdminSetting.new(params[:admin_setting])
 
@@ -73,6 +83,9 @@ class AdminSettingsController < ApplicationController
     authorize! :manage_master_data, :all
 
     @admin_setting = AdminSetting.find(params[:id])
+
+    set_page_title I18n.t(:Parameters)
+    set_breadcrumbs I18n.t(:Parameters) => admin_settings_path, I18n.t('edit_admin_setting') => ""
 
     if @admin_setting.update_attributes(params[:admin_setting])
       flash[:notice] = I18n.t (:notice_administration_setting_successful_updated)

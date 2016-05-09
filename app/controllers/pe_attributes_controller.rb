@@ -26,11 +26,14 @@ class PeAttributesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:pe_attributes)
+    set_breadcrumbs I18n.t(:pe_attributes) => pe_attributes_path, I18n.t('attributes_list') => ""
+
     @attributes = PeAttribute.all
   end
 
   def new
     authorize! :manage_master_data, :all
+    set_breadcrumbs I18n.t(:pe_attributes) => pe_attributes_path, I18n.t('new_pe_attribute') => ""
 
     set_page_title I18n.t(:pe_attributes)
     @attribute = PeAttribute.new
@@ -40,6 +43,8 @@ class PeAttributesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:pe_attributes)
+    set_breadcrumbs I18n.t(:pe_attributes) => pe_attributes_path, I18n.t('pe_attribute_edition') => ""
+
     @attribute = PeAttribute.find(params[:id])
 
     env["HTTP_REFERER"] += '#tabs-attribute'
@@ -49,6 +54,8 @@ class PeAttributesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:pe_attributes)
+    set_breadcrumbs I18n.t(:pe_attributes) => pe_attributes_path, I18n.t('new_pe_attribute') => ""
+
     @attribute = PeAttribute.new(params[:pe_attribute])
     @attribute.options = params[:options]
     @attribute.attr_type = params[:options][0]
@@ -65,6 +72,7 @@ class PeAttributesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:pe_attributes)
+    set_breadcrumbs I18n.t(:pe_attributes) => pe_attributes_path, I18n.t('pe_attribute_edition') => ""
 
     @attribute = nil
     @attribute = PeAttribute.find(params[:id])

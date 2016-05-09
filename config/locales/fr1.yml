@@ -443,7 +443,7 @@ fr1:
 
   #languages
   edit_language: "Editer le langage \"%{value}\" ..."
-  new_language: "Créer un nouveau langage"
+  new_language: "Créer une nouvelle langue"
   local: "Local"
 
   #estimation_values
@@ -1575,3 +1575,19 @@ fr1:
   estimation_status_edition: "Editer un statut d'estimation"
   organization_profiles_edition: "Editer un profil"
   field_edition: "Editer un champ personnalisé"
+  error_profile_failed_created: "Erreur: la création du profil a échoué"
+  project_security_level_edition: "Editer un niveau de sécurité"
+  profiles_list: "liste des profils"
+  profile_edition: "Editer un profil"
+  admin_settings: "Paramètres d'administration"
+  edit_admin_setting: "Editer un paramètre d'administration"
+  auth_method_edition: "Editer une méthode d'authentification"
+  auth_methods_list: "Liste des méthodes d'authentification"
+  maintenance_message: "Message de maintenance"
+  actions_history: "Historique des actions"
+  attributes_list: "Liste des attributs"
+  pe_attribute_edition: "Editer un attribut"
+  modules_list: "Liste des modules"
+  permissions_list: "Liste des permissions"
+  permission_edition: "Editer une permission"
+  languages_list: "Liste des langues"

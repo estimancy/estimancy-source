@@ -33,6 +33,7 @@ class ProfilesController < ApplicationController
 
     @profiles = Profile.all
     set_page_title I18n.t(:profiles)
+    set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('profiles_list') => ""
   end
 
   # GET /profiles/new
@@ -40,6 +41,7 @@ class ProfilesController < ApplicationController
   def new
     authorize! :manage_master_data, :all
     set_page_title I18n.t(:new_profile)
+    set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('new_profile') => ""
     @profile = Profile.new
   end
 
@@ -49,6 +51,7 @@ class ProfilesController < ApplicationController
 
     @profile = Profile.find(params[:id])
     set_page_title I18n.t(:edit_profile, value: @profile.name)
+    set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('profile_edition') => ""
 
     unless @profile.child_reference.nil?
       if @profile.child_reference.is_proposed_or_custom?
@@ -65,6 +68,7 @@ class ProfilesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:new_profile)
+    set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('new_profile') => ""
 
     @profile = Profile.new(params[:profile])
     @profile.owner_id = current_user.id
@@ -86,6 +90,7 @@ class ProfilesController < ApplicationController
     @profile = nil
     current_profile = Profile.find(params[:id])
     set_page_title I18n.t(:update_profile, value: current_profile.name)
+    set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('profile_edition') => ""
 
     if current_profile.is_defined?
       @profile = current_profile.amoeba_dup

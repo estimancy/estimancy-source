@@ -27,6 +27,8 @@ class PermissionsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:permissions)
+    set_breadcrumbs I18n.t(:permissions) => permissions_path, I18n.t('permissions_list') => ""
+
     @permissions = Permission.all
 
     respond_to do |format|
@@ -38,6 +40,8 @@ class PermissionsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:permissions)
+    set_breadcrumbs I18n.t(:permissions) => permissions_path, I18n.t('new_permission') => ""
+
     @permission = Permission.new
   end
 
@@ -45,11 +49,16 @@ class PermissionsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:permissions)
+    set_breadcrumbs I18n.t(:permissions) => permissions_path, I18n.t('permission_edition') => ""
+
     @permission = Permission.find(params[:id])
   end
 
   def create
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:permissions)
+    set_breadcrumbs I18n.t(:permissions) => permissions_path, I18n.t('new_permission') => ""
 
     @permission = Permission.new(params[:permission])
 
@@ -66,6 +75,9 @@ class PermissionsController < ApplicationController
 
   def update
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:permissions)
+    set_breadcrumbs I18n.t(:permissions) => permissions_path, I18n.t('permission_edition') => ""
 
     @permission = Permission.find(params[:id])
 

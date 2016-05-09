@@ -28,19 +28,26 @@ class ProjectSecurityLevelsController < ApplicationController
     set_page_title I18n.t(:new_project_security_level)
     @project_security_level = ProjectSecurityLevel.new
     @organization = Organization.find(params[:organization_id])
+    set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@organization, anchor: "tabs-project-security-levels"), I18n.t('new_project_security_level') => ""
   end
 
   def edit
     authorize! :show_project_security_levels, ProjectSecurityLevel
     @project_security_level = ProjectSecurityLevel.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
     set_page_title I18n.t(:edit_project_security_level, value: @organization.name)
+    set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@organization, anchor: "tabs-project-security-levels"), I18n.t('project_security_level_edition') => ""
   end
 
   def create
     authorize! :manage, ProjectSecurityLevel
 
     @project_security_level = ProjectSecurityLevel.new(params[:project_security_level])
+    @organization = @current_organization
+
+    set_page_title I18n.t(:new_project_security_level)
+    set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@current_organization, anchor: "tabs-project-security-levels"), I18n.t('new_project_security_level') => ""
 
     if @project_security_level.save
       redirect_to redirect_apply(nil, new_organization_project_security_level_path(), organization_authorization_path(@project_security_level.organization_id, anchor: "tabs-project-security-levels")), notice: "#{I18n.t (:notice_project_securities_level_successful_created)}"
@@ -54,6 +61,9 @@ class ProjectSecurityLevelsController < ApplicationController
 
     @project_security_level = ProjectSecurityLevel.find(params[:id])
     @organization = @project_security_level.organization
+
+    set_page_title I18n.t(:edit_project_security_level, value: @organization.name)
+    set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@organization, anchor: "tabs-project-security-levels"), I18n.t('project_security_level_edition') => ""
 
     if @project_security_level.update_attributes(params[:project_security_level])
       #redirect_to organization_authorization_path(@project_security_level.organization_id, anchor: "tabs-project-security-levels"), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"

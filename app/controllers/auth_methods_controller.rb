@@ -29,6 +29,8 @@ class AuthMethodsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:Authentications_method)
+    set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('auth_methods_list') => ""
+
     @auth_methods = AuthMethod.all
   end
 
@@ -37,6 +39,7 @@ class AuthMethodsController < ApplicationController
 
     @auth_method = AuthMethod.find(params[:id])
     set_page_title I18n.t(:edit_auth_method, parameter: @auth_method.name)
+    set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('auth_method_edition') => ""
 
     if is_master_instance?
       unless @auth_method.child_reference.nil?
@@ -58,7 +61,9 @@ class AuthMethodsController < ApplicationController
   def new
     authorize! :manage_master_data, :all
 
-    set_page_title I18n.t(:New_authentication_method)
+    set_page_title I18n.t(:Authentications_method)
+    set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('new_auth_method') => ""
+
     @auth_method = AuthMethod.new
   end
 
@@ -66,6 +71,8 @@ class AuthMethodsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:auth_methods)
+    set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('auth_method_edition') => ""
+
     @auth_method = nil
     current_auth_method = AuthMethod.find(params[:id])
 
@@ -94,6 +101,8 @@ class AuthMethodsController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:auth_methods)
+    set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('new_auth_method') => ""
+
     @auth_method = AuthMethod.new(params[:auth_method])
     #If we are on local instance, Status is set to "Local"
     if is_master_instance?

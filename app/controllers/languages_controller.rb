@@ -27,12 +27,15 @@ class LanguagesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:languages)
+    set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('languages_list') => ""
+
     @languages = Language.all
   end
 
   def new
     authorize! :manage, Language
     set_page_title I18n.t(:add_language)
+    set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('new_language') => ""
     @language = Language.new
   end
 
@@ -41,12 +44,6 @@ class LanguagesController < ApplicationController
     set_page_title I18n.t(:Edit_language)
     @language = Language.find(params[:id])
 
-    unless @language.child_reference.nil?
-      if @language.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_language_cant_be_edit)
-        redirect_to languages_path
-      end
-    end
   end
 
   def create

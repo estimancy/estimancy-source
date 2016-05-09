@@ -30,7 +30,7 @@ class CurrenciesController < ApplicationController
     authorize! :manage_master_data, :all
     @currencies = Currency.all
     set_page_title I18n.t(:currencies)
-
+    set_breadcrumbs I18n.t(:currencies) => currencies_path
   end
 
   # GET /currencies/new
@@ -39,12 +39,15 @@ class CurrenciesController < ApplicationController
     authorize! :manage_master_data, :all
     @currency = Currency.new
     set_page_title I18n.t(:new_currency)
+    set_breadcrumbs I18n.t(:currencies) => profiles_path, I18n.t('new_currency') => ""
   end
 
   # GET /currencies/1/edit
   def edit
     authorize! :manage_master_data, :all
     set_page_title I18n.t(:edit_currency)
+    set_breadcrumbs I18n.t(:currencies) => profiles_path, I18n.t('edit_currency') => ""
+
     @currency = Currency.find(params[:id])
 
     unless @currency.child_reference.nil?
@@ -60,6 +63,9 @@ class CurrenciesController < ApplicationController
   def create
     authorize! :manage_master_data, :all
 
+    set_page_title I18n.t(:new_currency)
+    set_breadcrumbs I18n.t(:currencies) => profiles_path, I18n.t('new_currency') => ""
+
     @currency = Currency.new(params[:currency])
     @currency.save
     redirect_to redirect(currencies_url)
@@ -69,6 +75,9 @@ class CurrenciesController < ApplicationController
   # PUT /currencies/1.json
   def update
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:edit_currency)
+    set_breadcrumbs I18n.t(:currencies) => profiles_path, I18n.t('edit_currency') => ""
 
     @currency = nil
     current_currency = Currency.find(params[:id])
