@@ -73,6 +73,7 @@ class EstimationStatusesController < ApplicationController
     @estimation_status = EstimationStatus.new
     @organization = Organization.find_by_id(params[:organization_id])
     set_page_title I18n.t(:new_estimation_status)
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('new_estimation_status') => ""
   end
 
   def edit
@@ -82,6 +83,7 @@ class EstimationStatusesController < ApplicationController
     @estimation_status = EstimationStatus.find(params[:id])
     @organization = @estimation_status.organization
     set_page_title I18n.t(:edit_estimation_status, value: @estimation_status.name)
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('estimation_status_edition') => ""
   end
 
   def create
@@ -89,6 +91,9 @@ class EstimationStatusesController < ApplicationController
 
     @estimation_status = EstimationStatus.new(params[:estimation_status])
     @organization = Organization.find_by_id(params['estimation_status']['organization_id'])
+
+    set_page_title I18n.t(:new_estimation_status)
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('new_estimation_status') => ""
 
     if @estimation_status.save
       # Create the status self transition
@@ -106,6 +111,9 @@ class EstimationStatusesController < ApplicationController
 
     @estimation_status = EstimationStatus.find(params[:id])
     @organization = @estimation_status.organization
+
+    set_page_title I18n.t(:edit_estimation_status, value: @estimation_status.name)
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('estimation_status_edition') => ""
 
     if @estimation_status.update_attributes(params[:estimation_status])
       flash[:notice] = I18n.t (:notice_estimation_status_successful_updated)

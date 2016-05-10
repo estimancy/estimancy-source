@@ -28,23 +28,32 @@ class WorkElementTypesController < ApplicationController
 
   def new
     authorize! :manage, WorkElementType
-    set_page_title I18n.t(:work_element_type)
+
     @work_element_type = WorkElementType.new
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:work_element_type)
+    set_breadcrumbs I18n.t(:work_element_type) => organization_setting_path(@current_organization, anchor: "tabs-wet"), I18n.t('new_work_element_type') => ""
   end
 
   # GET /work_element_types/1/edit
   def edit
     authorize! :show_work_element_types, WorkElementType
-    set_page_title I18n.t(:work_element_type)
+
     @work_element_type = WorkElementType.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:work_element_type)
+    set_breadcrumbs I18n.t(:work_element_type) => organization_setting_path(@organization, anchor: "tabs-wet"), I18n.t(:work_element_type_edition) => ""
   end
 
   def create
     authorize! :manage, WorkElementType
     @work_element_type = WorkElementType.new(params[:work_element_type])
     @organization = @work_element_type.organization
+
+    set_page_title I18n.t(:work_element_type)
+    set_breadcrumbs I18n.t(:work_element_type) => organization_setting_path(@current_organization, anchor: "tabs-wet"), I18n.t('new_work_element_type') => ""
 
     if @work_element_type.save
       flash[:notice] = I18n.t(:notice_work_element_type_successful_created)
@@ -58,6 +67,9 @@ class WorkElementTypesController < ApplicationController
     authorize! :manage, WorkElementType
     @work_element_type = WorkElementType.find(params[:id])
     @organization = @work_element_type.organization
+
+    set_page_title I18n.t(:work_element_type)
+    set_breadcrumbs I18n.t(:work_element_type) => organization_setting_path(@organization, anchor: "tabs-wet"), I18n.t(:work_element_type_edition) => ""
 
     if @work_element_type.update_attributes(params[:work_element_type])
       flash[:notice] =  I18n.t(:notice_work_element_type_successful_updated)

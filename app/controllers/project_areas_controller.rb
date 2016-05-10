@@ -39,19 +39,26 @@ class ProjectAreasController < ApplicationController
     authorize! :manage, ProjectArea
 
     set_page_title I18n.t(:project_areas)
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas"), I18n.t('new_project_area') => ""
     @project_area = ProjectArea.new
     @organization = Organization.find(params[:organization_id])
   end
 
   def edit
     authorize! :show_project_areas, ProjectArea
-    set_page_title I18n.t(:project_areas)
+
     @project_area = ProjectArea.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:project_areas)
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas"), I18n.t(:project_area_edition) => ""
   end
 
   def create
     authorize! :manage, ProjectArea
+
+    set_page_title I18n.t(:project_areas)
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas"), I18n.t('new_project_area') => ""
 
     @project_area = ProjectArea.new(params[:project_area])
     @project_area.owner_id = current_user.id
@@ -69,6 +76,9 @@ class ProjectAreasController < ApplicationController
     authorize! :manage, ProjectArea
     @organization = Organization.find(params[:organization_id])
     @project_area = ProjectArea.find(params[:id])
+
+    set_page_title I18n.t(:project_areas)
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas"), I18n.t(:project_area_edition) => ""
 
     if @project_area.update_attributes(params[:project_area])
       flash[:notice] = I18n.t (:notice_project_area_successful_updated)

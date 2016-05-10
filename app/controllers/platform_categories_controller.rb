@@ -32,14 +32,18 @@ class PlatformCategoriesController < ApplicationController
     set_page_title I18n.t(:label_PlatformCategory)
     @platform_category = PlatformCategory.new
     @organization = Organization.find(params[:organization_id])
+
+    set_breadcrumbs I18n.t(:label_PlatformCategory) => organization_setting_path(@current_organization, anchor: "tabs-platform-categories"), I18n.t('new_platform_category') => ""
   end
 
   def edit
     authorize! :show_platform_categories, PlatformCategory
 
-    set_page_title I18n.t(:label_PlatformCategory)
     @platform_category = PlatformCategory.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:label_PlatformCategory)
+    set_breadcrumbs I18n.t(:label_PlatformCategory) => organization_setting_path(@organization, anchor: "tabs-platform-categories"), I18n.t(:platform_category_edition) => ""
   end
 
   def create
@@ -48,6 +52,9 @@ class PlatformCategoriesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @platform_category = PlatformCategory.new(params[:platform_category])
     @platform_category.owner_id = current_user.id
+
+    set_page_title I18n.t(:label_PlatformCategory)
+    set_breadcrumbs I18n.t(:label_PlatformCategory) => organization_setting_path(@current_organization, anchor: "tabs-platform-categories"), I18n.t('new_platform_category') => ""
 
     if @platform_category.save
       flash[:notice] = I18n.t (:notice_platform_category_successful_created)
@@ -62,6 +69,9 @@ class PlatformCategoriesController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
     @platform_category = PlatformCategory.find(params[:id])
+
+    set_page_title I18n.t(:label_PlatformCategory)
+    set_breadcrumbs I18n.t(:label_PlatformCategory) => organization_setting_path(@organization, anchor: "tabs-platform-categories"), I18n.t(:platform_category_edition) => ""
 
     if @platform_category.update_attributes(params[:platform_category])
       flash[:notice] = I18n.t (:notice_platform_category_successful_updated)

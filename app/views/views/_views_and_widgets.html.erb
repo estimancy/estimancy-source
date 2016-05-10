@@ -12,7 +12,7 @@
       </tr>
   </thead>
   <tbody>
-    <% @organization.views.order('pemodule_id').each do |view| %>
+    <% @organization.views.order('pemodule_id').reject{ |v| v.views_widgets.all.length == 0}.each do |view| %>
       <tr>
         <td><%= view.name %></td>
         <td><%= view.description %></td>

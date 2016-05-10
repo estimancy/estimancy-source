@@ -10,22 +10,13 @@
   <div id="tabs-1">
     <%= simple_form_for(@group) do |f| %>
 
+        <%= f.error_notification %>
+
         <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
         <% if @organization %>
             <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id], class: 'input-xxlarge' } %>
         <% end %>
 
-        <% if @group.errors.any? %>
-          <div id="error_explanation">
-            <h2><%= pluralize(@group.errors.count, 'error') %> prohibited this group from being saved:</h2>
-
-            <ul>
-              <% @group.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
         <div class="div_tabs_to_disable">
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 

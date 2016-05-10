@@ -30,6 +30,8 @@ class PemodulesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:projestimate_module)
+    set_breadcrumbs I18n.t(:projestimate_module) => pemodules_path, I18n.t('modules_list') => ""
+
     @pemodules = Pemodule.all
     @attributes = PeAttribute.all
   end
@@ -38,6 +40,8 @@ class PemodulesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:projestimate_module_new)
+    set_breadcrumbs I18n.t(:projestimate_module) => pemodules_path, I18n.t('projestimate_module_new') => ""
+
     @wets = WorkElementType.all.reject{|i| i.alias == 'link' || i.alias == 'folder'}
     @pemodule = Pemodule.new
     @attributes = PeAttribute.all
@@ -48,6 +52,8 @@ class PemodulesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:projestimate_module_edit)
+    set_breadcrumbs I18n.t(:projestimate_module) => pemodules_path, I18n.t('projestimate_module_edit') => ""
+
     @wets = WorkElementType.all.reject{|i| i.alias == 'link' || i.alias == 'folder'}
     @pemodule = Pemodule.find(params[:id])
     @attributes = PeAttribute.all
@@ -63,6 +69,9 @@ class PemodulesController < ApplicationController
 
   def update
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:projestimate_module_edit)
+    set_breadcrumbs I18n.t(:projestimate_module) => pemodules_path, I18n.t('projestimate_module_edit') => ""
 
     @wets = WorkElementType.all.reject{|i| i.alias == 'link' || i.alias == 'folder'}
     @attributes = PeAttribute.all
@@ -93,6 +102,9 @@ class PemodulesController < ApplicationController
 
   def create
     authorize! :manage_master_data, :all
+
+    set_page_title I18n.t(:projestimate_module_new)
+    set_breadcrumbs I18n.t(:projestimate_module) => pemodules_path, I18n.t('projestimate_module_new') => ""
 
     @pemodule = Pemodule.new(params[:pemodule])
     @pemodule.alias =  params[:pemodule][:alias].downcase

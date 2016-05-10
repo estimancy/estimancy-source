@@ -26,6 +26,8 @@ class AuditsController < ApplicationController
   def index
     @audits = Audit.all
     set_page_title I18n.t(:Audit)
+    set_breadcrumbs I18n.t(:Audit) => audits_path, I18n.t('actions_history') => ""
+
     #@audits = Audit.filter(:params => params, :filter => :audit_filter)
     #@wf_filter = WillFilter::Filter.deserialize_from_params(params)
   end

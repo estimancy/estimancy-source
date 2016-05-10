@@ -28,6 +28,8 @@ class FieldsController < ApplicationController
 
     @field = Field.new
     set_page_title I18n.t(:fields)
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields"), I18n.t('new_field') => ""
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @field }
@@ -39,6 +41,7 @@ class FieldsController < ApplicationController
     set_page_title I18n.t(:fields)
     authorize! :show_custom_fields, Field
     @field = Field.find(params[:id])
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields"), I18n.t('field_edition') => ""
   end
 
   # POST /fields
@@ -47,6 +50,10 @@ class FieldsController < ApplicationController
     authorize! :manage, Field
 
     @field = Field.new(params[:field])
+    @organization = @field.organization
+
+    set_page_title I18n.t(:fields)
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields"), I18n.t('new_field') => ""
 
     respond_to do |format|
       if @field.save
@@ -66,6 +73,9 @@ class FieldsController < ApplicationController
 
     @field = Field.find(params[:id])
     @organization = @field.organization
+
+    set_page_title I18n.t(:fields)
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields"), I18n.t('field_edition') => ""
 
     respond_to do |format|
       if @field.update_attributes(params[:field])

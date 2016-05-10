@@ -984,6 +984,7 @@ class OrganizationsController < ApplicationController
     authorize! :create_organizations, Organization
 
     set_page_title I18n.t(:organizations)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:new_organization) => ""
     @organization = Organization.new
     @groups = @organization.groups
   end
@@ -1016,6 +1017,9 @@ class OrganizationsController < ApplicationController
 
   def create
     authorize! :create_organizations, Organization
+
+    set_page_title I18n.t(:organizations)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:new_organization) => ""
 
     @organization = Organization.new(params[:organization])
 
@@ -1060,13 +1064,16 @@ class OrganizationsController < ApplicationController
     authorize! :edit_organizations, Organization
 
     @organization = Organization.find(params[:id])
+
+    set_page_title I18n.t(:organizations)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+
     if @organization.update_attributes(params[:organization])
       flash[:notice] = I18n.t (:notice_organization_successful_updated)
       redirect_to redirect_apply(edit_organization_path(@organization), nil, '/organizationals_params')
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
-      @complexities = @organization.organization_uow_complexities
       @ot = @organization.organization_technologies.first
       @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles

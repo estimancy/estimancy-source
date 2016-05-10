@@ -73,6 +73,7 @@ public
     authorize! :manage, User
 
     set_page_title I18n.t(:new_user)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization => "#!", I18n.t(:new_user) => ""
 
     auth_type = AuthMethod.find(params[:user][:auth_type])
 
@@ -135,6 +136,7 @@ public
       set_page_title I18n.t(:edit_my_account)
     else
       authorize! :show_organization_users, User
+      set_page_title I18n.t(:edit_user, :value => @user.name)
     end
   end
 
@@ -147,7 +149,8 @@ public
       authorize! :manage, User
     end
 
-    set_page_title I18n.t(:edit_user, value: " ")
+    set_page_title I18n.t(:edit_user, value: @user.name)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
