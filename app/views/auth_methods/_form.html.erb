@@ -7,7 +7,7 @@
         <%= f.error_notification %>
 
         <div>
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+          <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
           <%= f.input :server_name, :label => I18n.t('server_name'), :input_html => {:class => 'input-large'} %>
           <table>
             <tr>
@@ -56,35 +56,17 @@
             </div>
           </div>
 
-          <% if is_master_instance? %>
-              <table>
-                <tr>
-                  <td>
-                    <%= f.association :record_status, :label => I18n.t('record_status'), :required => (is_master_instance? ? true : false),
-                          :collection => @auth_method.record_status_collection,
-                          :input_html => {:class => 'record_status'},
-                          :selected => (@auth_method.is_defined_or_nil? ? @proposed_status.id : @auth_method.record_status_id),
-                          :disabled => (true if @auth_method.is_retired?) %>
-                  </td>
-                  <td>
-                    <%= f.input :custom_value, :label => I18n.t('custom_value'), :input_html => {:class => 'custom_value'}, :disabled => (true unless @auth_method.is_custom?) %>
-                  </td>
-                </tr>
-              </table>
-              <%= f.input :change_comment, :label => I18n.t('change_comment'), :input_html => {:class => 'input-xxlarge', :rows => 2} %>
+        <div class="actions-tabs">
+          <% if action_name == 'new' || action_name=="create" %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn' %>
+          <% elsif action_name == 'edit' || action_name=="update" %>
+            <%= submit_tag I18n.t('save'), :class => 'btn' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn' %>
           <% end %>
-
-          <div class="actions-tabs">
-            <% if action_name == 'new' || action_name=="create" %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-            <% elsif action_name == 'edit' || action_name=="update" %>
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-            <% end %>
-            <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn' %>
-          </div>
-    <% end %>
+          <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn' %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
