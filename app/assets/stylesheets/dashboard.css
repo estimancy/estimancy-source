@@ -228,11 +228,17 @@ input::-webkit-inner-spin-button {
 }
 .modal {
     /*z-index: 99999 !important;*/
-    z-index: 100 !important;
+    z-index: 1000 !important;
 }
 .modal-backdrop {
     z-index: 999 !important;
 }
+
+.modal-backdrop, .modal-backdrop.fade.in {
+    opacity: 0.5;
+    filter: alpha(opacity=80);
+}
+
 .modal-header {
     height: auto;
     padding: 8px 15px 5px;
