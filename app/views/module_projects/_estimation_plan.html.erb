@@ -19,10 +19,9 @@
         <% end %>
 
         <% if pmod.id == @initialization_module_project.id %>
-            <% left_position = pmod.left_position.nil? ? "40%" : "#{pmod.left_position.to_f}px" %> <%# left_position = "40%"  %>
+            <% left_position = pmod.left_position.nil? ? "40%" : "#{pmod.left_position.to_f}px" %>
             <% top_position = pmod.top_position.nil? ? "0px" : "#{pmod.top_position.to_f}px" %>
         <% else %>
-            <%# left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*35}em" : "#{pmod.left_position.to_f}px" %>
             <% left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*40}%" : "#{pmod.left_position.to_f}px" %>
             <% top_position = pmod.top_position.nil? ? "#{pmod.position_y.to_i*10}em" : "#{pmod.top_position.to_f}px" %>
         <% end %>
