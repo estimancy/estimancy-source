@@ -386,7 +386,7 @@ public
                                   @database_adapter, @browser, @version_browser, @platform, @os, @server_name, @root_url, @defined_record_status)
     if um.deliver
       flash[:notice] = I18n.t (:notice_send_feedback_success)
-      redirect_to session[:return_to]
+      redirect_to root_url
     else
       flash[:error] = I18n.t (:error_send_feedback_failed)
     end
