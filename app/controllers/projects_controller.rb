@@ -332,9 +332,15 @@ class ProjectsController < ApplicationController
 
     #Give full control to project creator
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first_or_create!(key: "Secure Level Creator", value: "*ALL")
-    full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value, organization_id: @organization.id, description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
+    full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value,
+                                                                                                                                        organization_id: @organization.id,
+                                                                                                                                        description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
 
-    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status, name: "Manage Projet", uuid: UUIDTools::UUID.random_create.to_s)
+    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage",
+                                                                                                                                                          object_associated: "Project",
+                                                                                                                                                          record_status_id: @defined_record_status,
+                                                                                                                                                          name: "Manage Projet",
+                                                                                                                                                          uuid: UUIDTools::UUID.random_create.to_s)
     # Add the "manage project" authorization to the "FullControl" security level
     if manage_project_permission
       if !manage_project_permission.in?(full_control_security_level.permission_ids)
@@ -358,11 +364,34 @@ class ProjectsController < ApplicationController
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first.value
     defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
-    defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+    defaut_group_ps.group_id = Group.where(name: defaut_group.value,
+                                           organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
     defaut_group_ps.project_security_level = full_control_security_level
     defaut_group_ps.is_model_permission = false
     defaut_group_ps.is_estimation_permission = true
     defaut_group_ps.save
+
+    if @is_model == "true"
+
+      new_current_user_ps = @project.project_securities.build
+      if params[:project][:creator_id].blank?
+        new_current_user_ps.user_id = current_user.id
+      else
+        new_current_user_ps.user_id = params[:project][:creator_id].to_i
+      end
+      new_current_user_ps.project_security_level = full_control_security_level
+      new_current_user_ps.is_model_permission = true
+      new_current_user_ps.is_estimation_permission = false
+      new_current_user_ps.save
+
+      new_defaut_group_ps = @project.project_securities.build
+      new_defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+      new_defaut_group_ps.project_security_level = full_control_security_level
+      new_defaut_group_ps.is_model_permission = true
+      new_defaut_group_ps.is_estimation_permission = false
+      new_defaut_group_ps.save
+
+    end
 
     @project.is_locked = false
 
@@ -1819,13 +1848,6 @@ public
             guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
           end
         end
-
-        # new_mp.uow_inputs.each do |uo|
-        #   new_pbs_project_element = new_prj_components.find_by_copy_id(uo.pbs_project_element_id)
-        #   new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-        #
-        #   uo.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-        # end
 
         ["input", "output"].each do |io|
           new_mp.pemodule.pe_attributes.each do |attr|
