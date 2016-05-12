@@ -1847,6 +1847,7 @@ frsncf_isi:
   weightings_label: "Nom du coefficient de pondération 2"
   factors_label: "Nom du coefficient de pondération 3"
   allow_technology: "Allow technologies"
+  default_display: "Affichage par défaut"
   see_model: "Voir le modèle"
   sum: "Somme"
   product: "Produit"

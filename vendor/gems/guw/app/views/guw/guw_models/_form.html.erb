@@ -39,8 +39,8 @@
               <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
               <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
               <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= f.input :allow_technology, label: "Autoriser les technologies" %>
-              <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: "Affichage par défaut", input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
+              <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>
               <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
               <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
               <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>

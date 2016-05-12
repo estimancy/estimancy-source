@@ -1851,6 +1851,7 @@ en:
   factors_label: "Factor name "
   see_model: "See model"
   allow_technology: "Autoriser les technologies"
+  default_display: "Affichage par défaut"
   simple_text_mess_1: "The generic effort method corresponds to a calculation method of effort according to the formula a * x ^ b when <b>a</b> is the  adjustment factor and <b>b</b> the scale factor.<br><b>a</b> and <b>b</b> coefficients.<br>The <b>a</b> and <b>b</b> coefficients can be entered directly into the model or calculated with imported factors from Excel file. <br>The effort E is generated in the model unit (man hour, man month, ...). The user must define the conversion factor standard unit (hours)."
   retained_size_unit_2: "Size unit label"
   Wording_of_the_module_unit_effort_2: "Effort unit label"
