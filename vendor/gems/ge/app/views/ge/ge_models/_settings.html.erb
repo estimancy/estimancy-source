@@ -19,7 +19,9 @@
                 <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
                 <% if type_max_length <= 1 %>
                   <% factor_values.each do |key, values| %>
-                    <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+                    <% unless values.empty? %>
+                      <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+                    <% end %>
                   <% end %>
 
                 <% else %>
