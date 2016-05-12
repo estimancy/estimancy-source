@@ -9,6 +9,7 @@
                 beforeActivate: function (event, ui) {
                     //console.log("ID = "+ ui.newPanel.attr('id'));
                     if(ui.newPanel.attr('id') == "tabs-4"){
+                        window.location.hash = '#tabs-4';
                         window.location.reload(true);
                     }
                 },
@@ -216,7 +217,7 @@
                             //alert("test");
 
                             // Saving the nodes'(module_projects) parameters
-                            var nodes = []
+                            var nodes = [];
                             $(".module_project").each(function (idx, elem) {
                                 var $elem = $(elem);
                                 nodes.push({
@@ -240,14 +241,31 @@
                     });
 
                 //The initialization module_project won't be draggable
-                //instance.setDraggable("mp_initialization_3337", false);
-                instance.setDraggable($(".initialization_0_0"), false);
+                //instance.setDraggable($(".initialization_0_0"), false);
 
                 <% end %>
 
                 jsPlumb.fire("jsPlumbDemoLoaded", instance);
             });
         });
+
+
+        //===================== END For JsPlumb connector ============================
+
+
+        //===== update the module_box_min heigh =====
+
+        var heights = $("div.module_project_min").map(function ()
+        {
+            return (parseInt($(this).css("top"), 10) + (2 * $(this).height()) );
+        }).get();
+
+        var maxHeight = Math.max.apply(null, heights);
+
+        $("div.module_box_min").height(maxHeight);
+
+        //==== end update the module_box_min heigh =====
+
 
 
         //====== For JsPlumb connections
@@ -267,7 +285,7 @@
         // Saves the position of all nodes / connections as a json in a textarea.
         function saveAllJsplumbConnections() {
             // Saving all of the nodes' parameters
-            var nodes = []
+            var nodes = [];
             $(".module_project").each(function (idx, elem) {
                 var $elem = $(elem);
                 nodes.push({
@@ -293,7 +311,7 @@
 
             $('#json-output').val(nodes_graph_json);
         }
-        //====== END For JsPlumb connector
+
 
     });
 </script>

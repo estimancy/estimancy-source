@@ -11,16 +11,17 @@
           <% (current_module_project.id == pmod.id) ? select_pemodule = 'selected_module_project' : 'unselected_module_project' %>
         <% end %>
 
-        <% unless pmod.nil? %>
-          <% if pmod.id == @initialization_module_project.id %>
-            <% left_position = pmod.left_position.nil? ? "32%" : "#{pmod.left_position.to_f}px" %>
-            <% top_position = pmod.top_position.nil? ? "0px" : "#{pmod.top_position.to_f}px" %>
-          <% else %>
-            <% left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*30}em" : "#{pmod.left_position.to_f}px" %>
+        <% if pmod.id == @initialization_module_project.id %>
+            <%# left_position = pmod.left_position.nil? ? "40%" : "#{pmod.left_position.to_f - 165}px" %><%# left_position = "40%"  %>
+            <% left_position = pmod.left_position.nil? ? "40%" : "#{pmod.left_position.to_f/20}em" %><%# left_position = "40%"  %>
+            <% top_position = "0px" %>
+        <% else %>
+            <%# left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*40}%" : "#{pmod.left_position.to_f - 165}px" %>
+            <% left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*40}%" : "#{pmod.left_position.to_f/20}em" %>
             <% top_position = pmod.top_position.nil? ? "#{pmod.position_y.to_i*10/2}em" : "#{pmod.top_position.to_f/2}px" %>
-          <% end %>
+        <% end %>
 
-          <div class="<%= select_pemodule %> module_project_min <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center"
+        <div class="<%= select_pemodule %> module_project_min <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center"
                id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>"
                style="background-color: <%= "#{pmod.color}" %>; top: <%= top_position %>; left: <%= left_position %>" >
 
@@ -31,9 +32,8 @@
             <% else %>
               <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white blue", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
             <% end %>
-          </div>
+        </div>
           <%###= render :partial => 'module_projects/estimation_paths', :locals => { :pmod => pmod } %>
-        <% end %>
 
         <% select_pemodule = '' %>
     <% end %>
