@@ -7,17 +7,17 @@
         <th><%= I18n.t(:text_find_use_estimation_model, :model_name => @project.title) %></th>
       </tr>
       <% @related_projects.each do |project| %>
-          <% if can_see_estimation?(project) %>
-              <tr>
-                <td>
-                  <% if can_show_estimation?(project) %>
-                    <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{project}", edit_pemodule_path(project)) %> </span>
-                  <% else %>
-                      <span class='attribute_tooltip' title="<%= project.description %>"><%= project.title %> </span>
-                  <% end %>
-                </td>
-              </tr>
-          <% end %>
+        <% if can_see_estimation?(project) %>
+          <tr>
+            <td>
+              <% if can_show_estimation?(project) %>
+                <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{project}", dashboard_path(project)) %> </span>
+              <% else %>
+                <span class='attribute_tooltip' title="<%= project.description %>"><%= project.title %> </span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
     </table>
 <% end %>

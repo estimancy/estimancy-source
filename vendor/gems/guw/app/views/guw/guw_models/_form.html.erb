@@ -28,27 +28,30 @@
     <div class="row-fluid">
       <div class="span6">
         <%= simple_form_for(@guw_model) do |f| %>
-          <%= f.error_notification %>
-          <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
-          <div class="form-inputs">
-            <%= f.input :name %>
-            <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
-            <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-            <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-            <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-            <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
-            <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: "Affichage par défaut", input_html: { class: "input-xxlarge", rows: "5" } %>
-            <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-            <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
-            <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
-            <%= f.input :effort_unit, label: I18n.t(:effort_unit) %>
-            <%= f.input :cost_unit, label: I18n.t(:cost_unit) %>
-          </div>
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= f.button :submit, I18n.t('save') %>
-            <%= f.button :submit, I18n.t('apply') %>
-          <% end %>
-          <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+            <%= f.error_notification %>
+
+            <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+
+            <div class="form-inputs">
+              <%= f.input :name %>
+              <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
+              <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= f.input :allow_technology, label: "Autoriser les technologies" %>
+              <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: "Affichage par défaut", input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+              <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
+              <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
+              <%# f.input :effort_unit, label: I18n.t(:effort_unit) %>
+              <%# f.input :cost_unit, label: I18n.t(:cost_unit) %>
+            </div>
+
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= f.button :submit, I18n.t('save') %>
+              <%= f.button :submit, I18n.t('apply') %>
+            <% end %>
+            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
         <% end %>
       </div>
 
