@@ -1816,6 +1816,14 @@ public
         new_c.save
       end
 
+      #For applications
+      old_prj.applications.each do |application|
+        app = Application.where(name: application.name, organization_id: @organization.id).first
+        ap = ApplicationsProjects.create(application_id: app.id,
+                                         project_id: new_prj.id)
+        ap.save
+      end
+
       # For ModuleProject associations
       old_prj.module_projects.group(:id).each do |old_mp|
         new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)

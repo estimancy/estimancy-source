@@ -8,7 +8,6 @@
         <li class="tabs_4_with_estimation_plan"><a href="#tabs-4"><%= I18n.t(:estimation_plan) %></a></li>
         <li><a href="#tabs-5"><%= I18n.t(:securities) %></a></li>
         <li><a href="#tabs-history"><%= I18n.t(:label_project_history) %> </a></li>
-        <!--<li><a href="#tabs-6"> Tableau de bord </a></li>-->
       <% end %>
     </ul>
 
@@ -39,7 +38,6 @@
                 <%= f.association :applications,
                                   as: :select,
                                   collection: @current_organization.applications,
-                                  selected: @project.application_id,
                                   label: I18n.t(:label_product_name),
                                   input_html: { :class => 'input-large' },
                                   include_blank: true %>
