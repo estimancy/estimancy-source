@@ -34,7 +34,6 @@
               <% else %>
                 <%= f.association :applications, as: :select,
                                   collection: @current_organization.applications,
-                                  selected: @project.application_id,
                                   :label => I18n.t(:label_product_name),
                                   :input_html => { :class => 'input-large' },
                                   include_blank: true,
