@@ -11,23 +11,12 @@
 
         <div class="form-inputs">
           <div class="row-fluid">
-            <div class="span2"><%= f.input :status_number, label: I18n.t(:status_number) %></div>
-            <div class="span4"><%= f.input :status_alias, label: I18n.t(:alias) %></div>
-          </div>
-
-          <div class="row-fluid">
-            <div class="span2"><%= f.input :name, label: I18n.t(:name) %></div>
-            <div class="span5">
-              <label class="checkbox"></label>
-              <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
-            </div>
-          </div>
-
-          <div class="row-fluid">
-            <div class="span2"><%= f.input :name, label: I18n.t(:name) %></div>
-            <div class="span5">
-              <label class="checkbox"></label>
+            <div class="span6">
+              <%= f.input :status_number, label: I18n.t(:status_number) %>
+              <%= f.input :name, label: I18n.t(:name) %>
+              <%= f.input :status_alias, label: I18n.t(:alias) %>
               <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
+              <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
             </div>
           </div>
 
@@ -36,12 +25,10 @@
           <br>
         </div>
 
-        <div class="actions">
-          <% if can? :manage, EstimationStatus %>
-            <%= submit_tag I18n.t('save'), :class => 'btn' %>
-          <% end %>
-          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
-        </div>
+        <% if can? :manage, EstimationStatus %>
+          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
     <% end %>
   </div>
 </div>
