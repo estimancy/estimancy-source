@@ -2133,6 +2133,7 @@ public
   def set_checkout_version
     @project = Project.find(params[:project_id])
     @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
+    @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
   end
 
   #Checkout the project : create a new version of the project
@@ -2272,6 +2273,16 @@ public
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
                 end
               end
+            end
+          end
+
+          #New project last versions
+          if params['new_project_version'] == "yes"
+            #get last versions of the projects
+            #Get the archive status of the project's organization
+            new_status = new_prj.organization.estimation_statuses.where(is_new_status: true).first
+            if new_status
+              new_prj.update_attribute(:estimation_status_id, new_status.id)
             end
           end
 

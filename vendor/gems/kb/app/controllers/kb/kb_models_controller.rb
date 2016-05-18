@@ -250,7 +250,7 @@ class Kb::KbModelsController < ApplicationController
 
     @kb_datas.each do |i|
       params["filters"].each do |f|
-        if (params["filters"].values.include?(i.custom_attributes[f.first.to_sym]))
+        if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
           @project_list << i
         end
       end

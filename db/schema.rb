@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160502143035) do
+ActiveRecord::Schema.define(:version => 20160518080826) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -303,6 +303,7 @@ ActiveRecord::Schema.define(:version => 20160502143035) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.integer  "copy_id"
+    t.boolean  "is_new_status"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -664,14 +665,14 @@ ActiveRecord::Schema.define(:version => 20160502143035) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained"
+    t.boolean  "allow_retained",             :default => true
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria"
+    t.boolean  "allow_criteria",             :default => true
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -869,6 +870,9 @@ ActiveRecord::Schema.define(:version => 20160502143035) do
     t.integer  "project_id"
     t.integer  "position_x"
     t.integer  "position_y"
+    t.float    "top_position"
+    t.float    "left_position"
+    t.integer  "creation_order"
     t.integer  "nb_input_attr"
     t.integer  "nb_output_attr"
     t.integer  "copy_id"
@@ -1604,7 +1608,7 @@ ActiveRecord::Schema.define(:version => 20160502143035) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
+    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
