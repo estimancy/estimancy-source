@@ -7,7 +7,8 @@
         <th><%= I18n.t(:status_number) %></th>
         <th><%= I18n.t(:alias) %></th>
         <th><%= I18n.t(:name) %></th>
-        <th><%= I18n.t(:archive_status) %></th>
+        <th><%= I18n.t(:archive_stcatus) %></th>
+        <th><%= I18n.t(:new_cstatus) %></th>
         <th><%= I18n.t(:status_color) %></th>
         <th><%= I18n.t(:description) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
@@ -19,7 +20,12 @@
             <td style='width: 10px;'><%= estimation_status.status_number %></td>
             <td><%= estimation_status.status_alias %></td>
             <td><%= estimation_status.name %></td>
-            <td class="center"><%= check_box_tag("archive_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.is_archive_status, :disabled => true ) %></td>
+            <td class="center">
+              <%= check_box_tag("archive_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.is_archive_status, :disabled => true ) %>
+            </td>
+            <td class="center">
+              <%= check_box_tag("new_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.is_new_status, :disabled => true ) %>
+            </td>
             <td style='width: 10%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
             <td><%= estimation_status.description %></td>
             <td class="center">

@@ -253,14 +253,10 @@ class Kb::KbModelsController < ApplicationController
     @kb_input.filters = params["filters"]
 
     @kb_datas.each do |i|
-      unless params["filters"].nil?
-        params["filters"].each do |f|
-          if (params["filters"].values.include?(i.custom_attributes[f.first.to_sym]))
-            @project_list << i
-          end
+      params["filters"].each do |f|
+        if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
+          @project_list << i
         end
-      # else
-      #   @project_list = []
       end
 
     end
