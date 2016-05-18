@@ -21,7 +21,7 @@
 
       <% if @archive_status %>
          <label for="archive_last_project_version" class="checkbox">
-           <%= raw(I18n.t(:archive_last_project_versions)) %>
+           <%= raw(I18n.t(:archive_last_project_versions)) %> <%= @archive_status %>
            <input id="archive_last_project_version" name="archive_last_project_version" type="checkbox" value="yes" />
            <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_archived) %>"></i>
          </label>
@@ -29,9 +29,9 @@
 
       <% if @new_status %>
          <label for="new_project_version" class="checkbox">
-           <%= raw(I18n.t(:new_project_versions)) %>
+           <%= raw(I18n.t(:new_project_versions)) %> <%= @new_status %>
            <input id="new_project_version" name="new_project_version" type="checkbox" value="yes" />
-           <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_archived) %>"></i>
+           <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_new) %>"></i>
          </label>
       <% end %>
     </div>

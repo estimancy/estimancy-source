@@ -687,6 +687,12 @@ class Guw::GuwModelsController < ApplicationController
       ind = 0
       ind3 = 5
     end
+
+    workbook.add_worksheet("Matrice")
+    [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each do |ts|
+
+    end
+
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
