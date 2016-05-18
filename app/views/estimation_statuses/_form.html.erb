@@ -14,8 +14,9 @@
           <%= f.input :status_number, label: I18n.t(:status_number) %>
           <%= f.input :name, label: I18n.t(:name) %>
           <%= f.input :status_alias, label: I18n.t(:alias) %>
-          <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
+
           <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
+          <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
 
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
