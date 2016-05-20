@@ -15,18 +15,18 @@
   <div id="tabs-1">
 
     <% if controller.action_name == "new" %>
-        <div class="pull-right" style="margin-top: 100px;">
-          <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
-            <div>
-              <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
-              <%= hidden_field_tag :organization_id, @organization.id %>
-              <%= file_field_tag :file %>
-              <%= hidden_field_tag :ge_model_id, nil %>
-              <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-info' %>
-            </div>
-            <hr>
-          <% end %>
-        </div>
+      <div class="pull-right" style="margin-top: 100px;">
+        <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+          <div>
+            <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+            <%= hidden_field_tag :organization_id, @organization.id %>
+            <%= file_field_tag :file %>
+            <%= hidden_field_tag :ge_model_id, nil %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-info' %>
+          </div>
+          <hr>
+        <% end %>
+      </div>
     <% end %>
 
     <%= simple_form_for(@ge_model) do |f| %>

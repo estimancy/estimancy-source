@@ -15,11 +15,27 @@
   </ul>
 
   <div id="tabs-1">
+
+    <% if controller.action_name == "new" %>
+      <div class="pull-right">
+        <%= form_tag import_kb_model_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+          <div>
+            <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+            <%= hidden_field_tag :organization_id, @organization.id %>
+            <%= file_field_tag :file %>
+            <%= hidden_field_tag :ge_model_id, nil %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-mini btn-info' %>
+          </div>
+          <hr>
+        <% end %>
+      </div>
+    <% end %>
+
     <%= simple_form_for(@kb_model) do |f| %>
 
       <%= f.error_notification %>
 
-      <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+      <%= hidden_field_tag :organization_id, @organization.id %>
 
       <div class="form-inputs">
         <%= f.input :name, label: I18n.t(:name)  %>
@@ -71,7 +87,7 @@
 
     <div id="tabs-2">
       <div class="row-fluid">
-        <div class="span4">
+        <div class="span3">
 
           <%= form_tag kb.kb_model_import_path(@kb_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
 
@@ -80,13 +96,13 @@
               <%= file_field_tag :file %>
 
               <%= hidden_field_tag :kb_model_id, @kb_model.id %>
+              <%= hidden_field_tag :organization_id, @organization.id %>
             </div>
-
-            <hr>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-mini btn-primary' %>
           <% end %>
-
-          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn' %>
+        </div>
+        <div class="span1">
+          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-mini' %>
         </div>
         <div class="span8">
           <%= form_tag kb.kb_model_save_filters_path(@kb_model) do %>
