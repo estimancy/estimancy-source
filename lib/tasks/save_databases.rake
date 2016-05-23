@@ -21,15 +21,7 @@
 
 namespace :estimancy do
   desc 'Load default data'
-  task :check_subscription => :environment do
-    User.all.take(3).each do |user|
-      date_end = user.subscription_end_date.to_s
-      day_prev_end = (Date.parse(user.subscription_end_date.to_s) - Date.parse(Time.now.to_s)).to_i
-      if day_prev_end == 90 || day_prev_end == 30 || day_prev_end == 10 || day_prev_end == 3
-        UserMailer.regular_end_sub_date_checker(user.email,user.subscription_end_date.to_s,day_prev_end, user.name).deliver
-      elsif day_prev_end <= 0
-        UserMailer.subscription_end(user.email,user.name).deliver
-      end
-    end
+  task :upload_backup => :environment do
+    Cloudinary::Uploader.upload('/home/dumps/backups.tar')
   end
 end

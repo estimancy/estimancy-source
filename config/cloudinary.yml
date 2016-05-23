@@ -1,0 +1,13 @@
+production:
+  cloud_name: estimancy
+  api_key: 867124478869222
+  api_secret: fEzc8iBy5JWPpZKvLs70CNJ7nDw
+  enhance_image_tag: true
+  static_image_support: false
+
+development:
+  cloud_name: estimancy
+  api_key: 867124478869222
+  api_secret: fEzc8iBy5JWPpZKvLs70CNJ7nDw
+  enhance_image_tag: true
+  static_image_support: false
