@@ -22,6 +22,10 @@
 namespace :estimancy do
   desc 'Load default data'
   task :upload_backup => :environment do
-    Cloudinary::Uploader.upload('/home/dumps/backups.tar')
+    Cloudinary::Uploader.upload('/home/dumps/backups/demo.sql.gz')
+    Cloudinary::Uploader.upload('/home/dumps/backups/dev.sql.gz')
+    Cloudinary::Uploader.upload('/home/dumps/backups/saas.sql.gz')
+    Cloudinary::Uploader.upload('/home/dumps/backups/stelsia.sql.gz')
+    Cloudinary::Uploader.upload('/home/dumps/backups/testprod.sql.gz')
   end
 end
