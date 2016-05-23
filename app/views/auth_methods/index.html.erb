@@ -28,15 +28,6 @@
             <td class="center">
               <%= link_to '', edit_auth_method_path(auth_method), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-              <% if is_master_instance? && !auth_method.is_local_record? %>
-                  <% if auth_method.is_retired? %>
-                      <%= link_to('', "auth_methods/#{auth_method.id}/restore_change", confirm: I18n.t('restoring'), :class => 'icon-undo', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                  <% else %>
-                      <% unless auth_method.is_defined? %>
-                          <%= link_to('', "auth_methods/#{auth_method.id}/validate_change", confirm: I18n.t('validation'), :class => 'icon-ok', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                      <% end %>
-                  <% end %>
-              <% end %>
             </td>
           </tr>
       <% end %>
