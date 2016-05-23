@@ -30,7 +30,20 @@ class Kb::KbModelsController < ApplicationController
 
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
     workbook = RubyXL::Workbook.new
+
     worksheet = workbook[0]
+    worksheet.sheet_name = "Modèle"
+
+    worksheet.add_cell(0, 0, "Nom")
+    worksheet.add_cell(0, 1, @kb_model.name)
+
+    worksheet.add_cell(1, 0, "Coefficient de conversion en unité standard")
+    worksheet.add_cell(1, 1, @kb_model.standard_unit_coefficient)
+
+    worksheet.add_cell(2, 0, "Coefficient de conversion en unité standard")
+    worksheet.add_cell(2, 1, @kb_model.effort_unit)
+
+    worksheet = workbook.add_worksheet("Données")
     kb_model_datas = @kb_model.kb_datas
     default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:project_area)]
 
@@ -115,7 +128,7 @@ class Kb::KbModelsController < ApplicationController
   def import
     authorize! :manage_modules_instances, ModuleProject
 
-    @kb_model = Kb::KbModel.find(params[:kb_model_id])
+    @organization = Organization.find(params[:organization_id])
 
     unless params[:file].nil?
       begin
@@ -126,11 +139,20 @@ class Kb::KbModelsController < ApplicationController
         end
       rescue
         flash[:error] = "Une erreur est survenue durant l'import du modèle. Veuillez vérifier l'extension du fichier Excel."
-        redirect_to kb.edit_kb_model_path(@kb_model) and return
+        redirect_to kb.edit_kb_model_path(@kb_model, organization_id: @organization.id) and return
       end
 
-      Kb::KbData.delete_all("kb_model_id = #{@kb_model.id}")
+      file.default_sheet = file.sheets[0]
+      @kb_model = Kb::KbModel.where(params[:kb_model_id]).first_or_create(name: file.cell(1,2),
+                                                                          standard_unit_coefficient: file.cell(2,2),
+                                                                          effort_unit: file.cell(3,2),
+                                                                          organization_id: @organization.id)
 
+      unless @kb_model.nil?
+        Kb::KbData.delete_all("kb_model_id = #{@kb_model.id}")
+      end
+
+      file.default_sheet = file.sheets[1]
       ((file.first_row + 1)..file.last_row).each do |line|
         size   = file.cell(line, 'A')
         effort   = file.cell(line, 'B')
@@ -138,7 +160,7 @@ class Kb::KbModelsController < ApplicationController
 
         h = Hash.new
         ('D'..'ZZ').each_with_index do |letter, i|
-          if i < file.last_column
+          if i < file.sheet(1).last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
             rescue
@@ -155,7 +177,7 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    redirect_to kb.edit_kb_model_path(@kb_model)
+    redirect_to kb.edit_kb_model_path(@kb_model, organization_id: @organization.id)
   end
 
   def save_filters
@@ -472,6 +494,10 @@ class Kb::KbModelsController < ApplicationController
     worksheet.sheet_data[my_helper][4].change_border(:bottom, 'thin')
     worksheet.sheet_data[my_helper][3].change_border(:bottom, 'thin')
     send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version}-#{my_kb_model.name.gsub(" ", "_")}-(#{("A".."B").to_a[current_module_project.position_x - 1]},#{current_module_project.position_x})-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def import_kb
+
   end
 
 end

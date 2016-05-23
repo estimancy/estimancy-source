@@ -30,7 +30,6 @@ module Ge
 
     has_many :ge_factor_values, :dependent => :destroy
 
-    #=============
     amoeba do
       enable
       exclude_association [:ge_factor_values]
@@ -39,7 +38,9 @@ module Ge
           new_ge_factor.copy_id = original_ge_factor.id
       })
     end
-    #=============
 
   end
 end
+
+
+# 2/
