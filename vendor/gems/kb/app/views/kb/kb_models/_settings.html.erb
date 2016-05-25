@@ -175,7 +175,7 @@
                 Ecart
               </strong>
             </h5>
-            <%= (@previous_effort / @effort).round(2) %>
+            <%= @previous_effort - @effort %>
           <% end %>
         </div>
       </div>
@@ -199,7 +199,7 @@
 
 <script>
   $(document).ready(function(){
-    $(function () {
+    $(function() {
       $('#scatter_chart').highcharts({
         chart: {
           zoomType: 'xy'
