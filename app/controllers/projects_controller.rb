@@ -606,9 +606,11 @@ class ProjectsController < ApplicationController
         end
       end
 
-      if (@organization.projects.map(&:title) - [@project.title]).include?(params['project']['title'])
-        flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-        redirect_to edit_project_path and return
+      unless params['project'].nil?
+        if (@organization.projects.map(&:title) - [@project.title]).include?(params['project']['title'])
+          flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
+          redirect_to edit_project_path and return
+        end
       end
 
       @project.save
