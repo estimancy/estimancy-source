@@ -52,13 +52,6 @@ class PemodulesController < ApplicationController
     @pemodule = Pemodule.find(params[:id])
     @attributes = PeAttribute.all
     @attribute_settings = AttributeModule.all(:conditions => {:pemodule_id => @pemodule.id})
-
-    unless @pemodule.child_reference.nil?
-      if @pemodule.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_pemodule_cant_be_edit)
-        redirect_to pemodules_path
-      end
-    end
   end
 
   def update

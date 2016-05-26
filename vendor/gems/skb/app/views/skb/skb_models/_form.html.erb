@@ -1,0 +1,113 @@
+<div class="tabs">
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t(:knowledge_base) %>
+      </a>
+    </li>
+    <% if action_name.in?(%w(edit update)) %>
+      <li>
+        <a href="#tabs-2">
+          <%= I18n.t(:data) %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+
+  <div id="tabs-1">
+
+    <% if controller.action_name == "new" %>
+      <div class="pull-right">
+        <%= form_tag skb.import_skb_model_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+          <label style="color: #808080">
+            <%= I18n.t(:import_generic_effort_model) %>
+          </label>
+          <br>
+          <%= hidden_field_tag :organization_id, @organization.id %>
+          <%= file_field_tag :file %>
+          <%= hidden_field_tag :skb_model_id, nil %>
+          <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-mini btn-info' %>
+          <hr>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= simple_form_for(@skb_model) do |f| %>
+
+      <%= f.error_notification %>
+
+      <%= hidden_field_tag :organization_id, @current_organization.id %>
+
+      <div class="form-inputs">
+        <%= f.input :name, label: I18n.t(:name)  %>
+        <%= f.input :description, label: I18n.t(:description)  %>
+        <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+        <%= f.input :enabled_input, label: I18n.t(:modification_of_the_input_value_allow) %>
+
+        <%= f.input :size_unit, label: I18n.t(:size_unit) %>
+      </div>
+
+      <% if can? :manage_modules_instances, ModuleProject %>
+         <%= f.button :submit, I18n.t('save') %>
+      <% end %>
+      <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+    <% end %>
+  </div>
+
+  <% if action_name.in?(%w(edit update)) %>
+
+    <div id="tabs-2">
+      <div class="row-fluid">
+        <div class="span3">
+
+          <%= form_tag skb.skb_model_import_path(@skb_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
+
+            <div class="form-inputs">
+              <label><%= I18n.t(:import) %> </label>
+              <%= file_field_tag :file %>
+
+              <%= hidden_field_tag :skb_model_id, @skb_model.id %>
+              <%= hidden_field_tag :organization_id, @organization.id %>
+            </div>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-mini btn-primary' %>
+          <% end %>
+        </div>
+
+        <div class="span1">
+          <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-mini' %>
+        </div>
+
+        <div class="span8">
+          <% unless @skb_model.skb_datas.empty? %>
+            <table class="table table-bordered tablesorterPager">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Data</th>
+                  <th>Processing</th>
+                  <th>Taille (D+P)</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <% @skb_model.skb_datas.each do |skb_data| %>
+                  <tr>
+                    <td><%= skb_data.name %></td>
+                    <td><%= skb_data.description %></td>
+                    <td><%= skb_data.data %></td>
+                    <td><%= skb_data.processing %></td>
+                    <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+
+              <%= render :partial => 'layouts/footer_table' %>
+
+            </table>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

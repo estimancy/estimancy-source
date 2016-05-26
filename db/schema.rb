@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160518080826) do
+ActiveRecord::Schema.define(:version => 20160526133627) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -888,6 +888,7 @@ ActiveRecord::Schema.define(:version => 20160518080826) do
     t.integer  "staffing_model_id"
     t.integer  "kb_model_id"
     t.integer  "operation_model_id"
+    t.integer  "skb_model_id"
   end
 
   create_table "module_projects_pbs_project_elements", :id => false, :force => true do |t|
@@ -1424,6 +1425,36 @@ ActiveRecord::Schema.define(:version => 20160518080826) do
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
+  end
+
+  create_table "skb_skb_datas", :force => true do |t|
+    t.string  "name"
+    t.float   "data"
+    t.float   "processing"
+    t.integer "skb_model_id"
+    t.text    "description"
+  end
+
+  create_table "skb_skb_inputs", :force => true do |t|
+    t.float   "data"
+    t.float   "processing"
+    t.float   "retained_size"
+    t.integer "organization_id"
+    t.integer "module_project_id"
+    t.integer "skb_model_id"
+  end
+
+  create_table "skb_skb_models", :force => true do |t|
+    t.string   "name"
+    t.string   "size_unit"
+    t.boolean  "three_points_estimation"
+    t.boolean  "enabled_input"
+    t.integer  "organization_id"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
   end
 
   create_table "staffing_staffing_custom_data", :force => true do |t|

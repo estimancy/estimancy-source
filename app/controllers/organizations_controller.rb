@@ -365,6 +365,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:module ,parameter: @organization)
 
     @guw_models = @organization.guw_models.order("name asc")
+    @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
     @technologies = @organization.organization_technologies.order("name asc")
   end

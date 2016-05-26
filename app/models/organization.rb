@@ -60,6 +60,7 @@ class Organization < ActiveRecord::Base
   has_many :guw_models, class_name: "Guw::GuwModel", dependent: :destroy
   has_many :ge_models, class_name: "Ge::GeModel", dependent: :destroy
   has_many :kb_models, class_name: "Kb::KbModel", dependent: :destroy
+  has_many :skb_models, class_name: "Skb::SkbModel", dependent: :destroy
   has_many :expert_judgement_instances, class_name: "ExpertJudgement::Instance", dependent: :destroy
   has_many :staffing_models, class_name: "Staffing::StaffingModel", dependent: :destroy
 

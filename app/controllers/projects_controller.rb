@@ -73,7 +73,7 @@ class ProjectsController < ApplicationController
       @project = Project.new :state => 'preliminary'
     end
 
-    @pemodules ||= Pemodule.defined
+    @pemodules ||= Pemodule.all
     @project_modules = @project.pemodules
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
@@ -166,6 +166,13 @@ class ProjectsController < ApplicationController
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id).first_or_create
+      @project_list = []
+
+    elsif @module_project.pemodule.alias == "skb"
+      @skb_model = current_module_project.skb_model
+      @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
+                                      organization_id: @project_organization.id,
+                                      skb_model_id: @skb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
@@ -522,6 +529,7 @@ class ProjectsController < ApplicationController
 
     @guw_module = Pemodule.where(alias: "guw").first
     @kb_module = Pemodule.where(alias: "kb").first
+    @skb_module = Pemodule.where(alias: "skb").first
     @ge_module = Pemodule.where(alias: "ge").first
     @operation_module = Pemodule.where(alias: "operation").first
     @staffing_module = Pemodule.where(alias: "staffing").first
@@ -532,11 +540,12 @@ class ProjectsController < ApplicationController
     @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
     @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
     @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+    @skb_models = @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
     @staffing_modules = @staffing_module.nil? ? [] : @project.organization.staffing_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
     @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
     @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
 
-    @modules_selected = ([@guw_module, @ge_module, @staffing_module, @ej_module, @ebd_module, @kb_module]).map do |i|
+    @modules_selected = ([@guw_module, @ge_module, @staffing_module, @ej_module, @ebd_module, @kb_module, @skb_module]).map do |i|
       unless i.nil?
         [i.title, i.id]
       end
@@ -780,7 +789,7 @@ class ProjectsController < ApplicationController
       else
 
         @guw_module = Pemodule.where(alias: "guw").first
-        @kb_module = Pemodule.where(alias: "kb").first
+        @kb_module = Pemodule.where(alias: "skb").first
         @ge_module = Pemodule.where(alias: "ge").first
         @operation_module = Pemodule.where(alias: "operation").first
         @staffing_module = Pemodule.where(alias: "staffing").first
@@ -862,7 +871,7 @@ class ProjectsController < ApplicationController
 
 
     @guw_module = Pemodule.where(alias: "guw").first
-    @kb_module = Pemodule.where(alias: "kb").first
+    @kb_module = Pemodule.where(alias: "skb").first
     @ge_module = Pemodule.where(alias: "ge").first
     @operation_module = Pemodule.where(alias: "operation").first
     @staffing_module = Pemodule.where(alias: "staffing").first
@@ -1059,8 +1068,8 @@ class ProjectsController < ApplicationController
     end
 
     unless @pemodule.nil? || @project.nil?
-      @array_modules = Pemodule.defined
-      @pemodules ||= Pemodule.defined
+      @array_modules = Pemodule.all
+      @pemodules ||= Pemodule.all
 
       #Max pos or 1
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
@@ -1079,6 +1088,12 @@ class ProjectsController < ApplicationController
         Kb::KbInput.create( organization_id: @current_organization.id,
                             module_project_id: my_module_project.id,
                             kb_model_id: kb_model_id)
+      elsif @pemodule.alias == "skb"
+        skb_model_id = params[:module_selected].split(',').first.to_i
+        my_module_project.skb_model_id = skb_model_id
+        Skb::SkbInput.create( organization_id: @current_organization.id,
+                              module_project_id: my_module_project.id,
+                              skb_model_id: skb_model_id)
       elsif @pemodule.alias == "ge"
         my_module_project.ge_model_id = params[:module_selected].split(',').first
       elsif @pemodule.alias == "operation"
@@ -2700,7 +2715,7 @@ public
                                                        pbs_project_element_id: current_component.id).first_or_create!
       end
 
-    elsif @module_project.pemodule.alias == "kb"
+    elsif @module_project.pemodule.alias == "skb"
       @kb_model = current_module_project.kb_model
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
