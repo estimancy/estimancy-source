@@ -25,7 +25,7 @@
 class Pemodule < ActiveRecord::Base
   attr_accessible :alias, :title, :description#, :with_activities, :compliant_component_type, :record_status, :record_status_id, :custom_value, :change_comment
 
-  # include AASM
+  include AASM
   # include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
 
   #Project has many module, module has many project
@@ -50,14 +50,14 @@ class Pemodule < ActiveRecord::Base
   # validates :custom_value, :presence => true, :if => :is_custom?
 
   #ASSM needs
-  # aasm :column => :with_activities do # defaults to aasm_state
-  #   state :no, :initial => true
-  #   state :yes_for_input
-  #   state :yes_for_output_with_ratio
-  #   state :yes_for_output_without_ratio
-  #   state :yes_for_input_output_with_ratio
-  #   state :yes_for_input_output_without_ratio
-  # end
+  aasm :column => :with_activities do # defaults to aasm_state
+    state :no, :initial => true
+    state :yes_for_input
+    state :yes_for_output_with_ratio
+    state :yes_for_output_without_ratio
+    state :yes_for_input_output_with_ratio
+    state :yes_for_input_output_without_ratio
+  end
 
 
   ##Enable the amoeba gem for deep copy/clone (dup with associations)
