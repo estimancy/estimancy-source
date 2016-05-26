@@ -20,7 +20,7 @@
 #############################################################################
 
 class PemodulesController < ApplicationController
-  include DataValidationHelper #Module for master data changes validation
+  # include DataValidationHelper #Module for master data changes validation
   #load_resource :only => [:index, :edit, :update, :create, :destroy]
   load_resource
 
@@ -57,17 +57,11 @@ class PemodulesController < ApplicationController
   def update
     authorize! :manage_master_data, :all
 
-    @wets = WorkElementType.all.reject{|i| i.alias == 'link' || i.alias == 'folder'}
     @attributes = PeAttribute.all
 
     @pemodule = nil
     current_pemodule = Pemodule.find(params[:id])
-    if current_pemodule.is_defined?
-      @pemodule = current_pemodule.amoeba_dup
-      @pemodule.owner_id = current_user.id
-    else
-      @pemodule = current_pemodule
-    end
+    @pemodule = current_pemodule
 
     @attribute_settings = AttributeModule.all(:conditions => {:pemodule_id => @pemodule.id})
     @pemodule.compliant_component_type = params[:compliant_wet]
@@ -166,12 +160,7 @@ class PemodulesController < ApplicationController
     authorize! :manage_master_data, :all
 
     @pemodule = Pemodule.find(params[:id])
-    if @pemodule.is_defined? || @pemodule.is_custom?
-      #logical deletion: delete don't have to suppress records anymore
-      @pemodule.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
-    else
-      @pemodule.destroy
-    end
+    @pemodule.destroy
     redirect_to pemodules_url, :notice => "#{I18n.t (:notice_pemodule_successful_deleted)}"
   end
 

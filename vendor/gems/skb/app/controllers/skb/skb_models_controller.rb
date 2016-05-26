@@ -77,6 +77,40 @@ class Skb::SkbModelsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:skb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @skb_model.name => ""
   end
 
+  def data_export
+    authorize! :show_modules_instances, ModuleProject
+
+    @skb_model = Skb::SkbModel.find(params[:skb_model_id])
+    workbook = RubyXL::Workbook.new
+
+    worksheet = workbook[0]
+    worksheet.sheet_name = "Description du modèle"
+
+    worksheet.add_cell(0, 0, "Nom")
+    worksheet.add_cell(0, 1, @skb_model.name)
+
+    worksheet.add_cell(1, 0, "Description")
+    worksheet.add_cell(1, 1, @skb_model.description)
+
+    worksheet.add_cell(2, 0, "Unité de taille")
+    worksheet.add_cell(2, 1, @skb_model.size_unit)
+
+    worksheet = workbook.add_worksheet("Données")
+    kb_model_datas = @skb_model.skb_datas
+    default_attributs = ["Nom", "Dscription", "Données", "Traitements"]
+
+    if !kb_model_datas.nil? && !kb_model_datas.empty?
+      kb_model_datas.each_with_index do |kb_data, index|
+        worksheet.add_cell(index + 1, 0, kb_data.name).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 1, kb_data.description).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 2, kb_data.data).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 3, kb_data.processing).change_horizontal_alignment('center')
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "#{@skb_model.organization.name[0..4]}-#{@skb_model.name.gsub(" ", "_")}_skb_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
   def import
     authorize! :manage_modules_instances, ModuleProject
 
