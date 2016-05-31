@@ -227,6 +227,7 @@
               <div class="span12">
                 <%= I18n.t(:label_add_a_module_to_project) %>
                 <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                            "Base de connaissance de taille" => @skb_models,
                                                                             "Modules d'opération" => @operation_models,
                                                                             "Modules de Jugement d'Expert" => @ej_modules,
                                                                             "Modules Activités / Profils" => @wbs_instances,

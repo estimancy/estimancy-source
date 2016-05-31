@@ -126,10 +126,12 @@
 
         <tr>
           <td><%= f.input :start_date,
-                          :as => :string,
-                          :label => I18n.t(:start_date),
-                          :input_html => { :class => 'date-picker',
-                                           :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) } %></td>
+                          as: :string,
+                          label: I18n.t(:start_date),
+                          input_html: { :class => 'date-picker',
+                                           :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) },
+                          disabled: (!(can_alter_estimation?(@project) && can?(:alter_start_date, @project)) || @project.private) %>
+          </td>
 
           <script>
             $(document).ready(function () {

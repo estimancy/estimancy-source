@@ -444,7 +444,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       if guw_unit_of_work.guw_complexity.nil?
-        final_value = 0
+        final_value = nil
       else
         weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
         if guw_unit_of_work.guw_complexity.enable_value == false
@@ -491,35 +491,42 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         tcplx_value = 1
       end
 
-      guw_unit_of_work.size = final_value.to_f *
-          (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
-          (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*)) *
-          tcplx_value
-
-      if guw_unit_of_work.guw_type.allow_retained == false
-        guw_unit_of_work.ajusted_size = guw_unit_of_work.size.round(3)
+      if final_value.nil?
+        guw_unit_of_work.size = nil
+        guw_unit_of_work.ajusted_size = nil
       else
-        if params["ajusted_size"]["#{guw_unit_of_work.id}"].blank?
+        guw_unit_of_work.size = final_value.to_f *
+            (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
+            (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*)) *
+            tcplx_value
+
+        if guw_unit_of_work.guw_type.allow_retained == false
           guw_unit_of_work.ajusted_size = guw_unit_of_work.size.round(3)
         else
-          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"].blank?
+            guw_unit_of_work.ajusted_size = guw_unit_of_work.size.round(3)
+          else
+            guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+          end
         end
       end
 
       guw_unit_of_work.save
 
-      guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
-          (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
+      unless guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+        guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
+            (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
 
-      guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
-          (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
+        guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
+            (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
 
-      if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
-        guw_unit_of_work.flagged = true
-      elsif guw_unit_of_work.size.round(3) != guw_unit_of_work.ajusted_size.round(3)
-        guw_unit_of_work.flagged = true
-      else
-        guw_unit_of_work.flagged = false
+        if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
+          guw_unit_of_work.flagged = true
+        elsif guw_unit_of_work.size.round(3) != guw_unit_of_work.ajusted_size.round(3)
+          guw_unit_of_work.flagged = true
+        else
+          guw_unit_of_work.flagged = false
+        end
       end
 
       guw_unit_of_work.save
@@ -592,66 +599,66 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              guw_unit_of_work_group_id: @group.id,
                                              pbs_project_element_id: current_component.id,
                                              module_project_id: current_module_project.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum
+                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
 
     @group_size_theorical = Guw::GuwUnitOfWork.where(selected: true,
                                                      guw_unit_of_work_group_id: @group.id,
                                                      pbs_project_element_id: current_component.id,
                                                      module_project_id: current_module_project.id,
-                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum
+                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
 
     @group_number_of_unit_of_works = Guw::GuwUnitOfWork.where(guw_unit_of_work_group_id: @group.id,
                                                               pbs_project_element_id: current_component.id,
                                                               module_project_id: current_module_project.id,
-                                                              guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum
+                                                              guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
 
     @group_selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
                                                                 guw_unit_of_work_group_id: @group.id,
                                                                 pbs_project_element_id: current_component.id,
                                                                 module_project_id: current_module_project.id,
-                                                                guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum
+                                                                guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
 
     @group_flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
                                                             guw_unit_of_work_group_id: @group.id,
                                                             pbs_project_element_id: current_component.id,
                                                             module_project_id: current_module_project.id,
-                                                            guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum
+                                                            guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
 
 
     #For all unit of work
     @ajusted_size = Guw::GuwUnitOfWork.where(selected: true,
                                              pbs_project_element_id: current_component.id,
                                              module_project_id: current_module_project.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum
+                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
 
     @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
                                                pbs_project_element_id: current_component.id,
                                                module_project_id: current_module_project.id,
-                                               guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum
+                                               guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
 
     @effort = Guw::GuwUnitOfWork.where(selected: true,
                                        pbs_project_element_id: current_component.id,
                                        module_project_id: current_module_project.id,
-                                       guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum
+                                       guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
 
     @cost = Guw::GuwUnitOfWork.where(selected: true,
                                      pbs_project_element_id: current_component.id,
                                      module_project_id: current_module_project.id,
-                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum
+                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum.to_f.round(user_number_precision)
 
     @number_of_unit_of_works = Guw::GuwUnitOfWork.where(pbs_project_element_id: current_component.id,
                                                         module_project_id: current_module_project.id,
-                                                        guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum
+                                                        guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
 
     @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
                                                           pbs_project_element_id: current_component.id,
                                                           module_project_id: current_module_project.id,
-                                                          guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum
+                                                          guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
 
     @flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
                                                       pbs_project_element_id: current_component.id,
                                                       module_project_id: current_module_project.id,
-                                                      guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum
+                                                      guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
 
     update_estimation_values
     update_view_widgets_and_project_fields

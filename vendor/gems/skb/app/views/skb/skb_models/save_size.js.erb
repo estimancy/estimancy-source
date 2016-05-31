@@ -1,0 +1,3 @@
+$(".skb_input_data").html("<%= @skb_input.data %>");
+$(".skb_input_processing").html("<%= @skb_input.processing %>");
+$(".skb_input_total").html("<%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>");

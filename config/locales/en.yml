@@ -1922,3 +1922,6 @@ en:
   language_edition: "Edit language"
   use_real_base_percentage: "Use the values ​​of real base percentage"
   kpi_unit: "KPI Unit"
+
+  duplicate: "Duplicate unit of work"
+  add: "Create a unit of work"

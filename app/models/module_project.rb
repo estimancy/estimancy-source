@@ -31,6 +31,7 @@ class ModuleProject < ActiveRecord::Base
   belongs_to :ge_model, class_name: "Ge::GeModel"
   belongs_to :operation_model, class_name: "Operation::OperationModel"
   belongs_to :kb_model, class_name: "Kb::KbModel"
+  belongs_to :skb_model, class_name: "Skb::SkbModel"
   belongs_to :staffing_model, class_name: "Staffing::StaffingModel"
   belongs_to :expert_judgement_instance, class_name: "ExpertJudgement::Instance"
   belongs_to :wbs_activity
@@ -178,6 +179,8 @@ class ModuleProject < ActiveRecord::Base
       self.ge_model.nil? ? 'Undefined model': self.ge_model.to_s(self)
     elsif self.pemodule.alias == "kb"
       self.kb_model.nil? ? 'Undefined model': self.kb_model.to_s(self)
+    elsif self.pemodule.alias == "skb"
+      self.skb_model.nil? ? 'Undefined model': self.skb_model.to_s(self)
     elsif self.pemodule.alias == "guw"
       self.guw_model.nil? ? 'Undefined model': self.guw_model.to_s(self)
     elsif self.pemodule.alias == "staffing"
