@@ -53,6 +53,7 @@ class ModuleProject < ActiveRecord::Base
   has_many :inverse_associated_module_projects, :through => :second_module_projects, :source => :module_project
 
   has_many :wbs_activity_inputs, :dependent => :destroy
+  has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
 
   default_scope :order => 'position_x ASC, position_y ASC'
 

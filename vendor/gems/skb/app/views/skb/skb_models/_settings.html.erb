@@ -44,9 +44,9 @@
      @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
    end
 
-   @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data,
-                      y: @skb_input.nil? ? 0 : @skb_input.processing,
-                      z: @skb_input.nil? ? 0 : @skb_input.retained_size,
+   @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
+                      y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
+                      z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
                       name: @project.to_s,
                       description: @project.description.to_s }
 

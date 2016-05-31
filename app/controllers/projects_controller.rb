@@ -1853,6 +1853,14 @@ public
           new_mp.associated_module_projects << new_associated_mp
         end
 
+        old_mp.skb_inputs.each do |skbi|
+          Skb::SkbInput.create(data: skbi.data,
+                               processing: skbi.processing,
+                               retained_size: skbi.retained_size,
+                               organization_id: @organization.id,
+                               module_project_id: new_mp.id)
+        end
+
         # if the module_project is nil
         unless old_mp.view.nil?
           #Update the new project/estimation views and widgets
