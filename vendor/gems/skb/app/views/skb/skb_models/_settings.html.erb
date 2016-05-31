@@ -34,7 +34,7 @@
 </p>
 
 <p>
-  Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuelle
+  Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel
 </p>
 
 <%
@@ -44,11 +44,11 @@
      @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
    end
 
-   @my_skb_input << { x: @skb_model.skb_inputs.first.nil? ? 0 : @skb_model.skb_inputs.first.data,
-                     y: @skb_model.skb_inputs.first.nil? ? 0 : @skb_model.skb_inputs.first.processing,
-                     z: @skb_model.skb_inputs.first.nil? ? 0 : @skb_model.skb_inputs.first.retained_size,
-                     name: @project.to_s,
-                     description: @project.description.to_s }
+   @my_skb_input << { x: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.data,
+                      y: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.processing,
+                      z: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.retained_size,
+                      name: @project.to_s,
+                      description: @project.description.to_s }
 
 %>
 
