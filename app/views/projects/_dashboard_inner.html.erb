@@ -33,9 +33,11 @@
           - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %></h5>
 
         <div class="buttons">
-          <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini">
-            <%= I18n.t(:button_estimation_plan) %>
-          </a>
+          <% if can?(:execute_estimation_plan, @project) %>
+            <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini">
+              <%= I18n.t(:button_estimation_plan) %>
+            </a>
+          <% end %>
 
           <%# link_to "Exporter projet", export_my_project_xl_path(@project) , :class => 'btn btn-mini' %>
           <%# link_to "Tout exécuter", "#!", method: "post", class: "btn btn-mini" %>
