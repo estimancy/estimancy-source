@@ -137,18 +137,6 @@ class Ge::GeModelsController < ApplicationController
 
     model_worksheet.sheet_name = "Model"
 
-    if @ge_model.input_pe_attribute.nil?
-      input_pe_attribute_alias = ""
-    else
-      input_pe_attribute_alias = @ge_model.input_pe_attribute.alias
-    end
-
-    if @ge_model.output_pe_attribute.nil?
-      output_pe_attribute_alias = ""
-    else
-      output_pe_attribute_alias = @ge_model.output_pe_attribute.alias
-    end
-
     first_page = [[I18n.t(:model_name),  @ge_model.name],
                   [I18n.t(:model_description), @ge_model.description ],
                   [I18n.t(:three_points_estimation), @ge_model.three_points_estimation ? 1 : 0],

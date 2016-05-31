@@ -1932,7 +1932,7 @@ fr:
   permission_edition: "Editer une permission"
   languages_list: "Liste des langues"
   language_edition: "Editer une langue"
-  kpi_unit: "Unité de KPI"  kpi_unit: "Unité de KPI"
+  kpi_unit: "Unité de KPI"
 
   duplicate: "Dupliquer l'unité d'oeuvre"
   add: "Créer une unité d'oeuvre"
