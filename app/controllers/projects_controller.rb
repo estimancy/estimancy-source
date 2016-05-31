@@ -121,7 +121,7 @@ class ProjectsController < ApplicationController
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project.title}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
     @module_projects = @project.module_projects
@@ -871,7 +871,8 @@ class ProjectsController < ApplicationController
 
 
     @guw_module = Pemodule.where(alias: "guw").first
-    @kb_module = Pemodule.where(alias: "skb").first
+    @kb_module = Pemodule.where(alias: "kb").first
+    @skb_module = Pemodule.where(alias: "skb").first
     @ge_module = Pemodule.where(alias: "ge").first
     @operation_module = Pemodule.where(alias: "operation").first
     @staffing_module = Pemodule.where(alias: "staffing").first
@@ -882,11 +883,12 @@ class ProjectsController < ApplicationController
     @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
     @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
     @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+    @skb_models = @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
     @staffing_modules = @staffing_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
     @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
     @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
 
-    @modules_selected = (Pemodule.defined.all - [@guw_module, @kb_module, @ge_module, @staffing_module, @ej_module, @ebd_module]).map{|i| [i.title,i.id]}
+    @modules_selected = (Pemodule.all - [@guw_module, @kb_module, @ge_module, @staffing_module, @ej_module, @ebd_module]).map{|i| [i.title,i.id]}
 
     project_root = @project.root
     project_tree = project_root.subtree
