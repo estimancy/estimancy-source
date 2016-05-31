@@ -90,7 +90,7 @@ class PemodulesController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = []
 
-    if @pemodule.save
+    if @pemodule.save(validate: false)
       redirect_to redirect_apply(edit_pemodule_path(@pemodule), new_pemodule_path(), pemodules_path)
     else
       render action: 'new'
@@ -121,7 +121,7 @@ class PemodulesController < ApplicationController
     end
     @pemodule.pe_attributes(force_reload = true)
 
-    if @pemodule.save
+    if @pemodule.save(validate: false)
       flash[:notice] = I18n.t (:notice_pemodule_successful_updated)
     else
       flash[:notice] = I18n.t (:error_administration_setting_failed_update)
