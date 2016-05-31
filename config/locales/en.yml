@@ -1894,3 +1894,6 @@ en:
   use_base_100: "Use the base 100"
   use_real_base_percentage: "Use the values ​​of real base percentage"
   kpi_unit: "KPI Unit"
+
+  duplicate: "Duplicate unit of work"
+  add: "Create a unit of work"

@@ -1889,3 +1889,7 @@ frsncf_isi:
   error_resource_not_found: "La ressource est introuvable !"
   use_base_100: "Utiliser la base 100"
   use_real_base_percentage: "Utiliser les valeurs des pourcentages réel"
+  kpi_unit: "Unité de KPI"
+
+  duplicate: "Dupliquer l'unité d'oeuvre"
+  add: "Créer une unité d'oeuvre"
