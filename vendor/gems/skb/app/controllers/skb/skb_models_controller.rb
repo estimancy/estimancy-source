@@ -125,14 +125,11 @@ class Skb::SkbModelsController < ApplicationController
         end
       rescue
         flash[:error] = "Une erreur est survenue durant l'import du modèle. Veuillez vérifier l'extension du fichier Excel."
-        redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @organization.id) and return
+        redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @organization) and return
       end
 
       file.default_sheet = file.sheets[0]
-      @skb_model = Skb::SkbModel.where(params[:skb_model_id]).first_or_create(name: file.cell(1,2),
-                                                                              description: file.cell(2,2),
-                                                                              size_unit: file.cell(3,2),
-                                                                              organization_id: @organization.id)
+      @skb_model = Skb::SkbModel.find(params[:skb_model_id].to_i)
 
       unless @skb_model.nil?
         Skb::SkbData.delete_all("skb_model_id = #{@skb_model.id}")
@@ -153,7 +150,7 @@ class Skb::SkbModelsController < ApplicationController
       end
     end
 
-    redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @organization.id)
+    redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @skb_model.organization_id)
   end
 
   def create

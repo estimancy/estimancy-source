@@ -44,9 +44,9 @@
      @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
    end
 
-   @my_skb_input << { x: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.data,
-                      y: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.processing,
-                      z: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.retained_size,
+   @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data,
+                      y: @skb_input.nil? ? 0 : @skb_input.processing,
+                      z: @skb_input.nil? ? 0 : @skb_input.retained_size,
                       name: @project.to_s,
                       description: @project.description.to_s }
 
@@ -91,7 +91,7 @@
         },
 
         title: {
-          text: 'IFPUG : Traitements, données et taille de projets'
+          text: '<%= @current_organization %> / <%= @skb_model.name %>'
         },
 
         xAxis: {
@@ -142,7 +142,7 @@
           color: 'rgba(255, 50, 50, 0.8)',
           data: <%= raw(@my_skb_input.to_json) %>
         },{
-          name: 'Base de connaissance <%= @skb_model.name %>',
+          name: "Base de connaissance '<%= @skb_model.name %>'",
           color: 'rgba(50, 50, 255, 0.8)',
           data: <%= raw(@my_skb_datas.to_json) %>
         }]
