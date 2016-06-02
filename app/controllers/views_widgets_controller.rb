@@ -132,6 +132,12 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
     end
 
+    begin
+      @views_widget.module_project_id = @module_project.id
+    rescue
+
+    end
+
     respond_to do |format|
       if @views_widget.save
         unless params["field"].blank?
@@ -203,7 +209,7 @@ class ViewsWidgetsController < ApplicationController
       end
 
       if pf.nil?
-          ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+        ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
       else
         pf.value = @value
         pf.views_widget_id = @views_widget.id
