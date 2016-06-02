@@ -1898,7 +1898,7 @@ en:
   duplicate: "Duplicate unit of work"
   add: "Create a unit of work"
 
-  move_your_cusor: "Move your cursor on the chart and click to locate your current project"
+  move_your_cursor: "Move your cursor on the chart and click to locate your current project"
   total_size: "Total size"
   number_of_processing: "Number of processing"
   number_of_data: "Number of data"
