@@ -843,7 +843,7 @@ class ProjectsController < ApplicationController
                                  is_estimation_permission: true)
         else
           ProjectSecurity.create(project_id: project.id,
-                                 user_id: project.creator_id,
+                                 user_id: User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s),
                                  project_security_level_id: ps.project_security_level_id,
                                  group_id: nil,
                                  is_model_permission: false,
