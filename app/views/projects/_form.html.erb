@@ -135,7 +135,7 @@
           <td>
             <%= f.input :creator_id,
                         as: :select,
-                        collection: @organization.users.where(locked_at: nil).map{ |i| [i.name, i.id] },
+                        collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == "*OWNER" }.map{ |i| [i.name, i.id] },
                         label: I18n.t('creator'),
                         selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
                         input_html: { selected: current_user.id,:class => 'input-large', disabled: !can?(:alter_creator, @project) } %>
@@ -332,6 +332,58 @@
             </div>
           </div>
 
+          <div class="accordion" id="accordion1">
+            <div class="accordion-group accordion-caret">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                  <i class="fa fa-caret-down"></i>
+                  <b>Droit du propriétaire</b>
+                </a>
+              </div>
+              <div id="collapseOne" class="accordion-body in collapse">
+                <div class="accordion-inner">
+                  <table  id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+                    <thead>
+                    <tr>
+                      <th>Utilisateur</th>
+                      <% @organization.project_security_levels.each do |prj_level| %>
+                        <th class="filter-select">
+                          <span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
+                        </th>
+                      <% end %>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% est_owner = AdminSetting.find_by_key("Estimation Owner").value.to_s %>
+                    <% @organization.users.where(:initials => est_owner).each do |user| %>
+                      <tr>
+                        <td>
+                          <%= user %>
+                          <% @organization.project_security_levels.each do |prj_level| %>
+                            <%
+                               ps = ProjectSecurity.where(user_id: user.id,
+                                                          project_id: @project.id,
+                                                          project_security_level_id: prj_level.id,
+                                                          is_model_permission: false,
+                                                          is_estimation_permission: true).first
+                            %>
+                          <td style="text-align: center">
+                            <%= check_box_tag("owner_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true) %>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                    </tbody>
+                  </table>
+
+                  <%= submit_tag I18n.t('save'), :class => 'btn' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn', :anchor_value => params[:anchor_value] %>
+                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <h3><%= @project.is_model ? I18n.t(:securities_for_generated_project) : "" %></h3>
 
           <div class="accordion" id="accordion1">
@@ -410,6 +462,7 @@
             </div>
           </div>
         </div>
+
         </div>
 
         <% if @project.is_model == true %>

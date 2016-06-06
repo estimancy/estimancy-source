@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, @current_organization)
+    @current_ability ||= Ability.new(current_user, @current_organization, @project)
   end
 
   # Organization verification: user need to have at least one organization before continue

@@ -1026,7 +1026,15 @@ class OrganizationsController < ApplicationController
     # Add current_user to the organization
     @organization.users << current_user
 
-    #A la sauvegarde, on crée des sous traitants
+    owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: "*OWNER", email: "contact@estimancy.com").first
+    if owner.nil?
+      owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: "*OWNER", email: "contact@estimancy.com")
+      owner.save(validate: false)
+    end
+
+    @organization.users << owner
+
+        #A la sauvegarde, on crée des sous traitants
     if @organization.save
 
       # Add admin and user groups
