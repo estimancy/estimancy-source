@@ -433,7 +433,7 @@
                           <% end %>
                       </tr>
                     <% else %>
-                      <% @organization.users.each do |user| %>
+                      <% @organization.users.reject{|i| i.initials == "*OWNER" }.each do |user| %>
                         <tr>
                           <td>
                             <%= user %>
