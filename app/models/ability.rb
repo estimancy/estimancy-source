@@ -24,7 +24,7 @@ class Ability
   include CanCan::Ability
 
   #Initialize Ability then load permissions
-  def initialize(user, organization, prj)
+  def initialize(user, organization)
 
     #Uncomment in order to authorize everybody to manage all the app
     if Rails.env == "test" || user.super_admin == true
@@ -124,7 +124,6 @@ class Ability
         end
       end
 
-      if user.id == prj.creator_id
         owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
         prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
         unless prj_scrts.empty?
@@ -132,14 +131,16 @@ class Ability
           prj_scrts.each do |prj_scrt|
             unless prj_scrt.project_security_level.nil?
               project = prj_scrt.project
-              unless project.nil?
-                project.organization.estimation_statuses.each do |es|
-                  prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
-                    if permission.alias == "manage" and permission.category == "Project"
-                      # can :manage, project, estimation_status_id: es.id
-                      @array_owners = []
-                    else
-                      @array_owners << [permission.id, project.id, es.id]
+              if user.id == project.creator_id
+                unless project.nil?
+                  project.organization.estimation_statuses.each do |es|
+                    prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+                      if permission.alias == "manage" and permission.category == "Project"
+                        # can :manage, project, estimation_status_id: es.id
+                        @array_owners = []
+                      else
+                        @array_owners << [permission.id, project.id, es.id]
+                      end
                     end
                   end
                 end
@@ -147,7 +148,6 @@ class Ability
             end
           end
         end
-      end
 
       user.groups.where(organization_id: organization.id).each do |grp|
         prj_scrts = ProjectSecurity.find_all_by_group_id_and_is_model_permission_and_is_estimation_permission(grp.id, false, true)
