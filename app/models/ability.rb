@@ -124,7 +124,7 @@ class Ability
         end
       end
 
-      if user == prj.creator_id
+      if user.id == prj.creator_id
         owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
         prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
         unless prj_scrts.empty?
