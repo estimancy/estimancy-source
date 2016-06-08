@@ -687,18 +687,6 @@ class ProjectsController < ApplicationController
           end
         end
 
-        unless params["owner_securities"].nil?
-          params["owner_securities"].each do |psl|
-            params["owner_securities"][psl.first].each do |user|
-              ProjectSecurity.create(user_id: user.first.to_i,
-                                     project_id: @project.id,
-                                     project_security_level_id: psl.first,
-                                     is_model_permission: @project.is_model,
-                                     is_estimation_permission: true)
-            end
-          end
-        end
-
         unless params["user_securities_from_model"].nil?
           params["user_securities_from_model"].each do |psl|
             params["user_securities_from_model"][psl.first].each do |user|

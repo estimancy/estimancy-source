@@ -47,7 +47,7 @@ public
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:users)
-    @users = User.all
+    @users = User.all.reject{|i| i.initials == "*OWNER" }
     @audits = Audit.all
   end
 
