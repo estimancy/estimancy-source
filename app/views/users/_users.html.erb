@@ -29,9 +29,7 @@
           <td><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : user.confirmed_at.strftime("%d/%m/%Y") %></td>
           <td><%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td>
           <td style="min-width: 105px;" class="align-center">
-            <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
-            <% owner_value = owner_key.nil? ? '*OWNER' : owner_key.value %>
-            <% unless user.initials == owner_value || current_user.is_admin == true %>
+            <% if current_user.is_admin == true %>
               <% if user.locked_at.nil? %>
                 <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('edit')) %>
               <% else %>
