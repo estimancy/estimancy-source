@@ -124,7 +124,8 @@ class Ability
         end
       end
 
-        owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+      owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+      unless owner.nil?
         prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
         unless prj_scrts.empty?
           specific_permissions_array = []
@@ -148,6 +149,7 @@ class Ability
             end
           end
         end
+      end
 
       user.groups.where(organization_id: organization.id).each do |grp|
         prj_scrts = ProjectSecurity.find_all_by_group_id_and_is_model_permission_and_is_estimation_permission(grp.id, false, true)
