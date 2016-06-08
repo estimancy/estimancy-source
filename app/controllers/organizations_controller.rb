@@ -1026,18 +1026,7 @@ class OrganizationsController < ApplicationController
     # Add current_user to the organization
     @organization.users << current_user
 
-    owner_key = AdminSetting.find_by_key("Estimation Owner")
-    unless owner_key.nil?
-      owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
-      if owner.nil?
-        owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
-        owner.save(validate: false)
-      end
-    end
-
-    @organization.users << owner
-
-        #A la sauvegarde, on crée des sous traitants
+    #A la sauvegarde, on crée des sous traitants
     if @organization.save
 
       # Add admin and user groups
