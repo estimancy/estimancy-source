@@ -1,0 +1,9 @@
+$("#module_project_ratio_section").html("<%= j(render(:partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements', :object => @module_project_ratio_elements,
+                                                         locals: {wbs_activity_ratio: @wbs_activity_ratio, wai: @wbs_activity_input, effort_unit_coeff: @effort_coefficient, project_organization: @organization})) %>");
+
+$('#dashboard_selected_ratio_id').html("<%=raw j select_tag "dashboard_selected_ratio_id",
+                                            options_for_select(@wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                                            selected: @wbs_activity_ratio.id)  %>");
+//$('#dashboard_selected_ratio_id').html("<%#=raw j hidden_field_tag_tag(:dashboard_selected_ratio_id, @wbs_activity_ratio.id)  %>");
+
+$("#notifications").html("");

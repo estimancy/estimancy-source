@@ -218,7 +218,6 @@ class ProjectsController < ApplicationController
         end
       end
 
-
     elsif @module_project.pemodule.alias == "operation"
       @operation_model = current_module_project.operation_model
     elsif @module_project.pemodule.alias == "guw"
@@ -240,6 +239,37 @@ class ProjectsController < ApplicationController
                                 period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
                                 trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
                                 trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
+      end
+
+    elsif @module_project.pemodule.alias == "effort_breakdown"
+      @wbs_activity = current_module_project.wbs_activity
+      if params[:ratio].nil?
+        @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+      else
+        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio].nil?)
+      end
+      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+      # Module_project Ratio elements
+      @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: current_component.id)
+
+      if @module_project_ratio_elements.nil? || @module_project_ratio_elements.empty?
+        #create module_project ratio elements
+        @wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio.wbs_activity_ratio_elements.each do |ratio_element|
+
+            #mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
+            #                                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+            #                                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
+
+            mp_ratio_element = ModuleProjectRatioElement.where(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
+                                                               wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id)
+                                                        .first_or_create(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
+                                                                         wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
+                                                                         multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                                                                         ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
+          end
+        end
       end
 
     else
@@ -1040,7 +1070,7 @@ class ProjectsController < ApplicationController
 
       #When adding a module in the "timeline", it creates an entry in the table ModuleProject for the current project, at position 2 (the one being reserved for the input module).
       my_module_project = ModuleProject.new(:project_id => @project.id, :pemodule_id => @pemodule.id, :position_y => 1, :position_x => @module_positions_x.to_i + 1,
-                                            :top_position => 100, :left_position => 900, :creation_order => mp_creation_order+1)
+                                            :top_position => 100, :left_position => 600, :creation_order => mp_creation_order+1)
       my_module_project.save
 
       #si le module est un module generic on l'associe le module project
@@ -1078,6 +1108,17 @@ class ProjectsController < ApplicationController
                                 wbs_activity_id: wbs_id,
                                 wbs_activity_ratio_id: my_module_project.wbs_activity.wbs_activity_ratios.first )
         wai.save
+
+        #create module_project ratio elements
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio.wbs_activity_ratio_elements.each do |ratio_element|
+            mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
+                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
+            mp_ratio_element.save
+          end
+        end
+
       elsif @pemodule.alias == "expert_judgement"
         eji_id = params[:module_selected].split(',').first
         my_module_project.expert_judgement_instance_id = eji_id.to_i

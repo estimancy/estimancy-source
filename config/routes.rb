@@ -109,6 +109,7 @@ Projestimate::Application.routes.draw do
   mount BalancingModule::Engine, at: '/balancing_module'
 
   post "save_effort_breakdown" => "wbs_activities#save_effort_breakdown"
+  post "update_effort_breakdown_retained_values" => "wbs_activities#update_effort_breakdown_retained_values"
 
   resources :organization_technologies
   get 'change_abacus' => 'organization_technologies#change_abacus', :as => 'change_abacus'
@@ -173,6 +174,14 @@ Projestimate::Application.routes.draw do
   post 'module_projects_reassign' => 'module_projects#module_projects_reassign', as: 'module_projects_reassign'
   get 'update_module_project_dynamic_connections' => 'module_projects#update_module_project_dynamic_connections', as: 'update_module_project_dynamic_connections'
   get 'update_module_project_left_and_top_positions' => 'module_projects#update_module_project_left_and_top_positions', as: 'update_module_project_left_and_top_positions'
+
+  resources :module_project_ratio_elements do
+    post "load_comments"
+  end
+  post "save_comments" => "module_project_ratio_elements#save_comments", as: "save_mp_ratio_element_comments"
+  post "save_mp_ratio_element" => "module_project_ratio_elements#save_mp_ratio_element", as: "save_mp_ratio_element"
+  get 'refresh_dashboard_module_project_ratio_elements' => 'module_project_ratio_elements#refresh_dashboard_module_project_ratio_elements', :as => 'refresh_dashboard_module_project_ratio_elements'
+  get 'refresh_dashboard_retained_cost' => 'module_project_ratio_elements#refresh_dashboard_retained_cost', :as => 'refresh_dashboard_retained_cost'
 
   resources :languages
 

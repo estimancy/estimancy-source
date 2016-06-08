@@ -29,10 +29,18 @@
             <!--<i class="icon-list"></i>-->
           <!--</span>-->
         <!--</a>-->
+
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %></h5>
+          - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %>
+        </h5>
 
         <div class="buttons">
+          <% if @initialization_module_project.show_results_view %>
+              <%= link_to I18n.t(:hide_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "", :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+          <% else %>
+              <%= link_to I18n.t(:show_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+          <% end %>
+
           <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini">
             <%= I18n.t(:button_estimation_plan) %>
           </a>
@@ -40,7 +48,6 @@
           <%# link_to "Exporter projet", export_my_project_xl_path(@project) , :class => 'btn btn-mini' %>
           <%# link_to "Tout exécuter", "#!", method: "post", class: "btn btn-mini" %>
         </div>
-
       </div>
       <div class="collapse in" id="collapseActivity">
         <div class="widget-content">

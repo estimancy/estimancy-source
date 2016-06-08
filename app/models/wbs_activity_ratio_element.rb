@@ -20,7 +20,8 @@
 #############################################################################
 
 class WbsActivityRatioElement < ActiveRecord::Base
-  attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :record_status_id, :custom_value, :change_comment, :wbs_activity_element_id
+  attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :record_status_id, :custom_value, :change_comment, :wbs_activity_element_id,
+
   ###include MasterDataHelper
 
   has_ancestry
@@ -33,6 +34,8 @@ class WbsActivityRatioElement < ActiveRecord::Base
 
   has_many :wbs_activity_ratio_profiles, dependent: :delete_all
   has_many :organization_profiles, through: :wbs_activity_ratio_profiles
+
+  has_many :module_project_ratio_elements, dependent: :destroy
 
   #Enable the amoeba gem for deep copy/clone (dup with associations)
   amoeba do

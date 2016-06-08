@@ -4,7 +4,7 @@
     <!-- The Initialization module -->
     <%#= render :partial => 'module_projects/initialization_module_min' %>
 
-    <% module_projects.each do |pmod| %>
+    <% module_projects.reject{ |mp| mp.id == @initialization_module_project.id }.each do |pmod| %>
         <%### pmod = @project.module_projects.where("position_x = ? AND position_y = ?", x, y).first %>
 
         <% unless current_module_project.nil? or pmod.nil? %>

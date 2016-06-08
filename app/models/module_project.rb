@@ -52,6 +52,7 @@ class ModuleProject < ActiveRecord::Base
   has_many :inverse_associated_module_projects, :through => :second_module_projects, :source => :module_project  # module_project sucesseurs
 
   has_many :wbs_activity_inputs, :dependent => :destroy
+  has_many :module_project_ratio_elements, dependent: :destroy
 
   default_scope :order => 'position_x ASC, position_y ASC'
 

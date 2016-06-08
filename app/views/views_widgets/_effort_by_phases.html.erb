@@ -1,34 +1,25 @@
 <%
-   module_project = current_module_project
+   pbs_project_element = current_component
    pemodule = module_project.pemodule
-   estimation_value = local_assigns[:cev_output]
-
    precision = estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision
 
    # Only the Modules with activities
-   with_activities = pemodule.yes_for_output_with_ratio? || pemodule.yes_for_output_without_ratio? || pemodule.yes_for_input_output_with_ratio? || pemodule.yes_for_input_output_without_ratio?
-   return res unless with_activities
+   #with_activities = pemodule.yes_for_output_with_ratio? || pemodule.yes_for_output_without_ratio? || pemodule.yes_for_input_output_with_ratio? || pemodule.yes_for_input_output_without_ratio?
+   #return String.new unless with_activities
 
    wbs_activity = module_project.wbs_activity
-   wbs_activity_elements = wbs_activity.wbs_activity_elements
+
+   if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+     @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+   else
+     @wbs_unit = wbs_activity.effort_unit
+   end
 
 
    levels = ['probable']
    colspan = 1
    rowspan = 1
 
-   #Get the module_project probable estimation values for showing element consistency
-   probable_est_value_for_consistency = nil
-   pbs_level_data_for_consistency = Hash.new
-   probable_est_value_for_consistency = estimation_value.send("string_data_probable")
-
-   # For is_consistent purpose
-   levels.each do |level|
-     unless level.eql?("probable")
-       pbs_data_level = estimation_value.send("string_data_#{level}")
-       pbs_data_level.nil? ? pbs_level_data_for_consistency[level] = nil : pbs_level_data_for_consistency[level] = pbs_data_level[pbs_project_element.id]
-     end
-   end
 %>
 
 <table class='table table-condensed table-bordered table-striped table_effort_per_phase' style="margin-left:20px;">
@@ -36,69 +27,40 @@
     <th rowspan=""<%= rowspan %>">Phases</th>
     <th colspan=<%= colspan %>>
       <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-        <%= estimation_value.pe_attribute.name %> <%= estimation_value.pe_attribute.alias == "cost" ? "(#{@project.organization.currency})" : '' %>
+        <%= estimation_value.pe_attribute.name %> <%= estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{@project.organization.currency})" : '' %>
       </span>
     </th>
   </tr>
 
-  <% module_project.wbs_activity.wbs_activity_elements.each do |wbs_activity_elt| %>
-    <% completion_consistency = "" %>
-    <% title = "" %>
-    <tr>
-      <td>
-        <span class='tree_element_in_out' title='<%= title %>' style='margin-left:<%= wbs_activity_elt.depth %>em;'>
-          <%= wbs_activity_elt.name %>
+  <% module_project_ratio_elements.each do |mp_ratio_element| %>
+      <% completion_consistency = "" %>
+      <% title = "" %>
+      <tr>
+        <td>
+        <span class='tree_element_in_out' title='<%= title %>' style='margin-left:<%= mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>em;'>
+          <%= mp_ratio_element.name %>
         </span>
-      </td>
-      <% levels.each do |level| %>
-        <td class=''>
-          <span class='pull-right'>
-            <% level_estimation_values = Hash.new %>
-            <% level_estimation_values = estimation_value.send("string_data_#{level}") %>
-            <% pbs_estimation_values = level_estimation_values[pbs_project_element.id] %>
-
-            <%=
-             if wbs_activity_elt.is_root?
-               begin
-                 if estimation_value.pe_attribute.alias == "cost"
-                   @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
-                 else
-                   @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
-                 end
-               rescue
-                 if estimation_value.pe_attribute.alias == "cost"
-                   @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
-                 else
-                   @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
-                 end
-               end
-              end
-
-              begin
-                 if estimation_value.pe_attribute.alias == "cost"
-                   if pbs_estimation_values.nil?
-                     "-"
-                   else
-                     "#{convert_with_precision(pbs_estimation_values[wbs_activity_elt.id][:value], user_number_precision, true)} #{@wbs_unit}"
-                   end
-                 else
-                   text_field_tag("", convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true))
-                 end
-               rescue
-                 if estimation_value.pe_attribute.alias == "cost"
-                   if pbs_estimation_values.nil?
-                     "-"
-                   else
-                     "#{convert_with_precision(pbs_estimation_values[wbs_activity_elt.id], user_number_precision, true)} #{@wbs_unit}"
-                   end
-                 else
-                   text_field_tag("", convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true)) unless pbs_estimation_values.nil?
-                 end
-               end
-              %>
-          </span>
         </td>
-      <% end %>
-    <tr>
+        <% levels.each do |level| %>
+            <td class=''>
+          <span class='pull-right'>
+
+            <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
+            <%=
+                # if estimation_value.pe_attribute.alias == "cost"
+                if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                  if level_value.nil?
+                    "-"
+                  else
+                    "#{convert_with_precision(level_value, user_number_precision, true)} #{@wbs_unit}"
+                  end
+                else
+                  "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                end
+            %>
+          </span>
+            </td>
+        <% end %>
+        <tr>
   <% end %>
 </table>

@@ -576,6 +576,57 @@ $(document).ready(function() {
         });
     });
 
+    $("#ratio").change(function() {
+        if ($(this).val() !== "") {
+            return $.ajax({
+                url: "/refresh_dashboard_module_project_ratio_elements",
+                method: "GET",
+                data: "wbs_activity_ratio_id=" + $(this).val(),
+                success: function(data) {
+                    $("#dashboard_selected_ratio_id").val($(this).val());
+                    return $(".total-ratio").html(data);
+                },
+                error: function(XMLHttpRequest, testStatus, errorThrown) {
+                    return alert("Error!");
+                }
+            });
+        }
+    });
+
+    // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
+    $('.retained_effort').change(function(){
+        var ap_id = $(this).attr('id');
+        var ap_value = $('#'+ap_id).val();
+        //ap_value = parseFloat(ap_value.replace("," , "."));
+        var mp_ratio_element_id = $(this).data("mp_ratio_element_id");
+
+        if(!isNaN(parseFloat(ap_value)) && isFinite(ap_value)){
+            if(ap_value != undefined){
+
+                return $.ajax({
+                    url: "/refresh_dashboard_retained_cost",
+                    method: "GET",
+                    data: {
+                        wbs_activity_ratio_id: $("#ratio").val(),
+                        mp_ratio_element_id: mp_ratio_element_id,
+                        level: $(this).data("level"),
+                        ratio_value: $("#ratio_values_"+mp_ratio_element_id).val(),
+                        effort_value: ap_value
+                    },
+                    success: function(data) {
+
+                    },
+                    error: function(XMLHttpRequest, testStatus, errorThrown) {
+                        return alert("Error!");
+                    }
+                });
+
+            }
+
+        }
+    });
+
+
     $("#project_record_number").change(function() {
         return $.ajax({
             url: "project_record_number",

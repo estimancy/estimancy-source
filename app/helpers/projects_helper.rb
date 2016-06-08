@@ -69,6 +69,23 @@ module ProjectsHelper
       end
   end
 
+  def convert_wbs_activity_value(v, effort_unit_coefficient)
+    if v.nil?
+      nil
+    else
+      unless v.class == Hash
+        begin
+          value = v.to_f
+          (value / effort_unit_coefficient.to_f).round(user_number_precision)
+        rescue
+          0
+        end
+      else
+        0
+      end
+    end
+  end
+
   #Conversion en fonction des seuils et de la précision de l'utilisateur #> 12.12300 (si precision = 5)
   def convert(v, organization)
     unless v.class == Hash
@@ -999,7 +1016,8 @@ module ProjectsHelper
         "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
       end
 
-    elsif est_val_pe_attribute.alias == "effort"
+    #elsif est_val_pe_attribute.alias == "effort"
+    elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
         effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
@@ -1017,7 +1035,8 @@ module ProjectsHelper
 
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
-    elsif est_val_pe_attribute.alias == "cost"
+    #elsif est_val_pe_attribute.alias == "cost"
+    elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
       unless value.class == Hash
         "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
         end

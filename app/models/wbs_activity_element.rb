@@ -30,6 +30,8 @@ class WbsActivityElement < ActiveRecord::Base
   belongs_to :wbs_activity
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
 
+  has_many :module_project_ratio_elements, dependent: :destroy
+
   has_many :wbs_project_elements
 
   #default_scope order("id asc")
@@ -42,7 +44,7 @@ class WbsActivityElement < ActiveRecord::Base
   amoeba do
     enable
 
-    exclude_association [:wbs_activity_ratio_elements]      #TODO verify for wbs_project_elements exclusion
+    exclude_association [:wbs_activity_ratio_elements, :module_project_ratio_elements]      #TODO verify for wbs_project_elements exclusion
 
     customize(lambda { |original_wbs_activity_elt, new_wbs_activity_elt|
 

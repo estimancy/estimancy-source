@@ -4,42 +4,66 @@
   </strong>
 </h5>
 
-<% effort = PeAttribute.find_by_alias("effort") %>
+<% effort = PeAttribute.find_by_alias("effort") %>   <!-- Retained effort -->
+<% theoretical_effort =  PeAttribute.find_by_alias("theoretical_effort") %>
 <% ratio = PeAttribute.find_by_alias("ratio") %>
+
 <% cev = EstimationValue.where(:pe_attribute_id => effort.id,
                                :module_project_id => current_module_project.id,
-                               :in_out => "input").first %>
+                               :in_out => "input").first unless effort.nil? %>
 <% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
                                       :module_project_id => current_module_project.id,
-                                      :in_out => "output").first %>
+                                      :in_out => "output").first unless effort.nil? %>
+
+<% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
+                               :module_project_id => current_module_project.id,
+                               :in_out => "input").first unless theoretical_effort.nil? %>
+
+<% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
+                                      :module_project_id => current_module_project.id,
+                                      :in_out => "output").first unless theoretical_effort.nil? %>
+
 <% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
                                       :module_project_id => current_module_project.id,
-                                      :in_out => "output").first %>
+                                      :in_out => "output").first unless ratio.nil? %>
+
 <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
                                :module_project_id => current_module_project.previous.first,
-                               :in_out => "output").first %>
+                               :in_out => "output").first unless effort.nil? %>
+
 <% component_id = current_component.id %>
 <% organization = @project.organization %>
-<% wai = WbsActivityInput.where(module_project_id: current_module_project.id,
-                                wbs_activity_id: current_module_project.wbs_activity_id).first_or_create! %>
+<% wai = WbsActivityInput.where(module_project_id: current_module_project.id, wbs_activity_id: current_module_project.wbs_activity_id, pbs_project_element_id: current_component.id)
+                                .first_or_create(module_project_id: current_module_project.id, pbs_project_element_id: current_component.id,
+                                                 wbs_activity_id: current_module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id) %>
+
+<% selected_ratio = wai.wbs_activity_ratio.nil? ? @wbs_activity_ratio : wai.wbs_activity_ratio %>
+
 <% coeff = current_module_project.wbs_activity.effort_unit_coefficient.nil? ? 1 : current_module_project.wbs_activity.effort_unit_coefficient %>
 
-<% if cev.string_data_low[component_id].blank? %>
-  <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
-<% else %>
-  <% v_low = cev.nil? ? nil : (cev.string_data_low[component_id].to_f / coeff) %>
-<% end %>
+<% if cev.nil? %>
+    <% v_low = nil %>
+    <% v_ml = nil %>
+    <% v_high = nil %>
 
-<% if cev.string_data_most_likely[component_id].blank? %>
-  <% v_ml = pev.nil? ? nil : (pev.string_data_most_likely[component_id].to_f / coeff) %>
 <% else %>
-  <% v_ml = cev.nil? ? nil : (cev.string_data_most_likely[component_id].to_f / coeff) %>
-<% end %>
+    <% if cev.string_data_low[component_id].blank? %>
+      <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
+    <% else %>
+      <% v_low = cev.nil? ? nil : (cev.string_data_low[component_id].to_f / coeff) %>
+    <% end %>
 
-<% if cev.string_data_low[component_id].blank? %>
-  <% v_high = pev.nil? ? nil : (pev.string_data_high[component_id].to_f / coeff) %>
-<% else %>
-  <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
+    <% if cev.string_data_most_likely[component_id].blank? %>
+      <% v_ml = pev.nil? ? nil : (pev.string_data_most_likely[component_id].to_f / coeff) %>
+    <% else %>
+      <% v_ml = cev.nil? ? nil : (cev.string_data_most_likely[component_id].to_f / coeff) %>
+    <% end %>
+
+    <% if cev.string_data_low[component_id].blank? %>
+      <% v_high = pev.nil? ? nil : (pev.string_data_high[component_id].to_f / coeff) %>
+    <% else %>
+      <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
+    <% end %>
 <% end %>
 
 <%= form_tag save_effort_breakdown_path do %>
@@ -172,10 +196,31 @@
       </td>
     </tr>
   </table>
+
   <% if can?(:execute_estimation_plan, @project) %>
-    <%= submit_tag I18n.t(:launch_calculation), class: "pull-right btn btn-mini" %>
+    <%= submit_tag I18n.t(:calculate_save), class: "pull-right btn btn-mini" %>
   <% end %>
+
 <% end %>
+
+
+<!-- Ajout des valeurs des Ratios -->
+<div id="module_project_ratio_elements">
+  <%= form_tag update_effort_breakdown_retained_values_path do %>
+
+    <div id="module_project_ratio_section">
+        <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',
+                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
+                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+    </div>
+
+    <% if can?(:execute_estimation_plan, @project) %>
+      <%= submit_tag I18n.t(:update), class: "pull-right btn btn-mini" %>
+    <% end %>
+  <% end %>
+</div>
+<!-- Fin Ajout des valeurs des Ratios -->
+
 
 <%
    pbs_project_element = current_component
@@ -210,6 +255,21 @@
    end
    project_organization_profiles = project_organization_profiles.uniq
 %>
+
+<div class="modal fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_comments_content">
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="form_modal" tabindex="-1" role="dialog" aria-labelledby="form_modal_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="form_modal_content">
+    </div>
+  </div>
+</div>
+
 
 <!--<div class="row-fluid">-->
   <!--<div class="span12">-->

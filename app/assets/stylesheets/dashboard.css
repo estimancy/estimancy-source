@@ -948,10 +948,13 @@ span.error{
     color: #000000;
 }
 
+
 .modal .modal-body {
-    max-height: 600px;
+    height: 450px;
+    /*max-height: 600px;*/
     overflow-y: auto;
 }
+
 
 .darkseagreen{
     color: darkseagreen;

@@ -112,7 +112,8 @@ module ViewsWidgetsHelper
         "#{convert_with_precision(value.to_f, precision, true)}"
       end
 
-    elsif est_val_pe_attribute.alias == "effort"
+    #elsif est_val_pe_attribute.alias == "effort"
+    elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
         effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
@@ -130,7 +131,8 @@ module ViewsWidgetsHelper
 
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
-    elsif est_val_pe_attribute.alias == "cost"
+    #elsif est_val_pe_attribute.alias == "cost"
+    elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
       unless value.class == Hash
         "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
       end
@@ -501,7 +503,9 @@ module ViewsWidgetsHelper
 
           when "table_effort_per_phase", "table_cost_per_phase"
             unless estimation_value.in_out == "input"
-              value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
+              ###value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
+              # Avec les module_project Ratio-Elements
+              value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
             end
 
           when "histogram_effort_per_phase", "histogram_cost_per_phase"
@@ -559,7 +563,7 @@ module ViewsWidgetsHelper
 
     pbs_probable_est_value = probable_est_value[pbs_project_element.id]
 
-    return result if probable_est_value.nil? || pbs_probable_est_value.nil?
+    ###return result if probable_est_value.nil? || pbs_probable_est_value.nil?
 
     wbs_activity = module_project.wbs_activity
     wbs_activity_element_root = wbs_activity.wbs_activity_elements.first.root
@@ -570,6 +574,12 @@ module ViewsWidgetsHelper
       ratio_reference = wai.wbs_activity_ratio
     rescue
       ratio_reference = wbs_activity.wbs_activity_ratios.first
+    end
+
+    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+      wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+    else
+      wbs_unit = wbs_activity.effort_unit
     end
 
     project_organization = module_project.project.organization
@@ -592,23 +602,72 @@ module ViewsWidgetsHelper
     end
     project_organization_profiles = project_organization_profiles.uniq
 
+    pe_attribute_alias = estimation_value.pe_attribute.alias
+    if pe_attribute_alias.in?("cost", "effort")
+      #pe_attribute_alias = "theoretical_#{pe_attribute_alias}"
+      pe_attribute_alias = "retained_#{pe_attribute_alias}"
+    end
+
+
     case view_widget.widget_type
 
+      when "table_effort_per_phase", "table_cost_per_phase"
+
+        if ratio_reference.nil?
+          module_project_ratio_elements = []
+        else
+          module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
+        end
+
+        result = raw(render :partial => 'views_widgets/effort_by_phases',
+                            :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                            estimation_value: estimation_value,
+                                            pe_attribute: estimation_value.pe_attribute,
+                                            module_project: module_project,
+                                            project_organization_profiles: project_organization_profiles,
+                                            estimation_pbs_probable_results: pbs_probable_est_value,
+                                            ratio_reference: ratio_reference,
+                                            pe_attribute_alias: pe_attribute_alias,
+                                            module_project_ratio_elements: module_project_ratio_elements
+                                       } )
+
+
       when "effort_per_phases_profiles_table"
-        result = raw(render :partial => 'views_widgets/effort_by_phases_profiles', :locals => { project_wbs_activity_elements: wbs_activity_elements,
-                                                                                                pe_attribute: estimation_value.pe_attribute,
-                                                                                                module_project: module_project,
-                                                                                                project_organization_profiles: project_organization_profiles,
-                                                                                                estimation_pbs_probable_results: pbs_probable_est_value,
-                                                                                                ratio_reference: ratio_reference } )
+        if ratio_reference.nil?
+          added_module_project_ratio_elements = []
+        else
+          added_module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_element_id: nil).all
+        end
+
+        result = raw(render :partial => 'views_widgets/effort_by_phases_profiles',
+                                        :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                                      pe_attribute: estimation_value.pe_attribute,
+                                                      module_project: module_project,
+                                                      project_organization_profiles: project_organization_profiles,
+                                                      estimation_pbs_probable_results: pbs_probable_est_value,
+                                                      ratio_reference: ratio_reference,
+                                                      added_module_project_ratio_elements: added_module_project_ratio_elements,
+                                                      pe_attribute_alias: pe_attribute_alias,
+                                                      wbs_unit: wbs_unit
+                                       } )
 
       when "cost_per_phases_profiles_table"
-        result = raw(render :partial => 'views_widgets/cost_by_phases_profiles', :locals => { project_wbs_activity_elements: wbs_activity_elements,
-                                                                                              pe_attribute: estimation_value.pe_attribute,
-                                                                                              module_project: module_project,
-                                                                                              project_organization_profiles: project_organization_profiles,
-                                                                                              estimation_pbs_probable_results: pbs_probable_est_value,
-                                                                                              ratio_reference: ratio_reference } )
+        if ratio_reference.nil?
+          added_module_project_ratio_elements = []
+        else
+          added_module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_element_id: nil).all
+        end
+        result = raw(render :partial => 'views_widgets/cost_by_phases_profiles',
+                                        :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                                    pe_attribute: estimation_value.pe_attribute,
+                                                    module_project: module_project,
+                                                    project_organization_profiles: project_organization_profiles,
+                                                    estimation_pbs_probable_results: pbs_probable_est_value,
+                                                    ratio_reference: ratio_reference,
+                                                    added_module_project_ratio_elements: added_module_project_ratio_elements,
+                                                    pe_attribute_alias: pe_attribute_alias,
+                                                    wbs_unit: wbs_unit
+                                        } )
 
       when "stacked_bar_chart_effort_per_phases_profiles"
 
@@ -821,7 +880,7 @@ module ViewsWidgetsHelper
                 res << "#{ convert_with_precision(pbs_estimation_values[wbs_activity_elt.id], user_number_precision, true) } #{@wbs_unit}"
               end
             else
-              res << "#{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
+              res << " #{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
             end
           end
 

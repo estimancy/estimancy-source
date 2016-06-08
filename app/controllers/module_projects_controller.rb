@@ -150,7 +150,6 @@ class ModuleProjectsController < ApplicationController
 
   #update the module_project top and left position after drag (from estimation_plan)
   def update_module_project_left_and_top_positions
-    initialization_module_project = ModuleProject.find(params[:initialization_mp_id])
     module_projects = params[:module_projects_params]
     module_projects.each do |mp_params|
       mp_node = mp_params[1]

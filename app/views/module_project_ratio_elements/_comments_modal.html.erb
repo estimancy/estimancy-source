@@ -1,0 +1,40 @@
+<%= form_tag save_mp_ratio_element_comments_path, method: "post" do %>
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="comments_label<%= mp_ratio_element.id %>">
+      <%= mp_ratio_element.name %>
+    </h4>
+  </div>
+  <div class="modal-body">
+
+    <label>
+      <b>
+        <%= I18n.t(:name) %>
+      </b>
+    </label>
+    <%= text_area_tag "name[#{mp_ratio_element.id}]", mp_ratio_element.name, class: "attribute_note_area", readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        <%= I18n.t(:description) %>
+      </b>
+    </label>
+    <%= text_area_tag "description[#{mp_ratio_element.id}]", mp_ratio_element.description, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        <%= I18n.t(:comments) %>
+      </b>
+    </label>
+    <%= text_area_tag "comments[#{mp_ratio_element.id}]", mp_ratio_element.comments, class: "attribute_note_area", rows: 6, readonly: !can?(:execute_estimation_plan, @project) %>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" class="btn btn-default">
+        <%= I18n.t(:save) %>
+      </button>
+    <% end %>
+  </div>
+<% end %>
