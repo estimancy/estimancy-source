@@ -1935,7 +1935,8 @@ fr:
   kpi_unit: "Unité de KPI"
 
   duplicate: "Dupliquer l'unité d'oeuvre"
-  add: "Créer une unité d'oeuvre"  kpi_unit: "Unité de KPI"
+  add: "Créer une unité d'oeuvre"
+  kpi_unit: "Unité de KPI"
   calculate_save: "Calculer et Sauvegarder"
   calculated_value: "Calculé"
   retained_value: "Retenu"
@@ -1952,3 +1953,4 @@ fr:
   initial_label_ratio_value: "Valeur initiale du ratio"
   hide_results_global_view: "Cacher la vue globale du projet"
   show_results_global_view: "Afficher le vue globale du projet"
+  save_modifications: "Sauvegarder les modifications"
