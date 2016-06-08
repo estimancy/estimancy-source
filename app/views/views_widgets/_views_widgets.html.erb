@@ -30,7 +30,7 @@
             <td><%= widget.name %></td>
             <td><%= widget.pe_attribute.name if widget.pe_attribute %></td>
             <td><span><i class="<%= widget.icon_class %> icon-large"></i><%= widget.icon_class %></span></td>
-            <td style="max-width: 10px; background-color: <%= "##{widget.color}" %>"> <%= widget.color %> </td>
+            <td style="max-width: 10px; background-color: <%= "##{widget.color}" %>"><%= widget.color %> </td>
             <td class="align-center">
               <%= link_to "", edit_widget_path(widget), :class => 'icon-pencil icon-large', :title => I18n.t('edit') %>
               <%= link_to "", widget, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "icon-trash icon-large" %>

@@ -85,6 +85,8 @@ gem 'cache_digests'
 #Databases data translations
 gem 'globalize', '~> 3.1.0'
 
+gem 'cloudinary'
+
 #Optional gem for monitoring
 group :ic do
   gem 'newrelic_rpm'
@@ -107,6 +109,7 @@ gem 'guw', :path => 'vendor/gems/guw'
 gem 'ge', :path => 'vendor/gems/ge'
 gem 'operation', :path => 'vendor/gems/operation'
 gem 'kb', :path => 'vendor/gems/kb'
+gem 'skb', :path => 'vendor/gems/skb'
 gem 'balancing_module', :path => "vendor/gems/balancing_module"
 gem 'expert_judgement', :path => "vendor/gems/expert_judgement"
 gem 'staffing', :path => "vendor/gems/staffing"
@@ -143,7 +146,7 @@ gem 'slim'
 
 # For chart generation
 gem 'chartkick'
-gem "highcharts-rails", "~> 3.0.0"
+gem "highcharts-rails"
 gem 'groupdate'
 
 #Faker

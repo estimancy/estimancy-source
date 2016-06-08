@@ -15,21 +15,19 @@
   <div id="tabs-1">
 
     <% if controller.action_name == "new" %>
-        <div class="pull-right" style="margin-top: 100px;">
-          <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
-            <div>
-              <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
-              <%= hidden_field_tag :organization_id, @organization.id %>
-              <%= file_field_tag :file %>
-              <%= hidden_field_tag :ge_model_id, nil %>
-
-              <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-info' %>
-            </div>
-            <hr>
-          <% end %>
-        </div>
+      <div class="pull-right" style="margin-top: 100px;">
+        <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+          <div>
+            <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+            <%= hidden_field_tag :organization_id, @organization.id %>
+            <%= file_field_tag :file %>
+            <%= hidden_field_tag :ge_model_id, nil %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-info' %>
+          </div>
+          <hr>
+        <% end %>
+      </div>
     <% end %>
-
 
     <%= simple_form_for(@ge_model) do |f| %>
 
@@ -68,8 +66,12 @@
             <label class="checkbox"></label>
             <%=  label_tag I18n.t(:input_output_size) %>
           </div>
-          <div class="span2"> <%= f.input :input_size_unit, label: I18n.t(:input_size_unit) %></div>
-          <div class="span2"> <%= f.input :output_size_unit, label: I18n.t(:output_size_unit) %></div>
+          <div class="span2">
+            <%= f.input :input_size_unit, label: I18n.t(:input_size_unit) %>
+          </div>
+          <div class="span2">
+            <%= f.input :output_size_unit, label: I18n.t(:output_size_unit) %>
+          </div>
         </div>
 
         <div class="row-fluid">
@@ -106,7 +108,7 @@
       <% if action_name.in?(%w(edit update)) %>
 
         <div class="row-fluid">
-          <div class="span6">
+          <div class="span8">
             <%= form_tag ge.ge_model_import_path(@ge_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
 
               <div class="form-inputs">
@@ -114,23 +116,22 @@
                 <%= hidden_field_tag :organization_id,  @organization.id %>
                 <%= file_field_tag :file %>
                 <%= hidden_field_tag :ge_model_id, @ge_model.id %>
-
-                <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn btn-mini btn-primary' %>
               </div>
               <!--<hr>-->
             <% end %>
           </div>
-          <div class="span6">
+          <div class="span4">
             <label style="color: #808080">
               <% if !@ge_model.ge_factors.empty? %>
                 <%= I18n.t(:data_filename, filename: @ge_model.ge_factors.first.data_filename) %>
-                <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn btn-warning btn-xs', confirm: I18n.t(:confirm) %>
-              <% else %>
+                <br>
+                <%= link_to I18n.t(:export), ge.ge_model_data_export_path(@ge_model), :class => 'btn btn-mini', title: I18n.t(:export_generic_effort_model) %>
+                <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn btn-mini btn-warning pull-right', confirm: I18n.t(:confirm) %>
+            <% else %>
                 <%= I18n.t(:any_factor) %>
               <% end %>
             </label>
-            <%= link_to I18n.t(:export), ge.ge_model_data_export_path(@ge_model), :class => 'btn', title: I18n.t(:export_generic_effort_model) %>
-            <!--<hr>-->
           </div>
         </div>
         <hr>

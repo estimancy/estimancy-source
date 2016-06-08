@@ -30,11 +30,14 @@
             <% if @project.is_model == true %>
               <% apps = @project.applications %>
               <% if @current_organization.applications.empty? and apps.empty? %>
-                <%= f.input :application_name, :label => I18n.t(:label_product_name), :disabled => !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)), :input_html => { :class => 'input-large' } %>
+                <%= f.input :application_name,
+                            :label => I18n.t(:label_product_name),
+                            :disabled => !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)),
+                            :input_html => { :class => 'input-large' } %>
               <% else %>
-                <%= f.association :applications, as: :select,
+                <%= f.association :applications,
+                                  as: :select,
                                   collection: @current_organization.applications,
-                                  selected: @project.application_id,
                                   :label => I18n.t(:label_product_name),
                                   :input_html => { :class => 'input-large' },
                                   include_blank: true,
@@ -51,14 +54,24 @@
                 <%= f.input :application_name,
                             input_html: { :class => 'input-large' },
                             label: I18n.t(:label_product_name),
-                            disabled: !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) %>
+                            readonly: !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) %>
               <% else %>
-                <%= f.input :application_id, as: :select,
-                            collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
-                            label: I18n.t(:label_product_name),
-                            input_html: {:class => 'input-large'},
-                            selected: @project.application_id,
-                            disabled: (!(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || @project.private) %>
+                <% if (!(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || @project.private) %>
+                  <label>
+                    <%= I18n.t(:application) %>
+                  </label>
+                  <strong>
+                    <%= @project.application %>
+                  </strong>
+                  <br/>
+                <% else %>
+                  <%= f.input :application_id,
+                              as: :select,
+                              collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
+                              label: I18n.t(:label_product_name),
+                              input_html: {:class => 'input-large'},
+                              selected: @project.application_id %>
+                <% end %>
               <% end %>
             <% end %>
           </td>
@@ -113,10 +126,12 @@
 
         <tr>
           <td><%= f.input :start_date,
-                          :as => :string,
-                          :label => I18n.t(:start_date),
-                          :input_html => { :class => 'date-picker',
-                                           :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) } %></td>
+                          as: :string,
+                          label: I18n.t(:start_date),
+                          input_html: { :class => 'date-picker',
+                                           :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) },
+                          disabled: (!(can_alter_estimation?(@project) && can?(:alter_start_date, @project)) || @project.private) %>
+          </td>
 
           <script>
             $(document).ready(function () {

@@ -1,0 +1,152 @@
+<h3 id="skb">
+  <strong>
+    <%= @skb_model %>
+  </strong>
+  <hr>
+</h3>
+
+<h5>
+  Nombre de données
+</h5>
+<p>
+  <span class="skb_input_data">
+    <%= @skb_input.data.nil? ? '-' : @skb_input.data %>
+  </span>
+</p>
+
+<h5>
+  Nombre de traitements
+</h5>
+<p>
+  <span class="skb_input_processing">
+    <%= @skb_input.processing.nil? ? '-' : @skb_input.processing %>
+  </span>
+</p>
+
+
+<h5>
+  Taille totale
+</h5>
+<p>
+  <span class="skb_input_total">
+    <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
+  </span>
+</p>
+
+<p>
+  Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel
+</p>
+
+<%
+   @my_skb_datas = []
+   @my_skb_input = []
+   @skb_model.skb_datas.each do |i|
+     @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
+   end
+
+   @my_skb_input << { x: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.data,
+                      y: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.processing,
+                      z: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.retained_size,
+                      name: @project.to_s,
+                      description: @project.description.to_s }
+
+%>
+
+<div class="row-fluid">
+  <div class="span12">
+    <div id="yolo"></div>
+    <script>
+      $('#yolo').highcharts({
+
+        chart: {
+          type: 'bubble',
+          plotBorderWidth: 1,
+          zoomType: 'xy',
+          events: {
+            click: function (e) {
+              // find the clicked values and the series
+              var x = Math.round(e.xAxis[0].value);
+              var y = Math.round(e.yAxis[0].value);
+              var series = this.series[0];
+
+              // Add it
+              series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= @project.description.to_s %>" });
+
+              series.data[0].remove(false, false);
+
+              $.ajax({
+                url: "<%= skb.skb_model_save_size_path(@skb_model.id) %>",
+                data: {
+                  data: x,
+                  processing: y,
+                }
+              });
+
+            }
+          }
+        },
+
+        legend: {
+          enabled: true
+        },
+
+        title: {
+          text: 'IFPUG : Traitements, données et taille de projets'
+        },
+
+        xAxis: {
+          gridLineWidth: 1,
+          title: {
+            text: 'Données'
+          },
+          labels: {
+            format: '{value}'
+          }
+        },
+
+        yAxis: {
+          startOnTick: false,
+          endOnTick: false,
+          title: {
+            text: 'Traitements'
+          },
+          labels: {
+            format: '{value}'
+          },
+          maxPadding: 0.2
+        },
+
+        tooltip: {
+          useHTML: true,
+          headerFormat: '<table>',
+          pointFormat:
+          '<h5><b>{point.name}</b></h5>' +
+          '<p>{point.description}<br>' +
+          'Données: {point.x}<br>' +
+          'Traitements: {point.y}</p>' +
+          '<p>Taille totale: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
+          footerFormat: '</table>',
+          followPointer: false
+        },
+
+        plotOptions: {
+          series: {
+            dataLabels: {
+              enabled: true,
+              format: '{point.name}'
+            }
+          }
+        },
+        series: [{
+          name: 'Taille de <%= @project.to_s %>',
+          color: 'rgba(255, 50, 50, 0.8)',
+          data: <%= raw(@my_skb_input.to_json) %>
+        },{
+          name: 'Base de connaissance <%= @skb_model.name %>',
+          color: 'rgba(50, 50, 255, 0.8)',
+          data: <%= raw(@my_skb_datas.to_json) %>
+        }]
+      })
+    </script>
+  </div>
+</div>

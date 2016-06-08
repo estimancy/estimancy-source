@@ -105,6 +105,7 @@ Projestimate::Application.routes.draw do
   mount Ge::Engine, :at => '/ge'
   mount Operation::Engine, :at => '/operation'
   mount Kb::Engine, :at => '/kb'
+  mount Skb::Engine, :at => '/skb'
   mount Staffing::Engine, :at => '/staffing'
   mount BalancingModule::Engine, at: '/balancing_module'
 

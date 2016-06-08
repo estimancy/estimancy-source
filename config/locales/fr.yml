@@ -1869,6 +1869,7 @@ fr:
   weightings_label: "Nom du coefficient de pondération 2"
   factors_label: "Nom du coefficient de pondération 3"
   allow_technology: "Allow technologies"
+  default_display: "Affichage par défaut"
   see_model: "Voir le modèle"
   sum: "Somme"
   product: "Produit"
@@ -1932,6 +1933,9 @@ fr:
   languages_list: "Liste des langues"
   language_edition: "Editer une langue"
   kpi_unit: "Unité de KPI"
+
+  duplicate: "Dupliquer l'unité d'oeuvre"
+  add: "Créer une unité d'oeuvre"  kpi_unit: "Unité de KPI"
   calculate_save: "Calculer et Sauvegarder"
   calculated_value: "Calculé"
   retained_value: "Retenu"

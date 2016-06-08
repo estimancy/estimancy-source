@@ -1,7 +1,7 @@
 <ul class="nav">
 
   <li class="dropdown">
-    <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:Import_user_from_excel)%>">
+    <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:Import_user_from_excel) %>">
       <i class="fa fa-list-ul fa-lg pull-left"></i>&nbsp;
     </a>
   </li>
@@ -9,7 +9,7 @@
   <li class="dropdown">
     <% begin %>
       <% if @project %>
-        <a href="<%= main_app.dashboard_path(@project) %>" title="<%= I18n.t(:Current_estimate)%>">
+        <a href="<%= main_app.dashboard_path(@project) %>" title="<%= I18n.t(:Current_estimate) %>">
           <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
         </a>
       <% else %>
@@ -25,7 +25,7 @@
   </li>
 
   <li class="dropdown">
-    <a href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report)%>">
+    <a href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>">
       <i class="fa fa-print fa-lg pull-left"></i>&nbsp;
     </a>
   </li>

@@ -19,8 +19,6 @@
 #
 #############################################################################
 
-require 'uuidtools'
-
 namespace :estimancy do
   desc 'Load default data'
   task :check_subscription => :environment do

@@ -41,6 +41,7 @@ module Projestimate
     config.autoload_paths += Dir["#{config.root}/vendor/gems/guw/lib"]
     config.autoload_paths += Dir["#{config.root}/vendor/gems/ge/lib"]
     config.autoload_paths += Dir["#{config.root}/vendor/gems/operation/lib"]
+    config.autoload_paths += Dir["#{config.root}/vendor/gems/skb/lib"]
     config.autoload_paths += Dir["#{config.root}/vendor/gems/kb/lib"]
     config.autoload_paths += Dir["#{config.root}/vendor/gems/staffing/lib"]
     config.autoload_paths += Dir["#{config.root}/vendor/gems/expert_judgement/lib"]
@@ -54,6 +55,7 @@ module Projestimate
     config.autoload_paths += %W(#{config.root}/vendor/gems/guw/lib)
     config.autoload_paths += %W(#{config.root}/vendor/gems/operation/lib)
     config.autoload_paths += %W(#{config.root}/vendor/gems/ge/lib)
+    config.autoload_paths += %W(#{config.root}/vendor/gems/skb/lib)
     config.autoload_paths += %W(#{config.root}/vendor/gems/kb/lib)
     config.autoload_paths += %W(#{config.root}/vendor/gems/staffing/lib)
     config.autoload_paths += %W(#{config.root}/vendor/gems/expert_judgement/lib)
