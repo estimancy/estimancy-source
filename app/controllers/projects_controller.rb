@@ -2301,6 +2301,10 @@ public
               if archive_status
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
+                  new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut. Nouveau statut : #{archive_status.estimation_status} \r\n"
+                  comment = ancestor.status_comment + " \r\n" + new_comment
+                  ancestor.status_comment = comment
+                  ancestor.save(validate: false)
                 end
               end
             end
@@ -2313,6 +2317,12 @@ public
             new_status = new_prj.organization.estimation_statuses.where(is_new_status: true).first
             if new_status
               new_prj.update_attribute(:estimation_status_id, new_status.id)
+
+              new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut. Nouveau statut : #{new_status.name} \r\n"
+              comment = new_prj.status_comment + " \r\n" + new_comment
+
+              new_prj.status_comment = comment
+              new_prj.save(validate: false)
             end
           end
 
