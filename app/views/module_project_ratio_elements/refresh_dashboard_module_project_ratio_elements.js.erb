@@ -7,3 +7,7 @@ $('#dashboard_selected_ratio_id').html("<%=raw j select_tag "dashboard_selected_
 //$('#dashboard_selected_ratio_id').html("<%#=raw j hidden_field_tag_tag(:dashboard_selected_ratio_id, @wbs_activity_ratio.id)  %>");
 
 $("#notifications").html("");
+
+
+// ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
+update_mp_ratio_element_retained_cost_value();

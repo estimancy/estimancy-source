@@ -503,9 +503,26 @@ module ViewsWidgetsHelper
 
           when "table_effort_per_phase", "table_cost_per_phase"
             unless estimation_value.in_out == "input"
-              ###value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
-              # Avec les module_project Ratio-Elements
-              value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+              wbs_activity = module_project.wbs_activity
+              wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
+              begin
+                ratio_reference = wai.wbs_activity_ratio
+              rescue
+                ratio_reference = wbs_activity.wbs_activity_ratios.first
+              end
+
+              if ratio_reference.nil?
+                module_project_ratio_elements = []
+              else
+                module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id)
+              end
+
+              if module_project.module_project_ratio_elements.empty? || module_project.module_project_ratio_elements.nil?
+                value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
+              else
+                # Avec les module_project Ratio-Elements
+                value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+              end
             end
 
           when "histogram_effort_per_phase", "histogram_cost_per_phase"
@@ -619,7 +636,7 @@ module ViewsWidgetsHelper
           module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
         end
 
-        result = raw(render :partial => 'views_widgets/effort_by_phases',
+        result = raw(render :partial => 'views_widgets/effort_by_phases_with_mp_ratio_elements',
                             :locals => { project_wbs_activity_elements: wbs_activity_elements,
                                             estimation_value: estimation_value,
                                             pe_attribute: estimation_value.pe_attribute,
