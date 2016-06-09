@@ -259,6 +259,7 @@ class ProjectsController < ApplicationController
       @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
       # Module_project Ratio elements
       @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: current_component.id)
+      @pbs_project_element = current_component
 
       if @module_project_ratio_elements.nil? || @module_project_ratio_elements.empty?
         #create module_project ratio elements

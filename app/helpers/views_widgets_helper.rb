@@ -517,7 +517,7 @@ module ViewsWidgetsHelper
                 module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id)
               end
 
-              if module_project.module_project_ratio_elements.empty? || module_project.module_project_ratio_elements.nil?
+              if module_project_ratio_elements.empty? || module_project_ratio_elements.nil?
                 value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
               else
                 # Avec les module_project Ratio-Elements
