@@ -2183,7 +2183,7 @@ public
       redirect_to organization_estimations_path(@current_organization), :flash => {:warning => I18n.t('warning_not_allow_to_create_new_branch_of_project')} and return
     end
 
-    begin
+    # begin
       old_prj_copy_number = old_prj.copy_number
 
       #old_prj_pe_wbs_product_name = old_prj.pe_wbs_projects.products_wbs.first.name
@@ -2301,7 +2301,7 @@ public
               if archive_status
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut. Nouveau statut : #{archive_status.estimation_status} \r\n"
+                  new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut. Nouveau statut : #{archive_status.name} \r\n"
                   comment = ancestor.status_comment + " \r\n" + new_comment
                   ancestor.status_comment = comment
                   ancestor.save(validate: false)
@@ -2334,11 +2334,11 @@ public
           redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
         end
       end
-    rescue
+    # rescue
       flash[:error] = I18n.t(:error_project_checkout_failed)
       redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
       ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
-    end
+    # end
 
     #else
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}
