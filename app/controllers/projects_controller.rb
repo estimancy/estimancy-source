@@ -2304,7 +2304,7 @@ public
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
                   new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r\n"
                   # comment = ancestor.status_comment + " \r\n" + new_comment
-                  comment = "___________________________________________________________________________\r\n" + new_comment + " \r\n" + new_prj.status_comment + "___________________________________________________________________________\r\n"
+                  comment = "___________________________________________________________________________\r\n" + new_comment + "___________________________________________________________________________\r\n" + new_prj.status_comment
 
                   ancestor.status_comment = comment
                   ancestor.save(validate: false)
@@ -2322,7 +2322,7 @@ public
               old_version = old_prj.version
               new_prj.update_attribute(:estimation_status_id, new_status.id)
               new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name} \r\n"
-              comment = "___________________________________________________________________________\r\n" + new_comment + " \r\n" + new_prj.status_comment + "___________________________________________________________________________\r\n"
+              comment = "___________________________________________________________________________\r\n" + new_comment + "___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.status_comment = comment
               new_prj.save(validate: false)
             end
