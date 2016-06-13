@@ -2183,7 +2183,7 @@ public
       redirect_to organization_estimations_path(@current_organization), :flash => {:warning => I18n.t('warning_not_allow_to_create_new_branch_of_project')} and return
     end
 
-    # begin
+    begin
       old_prj_copy_number = old_prj.copy_number
 
       #old_prj_pe_wbs_product_name = old_prj.pe_wbs_projects.products_wbs.first.name
@@ -2302,12 +2302,8 @@ public
                 old_version = old_prj.version
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r\n"
-                  # comment = ancestor.status_comment + " \r\n" + new_comment
-                  comment = "___________________________________________________________________________\r\n" + new_comment + "___________________________________________________________________________\r\n" + new_prj.status_comment
-
-                  ancestor.status_comment = comment
-                  ancestor.save(validate: false)
+                  ancestor.status_comment = ancestor.status_comment + "\r ___________________________________________________________________________\r\n #{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name}"
+                  ancestor.save
                 end
               end
             end
@@ -2321,10 +2317,8 @@ public
             if new_status
               old_version = old_prj.version
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name} \r\n"
-              comment = "___________________________________________________________________________\r\n" + new_comment + "___________________________________________________________________________\r\n" + new_prj.status_comment
-              new_prj.status_comment = comment
-              new_prj.save(validate: false)
+              new_prj.status_comment = new_prj.status_comment + "\r ___________________________________________________________________________\r\n #{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}"
+              new_prj.save
             end
           end
 
@@ -2336,11 +2330,11 @@ public
           redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
         end
       end
-    # rescue
+    rescue
       flash[:error] = I18n.t(:error_project_checkout_failed)
       redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
       ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
-    # end
+    end
 
     #else
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}
