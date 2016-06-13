@@ -369,8 +369,14 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        ratio = WbsActivityInput.where(wbs_activity_id: activity.id,
-                                       module_project_id: widget.module_project.id).first.wbs_activity_ratio
+        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first
+
+        if wbs_activity_input.nil?
+          ratio = nil
+        else
+          ratio = wbs_activity_input.wbs_activity_ratio
+        end
+
         unless ratio.nil?
           activity.wbs_activity_elements.each do |element|
             my_len_2 = element.name.length < my_len_2 ? my_len_2 : element.name.length
