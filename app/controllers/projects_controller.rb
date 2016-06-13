@@ -2302,7 +2302,7 @@ public
                 old_version = old_prj.version
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  ancestor.status_comment = ancestor.status_comment + "\r ___________________________________________________________________________\r\n #{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name}"
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
                   ancestor.save
                 end
               end
@@ -2317,7 +2317,7 @@ public
             if new_status
               old_version = old_prj.version
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_prj.status_comment = new_prj.status_comment + "\r ___________________________________________________________________________\r\n #{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}"
+              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
           end
