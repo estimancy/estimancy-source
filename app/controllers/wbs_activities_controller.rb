@@ -335,7 +335,49 @@ class WbsActivitiesController < ApplicationController
       end
       @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
     end
-    #======================  FIN create or save module_project Ratio Element Values =========================
+    #=== FIN create or save module_project Ratio Element Values =====
+
+
+
+    #======= Voir si les attributs theoretical_effort et theoretical_cost existe sinon les créer ============
+    # Update the Activity module-project attributes if they don't exist (theoretical_effort, theoretical_cost)
+    unless @module_project.wbs_activity.nil?
+      theoretical_effort = PeAttribute.find_by_alias("theoretical_effort")
+      theoretical_cost = PeAttribute.find_by_alias("theoretical_cost")
+
+      [theoretical_effort, theoretical_cost].each do |theoretical_attribute|
+        ["input", "output"].each do |in_out|
+          unless in_out == "input" && theoretical_attribute.alias == "theoretical_cost"
+
+            theoretical_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out).first
+            if theoretical_est_val.nil?
+              theoretical_est_val = EstimationValue.create(:module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out)
+
+              case theoretical_attribute.alias
+                when "theoretical_effort"
+                  retained_attribute = PeAttribute.find_by_alias("effort")
+                when "theoretical_cost"
+                  retained_attribute = PeAttribute.find_by_alias("cost")
+              end
+
+              retained_attribute_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
+              if retained_attribute_est_val
+                ["low", "most_likely", "high", "probable"].each do |level|
+                  theoretical_est_val[:"string_data_#{level}"] = retained_attribute_est_val[:"string_data_#{level}"]
+                  theoretical_est_val[:"string_data_#{level}"][:pe_attribute_name] = theoretical_attribute.name
+                end
+                theoretical_est_val[:custom_attribute] = retained_attribute_est_val[:custom_attribute]
+                theoretical_est_val[:description] = theoretical_attribute.description
+              end
+
+              theoretical_est_val.save
+            end
+          end
+        end
+      end
+    end
+    #===== Fin test =====
+
 
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values
@@ -780,6 +822,7 @@ class WbsActivitiesController < ApplicationController
   end
 
 
+  # TODO : pas encore fini
   #==============
   def save_retained_value_by_phases_profiles(wbs_activity_element_id, mp_retained_value, activity_element_profiles, psb_level_estimation_value, mp_ratio_element, pe_attribute_alias)
     activity_element_profiles = psb_level_estimation_value[wbs_activity_element_id]["profiles"]

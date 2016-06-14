@@ -1481,3 +1481,8 @@ it:
   hide_results_global_view: "Cacher la vue globale du projet"
   show_results_global_view: "Afficher le vue globale du projet"
   save_modifications: "Sauvegarder les modifications"
+
+  theoretical_effort: "Effort calculé"
+  theoretical_cost: "Coût calculé"
+  retained_effort: "Effort retenu"
+  retained_cost: "Coût retenu"

@@ -594,7 +594,7 @@ $(document).ready(function() {
     });
 
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
-    update_mp_ratio_element_retained_cost_value();
+    update_mp_ratio_element_retained_effort_and_cost_values();
 
 
     $("#project_record_number").change(function() {
@@ -1007,27 +1007,64 @@ function preview_selected_wbs_activity(){
     });
 }
 
+
 // Function to update the Cost value when the Retained Effort change
-function update_mp_ratio_element_retained_cost_value(){
+function update_mp_ratio_element_retained_effort_and_cost_value(){
+
+}
+
+// Function to update the Cost value when the Retained Effort change
+function update_mp_ratio_element_retained_effort_and_cost_values(){
+
+    $('.retained_effort').on('focusin', function(){
+        //console.log("Saving value " + $(this).val());
+        $(this).data('previous_value', $(this).val());
+    });
+
+
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
     $('.retained_effort').change(function(){
         var ap_id = $(this).attr('id');
         var ap_value = $('#'+ap_id).val();
         //ap_value = parseFloat(ap_value.replace("," , "."));
-        var mp_ratio_element_id = $(this).data("mp_ratio_element_id");
+        var previous_value = $(this).data("previous_value");
+        var mp_ratio_element_id = $(this).data("mp_ratio_element_id"),
+            level = $(this).data("level");
+
+        var cost_field_id = ap_id.replace("effort" , "cost");
+        var current_cost_value = $('#'+cost_field_id).val();
+
+        // call function to get element parents effort value
+        var wbs_activity_element_parent_ids_string = $(this).data("wbs_activity_element_parent_ids");
+        var wbs_activity_element_parent_ids = JSON.parse(wbs_activity_element_parent_ids_string);
+        var wbs_activity_element_parent_efforts = new Object();
+
+        $.each(wbs_activity_element_parent_ids, function( index, value ) {
+            alert( index + ": " + value );
+        });
+
+        //wbs_activity_element_parent_ids.each(function(){
+        $.each(wbs_activity_element_parent_ids, function( index, value ) {
+            var parent_id = "retained_effort_"+level+"_"+value;
+            var parent_effort_value = $("#"+parent_id).val();
+            wbs_activity_element_parent_efforts[value] = parent_effort_value;
+        });
 
         if(!isNaN(parseFloat(ap_value)) && isFinite(ap_value)){
             if(ap_value != undefined){
 
                 return $.ajax({
-                    url: "/refresh_dashboard_retained_cost",
+                    url: "/refresh_dashboard_retained_effort_and_cost",
                     method: "GET",
                     data: {
                         wbs_activity_ratio_id: $("#ratio").val(),
                         mp_ratio_element_id: mp_ratio_element_id,
                         level: $(this).data("level"),
                         ratio_value: $("#ratio_values_"+mp_ratio_element_id).val(),
-                        effort_value: ap_value
+                        effort_value: ap_value,
+                        current_cost_value: current_cost_value,
+                        previous_effort_value: previous_value,
+                        element_parents_efforts: wbs_activity_element_parent_efforts
                     },
                     success: function(data) {
 

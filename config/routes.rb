@@ -182,7 +182,7 @@ Projestimate::Application.routes.draw do
   post "save_comments" => "module_project_ratio_elements#save_comments", as: "save_mp_ratio_element_comments"
   post "save_mp_ratio_element" => "module_project_ratio_elements#save_mp_ratio_element", as: "save_mp_ratio_element"
   get 'refresh_dashboard_module_project_ratio_elements' => 'module_project_ratio_elements#refresh_dashboard_module_project_ratio_elements', :as => 'refresh_dashboard_module_project_ratio_elements'
-  get 'refresh_dashboard_retained_cost' => 'module_project_ratio_elements#refresh_dashboard_retained_cost', :as => 'refresh_dashboard_retained_cost'
+  get 'refresh_dashboard_retained_effort_and_cost' => 'module_project_ratio_elements#refresh_dashboard_retained_effort_and_cost', :as => 'refresh_dashboard_retained_effort_and_cost'
 
   resources :languages
 

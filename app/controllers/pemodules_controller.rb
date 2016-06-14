@@ -129,7 +129,8 @@ class PemodulesController < ApplicationController
       if @pemodule.alias == Projestimate::Application::INITIALIZATION
         @pemodule.attribute_modules.create(:pe_attribute_id => g, :in_out => 'both', :record_status_id => @pemodule.record_status_id) unless g.blank?
       else
-        @pemodule.attribute_modules.create(:pe_attribute_id => g, :record_status_id => @pemodule.record_status_id) unless g.blank?
+        pe_attribute = PeAttribute.find(g)
+        @pemodule.attribute_modules.create(:pe_attribute_id => g, :record_status_id => @pemodule.record_status_id, :description => pe_attribute.description) unless g.blank?
       end
     end
     @pemodule.pe_attributes(force_reload = true)

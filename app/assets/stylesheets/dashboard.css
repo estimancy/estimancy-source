@@ -1228,3 +1228,7 @@ tr.conversion_factor, td.conversion_factor {
     width: 30px;
 }
 
+.show_hide_project_overview{
+    color: white;
+    margin-right: 10px;
+}
