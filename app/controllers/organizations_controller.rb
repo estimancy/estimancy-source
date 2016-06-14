@@ -1067,7 +1067,6 @@ class OrganizationsController < ApplicationController
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
-      @complexities = @organization.organization_uow_complexities
       @ot = @organization.organization_technologies.first
       @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles
