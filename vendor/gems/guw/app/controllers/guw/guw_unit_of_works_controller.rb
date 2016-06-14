@@ -535,7 +535,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
+    if @guw_unit_of_works.last.nil?
+      redirect_to main_app.dashboard_path(@project)
+    else
+      redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
+    end
   end
 
   def change_cotation
