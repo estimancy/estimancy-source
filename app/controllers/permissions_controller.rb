@@ -168,33 +168,19 @@ class PermissionsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          permission = Permission.where(description: row[1],
-                                        alias: row[2],
-                                        object_type: row[3],
-                                        category: row[4],
-                                        object_associated: row[7]).first
-
+          permission = Permission.where(alias: row[2]).first
           if permission.nil?
-            permission = Permission.create(name: row[0],
-                                          description: row[1],
-                                          alias: row[2],
-                                          object_type: row[3],
-                                          category: row[4],
-                                          object_associated: row[7])
-          else
-            del_array << permission
+            permission = Permission.create( name: row[0],
+                                            description: row[1],
+                                            alias: row[2],
+                                            object_type: row[3],
+                                            category: row[4],
+                                            object_associated: row[7])
           end
         end
       end
-
     else
       flash[:error] = I18n.t(:route_flag_error_4)
-    end
-
-    doublons = Permission.all.group_by{|perm| [perm.name, perm.alias]}
-    doublons.values.each do |duplicates|
-      first_one = duplicates.shift
-      duplicates.each{|doub| doub.destroy }
     end
 
     redirect_to :back
