@@ -891,7 +891,7 @@ class Guw::GuwModelsController < ApplicationController
       elsif guow.off_line_uo
         cplx = "HSUO"
       elsif guow.guw_complexity.nil?
-        cplx = "-"
+        cplx = ""
       else
         cplx = guow.guw_complexity.name
       end

@@ -22,7 +22,5 @@
 module Skb
   class SkbData < ActiveRecord::Base
     belongs_to :skb_model
-    serialize :custom_attributes, Hash
-
   end
 end

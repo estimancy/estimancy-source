@@ -6,7 +6,7 @@
 </h3>
 
 <h5>
-  Nombre de données
+  <%= I18n.t :number_of_data %>
 </h5>
 <p>
   <span class="skb_input_data">
@@ -15,7 +15,7 @@
 </p>
 
 <h5>
-  Nombre de traitements
+  <%= I18n.t :number_of_processing %>
 </h5>
 <p>
   <span class="skb_input_processing">
@@ -25,7 +25,7 @@
 
 
 <h5>
-  Taille totale
+  <%= I18n.t :total_size %>
 </h5>
 <p>
   <span class="skb_input_total">
@@ -34,7 +34,7 @@
 </p>
 
 <p>
-  Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel
+  <%= I18n.t :move_your_cursor %>
 </p>
 
 <%
@@ -44,9 +44,9 @@
      @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
    end
 
-   @my_skb_input << { x: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.data,
-                      y: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.processing,
-                      z: @skb_model.skb_inputs.last.nil? ? 0 : @skb_model.skb_inputs.last.retained_size,
+   @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
+                      y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
+                      z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
                       name: @project.to_s,
                       description: @project.description.to_s }
 
@@ -55,6 +55,8 @@
 <div class="row-fluid">
   <div class="span12">
     <div id="yolo"></div>
+    <hr>
+    <%= link_to "#{I18n.t(:calculate)}", url_for(params), class: "pull-right btn btn-mini" %>
     <script>
       $('#yolo').highcharts({
 
@@ -91,13 +93,13 @@
         },
 
         title: {
-          text: 'IFPUG : Traitements, données et taille de projets'
+          text: '<%= @current_organization %> / <%= @skb_model.name %>'
         },
 
         xAxis: {
           gridLineWidth: 1,
           title: {
-            text: 'Données'
+            text: '<%= I18n.t :data %>'
           },
           labels: {
             format: '{value}'
@@ -108,7 +110,7 @@
           startOnTick: false,
           endOnTick: false,
           title: {
-            text: 'Traitements'
+            text: '<%= I18n.t :processing %>'
           },
           labels: {
             format: '{value}'
@@ -124,7 +126,7 @@
           '<p>{point.description}<br>' +
           'Données: {point.x}<br>' +
           'Traitements: {point.y}</p>' +
-          '<p>Taille totale: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
+          '<p><%= I18n.t :total_size %>: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
           footerFormat: '</table>',
           followPointer: false
         },
@@ -142,7 +144,7 @@
           color: 'rgba(255, 50, 50, 0.8)',
           data: <%= raw(@my_skb_input.to_json) %>
         },{
-          name: 'Base de connaissance <%= @skb_model.name %>',
+          name: "Base de connaissance '<%= @skb_model.name %>'",
           color: 'rgba(50, 50, 255, 0.8)',
           data: <%= raw(@my_skb_datas.to_json) %>
         }]

@@ -47,7 +47,12 @@ public
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:users)
-    @users = User.all
+    owner_key = AdminSetting.find_by_key("Estimation Owner")
+    if owner_key.nil?
+      @users = User.all
+    else
+      User.all.reject{|i| i.initials == owner_key.value }
+    end
     @audits = Audit.all
   end
 

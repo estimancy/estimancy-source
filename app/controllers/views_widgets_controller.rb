@@ -142,6 +142,12 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.module_project_id = @module_project.id
     end
 
+    begin
+      @views_widget.module_project_id = @module_project.id
+    rescue
+
+    end
+
     respond_to do |format|
       if @views_widget.save
         unless params["field"].blank?
@@ -213,7 +219,7 @@ class ViewsWidgetsController < ApplicationController
       end
 
       if pf.nil?
-          ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+        ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
       else
         pf.value = @value
         pf.views_widget_id = @views_widget.id
@@ -376,8 +382,14 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        ratio = WbsActivityInput.where(wbs_activity_id: activity.id,
-                                       module_project_id: widget.module_project.id).first.wbs_activity_ratio
+        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first
+
+        if wbs_activity_input.nil?
+          ratio = nil
+        else
+          ratio = wbs_activity_input.wbs_activity_ratio
+        end
+
         unless ratio.nil?
           activity.wbs_activity_elements.each do |element|
             my_len_2 = element.name.length < my_len_2 ? my_len_2 : element.name.length

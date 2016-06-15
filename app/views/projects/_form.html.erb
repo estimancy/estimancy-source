@@ -137,9 +137,10 @@
 
         <tr>
           <td>
+            <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
             <%= f.input :creator_id,
                         as: :select,
-                        collection: @organization.users.where(locked_at: nil).map{ |i| [i.name, i.id] },
+                        collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
                         label: I18n.t('creator'),
                         selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
                         input_html: { selected: current_user.id,:class => 'input-large', disabled: !can?(:alter_creator, @project) } %>
@@ -385,7 +386,8 @@
                           <% end %>
                       </tr>
                     <% else %>
-                      <% @organization.users.each do |user| %>
+                    <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                      <% @organization.users.reject{|i| i.initials == owner_key.nil? ? '' : owner_key.value }.each do |user| %>
                         <tr>
                           <td>
                             <%= user %>
@@ -414,6 +416,7 @@
             </div>
           </div>
         </div>
+
         </div>
 
         <% if @project.is_model == true %>
