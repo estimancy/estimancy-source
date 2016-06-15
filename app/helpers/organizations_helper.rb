@@ -138,8 +138,10 @@ module OrganizationsHelper
           end
         end
       when :description
-        # mettre un truncate sinon ca plante sous ie8
-        content_tag('td', ActionView::Base.full_sanitizer.sanitize(value).to_s.html_safe, :class => "text_field_text_overflow")
+        v = ActionView::Base.full_sanitizer.sanitize(value).to_s.html_safe
+        content_tag('td', :class => "text_field_text_overflow") do
+          content_tag('span', v.to_s.html_safe, title: v)
+        end
       when :private
         # mettre un truncate sinon ca plante sous ie8
 

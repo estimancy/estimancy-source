@@ -7,7 +7,6 @@
     <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
     <table>
-      <!--<tr><td><%#= f.association :widget, label: I18n.t(:label_widget) %></td></tr>-->
       <tr>
         <td><%= f.input :name, label: I18n.t(:name) %></td>
         <td>
@@ -15,14 +14,11 @@
           <%= f.input :show_name, label: I18n.t(:show_name) %>
         </td>
       </tr>
-      <!--<tr>-->
-          <!--<td><%#= f.input :is_label_widget, label: I18n.t(:Is_it_of_a_title_thumbnail), disabled: !@views_widget.new_record? %></td>-->
-      <!--</tr>-->
       <tr>
         <td><%= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @pbs_project_element_id, include_blank: false, input_html:{class: "inline_attr"}  %></td>
         <td>
           <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-            <%= f.association :module_project, label: "Modules", collection: @project.module_projects.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
+            <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr"} %>
           <% else %>
             <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
           <% end %>
@@ -36,7 +32,7 @@
         <td>
           <!-- Color is using the JS Spectrum library -->
           <% if @views_widget.new_record? %>
-            <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+            <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
           <% else %>
             <%= f.input :color, label: I18n.t(:status_color) %>
           <% end %>

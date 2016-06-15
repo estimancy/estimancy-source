@@ -9,31 +9,27 @@
         <%= f.error_notification %>
         <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
 
-        <div class="form-inputs">
-          <div class="row-fluid">
-            <div class="span2"><%= f.input :status_number, label: I18n.t(:status_number) %></div>
-            <div class="span4"><%= f.input :status_alias, label: I18n.t(:alias) %></div>
-          </div>
+      <div class="form-inputs">
+        <div class="row-fluid">
+          <%= f.input :status_number, label: I18n.t(:status_number) %>
+          <%= f.input :name, label: I18n.t(:name) %>
+          <%= f.input :status_alias, label: I18n.t(:alias) %>
 
-          <div class="row-fluid">
-            <div class="span2"><%= f.input :name, label: I18n.t(:name) %></div>
-            <div class="span5">
-              <label class="checkbox"></label>
-              <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
-            </div>
-          </div>
+          <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
+          <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
 
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
           <br>
         </div>
+      </div>
 
-        <div class="actions">
-          <% if can? :manage, EstimationStatus %>
-            <%= submit_tag I18n.t('save'), :class => 'btn' %>
-          <% end %>
-          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
-        </div>
+      <div class="actions">
+        <% if can? :manage, EstimationStatus %>
+          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
+      </div>
     <% end %>
   </div>
 </div>

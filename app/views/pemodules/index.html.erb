@@ -21,7 +21,6 @@
         <th><%= I18n.t(:name) %></th>
         <th>Alias</th>
         <th><%= I18n.t(:description) %></th>
-        <th class="filter-select"><%= I18n.t(:record_status) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -36,21 +35,11 @@
                 <td class="span3"><%= pemodule.title %></td>
                 <td class="span3"><%= pemodule.alias %></td>
                 <td><%= pemodule.description %></td>
-                <td><%= pemodule.record_status.name unless pemodule.record_status.nil? %> <%= pemodule.show_custom_value %></td>
                 <td class="center">
                   <% if can? :manage, Pemodule %>
-                      <%= link_to '', edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                      <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'icon-info', :title => I18n.t('button_find_use')) %>
-                      <%= link_to '', pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-                      <% if is_master_instance? && !pemodule.is_local_record? %>
-                          <% if pemodule.is_retired? %>
-                              <%= link_to('', "pemodules/#{pemodule.id}/restore_change", confirm: I18n.t('restoring'), :class => 'icon-undo', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                          <% else %>
-                              <% unless pemodule.is_defined? %>
-                                  <%= link_to('', "pemodules/#{pemodule.id}/validate_change", confirm: I18n.t('validation'), :class => 'icon-ok', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                              <% end %>
-                          <% end %>
-                      <% end %>
+                    <%= link_to '', edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                    <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'icon-info', :title => I18n.t('button_find_use')) %>
+                    <%= link_to '', pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>

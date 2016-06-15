@@ -996,6 +996,10 @@ module ProjectsHelper
         end
 
         "#{convert_with_standard_unit_coefficient(est_val, value.to_f, effort_standard_unit_coefficient, precision)} #{size_unit}"
+      elsif module_project.pemodule.alias == "skb"
+        skb_model = module_project.skb_model
+        size_unit = skb_model.size_unit
+        "#{value.to_f} #{size_unit}"
       else
         "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
       end

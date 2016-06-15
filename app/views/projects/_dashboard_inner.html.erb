@@ -33,9 +33,11 @@
           - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %></h5>
 
         <div class="buttons">
-          <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini">
-            <%= I18n.t(:button_estimation_plan) %>
-          </a>
+          <% if can?(:execute_estimation_plan, @project) %>
+            <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini">
+              <%= I18n.t(:button_estimation_plan) %>
+            </a>
+          <% end %>
 
           <%# link_to "Exporter projet", export_my_project_xl_path(@project) , :class => 'btn btn-mini' %>
           <%# link_to "Tout exécuter", "#!", method: "post", class: "btn btn-mini" %>
@@ -53,34 +55,29 @@
   </div>
 </div>
 
-<div class="row-fluid">
-  <div class="span12">
-    <div class="widget-box collapsible">
-      <div class="widget-title">
-        <!--<a href="#collapseIn" data-toggle="collapse">-->
-          <!--<span class="icon">-->
-            <!--<i class="icon-align-left"></i>-->
-          <!--</span>-->
-        <!--</a>-->
+<% unless current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box collapsible">
+        <div class="widget-title">
+          <h5>
+            <%= I18n.t(:label_input_data) %> - <%= current_component %> - <%= "#{current_module_project}" %>
+          </h5>
+        </div>
 
-        <h5>
-          <%= I18n.t(:label_input_data) %> - <%= current_component %> - <%= "#{current_module_project}" %>
-        </h5>
-
-      </div>
-
-      <div class="collapse in" id="collapseIn">
-        <div class="widget-content tab-content">
-          <div class="input">
-            <div class="input_data">
-              <%= render :partial => 'projects/setting_module' %>
+        <div class="collapse in" id="collapseIn">
+          <div class="widget-content tab-content">
+            <div class="input">
+              <div class="input_data">
+                <%= render :partial => 'projects/setting_module' %>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>
 
 <!-- show selected view for each module project -->
 <!-- The results boxes will be arranged as in the estimation plan -->

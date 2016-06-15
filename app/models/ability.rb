@@ -100,6 +100,7 @@ class Ability
       @array_users = Array.new
       @array_status_groups = Array.new
       @array_groups = Array.new
+      @array_owners = Array.new
 
       #Specfic project security loading
       prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(user.id, false, true)
@@ -115,6 +116,51 @@ class Ability
                     can :manage, project, estimation_status_id: es.id
                   else
                     @array_users << [permission.id, project.id, es.id]
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+
+      owner_key = AdminSetting.find_by_key("Estimation Owner")
+      if owner_key.nil?
+        owner_key = AdminSetting.create(key: "Estimation Owner", value: "*OWNER")
+        owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+        if owner.nil?
+          owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+          owner.save(validate: false)
+          Organization.all.each do |o|
+            o.users << owner
+            o.save
+          end
+        end
+      else
+        owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+        if owner.nil?
+          owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+          owner.save(validate: false)
+        end
+        owner = User.find_by_initials(owner_key.value)
+      end
+
+      prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
+      unless prj_scrts.empty?
+        specific_permissions_array = []
+        prj_scrts.each do |prj_scrt|
+          unless prj_scrt.project_security_level.nil?
+            project = prj_scrt.project
+            if user.id == project.creator_id
+              unless project.nil?
+                project.organization.estimation_statuses.each do |es|
+                  prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+                    if permission.alias == "manage" and permission.category == "Project"
+                      # can :manage, project, estimation_status_id: es.id
+                      @array_owners = []
+                    else
+                      @array_owners << [permission.id, project.id, es.id]
+                    end
                   end
                 end
               end
@@ -166,7 +212,7 @@ class Ability
         end
       end
 
-      global = @array_users + @array_groups
+      global = @array_users + @array_groups + @array_owners
       status = @array_status_groups
 
       pe = Permission.where(id: [status, global].inject(:&).map{|i| i[0]}).all

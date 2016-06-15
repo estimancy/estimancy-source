@@ -365,6 +365,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:module ,parameter: @organization)
 
     @guw_models = @organization.guw_models.order("name asc")
+    @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
     @technologies = @organization.organization_technologies.order("name asc")
   end
@@ -426,6 +427,10 @@ class OrganizationsController < ApplicationController
         app = Application.where(name: application.name, organization_id: new_organization.id).first
         ap = ApplicationsProjects.create(application_id: app.id,
                                          project_id: new_prj.id)
+
+        # new_prj.application_id = app.id
+        # new_prj.save(validate: false)
+
         ap.save
       end
 
@@ -789,7 +794,6 @@ class OrganizationsController < ApplicationController
           #  #=====
           #end
 
-
           # Copy the WBS-Activities modules's Models instances
           organization_image.wbs_activities.each do |old_wbs_activity|
             new_wbs_activity = old_wbs_activity.amoeba_dup   #amoeba gem is configured in WbsActivity class model
@@ -1063,7 +1067,6 @@ class OrganizationsController < ApplicationController
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
-      @complexities = @organization.organization_uow_complexities
       @ot = @organization.organization_technologies.first
       @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles

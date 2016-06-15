@@ -69,29 +69,31 @@ module ViewsWidgetsHelper
     eq = view_widget.equation
     tmp_formula = eq["formula"].to_s
 
-    unless eq["A"].nil?
+    unless eq["A"].blank?
       a_value = EstimationValue.find(eq["A"].to_i).string_data_probable[current_component.id].to_s
     end
 
-    unless eq["B"].nil?
+    unless eq["B"].blank?
       b_value = EstimationValue.find(eq["B"].to_i).string_data_probable[current_component.id].to_s
     end
 
-    unless eq["C"].nil?
+    unless eq["C"].blank?
       c_value = EstimationValue.find(eq["C"].to_i).string_data_probable[current_component.id].to_s
     end
 
-    unless eq["D"].nil?
+    unless eq["D"].blank?
       d_value = EstimationValue.find(eq["D"].to_i).string_data_probable[current_component.id].to_s
     end
 
-    unless eq["E"].nil?
+    unless eq["E"].blank?
       e_value = EstimationValue.find(eq["E"].to_i).string_data_probable[current_component.id].to_s
     end
 
     begin
       formula = tmp_formula.gsub("A", a_value).gsub("B", b_value).gsub("C", c_value).gsub("D", d_value).gsub("E", e_value)
-      widget_data[:value_to_show] = eval(formula).round(current_user.number_precision)
+
+      #Regexp a utiliser mais j'y arrive pas [ABCDEF\d{*+\/}]
+      widget_data[:value_to_show] = eval(formula).round(current_user.number_precision) + " #{view_widget.kpi_unit}"
     rescue
       widget_data[:value_to_show] = "-"
     end

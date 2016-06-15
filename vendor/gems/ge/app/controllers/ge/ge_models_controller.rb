@@ -137,13 +137,25 @@ class Ge::GeModelsController < ApplicationController
 
     model_worksheet.sheet_name = "Model"
 
+    if @ge_model.input_pe_attribute.nil?
+      input_pe_attribute_alias = ""
+    else
+      input_pe_attribute_alias = @ge_model.input_pe_attribute.alias
+    end
+
+    if @ge_model.output_pe_attribute.nil?
+      output_pe_attribute_alias = ""
+    else
+      output_pe_attribute_alias = @ge_model.output_pe_attribute.alias
+    end
+
     first_page = [[I18n.t(:model_name),  @ge_model.name],
                   [I18n.t(:model_description), @ge_model.description ],
                   [I18n.t(:three_points_estimation), @ge_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:modification_entry_valur), @ge_model.enabled_input ],
                   [I18n.t(:enabled_theorical_effort_modification), @ge_model.modify_theorical_effort],
-                  [I18n.t(:module_input_attribute), @ge_model.input_pe_attribute.alias],
-                  [I18n.t(:module_output_attribute), @ge_model.output_pe_attribute.alias],
+                  [I18n.t(:module_input_attribute), input_pe_attribute_alias],
+                  [I18n.t(:module_output_attribute), output_pe_attribute_alias],
                   ["#{I18n.t(:label_Factor)} a", @ge_model.coeff_a ],
                   ["#{I18n.t(:scale_factor)} : b", @ge_model.coeff_b ],
                   [I18n.t(:p_factors_calculation_method), @ge_model.p_calculation_method],

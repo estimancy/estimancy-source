@@ -73,7 +73,7 @@ class ProjectsController < ApplicationController
       @project = Project.new :state => 'preliminary'
     end
 
-    @pemodules ||= Pemodule.defined
+    @pemodules ||= Pemodule.all
     @project_modules = @project.pemodules
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
@@ -121,7 +121,7 @@ class ProjectsController < ApplicationController
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project.title}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
     @module_projects = @project.module_projects
@@ -166,6 +166,13 @@ class ProjectsController < ApplicationController
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id).first_or_create
+      @project_list = []
+
+    elsif @module_project.pemodule.alias == "skb"
+      @skb_model = current_module_project.skb_model
+      @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
+                                      organization_id: @project_organization.id,
+                                      skb_model_id: @skb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
@@ -330,11 +337,19 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
 
+    estimation_owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+
     #Give full control to project creator
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first_or_create!(key: "Secure Level Creator", value: "*ALL")
-    full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value, organization_id: @organization.id, description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
+    full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value,
+                                                                                                                                        organization_id: @organization.id,
+                                                                                                                                        description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
 
-    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status, name: "Manage Projet", uuid: UUIDTools::UUID.random_create.to_s)
+    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage",
+                                                                                                                                                          object_associated: "Project",
+                                                                                                                                                          record_status_id: @defined_record_status,
+                                                                                                                                                          name: "Manage Projet",
+                                                                                                                                                          uuid: UUIDTools::UUID.random_create.to_s)
     # Add the "manage project" authorization to the "FullControl" security level
     if manage_project_permission
       if !manage_project_permission.in?(full_control_security_level.permission_ids)
@@ -344,11 +359,11 @@ class ProjectsController < ApplicationController
 
     #For user
     current_user_ps = @project.project_securities.build
-    if params[:project][:creator_id].blank?
-      current_user_ps.user_id = current_user.id
-    else
-      current_user_ps.user_id = params[:project][:creator_id].to_i
-    end
+    # if params[:project][:creator_id].blank?
+      current_user_ps.user_id = estimation_owner.id
+    # else
+      # current_user_ps.user_id = params[:project][:creator_id].to_i
+    # end
     current_user_ps.project_security_level = full_control_security_level
     current_user_ps.is_model_permission = false
     current_user_ps.is_estimation_permission = true
@@ -358,11 +373,34 @@ class ProjectsController < ApplicationController
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first.value
     defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
-    defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+    defaut_group_ps.group_id = Group.where(name: defaut_group.value,
+                                           organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
     defaut_group_ps.project_security_level = full_control_security_level
     defaut_group_ps.is_model_permission = false
     defaut_group_ps.is_estimation_permission = true
     defaut_group_ps.save
+
+    if @is_model == "true"
+
+      new_current_user_ps = @project.project_securities.build
+      # if params[:project][:creator_id].blank?
+        new_current_user_ps.user_id = estimation_owner.id
+      # else
+      #   new_current_user_ps.user_id = params[:project][:creator_id].to_i
+      # end
+      new_current_user_ps.project_security_level = full_control_security_level
+      new_current_user_ps.is_model_permission = true
+      new_current_user_ps.is_estimation_permission = false
+      new_current_user_ps.save
+
+      new_defaut_group_ps = @project.project_securities.build
+      new_defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+      new_defaut_group_ps.project_security_level = full_control_security_level
+      new_defaut_group_ps.is_model_permission = true
+      new_defaut_group_ps.is_estimation_permission = false
+      new_defaut_group_ps.save
+
+    end
 
     @project.is_locked = false
 
@@ -493,6 +531,7 @@ class ProjectsController < ApplicationController
 
     @guw_module = Pemodule.where(alias: "guw").first
     @kb_module = Pemodule.where(alias: "kb").first
+    @skb_module = Pemodule.where(alias: "skb").first
     @ge_module = Pemodule.where(alias: "ge").first
     @operation_module = Pemodule.where(alias: "operation").first
     @staffing_module = Pemodule.where(alias: "staffing").first
@@ -503,11 +542,12 @@ class ProjectsController < ApplicationController
     @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
     @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
     @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+    @skb_models = @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
     @staffing_modules = @staffing_module.nil? ? [] : @project.organization.staffing_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
     @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
     @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
 
-    @modules_selected = ([@guw_module, @ge_module, @staffing_module, @ej_module, @ebd_module, @kb_module]).map do |i|
+    @modules_selected = ([@guw_module, @ge_module, @staffing_module, @ej_module, @ebd_module, @kb_module, @skb_module]).map do |i|
       unless i.nil?
         [i.title, i.id]
       end
@@ -577,9 +617,11 @@ class ProjectsController < ApplicationController
         end
       end
 
-      if (@organization.projects.map(&:title) - [@project.title]).include?(params['project']['title'])
-        flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-        redirect_to edit_project_path and return
+      unless params['project'].nil?
+        if (@organization.projects.map(&:title) - [@project.title]).include?(params['project']['title'])
+          flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
+          redirect_to edit_project_path and return
+        end
       end
 
       @project.save
@@ -749,7 +791,7 @@ class ProjectsController < ApplicationController
       else
 
         @guw_module = Pemodule.where(alias: "guw").first
-        @kb_module = Pemodule.where(alias: "kb").first
+        @kb_module = Pemodule.where(alias: "skb").first
         @ge_module = Pemodule.where(alias: "ge").first
         @operation_module = Pemodule.where(alias: "operation").first
         @staffing_module = Pemodule.where(alias: "staffing").first
@@ -789,7 +831,7 @@ class ProjectsController < ApplicationController
                                  is_estimation_permission: true)
         else
           ProjectSecurity.create(project_id: project.id,
-                                 user_id: project.creator_id,
+                                 user_id: User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s),
                                  project_security_level_id: ps.project_security_level_id,
                                  group_id: nil,
                                  is_model_permission: false,
@@ -832,6 +874,7 @@ class ProjectsController < ApplicationController
 
     @guw_module = Pemodule.where(alias: "guw").first
     @kb_module = Pemodule.where(alias: "kb").first
+    @skb_module = Pemodule.where(alias: "skb").first
     @ge_module = Pemodule.where(alias: "ge").first
     @operation_module = Pemodule.where(alias: "operation").first
     @staffing_module = Pemodule.where(alias: "staffing").first
@@ -842,11 +885,12 @@ class ProjectsController < ApplicationController
     @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
     @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
     @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+    @skb_models = @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
     @staffing_modules = @staffing_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
     @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
     @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
 
-    @modules_selected = (Pemodule.defined.all - [@guw_module, @kb_module, @ge_module, @staffing_module, @ej_module, @ebd_module]).map{|i| [i.title,i.id]}
+    @modules_selected = (Pemodule.all - [@guw_module, @kb_module, @ge_module, @staffing_module, @ej_module, @ebd_module]).map{|i| [i.title,i.id]}
 
     project_root = @project.root
     project_tree = project_root.subtree
@@ -1028,8 +1072,8 @@ class ProjectsController < ApplicationController
     end
 
     unless @pemodule.nil? || @project.nil?
-      @array_modules = Pemodule.defined
-      @pemodules ||= Pemodule.defined
+      @array_modules = Pemodule.all
+      @pemodules ||= Pemodule.all
 
       #Max pos or 1
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
@@ -1048,6 +1092,12 @@ class ProjectsController < ApplicationController
         Kb::KbInput.create( organization_id: @current_organization.id,
                             module_project_id: my_module_project.id,
                             kb_model_id: kb_model_id)
+      elsif @pemodule.alias == "skb"
+        skb_model_id = params[:module_selected].split(',').first.to_i
+        my_module_project.skb_model_id = skb_model_id
+        Skb::SkbInput.create( organization_id: @current_organization.id,
+                              module_project_id: my_module_project.id,
+                              skb_model_id: skb_model_id)
       elsif @pemodule.alias == "ge"
         my_module_project.ge_model_id = params[:module_selected].split(',').first
       elsif @pemodule.alias == "operation"
@@ -1745,15 +1795,16 @@ public
 
       #Update the project securities for the current user who create the estimation from model
       #if params[:action_name] == "create_project_from_template"
+      owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
       if !params[:create_project_from_template].nil?
         creator_securities = new_prj.project_securities
         creator_securities.each do |ps|
           if ps.is_model_permission == true
             ps.update_attribute(:is_model_permission, false)
             ps.update_attribute(:is_estimation_permission, true)
-            if !ps.user_id.nil?
-              ps.update_attribute(:user_id, current_user.id)
-            end
+            # if !ps.user_id.nil?
+              ps.update_attribute(:user_id, owner.id)
+            # end
           else
             ps.destroy
           end
@@ -1787,6 +1838,14 @@ public
         new_c.save
       end
 
+      #For applications
+      old_prj.applications.each do |application|
+        app = Application.where(name: application.name, organization_id: @organization.id).first
+        ap = ApplicationsProjects.create(application_id: app.id,
+                                         project_id: new_prj.id)
+        ap.save
+      end
+
       # For ModuleProject associations
       old_prj.module_projects.group(:id).each do |old_mp|
         new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
@@ -1795,6 +1854,14 @@ public
         old_mp.associated_module_projects.each do |associated_mp|
           new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
           new_mp.associated_module_projects << new_associated_mp
+        end
+
+        old_mp.skb_inputs.each do |skbi|
+          Skb::SkbInput.create(data: skbi.data,
+                               processing: skbi.processing,
+                               retained_size: skbi.retained_size,
+                               organization_id: @organization.id,
+                               module_project_id: new_mp.id)
         end
 
         # if the module_project is nil
@@ -1819,13 +1886,6 @@ public
             guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
           end
         end
-
-        # new_mp.uow_inputs.each do |uo|
-        #   new_pbs_project_element = new_prj_components.find_by_copy_id(uo.pbs_project_element_id)
-        #   new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-        #
-        #   uo.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-        # end
 
         ["input", "output"].each do |io|
           new_mp.pemodule.pe_attributes.each do |attr|
@@ -2103,6 +2163,7 @@ public
   def set_checkout_version
     @project = Project.find(params[:project_id])
     @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
+    @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
   end
 
   #Checkout the project : create a new version of the project
@@ -2238,10 +2299,26 @@ public
               #Get the archive status of the project's organization
               archive_status = new_prj.organization.estimation_statuses.where(is_archive_status: true).first
               if archive_status
+                old_version = old_prj.version
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.save
                 end
               end
+            end
+          end
+
+          #New project last versions
+          if params['new_project_version'] == "yes"
+            #get last versions of the projects
+            #Get the archive status of the project's organization
+            new_status = new_prj.organization.estimation_statuses.where(is_new_status: true).first
+            if new_status
+              old_version = old_prj.version
+              new_prj.update_attribute(:estimation_status_id, new_status.id)
+              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.save
             end
           end
 
@@ -2657,7 +2734,7 @@ public
                                                        pbs_project_element_id: current_component.id).first_or_create!
       end
 
-    elsif @module_project.pemodule.alias == "kb"
+    elsif @module_project.pemodule.alias == "skb"
       @kb_model = current_module_project.kb_model
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,

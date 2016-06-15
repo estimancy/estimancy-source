@@ -47,7 +47,6 @@ module Ge
       })
     end
 
-
     def to_s(mp=nil)
       if mp.nil?
         self.name

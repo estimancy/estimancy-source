@@ -126,9 +126,16 @@ class ViewsWidgetsController < ApplicationController
       equation = Hash.new
       equation["formula"] = params[:formula].upcase
       ["A", "B", "C", "D", "E"].each do |letter|
-        equation[letter] = params[letter.to_sym].upcase
+        equation[letter] = params[letter.to_sym].to_s.upcase
       end
       @views_widget.equation = equation
+      @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
+    end
+
+    begin
+      @views_widget.module_project_id = @module_project.id
+    rescue
+
     end
 
     respond_to do |format|
@@ -202,7 +209,7 @@ class ViewsWidgetsController < ApplicationController
       end
 
       if pf.nil?
-          ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+        ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
       else
         pf.value = @value
         pf.views_widget_id = @views_widget.id
@@ -291,7 +298,6 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
-
   #Update the module_project corresponding data of view
   def update_widget_module_project_data
     module_project_id = params['module_project_id']
@@ -363,8 +369,14 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        ratio = WbsActivityInput.where(wbs_activity_id: activity.id,
-                                       module_project_id: widget.module_project.id).first.wbs_activity_ratio
+        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first
+
+        if wbs_activity_input.nil?
+          ratio = nil
+        else
+          ratio = wbs_activity_input.wbs_activity_ratio
+        end
+
         unless ratio.nil?
           activity.wbs_activity_elements.each do |element|
             my_len_2 = element.name.length < my_len_2 ? my_len_2 : element.name.length

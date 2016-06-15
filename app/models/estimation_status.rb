@@ -20,7 +20,7 @@
 #############################################################################
 
 class EstimationStatus < ActiveRecord::Base
-  attr_accessible :description, :status_alias, :name, :organization_id, :status_number, :status_color, :is_archive_status
+  attr_accessible :description, :status_alias, :name, :organization_id, :status_number, :status_color, :is_archive_status, :is_new_status
 
   belongs_to :organization
 
@@ -43,6 +43,7 @@ class EstimationStatus < ActiveRecord::Base
   validates :status_number, presence: true, uniqueness: { scope: :organization_id, case_sensitive: false }
   validates :status_alias, presence: true, uniqueness: { scope: :organization_id, case_sensitive: false }
   validates :is_archive_status, uniqueness: { scope: :organization_id, case_sensitive: false, message: I18n.t(:only_one_archive_status_possible), :if => Proc.new { |status| status.is_archive_status == true} }
+  validates :is_new_status, uniqueness: { scope: :organization_id, case_sensitive: false, message: I18n.t(:only_one_new_status_possible), :if => Proc.new { |status| status.is_new_status == true} }
   validate  :check_status_alias
 
   default_scope order('status_number ASC')

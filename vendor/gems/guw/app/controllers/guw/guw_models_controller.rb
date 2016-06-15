@@ -687,6 +687,19 @@ class Guw::GuwModelsController < ApplicationController
       ind = 0
       ind3 = 5
     end
+
+    worksheet = workbook.add_worksheet("Matrice")
+    [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each_with_index do |ts, i|
+      worksheet.add_cell(0, i+1, ts[0])
+      ["size", "effort", "cost"].each_with_index do |ta, j|
+        worksheet.add_cell(j+1, 0, ta.to_s.humanize)
+        gsma = Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model.id,
+                                                  type_attribute: ta,
+                                                  type_scale: ts[1]).first
+        worksheet.add_cell(j+1, i+1, gsma.nil? ? 0 : 1)
+      end
+    end
+
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
@@ -842,7 +855,7 @@ class Guw::GuwModelsController < ApplicationController
       elsif guow.off_line_uo
         cplx = "HSUO"
       elsif guow.guw_complexity.nil?
-        cplx = "-"
+        cplx = ""
       else
         cplx = guow.guw_complexity.name
       end

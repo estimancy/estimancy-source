@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160420150247) do
+ActiveRecord::Schema.define(:version => 20160526133627) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -303,6 +303,7 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.integer  "copy_id"
+    t.boolean  "is_new_status"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -846,12 +847,6 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
@@ -875,6 +870,9 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.integer  "project_id"
     t.integer  "position_x"
     t.integer  "position_y"
+    t.float    "top_position"
+    t.float    "left_position"
+    t.integer  "creation_order"
     t.integer  "nb_input_attr"
     t.integer  "nb_output_attr"
     t.integer  "copy_id"
@@ -890,6 +888,7 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.integer  "staffing_model_id"
     t.integer  "kb_model_id"
     t.integer  "operation_model_id"
+    t.integer  "skb_model_id"
   end
 
   create_table "module_projects_pbs_project_elements", :id => false, :force => true do |t|
@@ -1428,6 +1427,36 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.string   "reference_uuid"
   end
 
+  create_table "skb_skb_datas", :force => true do |t|
+    t.string  "name"
+    t.float   "data"
+    t.float   "processing"
+    t.integer "skb_model_id"
+    t.text    "description"
+  end
+
+  create_table "skb_skb_inputs", :force => true do |t|
+    t.float   "data"
+    t.float   "processing"
+    t.float   "retained_size"
+    t.integer "organization_id"
+    t.integer "module_project_id"
+    t.integer "skb_model_id"
+  end
+
+  create_table "skb_skb_models", :force => true do |t|
+    t.string   "name"
+    t.string   "size_unit"
+    t.boolean  "three_points_estimation"
+    t.boolean  "enabled_input"
+    t.integer  "organization_id"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
+  end
+
   create_table "staffing_staffing_custom_data", :force => true do |t|
     t.integer  "staffing_model_id"
     t.integer  "module_project_id"
@@ -1610,7 +1639,7 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
+    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1664,6 +1693,7 @@ ActiveRecord::Schema.define(:version => 20160420150247) do
     t.text     "comment"
     t.boolean  "is_kpi_widget"
     t.text     "equation"
+    t.string   "kpi_unit"
   end
 
   create_table "wbs_activities", :force => true do |t|

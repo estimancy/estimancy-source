@@ -8,7 +8,6 @@
         <li class="tabs_4_with_estimation_plan"><a href="#tabs-4"><%= I18n.t(:estimation_plan) %></a></li>
         <li><a href="#tabs-5"><%= I18n.t(:securities) %></a></li>
         <li><a href="#tabs-history"><%= I18n.t(:label_project_history) %> </a></li>
-        <!--<li><a href="#tabs-6"> Tableau de bord </a></li>-->
       <% end %>
     </ul>
 
@@ -36,10 +35,11 @@
               <% if @current_organization.applications.empty? and apps.empty? %>
                 <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
               <% else %>
-                <%= f.association :applications, as: :select,
+                <%= f.association :applications,
+                                  as: :select,
                                   collection: @current_organization.applications,
-                                  :label => I18n.t(:label_product_name),
-                                  :input_html => { :class => 'input-large' },
+                                  label: I18n.t(:label_product_name),
+                                  input_html: { :class => 'input-large' },
                                   include_blank: true %>
               <% end %>
             <% else %>
@@ -58,10 +58,10 @@
                 <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
               <% else %>
                 <%= f.input :application_id, as: :select,
-                              collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
-                              label: I18n.t(:label_product_name),
-                              input_html: {:class => 'input-large'},
-                              selected: @project.application_id %>
+                            collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
+                            label: I18n.t(:label_product_name),
+                            selected: @project.application_id,
+                            input_html: {:class => 'input-large'} %>
               <% end %>
             <% end %>
           </td>
@@ -133,9 +133,10 @@
 
         <tr>
           <td>
+            <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
             <%= f.input :creator_id,
                         as: :select,
-                        collection: @organization.users.where(locked_at: nil).map{ |i| [i.name, i.id] },
+                        collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
                         label: I18n.t('creator'),
                         selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
                         input_html: { selected: current_user.id,:class => 'input-large', disabled: !can?(:alter_creator, @project) } %>
@@ -223,6 +224,7 @@
               <div class="span12">
                 <%= I18n.t(:label_add_a_module_to_project) %>
                 <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                            "Base de connaissance de taille" => @skb_models,
                                                                             "Modules d'opération" => @operation_models,
                                                                             "Modules de Jugement d'Expert" => @ej_modules,
                                                                             "Modules Activités / Profils" => @wbs_instances,
@@ -380,7 +382,8 @@
                           <% end %>
                       </tr>
                     <% else %>
-                      <% @organization.users.each do |user| %>
+                    <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                      <% @organization.users.reject{|i| i.initials == owner_key.nil? ? '' : owner_key.value }.each do |user| %>
                         <tr>
                           <td>
                             <%= user %>
@@ -409,6 +412,7 @@
             </div>
           </div>
         </div>
+
         </div>
 
         <% if @project.is_model == true %>
