@@ -103,7 +103,7 @@ class PemodulesController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = []
 
-    if @pemodule.save
+    if @pemodule.save(validate: false)
       redirect_to redirect_apply(edit_pemodule_path(@pemodule), new_pemodule_path(), pemodules_path)
     else
       render action: 'new'
@@ -134,7 +134,7 @@ class PemodulesController < ApplicationController
     end
     @pemodule.pe_attributes(force_reload = true)
 
-    if @pemodule.save
+    if @pemodule.save(validate: false)
       flash[:notice] = I18n.t (:notice_pemodule_successful_updated)
     else
       flash[:notice] = I18n.t (:error_administration_setting_failed_update)
@@ -161,10 +161,10 @@ class PemodulesController < ApplicationController
       #   project_value = params[:project_value][i]
       # end
 
-      attribute_module.update_attributes(:in_out => params[:in_out][i],                                           
-                                         :default_low =>  params[:default_low][i],
-                                         :default_most_likely =>  params[:default_most_likely][i],
-                                         :default_high =>  params[:default_high][i])
+      attribute_module.update_attributes(:in_out => params[:in_out]["#{attribute_module.id}"],
+                                         :default_low =>  params[:default_low]["#{attribute_module.id}"],
+                                         :default_most_likely =>  params[:default_most_likely]["#{attribute_module.id}"],
+                                         :default_high =>  params[:default_high]["#{attribute_module.id}"])
     end
     redirect_to redirect_apply(edit_pemodule_path(@pemodule, :anchor=>'tabs-3'), nil, pemodules_path), :notice => "#{I18n.t (:notice_module_project_successful_updated)}"
   end

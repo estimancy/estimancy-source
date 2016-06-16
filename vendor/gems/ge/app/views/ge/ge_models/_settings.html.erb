@@ -7,7 +7,7 @@
         <div class="accordion" id="accordion_factor">
 
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
-            <% factor_values_per_type.each do |type, factor_values| %>
+              <% factor_values_per_type.each do |type, factor_values| %>
 
               <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
                 <% factor_value = factor_values.first %>

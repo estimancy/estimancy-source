@@ -19,15 +19,15 @@
         <p><%= text_field_tag "new_version", "", :class => 'input-xlarge' %></p>
       </div>
 
-      <% if @archive_status %>
-         <label for="archive_last_project_version" class="checkbox">
-           <%= raw(I18n.t(:archive_last_project_versions)) %> <%= @archive_status %>
-           <input id="archive_last_project_version" name="archive_last_project_version" type="checkbox" value="yes" />
-           <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_archived) %>"></i>
-         </label>
+      <% if @archive_status && can?(:can_archive_version, @project) %>
+        <label for="archive_last_project_version" class="checkbox">
+          <%= raw(I18n.t(:archive_last_project_versions)) %> <%= @archive_status %>
+          <input id="archive_last_project_version" name="archive_last_project_version" type="checkbox" value="yes" />
+         <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_archived) %>"></i>
+        </label>
       <% end %>
 
-      <% if @new_status %>
+      <% if @new_status && can?(:can_draft_version, @project) %>
          <label for="new_project_version" class="checkbox">
            <%= raw(I18n.t(:new_project_versions)) %> <%= @new_status %>
            <input id="new_project_version" name="new_project_version" type="checkbox" value="yes" />

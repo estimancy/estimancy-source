@@ -368,6 +368,8 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
 
+    estimation_owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+
     #Give full control to project creator
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first_or_create!(key: "Secure Level Creator", value: "*ALL")
     full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value,
@@ -388,11 +390,11 @@ class ProjectsController < ApplicationController
 
     #For user
     current_user_ps = @project.project_securities.build
-    if params[:project][:creator_id].blank?
-      current_user_ps.user_id = current_user.id
-    else
-      current_user_ps.user_id = params[:project][:creator_id].to_i
-    end
+    # if params[:project][:creator_id].blank?
+      current_user_ps.user_id = estimation_owner.id
+    # else
+      # current_user_ps.user_id = params[:project][:creator_id].to_i
+    # end
     current_user_ps.project_security_level = full_control_security_level
     current_user_ps.is_model_permission = false
     current_user_ps.is_estimation_permission = true
@@ -412,11 +414,11 @@ class ProjectsController < ApplicationController
     if @is_model == "true"
 
       new_current_user_ps = @project.project_securities.build
-      if params[:project][:creator_id].blank?
-        new_current_user_ps.user_id = current_user.id
-      else
-        new_current_user_ps.user_id = params[:project][:creator_id].to_i
-      end
+      # if params[:project][:creator_id].blank?
+        new_current_user_ps.user_id = estimation_owner.id
+      # else
+      #   new_current_user_ps.user_id = params[:project][:creator_id].to_i
+      # end
       new_current_user_ps.project_security_level = full_control_security_level
       new_current_user_ps.is_model_permission = true
       new_current_user_ps.is_estimation_permission = false
@@ -860,7 +862,7 @@ class ProjectsController < ApplicationController
                                  is_estimation_permission: true)
         else
           ProjectSecurity.create(project_id: project.id,
-                                 user_id: project.creator_id,
+                                 user_id: User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s),
                                  project_security_level_id: ps.project_security_level_id,
                                  group_id: nil,
                                  is_model_permission: false,
@@ -1839,15 +1841,16 @@ public
 
       #Update the project securities for the current user who create the estimation from model
       #if params[:action_name] == "create_project_from_template"
+      owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
       if !params[:create_project_from_template].nil?
         creator_securities = new_prj.project_securities
         creator_securities.each do |ps|
           if ps.is_model_permission == true
             ps.update_attribute(:is_model_permission, false)
             ps.update_attribute(:is_estimation_permission, true)
-            if !ps.user_id.nil?
-              ps.update_attribute(:user_id, current_user.id)
-            end
+            # if !ps.user_id.nil?
+              ps.update_attribute(:user_id, owner.id)
+            # end
           else
             ps.destroy
           end
@@ -1897,6 +1900,14 @@ public
         old_mp.associated_module_projects.each do |associated_mp|
           new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
           new_mp.associated_module_projects << new_associated_mp
+        end
+
+        old_mp.skb_inputs.each do |skbi|
+          Skb::SkbInput.create(data: skbi.data,
+                               processing: skbi.processing,
+                               retained_size: skbi.retained_size,
+                               organization_id: @organization.id,
+                               module_project_id: new_mp.id)
         end
 
         # if the module_project is nil
@@ -2334,8 +2345,11 @@ public
               #Get the archive status of the project's organization
               archive_status = new_prj.organization.estimation_statuses.where(is_archive_status: true).first
               if archive_status
+                old_version = old_prj.version
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.save
                 end
               end
             end
@@ -2347,7 +2361,10 @@ public
             #Get the archive status of the project's organization
             new_status = new_prj.organization.estimation_statuses.where(is_new_status: true).first
             if new_status
+              old_version = old_prj.version
               new_prj.update_attribute(:estimation_status_id, new_status.id)
+              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.save
             end
           end
 

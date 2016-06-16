@@ -236,13 +236,12 @@ class WbsActivitiesController < ApplicationController
                 new_ancestor_ids_list.push(ancestor_id)
               end
               new_elt.ancestry = new_ancestor_ids_list.join('/')
-
-              corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
-                ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
-              end
-
-              new_elt.save(:validate => false)
             end
+
+            corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
+              ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
+            end
+            new_elt.save(:validate => false)
           end
         else
           flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"

@@ -1936,6 +1936,14 @@ fr:
 
   duplicate: "Dupliquer l'unité d'oeuvre"
   add: "Créer une unité d'oeuvre"
+
+  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
+  total_size: "Taille totale"
+  number_of_processing: "Nombre de traitements"
+  number_of_data: "Nombre de données"
+  processing: "Traitements"
+  data: "Données"
+  add: "Créer une unité d'oeuvre"
   kpi_unit: "Unité de KPI"
   calculate_save: "Calculer et Sauvegarder"
   calculated_value: "Calculé"

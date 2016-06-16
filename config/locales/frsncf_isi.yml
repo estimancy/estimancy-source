@@ -1016,7 +1016,7 @@ frsncf_isi:
   notice_pe_attribute_successful_updated: "Attribut mis à jour avec succès."
   text_index_permissions_guidance: "Liste toutes les permissions globales et devis"
   notice_end_of_estimation_execution: "Fin de l'exécution des modules"
-  label_project_name: "N° de la demande"
+  label_project_name: "N° du devis"
   label_product_name: "Nom de l'application"
   label_project_version: "Version"
   label_permission_access: "Accès"
@@ -1920,6 +1920,13 @@ frsncf_isi:
 
   duplicate: "Dupliquer l'unité d'oeuvre"
   add: "Créer une unité d'oeuvre"
+
+  move_your_cursor: "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
+  total_size: "Taille totale"
+  number_of_processing: "Nombre de traitements"
+  number_of_data: "Nombre de données"
+  processing: "Traitements"
+  data: "Données"
   calculate_save: "Calculer et Sauvegarder"
   calculated_value: "Calculé"
   retained_value: "Retenu"
