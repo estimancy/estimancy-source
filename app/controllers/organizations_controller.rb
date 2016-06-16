@@ -851,13 +851,11 @@ class OrganizationsController < ApplicationController
                       end
                     end
                     new_elt.ancestry = new_ancestor_ids_list.join('/')
-
-                    corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
-                      ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
-                    end
-
-                    new_elt.save(:validate => false)
                   end
+                  corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
+                    ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
+                  end
+                  new_elt.save(:validate => false)
                 end
               else
                 flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"
@@ -934,19 +932,40 @@ class OrganizationsController < ApplicationController
 
           # Update the modules's GE Models instances
           new_organization.ge_models.each do |ge_model|
-            # Update all the new organization module_project's guw_model with the current guw_model
+            #===================  TEST  =======================
+            #Terminate the model duplication with the copie of the factors values
+            ge_model.transaction do
+              #Then copy the factor values
+              ge_model.ge_factors.each do |factor|
+                #get the factor values for each factor of new model
+
+                # get the original factor from copy_id
+                parent_factor = Ge::GeFactor.find(factor.copy_id)
+                if parent_factor
+                  parent_factor.ge_factor_values.each do |parent_factor_value|
+                    new_factor_value =  parent_factor_value.dup
+                    new_factor_value.ge_model_id = ge_model.id
+                    new_factor_value.ge_factor_id = factor.id
+                    new_factor_value.save
+                  end
+                end
+              end
+            end
+            #===================  TEST  =======================
+
+            # Update all the new organization module_project's ge_model with the current ge_model
             ge_copy_id = ge_model.copy_id
             new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
           end
 
-          # Update the modules's GE Models instances
+          # Update the modules's Staffing Models instances
           new_organization.staffing_models.each do |staffing_model|
             # Update all the new organization module_project's guw_model with the current guw_model
             staffing_model_copy_id = staffing_model.copy_id
             new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
           end
 
-          # Update the modules's GE Models instances
+          # Update the modules's KB Models instances
           new_organization.kb_models.each do |kb_model|
             # Update all the new organization module_project's guw_model with the current guw_model
             kb_copy_id = kb_model.copy_id
@@ -963,7 +982,6 @@ class OrganizationsController < ApplicationController
             ###### Replace the code below
 
             guw_model.terminate_guw_model_duplication
-
           end
 
           flash[:notice] = I18n.t(:notice_organization_successful_created)
