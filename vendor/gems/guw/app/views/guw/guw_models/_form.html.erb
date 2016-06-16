@@ -161,26 +161,12 @@
     </div>
 
     <div id="tabs-factors">
-      <div class="tabs">
-        <ul>
-          <li>
-            <a href="#tabs-work-unit">
-              <%= @guw_model.coefficient_label %>
-            </a>
-          </li>
-          <li>
-            <a href="#tabs-weighting">
-              <%= @guw_model.weightings_label %>
-            </a>
-          </li>
-          <li>
-            <a href="#tabs-factor">
-              <%= @guw_model.factors_label %>
-            </a>
-          </li>
-        </ul>
+      <div class="row-fluid">
+        <div class="span4">
+          <b>
+            <%= @guw_model.coefficient_label %>
+          </b>
 
-        <div id="tabs-work-unit">
           <table class="table table-bordered">
             <tr>
               <th><%= I18n.t(:name) %></th>
@@ -209,8 +195,11 @@
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
         </div>
+        <div class="span4">
+          <b>
+            <%= @guw_model.weightings_label %>
+          </b>
 
-        <div id="tabs-weighting">
           <table class="table table-bordered">
             <tr>
               <th><%= I18n.t(:name) %></th>
@@ -239,8 +228,11 @@
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
         </div>
+        <div class="span4">
+          <b>
+            <%= @guw_model.factors_label %>
+          </b>
 
-        <div id="tabs-factor">
           <table class="table table-bordered">
             <tr>
               <th><%= I18n.t(:name) %></th>
@@ -268,6 +260,7 @@
             <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn" %>
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+        </div>
         </div>
       </div>
     </div>
