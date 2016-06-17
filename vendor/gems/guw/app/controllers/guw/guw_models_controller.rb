@@ -99,7 +99,6 @@ class Guw::GuwModelsController < ApplicationController
     ind3 = 0
     save_position = 0
     if !params[:file].nil?# && (File.extname(params[:file].original_filename) == ".xls" || File.extname(params[:file].original_filename) == ".xlsx")
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       @workbook = RubyXL::Parser.parse(params[:file].path)
       @workbook.each_with_index do |worksheet, index|
        tab = worksheet.extract_data
@@ -991,7 +990,7 @@ class Guw::GuwModelsController < ApplicationController
     tab_error = [[false], [false], [false], [false], [false]]
     indexing_field_error = [[false],[false],[false],[false]]
 
-    if !params[:file].nil?# && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       worksheet =workbook[0]
       tab = worksheet.extract_data
