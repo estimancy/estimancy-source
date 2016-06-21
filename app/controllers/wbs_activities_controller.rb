@@ -72,8 +72,8 @@ class WbsActivitiesController < ApplicationController
     @wbs_activities = WbsActivity.where('organization_id IN (?)', current_user.organizations)
   end
 
-  def edit
 
+  def edit
     #no authorize required since everyone can show this object
 
     @wbs_activity = WbsActivity.find(params[:id])
@@ -417,9 +417,7 @@ class WbsActivitiesController < ApplicationController
               mp_ratio_element_attribute_alias = "cost"
           end
 
-
           #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
-
 
           ["low", "most_likely", "high"].each do |level|
 
@@ -432,9 +430,7 @@ class WbsActivitiesController < ApplicationController
             @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => eb.send("get_#{est_val.pe_attribute.alias}") }
 
             level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
-
             @results["string_data_#{level}"] = level_estimation_value
-
 
             #======= Update the retained effort output if nil or for the first time  ========
             # level_retained_value = retained_est_val.send("string_data_#{level}")
@@ -446,6 +442,7 @@ class WbsActivitiesController < ApplicationController
             #   level_retained_value[@pbs_project_element.id] = level_estimation_value[@pbs_project_element.id]
             #   retained_est_val.send("string_data_#{level}=", level_retained_value)
             # end
+
 
             #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
             @module_project_ratio_elements.each do |mp_ratio_element|
@@ -541,18 +538,15 @@ class WbsActivitiesController < ApplicationController
                       else
                         res[key] = tmp
                       end
-
                     end
 
                     estimation_value_profile = res
-
                   else
                     estimation_value_profile = (hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100
                     #the update the parent's value
                     parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
                   end
                 end
-
                 current_probable_profiles["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => estimation_value_profile} }
               end
               #  end
@@ -563,7 +557,6 @@ class WbsActivitiesController < ApplicationController
               begin
                 probable_estimation_value[@pbs_project_element.id][wbs_activity_element_id]["profiles"]["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => parent_profile_est_value["#{wbs_activity_element_id}"]} }
               rescue
-
               end
             end
           end
@@ -600,7 +593,6 @@ class WbsActivitiesController < ApplicationController
             if mp_ratio_element.send("#{mp_retained_alias}").nil?
               mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
             end
-
             mp_ratio_element.save
           end
 
@@ -701,7 +693,6 @@ class WbsActivitiesController < ApplicationController
       #   mp_ratio_element.send("#{theoretical_pe_attribute_alias}_probable=", theoretical_probable_value)
       # end
 
-
       #Save retained_effort_probable and retained_cost_probable
       ["retained_effort", "retained_cost"].each do |retained_attribute|
         level_value = []
@@ -797,11 +788,13 @@ class WbsActivitiesController < ApplicationController
                 if psb_level_estimation_value[wbs_activity_element_id].nil?
                   psb_level_estimation_value[wbs_activity_element_id] = Hash.new
                 end
+
                 psb_level_estimation_value[wbs_activity_element_id][:value] = mp_retained_value
 
                 # Then update Effort or cost by phases and profiles
                 activity_element_profiles = psb_level_estimation_value[wbs_activity_element_id]["profiles"]
-                ###probable_profiles_values = save_retained_value_by_phases_profiles(wbs_activity_element_id, mp_retained_value, activity_element_profiles, psb_level_estimation_value, mp_ratio_element, pe_attribute_alias)
+                psb_level_estimation_value = save_retained_value_by_phases_profiles(ev, wbs_activity_element_id, mp_retained_value, activity_element_profiles, level_estimation_value, psb_level_estimation_value, mp_ratio_element, pe_attribute_alias)
+                puts "Test = #{psb_level_estimation_value}"
 
               else
                 # level = low, most_likely, high
@@ -823,69 +816,162 @@ class WbsActivitiesController < ApplicationController
 
   # TODO : pas encore fini
   #==============
-  def save_retained_value_by_phases_profiles(wbs_activity_element_id, mp_retained_value, activity_element_profiles, psb_level_estimation_value, mp_ratio_element, pe_attribute_alias)
+  def save_retained_value_by_phases_profiles(est_val, wbs_activity_element_id, mp_retained_value, activity_element_profiles, probable_estimation_value, psb_level_estimation_value, mp_ratio_element, pe_attribute_alias)
     activity_element_profiles = psb_level_estimation_value[wbs_activity_element_id]["profiles"]
     wbs_activity_elt_id = wbs_activity_element_id
 
     wbs_activity_elements = @wbs_activity.wbs_activity_elements
+    referenced_wbs_activity_ratio_profiles = @ratio_reference.wbs_activity_ratio_profiles  # Get the referenced ratio wbs_activity_ratio_profiles 
     profiles_probable_value = {}
     parent_profile_est_value = {}
 
+    #=============  TEST   ==================
+
     @wbs_activity.organization_profiles.each do |profile|
       profiles_probable_value["profile_id_#{profile.id}"] = Hash.new
-
       # Parent values are reset to zero
       wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt}"] = 0 }
 
-      if activity_element_profiles.nil?
-        # create a new hash for profiles estimations results
-        psb_level_estimation_value[wbs_activity_element_id]["profiles"] = Hash.new
-      end
+      probable_estimation_value[@pbs_project_element.id].each do |wbs_activity_elt_id, hash_value|
 
-      current_probable_profiles = activity_element_profiles #current_probable_profiles = probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]["profiles"]
-      estimation_value_profile = nil
-      tmp = Hash.new
+        if hash_value["profiles"].nil?
+          # create a new hash for profiles estimations results
+          probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]["profiles"] = Hash.new
+        end
 
-      unless mp_ratio_element.ratio_value.nil?
-        if pe_attribute_alias == "cost"
-          mp_retained_effort_value = mp_ratio_element.send("retained_effort_probable")
+        current_probable_profiles = probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]["profiles"]
 
-          res = Hash.new
+        wbs_activity_element = WbsActivityElement.find(wbs_activity_elt_id)
+        wbs_activity_elt_id = wbs_activity_element.id
 
-          wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: wbs_activity_element_id).first
-          unless wbs_activity_ratio_element.nil?
-            wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-              tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * mp_retained_effort_value.to_f  * (mp_ratio_element.ratio_value.to_f / 100)
+        # Wbs_project_element root element doesn't have a wbs_activity_element
+        #if !wbs_activity_elt_id.nil? ||
+        wbs_activity_ratio_elt = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: wbs_activity_elt_id).first
+        unless wbs_activity_ratio_elt.nil?
+          # get the wbs_activity_ratio_profile
+          corresponding_ratio_profile = referenced_wbs_activity_ratio_profiles.where('wbs_activity_ratio_element_id = ? AND organization_profile_id = ?', wbs_activity_ratio_elt.id, profile.id).first
+          # Get current profile ratio value for the referenced ratio
+          corresponding_ratio_profile_value = corresponding_ratio_profile.nil? ? nil : corresponding_ratio_profile.ratio_value
+          estimation_value_profile = nil
+          tmp = Hash.new
+          unless corresponding_ratio_profile_value.nil?
+
+            #if est_val.pe_attribute.alias.in?("theoretical_cost", "cost")
+            if pe_attribute_alias == "cost"
+
+              eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
+              #efforts_man_month = eb.get_effort
+              efforts_man_month = eb.get_theoretical_effort
+              res = Hash.new
+
+              efforts_man_month.each do |key, value|
+                tmp = Hash.new
+                wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first
+                unless wbs_activity_ratio_element.nil?
+                  wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
+                    tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient) * (warp.ratio_value / 100)
+                  end
+                end
+                res[key] = tmp
+
+                if WbsActivityElement.find(key).root?
+                  res[key] = tmp.values.sum
+                else
+                  res[key] = tmp
+                end
+              end
+
+              estimation_value_profile = res
+            else
+              estimation_value_profile = (hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100
+              #the update the parent's value
+              parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
             end
           end
-
-          if mp_ratio_element.wbs_activity_element.root?
-            res = tmp.values.sum
-          else
-            res = tmp
-          end
-          estimation_value_profile = res
-        else
-          #pe_attribute_alias == "effort"
-          estimation_value_profile = (psb_level_estimation_value[wbs_activity_element_id][:value].to_f * mp_ratio_element.ratio_value.to_f) / 100
-          #the update the parent's value
-          parent_profile_est_value["#{mp_ratio_element.wbs_activity_element.parent_id}"] = parent_profile_est_value["#{mp_ratio_element.wbs_activity_element.parent_id}"].to_f + estimation_value_profile
+          current_probable_profiles["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => estimation_value_profile} }
         end
       end
-
-      current_probable_profiles["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => estimation_value_profile} }
 
       #Need to calculate the parents effort by profile : addition of its children values
       wbs_activity_elements.each do |wbs_activity_element_id|
         begin
           probable_estimation_value[@pbs_project_element.id][wbs_activity_element_id]["profiles"]["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => parent_profile_est_value["#{wbs_activity_element_id}"]} }
         rescue
-
         end
       end
     end
 
-    parent_profile_est_value
+    @results['string_data_probable'] = probable_estimation_value
+    #Update current pbs estimation values
+    est_val.update_attributes(@results)
+
+
+    # ============= FIN TEST ================
+
+
+
+    # @wbs_activity.organization_profiles.each do |profile|
+    #
+    #   profiles_probable_value["profile_id_#{profile.id}"] = Hash.new
+    #   # Parent values are reset to zero
+    #   #wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt}"] = 0 }
+    #   wbs_activity_elements.each{ |elt| parent_profile_est_value[elt.parent_id] = 0 }
+    #
+    #   if activity_element_profiles.nil?
+    #     # create a new hash for profiles estimations results
+    #     psb_level_estimation_value[wbs_activity_element_id]["profiles"] = Hash.new
+    #   end
+    #
+    #   current_probable_profiles = activity_element_profiles #current_probable_profiles = probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]["profiles"]
+    #   estimation_value_profile = nil
+    #   tmp = Hash.new
+    #
+    #   unless mp_ratio_element.ratio_value.nil?
+    #     if pe_attribute_alias == "cost"
+    #       res = Hash.new
+    #       mp_retained_effort_value = mp_ratio_element.send("retained_effort_probable")
+    #
+    #       wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: wbs_activity_element_id).first
+    #       unless wbs_activity_ratio_element.nil?
+    #         wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
+    #           tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * mp_retained_effort_value.to_f  * (mp_ratio_element.ratio_value.to_f / 100)
+    #         end
+    #       end
+    #
+    #       if mp_ratio_element.wbs_activity_element.root?
+    #         res = tmp.values.sum
+    #       else
+    #         res = tmp
+    #       end
+    #       estimation_value_profile = res
+    #     else
+    #       ###pe_attribute_alias == "effort"
+    #       ###estimation_value_profile = (psb_level_estimation_value[wbs_activity_element_id][:value].to_f * mp_ratio_element.ratio_value.to_f) / 100
+    #       estimation_value_profile = (mp_retained_value.to_f * mp_ratio_element.ratio_value.to_f) / 100
+    #     end
+    #
+    #     #update element probable value
+    #     current_probable_profiles["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] = {:value => estimation_value_profile}
+    #     #probable_estimation_value[@pbs_project_element.id][wbs_activity_element_id] = current_probable_profiles
+    #
+    #     #the update the parent's value
+    #     parent_est_val = parent_profile_est_value["#{mp_ratio_element.wbs_activity_element.parent_id}"].to_f + estimation_value_profile
+    #     parent_profile_est_value["#{mp_ratio_element.wbs_activity_element.parent_id}"] = parent_est_val
+    #
+    #     parent_profile_est_value[wbs_activity_element_id] = estimation_value_profile
+    #     psb_level_estimation_value[wbs_activity_element_id]["profiles"] = current_probable_profiles
+    #   end
+    #
+    #   #Need to calculate the parents effort by profile : addition of its children values
+    #   # wbs_activity_elements.each do |wbs_activity_element_id|
+    #   #   #begin
+    #   #   psb_level_estimation_value[wbs_activity_element_id]["profiles"]["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] =  { :value => parent_profile_est_value["#{wbs_activity_element_id}"] }
+    #   #   #rescue
+    #   #   #end
+    #   # end
+    # end
+    #
+    # psb_level_estimation_value
 
     ###@results['string_data_probable'] = probable_estimation_value
     ###est_val.update_attributes(@results)

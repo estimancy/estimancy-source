@@ -93,7 +93,7 @@
                  activity_elt_ancestor_ids = mp_ratio_element.wbs_activity_element.ancestor_ids
                  activity_elt_ancestor_ids.each do |ancestor_id|
                    parent_ratio_elt = @module_project_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
-                   mp_ratio_element_ancestor_ids << parent_ratio_elt.id
+                   mp_ratio_element_ancestor_ids << parent_ratio_elt.id unless parent_ratio_elt.nil?
                  end
                end
             %>
