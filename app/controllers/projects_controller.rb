@@ -821,23 +821,24 @@ class ProjectsController < ApplicationController
       # ProjectSecurity.delete_all("project = ?", project.id)
       project.project_securities.delete_all
 
-      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false).all.each do |ps|
-        if ps.user_id.nil?
+      model_project.project_securities.where(is_model_permission: false, is_estimation_permission: true).all.each do |ps|
           ProjectSecurity.create(project_id: project.id,
-                                 user_id: nil,
+                                 user_id: ps.user_id,
                                  project_security_level_id: ps.project_security_level_id,
                                  group_id: ps.group_id,
                                  is_model_permission: false,
                                  is_estimation_permission: true)
-        else
-          ProjectSecurity.create(project_id: project.id,
-                                 user_id: User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s),
-                                 project_security_level_id: ps.project_security_level_id,
-                                 group_id: nil,
-                                 is_model_permission: false,
-                                 is_estimation_permission: true)
-        end
       end
+
+      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false, user_id: model_project.creator_id).all.each do |ps|
+        ProjectSecurity.create(project_id: project.id,
+                               user_id: project.creator_id,
+                               project_security_level_id: ps.project_security_level_id,
+                               group_id: ps.group_id,
+                               is_model_permission: false,
+                               is_estimation_permission: true)
+      end
+
     end
 
     redirect_to :back
