@@ -821,13 +821,13 @@ class ProjectsController < ApplicationController
       # ProjectSecurity.delete_all("project = ?", project.id)
       project.project_securities.delete_all
 
-      model_project.project_securities.where(is_model_permission: false, is_estimation_permission: true).all.each do |ps|
-          ProjectSecurity.create(project_id: project.id,
-                                 user_id: ps.user_id,
-                                 project_security_level_id: ps.project_security_level_id,
-                                 group_id: ps.group_id,
-                                 is_model_permission: false,
-                                 is_estimation_permission: true)
+      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false).all.each do |ps|
+        ProjectSecurity.create(project_id: project.id,
+                               user_id: ps.user_id,
+                               project_security_level_id: ps.project_security_level_id,
+                               group_id: ps.group_id,
+                               is_model_permission: false,
+                               is_estimation_permission: true)
       end
 
       model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false, user_id: model_project.creator_id).all.each do |ps|
