@@ -831,8 +831,10 @@ class ProjectsController < ApplicationController
       end
 
       model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false, user_id: model_project.creator_id).all.each do |ps|
+        owner_user = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s)
+
         ProjectSecurity.create(project_id: project.id,
-                               user_id: project.creator_id,
+                               user_id: owner_user.id,
                                project_security_level_id: ps.project_security_level_id,
                                group_id: ps.group_id,
                                is_model_permission: false,
