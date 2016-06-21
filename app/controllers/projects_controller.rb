@@ -823,7 +823,7 @@ class ProjectsController < ApplicationController
 
       model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false).all.each do |ps|
         ProjectSecurity.create(project_id: project.id,
-                               user_id: ps.user_id,
+                               user_id: nil,
                                project_security_level_id: ps.project_security_level_id,
                                group_id: ps.group_id,
                                is_model_permission: false,
