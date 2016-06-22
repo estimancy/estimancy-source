@@ -45,6 +45,9 @@ fr:
     sessions:
       signed_in: ''  #Connecté(e) avec succès.
       signed_out: '' #Déconnecté(e) avec succès.
+      user:
+        success: Vous êtes connecté(e) avec succès.
+        failure: Erreur de connection.
     unlocks:
       send_instructions: Vous allez recevoir sous quelques minutes un courriel comportant des instructions pour déverrouiller votre compte.
       send_paranoid_instructions: Si votre courriel existe sur notre base de données, vous recevrez sous quelques minutes un message avec des instructions pour déverrouiller votre compte.

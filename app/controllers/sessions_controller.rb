@@ -20,7 +20,7 @@ class SessionsController < Devise::SessionsController
         redirect_to root_url
       else
         sign_in_and_redirect @user, :event => :authentication
-        set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
+        #set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
       end
     else
       super
