@@ -901,9 +901,11 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
-    @results['string_data_probable'] = probable_estimation_value
+    probable_estimation_value
+
+    ####@results['string_data_probable'] = probable_estimation_value
     #Update current pbs estimation values
-    est_val.update_attributes(@results)
+    ######est_val.update_attributes(@results)
 
 
     # ============= FIN TEST ================
