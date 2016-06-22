@@ -98,8 +98,7 @@ class Guw::GuwModelsController < ApplicationController
     ind2 = 10
     ind3 = 0
     save_position = 0
-    if !params[:file].nil? &&
-        (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       @workbook = RubyXL::Parser.parse(params[:file].path)
       @workbook.each_with_index do |worksheet, index|
        tab = worksheet.extract_data
@@ -174,12 +173,22 @@ class Guw::GuwModelsController < ApplicationController
             # end
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-                Guw::GuwFactor.create(name:row[0],
+                Guw::GuwFactor.create(name: row[0],
                                       value: row[1],
                                       display_order: row[2],
                                       guw_model_id: @guw_model.id)
               end
             end
+          # elsif index == 5
+          #   tab.each_with_index do |row, index|
+          #     [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
+          #       ["size", "effort", "cost"].each_with_index do |at, j|
+          #         if row[i][j] == "1"
+          #           p "OK"
+          #         end
+          #       end
+          #     end
+          #   end
           else
             # if critical_flag
             #   route_flag = 5

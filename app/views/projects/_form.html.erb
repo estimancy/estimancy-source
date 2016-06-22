@@ -358,7 +358,7 @@
                   </thead>
 
                   <tbody>
-                  <!--If project is an estimation model, the user permission will be affected to the creator of the created estimation from this model-->
+                    <!--If project is an estimation model, the user permission will be affected to the creator of the created estimation from this model-->
                     <% if @project.is_model %>
                       <% creator = @project.creator %>
                       <% model_creator_id = @project.creator_id %>
@@ -382,8 +382,8 @@
                           <% end %>
                       </tr>
                     <% else %>
-                    <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
-                      <% @organization.users.reject{|i| i.initials == owner_key.nil? ? '' : owner_key.value }.each do |user| %>
+                      <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                      <% @organization.users.each do |user| %>
                         <tr>
                           <td>
                             <%= user %>
