@@ -130,6 +130,7 @@ class Ability
         owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
         if owner.nil?
           owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+          owner.skip_confirmation_notification!
           owner.save(validate: false)
           Organization.all.each do |o|
             o.users << owner
@@ -140,12 +141,16 @@ class Ability
         owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
         if owner.nil?
           owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+          owner.skip_confirmation_notification!
           owner.save(validate: false)
         end
         owner = User.find_by_initials(owner_key.value)
       end
 
-      prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
+      if owner
+        prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
+      end
+
       unless prj_scrts.empty?
         specific_permissions_array = []
         prj_scrts.each do |prj_scrt|
