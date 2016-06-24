@@ -352,7 +352,7 @@ frsncf:
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de projet"
   project_area: "Domaine"
-  label_acquisition: "Acquisition"
+  label_acquisition: "Service"
   label_platform: "Plateforme"
   label_version: "Vers."
 
