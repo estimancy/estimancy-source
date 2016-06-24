@@ -50,7 +50,84 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
-    flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
+    redirect_to :back
+  end
+
+  def import_project_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = ProjectCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+    end
+    redirect_to :back
+  end
+
+  def import_platform_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = PlatformCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+    end
+    redirect_to :back
+  end
+
+  def import_acquisition_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = AcquisitionCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+    end
     redirect_to :back
   end
 
@@ -71,11 +148,6 @@ class OrganizationsController < ApplicationController
 
   def polyval_export
     @organization = Organization.find(params[:organization_id])
-=begin    polyval_var = (params[:MYonglet] == "ProjectCategory" ? ProjectCategory.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "WorkElementType" ? WorkElementType.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "OrganizationTechnology" ? OrganizationTechnology.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "OrganizationProfile" ? OrganizationProfile.where(organization_id: @organization.id) : PlatformCategory.where(organization_id: @organization.id))
-=end
     case params[:MYonglet]
       when "ProjectCategory"
         polyval_var = ProjectCategory.where(organization_id: @organization.id)

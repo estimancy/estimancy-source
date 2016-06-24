@@ -345,7 +345,7 @@ frsncf_isi:
   platform_categories: "Catégories de plates-formes"
   project_categories: "Catégories de devis"
   project_areas: "Domaine"
-  acquisition_category: "Catégorie d'acquisition"
+  acquisition_category: "Service"
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de devis"
   project_area: "Domaine"
@@ -366,8 +366,8 @@ frsncf_isi:
   new_platform_category: "Créer une catégorie de plateforme"
 
   #Acquisition categories
-  edit_acquisition_category: "Editer la catégorie d'acquisition \"%{value}\" ..."
-  new_acquisition_category: "Créer une catégorie d'acquisition"
+  edit_acquisition_category: "Editer le service \"%{value}\" ..."
+  new_acquisition_category: "Créer une service"
   notice_acquisition_category_successful_created: "Une nouvelle catégorie d'activité a été créée avec succès."
   notice_acquisition_category_successful_destroyed: "Cette catégorie d'activité a été supprimée avec succès"
   warning_acquisition_category_cannot_be_updated: "Cette catégorie d'activité ne peux pas être mise à jour, les changements précédents n'ont pas encore été validé."
