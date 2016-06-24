@@ -341,7 +341,7 @@ frsncf_isi:
 
   #Project settings
   activity_categories: "Catégories d'activités"
-  acquisition_categories: "Catégories d'acquisitions"
+  acquisition_categories: "Services"
   platform_categories: "Catégories de plates-formes"
   project_categories: "Catégories de devis"
   project_areas: "Domaine"
@@ -1392,7 +1392,7 @@ frsncf_isi:
   notice_cannot_view_project_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories de devis"
   notice_cannot_view_platform_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories de plateforme"
   notice_cannot_view_work_element_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'éléments de travail"
-  notice_cannot_view_acquisition_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories d'acquisitions"
+  notice_cannot_view_acquisition_categories: "Vous n'avez pas les autorisations nécessaires pour voir les services"
   notice_cannot_view_organization_technologies: "Vous n'avez pas les autorisations nécessaires pour voir les technologies"
   notice_cannot_view_unit_of_works: "Vous n'avez pas les autorisations nécessaires pour voir les unités d'oeuvres"
   notice_cannot_view_size_unit_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'unité de taille"
@@ -1514,7 +1514,7 @@ frsncf_isi:
   organization_copy: "Copie de l'organisation"
   Technologies_List: "Liste des Technologies"
   List_of_Works_Units: "Liste des Unités d'Oeuvres"
-  List_of_Acquisitions_Types: "Liste des Types d'Acquisitions"
+  List_of_Acquisitions_Types: "Liste des services"
   Technology_warning: "Pour chaque technologie , configurer une taille equivalante (en pour cent ) selon le type de taille ."
   wait_for_complete_organization_delete: "Veuillez patienter, la suppression de l'organisation et des objets liés est en cours..."
   wait_for_new_organization_creation: "Veuillez patienter, la création de la nouvelle organisation est en cours..."
@@ -1549,7 +1549,7 @@ frsncf_isi:
   Generate_Excel_report: "Générer un rapport Excel"
 
   #traduction import/export
-  Type_acquisitions: "Type d'acquisitions"
+  Type_acquisitions: "Services"
   model_name: "Nom du modèle"
   model_description: "Description du modèle"
   retained_size_unit: "Libellé de l'unité de taille du module"
@@ -1660,7 +1660,7 @@ frsncf_isi:
   numerber_of_uw_modifies: "Nombre d'U.O. modifiés"
   numerber_of_uw_selected: "Nombre d'U.O. sélectionnés"
   import_data_from_uw: "Import de donnée d'une unité d'oeuvre"
-  new_acquisition_type: "Nouveau type d'acquisition"
+  new_acquisition_type: "Nouveau service"
   calculate_duration_and_size: "Calcul de la durée et de la taille des équipes"
   duration_in_week: "Durée(semaine)"
   initialize_restraint: "Aligner le retenu sur le trapèze"
