@@ -48,7 +48,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
-      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+      flash[:error] = "Une erreur est survenue durant l'import"
     end
     redirect_to :back
   end
@@ -74,7 +74,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
-      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+      flash[:error] = "Une erreur est survenue durant l'import"
     end
     redirect_to :back
   end
@@ -100,7 +100,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
-      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+      flash[:error] = "Une erreur est survenue durant l'import"
     end
     redirect_to :back
   end
@@ -114,7 +114,7 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          new_app = AcquisitionCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          new_app = AcquisitionCategory.new(name: row[0], description: row[1], organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
@@ -126,7 +126,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
-      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+      flash[:error] = "Une erreur est survenue durant l'import"
     end
     redirect_to :back
   end
@@ -144,6 +144,51 @@ class OrganizationsController < ApplicationController
       worksheet.add_cell(index + 1, 1, project_area.description)
     end
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Project_Area-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_acquisition_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_acquisition_categories = @organization.acquisition_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_acquisition_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Acquisition-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_platform_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_platform_categories = @organization.platform_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_platform_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Platform-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_project_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_project_categories = @organization.project_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_project_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Project-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def polyval_export

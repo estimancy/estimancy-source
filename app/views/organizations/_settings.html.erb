@@ -140,7 +140,7 @@
 
       <% if can? :manage, ProjectCategory %>
         <%= link_to I18n.t('new_project_category'), new_organization_project_category_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn pull-right button_margin_right'%>
+        <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn pull-right button_margin_right'%>
         <a href="#import_project_category" role="button" class="btn pull-right button_margin_right" title="Import project category from Excel" data-toggle="modal">
           <%= I18n.t(:import) %>
         </a>
@@ -202,7 +202,7 @@
 
       <% if can? :manage, PlatformCategory %>
       <%= link_to I18n.t('new_platform_category'), new_organization_platform_category_path(@organization), :class => 'btn pull-right' %>
-      <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn pull-right button_margin_right'%>
+      <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn pull-right button_margin_right'%>
       <a href="#import_platform_category" role="button" class="btn pull-right button_margin_right" title="Import platform category from Excel" data-toggle="modal">
         <%= I18n.t(:import) %>
       </a>
@@ -300,7 +300,7 @@
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
         <%= link_to I18n.t('new_acquisition_category'), new_organization_acquisition_category_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
+        <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
         <a href="#import_acquisition_category" role="button" class="btn pull-right button_margin_right" title="Import acquisition category from Excel" data-toggle="modal">
           <%= I18n.t(:import) %>
         </a>
