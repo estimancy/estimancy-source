@@ -493,7 +493,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       if final_value.nil?
         guw_unit_of_work.size = nil
-        guw_unit_of_work.ajusted_size = nil
+        guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
       else
         guw_unit_of_work.size = final_value.to_f *
             (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
