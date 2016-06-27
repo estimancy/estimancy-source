@@ -513,16 +513,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       guw_unit_of_work.save
 
-      unless guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+      unless guw_unit_of_work.ajusted_size.nil?
         guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
             (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
 
         guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
             (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
+      end
 
+      if guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+        guw_unit_of_work.flagged = false
+      else
         if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
           guw_unit_of_work.flagged = true
-        elsif guw_unit_of_work.size.round(3) != guw_unit_of_work.ajusted_size.round(3)
+        elsif guw_unit_of_work.size.to_f.round(3) != guw_unit_of_work.ajusted_size.round(3)
           guw_unit_of_work.flagged = true
         else
           guw_unit_of_work.flagged = false
