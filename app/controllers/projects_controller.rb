@@ -690,7 +690,9 @@ class ProjectsController < ApplicationController
         unless params["user_securities_from_model"].nil?
           params["user_securities_from_model"].each do |psl|
             params["user_securities_from_model"][psl.first].each do |user|
-              ProjectSecurity.create(user_id: user.first.to_i,
+              owner_key = AdminSetting.find_by_key("Estimation Owner")
+              owner = User.where(initials: owner_key.value).first
+              ProjectSecurity.create(user_id: owner.id.to_i,
                                      project_id: @project.id,
                                      project_security_level_id: psl.first,
                                      is_model_permission: @project.is_model,
@@ -1805,9 +1807,9 @@ public
           if ps.is_model_permission == true
             ps.update_attribute(:is_model_permission, false)
             ps.update_attribute(:is_estimation_permission, true)
-            # if !ps.user_id.nil?
+            if ps.user_id == owner.id
               ps.update_attribute(:user_id, owner.id)
-            # end
+            end
           else
             ps.destroy
           end
