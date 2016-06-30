@@ -966,7 +966,8 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
     end
-      unless final_mess.empty?
+
+    unless final_mess.empty?
       flash[:error] = final_mess.join("<br/>").html_safe
     end
   end

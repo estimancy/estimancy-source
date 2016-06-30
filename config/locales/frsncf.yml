@@ -1054,7 +1054,7 @@ frsncf:
   label_ProjectArea: "Domaine"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Projet"
-  label_AcquisitionCategory: "Catégorie Acquisition"
+  label_AcquisitionCategory: "Catégorie de service"
   label_WbsActivity: "WBS-Activité"
   label_Pemodule: "Module"
   label_PeAttribute: "Attribut"

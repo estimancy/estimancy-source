@@ -1,4 +1,4 @@
-frsncf_isi:
+frsncf_amoa_infra:
   direction: ltr
   date:
    abbr_day_names:
@@ -349,7 +349,7 @@ frsncf_isi:
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de devis"
   project_area: "Domaine"
-  label_acquisition: "Acquisition"
+  label_acquisition: "Service"
   label_platform: "Plateforme"
   label_version: "Vers."
 
@@ -1051,7 +1051,7 @@ frsncf_isi:
   label_ProjectArea: "Domaine"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Devis"
-  label_AcquisitionCategory: "Catégorie Acquisition"
+  label_AcquisitionCategory: "Catégorie Service"
   label_WbsActivity: "WBS-Activité"
   label_Pemodule: "Module"
   label_PeAttribute: "Attribut"
@@ -1579,7 +1579,7 @@ frsncf_isi:
   route_flag_error_11: "l'aquisition est manquant pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_12: "la technologie est manquant pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_13: "Le type d'UO renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
-  route_flag_error_14: "Le type d'Acquisition renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
+  route_flag_error_14: "Le type de service renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_15: "La Technologie renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_16: "La complexité renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_17: "Erreur: aucun fichier sélectionné."

@@ -40,13 +40,6 @@ class LanguagesController < ApplicationController
     authorize! :manage_master_data, :all
     set_page_title I18n.t(:Edit_language)
     @language = Language.find(params[:id])
-
-    unless @language.child_reference.nil?
-      if @language.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_language_cant_be_edit)
-        redirect_to languages_path
-      end
-    end
   end
 
   def create
@@ -66,12 +59,8 @@ class LanguagesController < ApplicationController
 
     @language = nil
     current_language = Language.find(params[:id])
-    if current_language.is_defined?
-      @language = current_language.amoeba_dup
-      @language.owner_id = current_user.id
-    else
-      @language = current_language
-    end
+
+    @language = current_language
 
     if @language.update_attributes(params[:language])
       flash[:notice] = I18n.t (:notice_language_successful_updated)
