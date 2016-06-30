@@ -172,11 +172,11 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
+    # if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
+    #   project = @project
+    # else
       project = @project
-    else
-      project = @views_widget.estimation_value.module_project.project
-    end
+    # end
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
