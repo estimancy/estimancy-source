@@ -5,7 +5,7 @@ class ModuleProjectRatioElementsController < ApplicationController
   end
 
   def edit
-
+    @module_project_ratio_element = ModuleProjectRatioElement.find(params[:id])
   end
 
   def create
@@ -17,8 +17,28 @@ class ModuleProjectRatioElementsController < ApplicationController
     if @module_project_ratio_element.save
       redirect_to dashboard_path(@project)
     else
+      render(:new)
+    end
+  end
+
+
+  def update
+    @module_project_ratio_element = ModuleProjectRatioElement.find(params[:id])
+    if @module_project_ratio_element.update_attributes(params[:module_project_ratio_element])
+      redirect_to dashboard_path(@project)
+    else
       render(:edit)
     end
+  end
+
+
+  def destroy
+    @module_project_ratio_element = ModuleProjectRatioElement.find(params[:id])
+    @module_project_ratio_element.delete
+
+    # Then update root element Effort and Cost value
+    # TODO
+    redirect_to main_app.dashboard_path(@project)
   end
 
   def load_comments
@@ -78,35 +98,73 @@ class ModuleProjectRatioElementsController < ApplicationController
   end
 
 
-  def  refresh_dashboard_retained_cost
+  def  refresh_dashboard_retained_effort_and_cost
     @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
 
     @selected_ratio = @wbs_activity_ratio
     @pbs_project_element = current_component
     @module_project = current_module_project
     @mp_ratio_element = ModuleProjectRatioElement.find(params["mp_ratio_element_id"])
+    @element_parents_ids = Array.new
+    @element_parents_ids_effort_cost_values = Hash.new
 
     if @wbs_activity_ratio && @mp_ratio_element
+
+      @wbs_activity_elt_root = @wbs_activity_ratio.wbs_activity.wbs_activity_elements.first.root
+
       @wbs_activity_element = @mp_ratio_element.wbs_activity_element
+      wbs_activity = @wbs_activity_ratio.wbs_activity
+      effort_unit_coefficient = wbs_activity.effort_unit_coefficient
+
       wbs_activity_ratio_element_id = @mp_ratio_element.wbs_activity_ratio_element_id
+      @level = params['level']
+      ratio_value = params['ratio_value']
+      effort_value = params['effort_value']
+      previous_effort_value = params['previous_effort_value']
+      previous_cost_value = params['previous_cost_value']
+      mp_ratio_element_parents_efforts = params['element_parents_efforts'] || []
 
       if @wbs_activity_element
-        wbs_activity = @wbs_activity_element.wbs_activity
+        @retained_effort_id = "retained_cost_#{@level}_#{params["mp_ratio_element_id"]}"
+        @cost_value = calculate_cost_from_effort(effort_value, @mp_ratio_element, effort_unit_coefficient)
 
-        #get element parent
-        parent_wbs_activity_element_id = @wbs_activity_element.parent_id
-        @mp_ratio_element_parent_id = ModuleProjectRatioElement.where(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                                     wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_element_id: wbs_activity_ratio_element_id).first
+      else
+        # Il s'agit d'une phase ajouté au niveau du dashboard
+        @cost_value = previous_cost_value.to_f
+      end
 
-        level = params['level']
-        ratio_value = params['ratio_value']
-        effort_value = params['effort_value']
-        @retained_effort_id = "retained_cost_#{level}_#{params["mp_ratio_element_id"]}"
-
-        @cost_value = calculate_cost_from_effort(effort_value, @mp_ratio_element, wbs_activity.effort_unit_coefficient)
-
+      # Mettre à jour les valeurs de l'effort et de côut des elements parents
+      mp_ratio_element_parents_efforts.each do |key, current_parent_values|
+        parent_mp_ratio_element = ModuleProjectRatioElement.find(key)
+        if parent_mp_ratio_element
+          parent_new_effort_value = (current_parent_values[:effort].to_f - previous_effort_value.to_f) + effort_value.to_f
+          parent_new_cost_value = (current_parent_values[:cost].to_f - previous_cost_value.to_f) + @cost_value.to_f
+          @element_parents_ids_effort_cost_values[key] = { effort: parent_new_effort_value, cost: parent_new_cost_value }
+        end
       end
     end
+  end
+
+
+  def refresh_dashboard_added_phase_parents_cost_value
+    @level = params['level']
+    cost_value = params['cost_value']
+    previous_cost_value = params['previous_cost_value']
+    mp_ratio_element_parents_costs = params['element_parents_costs'] || []
+    @element_parents_ids_cost_values = Hash.new
+
+    @mp_ratio_element = ModuleProjectRatioElement.find(params["mp_ratio_element_id"])
+    if @mp_ratio_element
+      # Mettre à jour les valeurs de l'effort et de côut des elements parents
+      mp_ratio_element_parents_costs.each do |key, current_parent_values|
+        parent_mp_ratio_element = ModuleProjectRatioElement.find(key)
+        if parent_mp_ratio_element
+          parent_new_cost_value = (current_parent_values[:cost].to_f - previous_cost_value.to_f) + cost_value.to_f
+          @element_parents_ids_cost_values[key] = { cost: parent_new_cost_value }
+        end
+      end
+    end
+
   end
 
 

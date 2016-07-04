@@ -1885,7 +1885,7 @@ frsncf_isi:
   input_output_size: "Taille E/S : "
   input_effort: "Effort en entrée : "
   output_effort: "Effort en sortie : "
-  project_not_found: "devis inexistant !"
+  project_not_found: "Devis inexistant !"
   error_resource_not_found: "La ressource est introuvable !"
   use_base_100: "Utiliser la base 100"
   use_real_base_percentage: "Utiliser les valeurs des pourcentages réel"
@@ -1920,13 +1920,6 @@ frsncf_isi:
 
   duplicate: "Dupliquer l'unité d'oeuvre"
   add: "Créer une unité d'oeuvre"
-
-  move_your_cursor: "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
-  total_size: "Taille totale"
-  number_of_processing: "Nombre de traitements"
-  number_of_data: "Nombre de données"
-  processing: "Traitements"
-  data: "Données"
   calculate_save: "Calculer et Sauvegarder"
   calculated_value: "Calculé"
   retained_value: "Retenu"
@@ -1944,3 +1937,15 @@ frsncf_isi:
   hide_results_global_view: "Cacher la vue globale du projet"
   show_results_global_view: "Afficher le vue globale du projet"
   save_modifications: "Sauvegarder les modifications"
+
+  theoretical_effort: "Effort calculé"
+  theoretical_cost: "Coût calculé"
+  retained_effort: "Effort retenu"
+  retained_cost: "Coût retenu"
+
+  move_your_cursor: "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
+  total_size: "Taille totale"
+  number_of_processing: "Nombre de traitements"
+  number_of_data: "Nombre de données"
+  processing: "Traitements"
+  data: "Données"

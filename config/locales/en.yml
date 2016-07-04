@@ -1925,13 +1925,6 @@ en:
 
   duplicate: "Duplicate unit of work"
   add: "Create a unit of work"
-
-  move_your_cursor: "Move your cursor on the chart and click to locate your current project"
-  total_size: "Total size"
-  number_of_processing: "Number of processing"
-  number_of_data: "Number of data"
-  processing: "Processing"
-  data: "Data"
   kpi_unit: "KPI Unit"
   calculate_save: "Calculate and Save"
   calculated_value: "Calculated"
@@ -1950,3 +1943,14 @@ en:
   hide_results_global_view: "Hide the project overview"
   show_results_global_view: "Show the project overview"
   save_modifications: "Save modifications"
+
+  theoretical_effort: "Calculated effort"
+  theoretical_cost: "Calculated cost"
+  retained_effort: "Retained effort"
+  retained_cost: "Retained cost"
+  move_your_cursor: "Move your cursor on the chart and click to locate your current project"
+  total_size: "Total size"
+  number_of_processing: "Number of processing"
+  number_of_data: "Number of data"
+  processing: "Processing"
+  data: "Data"
