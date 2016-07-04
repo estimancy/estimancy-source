@@ -10,7 +10,7 @@
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
 
           <% selected_inline_columns.each do |column| %>
-              <%= column_header(column) %>
+            <%= column_header(column) %>
           <% end %>
 
           <th class="action"><%= I18n.t(:actions) %></th>

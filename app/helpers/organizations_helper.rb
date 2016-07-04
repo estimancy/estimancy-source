@@ -71,7 +71,7 @@ module OrganizationsHelper
       when :title
         content_tag('th class="text_left"', I18n.t(column.caption))
       when :description
-        content_tag('th class="text_left"', I18n.t(column.caption))
+        content_tag('th class="center"', I18n.t(column.caption))
       when :version
         content_tag('th class="center"', I18n.t(column.caption))
       when :status_name

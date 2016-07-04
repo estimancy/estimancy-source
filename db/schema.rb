@@ -665,14 +665,14 @@ ActiveRecord::Schema.define(:version => 20160526133627) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained"
+    t.boolean  "allow_retained",             :default => true
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria"
+    t.boolean  "allow_criteria",             :default => true
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -846,12 +846,6 @@ ActiveRecord::Schema.define(:version => 20160526133627) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1680,7 +1674,7 @@ ActiveRecord::Schema.define(:version => 20160526133627) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
+    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

@@ -1227,4 +1227,7 @@ class Guw::GuwModelsController < ApplicationController
     redirect_to :back
   end
 
+  def auto_sizing
+    p "Yolo"
+  end
 end

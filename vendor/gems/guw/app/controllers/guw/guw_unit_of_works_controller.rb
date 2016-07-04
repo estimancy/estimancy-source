@@ -362,6 +362,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_guw_unit_of_works
+
     @guw_model = current_module_project.guw_model
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
@@ -543,6 +544,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def change_cotation
+    authorize! :execute_estimation_plan, @project
+
     @guw_model = current_module_project.guw_model
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
@@ -557,6 +560,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def change_work_unit
+    authorize! :execute_estimation_plan, @project
+
     @guw_model = current_module_project.guw_model
     @guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
@@ -581,12 +586,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   # end
 
   def change_technology_form
+    authorize! :execute_estimation_plan, @project
+
     @guw_model = current_module_project.guw_model
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
   end
 
   def change_selected_state
+    authorize! :execute_estimation_plan, @project
+
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     if @guw_unit_of_work.selected == false
       @guw_unit_of_work.selected = true
