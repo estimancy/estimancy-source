@@ -78,10 +78,9 @@
     <% @unit_of_work_groups.each_with_index do |uowg, j| %>
       <div class="accordion-heading" style="padding:5px;">
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
-
-            <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
-              <%= uowg.name %>
-            </span>
+          <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
+            <%= uowg.name %>
+          </span>
         </a>
         <% if can?(:execute_estimation_plan, @project) %>
           <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
