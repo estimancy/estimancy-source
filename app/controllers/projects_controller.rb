@@ -1741,11 +1741,11 @@ public
   def duplicate
     # To duplicate a project user need to have the "show_project" and "create_project_from_scratch" authorizations
     if params[:action_name] == "duplication"
-      authorize! :create_project_from_scratch, Project
+      authorize! :copy_project, Project
       # To Create a project from a template user need to have "create_project_from_template" authorization
       #elsif params[:action_name] == "create_project_from_template"
     elsif !params[:create_project_from_template].nil?
-      authorize! :create_project_from_template, Project
+      authorize! :copy_project, Project
     end
 
     @organization = Organization.find(params[:organization_id])

@@ -412,6 +412,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.guw_weighting = guw_weighting
       guw_unit_of_work.guw_factor = guw_factor
 
+      @guw_model.guw_attributes.all.each do |gac|
+        guw_unit_of_work.save
+        finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
+                                                   guw_unit_of_work_id: guw_unit_of_work.id,
+                                                   guw_attribute_id: gac.id).first_or_create
+        finder.save
+      end
+
       if params["quantity"].present?
         guw_unit_of_work.quantity = params["quantity"]["#{guw_unit_of_work.id}"].nil? ? 1 : params["quantity"]["#{guw_unit_of_work.id}"].to_f
       else
@@ -493,7 +501,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       if final_value.nil?
         guw_unit_of_work.size = nil
-        guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+        if params["ajusted_size"].nil?
+          guw_unit_of_work.ajusted_size = nil
+        else
+          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+        end
       else
         guw_unit_of_work.size = final_value.to_f *
             (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
