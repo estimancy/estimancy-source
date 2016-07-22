@@ -130,13 +130,13 @@ class ViewsWidgetsController < ApplicationController
       end
       @views_widget.equation = equation
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
+
+      begin
+        @views_widget.module_project_id = @module_project.id
+      rescue
+      end
     end
 
-    begin
-      @views_widget.module_project_id = @module_project.id
-    rescue
-
-    end
 
     respond_to do |format|
       if @views_widget.save
