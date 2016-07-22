@@ -1501,7 +1501,7 @@ frsncf:
 
   #recent
   resend_confirmation_instructions: "Renvoyer les instructions de confirmation"
-  Sign_in_with_SAML: "S'inscrire avec SAML"
+  Sign_in_with_SAML: "Se connecter avec SAML"
   add_level: "Ajouter un niveau"
   Standard_unit_conversion_factor: "Coefficient de conversion en unité standard"
   new_UO_model: "Nouveau modèle d'UO"
