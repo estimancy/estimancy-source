@@ -93,7 +93,9 @@
                  activity_elt_ancestor_ids = mp_ratio_element.wbs_activity_element.ancestor_ids
                  activity_elt_ancestor_ids.each do |ancestor_id|
                    parent_ratio_elt = @module_project_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
-                   mp_ratio_element_ancestor_ids << parent_ratio_elt.id
+                   unless parent_ratio_elt.nil?
+                    mp_ratio_element_ancestor_ids << parent_ratio_elt.id
+                   end
                  end
                end
             %>
@@ -103,8 +105,8 @@
               <td style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>"></td>
               <td>
                 <span class="badge badge-default">
-                    <% elt_position =  mp_ratio_element.position %>
-                    <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+                  <% elt_position =  mp_ratio_element.position %>
+                  <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
                 </span>
               </td>
               <td>

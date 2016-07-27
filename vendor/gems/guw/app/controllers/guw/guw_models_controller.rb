@@ -1228,12 +1228,7 @@ class Guw::GuwModelsController < ApplicationController
   end
 
   def auto_sizing
-    # begin
-      result = exec("python #{Rails.root}/autosize/modelConstruction.py")
-      p "======"
-      p result
-    # rescue Exception => e
-    #   p e
-    # end
+    RestClient.post('http://localhost:5001/estimate', :tmpfile => File.new(params[:file].path))
+    redirect_to :back
   end
 end
