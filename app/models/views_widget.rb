@@ -58,7 +58,10 @@ class ViewsWidget < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
-  def self.update_field(view_widget, organization, project, component)
+  def self.update_field(view_widget, organization, project)
+
+
+    component = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
 
     organization.fields.each do |field|
 

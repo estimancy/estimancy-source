@@ -161,7 +161,7 @@ class Operation::OperationModelsController < ApplicationController
 
     #@current_organization.fields.each do |field|
     current_module_project.views_widgets.each do |vw|
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, current_component)
+      ViewsWidget::update_field(vw, @current_organization, current_module_project.project)
     end
     #end
 

@@ -951,7 +951,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def update_view_widgets_and_project_fields
     @module_project.views_widgets.each do |vw|
-      ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
+      ViewsWidget::update_field(vw, @current_organization, @module_project.project)
     end
   end
 
