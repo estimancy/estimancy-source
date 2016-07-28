@@ -161,7 +161,8 @@ class Operation::OperationModelsController < ApplicationController
 
     #@current_organization.fields.each do |field|
     current_module_project.views_widgets.each do |vw|
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project)
+      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
+      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
     end
     #end
 
