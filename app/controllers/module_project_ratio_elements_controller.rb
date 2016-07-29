@@ -2,11 +2,32 @@ class ModuleProjectRatioElementsController < ApplicationController
 
   def new
     @module_project_ratio_element = ModuleProjectRatioElement.new
+    if params[:module_project_id]
+      @module_project = ModuleProject.find(params[:module_project_id])
+      @pbs_project_element = PbsProjectElement.find(params[:pbs_project_element_id])
+      @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+
+      @potential_parents = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element, false)
+    end
+    @selected_parent ||= @potential_parents.find(params[:selected_parent_id])
   end
 
   def edit
     @module_project_ratio_element = ModuleProjectRatioElement.find(params[:id])
+
+    @module_project = @module_project_ratio_element.module_project
+    @pbs_project_element = @module_project_ratio_element.pbs_project_element
+    @wbs_activity_ratio = @module_project_ratio_element.wbs_activity_ratio
+
+    if @module_project_ratio_element.ancestry.nil?
+      @potential_parents = []
+    else
+      @potential_parents = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+    end
+
+    @selected_parent = @module_project_ratio_element.parent
   end
+
 
   def create
     @module_project_ratio_element = ModuleProjectRatioElement.new(params[:module_project_ratio_element])
@@ -66,32 +87,11 @@ class ModuleProjectRatioElementsController < ApplicationController
 
       @wbs_activity = @wbs_activity_ratio.wbs_activity
       @wbs_activity_input = WbsActivityInput.where(module_project_id: @module_project.id, wbs_activity_id: @module_project.wbs_activity_id, pbs_project_element_id: @pbs_project_element.id).first
-
       @organization = @wbs_activity.organization
-
-
       @effort_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient
 
-      # Module_project Ratio elements
-      @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: @pbs_project_element.id)
-
-      if @module_project_ratio_elements.nil? || @module_project_ratio_elements.empty?
-        #create module_project ratio elements
-        @wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
-
-          #mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-          #                                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-          #                                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
-
-          mp_ratio_element = ModuleProjectRatioElement.where(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                             wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id)
-                                                      .first_or_create(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                          wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-                                                          multiple_references: ratio_element.multiple_references, wbs_activity_element_id: ratio_element.wbs_activity_element_id,
-                                                          name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-                                                          ratio_value: ratio_element.ratio_value,  position: ratio_element.wbs_activity_element.position)
-        end
-      end
+      # # Module_project Ratio elements
+      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
     end
 
     #@total = @module_project_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
@@ -187,7 +187,6 @@ class ModuleProjectRatioElementsController < ApplicationController
     cost_value = tmp_cost.values.sum
 
     cost_value * effort_unit_coeff.to_f
-
   end
 
 

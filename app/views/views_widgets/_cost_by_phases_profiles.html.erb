@@ -88,7 +88,7 @@
 
                                       <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
                                       <% if wbs_profiles_value.class == Hash %>
-                                          <% wbs_profiles_value = wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f %>
+                                          <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
                                       <% end %>
                                       <% array_root[profile.id] << wbs_profiles_value.to_f %>
                                       <% effort_per_phase +=  wbs_profiles_value %>

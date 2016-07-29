@@ -208,4 +208,53 @@ class ModuleProject < ActiveRecord::Base
       ""
     end
   end
+
+
+  # Get the module_project ratio-elements for WBS-ACTIVITY module
+  def get_module_project_ratio_elements(wbs_activity_ratio, pbs_project_element, sort_result=true)
+    # Module_project Ratio elements
+    mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.id)
+
+    if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
+      #create module_project ratio elements
+      wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
+        mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
+
+        if mp_ratio_elt.nil?
+          mp_ratio_elt = ModuleProjectRatioElement.new(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
+                               is_optional: ratio_element.is_optional, wbs_activity_ratio_element_id: ratio_element.id, multiple_references: ratio_element.multiple_references,
+                               wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                               ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
+
+          current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id)
+          activity_elt = mp_ratio_elt.wbs_activity_element
+          activity_elt_ancestor_ids = activity_elt.ancestor_ids
+          new_ancestor_ids_list = []
+          unless activity_elt.is_root?
+            activity_elt_ancestor_ids.each do |ancestor_id|
+              ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+              unless ancestor.nil?
+                new_ancestor_ids_list.push(ancestor.id)
+              end
+            end
+            new_ancestry = new_ancestor_ids_list.join('/')
+            mp_ratio_elt.ancestry = new_ancestry
+            mp_ratio_elt.save
+          end
+        end
+
+      end
+      mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.id)
+    end
+
+    if sort_result
+      module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(mp_ratio_elements.arrange(order: 'position'))
+    else
+      module_project_ratio_elements = mp_ratio_elements
+    end
+
+    module_project_ratio_elements
+  end
+
+
 end

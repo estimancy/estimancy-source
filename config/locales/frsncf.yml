@@ -1951,3 +1951,4 @@ frsncf:
   number_of_data: "Nombre de données"
   processing: "Traitements"
   data: "Données"
+  is_optional: "Est facultatif"

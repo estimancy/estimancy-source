@@ -1486,3 +1486,4 @@ it:
   theoretical_cost: "Coût calculé"
   retained_effort: "Effort retenu"
   retained_cost: "Coût retenu"
+  is_optional: "Est facultatif"

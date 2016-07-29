@@ -1885,3 +1885,4 @@ es:
   theoretical_cost: "Calculated cost"
   retained_effort: "Retained effort"
   retained_cost: "Retained cost"
+  is_optional: "Is optional"

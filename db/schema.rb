@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160526133627) do
+ActiveRecord::Schema.define(:version => 20160623072653) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -904,7 +904,11 @@ ActiveRecord::Schema.define(:version => 20160526133627) do
     t.boolean  "selected"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
+    t.boolean  "is_optional"
+    t.string   "ancestry"
   end
+
+  add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
 
   create_table "module_projects", :force => true do |t|
     t.integer  "pemodule_id"
@@ -1813,6 +1817,7 @@ ActiveRecord::Schema.define(:version => 20160526133627) do
     t.string   "reference_uuid"
     t.boolean  "multiple_references"
     t.string   "ancestry"
+    t.boolean  "is_optional"
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"

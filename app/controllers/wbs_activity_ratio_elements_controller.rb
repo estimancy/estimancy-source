@@ -70,9 +70,17 @@ class WbsActivityRatioElementsController < ApplicationController
           new_ref.update_attribute('multiple_references', true)
         end
     end
+
     if params[:simple_reference]
       new_ref = WbsActivityRatioElement.find_by_id_and_wbs_activity_ratio_id(params[:simple_reference], params[:wbs_activity_ratio_id])
       new_ref.update_attribute('simple_reference', true)
+    end
+
+    if params[:is_optional]
+      params[:is_optional].each do |p|
+        ratio_elt = WbsActivityRatioElement.find_by_id(p)
+        ratio_elt.update_attribute('is_optional', true)
+      end
     end
 
     #keep current ratio
@@ -87,9 +95,9 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #we test total
     if @total != 100
-      flash.now[:warning] = I18n.t (:warning_sum_ratio_different_100)
+      flash.now[:warning] = I18n.t(:warning_sum_ratio_different_100)
     else
-      flash.now[:notice] = I18n.t (:notice_ratio_successful_saved)
+      flash.now[:notice] = I18n.t(:notice_ratio_successful_saved)
     end
 
     respond_to do |format|

@@ -58,6 +58,7 @@
     <th><%= I18n.t(:order) %></th>
     <th><%= I18n.t(:name) %></th>
     <th><%= I18n.t(:description) %></th>
+    <th><%= I18n.t(:is_optional) %></th>
     <th><%= I18n.t(:label_ratio_value) %></th>
     <th><%= I18n.t(:set_of_reference_value) %></th>
   </tr>
@@ -73,9 +74,11 @@
       <td><%= wbs_activity_ratio_element.wbs_activity_element.description %></td>
 
       <% if ! wbs_activity_ratio_element.wbs_activity_element.has_children? %>
+        <td style="text-align: center"><%= check_box_tag 'is_optional[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.is_optional %></td>
         <td style="text-align: center"><%= text_field_tag "ratio_values[#{wbs_activity_ratio_element.id}]", wbs_activity_ratio_element.ratio_value, :class => 'input-mini', :tabindex => i %></td>
         <td style="text-align: center"><%= check_box_tag 'multiple_references[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.multiple_references %></td>
       <% else %>
+        <td style="text-align: center"> - </td>
         <td style="text-align: center"> - </td>
         <td style="text-align: center"> - </td>
       <% end %>

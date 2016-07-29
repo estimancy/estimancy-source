@@ -255,30 +255,13 @@ class ProjectsController < ApplicationController
       else
         @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio].nil?)
       end
+
+      @pbs_project_element = current_component
       ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
       @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
       # Module_project Ratio elements
-      @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: current_component.id)
-      @pbs_project_element = current_component
-
-      if @module_project_ratio_elements.nil? || @module_project_ratio_elements.empty?
-        #create module_project ratio elements
-        @wbs_activity.wbs_activity_ratios.each do |ratio|
-          ratio.wbs_activity_ratio_elements.each do |ratio_element|
-
-            #mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-            #                                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-            #                                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
-
-            mp_ratio_element = ModuleProjectRatioElement.where(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                               wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id)
-                                                        .first_or_create(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                                         wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-                                                                         multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-                                                                         ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
-          end
-        end
-      end
+      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
 
     else
 
@@ -1164,11 +1147,32 @@ class ProjectsController < ApplicationController
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
           ratio.wbs_activity_ratio_elements.each do |ratio_element|
             mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
                                  ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
             mp_ratio_element.save
           end
+          #Update module_project_ratio_element ancestry
+          #current_ratio_mp_ratio_elements = my_module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio.id, pbs_project_element_id: @pbs_project_element.id)
+          current_ratio_mp_ratio_elements = my_module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio.id)
+          my_module_project.wbs_activity.wbs_activity_elements.each do |activity_elt|
+            activity_elt_ancestor_ids = activity_elt.ancestor_ids
+            unless activity_elt.is_root?
+              new_ancestor_ids_list = []
+              activity_elt_ancestor_ids.each do |ancestor_id|
+                ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+                unless ancestor.nil?
+                  new_ancestor_ids_list.push(ancestor.id)
+                end
+              end
+              new_ancestry = new_ancestor_ids_list.join('/')
+              mp_ratio_elements = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: activity_elt.id)
+              unless mp_ratio_elements.nil?
+                mp_ratio_elements.update_all(ancestry: new_ancestry)
+              end
+            end
+          end
         end
+
 
       elsif @pemodule.alias == "expert_judgement"
         eji_id = params[:module_selected].split(',').first
