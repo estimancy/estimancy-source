@@ -89,4 +89,6 @@ Guw::Engine.routes.draw do
   post "save_comments" => "guw_unit_of_works#save_comments", as: "save_comments"
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
+
+  post "auto_sizing" => "guw_models#auto_sizing", as: "auto_sizing"
 end

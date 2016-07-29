@@ -173,12 +173,22 @@ class Guw::GuwModelsController < ApplicationController
             # end
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-                Guw::GuwFactor.create(name:row[0],
+                Guw::GuwFactor.create(name: row[0],
                                       value: row[1],
                                       display_order: row[2],
                                       guw_model_id: @guw_model.id)
               end
             end
+          # elsif index == 5
+          #   tab.each_with_index do |row, index|
+          #     [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
+          #       ["size", "effort", "cost"].each_with_index do |at, j|
+          #         if row[i][j] == "1"
+          #           p "OK"
+          #         end
+          #       end
+          #     end
+          #   end
           else
             # if critical_flag
             #   route_flag = 5
@@ -563,26 +573,11 @@ class Guw::GuwModelsController < ApplicationController
 
       worksheet.sheet_data[ind2 + 2][0].change_font_bold(true)
       worksheet.change_row_bold(ind2 + 3,true)
-
-      #work units
-      j = ind2 + 3
-      worksheet.add_cell(j, 0, @guw_model.coefficient_label)
-      # worksheet.change_row_bold(j, true)
-
-      j = j + @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size + 1
-      worksheet.add_cell(j, 0, @guw_model.weightings_label)
-      worksheet.change_row_bold(j, true)
-
-      j = j + @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size + 1
-      worksheet.add_cell(j, 0, @guw_model.factors_label)
-      worksheet.change_row_bold(j, true)
-
-      j = j + @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guw_type.id).select{|ct| ct.value != nil }}.size + 1
-      worksheet.add_cell(j, 0, I18n.t(:technology))
-      worksheet.change_row_bold(j, true)
-
+      worksheet.add_cell(ind2 + 3, 0,  I18n.t(:Coefficient_of_acquisiton))
+      worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
 
       @guw_complexities.each do |guw_complexity|
+
         worksheet.add_cell(ind2, ind + 1, guw_complexity.name).change_horizontal_alignment('center')
         worksheet[ind2][ind + 1].change_border(:top, 'thin')
         worksheet[ind2][ind + 1].change_border(:left, 'thin')
@@ -599,72 +594,55 @@ class Guw::GuwModelsController < ApplicationController
           end
         end
 
-        #### ComplexityWorkUnit
         guw_complexity.guw_complexity_work_units.each do |guw_complexity_work_unit|
           @guw_work_unit = guw_complexity_work_unit.guw_work_unit
           unless @guw_work_unit.nil?
             cu = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: guw_complexity.id, guw_work_unit_id: @guw_work_unit.id).first
             worksheet.add_cell(ind2 + 4, 0, @guw_work_unit.name)
+            worksheet[ind2 + 4][0].change_border(:right, 'thin')
+
             ["","","",cu.value].each_with_index do |val, index|
               worksheet.add_cell(ind2 + 4, ind + index + 1, val).change_horizontal_alignment('center')
             end
-            # 4.times.each do |index|
-            #   worksheet[10][ind + index + 1].change_border(:top, 'thin')
-            # end
-            # worksheet[ind2 + 4][ind + 4].change_border(:right, 'thin')
-            ind2 += 1
-          end
-        end
-
-        #### ComplexityWeighting
-        guw_complexity.guw_complexity_weightings.each do |guw_complexity_weighting|
-          @guw_weighting = guw_complexity_weighting.guw_weighting
-          unless @guw_weighting.nil?
-            cu = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_complexity.id, guw_weighting_id: @guw_weighting.id).first
-            worksheet.add_cell(ind2 + 5, 0, @guw_weighting.name)
-            ["","","",cu.value].each_with_index do |val, index|
-              worksheet.add_cell(ind2 + 5, ind + index + 1, val).change_horizontal_alignment('center')
+            4.times.each do |index|
+              worksheet[10][ind + index + 1].change_border(:top, 'thin')
             end
-            # 4.times.each do |index|
-            #   worksheet[10][ind + index + 1].change_border(:top, 'thin')
-            # end
-            # worksheet[ind2 + 6][ind + 6].change_border(:right, 'thin')
+            worksheet[ind2 + 4][ind + 4].change_border(:right, 'thin')
             ind2 += 1
           end
         end
 
-        #### ComplexityFactor
-        guw_complexity.guw_complexity_factors.each do |guw_complexity_factor|
-          @guw_factor = guw_complexity_factor.guw_factor
-          unless @guw_factor.nil?
-            cu = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_complexity.id, guw_factor_id: @guw_factor.id).first
-            worksheet.add_cell(ind2 + 6, 0, @guw_factor.name)
-            ["","","",cu.value].each_with_index do |val, index|
-              worksheet.add_cell(ind2 + 6, ind + index + 1, val).change_horizontal_alignment('center')
-            end
-            # 4.times.each do |index|
-            #   worksheet[10][ind + index + 1].change_border(:top, 'thin')
-            # end
-            # worksheet[ind2 + 5][ind + 5].change_border(:right, 'thin')
-            ind2 += 1
-          end
+        worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
+        5.times.each do |index|
+          # worksheet[ind2 + 3][ind + index].change_border(:bottom, 'thin')
         end
 
-        #### Complexity Technology
+        worksheet.change_row_bold(ind2 + 4,true)
+        worksheet.add_cell(ind2 + 4, 0, I18n.t(:organization_technology))
+        worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
+
+        block_it = ind2 + 5
+
         guw_complexity.guw_complexity_technologies.each do |complexity_technology|
           @guw_organisation_technology = complexity_technology.organization_technology
           unless @guw_organisation_technology.nil?
             ct = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity.id, organization_technology_id: @guw_organisation_technology.id).first
-            worksheet.add_cell(ind2 + 7, 0, @guw_organisation_technology.name)
-            worksheet[ind2 + 7][0].change_border(:right, 'thin')
+            worksheet.add_cell(ind2 + 5, 0, @guw_organisation_technology.name)
+            worksheet[ind2 + 5][0].change_border(:right, 'thin')
+
             ["", "", "", ct.coefficient].each_with_index do |val, index|
-              worksheet.add_cell(ind2 + 7, ind + index + 1, val).change_horizontal_alignment('center')
+              worksheet.add_cell(ind2 + 5, ind + index + 1, val).change_horizontal_alignment('center')
+              worksheet[block_it][ind + index + 1].change_border(:top, 'thin')
+
             end
-            # 4.times.each do |index|
-            #   worksheet[10][ind + index + 1].change_border(:top, 'thin')
-            # end
-            # worksheet[ind2 + 7][ind + 7].change_border(:right, 'thin')
+            worksheet[ind2 + 5][ind + 4].change_border(:right, 'thin')
             ind2 += 1
+          end
+        end
+        worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
+        unless guw_complexity.guw_complexity_technologies.empty?
+          4.times.each_with_index do |index|
+            worksheet[ind2 + 4][ind + index + 1].change_border(:bottom, 'thin')
           end
         end
 
@@ -674,7 +652,6 @@ class Guw::GuwModelsController < ApplicationController
         ind2 = 6
         ind += 4
       end
-
       ind = 0
       [I18n.t(:complexity_threshold), I18n.t(:pe_attributes)].each_with_index do |val, index|
         worksheet.add_cell(ind3 + index, ind, val)
@@ -1013,7 +990,7 @@ class Guw::GuwModelsController < ApplicationController
     tab_error = [[false], [false], [false], [false], [false]]
     indexing_field_error = [[false],[false],[false],[false]]
 
-    if !params[:file].nil?# && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       worksheet =workbook[0]
       tab = worksheet.extract_data
@@ -1250,4 +1227,8 @@ class Guw::GuwModelsController < ApplicationController
     redirect_to :back
   end
 
+  def auto_sizing
+    RestClient.post('http://localhost:5001/estimate', :tmpfile => File.new(params[:file].path))
+    redirect_to :back
+  end
 end

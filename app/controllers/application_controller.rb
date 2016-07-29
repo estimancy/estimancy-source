@@ -72,7 +72,6 @@ class ApplicationController < ActionController::Base
   helper_method :set_user_language
   helper_method :initialization_module
   helper_method :user_number_precision
-  helper_method :display_badge
 
   before_filter :check_access
   before_filter :set_user_time_zone
@@ -82,7 +81,6 @@ class ApplicationController < ActionController::Base
   before_filter :set_breadcrumbs
   before_filter :set_current_project
   before_filter :set_current_organization
-  ###before_filter :session_expiration
   before_filter :update_activity_time
   before_filter :initialization_module
 
@@ -115,48 +113,6 @@ class ApplicationController < ActionController::Base
 
   def current_ability
     @current_ability ||= Ability.new(current_user, @current_organization)
-  end
-
-  # Organization verification: user need to have at least one organization before continue
-  def check_user_organization
-    if current_user.organizations.empty?
-      redirect_to(new_organization_path, flash: { warning: I18n.t(:user_need_at_least_one_organization)})
-    end
-  end
-
-  def session_expiration
-    unless load_admin_setting('session_maximum_lifetime').nil? && load_admin_setting('session_inactivity_timeout').nil?
-      if current_user
-        if session_expired?
-          reset_session
-          flash[:error] = I18n.t(:error_session_expired)
-          redirect_to root_path(:return_to => session[:return_to])
-        end
-      end
-    end
-  end
-
-  def session_expired?
-    unless load_admin_setting('session_maximum_lifetime')=='unset'
-      setting_session_maximum_lifetime = load_admin_setting('session_maximum_lifetime').to_i*60*60*24
-      unless session[:ctime] && (Time.now.utc.to_i - session[:ctime].to_i <= setting_session_maximum_lifetime)
-        return true
-      end
-    end
-
-    unless load_admin_setting('session_inactivity_timeout')=='unset'
-      if load_admin_setting('session_inactivity_timeout').to_i==30
-        unless session[:atime] && (Time.now.utc.to_i - session[:atime].to_i <= load_admin_setting('session_inactivity_timeout').to_i*60)
-          return true
-        end
-      else
-        unless session[:atime] && (Time.now.utc.to_i - session[:atime].to_i <= load_admin_setting('session_inactivity_timeout').to_i*60*60)
-          return true
-        end
-      end
-
-    end
-    false
   end
 
   def update_activity_time
@@ -392,7 +348,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
   #Get record statuses
   def get_record_statuses
     @retired_status = RecordStatus.find_by_name('Retired')
@@ -414,30 +369,6 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-
-  # Get the bootstraap badge class
-  def display_badge(state)
-    badge = "badge-default"
-    case state
-      when "preliminary"
-        badge = "badge-default" #Gris
-      when ":in_progress"
-        badge = "badge-info"  #Bleu
-      when "in_review"
-        badge = "badge-warning" #Orange
-      when "checkpoint"
-        badge = "badge-important" #Rouge
-      when "released"
-        badge = "badge-success" #Vert
-      when "rejected"
-        badge = "badge-inverse" #Noir
-      else
-        badge = "badge-default"
-    end
-
-    return badge
-  end
-
 
   private
   def extract_locale_from_accept_language_header

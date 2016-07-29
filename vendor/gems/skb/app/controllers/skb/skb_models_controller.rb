@@ -248,7 +248,8 @@ class Skb::SkbModelsController < ApplicationController
     end
 
     current_module_project.views_widgets.each do |vw|
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, current_component)
+      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
+      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
     end
 
     size_attr = PeAttribute.find_by_alias("retained_size")

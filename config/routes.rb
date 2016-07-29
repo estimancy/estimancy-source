@@ -347,7 +347,6 @@ Projestimate::Application.routes.draw do
   post "execute_estimation" => "projects#execute_estimation"
   get "export_my_project_xl/:project_id" => "projects#export_my_project_xl" , :as => 'export_my_project_xl'
 
-
   resources :translations
   get 'load_translations' => 'translations#load_translations', :as => 'load_translations'
 
