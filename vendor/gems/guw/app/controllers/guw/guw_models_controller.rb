@@ -421,9 +421,9 @@ class Guw::GuwModelsController < ApplicationController
     worksheet.change_column_bold(0,true)
     worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
     worksheet.change_column_width(0, 38)
-    worksheet.change_column_width(1, the_most_largest(@guw_model.description))
-    worksheet.merge_cells(6, 0, 6, 1)
-    worksheet.change_row_height(6, 25)
+    worksheet.change_column_width(1, 30)
+    # worksheet.merge_cells(6, 0, 6, 1)
+    # worksheet.change_row_height(6, 25)
 
     worksheet = workbook[1]
 
