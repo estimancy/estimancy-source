@@ -1916,3 +1916,4 @@ fr:
   number_of_data: "Nombre de données"
   processing: "Traitements"
   data: "Données"
+  confirm_deletion: "Confirmer la suppression de l'estimation"

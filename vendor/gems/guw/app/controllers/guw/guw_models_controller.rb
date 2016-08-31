@@ -688,8 +688,13 @@ class Guw::GuwModelsController < ApplicationController
           ind4 += 1
         end
 
-        worksheet[ind4 - 1][0].change_border(:bottom, 'thin')
-        4.times.each {|index| worksheet[ind4 - 1][ind + index + 1].change_border(:bottom, 'thin')}
+        # begin
+        #   worksheet[ind4 - 1][0].change_border(:bottom, 'thin')
+        #   (@guw_model.guw_attributes.size - 1).times.each do |index|
+        #     worksheet[ind4 - 1][ind + index].change_border(:bottom, 'thin')
+        #   end
+        # rescue
+        # end
 
         ind += 4
       end

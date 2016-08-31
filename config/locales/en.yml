@@ -1904,3 +1904,5 @@ en:
   number_of_data: "Number of data"
   processing: "Processing"
   data: "Data"
+
+  confirm_deletion: "Confirm estimation deletion"
