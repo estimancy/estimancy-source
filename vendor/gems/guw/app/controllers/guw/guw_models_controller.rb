@@ -305,7 +305,9 @@ class Guw::GuwModelsController < ApplicationController
                   ind3 = save_position + 2
                   ind = 1
                   while !tab[save_position][ind].nil?
-                   @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id, name: tab[save_position][ind], value: 4)
+                   @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
+                                                                        name: tab[save_position][ind],
+                                                                        value: tab[save_position][ind + 1])
                     @guw_model.guw_attributes.each do |att|
                       while !tab[ind3].nil? && tab[ind3][0] != att.name
                         ind3 += 1
@@ -663,6 +665,7 @@ class Guw::GuwModelsController < ApplicationController
 
       guw_type.guw_type_complexities.each  do |type_attribute_complexity|
         worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
+        worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
         worksheet[ind3][ind + 1].change_border(:top, 'thin')
         worksheet[ind3][ind + 1].change_border(:right, 'thin')
         worksheet[ind3][ind + 1].change_border(:left, 'thin')

@@ -1588,7 +1588,7 @@ fr:
   route_flag_error_3: "Des erreurs se sont glissées dans votre fichier merci de bien vouloir les corriger pour un exemple de ce à quoi doit ressembler un fichier conforme référé vous au wiki pour plus d'information (http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work)."
   route_flag_error_4: "Erreur le fichier importé n'est pas un fichier Excel ou n'est pas valide."
   route_flag_error_5: "Des informations cruciales son manquant impossible de créer le modèle D'UO, referer vous au wiki rubrique importation d'UO pour plus d'information"
-  route_flag_error_6: "Attention page non conforme détecter, nombre de pages non importées: %{ind}"
+  route_flag_error_6: "Attention page non conforme détecté, nombre de pages non importées: %{ind}"
   route_flag_error_7: "Un décalage dans les pages du fichier a entraîné une erreur l'or de l'importation, le modèle a été créé, mais des informations n'ont pas été récupérées, referer vous au wiki pour plus d'information (http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work)."
   route_flag_error_8: "le nom est manquant pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_9: "le nom du groupe est manquant pour la/les ligne(s) suivante: %{mess_error}"
