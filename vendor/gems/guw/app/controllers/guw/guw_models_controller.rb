@@ -179,16 +179,16 @@ class Guw::GuwModelsController < ApplicationController
                                       guw_model_id: @guw_model.id)
               end
             end
-          # elsif index == 5
-          #   tab.each_with_index do |row, index|
-          #     [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
-          #       ["size", "effort", "cost"].each_with_index do |at, j|
-          #         if row[i][j] == "1"
-          #           p "OK"
-          #         end
-          #       end
-          #     end
-          #   end
+          elsif index == 5
+            tab.each_with_index do |row, index|
+              [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
+                ["size", "effort", "cost"].each_with_index do |at, j|
+                  if row[i][j] == "1"
+                    p "OK"
+                  end
+                end
+              end
+            end
           else
             # if critical_flag
             #   route_flag = 5
@@ -305,9 +305,14 @@ class Guw::GuwModelsController < ApplicationController
                   ind3 = save_position + 2
                   ind = 1
                   while !tab[save_position][ind].nil?
+                    if tab[save_position].nil?
+                      value = nil
+                    else
+                      value = tab[save_position][ind + 1]
+                    end
                    @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
                                                                         name: tab[save_position][ind],
-                                                                        value: tab[save_position][ind + 1])
+                                                                        value: value)
                     @guw_model.guw_attributes.each do |att|
                       while !tab[ind3].nil? && tab[ind3][0] != att.name
                         ind3 += 1
