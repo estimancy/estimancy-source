@@ -704,7 +704,9 @@ class ProjectsController < ApplicationController
         unless params["user_securities_from_model"].nil?
           params["user_securities_from_model"].each do |psl|
             params["user_securities_from_model"][psl.first].each do |user|
-              ProjectSecurity.create(user_id: user.first.to_i,
+              owner_key = AdminSetting.find_by_key("Estimation Owner")
+              owner = User.where(initials: owner_key.value).first
+              ProjectSecurity.create(user_id: owner.id.to_i,
                                      project_id: @project.id,
                                      project_security_level_id: psl.first,
                                      is_model_permission: @project.is_model,
@@ -836,22 +838,25 @@ class ProjectsController < ApplicationController
       project.project_securities.delete_all
 
       model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false).all.each do |ps|
-        if ps.user_id.nil?
-          ProjectSecurity.create(project_id: project.id,
-                                 user_id: nil,
-                                 project_security_level_id: ps.project_security_level_id,
-                                 group_id: ps.group_id,
-                                 is_model_permission: false,
-                                 is_estimation_permission: true)
-        else
-          ProjectSecurity.create(project_id: project.id,
-                                 user_id: User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s),
-                                 project_security_level_id: ps.project_security_level_id,
-                                 group_id: nil,
-                                 is_model_permission: false,
-                                 is_estimation_permission: true)
-        end
+        ProjectSecurity.create(project_id: project.id,
+                               user_id: nil,
+                               project_security_level_id: ps.project_security_level_id,
+                               group_id: ps.group_id,
+                               is_model_permission: false,
+                               is_estimation_permission: true)
       end
+
+      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false, user_id: model_project.creator_id).all.each do |ps|
+        owner_user = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s)
+
+        ProjectSecurity.create(project_id: project.id,
+                               user_id: owner_user.id,
+                               project_security_level_id: ps.project_security_level_id,
+                               group_id: ps.group_id,
+                               is_model_permission: false,
+                               is_estimation_permission: true)
+      end
+
     end
 
     redirect_to :back
@@ -1786,7 +1791,7 @@ public
   def duplicate
     # To duplicate a project user need to have the "show_project" and "create_project_from_scratch" authorizations
     if params[:action_name] == "duplication"
-      authorize! :create_project_from_scratch, Project
+      authorize! :copy_project, @project
       # To Create a project from a template user need to have "create_project_from_template" authorization
       #elsif params[:action_name] == "create_project_from_template"
     elsif !params[:create_project_from_template].nil?
@@ -1852,9 +1857,9 @@ public
           if ps.is_model_permission == true
             ps.update_attribute(:is_model_permission, false)
             ps.update_attribute(:is_estimation_permission, true)
-            # if !ps.user_id.nil?
+            if ps.user_id == owner.id
               ps.update_attribute(:user_id, owner.id)
-            # end
+            end
           else
             ps.destroy
           end

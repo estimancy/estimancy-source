@@ -34,7 +34,7 @@ class ProjectArea < ActiveRecord::Base
 
   has_many :projects
 
-  validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
+  validates :name, :presence => true#, :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 
   #Search fields
   scoped_search :on => [:name, :description, :created_at, :updated_at]

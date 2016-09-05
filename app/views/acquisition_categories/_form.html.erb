@@ -15,13 +15,13 @@
 
       <div class="actions-tabs">
         <% if can? :manage, AcquisitionCategory %>
-            <% if action_name == 'new' || action_name=='create' %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-            <% elsif action_name == 'edit' || action_name=='update' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-            <% end %>
+          <% if action_name == 'new' || action_name=='create' %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn' %>
+          <% elsif action_name == 'edit' || action_name=='update' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+          <% end %>
         <% end %>
         <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-acquisition-categories'), :class => 'btn' %>
       </div>
