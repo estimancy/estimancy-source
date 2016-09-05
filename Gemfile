@@ -27,7 +27,7 @@ if File.exist?(database_file)
         # when /postgres/
           # gem 'pg'
         else
-          warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
+          # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
     end
   else

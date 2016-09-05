@@ -179,16 +179,16 @@ class Guw::GuwModelsController < ApplicationController
                                       guw_model_id: @guw_model.id)
               end
             end
-          # elsif index == 5
-          #   tab.each_with_index do |row, index|
-          #     [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
-          #       ["size", "effort", "cost"].each_with_index do |at, j|
-          #         if row[i][j] == "1"
-          #           p "OK"
-          #         end
-          #       end
-          #     end
-          #   end
+          elsif index == 5
+            tab.each_with_index do |row, index|
+              [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
+                ["size", "effort", "cost"].each_with_index do |at, j|
+                  if row[i][j] == "1"
+                    p "OK"
+                  end
+                end
+              end
+            end
           else
             # if critical_flag
             #   route_flag = 5
@@ -305,7 +305,14 @@ class Guw::GuwModelsController < ApplicationController
                   ind3 = save_position + 2
                   ind = 1
                   while !tab[save_position][ind].nil?
-                   @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id, name: tab[save_position][ind], value: 4)
+                    if tab[save_position].nil?
+                      value = nil
+                    else
+                      value = tab[save_position][ind + 1]
+                    end
+                   @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
+                                                                        name: tab[save_position][ind],
+                                                                        value: value)
                     @guw_model.guw_attributes.each do |att|
                       while !tab[ind3].nil? && tab[ind3][0] != att.name
                         ind3 += 1
@@ -421,9 +428,9 @@ class Guw::GuwModelsController < ApplicationController
     worksheet.change_column_bold(0,true)
     worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
     worksheet.change_column_width(0, 38)
-    worksheet.change_column_width(1, the_most_largest(@guw_model.description))
-    worksheet.merge_cells(6, 0, 6, 1)
-    worksheet.change_row_height(6, 25)
+    worksheet.change_column_width(1, 30)
+    # worksheet.merge_cells(6, 0, 6, 1)
+    # worksheet.change_row_height(6, 25)
 
     worksheet = workbook[1]
 
@@ -663,6 +670,7 @@ class Guw::GuwModelsController < ApplicationController
 
       guw_type.guw_type_complexities.each  do |type_attribute_complexity|
         worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
+        worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
         worksheet[ind3][ind + 1].change_border(:top, 'thin')
         worksheet[ind3][ind + 1].change_border(:right, 'thin')
         worksheet[ind3][ind + 1].change_border(:left, 'thin')
@@ -688,8 +696,13 @@ class Guw::GuwModelsController < ApplicationController
           ind4 += 1
         end
 
-        worksheet[ind4 - 1][0].change_border(:bottom, 'thin')
-        4.times.each {|index| worksheet[ind4 - 1][ind + index + 1].change_border(:bottom, 'thin')}
+        # begin
+        #   worksheet[ind4 - 1][0].change_border(:bottom, 'thin')
+        #   (@guw_model.guw_attributes.size - 1).times.each do |index|
+        #     worksheet[ind4 - 1][ind + index].change_border(:bottom, 'thin')
+        #   end
+        # rescue
+        # end
 
         ind += 4
       end
@@ -970,7 +983,8 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
     end
-      unless final_mess.empty?
+
+    unless final_mess.empty?
       flash[:error] = final_mess.join("<br/>").html_safe
     end
   end
