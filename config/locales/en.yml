@@ -1519,7 +1519,7 @@ en:
 
   #recent
   resend_confirmation_instructions: "Resend confirmation instructions"
-  Sign_in_with_SAML: "Se connecter avec SAML"
+  Sign_in_with_SAML: "Sign in with SAML"
   add_level: "add level"
   Standard_unit_conversion_factor: "Standard unit conversion factor"
   new_UO_model: "New UO model"
@@ -1956,5 +1956,3 @@ en:
   data: "Data"
 
   is_optional: "Is optional"
-
-  confirm_deletion: "Confirm estimation deletion"

@@ -142,12 +142,11 @@ class ViewsWidgetsController < ApplicationController
       ###@views_widget.module_project_id = @module_project.id
       ###end
 
-      begin
-        @views_widget.module_project_id = @module_project.id
-      rescue
-      end
-    end
+    begin
+      @views_widget.module_project_id = @module_project.id
+    rescue
 
+    end
 
     respond_to do |format|
       if @views_widget.save
@@ -183,11 +182,11 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    # if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
-    #   project = @project
-    # else
+    if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
       project = @project
-    # end
+    else
+      project = @views_widget.estimation_value.module_project.project
+    end
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true

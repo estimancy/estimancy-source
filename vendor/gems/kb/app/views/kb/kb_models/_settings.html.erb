@@ -118,7 +118,7 @@
              if current_module_project.previous.size > 1
                @previous_effort = EstimationValue.where(pe_attribute_id: effort_attr.id,
                                                         module_project_id: current_module_project.previous.last.id,
-                                                        in_out: "output").first.send("string_data_probable")[current_component.id].to_f
+                                                        in_out: "output").first.send("string_data_probable")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
              end %>
 
             <% unless @kb_model.enabled_input %>
@@ -168,14 +168,14 @@
                 Effort (<%= current_module_project.previous.last %>)
               </strong>
             </h5>
-            <%= @previous_effort.round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+            <%= @previous_effort.round(2) %> j.h.
 
             <h5>
               <strong>
                 Ecart
               </strong>
             </h5>
-            <%= (@effort - @previous_effort).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+            <%= @previous_effort - @effort %>
           <% end %>
         </div>
       </div>
@@ -216,8 +216,7 @@
         },
         yAxis: {
           title: {
-            //text: 'Effort (<%= @kb_model.effort_unit %>)'
-            text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
+            text: 'Effort (<%= @kb_model.effort_unit %>)'
           },
           min: 0
         },
@@ -258,7 +257,7 @@
           color: 'rgba(83, 223, 255, 1)',
           data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
         },{
-          name: 'Effort précédent',
+          name: '<%= I18n.t("effort_retained") %>',
           marker: {
             radius: 5
           },
@@ -271,7 +270,7 @@
                       ]
                     ] %>
         },{
-          name: '<%= I18n.t("effort_retained") %>',
+          name: 'Effort précédent',
           marker: {
             radius: 5
           },

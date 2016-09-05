@@ -20,7 +20,7 @@ class SessionsController < Devise::SessionsController
         redirect_to root_url
       else
         sign_in_and_redirect @user, :event => :authentication
-        #set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
+        set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
       end
     else
       super
@@ -54,22 +54,12 @@ class SessionsController < Devise::SessionsController
       set_flash_message(:notice, :signed_in) if is_flashing_format?
       sign_in(resource_name, resource)
       yield resource if block_given?
-      if session[:user_return_to].blank?
-        location = after_sign_in_path_for(resource)
-      else
-        location = session[:user_return_to]
-      end
-      respond_with resource, location: location
+      respond_with resource, location: after_sign_in_path_for(resource)
     else
       flash[:warning] = "Ce compte est associé à une authentification externe"
       sign_out resource
       redirect_to root_url
     end
-  end
-
-  def destroy
-    session[:user_return_to] = nil
-    super
   end
 
 end
