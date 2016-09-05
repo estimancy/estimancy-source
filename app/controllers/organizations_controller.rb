@@ -48,9 +48,86 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
-      flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
+      flash[:error] = "Une erreur est survenue durant l'import"
     end
-    flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
+    redirect_to :back
+  end
+
+  def import_project_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = ProjectCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = "Une erreur est survenue durant l'import"
+    end
+    redirect_to :back
+  end
+
+  def import_platform_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = PlatformCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = "Une erreur est survenue durant l'import"
+    end
+    redirect_to :back
+  end
+
+  def import_acquisition_categories
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = AcquisitionCategory.new(name: row[0], description: row[1], organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = "Une erreur est survenue durant l'import"
+    end
     redirect_to :back
   end
 
@@ -69,13 +146,53 @@ class OrganizationsController < ApplicationController
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Project_Area-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
+  def export_acquisition_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_acquisition_categories = @organization.acquisition_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_acquisition_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Acquisition-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_platform_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_platform_categories = @organization.platform_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_platform_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Platform-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_project_categories
+    @organization = Organization.find(params[:organization_id])
+    organization_project_categories = @organization.project_categories
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:description))
+    organization_project_categories.each_with_index do |ac, index|
+      worksheet.add_cell(index + 1, 0, ac.name)
+      worksheet.add_cell(index + 1, 1, ac.description)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Project-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
   def polyval_export
     @organization = Organization.find(params[:organization_id])
-=begin    polyval_var = (params[:MYonglet] == "ProjectCategory" ? ProjectCategory.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "WorkElementType" ? WorkElementType.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "OrganizationTechnology" ? OrganizationTechnology.where(organization_id: @organization.id) :
-                  params[:MYonglet] == "OrganizationProfile" ? OrganizationProfile.where(organization_id: @organization.id) : PlatformCategory.where(organization_id: @organization.id))
-=end
     case params[:MYonglet]
       when "ProjectCategory"
         polyval_var = ProjectCategory.where(organization_id: @organization.id)
@@ -851,13 +968,11 @@ class OrganizationsController < ApplicationController
                       end
                     end
                     new_elt.ancestry = new_ancestor_ids_list.join('/')
-
-                    corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
-                      ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
-                    end
-
-                    new_elt.save(:validate => false)
                   end
+                  corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
+                    ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
+                  end
+                  new_elt.save(:validate => false)
                 end
               else
                 flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"
@@ -934,19 +1049,40 @@ class OrganizationsController < ApplicationController
 
           # Update the modules's GE Models instances
           new_organization.ge_models.each do |ge_model|
-            # Update all the new organization module_project's guw_model with the current guw_model
+            #===================  TEST  =======================
+            #Terminate the model duplication with the copie of the factors values
+            ge_model.transaction do
+              #Then copy the factor values
+              ge_model.ge_factors.each do |factor|
+                #get the factor values for each factor of new model
+
+                # get the original factor from copy_id
+                parent_factor = Ge::GeFactor.find(factor.copy_id)
+                if parent_factor
+                  parent_factor.ge_factor_values.each do |parent_factor_value|
+                    new_factor_value =  parent_factor_value.dup
+                    new_factor_value.ge_model_id = ge_model.id
+                    new_factor_value.ge_factor_id = factor.id
+                    new_factor_value.save
+                  end
+                end
+              end
+            end
+            #===================  TEST  =======================
+
+            # Update all the new organization module_project's ge_model with the current ge_model
             ge_copy_id = ge_model.copy_id
             new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
           end
 
-          # Update the modules's GE Models instances
+          # Update the modules's Staffing Models instances
           new_organization.staffing_models.each do |staffing_model|
             # Update all the new organization module_project's guw_model with the current guw_model
             staffing_model_copy_id = staffing_model.copy_id
             new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
           end
 
-          # Update the modules's GE Models instances
+          # Update the modules's KB Models instances
           new_organization.kb_models.each do |kb_model|
             # Update all the new organization module_project's guw_model with the current guw_model
             kb_copy_id = kb_model.copy_id
@@ -963,7 +1099,6 @@ class OrganizationsController < ApplicationController
             ###### Replace the code below
 
             guw_model.terminate_guw_model_duplication
-
           end
 
           flash[:notice] = I18n.t(:notice_organization_successful_created)

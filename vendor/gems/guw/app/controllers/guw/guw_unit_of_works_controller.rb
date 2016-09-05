@@ -413,6 +413,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.guw_weighting = guw_weighting
       guw_unit_of_work.guw_factor = guw_factor
 
+      @guw_model.guw_attributes.all.each do |gac|
+        guw_unit_of_work.save
+        finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
+                                                   guw_unit_of_work_id: guw_unit_of_work.id,
+                                                   guw_attribute_id: gac.id).first_or_create
+        finder.save
+      end
+
       if params["quantity"].present?
         guw_unit_of_work.quantity = params["quantity"]["#{guw_unit_of_work.id}"].nil? ? 1 : params["quantity"]["#{guw_unit_of_work.id}"].to_f
       else
@@ -494,7 +502,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       if final_value.nil?
         guw_unit_of_work.size = nil
-        guw_unit_of_work.ajusted_size = nil
+        if params["ajusted_size"].nil?
+          guw_unit_of_work.ajusted_size = nil
+        else
+          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+        end
       else
         guw_unit_of_work.size = final_value.to_f *
             (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
@@ -514,16 +526,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       guw_unit_of_work.save
 
-      unless guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+      unless guw_unit_of_work.ajusted_size.nil?
         guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
             (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
 
         guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
             (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
+      end
 
+      if guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+        guw_unit_of_work.flagged = false
+      else
         if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
           guw_unit_of_work.flagged = true
-        elsif guw_unit_of_work.size.round(3) != guw_unit_of_work.ajusted_size.round(3)
+        elsif guw_unit_of_work.size.to_f.round(3) != guw_unit_of_work.ajusted_size.round(3)
           guw_unit_of_work.flagged = true
         else
           guw_unit_of_work.flagged = false
