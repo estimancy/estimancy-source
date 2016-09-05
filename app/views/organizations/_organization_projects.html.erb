@@ -52,8 +52,8 @@
                 <% if can_show_estimation?(project) %>
                   <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
 
-                  <% if can? :copy_project, project %>
-                    <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
+                  <% if can? :create_project_from_scratch, Project %>
+                      <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
                   <% end %>
                 <% end %>
 

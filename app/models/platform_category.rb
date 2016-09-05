@@ -29,7 +29,7 @@ class PlatformCategory < ActiveRecord::Base
 
   # belongs_to :record_status
 
-  # validates_presence_of :description
+  validates_presence_of :description
   validates :name, :presence => true
 
   amoeba do
