@@ -139,8 +139,8 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.equation = equation
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
       @views_widget.is_kpi_widget = true
-      @views_widget.module_project_id = @module_project.id
-    end
+      ###@views_widget.module_project_id = @module_project.id
+      ###end
 
       begin
         @views_widget.module_project_id = @module_project.id
