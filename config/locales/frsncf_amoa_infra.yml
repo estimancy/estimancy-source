@@ -341,15 +341,15 @@ frsncf_amoa_infra:
 
   #Project settings
   activity_categories: "Catégories d'activités"
-  acquisition_categories: "Catégories d'acquisitions"
+  acquisition_categories: "Services"
   platform_categories: "Catégories de plates-formes"
   project_categories: "Catégories de devis"
   project_areas: "Domaine"
-  acquisition_category: "Catégorie d'acquisition"
+  acquisition_category: "Service"
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de devis"
   project_area: "Domaine"
-  label_acquisition: "Acquisition"
+  label_acquisition: "Service"
   label_platform: "Plateforme"
   label_version: "Vers."
 
@@ -366,8 +366,8 @@ frsncf_amoa_infra:
   new_platform_category: "Créer une catégorie de plateforme"
 
   #Acquisition categories
-  edit_acquisition_category: "Editer la catégorie d'acquisition \"%{value}\" ..."
-  new_acquisition_category: "Créer une catégorie d'acquisition"
+  edit_acquisition_category: "Editer le service \"%{value}\" ..."
+  new_acquisition_category: "Créer une service"
   notice_acquisition_category_successful_created: "Une nouvelle catégorie d'activité a été créée avec succès."
   notice_acquisition_category_successful_destroyed: "Cette catégorie d'activité a été supprimée avec succès"
   warning_acquisition_category_cannot_be_updated: "Cette catégorie d'activité ne peux pas être mise à jour, les changements précédents n'ont pas encore été validé."
@@ -1051,7 +1051,7 @@ frsncf_amoa_infra:
   label_ProjectArea: "Domaine"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Devis"
-  label_AcquisitionCategory: "Catégorie Acquisition"
+  label_AcquisitionCategory: "Catégorie Service"
   label_WbsActivity: "WBS-Activité"
   label_Pemodule: "Module"
   label_PeAttribute: "Attribut"
@@ -1392,7 +1392,7 @@ frsncf_amoa_infra:
   notice_cannot_view_project_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories de devis"
   notice_cannot_view_platform_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories de plateforme"
   notice_cannot_view_work_element_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'éléments de travail"
-  notice_cannot_view_acquisition_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories d'acquisitions"
+  notice_cannot_view_acquisition_categories: "Vous n'avez pas les autorisations nécessaires pour voir les services"
   notice_cannot_view_organization_technologies: "Vous n'avez pas les autorisations nécessaires pour voir les technologies"
   notice_cannot_view_unit_of_works: "Vous n'avez pas les autorisations nécessaires pour voir les unités d'oeuvres"
   notice_cannot_view_size_unit_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'unité de taille"
@@ -1499,7 +1499,7 @@ frsncf_amoa_infra:
 
   #recent
   resend_confirmation_instructions: "Renvoyer les instructions de confirmation"
-  Sign_in_with_SAML: "S'inscrire avec SAML"
+  Sign_in_with_SAML: "Se connecter avec SAML"
   add_level: "Ajouter un niveau"
   Standard_unit_conversion_factor: "Coefficient de conversion en unité standard"
   new_UO_model: "Nouveau modèle d'UO"
@@ -1514,7 +1514,7 @@ frsncf_amoa_infra:
   organization_copy: "Copie de l'organisation"
   Technologies_List: "Liste des Technologies"
   List_of_Works_Units: "Liste des Unités d'Oeuvres"
-  List_of_Acquisitions_Types: "Liste des Types d'Acquisitions"
+  List_of_Acquisitions_Types: "Liste des services"
   Technology_warning: "Pour chaque technologie , configurer une taille equivalante (en pour cent ) selon le type de taille ."
   wait_for_complete_organization_delete: "Veuillez patienter, la suppression de l'organisation et des objets liés est en cours..."
   wait_for_new_organization_creation: "Veuillez patienter, la création de la nouvelle organisation est en cours..."
@@ -1549,7 +1549,7 @@ frsncf_amoa_infra:
   Generate_Excel_report: "Générer un rapport Excel"
 
   #traduction import/export
-  Type_acquisitions: "Type d'acquisitions"
+  Type_acquisitions: "Services"
   model_name: "Nom du modèle"
   model_description: "Description du modèle"
   retained_size_unit: "Libellé de l'unité de taille du module"
@@ -1579,7 +1579,7 @@ frsncf_amoa_infra:
   route_flag_error_11: "l'aquisition est manquant pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_12: "la technologie est manquant pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_13: "Le type d'UO renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
-  route_flag_error_14: "Le type d'Acquisition renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
+  route_flag_error_14: "Le type de service renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_15: "La Technologie renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_16: "La complexité renseigner n'est pas reconnue pour la/les ligne(s) suivante: %{mess_error}"
   route_flag_error_17: "Erreur: aucun fichier sélectionné."
@@ -1660,7 +1660,7 @@ frsncf_amoa_infra:
   numerber_of_uw_modifies: "Nombre d'U.O. modifiés"
   numerber_of_uw_selected: "Nombre d'U.O. sélectionnés"
   import_data_from_uw: "Import de donnée d'une unité d'oeuvre"
-  new_acquisition_type: "Nouveau type d'acquisition"
+  new_acquisition_type: "Nouveau service"
   calculate_duration_and_size: "Calcul de la durée et de la taille des équipes"
   duration_in_week: "Durée(semaine)"
   initialize_restraint: "Aligner le retenu sur le trapèze"
@@ -1950,3 +1950,5 @@ frsncf_amoa_infra:
   processing: "Traitements"
   data: "Données"
   is_optional: "Est facultatif"
+
+  confirm_deletion: "Confirmer la suppression de l'estimation"

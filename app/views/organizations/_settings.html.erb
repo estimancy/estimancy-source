@@ -2,9 +2,9 @@
   <ul>
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
-    <li><a href="#tabs-project-categories"><%= I18n.t(:project_categories) %></a></li>
-    <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
+    <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
+    <li><a href="#tabs-project-categories"><%= I18n.t(:project_categories) %></a></li>
     <li><a href="#tabs-wet"><%= I18n.t(:label_WorkElementType) %></a></li>
     <li><a href="#tabs-technology"><%= I18n.t(:organization_technology) %> </a></li>
     <li><a href="#tabs-estimations-statuses"><%= I18n.t(:estimations_statuses) %> </a></li>
@@ -21,28 +21,28 @@
       <% if can? :manage, Application %>
         <%= link_to I18n.t('new_application'), new_organization_application_path(@organization), :class => 'btn pull-right' %>
         <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn pull-right button_margin_right'%>
-            <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import applications from excel" data-toggle="modal">
-              <%= I18n.t(:import) %>
-            </a>
+          <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import applications from excel" data-toggle="modal">
+            <%= I18n.t(:import) %>
+          </a>
 
-            <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                  <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-                </div>
-                <div class="modal-body">
-                  <%= file_field_tag :file %>
-                </div>
-                <div class="modal-footer">
-                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                  <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                </div>
-                <div class="loading span11 hide">
-                  <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-                </div>
-              <% end %>
-            </div>
+          <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+              </div>
+              <div class="modal-body">
+                <%= file_field_tag :file %>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              </div>
+              <div class="loading span11 hide">
+                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+              </div>
+            <% end %>
+          </div>
 
       <% end %>
 
@@ -79,29 +79,29 @@
 
       <% if can? :manage, ProjectArea %>
          <%= link_to I18n.t('new_project_area'), new_organization_project_area_path(@organization), :class => 'btn pull-right' %>
-            <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn pull-right button_margin_right'%>
-            <a href="#ImportProjectAreas" role="button" class="btn pull-right button_margin_right" title="Import project areas from excel" data-toggle="modal">
-              <%= I18n.t(:import) %>
-            </a>
+          <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn pull-right button_margin_right'%>
+          <a href="#ImportProjectAreas" role="button" class="btn pull-right button_margin_right" title="Import project areas from excel" data-toggle="modal">
+            <%= I18n.t(:import) %>
+          </a>
 
-            <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-                  </div>
-                  <div class="modal-body">
-                    <%= file_field_tag :file %>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                  </div>
-                  <div class="loading span11 hide">
-                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-                  </div>
-              <% end %>
-            </div>
+          <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+                </div>
+                <div class="modal-body">
+                  <%= file_field_tag :file %>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                  <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                </div>
+                <div class="loading span11 hide">
+                  <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+                </div>
+            <% end %>
+          </div>
       <% end %>
 
       <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
@@ -140,7 +140,30 @@
 
       <% if can? :manage, ProjectCategory %>
         <%= link_to I18n.t('new_project_category'), new_organization_project_category_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn pull-right button_margin_right'%>
+        <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn pull-right button_margin_right'%>
+        <a href="#import_project_category" role="button" class="btn pull-right button_margin_right" title="Import project category from Excel" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+
+        <div id="import_project_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <%= form_tag organization_import_project_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+            </div>
+            <div class="modal-body">
+              <%= file_field_tag :file %>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+            </div>
+            <div class="loading span11 hide">
+              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+            </div>
+          <% end %>
+        </div>
+
       <% end %>
 
       <table id="table_list_21" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
@@ -178,8 +201,31 @@
     <% if can? :show_platform_categories, PlatformCategory %>
 
       <% if can? :manage, PlatformCategory %>
-         <%= link_to I18n.t('new_platform_category'), new_organization_platform_category_path(@organization), :class => 'btn pull-right' %>
-         <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn pull-right button_margin_right'%>
+      <%= link_to I18n.t('new_platform_category'), new_organization_platform_category_path(@organization), :class => 'btn pull-right' %>
+      <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn pull-right button_margin_right'%>
+      <a href="#import_platform_category" role="button" class="btn pull-right button_margin_right" title="Import platform category from Excel" data-toggle="modal">
+        <%= I18n.t(:import) %>
+      </a>
+
+      <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+          </div>
+          <div class="modal-body">
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+          </div>
+        <% end %>
+      </div>
+
       <% end %>
 
       <table id="table_list_3" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
@@ -214,8 +260,8 @@
   <div id="tabs-wet">
     <% if can? :show_work_element_types, WorkElementType %>
       <% if can? :manage, WorkElementType %>
-         <%= link_to I18n.t(:new_work_element_type), new_organization_work_element_type_path(@organization), :class => 'btn pull-right' %>
-         <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right'%>
+        <%= link_to I18n.t(:new_work_element_type), new_organization_work_element_type_path(@organization), :class => 'btn pull-right' %>
+        <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
       <% end %>
 
       <table id="table_list_4" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
@@ -253,7 +299,30 @@
   <div id="tabs-acquisition-categories">
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
-         <%= link_to I18n.t('new_acquisition_category'), new_organization_acquisition_category_path(@organization), :class => 'btn pull-right' %>
+        <%= link_to I18n.t('new_acquisition_category'), new_organization_acquisition_category_path(@organization), :class => 'btn pull-right' %>
+        <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
+        <a href="#import_acquisition_category" role="button" class="btn pull-right button_margin_right" title="Import acquisition category from Excel" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+
+        <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+            </div>
+            <div class="modal-body">
+              <%= file_field_tag :file %>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+            </div>
+            <div class="loading span11 hide">
+              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+            </div>
+          <% end %>
+        </div>
       <% end %>
 
       <table id="table_list_5" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
