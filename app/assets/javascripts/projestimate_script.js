@@ -19,6 +19,38 @@
 
 $(document).ready(function() {
 
+    //====================================================
+
+    $(".module_project11").draggable({
+        start: function(event, ui) {}, // console.log(event);console.log(ui)},
+        stop: function(event, ui) {}, // console.log(event);//console.log(ui)},
+        cursor:'move',
+        opacity: 0.5,
+
+        drag: function(){
+            jsPlumb.repaint($(this)); // (or) jsPlumb.repaintEverything(); to repaint the connections and endpoints
+            //followed by your code
+            var offset = $(this).offset();
+            var xPos = offset.left;
+            var yPos = offset.top;
+            console.log('x: ' + xPos);
+            console.log('y: ' + yPos);
+        }
+    });
+
+    $(".window11").draggable({
+        //helper: 'clone',
+        // appendTo: 'body',
+        start: function(event, ui) {}, // console.log(event);console.log(ui)},
+        stop: function(event, ui) {}, // console.log(event);//console.log(ui)},
+        //revert: false,
+        cursor:'move',
+        opacity: 0.5,
+    });
+
+    //====================================================
+
+
     $(".modal").draggable({
         handle: ".modal-header"
     });
