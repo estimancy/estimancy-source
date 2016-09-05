@@ -362,7 +362,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_guw_unit_of_works
-
     @guw_model = current_module_project.guw_model
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,

@@ -443,7 +443,7 @@ frsncf:
 
   #languages
   edit_language: "Editer le langage \"%{value}\" ..."
-  new_language: "Créer une nouvelle langue"
+  new_language: "Créer un nouveau langage"
   local: "Local"
 
   #estimation_values

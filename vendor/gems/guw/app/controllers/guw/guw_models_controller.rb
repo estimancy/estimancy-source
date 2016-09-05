@@ -277,7 +277,7 @@ class Guw::GuwModelsController < ApplicationController
                     ind3 = ind2
                     if !tab[ind2].nil? && tab[ind2][0] == I18n.t(:organization_technology)
                       @current_organization.organization_technologies.each do |techno|
-                       while !tab[ind2].nil? && tab[ind2][0].to_s.downcase != techno.name.to_s.downcase
+                       while !tab[ind2].nil? && tab[ind2][0] != techno.name
                          ind2 += 1
                        end
                        if !tab[ind2].nil?
@@ -787,13 +787,9 @@ class Guw::GuwModelsController < ApplicationController
 
     if @guw_model.update_attributes(params[:guw_model])
       if @guw_model.default_display == "list"
-        redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id),
-                                   nil,
-                                   guw.guw_model_all_guw_types_path(@guw_model, organization_id: @organization.id)) and return
+        redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil, guw.guw_model_all_guw_types_path(@guw_model)) and return
       else
-        redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id),
-                                   nil,
-                                   guw.guw_model_path(@guw_model)) and return
+        redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil ,guw.guw_model_path(@guw_model)) and return
       end
     else
       render action: :edit
@@ -1004,7 +1000,8 @@ class Guw::GuwModelsController < ApplicationController
     tab_error = [[false], [false], [false], [false], [false]]
     indexing_field_error = [[false],[false],[false],[false]]
 
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+    if !params[:file].nil? &&
+        (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       worksheet =workbook[0]
       tab = worksheet.extract_data
