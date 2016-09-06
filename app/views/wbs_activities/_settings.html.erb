@@ -27,8 +27,13 @@
                                       :module_project_id => current_module_project.id,
                                       :in_out => "output").first unless ratio.nil? %>
 
-<% pev = EstimationValue.where(:pe_attribute_id => effort.id,
+<% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
                                :module_project_id => current_module_project.previous.first,
+                               :in_out => "output").first unless effort.nil? %>
+
+<% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort) %>
+<% pev = EstimationValue.where(:pe_attribute_id => effort.id,
+                               :module_project_id => possible_module_projects.last,
                                :in_out => "output").first unless effort.nil? %>
 
 <% component_id = current_component.id %>
