@@ -1872,7 +1872,6 @@ public
       # For PBS
       new_prj_components = pe_wbs_product.pbs_project_elements
       new_prj_components.each do |new_c|
-
         if new_c.is_root == true
           if !params[:create_project_from_template].nil?
             if new_prj.application.nil?
@@ -1910,6 +1909,41 @@ public
           new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
           new_mp.associated_module_projects << new_associated_mp
         end
+
+
+        ### Wbs activity
+        #create module_project ratio elements
+        old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+          mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
+                                    wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
+                                    wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
+                                    name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
+                                    ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
+
+          pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
+          mp_ratio_element.pbs_project_element_id = pbs_id
+          mp_ratio_element.save
+        end
+
+        new_mp_ratio_elements = new_mp.module_project_ratio_elements
+        new_mp_ratio_elements.each do |mp_ratio_element|
+          #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+
+          #unless mp_ratio_element.is_root?
+            new_ancestor_ids_list = []
+            mp_ratio_element.ancestor_ids.each do |ancestor_id|
+              ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+              if ancestor
+                ancestor_id = ancestor.id
+                new_ancestor_ids_list.push(ancestor_id)
+              end
+            end
+            mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+          #end
+          mp_ratio_element.save
+        end
+
+        ### End wbs_activity
 
         old_mp.skb_inputs.each do |skbi|
           Skb::SkbInput.create(data: skbi.data,
