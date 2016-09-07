@@ -100,7 +100,10 @@ class ModuleProjectRatioElementsController < ApplicationController
 
   # Update effort and cost value after checkbox change
   def  refresh_checked_retained_effort_and_cost
-
+    @level = "most_likely"
+    @element_parents_ids_effort_cost_values = params['element_parents_efforts'] || []
+    @retained_modified_effort = params['retained_modified_effort']
+    @modified_global_ratio = params['modified_global_ratio']
   end
 
 

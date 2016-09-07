@@ -1,12 +1,15 @@
 //$('#<%#= "#{@retained_effort_id}" %>').val(<%#= @cost_value %>) ;
 
-<%# @element_parents_ids_effort_cost_values.each do |mp_ratio_elt_id, values| %>
-    <%# parent_retained_effort_id = "retained_effort_#{@level}_#{mp_ratio_elt_id}" %>
-    <%# parent_retained_cost_id = "retained_cost_#{@level}_#{mp_ratio_elt_id}" %>
+<% @element_parents_ids_effort_cost_values.each do |mp_ratio_elt_id, values| %>
+    <% parent_retained_effort_id = "retained_effort_#{@level}_#{mp_ratio_elt_id}" %>
+    <% parent_retained_cost_id = "retained_cost_#{@level}_#{mp_ratio_elt_id}" %>
 
-//    $('#<%#= "#{parent_retained_effort_id}" %>').val(<%#= values[:effort] %>) ;
-//    $('#<%#= "#{parent_retained_cost_id}" %>').val(<%#= values[:cost] %>) ;
-<%# end %>
+    $('#<%= "#{parent_retained_effort_id}" %>').val(<%= values[:effort] %>) ;
+    $('#<%= "#{parent_retained_cost_id}" %>').val(<%= values[:cost] %>) ;
+<% end %>
+
+$("#modified_global_ratio").text(<%= @modified_global_ratio %>);
+$("#retained_modified_effort").text(<%= @retained_modified_effort %>);
 
 
 // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed

@@ -1245,11 +1245,11 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
                 //alert("parent_effort = "+ parent_effort);
                 //alert("effort_value = "+ effort_value);
 
-                //wbs_activity_element_parent_efforts[value] = { effort: new_parent_effort_value, cost: new_parent_cost_value };
+                wbs_activity_element_parent_efforts[value] = { effort: new_parent_effort_value, cost: new_parent_cost_value };
 
                 //update values
-                $("#"+parent_effort_id).val(new_parent_effort_value.toFixed(2));
-                $("#"+parent_cost_id).val(new_parent_cost_value.toFixed(2));
+                $("#11"+parent_effort_id).val(new_parent_effort_value.toFixed(2));
+                $("#11"+parent_cost_id).val(new_parent_cost_value.toFixed(2));
 
                 //$("#"+"retained_effort_most_likely_202").val(new_parent_effort_value);
             });
@@ -1266,8 +1266,8 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
         }
 
         //update Ratio value and retained effort
-        $("#modified_global_ratio").text(new_ratio_value.toFixed(2));
-        $("#retained_modified_effort").text(new_retained_modified_effort.toFixed(2));
+        $("#modified_global_ratio11").text(new_ratio_value.toFixed(2));
+        $("#retained_modified_effort11").text(new_retained_modified_effort.toFixed(2));
 
 
         //var ap_id = $(this).attr('id');
@@ -1289,7 +1289,10 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
                             level: level,
                             ratio_value: $("#ratio_values_"+mp_ratio_element_id).val(),
                             element_parents_ids: wbs_activity_element_parent_ids,
-                            element_parents_efforts: wbs_activity_element_parent_efforts
+                            element_parents_efforts: wbs_activity_element_parent_efforts,
+                            retained_modified_effort: new_retained_modified_effort.toFixed(2),
+                            modified_global_ratio: new_ratio_value.toFixed(2)
+
                         },
                         success: function(data) {
 
