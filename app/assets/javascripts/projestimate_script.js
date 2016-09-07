@@ -1158,6 +1158,160 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
 
         }
     });
+
+
+    // TEST
+
+    // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
+    $('.selected_phase').change(function(){
+
+        var $obj = $(this);
+        var val = $obj.val();
+
+        var checked_or_not;  //var checked_or_not = $(".selected_phase").is(':checked') ? 1 : 0;
+
+        if ($(this).is(':checked') ) {
+            checked_or_not = 1;
+        }
+        else{
+            checked_or_not = 0;
+        }
+
+
+        //alert("val = "+ val);
+        var mp_ratio_element_id = val; //$(this).data("mp_ratio_element_id");
+        var current_ratio_value = $("#ratio_values_"+val).val();
+        var global_ratio_value = parseFloat($("#modified_global_ratio").text().replace("," , "."));  //$("#global_ratio").text();
+
+        var retained_modified_effort = parseFloat($("#retained_modified_effort").text().replace("," , "."));  //Retained effort value
+
+        var new_retained_modified_effort, new_ratio_value;
+
+        //alert("global ratio" + global_ratio_value);
+        //alert("current ratio" + current_ratio_value);
+        //alert("diff ratio" + (global_ratio_value - current_ratio_value));
+
+        // call function to get element parents effort value
+        var wbs_activity_element_parent_ids =  $(this).data("mp_ratio_element_ancestor_ids");
+        var wbs_activity_element_parent_efforts = new Object();
+
+        var levels = ['low', 'most_likely', 'high'];
+        var levelLength = levels.length;
+
+        //for(var i=0; i<levelLength; i+=1) {
+
+            var level = "most_likely"; //levels[i];
+
+            //alert("level = "+ level);
+            var retained_effort_level_id = "retained_effort_"+level+"_"+val;
+            var retained_cost_level_id = "retained_cost_"+level+"_"+val;
+
+            var retained_effort_level_value = $('#'+retained_effort_level_id).val();
+            var retained_cost_level_value = $('#'+retained_cost_level_id).val();
+
+            var effort_value = parseFloat(retained_effort_level_value.replace("," , "."));
+            var cost_value = parseFloat(retained_cost_level_value.replace("," , "."));
+
+            //alert("ancestors length = "+ wbs_activity_element_parent_ids.length);
+
+            $.each(wbs_activity_element_parent_ids, function( index, value ) {
+                var parent_effort_id = "retained_effort_"+level+"_"+value;
+                var parent_cost_id = "retained_cost_"+level+"_"+value;
+
+                var parent_effort_value = $("#"+parent_effort_id).val();
+                var parent_cost_value = $("#"+parent_cost_id).val();
+
+                var parent_effort = parseFloat(parent_effort_value.replace("," , "."));
+                var parent_cost = parseFloat(parent_cost_value.replace("," , "."));
+
+                var new_parent_effort_value,  new_parent_cost_value;
+
+                if (checked_or_not == 1 ) {
+                    //alert("addition");
+                    new_parent_effort_value = parent_effort + effort_value;
+                    new_parent_cost_value = parent_cost + cost_value;
+                    //new_ratio_value = global_ratio_value + current_ratio_value;
+                    //new_retained_modified_effort = retained_modified_effort + effort_value;
+                }
+                else{
+                    //alert("non cocher");
+                    //alert("soustraction");
+                    new_parent_effort_value = parent_effort - effort_value;
+                    new_parent_cost_value = parent_cost - cost_value;
+                    //new_ratio_value = global_ratio_value - current_ratio_value;
+                    //new_retained_modified_effort = retained_modified_effort - effort_value;
+                }
+
+                //alert("parent_effort = "+ parent_effort);
+                //alert("effort_value = "+ effort_value);
+
+                //wbs_activity_element_parent_efforts[value] = { effort: new_parent_effort_value, cost: new_parent_cost_value };
+
+                //update values
+                $("#"+parent_effort_id).val(new_parent_effort_value.toFixed(2));
+                $("#"+parent_cost_id).val(new_parent_cost_value.toFixed(2));
+
+                //$("#"+"retained_effort_most_likely_202").val(new_parent_effort_value);
+            });
+
+        if (checked_or_not == 1) {
+            //new_ratio_value = global_ratio_value + current_ratio_value;
+            new_ratio_value = parseFloat(global_ratio_value) + parseFloat(current_ratio_value);
+            new_retained_modified_effort = retained_modified_effort + effort_value;
+        }
+        else{
+            //new_ratio_value = global_ratio_value - current_ratio_value;
+            new_ratio_value = parseFloat(global_ratio_value) - parseFloat(current_ratio_value);
+            new_retained_modified_effort = retained_modified_effort - effort_value;
+        }
+
+        //update Ratio value and retained effort
+        $("#modified_global_ratio").text(new_ratio_value.toFixed(2));
+        $("#retained_modified_effort").text(new_retained_modified_effort.toFixed(2));
+
+
+        //var ap_id = $(this).attr('id');
+        //var ap_value = $('#'+ap_id).val();
+        ////ap_value = parseFloat(ap_value.replace("," , "."));
+        //var previous_value = $(this).data("previous_value");
+        //var cost_field_id = ap_id.replace("effort" , "cost");
+        //var current_cost_value = $('#'+cost_field_id).val();
+
+
+            //if(!isNaN(parseFloat(val)) && isFinite(val)){
+            //    if(val != undefined){
+                    return $.ajax({
+                        url: "/refresh_checked_retained_effort_and_cost",
+                        method: "GET",
+                        data: {
+                            wbs_activity_ratio_id: $("#ratio").val(),
+                            mp_ratio_element_id: mp_ratio_element_id,
+                            level: level,
+                            ratio_value: $("#ratio_values_"+mp_ratio_element_id).val(),
+                            element_parents_ids: wbs_activity_element_parent_ids,
+                            element_parents_efforts: wbs_activity_element_parent_efforts
+                        },
+                        success: function(data) {
+
+                        },
+                        error: function(XMLHttpRequest, testStatus, errorThrown) {
+                            //return alert("Error!");
+                        }
+                    });
+            //
+            //    }
+            //
+            //}
+        //}
+
+
+
+
+    });
+
+
+    // End test
+
 }
 
 

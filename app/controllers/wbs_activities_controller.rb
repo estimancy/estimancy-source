@@ -547,6 +547,9 @@ class WbsActivitiesController < ApplicationController
                       current_wbs_profile_values =  probable_estimation_value[@pbs_project_element.id][wbs_id]["profiles"]
                       if current_wbs_profile_values.nil? || current_wbs_profile_values.empty?
                         probable_estimation_value[@pbs_project_element.id][wbs_id]["profiles"] = { "profile_id_#{profile.id}" => Hash.new } #Hash.new
+
+                      elsif current_wbs_profile_values["profile_id_#{profile.id}"].nil? || current_wbs_profile_values["profile_id_#{profile.id}"].empty?
+                        current_wbs_profile_values["profile_id_#{profile.id}"] = Hash.new
                       end
 
                       current_wbs = WbsActivityElement.find(wbs_id)
@@ -706,6 +709,9 @@ class WbsActivitiesController < ApplicationController
     @module_project = current_module_project
     @pbs_project_element = current_component
     @wbs_activity = @module_project.wbs_activity
+
+    new_global_ratio_value = 0
+
     if @wbs_activity
       effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient.to_f
       @ratio_reference = WbsActivityRatio.find(params[:dashboard_selected_ratio_id])
@@ -715,7 +721,20 @@ class WbsActivitiesController < ApplicationController
       # SAUVEGARDE DES VALEURS DES RATIO-ELEMENTS DU MODULE-PROJECT
       #======================  DEBUT SAUVEGARDE ====================
       # Save Ratio-Element values
+      selected_elements = params['selected']
       @module_project_ratio_elements.each_with_index do |mp_ratio_element, i|
+        test = mp_ratio_element
+        if selected_elements.include?(mp_ratio_element.id.to_s)
+          mp_ratio_element.selected = true
+          new_global_ratio_value = new_global_ratio_value + mp_ratio_element.ratio_value.to_f
+        else
+            if mp_ratio_element.is_optional == true
+              mp_ratio_element.selected = false
+            else
+              mp_ratio_element.selected = true
+              new_global_ratio_value = new_global_ratio_value + mp_ratio_element.ratio_value.to_f
+            end
+        end
 
         if @ratio_reference.allow_modify_ratio_reference
           unless params[:ratio_values].nil?
@@ -850,6 +869,10 @@ class WbsActivitiesController < ApplicationController
 
               end
               ev.send("string_data_#{level}")[current_component.id] = psb_level_estimation_value
+              ev.save
+
+            elsif pe_attribute_alias == "ratio"
+              ev.send("string_data_#{level}")[current_component.id] = new_global_ratio_value
               ev.save
             end
 

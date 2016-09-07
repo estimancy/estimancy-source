@@ -98,6 +98,12 @@ class ModuleProjectRatioElementsController < ApplicationController
   end
 
 
+  # Update effort and cost value after checkbox change
+  def  refresh_checked_retained_effort_and_cost
+
+  end
+
+
   def  refresh_dashboard_retained_effort_and_cost
     @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
 
