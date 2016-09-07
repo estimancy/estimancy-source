@@ -1521,6 +1521,7 @@ de:
   calculated_value: "Calculated"
   retained_value: "Retained"
   calculated_effort: "Calculated effort"
+  initial_calculated_effort: "Initial calculated effort"
   retained_effort: "Retained effort"
   calculated_cost: "Calculated cost"
   retained_cost: "Retained cost"

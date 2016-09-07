@@ -1245,7 +1245,7 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
                 //alert("parent_effort = "+ parent_effort);
                 //alert("effort_value = "+ effort_value);
 
-                wbs_activity_element_parent_efforts[value] = { effort: new_parent_effort_value, cost: new_parent_cost_value };
+                wbs_activity_element_parent_efforts[value] = { effort: new_parent_effort_value.toFixed(2), cost: new_parent_cost_value.toFixed(2) };
 
                 //update values
                 $("#11"+parent_effort_id).val(new_parent_effort_value.toFixed(2));
