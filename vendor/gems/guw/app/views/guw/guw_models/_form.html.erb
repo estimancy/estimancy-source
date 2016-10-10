@@ -37,7 +37,9 @@
               <%= f.input :name %>
               <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
               <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= select_tag "azerty", "" %>
               <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= select_tag "azerty", "" %>
               <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
               <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
               <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>

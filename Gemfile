@@ -41,6 +41,8 @@ end
 gem 'pg'
 gem 'thin'
 
+gem 'curb'
+
 #Permissions
 gem 'cancan'
 
@@ -101,6 +103,7 @@ gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
 gem 'rubyXL', "3.3.15"
 gem 'nokogiri'
+gem 'mechanize'
 
 # Including
 gem 'guw', :path => 'vendor/gems/guw'
@@ -116,7 +119,8 @@ gem 'staffing', :path => "vendor/gems/staffing"
 gem "jit-rails", "~> 0.0.2"
 
 # Gem to audit User actions
-gem "audited-activerecord", "~> 3.0"
+gem "audited-activerecord"#, "~> 3.0"
+# gem "audited"#, "~> 4.3"
 
 #Authentication gem
 gem 'devise'
