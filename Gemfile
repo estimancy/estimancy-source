@@ -120,6 +120,8 @@ gem "jit-rails", "~> 0.0.2"
 
 # Gem to audit User actions
 gem "audited-activerecord", "~> 3.0"
+gem 'railroady'
+gem "rails-erd"
 
 #Authentication gem
 gem 'devise'
