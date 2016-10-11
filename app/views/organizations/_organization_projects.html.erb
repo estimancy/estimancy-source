@@ -10,10 +10,12 @@
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
 
           <% selected_inline_columns.each do |column| %>
-              <%= column_header(column) %>
+            <%= column_header(column) %>
           <% end %>
 
-          <th class="action"><%= I18n.t(:actions) %></th>
+          <th class="action">
+            <%= I18n.t(:actions) %>
+          </th>
         </tr>
       </thead>
 
@@ -33,7 +35,7 @@
               <td style="min-width: 130px;">
                 <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
                   <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
-                     <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
+                    <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
                   <% end %>
                 <% end %>
 

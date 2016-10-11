@@ -2157,7 +2157,7 @@ public
     authorize! :create_project_from_template, Project
 
     @organization = Organization.find(params[:organization_id])
-    @estimation_models = @organization.projects.where(:is_model => true)
+    @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
   end

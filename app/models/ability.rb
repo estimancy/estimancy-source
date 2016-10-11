@@ -103,7 +103,7 @@ class Ability
       @array_owners = Array.new
 
       #Specfic project security loading
-      prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(user.id, false, true)
+      prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(user.id, false, true)
       unless prj_scrts.empty?
         specific_permissions_array = []
         prj_scrts.each do |prj_scrt|
@@ -148,7 +148,7 @@ class Ability
       end
 
       if owner
-        prj_scrts = ProjectSecurity.find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
+        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
       end
 
       unless prj_scrts.empty?
@@ -175,12 +175,12 @@ class Ability
       end
 
       user.groups.where(organization_id: organization.id).each do |grp|
-        prj_scrts = ProjectSecurity.find_all_by_group_id_and_is_model_permission_and_is_estimation_permission(grp.id, false, true)
+        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_group_id_and_is_model_permission_and_is_estimation_permission(grp.id, false, true)
         unless prj_scrts.empty?
           specific_permissions_array = []
           prj_scrts.each do |prj_scrt|
             # Get the project/estimation permissions
-            project = prj_scrt.project
+            project = prj_scrt.project.includes(:organization)
             unless project.nil?
               unless prj_scrt.project_security_level.nil?
                 project.organization.estimation_statuses.each do |es|
@@ -201,8 +201,8 @@ class Ability
           end
         end
 
-        grp.estimation_status_group_roles.each do |esgr|
-          esgr_security_level = esgr.project_security_level
+        grp.estimation_status_group_roles.includes(:project_security_level).each do |esgr|
+          esgr_security_level = esgr.project_security_level.includes(:estimation_status)
           unless esgr_security_level.nil?
             esgr_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
               esgr.organization.projects.each do |project|

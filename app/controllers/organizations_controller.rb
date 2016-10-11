@@ -503,7 +503,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
     if current_user.super_admin == true
-      @projects = @organization.projects.where(is_model: false).all
+      @projects = @organization.projects.includes(:estimation_status, :project_area, :application, :creator).where(is_model: false).all
     else
       tmp1 = @organization.projects.where(is_model: false, private: false).all
       tmp2 = @organization.projects.where(creator_id: current_user.id, is_model: false, private: true).all
