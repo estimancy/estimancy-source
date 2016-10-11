@@ -15,7 +15,9 @@
             <%= column_header(column) %>
           <% end %>
 
-          <th class="action"><%= I18n.t(:actions) %></th>
+          <th class="action">
+            <%= I18n.t(:actions) %>
+          </th>
         </tr>
       </thead>
 
@@ -37,7 +39,7 @@
               <td style="min-width: 130px;">
                 <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
                   <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
-                     <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
+                    <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
                   <% end %>
                 <% end %>
 
@@ -45,7 +47,7 @@
                   <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
                 <% end %>
 
-                <% if can_alter_estimation?(project) && can?(:commit_project, project) %>
+                <% if can?(:commit_project, project) %>
                   <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) unless project.is_childless?)) %>
                 <% end %>
 
@@ -55,10 +57,10 @@
 
                 <% if can_show_estimation?(project) %>
                   <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
+                <% end %>
 
-                  <% if can? :copy_project, project %>
-                    <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
-                  <% end %>
+                <% if can? :copy_project, project %>
+                  <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
                 <% end %>
 
                 <% if (can? :delete_project, project) || (can? :manage, project) %>
