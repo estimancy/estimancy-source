@@ -441,7 +441,8 @@ module EffortBreakdown
       node.children.map do |child|
         unless child.nil? || child.wbs_activity.nil?
           value = effort_array[child.id]
-          if value.is_a?(Integer) || value.is_a?(Float)
+          ###if value.is_a?(Integer) || value.is_a?(Float)
+          if value.is_a?(Integer) || value.is_a?(Float) || value.class.superclass == Integer || value.class.superclass == Numeric
             tab << value
           end
         end
