@@ -22,7 +22,7 @@
 class WbsActivity < ActiveRecord::Base
   attr_accessible :name, :description, :state, :record_status_id, :custom_value, :change_comment, :organization_id, :parent_id,
                   :cost_unit, :cost_unit_coefficient, :effort_unit, :effort_unit_coefficient, :three_points_estimation, :enabled_input,
-                  :organization_profile_ids
+                  :organization_profile_ids, :phases_short_name_number
 
   include AASM
 

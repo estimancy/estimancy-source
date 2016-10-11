@@ -5,7 +5,9 @@
             <%= link_to "", "#!",
                         onclick: "toggle_group();",
                         class: "fa fa-check-square-o" %>
-            <%# link_to "" ,"#!" , onclick: "verif_checkbox();", class: "fa fa-trash", style: "color: black;position: absolute;bottom: 7px; left: 20px"%>
+            <%#= link_to "" ,"#!", onclick: "delete_all_selected_checkbox_projects();", id: "destroy_multiple_checked_projects", class: "fa fa-trash-o", style: "color: #0088cc; position: absolute;bottom: 9px; left: 20px", title: "Supprimer toutes les estimations sélectionnées", confirm: "Etes vous sûr de vouloir supprimer tous les estimations sélectionnées", remote: true %>
+            <%###= link_to "", "#!", onclick: "delete_all_selected_checkbox_projects();",
+                        class: "fa fa-trash-o", title: "Supprimer toutes les estimations sélectionnées" %>
           </th>
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
 
@@ -23,7 +25,9 @@
             <tr>
 
               <td>
-                <input type="checkbox"  class="myCHECK" id="<%= project.id %>">
+                <span>
+                  <input type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
+                </span>
               </td>
 
               <% selected_inline_columns.each do |column| %>
@@ -113,6 +117,66 @@
                 }
             });
         }
+    }
+
+
+    function delete_all_selected_checkbox_projects() {
+
+        var project_ids_to_delete = [];
+        $(".myCHECK").each(function () {
+            if ($(this).is(':checked') ) {
+                project_ids_to_delete.push($(this).attr('value'));
+            }
+        });
+
+
+        $.ajax({
+            url: "/destroy_multiple_project",
+            type: "GET",
+            data: {
+                commit: "<%= I18n.t(:delete)%>",
+                yes_confirmation: "selected",
+                project_ids_to_delete: project_ids_to_delete
+            },
+            complete: function() {
+                $(this).prop('checked', false);
+                window.location.reload(true);
+            }
+        });
+    }
+
+   // Allow to destro multiple selected projects
+    function delete_all_selected_checkbox_projects1() {
+
+        //$("#destroy_multiple_checked_projects").click(function(){
+
+            alert("test");
+            var myConfirm = confirm("<%= I18n.t(:are_you_sure)%>");
+            //if (myConfirm == true) {
+                var project_ids_to_delete = [];
+                $(".myCHECK").each(function () {
+                    if ($(this).is(':checked') ) {
+                        project_ids_to_delete.push($(this).attr('value'));
+                    }
+                });
+
+                $.ajax({
+                    url: "/destroy_multiple_project",
+                    type: "GET",
+                    data: {
+                        commit: "<%= I18n.t(:delete)%>",
+                        yes_confirmation: "selected",
+                        project_ids_to_delete: project_ids_to_delete
+                    },
+                    complete: function() {
+                        $(this).prop('checked', false);
+                        window.location.reload(true);
+                    }
+                });
+            //}
+        //});
+
+
     }
 
 </script>

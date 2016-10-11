@@ -126,6 +126,27 @@ class ViewsWidgetsController < ApplicationController
                                                                 :position_y => position_y,
                                                                 :width => 3,
                                                                 :height => 3))
+    # if params[:views_widget][:is_kpi_widget].present?
+    #   equation = Hash.new
+    #   equation["formula"] = params[:formula].upcase
+    #   ["A", "B", "C", "D", "E"].each do |letter|
+    #     unless params[letter.to_sym].nil?
+    #       equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
+    #     end
+    #     equation[letter] = params[letter.to_sym].to_s.upcase
+    #   end
+    #   @views_widget.equation = equation
+    #   @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
+    #   @views_widget.is_kpi_widget = true
+    #   ###@views_widget.module_project_id = @module_project.id
+    #   ###end
+    #
+    #   begin
+    #     @views_widget.module_project_id = @module_project.id
+    #   rescue
+    #   end
+    # end
+
 
     if params[:views_widget][:is_kpi_widget].present?
       equation = Hash.new
@@ -134,7 +155,7 @@ class ViewsWidgetsController < ApplicationController
         unless params[letter.to_sym].nil?
           equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
         end
-        equation[letter] = params[letter.to_sym].to_s.upcase
+        ###equation[letter] = params[letter.to_sym].to_s.upcase
       end
       @views_widget.equation = equation
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
@@ -193,10 +214,17 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.is_kpi_widget = true
       equation = Hash.new
       equation["formula"] = params[:formula].upcase
+
       ["A", "B", "C", "D", "E"].each do |letter|
-        equation[letter] = params[letter.to_sym].upcase
+        unless params[letter.to_sym].nil?
+          equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
+        end
+        ###equation[letter] = params[letter.to_sym].to_s.upcase
       end
+
       @views_widget.equation = equation
+      @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
+      @views_widget.is_kpi_widget = true
     end
 
     if params["field"].blank?

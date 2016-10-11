@@ -36,6 +36,110 @@ class WbsActivityRatioElementsController < ApplicationController
     @wbs_activity_ratio_element = WbsActivityRatioElement.new
   end
 
+
+  # Save the percentage of input values
+  def save_percentage_of_input_values
+    authorize! :manage_modules_instances, ModuleProject
+
+    @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
+
+    #Select ratio and elements
+    wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+    wbs_activity_ratio.update_attributes( allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase])
+
+
+    wbs_activity_ratio.wbs_activity_ratio_variables.each do |warv|
+
+      warv.name = params["name"]["#{warv.id}"]
+      warv.percentage_of_input = params["percentage_of_input"]["#{warv.id}"]
+      warv.description = params["description"]["#{warv.id}"]
+
+      if params[:wbs_arv_is_modifiable]
+        if params[:wbs_arv_is_modifiable].include?("#{warv.id}")
+          warv.is_modifiable = true
+        else
+          warv.is_modifiable = false
+        end
+      else
+        warv.is_modifiable = false
+      end
+
+      warv.save
+    end
+
+    #keep current ratio
+    @selected_ratio = wbs_activity_ratio
+    # @wbs_activity_ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.all
+    ###@wbs_activity_ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).order("abs(wbs_activity_elements.dotted_id) ASC").all
+    ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+    @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+
+    respond_to do |format|
+      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+
+      format.js { }
+    end
+  end
+
+
+  # Save the formula
+  def save_formula
+
+    authorize! :manage_modules_instances, ModuleProject
+
+    @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
+
+    #Select ratio and elements
+    wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+
+    wbs_activity_ratio.wbs_activity_ratio_elements.each do |wbs_activity_ratio_elt|
+
+      unless wbs_activity_ratio_elt.wbs_activity_element.is_root?
+        wbs_activity_ratio_elt.formula = params["formula"]["#{wbs_activity_ratio_elt.id}"]
+
+        if params[:is_optional]
+          if params[:is_optional].include?("#{wbs_activity_ratio_elt.id}")
+            wbs_activity_ratio_elt.is_optional = true
+          else
+            wbs_activity_ratio_elt.is_optional = false
+          end
+        else
+          wbs_activity_ratio_elt.is_optional = false
+        end
+
+        if params[:is_modifiable]
+          if params[:is_modifiable].include?("#{wbs_activity_ratio_elt.id}")
+            wbs_activity_ratio_elt.is_modifiable = true
+          else
+            wbs_activity_ratio_elt.is_modifiable = false
+          end
+        else
+          wbs_activity_ratio_elt.is_modifiable = false
+        end
+
+
+        wbs_activity_ratio_elt.save
+      end
+
+    end
+
+    #keep current ratio
+    @selected_ratio = wbs_activity_ratio
+    # @wbs_activity_ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.all
+    ###@wbs_activity_ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).order("abs(wbs_activity_elements.dotted_id) ASC").all
+    ratio_elements = wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+    @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+
+    respond_to do |format|
+      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+
+      format.js { }
+    end
+  end
+
+
   def save_values
     authorize! :manage_modules_instances, ModuleProject
     #set ratio values

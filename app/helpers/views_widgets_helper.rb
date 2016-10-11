@@ -28,27 +28,27 @@ module ViewsWidgetsHelper
     formula = eq["formula"].to_s
 
     unless eq["A"].blank?
-      a_value = get_ev_value(eq["A"], current_component.id)
+      a_value = get_ev_value(eq["A"].first, current_component.id)
       formula = formula.gsub("A", a_value)
     end
 
     unless eq["B"].blank?
-      b_value = get_ev_value(eq["B"], current_component.id)
+      b_value = get_ev_value(eq["B"].first, current_component.id)
       formula = formula.gsub("B", b_value)
     end
 
     unless eq["C"].blank?
-      c_value = get_ev_value(eq["C"], current_component.id)
+      c_value = get_ev_value(eq["C"].first, current_component.id)
       formula = formula.gsub("C", c_value)
     end
 
     unless eq["D"].blank?
-      d_value = get_ev_value(eq["D"], current_component.id)
+      d_value = get_ev_value(eq["D"].first, current_component.id)
       formula = formula.gsub("D", d_value)
     end
 
     unless eq["E"].blank?
-      e_value = get_ev_value(eq["E"], current_component.id)
+      e_value = get_ev_value(eq["E"].first, current_component.id)
       formula = formula.gsub("E", e_value)
     end
 
@@ -64,6 +64,25 @@ module ViewsWidgetsHelper
   end
 
   def get_ev_value(ev_id, current_component_id)
+    unless ev_id.to_i == 0
+      ev = EstimationValue.find(ev_id.to_i)
+      unless ev.nil?
+        val = ev.string_data_probable[current_component_id]
+        if val.is_a?(Hash)
+          test = compute_value(val, ev, current_component_id)
+          val = "hello"
+          #val.to_s
+        else
+          val.to_s
+        end
+      else
+        nil
+      end
+    end
+  end
+
+
+  def get_ev_value_SAVE(ev_id, current_component_id)
     unless ev_id.to_i == 0
       ev = EstimationValue.find(ev_id.to_i)
       val = ev.string_data_probable[current_component_id]

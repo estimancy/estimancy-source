@@ -462,4 +462,21 @@ class ApplicationController < ActionController::Base
   end
 
 
+
+  def test_me
+    (0..5).step(1).each do |i|
+      url = "https://issues.apache.org/jira/sr/jira.issueviews:searchrequest-excel-current-fields/temp/SearchRequest.xls?jqlQuery=project+%3D+MESOS+AND+resolution+%3D+Unresolved+ORDER+BY+priority+DESC%2C+key+DESC&tempMax=10&pager/start=#{i}"
+      easy = Curl::Easy.new(url)
+
+      easy.username = 'safae.laqrichi'
+      easy.password = 'estimancy'
+
+      File.open("final.xls", 'wb') do |f|
+        easy.on_body {|data| f << data; data.size }
+        easy.perform
+        f.close()
+      end
+    end
+  end
+
 end

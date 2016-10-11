@@ -72,13 +72,18 @@ module ModuleProjectsHelper
     # leaf element consistency will be compute at the same time
     consistency = false
 
-    number_of_not_null = 0
+    number_of_not_null = 0.0
     input_data.each do |key, value|
-      if value.is_a?(Integer) || value.is_a?(Float)
-        if key.to_s.eql?("ml")
-          number_of_not_null = number_of_not_null+4
-        else
-          number_of_not_null = number_of_not_null+1
+      ###if value.is_a?(Integer) || value.is_a?(Float) || value.is_a?(BigDecimal) || value.is_a?(Bignum)
+      if value.is_a?(Integer) || value.is_a?(Float) || value.class.superclass == Integer || value.class.superclass == Numeric
+        begin
+          if key.to_s.eql?("ml")
+            number_of_not_null = number_of_not_null+4
+          else
+            number_of_not_null = number_of_not_null+1
+          end
+        rescue
+          not_integer_or_float << nil
         end
       else
         not_integer_or_float << "#{key.to_s}"
@@ -102,7 +107,7 @@ module ModuleProjectsHelper
       end
       # Calculate the probable value according to the number of not null value (sum is divide by the number od not null values)
       if number_of_not_null.zero?
-        computed_probable_value = 0
+        computed_probable_value = 0.0
       else
         computed_probable_value = sum_of_not_null / number_of_not_null
       end
@@ -111,7 +116,9 @@ module ModuleProjectsHelper
 
     unless estimation_value.nil?
       #computed_probable_value according to the attribute type
-      if estimation_value.pe_attribute.attr_type.eql?("integer") && !computed_probable_value.nan?
+      ###if estimation_value.pe_attribute.attr_type.eql?("integer") && !computed_probable_value.nan?
+      ###if computed_probable_value.is_a?(Integer) || (computed_probable_value.is_a?(Float) && !computed_probable_value.nan?)
+      unless computed_probable_value.is_a?(Float) && computed_probable_value.nan?
         computed_probable_value = computed_probable_value.round
       end
     end

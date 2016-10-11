@@ -27,8 +27,10 @@ class WbsActivityRatio < ActiveRecord::Base
   has_many :pbs_project_elements
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
   has_many :wbs_activity_ratio_profiles, :through => :wbs_activity_ratio_elements
+  has_many :wbs_activity_ratio_variables, :dependent => :destroy
 
   has_many :module_project_ratio_elements, dependent: :destroy
+  has_many :module_project_ratio_variables, dependent: :destroy
 
   belongs_to :wbs_activity
 
@@ -92,5 +94,16 @@ class WbsActivityRatio < ActiveRecord::Base
   def to_s
     self.nil? ? '' : self.name
   end
+
+  #get the current ratio wbs_activity_ratio_variable
+  def get_wbs_activity_ratio_variables
+    [["RTU", "100%"], ["TEST", ""], ["", ""], ["", ""]].each do |var|
+      variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
+      variable.save
+    end
+
+    self.wbs_activity_ratio_variables
+  end
+
 
 end

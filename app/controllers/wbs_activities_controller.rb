@@ -20,6 +20,7 @@
 #############################################################################
 
 require 'will_paginate/array'
+require 'dentaku'
 
 class WbsActivitiesController < ApplicationController
   #include DataValidationHelper #Module for master data changes validation
@@ -60,8 +61,15 @@ class WbsActivitiesController < ApplicationController
     ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
     @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
+    @wbs_activity_ratio_variables =  @selected_ratio.wbs_activity_ratio_variables
+    if @wbs_activity_ratio_variables.all.empty?
+      @wbs_activity_ratio_variables = @selected_ratio.get_wbs_activity_ratio_variables
+    end
+
+
     @total = @wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
   end
+
 
   def index
     #No authorize required since everyone can access the list of ABS
@@ -94,6 +102,13 @@ class WbsActivitiesController < ApplicationController
       @wbs_activity_organization = @wbs_activity_ratios.first.wbs_activity.organization
     end
     @wbs_organization_profiles = @wbs_activity_organization.nil? ? [] : @wbs_activity.organization_profiles #@wbs_activity_organization.organization_profiles
+
+    unless @selected_ratio.nil?
+      @wbs_activity_ratio_variables =  @selected_ratio.wbs_activity_ratio_variables
+      if @wbs_activity_ratio_variables.all.empty?
+        @wbs_activity_ratio_variables = @selected_ratio.get_wbs_activity_ratio_variables
+      end
+    end
 
     @wbs_activity_ratio_elements = []
     unless @wbs_activity.wbs_activity_ratios.empty?
@@ -490,7 +505,7 @@ class WbsActivitiesController < ApplicationController
           @wbs_activity.organization_profiles.each do |profile|
             profiles_probable_value["profile_id_#{profile.id}"] = Hash.new
             # Parent values are reset to zero
-            wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt.id}"] = 0 }
+            wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt.id}"] = 0.0 }
 
             probable_estimation_value[@pbs_project_element.id].each do |wbs_activity_elt_id, hash_value|
               # Get the probable value profiles values
@@ -666,13 +681,46 @@ class WbsActivitiesController < ApplicationController
           end
 
           est_val.update_attributes(in_result)
-          est_val.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+          pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
+          est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
+
+
+          #=================  Save the module_project_ratio_variables values from de probable value  =================================
+          # if est_val.pe_attribute.alias == "effort"
+          #   #initialize calculator
+          #   calculator = Dentaku::Calculator.new
+          #
+          #   root_probable_effort_value = pbs_input_probable_value
+          #   calculator.store(root_probable_effort_value: pbs_input_probable_value)
+          #
+          #   #mp_ratio_variables = @ratio_reference.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
+          #   mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
+          #   mp_ratio_variables.each do |mp_var|
+          #     wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
+          #     percentage_of_input = wbs_ratio_variable.percentage_of_input
+          #     if wbs_ratio_variable.is_modifiable
+          #      percentage_of_input = mp_var.percentage_of_input
+          #     end
+          #
+          #     # calculate value from percentage of input
+          #     if root_probable_effort_value.nil? || percentage_of_input.blank?
+          #       mp_var.update_attribute(:value_from_percentage, nil)
+          #     else
+          #       value_from_percentage = calculator.evaluate("#{root_probable_effort_value.to_f} * #{percentage_of_input}")
+          #       mp_var.update_attribute(:value_from_percentage, value_from_percentage)
+          #     end
+          #   end
+          # end
+          #=================  END Save module_project_ratio_variables  =================================
+
         end
       elsif est_val.pe_attribute.alias == "ratio"
         ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
         est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
       end
     end
+
+
 
     wai = WbsActivityInput.where(module_project_id: current_module_project.id,
                                  wbs_activity_id: @wbs_activity.id).first

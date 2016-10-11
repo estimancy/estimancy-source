@@ -1,0 +1,77 @@
+<% use_real_base_percentage = (@selected_ratio.nil? ? nil : @selected_ratio.use_real_base_percentage) %>
+<% allow_modify_retained_effort = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_retained_effort) %>
+<% allow_modify_ratio_reference = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_ratio_reference) %>
+<% allow_modify_ratio_value = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_ratio_value) %>
+<% allow_add_new_phase = (@selected_ratio.nil? ? nil : @selected_ratio.allow_add_new_phase) %>
+
+<span>
+  <label class="checkbox pull-left" style="margin-left: 40px; margin-top: 10px">
+    <%#= check_box_tag :use_real_base_percentage, 1, use_real_base_percentage %>
+    <%#= I18n.t(:use_real_base_percentage ) %>
+  </label>
+</span>
+
+
+<br>
+
+<div class="pull-left">
+    <span>
+      <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+        <%= check_box_tag :allow_modify_retained_effort, 1, allow_modify_retained_effort %>
+        <%= I18n.t(:allow_modify_retained_effort ) %>
+      </label>
+    </span>
+
+    <span>
+      <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+        <%#= check_box_tag :allow_modify_ratio_reference, 1, allow_modify_ratio_reference %>
+        <%#= I18n.t(:allow_modify_ratio_reference ) %>
+      </label>
+    </span>
+
+    <span>
+      <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+        <%#= check_box_tag :allow_modify_ratio_value, 1, allow_modify_ratio_value %>
+        <%#= I18n.t(:allow_modify_ratio_value ) %>
+      </label>
+    </span>
+
+    <span>
+      <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+        <%= check_box_tag :allow_add_new_phase, 1, allow_add_new_phase %>
+        <%= I18n.t(:allow_add_new_phase ) %>
+      </label>
+    </span>
+</div>
+
+<br>
+<br>
+
+<h4 style="color: #0073ea;">Définition des variables et de leur pourcentage par rapport à la valeur en entrée</h4>
+<table class="table table-bordered table-condensed">
+  <tr>
+    <th><%= I18n.t(:variable_name) %></th>
+    <th><%= I18n.t(:percentage_of_input) %></th>
+    <th><%= I18n.t(:is_modifiable) %></th>
+    <th><%= I18n.t(:description) %></th>
+  </tr>
+
+  <% unless @selected_ratio.nil? %>
+      <%= hidden_field_tag 'wbs_activity_ratio_id', @selected_ratio.id %>
+      <%= hidden_field_tag 'wbs_activity_id', @selected_ratio.wbs_activity_id %>
+      <% @selected_ratio.wbs_activity_ratio_variables.each do |wbs_arv| %>
+          <tr>
+            <td class="align-center"><%= text_field_tag "name[#{wbs_arv.id}]", wbs_arv.name, :class => 'input-xl' %></td>
+            <td class="align-center"><%= text_field_tag "percentage_of_input[#{wbs_arv.id}]", wbs_arv.percentage_of_input, :class => 'input-xl' %></td>
+            <td class="align-center"><%= check_box_tag 'wbs_arv_is_modifiable[]', wbs_arv.id, wbs_arv.is_modifiable %></td>
+            <td class="align-center"><%= text_field_tag "description[#{wbs_arv.id}]", wbs_arv.description, :class => 'input-xxl' %></td>
+          </tr>
+      <% end %>
+  <% end %>
+</table>
+
+<% if can? :manage_modules_instances, ModuleProject %>
+    <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn' %>
+    <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn' %>
+<% end %>
+<%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>

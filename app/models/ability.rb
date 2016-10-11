@@ -68,7 +68,8 @@ class Ability
     if user && !user.groups.where(organization_id: organization.id).empty?
       permissions_array = []
 
-      user.groups.where(organization_id: organization.id).map do |grp|
+      #user.groups.where(organization_id: organization.id).map do |grp|
+      user.groups.where(organization_id: organization.id).includes(:permissions).map do |grp|
         grp.permissions.map do |i|
           if i.object_associated.blank?
             permissions_array << [i.alias.to_sym, :all]

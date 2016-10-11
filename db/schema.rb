@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160623072653) do
+ActiveRecord::Schema.define(:version => 20160916134406) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -625,8 +625,8 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_id"
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.boolean  "three_points_estimation"
     t.string   "retained_size_unit"
     t.boolean  "one_level_model"
@@ -639,7 +639,7 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -665,14 +665,14 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -847,6 +847,12 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
@@ -900,9 +906,24 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.datetime "updated_at",                     :null => false
     t.boolean  "is_optional"
     t.string   "ancestry"
+    t.string   "phase_short_name"
   end
 
   add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
+
+  create_table "module_project_ratio_variables", :force => true do |t|
+    t.integer  "module_project_id"
+    t.integer  "pbs_project_element_id"
+    t.integer  "wbs_activity_ratio_id"
+    t.integer  "wbs_activity_ratio_variable_id"
+    t.string   "name"
+    t.text     "description"
+    t.string   "percentage_of_input"
+    t.float    "value_from_percentage"
+    t.boolean  "is_modifiable",                  :default => false
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
+  end
 
   create_table "module_projects", :force => true do |t|
     t.integer  "pemodule_id"
@@ -1678,7 +1699,7 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1741,15 +1762,15 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.string   "state"
     t.text     "description"
     t.integer  "organization_id"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_number",             :default => 0
+    t.integer  "copy_number",              :default => 0
     t.integer  "copy_id"
     t.boolean  "three_points_estimation"
     t.string   "cost_unit"
@@ -1757,6 +1778,7 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.string   "effort_unit"
     t.float    "effort_unit_coefficient"
     t.boolean  "enabled_input"
+    t.integer  "phases_short_name_number", :default => 0
   end
 
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"
@@ -1781,6 +1803,7 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.boolean  "is_root"
     t.string   "master_ancestry"
     t.float    "position"
+    t.string   "phase_short_name"
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
@@ -1801,8 +1824,8 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.integer  "wbs_activity_element_id"
     t.float    "ratio_value"
     t.boolean  "simple_reference"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
@@ -1812,6 +1835,8 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
     t.boolean  "multiple_references"
     t.string   "ancestry"
     t.boolean  "is_optional"
+    t.string   "formula"
+    t.boolean  "is_modifiable",           :default => false
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"
@@ -1827,6 +1852,16 @@ ActiveRecord::Schema.define(:version => 20160623072653) do
   end
 
   add_index "wbs_activity_ratio_profiles", ["ancestry"], :name => "index_wbs_activity_ratio_profiles_on_ancestry"
+
+  create_table "wbs_activity_ratio_variables", :force => true do |t|
+    t.integer  "wbs_activity_ratio_id"
+    t.string   "name"
+    t.text     "description"
+    t.string   "percentage_of_input"
+    t.boolean  "is_modifiable",         :default => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
+  end
 
   create_table "wbs_activity_ratios", :force => true do |t|
     t.string   "uuid"

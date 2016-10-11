@@ -114,6 +114,7 @@ gem 'skb', :path => 'vendor/gems/skb'
 gem 'balancing_module', :path => "vendor/gems/balancing_module"
 gem 'expert_judgement', :path => "vendor/gems/expert_judgement"
 gem 'staffing', :path => "vendor/gems/staffing"
+####gem 'wbs_static', path: "vendor/gems/wbs_static"
 
 # This gem provides the JavaScript InfoVis Toolkit for your rails application.
 gem "jit-rails", "~> 0.0.2"
@@ -150,6 +151,10 @@ gem 'chartkick'
 gem "highcharts-rails"
 gem 'groupdate'
 
+#Dentaku is a parser and evaluator for mathematical formulas
+gem 'dentaku', '~> 2.0', '>= 2.0.9'
+
+
 #Faker
 #gem 'faker'
 
@@ -172,6 +177,8 @@ group :development do
   # To use debugger
   #gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'meta_request'
+
+  gem 'bullet'
 end
 
 group :test do

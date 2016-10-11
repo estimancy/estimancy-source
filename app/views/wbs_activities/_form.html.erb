@@ -139,11 +139,28 @@
             <%= select_tag 'Ratio', options_for_select(@wbs_activity_ratios.map { |i| [i.name, i.id] }, :selected => (params[:project_default_ratio] || @wbs_activity_ratio)), :class => 'select_ratio' %>
           </div>
 
-          <%= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
-            <div id="ratio_section">
-              <%= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
-            </div>
+
+
+          <br /><br />
+          <!--<%#= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>-->
+            <!--<div id="ratio_section">-->
+              <!--<%#= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>-->
+            <!--</div>-->
+          <!--<%# end %>-->
+
+          <!--  Test formula with percentage calculations -->
+          <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+              <div id="percentage_of_input_ratio_section">
+                <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+              </div>
           <% end %>
+
+          <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+              <div id="formula_ratio_section">
+                <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+              </div>
+          <% end %>
+
 
           <br /><br />
           <!-- Table of of Ratio values per profile -->
