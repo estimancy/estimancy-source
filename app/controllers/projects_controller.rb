@@ -92,8 +92,6 @@ class ProjectsController < ApplicationController
   public
 
   def dashboard
-    authorize! :show_project, @project
-
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
