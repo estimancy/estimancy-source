@@ -1,0 +1,50 @@
+<br>
+<br>
+
+
+<h4 style="color: #0073ea;">Table des Ratios et formule de calcul de chaque phase de la WBS</h4>
+<table id="table_list_4" class="table table-bordered table-condensed">
+  <tr>
+    <th><%= I18n.t(:order) %></th>
+    <th><%= I18n.t(:phase_short_name) %></th>
+    <th><%= I18n.t(:name) %></th>
+    <th><%= I18n.t(:description) %></th>
+    <th><%= I18n.t(:is_optional) %></th>
+    <th><%= I18n.t(:is_modifiable) %></th>
+    <th><%= I18n.t(:wbs_phase_formula) %></th>
+  </tr>
+
+  <% gap = 1 %>
+  <% @wbs_activity_ratio_elements.each_with_index do |wbs_activity_ratio_element, i| %>
+      <tr>
+        <td>
+          <% elt_position =  wbs_activity_ratio_element.wbs_activity_element.position %>
+          <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+        </td>
+        <td><%= wbs_activity_ratio_element.wbs_activity_element.phase_short_name %></td>
+
+        <td style="padding-left:<%=gap+(wbs_activity_ratio_element.wbs_activity_element.depth*2)%>em"><%= wbs_activity_ratio_element.wbs_activity_element.name %></td>
+        <td><%= wbs_activity_ratio_element.wbs_activity_element.description %></td>
+
+        <% if ! wbs_activity_ratio_element.wbs_activity_element.has_children? %>
+            <td style="text-align: center"><%= check_box_tag 'is_optional[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.is_optional %></td>
+            <td style="text-align: center"><%= check_box_tag 'is_modifiable[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.is_modifiable %></td>
+            <td style="text-align: center"><%= text_field_tag "formula[#{wbs_activity_ratio_element.id}]", wbs_activity_ratio_element.formula, :class => 'input-xxl', :tabindex => i %></td>
+        <% else %>
+            <td style="text-align: center"> - </td>
+            <td style="text-align: center"> - </td>
+            <td style="text-align: center"> - </td>
+        <% end %>
+        <%= hidden_field_tag 'wbs_activity_ratio_id', wbs_activity_ratio_element.wbs_activity_ratio_id %>
+        <%= hidden_field_tag 'wbs_activity_id', wbs_activity_ratio_element.wbs_activity_ratio.wbs_activity_id %>
+      </tr>
+  <% end %>
+</table>
+
+
+<% if can? :manage_modules_instances, ModuleProject %>
+  <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn' %>
+  <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn' %>
+<% end %>
+<%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+

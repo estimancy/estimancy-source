@@ -52,7 +52,7 @@
              end
           %>
           <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]},
-                                                                         selected: mpl.nil? ? '' : mpl.id),
+                                                                         selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
                          view_widget_id: @views_widget.id,
                          letter: letter,
                          class: "inline_attr module_project_variables" %>
@@ -70,7 +70,7 @@
         <h5>
           <%= I18n.t(:kpi_unit) %>
         </h5>
-        <%= text_field_tag "kpi_unit", "" %>
+        <%= f.input :kpi_unit, label: false %> <%#= text_field_tag "kpi_unit", "" %>
       </div>
     </div>
 

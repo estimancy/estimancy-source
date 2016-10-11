@@ -95,6 +95,26 @@ class ModuleProjectRatioElementsController < ApplicationController
     end
 
     #@total = @module_project_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
+
+    # Module Project Ratio Variables
+    @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+    if @module_project_ratio_variables.all.empty?
+      @wbs_activity_ratio_variables = @wbs_activity_ratio.wbs_activity_ratio_variables
+
+      if @wbs_activity_ratio_variables.all.empty?
+        @wbs_activity_ratio_variables = @wbs_activity_ratio.get_wbs_activity_ratio_variables
+      end
+      # create the module_project_ratio_variable
+      @wbs_activity_ratio_variables.each do |ratio_variable|
+        mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
+                                                           wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id, name: ratio_variable.name, description: ratio_variable.description,
+                                                           percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+        mp_ratio_variable.save
+      end
+
+      @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+    end
+
   end
 
 

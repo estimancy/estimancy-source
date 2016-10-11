@@ -6,7 +6,9 @@
 
     <%= simple_form_for(@wbs_activity_element) do |f| %>
       <%= f.error_notification %>
+
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+
       <%= f.input :wbs_activity_id, :as => :hidden, :label => 'WBS-Activity', :input_html => {:value => @wbs_activity.id, :class => 'input-xxlarge'} %>
       <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :label => 'Parent element', :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'} %>
       <%= hidden_field_tag :selected_parent_id, params[:selected_parent_id] %>

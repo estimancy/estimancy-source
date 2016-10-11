@@ -263,6 +263,26 @@ class ProjectsController < ApplicationController
       # Module_project Ratio elements
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
 
+      # Module Project Ratio Variables
+      @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      if @module_project_ratio_variables.all.empty?
+        @wbs_activity_ratio_variables = @wbs_activity_ratio.wbs_activity_ratio_variables
+
+        if @wbs_activity_ratio_variables.all.empty?
+          @wbs_activity_ratio_variables = @wbs_activity_ratio.get_wbs_activity_ratio_variables
+        end
+        # create the module_project_ratio_variable
+        @wbs_activity_ratio_variables.each do |ratio_variable|
+          mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
+                                                             wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id, name: ratio_variable.name, description: ratio_variable.description,
+                                                             percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+          mp_ratio_variable.save
+        end
+
+        @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      end
+
+
     else
 
     end
@@ -954,6 +974,28 @@ class ProjectsController < ApplicationController
   end
 
 
+  # Multiple deletion
+  def destroy_multiple_project
+    if params['project_ids_to_delete']
+      project_ids = params['project_ids_to_delete']
+      project_ids.each do |project_id|
+        project = Project.find(project_id)
+        if project
+          if ((can? :delete_project, project) || (can? :manage, project)) && project.is_childless?
+            project.destroy
+          else
+            flash[:warning] = I18n.t(:error_access_denied)
+          end
+        end
+      end
+
+      flash[:notice] = I18n.t(:notice_project_successful_deleted)
+    end
+    redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
+  end
+
+
+
   #Update the project's organization estimation statuses
   def update_organization_estimation_statuses
     @estimation_statuses = []
@@ -1150,6 +1192,17 @@ class ProjectsController < ApplicationController
 
         #create module_project ratio elements
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+
+          # create the module_project_ratio_variable
+          ratio.wbs_activity_ratio_variables.each do |ratio_variable|
+            mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id,
+                                   wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id, name: ratio_variable.name, description: ratio_variable.description,
+                                   percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+            mp_ratio_variable.save
+          end
+
+
+          # create the module_project_ratio_elements
           ratio.wbs_activity_ratio_elements.each do |ratio_element|
             mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
                                  multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,

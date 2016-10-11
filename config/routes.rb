@@ -23,6 +23,9 @@ require 'sidekiq/web'
 
 Projestimate::Application.routes.draw do
 
+  resources :wbs_activity_ratio_variables
+
+
   resources :applications
   resources :fields
   resources :views_widgets
@@ -133,6 +136,8 @@ Projestimate::Application.routes.draw do
 
   resources :wbs_activity_ratio_elements
   post 'save_values' => 'wbs_activity_ratio_elements#save_values', :as => 'save_values'
+  post 'save_formula' => 'wbs_activity_ratio_elements#save_formula', :as => 'save_formula'
+  post 'save_percentage_of_input_values' => 'wbs_activity_ratio_elements#save_percentage_of_input_values', :as => 'save_percentage_of_input_values'
 
   resources :wbs_activity_elements
   match 'wbs_activities/:wbs_activity_id/duplicate_wbs_activity' => 'wbs_activities#duplicate_wbs_activity', :as => :duplicate_wbs_activity
@@ -323,6 +328,7 @@ Projestimate::Application.routes.draw do
   get 'add_comment_on_status_change' => 'projects#add_comment_on_status_change', as: 'add_comment_on_status_change'
   get 'change_new_estimation_data' => 'projects#change_new_estimation_data', as: 'change_new_estimation_data'
   get 'set_checkout_version' => 'projects#set_checkout_version', as: 'set_checkout_version'
+  get 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
 
   match 'update_comments_status_change' => 'projects#update_comments_status_change', as: 'update_comments_status_change'
   post 'add_wbs_activity_to_project' => 'projects#add_wbs_activity_to_project',  :as => 'add_wbs_activity_to_project'

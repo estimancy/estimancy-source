@@ -62,7 +62,14 @@ class WbsActivityElementsController < ApplicationController
     @wbs_activity = @wbs_activity_element.wbs_activity
     @potential_parents = @wbs_activity.wbs_activity_elements
 
+    #update phase short name
+    phases_short_name_number = @wbs_activity.phases_short_name_number+1
+    @wbs_activity_element.phase_short_name = "P#{phases_short_name_number}"
+
     if @wbs_activity_element.save
+      @wbs_activity.phases_short_name_number = phases_short_name_number
+      @wbs_activity.save
+
       @wbs_activity.wbs_activity_ratios.each do |wbs_activity_ratio|
         @wbs_activity_ratio_element = WbsActivityRatioElement.new(:ratio_value => nil,
                                                                   :wbs_activity_ratio_id => wbs_activity_ratio.id,
@@ -94,11 +101,21 @@ class WbsActivityElementsController < ApplicationController
     #  end
     #end
 
+
     if params[:wbs_activity_element][:wbs_activity_id]
       @wbs_activity = WbsActivity.find(params[:wbs_activity_element][:wbs_activity_id])
     end
 
-    if @wbs_activity_element.update_attributes(params[:wbs_activity_element])
+    #update phase short name
+    if @wbs_activity_element.phase_short_name.nil?
+      phases_short_name_number = @wbs_activity.phases_short_name_number.to_i+1
+      element_phases_short_name_number = "P#{phases_short_name_number}"
+      @wbs_activity.phases_short_name_number = phases_short_name_number
+    end
+
+    if @wbs_activity_element.update_attributes(params[:wbs_activity_element].merge(phase_short_name: element_phases_short_name_number))
+      @wbs_activity.save
+
       redirect_to edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), :notice => "#{I18n.t (:notice_wbs_activity_element_successful_updated)}"
     else
       render action: 'edit'
