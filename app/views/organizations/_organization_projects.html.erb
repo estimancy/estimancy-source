@@ -41,7 +41,7 @@
                   <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
                 <% end %>
 
-                <% if can_alter_estimation?(project) && can?(:commit_project, project) %>
+                <% if can?(:commit_project, project) %>
                   <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) unless project.is_childless?)) %>
                 <% end %>
 
