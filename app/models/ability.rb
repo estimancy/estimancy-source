@@ -203,7 +203,7 @@ class Ability
         end
 
         grp.estimation_status_group_roles.includes(:project_security_level).each do |esgr|
-          esgr_security_level = esgr.project_security_level.includes(:estimation_status)
+          esgr_security_level = esgr.project_security_level
           unless esgr_security_level.nil?
             esgr_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
               esgr.organization.projects.each do |project|
