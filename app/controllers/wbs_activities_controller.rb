@@ -716,6 +716,7 @@ class WbsActivitiesController < ApplicationController
         end
       elsif est_val.pe_attribute.alias == "ratio"
         ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
+        #nouvelle calcul du ratio
         est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
       end
     end
