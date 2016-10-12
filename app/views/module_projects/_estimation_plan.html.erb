@@ -1,6 +1,6 @@
 
 <%# module_projects = @project.module_projects %>
-<% module_projects = @project.module_projects.reject{ |mp| mp.id == @initialization_module_project.id } %>
+<% module_projects = @project.module_projects.includes(:pemodule).reject{ |mp| mp.id == @initialization_module_project.id } %>
 <% @alphabet = %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) %>
 
 <% unless module_projects.empty? %>
