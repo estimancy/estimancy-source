@@ -222,7 +222,7 @@ class ModuleProject < ActiveRecord::Base
         mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
 
         if mp_ratio_elt.nil?
-          mp_ratio_elt = ModuleProjectRatioElement.new(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
+          mp_ratio_elt = ModuleProjectRatioElement.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
                                is_optional: ratio_element.is_optional, wbs_activity_ratio_element_id: ratio_element.id, multiple_references: ratio_element.multiple_references,
                                wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
                                ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
