@@ -1,4 +1,4 @@
-<% module_projects = @project.module_projects %>
+<% module_projects = @project.module_projects.includes(:pemodule) %>
 
 <% unless module_projects.empty? %>
     <!-- The Initialization module -->

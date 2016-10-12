@@ -231,6 +231,7 @@ class ProjectsController < ApplicationController
       #  @guw_model = Guw::GuwModel.first
       #else
         @guw_model = current_module_project.guw_model
+      # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(current_module_project)
       #end
       @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
 

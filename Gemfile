@@ -151,6 +151,10 @@ gem 'chartkick'
 gem "highcharts-rails"
 gem 'groupdate'
 
+#Dentaku is a parser and evaluator for mathematical formulas
+gem 'dentaku', '~> 2.0', '>= 2.0.9'
+
+
 #Faker
 #gem 'faker'
 
