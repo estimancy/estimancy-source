@@ -181,7 +181,7 @@ class Ability
           specific_permissions_array = []
           prj_scrts.each do |prj_scrt|
             # Get the project/estimation permissions
-            project = prj_scrt.project.includes(:organization)
+            project = prj_scrt.project
             unless project.nil?
               unless prj_scrt.project_security_level.nil?
                 project.organization.estimation_statuses.each do |es|
