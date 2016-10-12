@@ -118,8 +118,6 @@ Projestimate::Application.routes.draw do
   resources :organization_technologies
   get 'change_abacus' => 'organization_technologies#change_abacus', :as => 'change_abacus'
 
-
-  resources :unit_of_works
   resources :attribute_categories
 
   resources :versions

@@ -92,8 +92,6 @@ class ProjectsController < ApplicationController
   public
 
   def dashboard
-    authorize! :show_project, @project
-
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
@@ -2296,7 +2294,7 @@ public
     authorize! :create_project_from_template, Project
 
     @organization = Organization.find(params[:organization_id])
-    @estimation_models = @organization.projects.where(:is_model => true)
+    @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end

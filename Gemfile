@@ -9,7 +9,6 @@ gem 'cookies_eu'
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', :require => 'bcrypt'
 gem "useragent"
-gem "rest_client"
 
 # Include database gems for the adapters found in the database
 # configuration file
@@ -41,6 +40,8 @@ end
 # gem 'pg'
 gem 'pg'
 gem 'thin'
+
+gem 'curb'
 
 #Permissions
 gem 'cancan'
@@ -86,8 +87,6 @@ gem 'cache_digests'
 #Databases data translations
 gem 'globalize', '~> 3.1.0'
 
-gem 'cloudinary'
-
 #Optional gem for monitoring
 group :ic do
   gem 'newrelic_rpm'
@@ -104,6 +103,7 @@ gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
 gem 'rubyXL', "3.3.15"
 gem 'nokogiri'
+gem 'mechanize'
 
 # Including
 gem 'guw', :path => 'vendor/gems/guw'
@@ -114,13 +114,13 @@ gem 'skb', :path => 'vendor/gems/skb'
 gem 'balancing_module', :path => "vendor/gems/balancing_module"
 gem 'expert_judgement', :path => "vendor/gems/expert_judgement"
 gem 'staffing', :path => "vendor/gems/staffing"
-####gem 'wbs_static', path: "vendor/gems/wbs_static"
 
 # This gem provides the JavaScript InfoVis Toolkit for your rails application.
 gem "jit-rails", "~> 0.0.2"
 
 # Gem to audit User actions
-gem "audited-activerecord", "~> 3.0"
+gem "audited-activerecord"#, "~> 3.0"
+# gem "audited"#, "~> 4.3"
 
 #Authentication gem
 gem 'devise'
@@ -151,10 +151,6 @@ gem 'chartkick'
 gem "highcharts-rails"
 gem 'groupdate'
 
-#Dentaku is a parser and evaluator for mathematical formulas
-gem 'dentaku', '~> 2.0', '>= 2.0.9'
-
-
 #Faker
 #gem 'faker'
 
@@ -177,8 +173,6 @@ group :development do
   # To use debugger
   #gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'meta_request'
-
-  gem 'bullet'
 end
 
 group :test do
@@ -212,6 +206,7 @@ gem 'remotipart', '~> 1.2'
 gem 'yaml_db'
 
 gem 'test-unit'
+gem 'bullet', group: :development
 
 local_gemfile = File.join(File.dirname(__FILE__), 'Gemfile.local')
 if File.exists?(local_gemfile)

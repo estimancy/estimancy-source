@@ -166,7 +166,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 textarea {
   overflow: auto;
-  vertical-align: top;
+  /*vertical-align: top;*/
 }
 
 @media print {
@@ -2011,7 +2011,7 @@ table {
   padding: 8px;
   line-height: 20px;
   text-align: left;
-  vertical-align: top;
+  /*vertical-align: top;*/
   border-top: 1px solid #dddddd;
 }
 
