@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    if @project
+    if controller_name == "projects" and @project.persisted?
       @current_organization = @project.organization
     end
     @current_ability ||= Ability.new(current_user, @current_organization)
