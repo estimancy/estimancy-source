@@ -58,18 +58,20 @@
             </tr>
 
             <% @organization.estimation_statuses.each do |estimation_status| %>
-             <tr>
-               <td><%= estimation_status.libelle %></td>
-               <% @organization.estimation_statuses.each do |status| %>
-                   <% if estimation_status == status %>
-                        <td class="center">
-                          <%= check_box_tag("status_workflow[#{status.id}][]", estimation_status.id, true, :disabled => true ) %>
-                        </td>
-                   <% else %>
-                       <td class="center"><%= check_box_tag("status_workflow[#{status.id}][]", estimation_status.id, (status.to_transition_statuses.map(&:id).include? estimation_status.id)) %></td>
-                   <% end %>
+              <tr>
+                <td><%= estimation_status.libelle %></td>
+                  <% @organization.estimation_statuses.includes(:to_transition_statuses).each do |status| %>
+                    <% if estimation_status == status %>
+                    <td class="center">
+                      <%= check_box_tag("status_workflow[#{status.id}][]", estimation_status.id, true, :disabled => true ) %>
+                    </td>
+                    <% else %>
+                     <td class="center">
+                       <%= check_box_tag("status_workflow[#{status.id}][]", estimation_status.id, (status.to_transition_statuses.map(&:id).include? estimation_status.id)) %>
+                     </td>
+                  <% end %>
                <% end %>
-            </tr>
+              </tr>
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
