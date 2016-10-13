@@ -105,8 +105,8 @@
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
              size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                        :module_project_id => current_module_project.previous.first.id,
-                                                        :in_out => "output").first
+                                                      :module_project_id => current_module_project.previous.last.id,
+                                                      :in_out => "output").first
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
                                                        :module_project_id => current_module_project.id,
