@@ -180,14 +180,22 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
           elsif index == 5
-            tab.each_with_index do |row, index|
-              [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
-                ["size", "effort", "cost"].each_with_index do |at, j|
-                  if row[i][j] == "1"
-                    p "OK"
+            begin
+              if !tab[0].nil? && !tab[1].nil? && !tab[2].nil? && !tab[3].nil?
+              [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each_with_index do |ts, i|
+                ["size", "effort", "cost"].each_with_index do |ta, j|
+                  if tab[j+1][i+1] == 1
+                    gsma = Guw::GuwScaleModuleAttribute.new(guw_model_id: @guw_model.id,
+                                                            type_attribute: ta,
+                                                            type_scale: ts[1])
+                    gsma.save
                   end
                 end
               end
+              else
+                route_flag = 6
+              end
+            rescue
             end
           else
             # if critical_flag
