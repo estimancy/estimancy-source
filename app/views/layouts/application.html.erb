@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title><%= @page_title ? @page_title : controller.action_name %></title>
 
-  <%= stylesheet_link_tag 'application' %>
+  <%= stylesheet_link_tag 'application', media: 'screen' %>
+  <%= stylesheet_link_tag 'print', media: 'print' %>
+
   <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>  <!-- This line is replaced with de 2 lines to solve chart loading problems -->
 
   <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
