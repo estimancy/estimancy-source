@@ -105,8 +105,8 @@
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
              size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                        :module_project_id => current_module_project.previous.first.id,
-                                                        :in_out => "output").first
+                                                      :module_project_id => current_module_project.previous.last.id,
+                                                      :in_out => "output").first
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
                                                        :module_project_id => current_module_project.id,
@@ -116,9 +116,12 @@
 
              effort_attr = PeAttribute.find_by_alias("effort")
              if current_module_project.previous.size > 1
-               @previous_effort = EstimationValue.where(pe_attribute_id: effort_attr.id,
+               ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
                                                         module_project_id: current_module_project.previous.last.id,
-                                                        in_out: "output").first.send("string_data_probable")[current_component.id].to_f
+                                                        in_out: "output").first
+               if ev
+                @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+               end
              end %>
 
             <% unless @kb_model.enabled_input %>
@@ -163,20 +166,23 @@
               </strong>
             </h5>
 
-            <h5>
-              <strong>
-                Effort (<%= current_module_project.previous.last %>)
-              </strong>
-            </h5>
-            <%= @previous_effort.round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+            <% if @previous_effort %>
+              <h5>
+                <strong>
+                  Effort (<%= current_module_project.previous.last %>)
+                </strong>
+              </h5>
+              <%= @previous_effort.round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
 
-            <h5>
-              <strong>
-                Ecart
-              </strong>
-            </h5>
-            <%= (@effort - @previous_effort).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
-          <% end %>
+              <h5>
+                <strong>
+                  Ecart
+                </strong>
+              </h5>
+              <%= (@effort - @previous_effort).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+            <% end %>
+
+        <% end %>
         </div>
       </div>
     </div>

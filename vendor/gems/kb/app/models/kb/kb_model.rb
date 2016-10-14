@@ -60,10 +60,11 @@ module Kb
           nil
         end
       else
-        begin
-          c.send("string_data_#{level}")[component_id]
-        rescue
-          nil
+        c_ev = c.send("string_data_#{level}")[component_id]
+        if c_ev.nil?
+          p.send("string_data_#{level}")[component_id]
+        else
+          c_ev
         end
       end
     end

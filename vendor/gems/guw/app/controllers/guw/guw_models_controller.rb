@@ -179,34 +179,10 @@ class Guw::GuwModelsController < ApplicationController
                                       guw_model_id: @guw_model.id)
               end
             end
-          # elsif index == 5
-          #   tab.each_with_index do |row, index|
-          #     [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label]].each_with_index do |ts, i|
-          #       ["size", "effort", "cost"].each_with_index do |at, j|
-          #         unless row.nil?
-          #           if row[i]
-          #             if row[i][j] == "1"
-          #               p "OK"
-          #             else
-          #               p "KO"
-          #             end
-          #           else
-          #             p "NO Element"
-          #           end
-          #         end
-          #       end
-          #     end
-          #   end
           else
-            # if critical_flag
-            #   route_flag = 5
-            #   break
-            # end
-            if worksheet.sheet_name != I18n.t(:is_model) && worksheet.sheet_name != I18n.t(:attribute_description)# && worksheet.sheet_name != I18n.t(:Type_acquisitions)
-
-              if worksheet.sheet_name == "Matrice"
+            if worksheet.sheet_name == "Matrice"
+              begin
                 if !tab[0].nil? && !tab[1].nil? && !tab[2].nil? && !tab[3].nil?
-
                   [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each_with_index do |ts, i|
                     ["size", "effort", "cost"].each_with_index do |ta, j|
                       if tab[j+1][i+1] == 1
@@ -220,8 +196,10 @@ class Guw::GuwModelsController < ApplicationController
                 else
                   route_flag = 6
                 end
-              else
-
+              rescue
+              end
+            else
+              if worksheet.sheet_name != I18n.t(:is_model) && worksheet.sheet_name != I18n.t(:attribute_description)# && worksheet.sheet_name != I18n.t(:Type_acquisitions)
                 if !tab[0].nil? && !tab[2].nil? && !tab[3].nil? && !tab[1].nil? && !tab[4].nil?
                   @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
                                                   description: tab[0][0],
@@ -378,10 +356,10 @@ class Guw::GuwModelsController < ApplicationController
                   route_flag = 6
                   sheet_error += 1
                 end
+              else
+                route_flag = 7
+                break
               end
-            else
-              route_flag = 7
-              break
             end
           end
         else
@@ -425,7 +403,7 @@ class Guw::GuwModelsController < ApplicationController
     @guw_organisation = @guw_model.organization
     @guw_types = @guw_model.guw_types
     first_page = [[I18n.t(:model_name),  @guw_model.name],
-                  [I18n.t(:model_description), @guw_model.description],
+                  [I18n.t(:model_description), @guw_model.description ],
                   [I18n.t(:work_unit_label),  @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label],
                   [I18n.t(:weightings_label),  @guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label],
                   [I18n.t(:factors_label),  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label],
@@ -1266,8 +1244,4 @@ class Guw::GuwModelsController < ApplicationController
     redirect_to :back
   end
 
-  def auto_sizing
-    RestClient.post('http://localhost:5001/estimate', :tmpfile => File.new(params[:file].path))
-    redirect_to :back
-  end
 end
