@@ -723,6 +723,7 @@ class WbsActivitiesController < ApplicationController
 
 
 
+
     wai = WbsActivityInput.where(module_project_id: current_module_project.id,
                                  wbs_activity_id: @wbs_activity.id).first
     wai.wbs_activity_ratio_id = @ratio_reference.id.to_i

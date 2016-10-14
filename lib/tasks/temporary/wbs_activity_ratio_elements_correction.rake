@@ -40,12 +40,45 @@ namespace :wbs_activity_ratio_elements do
                   puts "#{false_wbs_activity_element_id}, #{wbs_activity_element_id}  different"
                   wbs_activity_ratio_element.wbs_activity_element_id = wbs_activity_element_id
                   wbs_activity_ratio_element.save
+
+                  # update module_project_ratio_elements
+                  module_project_ratio_elements = ratio.module_project_ratio_elements
+                  unless module_project_ratio_elements.nil?
+                    corresponding_mp_ratio_elt = module_project_ratio_elements.where(wbs_activity_ratio_element_id: wbs_activity_ratio_element.id).last
+                    if corresponding_mp_ratio_elt
+                      corresponding_mp_ratio_elt.wbs_activity_element_id = wbs_activity_element_id
+                      corresponding_mp_ratio_elt.save
+                    end
+                  end
+
+                  # module_project_ratio_elements.each do |mp_ratio_el|
+                  # end
+                  #
+
+                  all_wbs_activity_elements_ids.each do |each_activity_elt_id|
+                    activity_elt = WbsActivityElement.find(each_activity_elt_id)
+                    activity_elt_ancestor_ids = activity_elt.ancestor_ids
+                    unless activity_elt.is_root?
+                      new_ancestor_ids_list = []
+                      activity_elt_ancestor_ids.each do |ancestor_id|
+                        ancestor = module_project_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+                        unless ancestor.nil?
+                          new_ancestor_ids_list.push(ancestor.id)
+                        end
+                      end
+                      new_ancestry = new_ancestor_ids_list.join('/')
+                      mp_ratio_elements = module_project_ratio_elements.where(wbs_activity_element_id: activity_elt.id)
+                      unless mp_ratio_elements.nil?
+                        mp_ratio_elements.update_all(ancestry: new_ancestry)
+                      end
+                    end
+                  end
+
                 end
               end
             end
+
           end
-
-
         end
       end
 

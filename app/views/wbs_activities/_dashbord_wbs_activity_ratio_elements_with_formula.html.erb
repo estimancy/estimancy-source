@@ -148,8 +148,10 @@
 
             <% if mp_ratio_element.wbs_activity_ratio_element.nil? %>
                 <% allow_modify_retained_effort = true %>
+                <% is_optional = true %>
             <% else %>
                 <% allow_modify_retained_effort = mp_ratio_element.wbs_activity_ratio_element.is_modifiable %>
+                <% is_optional = mp_ratio_element.wbs_activity_ratio_element.is_optional %>
             <% end %>
 
             <tr>
@@ -157,7 +159,7 @@
 
               <td>
                 <%= check_box_tag "selected[]", mp_ratio_element.id, mp_ratio_element.selected, id: "selected_phase_#{mp_ratio_element.id}", class: "selected selected_phase checkbox_#{mp_ratio_element.id}", selected: mp_ratio_element.id,
-                                  disabled: ( !can?(:execute_estimation_plan, @project) || !mp_ratio_element.is_optional || mp_ratio_element.is_root? ),
+                                  disabled: ( !can?(:execute_estimation_plan, @project) || !is_optional || mp_ratio_element.is_root? ),
                                   "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
                 <%= hidden_field_tag "", mp_ratio_element.id, class: "#{mp_ratio_element.id}" %>
               </td>

@@ -252,7 +252,7 @@ class ProjectsController < ApplicationController
       if params[:ratio].nil?
         @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
       else
-        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio].nil?)
+        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
       end
 
       @pbs_project_element = current_component
@@ -283,7 +283,6 @@ class ProjectsController < ApplicationController
 
 
     else
-
     end
   end
 
