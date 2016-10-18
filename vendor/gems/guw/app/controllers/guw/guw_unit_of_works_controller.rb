@@ -449,6 +449,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    guw_type_id: guw_unit_of_work.guw_type_id).first
 
         guw_unit_of_work.save
+      else
+        unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
+          guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
+          guw_unit_of_work.guw_complexity_id = guw_complexity_id
+          guw_unit_of_work.save
+        else
+          guw_complexity_id = guw_unit_of_work.guw_complexity_id
+        end
       end
 
       if guw_unit_of_work.guw_complexity.nil?
