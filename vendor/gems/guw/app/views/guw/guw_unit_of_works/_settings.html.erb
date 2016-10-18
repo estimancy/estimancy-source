@@ -277,13 +277,19 @@
                     <% begin %>
                       <% if guow.off_line == true %>
                         <% @default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: "input-small guw_complexity", prompt: "HSAT", readonly: !guow.guw_type.allow_complexity %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: "input-small guw_complexity", prompt: "HSAT", disabled: !guow.guw_type.allow_complexity %>
                       <% elsif guow.off_line_uo == true %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: "input-small guw_complexity", prompt: "HSUO", readonly: !guow.guw_type.allow_complexity %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: "input-small guw_complexity", prompt: "HSUO", disabled: !guow.guw_type.allow_complexity %>
                       <% elsif guow.guw_complexity.nil? %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id ), guw: guow.id, class: "input-small guw_complexity", include_blank: true, readonly: !guow.guw_type.allow_complexity %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] },
+                                                                                       selected: guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id),
+                                       guw: guow.id, class: "input-small guw_complexity",
+                                       include_blank: true,
+                                       disabled: !guow.guw_type.allow_complexity %>
+                        <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id %>
+
                       <% else %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id, class: "input-small guw_complexity", include_blank: true, readonly: !guow.guw_type.allow_complexity %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id, class: "input-small guw_complexity", include_blank: true, disabled: !guow.guw_type.allow_complexity %>
                       <% end %>
                     <% rescue %>
                     <% end %>
