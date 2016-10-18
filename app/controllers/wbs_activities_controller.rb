@@ -396,6 +396,9 @@ class WbsActivitiesController < ApplicationController
 
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values
+    input_effort_for_global_ratio = 0.0
+    effort_total_for_global_ratio = 0.0
+
 
     current_pbs_estimations.each do |est_val|
 
@@ -630,6 +633,12 @@ class WbsActivitiesController < ApplicationController
           #Update current pbs estimation values
           est_val.update_attributes(@results)
 
+          # Recupere effort global pour ratio global
+          if est_val.pe_attribute.alias == "effort"
+            root_element = wbs_activity_elements.first.root
+            effort_total_for_global_ratio = probable_estimation_value[@pbs_project_element.id][root_element.id][:value]
+          end
+
           #======= Update PROBABLE the retained effort/cost output if nil or for the first time  ========
           # probable_retained_value = retained_est_val.send("string_data_probable")
           # if probable_retained_value.nil?
@@ -684,6 +693,10 @@ class WbsActivitiesController < ApplicationController
           pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
           est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
 
+          if est_val.pe_attribute.alias == "effort"
+            input_effort_for_global_ratio = pbs_input_probable_value
+          end
+
 
           #=================  Save the module_project_ratio_variables values from de probable value  =================================
           # if est_val.pe_attribute.alias == "effort"
@@ -716,12 +729,17 @@ class WbsActivitiesController < ApplicationController
         end
       elsif est_val.pe_attribute.alias == "ratio"
         ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
+
         #nouvelle calcul du ratio
-        est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
+        rtu = @ratio_reference.module_project_ratio_variables.where(name: "RTU").first
+        input_effort = input_effort_for_global_ratio
+        effort_total = effort_total_for_global_ratio
+        new_ratio_global = (input_effort.to_f / effort_total.to_f) * 100
+
+        #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
+        est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
       end
     end
-
-
 
 
     wai = WbsActivityInput.where(module_project_id: current_module_project.id,
