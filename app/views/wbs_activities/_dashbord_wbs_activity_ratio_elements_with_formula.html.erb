@@ -168,7 +168,7 @@
                 <span class="badge badge-default">
                     <%# elt_position =  mp_ratio_element.position %>
                     <%#= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
-                  <%= mp_ratio_element.wbs_activity_element.phase_short_name %>
+                  <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
                 </span>
               </td>
               <td>
