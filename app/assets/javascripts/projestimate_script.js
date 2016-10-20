@@ -619,7 +619,7 @@ $(document).ready(function() {
                     return $(".total-ratio").html(data);
                 },
                 error: function(XMLHttpRequest, testStatus, errorThrown) {
-                    return alert("Error!");
+                    return alert("Error! :" +  errorThrown);
                 }
             });
         }

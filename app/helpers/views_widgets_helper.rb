@@ -369,6 +369,19 @@ module ViewsWidgetsHelper
 
         # Get the project wbs_project_element root if module with activities
         if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+
+          # get the wbs_activity_selected ratio
+          ratio_reference = @wbs_activity_ratio
+          if ratio_reference.nil?
+            wbs_activity = module_project.wbs_activity
+            wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
+            begin
+              ratio_reference = wai.wbs_activity_ratio
+            rescue
+              ratio_reference = wbs_activity.wbs_activity_ratios.first
+            end
+          end
+
           if estimation_value.in_out == "output"
             unless estimation_value.pe_attribute.alias == "ratio" || estimation_value.pe_attribute.alias == "ratio_name"
               wbs_activity_elt_root = module_project.wbs_activity.wbs_activity_elements.first.root
@@ -525,11 +538,11 @@ module ViewsWidgetsHelper
             unless estimation_value.in_out == "input"
               wbs_activity = module_project.wbs_activity
               wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
-              begin
-                ratio_reference = wai.wbs_activity_ratio
-              rescue
-                ratio_reference = wbs_activity.wbs_activity_ratios.first
-              end
+              # begin
+              #   ratio_reference = wai.wbs_activity_ratio
+              # rescue
+              #   ratio_reference = wbs_activity.wbs_activity_ratios.first
+              # end
 
               if ratio_reference.nil?
                 module_project_ratio_elements = []
@@ -541,7 +554,7 @@ module ViewsWidgetsHelper
                 value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
               else
                 # Avec les module_project Ratio-Elements
-                value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+                value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
               end
             end
 
@@ -565,14 +578,14 @@ module ViewsWidgetsHelper
           when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table"
 
             unless estimation_value.in_out == "input"
-              value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+              value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
             end
 
           when "stacked_bar_chart_effort_per_phases_profiles"
 
             unless estimation_value.in_out == "input"
               chart_height = height-90
-              stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+              stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
               value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
             end
 
@@ -592,7 +605,7 @@ module ViewsWidgetsHelper
 
 
   # Get Effort and Cost data by Phases and by Profiles
-  def get_chart_data_by_phase_and_profile(pbs_project_element, module_project, estimation_value, view_widget)
+  def get_chart_data_by_phase_and_profile(pbs_project_element, module_project, estimation_value, view_widget, ratio_reference)
     result = String.new
     stacked_data = Array.new
     profiles_wbs_data = Hash.new
@@ -607,11 +620,11 @@ module ViewsWidgetsHelper
 
     wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
 
-    begin
-      ratio_reference = wai.wbs_activity_ratio
-    rescue
-      ratio_reference = wbs_activity.wbs_activity_ratios.first
-    end
+    # begin
+    #   ratio_reference = wai.wbs_activity_ratio
+    # rescue
+    #   ratio_reference = wbs_activity.wbs_activity_ratios.first
+    # end
 
     if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
       wbs_unit = get_attribute_unit(estimation_value.pe_attribute)

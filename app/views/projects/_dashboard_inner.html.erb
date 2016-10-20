@@ -80,7 +80,7 @@
           <div class="widget-content tab-content">
             <div class="input">
               <div class="input_data">
-                <%= render :partial => 'projects/setting_module' %>
+                <%= render :partial => 'projects/setting_module', object: @wbs_activity_ratio %>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@
 <!-- show selected view for each module project -->
 <!-- The results boxes will be arranged as in the estimation plan -->
 <div id="output_data_view_widgets_results">
-  <%= render :partial => 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x] %>
+  <%= render :partial => 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x, @wbs_activity_ratio] %>
 </div>
 
 <!-- The Estimation graph -->

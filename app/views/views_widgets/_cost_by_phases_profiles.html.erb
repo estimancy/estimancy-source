@@ -1,3 +1,6 @@
+<% wbs_activity = ratio_reference.wbs_activity  %>
+<% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1 %>
+
 <div>
   <div class="pull-left">
     <table id="profiles_per_activity" class="table table-bordered table-condensed table_effort_per_phase" style="margin-left:20px;">
@@ -72,7 +75,8 @@
                                 <% unless wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil? %>
                                     <% if !wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil? %>
                                         <% wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value] %>
-                                        <% array_profile_sum << wbs_profiles_value %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
+                                        <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
+                                        <% array_profile_sum << wbs_profiles_value.to_f %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
                                     <% end %>
                                 <% end %>
                                 <% if wbs_activity_elt.is_root? %>
@@ -89,6 +93,7 @@
                                       <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
                                       <% if wbs_profiles_value.class == Hash %>
                                           <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
+                                          <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
                                       <% end %>
                                       <% array_root[profile.id] << wbs_profiles_value.to_f %>
                                       <% effort_per_phase +=  wbs_profiles_value %>

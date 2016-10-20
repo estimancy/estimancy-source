@@ -734,7 +734,11 @@ class WbsActivitiesController < ApplicationController
         rtu = @ratio_reference.module_project_ratio_variables.where(name: "RTU").first
         input_effort = input_effort_for_global_ratio
         effort_total = effort_total_for_global_ratio
-        new_ratio_global = (input_effort.to_f / effort_total.to_f) * 100
+        if effort_total.nil? || effort_total == 0
+          new_ratio_global = nil
+        else
+          new_ratio_global = (input_effort.to_f / effort_total.to_f) * 100
+        end
 
         #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
         est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
@@ -763,7 +767,8 @@ class WbsActivitiesController < ApplicationController
       ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
     end
 
-    redirect_to dashboard_path(@project)
+    @wbs_activity_ratio = @ratio_reference
+    redirect_to dashboard_path(@project, ratio: @ratio_reference.id)
   end
 
 

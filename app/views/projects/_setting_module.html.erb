@@ -18,7 +18,7 @@
   <% elsif current_module_project.pemodule.alias == "cocomo_expert" %>
     <%= render partial: "cocomo_expert/input_cocomo/settings" %>
   <% elsif current_module_project.pemodule.alias == "effort_breakdown" %>
-    <%= render partial: "wbs_activities/settings" %>
+    <%= render partial: "wbs_activities/settings", object: @wbs_activity_ratio %>
   <% elsif current_module_project.pemodule.alias == "staffing" %>
       <%= render partial: "staffing/staffing_custom_data/settings" %>
   <% end %>
