@@ -143,10 +143,18 @@ class Kb::KbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[0]
-      @kb_model = Kb::KbModel.where(params[:kb_model_id]).first_or_create(name: file.cell(1,2),
-                                                                          standard_unit_coefficient: file.cell(2,2),
-                                                                          effort_unit: file.cell(3,2),
-                                                                          organization_id: @organization.id)
+      if params[:kb_model_id].nil?
+        @kb_model = Kb::KbModel.create(name: file.cell(1,2),
+                                       standard_unit_coefficient: file.cell(2,2),
+                                       effort_unit: file.cell(3,2),
+                                       organization_id: @organization.id)
+      else
+        @kb_model = Kb::KbModel.where(id: params[:kb_model_id],
+                                      organization_id: @organization.id).first_or_create(name: file.cell(1,2),
+                                                                                         standard_unit_coefficient: file.cell(2,2),
+                                                                                         effort_unit: file.cell(3,2),
+                                                                                         organization_id: @organization.id)
+      end
 
       unless @kb_model.nil?
         Kb::KbData.delete_all("kb_model_id = #{@kb_model.id}")
