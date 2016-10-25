@@ -21,7 +21,8 @@
           <%= f.input :bottom_range, label: I18n.t(:low_border_include) %>
           <%= f.input :top_range, label: I18n.t(:high_border_include) %>
           <%= f.input :enable_value, label: I18n.t(:Product) + " ?" %>
-      <% end %>
+        <% end %>
+        <%= f.input :default_value, label: "Valeur par défaut" %>
         <%= f.input :weight, label: I18n.t(:weight) %>
         <%= f.input :display_order, label: I18n.t(:display_order) %>
       </div>
