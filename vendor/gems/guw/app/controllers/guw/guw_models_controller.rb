@@ -1247,5 +1247,4 @@ class Guw::GuwModelsController < ApplicationController
 
     redirect_to :back
   end
-
 end
