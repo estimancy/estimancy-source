@@ -2,18 +2,24 @@
 
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
 
-  <div class="pull-left">
-    <% if can? :execute_estimation_plan, @project %>
-      <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn btn-mini input-small" %>
-      <a href="#import_myexport" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-        <%= I18n.t(:import) %>
-      </a>
-    <% end %>
-    <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn btn-mini input-small", method: "post" %>
+  <div class="row-fluid">
+    <div class="span12">
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn btn-mini input-small" %>
+        <a href="#import_myexport" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+      <% end %>
+      <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn btn-mini input-small", method: "post" %>
+      <button type="button" class="btn btn-primary btn-mini" data-toggle="modal" data-target="#stats_modal">
+        Statistiques détaillées
+      </button>
+    </div>
   </div>
 
-  <div class="pull-right">
-    <div class="pull-left">
+  <div class="row-fluid">
+    <hr>
+    <div class="pull-right">
       <span class="label label-success">
       Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %> :
         <span class="label label-success ajusted_size">
@@ -58,8 +64,6 @@
     </div>
   </div>
 
-  <br>
-  <br>
   <hr>
 
   <div class="accordion" id="accordion">
@@ -351,10 +355,6 @@
 
       <br>
     <% end %>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary btn-mini pull-right" data-toggle="modal" data-target="#stats_modal">
-      Statistiques détaillées
-    </button>
   </div>
 <% end %>
 
