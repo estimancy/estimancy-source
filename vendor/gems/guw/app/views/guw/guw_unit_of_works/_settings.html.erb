@@ -1,22 +1,25 @@
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_path do %>
 
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
 
-  <div class="pull-left">
-    <% if can? :execute_estimation_plan, @project %>
-      <a href="#auto_sizing" role="button" class="btn btn-mini input-small" title="Automatic Sizing" data-toggle="modal">
-        Automatic Sizing
-      </a>
-      <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn btn-mini input-small" %>
-      <a href="#import_myexport" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-        <%= I18n.t(:import) %>
-      </a>
-    <% end %>
-    <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn btn-mini input-small", method: "post" %>
+  <div class="row-fluid">
+    <div class="span12">
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn btn-mini input-small" %>
+        <a href="#import_myexport" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+      <% end %>
+      <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn btn-mini input-small", method: "post" %>
+      <button type="button" class="btn btn-primary btn-mini" data-toggle="modal" data-target="#stats_modal">
+        Statistiques détaillées
+      </button>
+    </div>
   </div>
 
-  <div class="pull-right">
-    <div class="pull-left">
+  <div class="row-fluid">
+    <hr>
+    <div class="pull-right">
       <span class="label label-success">
       Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %> :
         <span class="label label-success ajusted_size">
@@ -77,51 +80,59 @@
 
     <% @unit_of_work_groups.each_with_index do |uowg, j| %>
       <div class="accordion-heading" style="padding:5px;">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
-          <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
-            <%= uowg.name %>
-          </span>
-        </a>
-        <% if can?(:execute_estimation_plan, @project) %>
-          <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
-        <% end %>
-        <div class="pull-right">
-          <span class="label label-success">
-            Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
-            <span class="<%= uowg.id %>_ajusted">
-              <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.to_f }.flatten.sum.to_f.round(3) %>
-            </span>
-          </span>
-          <span class="label label-success">
-            Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
-            <span class="<%= uowg.id %>_theorical">
-              <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f}.sum.to_f.round(3) %>
-            </span>
-          </span>
-          <span class="label label-info">
-             <%= I18n.t(:numerber_of_uw) %> :
-            <span class="<%= uowg.id %>_number">
-              <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
-            </span>
-          </span>
-          <span class="label label-info">
-            <%= I18n.t(:numerber_of_uw_modifies) %> :
-            <span class="<%= uowg.id %>_flagged">
-              <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
-            </span>
-          </span>
-          <span class="label label-info">
-            <%= I18n.t(:numerber_of_uw_selected) %> :
-            <span class="<%= uowg.id %>_selected">
-              <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
-            </span>
-          </span>
-          <span class="label label-info">
-            Nombre d'U.O. H.S. :
-            <span class="<%= uowg.id %>_off_line">
-              <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
-            </span>
-          </span>
+        <div class="row-fluid">
+          <div class="span3">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
+              <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
+                <%= uowg.name %>
+              </span>
+            </a>
+          </div>
+
+          <div class="span9">
+            <div class="pull-right">
+              <% if can?(:execute_estimation_plan, @project) %>
+                <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
+              <% end %>
+
+              <span class="label label-success">
+                Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
+                <span class="<%= uowg.id %>_ajusted">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.to_f }.flatten.sum.to_f.round(3) %>
+                </span>
+              </span>
+              <span class="label label-success">
+                Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
+                <span class="<%= uowg.id %>_theorical">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f}.sum.to_f.round(3) %>
+                </span>
+              </span>
+              <span class="label label-info">
+                 <%= I18n.t(:numerber_of_uw) %> :
+                <span class="<%= uowg.id %>_number">
+                  <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                <%= I18n.t(:numerber_of_uw_modifies) %> :
+                <span class="<%= uowg.id %>_flagged">
+                  <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                <%= I18n.t(:numerber_of_uw_selected) %> :
+                <span class="<%= uowg.id %>_selected">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                Nombre d'U.O. H.S. :
+                <span class="<%= uowg.id %>_off_line">
+                  <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -353,35 +364,12 @@
 
       <br>
     <% end %>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary btn-mini pull-right" data-toggle="modal" data-target="#stats_modal">
-      Statistiques détaillées
-    </button>
   </div>
 <% end %>
 
+
 <div id="import_myexport" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <%= form_tag guw.import_myexport_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
-    </div>
-    <div class="modal-body">
-      <!--<p>description de se que fait l'action peut etre ?</p>-->
-      <%= file_field_tag :file %>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-    </div>
-    <div class="loading span11 hide">
-      <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-    </div>
-  <% end %>
-</div>
-
-<div id="auto_sizing" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <%= form_tag guw.auto_sizing_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
