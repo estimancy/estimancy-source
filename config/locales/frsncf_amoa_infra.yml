@@ -1953,3 +1953,4 @@ frsncf_amoa_infra:
   is_optional: "Est facultatif"
 
   confirm_deletion: "Confirmer la suppression de l'estimation"
+  initialize_calculation: "Initialiser le calcul"

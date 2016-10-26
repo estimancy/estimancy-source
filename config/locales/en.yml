@@ -1959,3 +1959,4 @@ en:
   is_optional: "Is optional"
 
   confirm_deletion: "Confirm estimation deletion"
+  initialize_calculation: "Initialize the calculation"
