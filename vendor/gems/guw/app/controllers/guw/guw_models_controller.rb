@@ -84,6 +84,10 @@ class Guw::GuwModelsController < ApplicationController
     end
   end
 
+  def statistics
+    @guw_model = Guw::GuwModel.find(params[:guw_model])
+  end
+
   def importxl
 
     element_found_flag = false

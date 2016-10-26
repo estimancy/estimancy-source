@@ -513,8 +513,21 @@ class Ge::GeModelsController < ApplicationController
                   factors = @ge_model.ge_factors.where(alias: factor_alias)
                   unless factors.nil?
                     factor = factors.first
-                    factor_value = Ge::GeFactorValue.create(ge_model_id: @ge_model.id, ge_factor_id: factor.id, factor_alias: factor_alias, factor_scale_prod: factor.scale_prod, factor_type: factor.factor_type,
-                                                            factor_name: factor_name, value_text: row_factor["text"], value_number: row_factor["value"], default: row_factor["default"])
+                    begin
+                      factor_value = Ge::GeFactorValue.create(ge_model_id: @ge_model.id,
+                                                              ge_factor_id: factor.id, factor_alias: factor_alias, factor_scale_prod: factor.scale_prod, factor_type: factor.factor_type,
+                                                              factor_name: factor_name, value_text: row_factor["text"], value_number: row_factor["value"], default: row_factor["default"])
+                    rescue
+                      factor_value = Ge::GeFactorValue.create(ge_model_id: @ge_model.id,
+                                                              ge_factor_id: nil,
+                                                              factor_alias: "???",
+                                                              factor_scale_prod: 1,
+                                                              factor_type: nil,
+                                                              factor_name: "???",
+                                                              value_text: "???",
+                                                              value_number: 1,
+                                                              default: nil)
+                    end
                   end
                 end
               end
