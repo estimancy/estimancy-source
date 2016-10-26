@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160916134406) do
+ActiveRecord::Schema.define(:version => 20161025101220) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -625,8 +625,8 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_id"
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.boolean  "three_points_estimation"
     t.string   "retained_size_unit"
     t.boolean  "one_level_model"
@@ -639,7 +639,7 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -665,14 +665,14 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -847,6 +847,12 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
@@ -901,6 +907,7 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
     t.boolean  "is_optional"
     t.string   "ancestry"
     t.string   "phase_short_name"
+    t.boolean  "is_just_changed"
   end
 
   add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
@@ -1693,7 +1700,7 @@ ActiveRecord::Schema.define(:version => 20160916134406) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-12-04 14:05:34'
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
