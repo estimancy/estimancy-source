@@ -29,7 +29,7 @@ module EffortBreakdown
   class EffortBreakdown
     include PemoduleEstimationMethods
 
-    attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio #module input/output parameters
+    attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids, :changed_retained_effort_values #module input/output parameters
 
     #def initialize(c, mp, e, r)
     def initialize(*args)
@@ -39,6 +39,8 @@ module EffortBreakdown
       @project = @module_project.project
       @ratio = args[3]
       args[2].nil? ? @input_effort = nil : @input_effort = args[2]
+      @changed_mp_ratio_element_ids = args[4]      # mp_ratio_element_ids dont l'effort retenu a été modifié manuellement
+      @changed_retained_effort_values = args[5]    # valeurs des efforts retenus (modifiés ou non)
     end
 
     # Getters for module outputs
@@ -49,7 +51,13 @@ module EffortBreakdown
       WbsActivityElement.rebuild_depth_cache!
 
       efforts_man_month = nil
-      efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula  ###get_effort_with_activities_elements
+      if @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
+        efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula  ###get_effort_with_activities_elements
+      else
+        #some retained effort values have manuelly changed
+        efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula_and_changed_retained_effort_values  ###get_effort_with_activities_elements
+      end
+
       efforts_man_month
     end
 
@@ -132,6 +140,138 @@ module EffortBreakdown
 
       res
     end
+
+
+    ####################   TEST  #################
+
+    # Use the changed retained effort values before reexcuting
+    # get_effort_with_module_project_ratio_elements_with_formula_and_changed_retained_effort
+    def get_effort_with_module_project_ratio_elements_with_formula_and_changed_retained_effort_values
+
+      #project on which estimation is
+      project = @module_project.project
+
+      # Project pe_wbs_activity
+      wbs_activity = @module_project.wbs_activity
+
+      # Get the wbs_activity_element which contain the wbs_activity_ratio
+      wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
+
+      #Get the referenced wbs_activity_elt of the @ratio
+      referenced_ratio_elements = WbsActivityRatioElement.where('wbs_activity_ratio_id =? and multiple_references = ?', @ratio.id, true)
+      # If there is no referenced elements, all elements will be consider as references
+      if referenced_ratio_elements.nil? || referenced_ratio_elements.empty?
+        referenced_ratio_elements = WbsActivityRatioElement.where('wbs_activity_ratio_id =?', @ratio.id)
+      end
+
+      output_effort = Hash.new
+
+
+      current_output_effort = @input_effort
+      calculator = Dentaku::Calculator.new
+
+      # Calculate the module_project_ratio_variable value_percentage
+      mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
+      mp_ratio_variables.each do |mp_var|
+        wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
+        percentage_of_input = wbs_ratio_variable.percentage_of_input
+        if wbs_ratio_variable.is_modifiable
+          percentage_of_input = mp_var.percentage_of_input
+        end
+
+        # calculate value from percentage of input
+        if current_output_effort.nil? || percentage_of_input.blank?
+          mp_var.update_attribute(:value_from_percentage, nil)
+        else
+          value_from_percentage = calculator.evaluate("#{current_output_effort.to_f} * #{percentage_of_input}")
+          mp_var.update_attribute(:value_from_percentage, value_from_percentage)
+
+          # Store the ratio_variables value in the calculator
+          calculator.store(:"#{mp_var.name}" => value_from_percentage)
+        end
+      end
+
+
+      # get retained values
+      changed_wbs_activity_element_ids = []
+      @changed_mp_ratio_element_ids.each do |changed_value_id|
+        mp_ratio_element = ModuleProjectRatioElement.find(changed_value_id)
+        wbs_activity_element = mp_ratio_element.wbs_activity_element
+        wbs_activity_element_id = wbs_activity_element.id
+
+        element_effort = @changed_retained_effort_values["#{changed_value_id}"].to_f
+        output_effort[wbs_activity_element_id] = element_effort.to_f
+
+        changed_wbs_activity_element_ids << wbs_activity_element_id
+
+        # Add element short_name in calculator
+        element_phase_short_name = wbs_activity_element.phase_short_name
+        unless element_phase_short_name.nil?
+          calculator.store(:"#{element_phase_short_name}" => element_effort)
+        end
+      end
+
+
+      wbs_activity_root.children.each do |node|
+        # Sort node subtree by ancestry_depth
+        sorted_node_elements = node.subtree.order('ancestry_depth desc')
+        sorted_node_elements.each do |element|
+
+          # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
+          unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
+
+            # Sauf si la valeur de l'élément n'est pas pas encore enregistrée
+            if output_effort[element.id].nil?
+
+              # Element effort is really computed only on leaf element
+              if element.is_childless? || element.has_new_complement_child?
+                # Get the ratio Value of current element
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
+
+                unless corresponding_ratio_elt.nil?
+
+                  formula = corresponding_ratio_elt.formula
+
+                  if current_output_effort.nil? || formula.blank?
+                    output_effort[element.id] = nil
+                  else
+                    formula_expression = "#{formula.downcase}"
+                    begin
+                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01')
+                    rescue
+                      normalized_formula_expression = nil
+                    end
+                    element_effort = calculator.evaluate(normalized_formula_expression)
+                    output_effort[element.id] = element_effort
+
+                    # Add element short_name in calculator
+                    element_phase_short_name = element.phase_short_name
+                    unless element_phase_short_name.nil?
+                      calculator.store(:"#{element_phase_short_name}" => element_effort)
+                    end
+                  end
+
+                end
+              else
+                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+              end
+
+            end
+          end
+        end
+      end
+
+
+      # After treating all leaf and node elements, the root element is going to compute by aggregation
+      output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort)
+
+      # Global output efforts
+      output_effort
+
+    end
+
+
+    ####################  FIN TEST  #################
 
 
     # Use module_project_ratio_element FORMULA

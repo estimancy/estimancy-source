@@ -219,32 +219,49 @@
     </tr>
   </table>
 
+
+  <!-- Ajout des valeurs des Ratios -->
+  <div id="module_project_ratio_elements">
+      <div id="module_project_ratio_section">
+        <%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',
+               :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
+               locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+
+        <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
+                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+      </div>
+  </div>
+  <!-- Fin Ajout des valeurs des Ratios -->
+
+
   <% if can?(:execute_estimation_plan, @project) %>
     <%= submit_tag I18n.t(:calculate_save), class: "pull-right btn btn-mini" %>
+    <%#= submit_tag I18n.t(:calculate_save), class: "pull-right btn btn-mini" %>
   <% end %>
 
 <% end %>
 
 
 <!-- Ajout des valeurs des Ratios -->
-<div id="module_project_ratio_elements">
-  <%= form_tag update_effort_breakdown_retained_values_path do %>
+<!--<div id="module_project_ratio_elements">-->
+  <!--<%#= form_tag update_effort_breakdown_retained_values_path do %>-->
 
-    <div id="module_project_ratio_section">
-        <%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',
-                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
-                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+    <!--<div id="module_project_ratio_section">-->
+        <!--<%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',-->
+                   <!--:object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],-->
+                   <!--locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>-->
 
-      <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                 :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
+      <%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+#                  :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
                  locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-    </div>
+    <!--</div>-->
 
-    <% if can?(:execute_estimation_plan, @project) %>
-      <%= submit_tag I18n.t(:save_modifications), class: "pull-right btn btn-mini" %>
-    <% end %>
-  <% end %>
-</div>
+    <!--<%# if can?(:execute_estimation_plan, @project) %>-->
+      <!--<%#= submit_tag I18n.t(:save_modifications), class: "pull-right btn btn-mini" %>-->
+    <!--<%# end %>-->
+  <!--<%# end %>-->
+<!--</div>-->
 <!-- Fin Ajout des valeurs des Ratios -->
 
 

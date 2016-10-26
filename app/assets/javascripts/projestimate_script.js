@@ -1048,11 +1048,28 @@ function update_mp_ratio_element_retained_effort_and_cost_value(){
 // Function to update the Cost value when the Retained Effort change
 function update_mp_ratio_element_retained_effort_and_cost_values(){
 
-    $('.retained_cost').on('focusin', function(){
+    // Mise à jour de la valeur booleenne de "is_just_changed" lorsque la valeur de l'effort retenu change
+    $('.retained_effort').change(function(){
+        var ap_id = $(this).attr('id');
+        var ap_value = $('#'+ap_id).val();
+        //ap_value = parseFloat(ap_value.replace("," , "."));
+
+        var mp_ratio_element_id = $(this).data("mp_ratio_element_id");
+
+        if(!isNaN(parseFloat(ap_value)) && isFinite(ap_value)){
+            if(ap_value != undefined){
+                //$("is_just_changed_"+mp_ratio_element_id).prop( "checked", true );
+                $("#is_just_changed_"+mp_ratio_element_id).attr("checked",true);
+            }
+        }
+    });
+
+
+    $('.retained_cost_SAVE').on('focusin', function(){
         $(this).data('previous_value', $(this).val());
     });
 
-    $('.retained_cost').change(function(){
+    $('.retained_cost_SAVE').change(function(){
         var cost_elt_id = $(this).attr('id'),
             cost_value = $('#'+cost_elt_id).val(),
             previous_cost_value = $(this).data("previous_value"),
@@ -1094,13 +1111,13 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
     });
 
 
-    $('.retained_effort').on('focusin', function(){
+    $('.retained_effort_SAVE').on('focusin', function(){
         //console.log("Saving value " + $(this).val());
         $(this).data('previous_value', $(this).val());
     });
 
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
-    $('.retained_effort').change(function(){
+    $('.retained_effort_SAVE').change(function(){
         var ap_id = $(this).attr('id');
         var ap_value = $('#'+ap_id).val();
         //ap_value = parseFloat(ap_value.replace("," , "."));
