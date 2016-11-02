@@ -144,10 +144,11 @@ class Kb::KbModelsController < ApplicationController
 
       file.default_sheet = file.sheets[0]
       if params[:kb_model_id].nil?
-        @kb_model = Kb::KbModel.create(name: file.cell(1,2),
+        @kb_model = Kb::KbModel.new(name: file.cell(1,2),
                                        standard_unit_coefficient: file.cell(2,2),
                                        effort_unit: file.cell(3,2),
                                        organization_id: @organization.id)
+        @kb_model.save(validate: false)
       else
         @kb_model = Kb::KbModel.where(id: params[:kb_model_id],
                                       organization_id: @organization.id).first_or_create(name: file.cell(1,2),
@@ -156,7 +157,7 @@ class Kb::KbModelsController < ApplicationController
                                                                                          organization_id: @organization.id)
       end
 
-      unless @kb_model.nil?
+      if @kb_model.persisted?
         Kb::KbData.delete_all("kb_model_id = #{@kb_model.id}")
       end
 
@@ -185,7 +186,7 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    redirect_to kb.edit_kb_model_path(@kb_model, organization_id: @organization.id)
+    redirect_to kb.edit_kb_model_path(@kb_model, organization_id: @organization.id) and return
   end
 
   def save_filters
