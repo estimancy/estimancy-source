@@ -97,7 +97,7 @@ class Skb::SkbModelsController < ApplicationController
 
     worksheet = workbook.add_worksheet("Données")
     kb_model_datas = @skb_model.skb_datas
-    default_attributs = ["Nom", "Dscription", "Données", "Traitements"]
+    default_attributs = ["Nom", "Description", "Données", "Traitements"]
 
     if !kb_model_datas.nil? && !kb_model_datas.empty?
       kb_model_datas.each_with_index do |kb_data, index|
