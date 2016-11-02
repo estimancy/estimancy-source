@@ -1616,3 +1616,4 @@ fr1:
   retained_effort: "Effort retenu"
   retained_cost: "Coût retenu"
   is_optional: "Est facultatif"
+  initialize_calculation: "Initialiser le calcul"

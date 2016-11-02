@@ -1536,3 +1536,4 @@ de:
   show_results_global_view: "Show the project overview"
   save_modifications: "Save modifications"
   is_optional: "Is optional"
+  initialize_calculation: "Initialize the calculation"

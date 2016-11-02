@@ -1578,3 +1578,4 @@ en-gb:
   retained_effort: "Retained effort"
   retained_cost: "Retained cost"
   is_optional: "Is optional"
+  initialize_calculation: "Initialize the calculation"

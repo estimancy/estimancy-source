@@ -439,6 +439,11 @@ class WbsActivitiesController < ApplicationController
           #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
           just_changed_values = params['is_just_changed']
+          # Il s'agit du bouton pour réinitialiser le calcul
+          if params['initialize_calculation']
+            just_changed_values = []
+          end
+
           level_retained_effort_most_likely = params["retained_effort_most_likely"]
           level_retained_effort_most_likely.each do |key, value|
             level_retained_effort_most_likely[key] = value.to_f * effort_unit_coefficient
@@ -676,6 +681,11 @@ class WbsActivitiesController < ApplicationController
             mp_retained_alias = "retained_#{mp_ratio_element_attribute_alias}_probable"
             if mp_ratio_element.send("#{mp_retained_alias}").nil?
               mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
+            end
+
+            # if value is manually updated, update the flagged attribute
+            if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
+              mp_ratio_element.flagged = true
             end
 
             mp_ratio_element.save
