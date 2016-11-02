@@ -386,7 +386,7 @@
 
 <div id="import_myexport" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <%= form_tag guw.import_myexport_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-    <div class="modal-header">
+    <div class="modal-header modal-drag">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
     </div>
@@ -494,17 +494,17 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel">
+<div class="modal fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel" style="height: 400px;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header modal-drag">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Statistiques détaillés</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="max-height: 250px;">
         <%= render partial: "guw/guw_unit_of_works/details" %>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer modal-drag">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
       </div>
     </div><!-- /.modal-content -->

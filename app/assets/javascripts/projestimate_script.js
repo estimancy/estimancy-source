@@ -52,7 +52,7 @@ $(document).ready(function() {
 
 
     $(".modal").draggable({
-        handle: ".modal-header"
+        handle: ".modal-drag"
     });
 
     // Modal bug

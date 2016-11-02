@@ -302,7 +302,7 @@
 
         <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag import_wbs_activities_path, :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header">
+            <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel"><%= I18n.t(:import) %> <%= I18n.t(:wbs_activity) %></h3>
             </div>
@@ -316,7 +316,7 @@
               <label><%= I18n.t(:encoding) %></label>
               <%= select_tag :encoding, options_for_select(Project::encoding, :selected => I18n.t(:general_csv_encoding)) %>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer modal-drag">
               <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
               <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
             </div>

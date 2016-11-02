@@ -27,7 +27,7 @@
 
           <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
-              <div class="modal-header">
+              <div class="modal-header modal-drag">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
               </div>
@@ -86,7 +86,7 @@
 
           <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
-                <div class="modal-header">
+                <div class="modal-header modal-drag">
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                   <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
                 </div>
@@ -147,7 +147,7 @@
 
         <div id="import_project_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_project_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header">
+            <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
             </div>
@@ -209,7 +209,7 @@
 
       <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
-          <div class="modal-header">
+          <div class="modal-header modal-drag">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
           </div>
@@ -307,7 +307,7 @@
 
         <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header">
+            <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
             </div>
