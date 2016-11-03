@@ -411,7 +411,11 @@ class OrganizationsController < ApplicationController
         mps = ModuleProject.where(project_id: project, pemodule_id: pemodule).all
         mps.each do |mp|
           Guw::GuwUnitOfWork.where(module_project_id: mp).each do |guw|
-            tmp << (array_project + array_value + [guw.name, guw.guw_complexity.name, guw.size, guw.ajusted_size.to_f]).flatten(1)
+            unless guw.nil?
+              tmp << (array_project + array_value + [guw.name, guw.guw_complexity.name, guw.size, guw.ajusted_size.to_f]).flatten(1)
+            else
+              tmp << (array_project + array_value).flatten(1)
+            end
           end
         end
       else
