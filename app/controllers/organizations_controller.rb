@@ -352,6 +352,9 @@ class OrganizationsController < ApplicationController
 
     if params[:with_header] == "checked"
       if params[:with_guw] == "checked"
+
+        @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+
         tmp << [
             I18n.t(:project),
             I18n.t(:label_project_version),
@@ -362,7 +365,20 @@ class OrganizationsController < ApplicationController
             I18n.t(:project_area),
             I18n.t(:state),
             I18n.t(:creator),
-        ] + @organization.fields.map(&:name) + ["Nom de l'UO", "Complexité", "Théorique", "Calculé"]
+        ] + @organization.fields.map(&:name) + [  I18n.t(:selected),
+                                                  I18n.t(:name),
+                                                  'Type',
+                                                  I18n.t(:description),
+                                                  @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label.to_s,
+                                                  @guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label,
+                                                  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label,
+                                                  I18n.t(:organization_technology),
+                                                  I18n.t(:quantity),
+                                                  I18n.t(:tracability),
+                                                  I18n.t(:cotation),
+                                                  I18n.t(:results),
+                                                  I18n.t(:retained_result)] + @guw_model.guw_attributes.map(&:name)
+
       else
         tmp << [
             I18n.t(:project),
@@ -407,12 +423,45 @@ class OrganizationsController < ApplicationController
       end
 
       if params[:with_guw] == "checked"
-        pemodule = Pemodule.where(alias: "guw").first
-        mps = ModuleProject.where(project_id: project, pemodule_id: pemodule).all
+        mps = ModuleProject.where(project_id: project).all
         mps.each do |mp|
-          Guw::GuwUnitOfWork.where(module_project_id: mp).each do |guw|
+          Guw::GuwUnitOfWork.where(module_project_id: mp, guw_model_id: @guw_model.id).each do |guw|
+            array_guw = []
             unless guw.nil?
-              tmp << (array_project + array_value + [guw.name, guw.guw_complexity.name, guw.size, guw.ajusted_size.to_f]).flatten(1)
+
+              if guw.off_line
+                cplx = "HSAT"
+              elsif guw.off_line_uo
+                cplx = "HSUO"
+              elsif guw.guw_complexity.nil?
+                cplx = ""
+              else
+                cplx = guw.guw_complexity.name
+              end
+
+              array_guw = [
+                guw.selected ? "1" : "0",
+                guw.name,
+                guw.guw_type.name,
+                guw.comments,
+                guw.guw_work_unit,
+                guw.guw_weighting,
+                guw.guw_factor,
+                guw.organization_technology,
+                guw.quantity.to_s,
+                guw.tracking,
+                cplx,
+                guw.ajusted_size.to_s
+            ]
+
+              guw.guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guw.id, guw_attribute_id: guw_attribute.id, guw_type_id: guw.guw_type.id).first
+                unless guowa.nil?
+                  array_guw = array_guw + [(guowa.most_likely.nil? ? "N/A" : guowa.most_likely.to_s)]
+                end
+              end
+
+              tmp << (array_project + array_value + array_guw).flatten(1)
             else
               tmp << (array_project + array_value).flatten(1)
             end
@@ -436,7 +485,7 @@ class OrganizationsController < ApplicationController
       tmp2[i].each_with_index do |r, j|
         if is_number?(tmp2[i][j])
           unless tmp2[i][j] == 0 || j == 1
-            worksheet.add_cell(i, j, tmp2[i][j].to_f).set_number_format('.##')
+            worksheet.add_cell(i, j, tmp2[i][j].to_f)#.set_number_format('.##')
           else
             worksheet.add_cell(i, j, tmp2[i][j])
           end
