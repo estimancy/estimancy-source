@@ -684,8 +684,10 @@ class WbsActivitiesController < ApplicationController
             end
 
             # if value is manually updated, update the flagged attribute
-            if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
-              mp_ratio_element.flagged = true
+            unless just_changed_values.nil?
+              if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
+                mp_ratio_element.flagged = true
+              end
             end
 
             mp_ratio_element.save
