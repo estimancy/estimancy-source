@@ -19,10 +19,10 @@
 
    if effort == 0
      ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                :module_project_id => current_module_project.previous.first,
+                                :module_project_id => current_module_project.previous.last,
                                 :in_out => "output").first
      begin
-       previous_activity_root = current_module_project.previous.first.wbs_activity.wbs_activity_elements.first.root
+       previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
        effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
      rescue
       effort = 0

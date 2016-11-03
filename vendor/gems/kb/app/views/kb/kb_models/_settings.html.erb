@@ -105,7 +105,7 @@
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
              size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                      :module_project_id => current_module_project.previous.last.id,
+                                                      :module_project_id => current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first.id,
                                                       :in_out => "output").first
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
@@ -120,7 +120,11 @@
                                                         module_project_id: current_module_project.previous.last.id,
                                                         in_out: "output").first
                if ev
-                @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 if ev.module_project.pemodule.alias == "effort_breakdown"
+                   @previous_effort = ev.send("string_data_probable")[current_component.id][current_module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                 else
+                   @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 end
                end
              end %>
 
