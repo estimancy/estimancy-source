@@ -351,17 +351,31 @@ class OrganizationsController < ApplicationController
     tmp = Array.new
 
     if params[:with_header] == "checked"
-      tmp << [
-          I18n.t(:project),
-          I18n.t(:label_project_version),
-          I18n.t(:label_product_name),
-          I18n.t(:description),
-          I18n.t(:start_date),
-          I18n.t(:applied_model),
-          I18n.t(:project_area),
-          I18n.t(:state),
-          I18n.t(:creator),
-      ] + @organization.fields.map(&:name)
+      if params[:with_guw] == "checked"
+        tmp << [
+            I18n.t(:project),
+            I18n.t(:label_project_version),
+            I18n.t(:label_product_name),
+            I18n.t(:description),
+            I18n.t(:start_date),
+            I18n.t(:applied_model),
+            I18n.t(:project_area),
+            I18n.t(:state),
+            I18n.t(:creator),
+        ] + @organization.fields.map(&:name) + ["Nom de l'UO", "Complexité", "Théorique", "Calculé"]
+      else
+        tmp << [
+            I18n.t(:project),
+            I18n.t(:label_project_version),
+            I18n.t(:label_product_name),
+            I18n.t(:description),
+            I18n.t(:start_date),
+            I18n.t(:applied_model),
+            I18n.t(:project_area),
+            I18n.t(:state),
+            I18n.t(:creator),
+        ] + @organization.fields.map(&:name)
+      end
     end
 
     @projects.each do |project|
@@ -392,7 +406,18 @@ class OrganizationsController < ApplicationController
 
       end
 
-      tmp << (array_project + array_value).flatten(1)
+      if params[:with_guw] == "checked"
+        pemodule = Pemodule.where(alias: "guw").first
+        mps = ModuleProject.where(project_id: project, pemodule_id: pemodule).all
+        mps.each do |mp|
+          Guw::GuwUnitOfWork.where(module_project_id: mp).each do |guw|
+            tmp << (array_project + array_value + [guw.name, guw.guw_complexity.name, guw.size, guw.ajusted_size.to_f]).flatten(1)
+          end
+        end
+      else
+        tmp << (array_project + array_value).flatten(1)
+      end
+
 
     end
 
