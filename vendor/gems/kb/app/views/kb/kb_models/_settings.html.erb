@@ -183,7 +183,7 @@
                   Ecart
                 </strong>
               </h5>
-              <%= (@effort - @previous_effort).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+              <%= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
             <% end %>
 
         <% end %>
