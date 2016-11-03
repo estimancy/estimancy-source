@@ -176,7 +176,7 @@
                   Effort (<%= current_module_project.previous.last %>)
                 </strong>
               </h5>
-              <%= @previous_effort.round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+              <%= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
 
               <h5>
                 <strong>
@@ -277,7 +277,7 @@
           data: <%= [
                       [
                         @previous_effort.nil? ? 0 : @size,
-                        @previous_effort.nil? ? 0 : @previous_effort.round(2)
+                        @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
                       ]
                     ] %>
         },{
