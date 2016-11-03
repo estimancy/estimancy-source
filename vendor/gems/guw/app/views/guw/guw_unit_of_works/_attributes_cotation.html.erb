@@ -9,7 +9,7 @@
   <%= hidden_field_tag "hidden_quantity[#{guow.id}]", guow.quantity %>
   <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
 
-  <div class="modal-header">
+  <div class="modal-header modal-drag">
     <h4 class="modal-title" id="myModalLabel<%= guow.id %>">
       <b>
         <%= guw_type %>
@@ -37,33 +37,36 @@
 
       <%# Guw::GuwUnitOfWorkAttribute.includes(:guw_attribute).where(guw_unit_of_work_id: guow.id).order('guw_guw_attributes.name asc').each do |uowa, j| %>
       <% guow.guw_unit_of_work_attributes.includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
-        <tr>
-          <% unless guw_type.nil? %>
-            <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
-          <% end %>
-          <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
-            <td>
-              <%= link_to uowa.guw_attribute.name, "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left" %>
-            </td>
-
-            <% if @guw_model.three_points_estimation == true %>
-              <td>
-                <%= text_field_tag "low[#{guow.id}][#{uowa.id}]", uowa.low, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
-              </td>
+        <% begin %>
+          <tr>
+            <% unless guw_type.nil? %>
+              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
             <% end %>
-
-            <td>
-              <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
-            </td>
-
-            <% if @guw_model.three_points_estimation == true %>
+            <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td>
-                <%= text_field_tag "high[#{guow.id}][#{uowa.id}]", uowa.high, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= link_to uowa.guw_attribute.name, "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left" %>
               </td>
-            <% end %>
 
-          <% end %>
-        </tr>
+              <% if @guw_model.three_points_estimation == true %>
+                <td>
+                  <%= text_field_tag "low[#{guow.id}][#{uowa.id}]", uowa.low, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+                </td>
+              <% end %>
+
+              <td>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+              </td>
+
+              <% if @guw_model.three_points_estimation == true %>
+                <td>
+                  <%= text_field_tag "high[#{guow.id}][#{uowa.id}]", uowa.high, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+                </td>
+              <% end %>
+
+            <% end %>
+          </tr>
+        <% rescue %>
+        <% end %>
       <% end %>
     </table>
   </div>

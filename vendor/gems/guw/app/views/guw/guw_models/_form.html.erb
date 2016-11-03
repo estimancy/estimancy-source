@@ -36,10 +36,11 @@
               <%= f.input :name %>
               <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
               <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= select_tag "azerty", "" %>
+              <%= select_tag "coefficient_type", options_for_select(["Coefficient", "Pourcentage"]) %>
               <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= select_tag "azerty", "" %>
+              <%= select_tag "weightings_type", options_for_select(["Coefficient", "Pourcentage"]) %>
               <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
+              <%= select_tag "factors_type", options_for_select(["Coefficient", "Pourcentage"]) %>
               <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
               <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>
               <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
@@ -69,7 +70,7 @@
 
         <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag guw.importxl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header">
+            <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
             </div>
