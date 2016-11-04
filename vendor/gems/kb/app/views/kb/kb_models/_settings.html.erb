@@ -71,7 +71,7 @@
                                  prompt: I18n.t(:Indifferent),
                                  disabled: !@kb_model.enabled_input %>
 
-                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? (@kb_input.filters[key]) : @filters[key] %>" />
+                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, @kb_model.send("filter_#{arr[i]}")) : @filters[key] %>" />
                 </div>
               <% end %>
             </p>
@@ -191,7 +191,7 @@
       </div>
     </div>
     <div class="span9">
-      <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
       <hr>
     </div>
   </div>
