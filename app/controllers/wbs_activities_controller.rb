@@ -390,7 +390,24 @@ class WbsActivitiesController < ApplicationController
           end
         end
       end
+
+      ## Update selected attribute
+      @module_project_ratio_elements.each do |mp_ratio_element|
+        selected_elements = params['selected']
+        if !selected_elements.nil? && selected_elements.include?(mp_ratio_element.id.to_s)
+          mp_ratio_element.selected = true
+        else
+          if mp_ratio_element.wbs_activity_ratio_element.is_optional == true ##mp_ratio_element.is_optional == true
+            mp_ratio_element.selected = false
+          else
+            mp_ratio_element.selected = true
+          end
+        end
+        mp_ratio_element.save
+      end
+
     end
+
     #===== Fin test =====
 
 
@@ -683,6 +700,7 @@ class WbsActivitiesController < ApplicationController
               mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
             end
 
+
             # if value is manually updated, update the flagged attribute
             unless just_changed_values.nil?
               if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
@@ -718,7 +736,6 @@ class WbsActivitiesController < ApplicationController
           if est_val.pe_attribute.alias == "effort"
             input_effort_for_global_ratio = pbs_input_probable_value
           end
-
 
           #=================  Save the module_project_ratio_variables values from de probable value  =================================
           # if est_val.pe_attribute.alias == "effort"
