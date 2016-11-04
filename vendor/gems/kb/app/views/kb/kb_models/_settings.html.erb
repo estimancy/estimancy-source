@@ -71,7 +71,7 @@
                                  prompt: I18n.t(:Indifferent),
                                  disabled: !@kb_model.enabled_input %>
 
-                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? (@kb_input.filters[key]) : @filters[key] %>" />
+                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, @kb_model.send("filter_#{arr[i]}")) : @filters[key] %>" />
                 </div>
               <% end %>
             </p>
@@ -105,7 +105,7 @@
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
              size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                      :module_project_id => current_module_project.previous.last.id,
+                                                      :module_project_id => current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first.id,
                                                       :in_out => "output").first
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
@@ -120,7 +120,11 @@
                                                         module_project_id: current_module_project.previous.last.id,
                                                         in_out: "output").first
                if ev
-                @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 if ev.module_project.pemodule.alias == "effort_breakdown"
+                   @previous_effort = ev.send("string_data_probable")[current_component.id][current_module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                 else
+                   @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 end
                end
              end %>
 
@@ -172,14 +176,14 @@
                   Effort (<%= current_module_project.previous.last %>)
                 </strong>
               </h5>
-              <%= @previous_effort.round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+              <%= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
 
               <h5>
                 <strong>
                   Ecart
                 </strong>
               </h5>
-              <%= (@effort - @previous_effort).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+              <%= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
             <% end %>
 
         <% end %>
@@ -187,7 +191,7 @@
       </div>
     </div>
     <div class="span9">
-      <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
       <hr>
     </div>
   </div>
@@ -273,7 +277,7 @@
           data: <%= [
                       [
                         @previous_effort.nil? ? 0 : @size,
-                        @previous_effort.nil? ? 0 : @previous_effort.round(2)
+                        @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
                       ]
                     ] %>
         },{

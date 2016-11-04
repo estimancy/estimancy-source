@@ -129,7 +129,15 @@ class Skb::SkbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[0]
-      @skb_model = Skb::SkbModel.find(params[:skb_model_id].to_i)
+
+      if params[:skb_model_id].blank?
+        @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
+                                       organization_id: @organization.id)
+        @skb_model.save(validate: false)
+      else
+        @skb_model = Skb::SkbModel.where(id: params[:skb_model_id],
+                                         organization_id: @organization.id).first
+      end
 
       unless @skb_model.nil?
         Skb::SkbData.delete_all("skb_model_id = #{@skb_model.id}")
@@ -192,6 +200,18 @@ class Skb::SkbModelsController < ApplicationController
 
     @skb_model.delete
     redirect_to main_app.organization_module_estimation_path(@skb_model.organization_id, anchor: "taille")
+  end
+
+  def raz
+    @skb_model = Skb::SkbModel.find(params[:skb_model_id])
+    @skb_input = @skb_model.skb_inputs.where(module_project_id: current_module_project.id).first
+    unless @skb_input.nil?
+      @skb_input.data = nil
+      @skb_input.processing = nil
+      @skb_input.retained_size = nil
+      @skb_input.save
+    end
+    redirect_to :back
   end
 
   def save_size

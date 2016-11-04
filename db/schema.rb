@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161025101220) do
+ActiveRecord::Schema.define(:version => 20161104101424) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -573,6 +573,7 @@ ActiveRecord::Schema.define(:version => 20161025101220) do
     t.integer  "copy_id"
     t.boolean  "enable_value"
     t.integer  "display_order", :default => 0
+    t.boolean  "default_value"
   end
 
   create_table "guw_guw_complexity_factors", :force => true do |t|
@@ -846,12 +847,6 @@ ActiveRecord::Schema.define(:version => 20161025101220) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1516,6 +1511,8 @@ ActiveRecord::Schema.define(:version => 20161025101220) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
+    t.string   "label_x"
+    t.string   "label_y"
   end
 
   create_table "staffing_staffing_custom_data", :force => true do |t|
