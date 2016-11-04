@@ -27,6 +27,7 @@ Skb::Engine.routes.draw do
     post "import"
     get "data_export"
     post "duplicate"
+    post "raz"
   end
 
   match 'skb_models/import_skb_model' => 'skb_models#import', as: "import_skb_model"

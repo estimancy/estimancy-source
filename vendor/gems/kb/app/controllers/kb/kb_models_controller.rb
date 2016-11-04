@@ -133,7 +133,7 @@ class Kb::KbModelsController < ApplicationController
     unless params[:file].nil?
       begin
         begin
-        file = Roo::Spreadsheet.open(params[:file].path, :extension => :xls)
+          file = Roo::Spreadsheet.open(params[:file].path, :extension => :xls)
         rescue
           file = Roo::Spreadsheet.open(params[:file].path, :extension => :xlsx)
         end
