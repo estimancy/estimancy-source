@@ -22,10 +22,14 @@
                                 :module_project_id => current_module_project.previous.last,
                                 :in_out => "output").first
      begin
-       previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
-       effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+       begin
+         previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+         effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+       rescue
+         effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+       end
      rescue
-      effort = 0
+       effort = 1
      end
    end
 
