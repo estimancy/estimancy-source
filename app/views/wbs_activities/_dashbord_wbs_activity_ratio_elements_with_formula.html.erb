@@ -286,16 +286,17 @@
               </td>
             </tr>
           <% end %>
-
-          <% if can?(:execute_estimation_plan, @project) && allow_add_new_phase %>
+<!--
+          <%# if can?(:execute_estimation_plan, @project) && allow_add_new_phase %>
               <tr>
                 <td>
                   <span class="pull-left">
-                    <%= link_to '', new_module_project_ratio_element_path(module_project_id: current_module_project.id, wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: current_component.id, selected_parent_id: root_mp_ratio_element_id), class: "icon icon-plus", title: I18n.t(:new_module_project_ratio_element), method: "get", remote: true %>
+                    <%#= link_to '', new_module_project_ratio_element_path(module_project_id: current_module_project.id, wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: current_component.id, selected_parent_id: root_mp_ratio_element_id), class: "icon icon-plus", title: I18n.t(:new_module_project_ratio_element), method: "get", remote: true %>
                   </span>
                 </td>
               </tr>
-          <% end %>
+          <%# end %>
+ -->
         </table>
     </div>
   </div>
