@@ -99,6 +99,12 @@ module EffortBreakdown
           cost[key] << tmp[k]
         end
 
+        # Test if node is selected or not ( it will be taken in account only if the node is selected)
+        mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: key).first
+        if (mp_ratio_element && mp_ratio_element.selected==true) || mp_ratio_element.nil?
+
+        end
+
         cost.each do |k, v|
           if WbsActivityElement.find(key).root?
             res[key] = cost.values.sum.sum
@@ -110,6 +116,7 @@ module EffortBreakdown
 
       res
     end
+
 
     def get_theoretical_cost(*args)
       cost = Hash.new {|h,k| h[k]=[]}

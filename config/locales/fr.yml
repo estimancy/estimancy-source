@@ -1951,8 +1951,8 @@ fr:
   new_mp_ratio_element: "Nouvelle élément de la WBS-Activité"
   create_mp_ratio_element: "Ajouter une nouvelle phase"
   initial_label_ratio_value: "Valeur initiale du ratio"
-  hide_results_global_view: "Cacher la vue globale du projet"
-  show_results_global_view: "Afficher le vue globale du projet"
+  hide_results_global_view: "Masquer la vue globale"
+  show_results_global_view: "Afficher la vue globale"
   save_modifications: "Sauvegarder les modifications"
 
   theoretical_effort: "Effort calculé"
@@ -1976,3 +1976,4 @@ fr:
   phase_wording: "Libellé"
   wbs_phase_formula: "Formule de calcul"
   initialize_calculation: "Initialiser le calcul"
+  comments: "Commentaires"

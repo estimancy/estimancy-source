@@ -397,7 +397,7 @@ class WbsActivitiesController < ApplicationController
         if !selected_elements.nil? && selected_elements.include?(mp_ratio_element.id.to_s)
           mp_ratio_element.selected = true
         else
-          if mp_ratio_element.wbs_activity_ratio_element.is_optional == true ##mp_ratio_element.is_optional == true
+          if !mp_ratio_element.wbs_activity_ratio_element.nil? && mp_ratio_element.wbs_activity_ratio_element.is_optional==true ##mp_ratio_element.is_optional == true
             mp_ratio_element.selected = false
           else
             mp_ratio_element.selected = true
@@ -537,6 +537,16 @@ class WbsActivitiesController < ApplicationController
           # get the wbs_project_elements that have at least one child
           wbs_activity_elements = @wbs_activity.wbs_activity_elements#.select{ |elt| elt.has_children? && !elt.is_root }.map(&:id)
 
+          # update probable_estimation_value[@pbs_project_element.id] for each wbs-activity-element
+          wbs_activity_elements.each do |wbs_activity_elt|
+            wbs_activity_elt_id = wbs_activity_elt.id
+            wbs_probable_estimation_value = probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]
+            if wbs_probable_estimation_value.nil?
+              probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id] = Hash.new
+              probable_estimation_value[@pbs_project_element.id][wbs_activity_elt_id]["profiles"] = Hash.new
+            end
+          end
+
           #@project.organization.organization_profiles.each do |profile|
           @wbs_activity.organization_profiles.each do |profile|
             profiles_probable_value["profile_id_#{profile.id}"] = Hash.new
@@ -594,6 +604,7 @@ class WbsActivitiesController < ApplicationController
 
                     estimation_value_profile = res
                     res.each do |wbs_id, res_hash_value|
+                      wbs_value = probable_estimation_value[@pbs_project_element.id][wbs_id]
                       current_wbs_profile_values =  probable_estimation_value[@pbs_project_element.id][wbs_id]["profiles"]
                       if current_wbs_profile_values.nil? || current_wbs_profile_values.empty?
                         probable_estimation_value[@pbs_project_element.id][wbs_id]["profiles"] = { "profile_id_#{profile.id}" => Hash.new } #Hash.new
@@ -623,10 +634,15 @@ class WbsActivitiesController < ApplicationController
                     #the update the parent's value
                     parent_profile_est_value["#{wbs_activity_element.id}"] = estimation_value_profile
                     ###parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
-                    # Update values for ancestors
-                    wbs_activity_element.ancestors.each do |ancestor|
-                      parent_profile_est_value["#{ancestor.id}"] = parent_profile_est_value["#{ancestor.id}"].to_f + estimation_value_profile
+
+                    # Update values for ancestors if the element it self is selected
+                    mp_ratio_element_for_effort_profile = @module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_element).first
+                    if (mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected==true) || mp_ratio_element_for_effort_profile.nil?
+                      wbs_activity_element.ancestors.each do |ancestor|
+                        parent_profile_est_value["#{ancestor.id}"] = parent_profile_est_value["#{ancestor.id}"].to_f + estimation_value_profile
+                      end
                     end
+
 
                     #Need to calculate the parents effort by profile : addition of its children values
                     # wbs_activity_elements.each do |wbs_activity_element_id|
@@ -809,7 +825,7 @@ class WbsActivitiesController < ApplicationController
     ####update_effort_breakdown_retained_values
 
     @wbs_activity_ratio = @ratio_reference
-    redirect_to dashboard_path(@project, ratio: @ratio_reference.id)
+    redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
   end
 
 

@@ -31,7 +31,7 @@
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project %>
+          - <%= link_to "#{current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project}", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF' %>
         </h5>
 
         <div class="buttons">
@@ -39,9 +39,17 @@
           <% if can?(:execute_estimation_plan, @project) %>
            <span>
                 <% if @initialization_module_project.show_results_view %>
-                      <%= link_to I18n.t(:hide_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "show_hide_project_overview", :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+                     <%#= link_to I18n.t(:hide_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "show_hide_project_overview", :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+                     <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview",  :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
+                        <i class="icon-eye-open a_white" style="color: white"></i>
+                        <%= I18n.t(:hide_results_global_view) %>
+                     <% end %>
                 <% else %>
-                      <%= link_to I18n.t(:show_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "show_hide_project_overview", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+                     <%#= link_to I18n.t(:show_results_global_view), show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id:"show_results_view", :class => "show_hide_project_overview", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true %>
+                     <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
+                         <i class="icon-eye-close a_white" style="color: white"></i>
+                         <%= I18n.t(:show_results_global_view) %>
+                     <% end %>
                 <% end %>
             </span>
 
