@@ -67,7 +67,10 @@ class WbsActivityElementsController < ApplicationController
     @wbs_activity_element.phase_short_name = "P#{phases_short_name_number}"
 
     if @wbs_activity_element.save
-      @wbs_activity.phases_short_name_number = phases_short_name_number
+      unless @wbs_activity_element.is_root?
+        @wbs_activity.phases_short_name_number = phases_short_name_number
+      end
+
       @wbs_activity.save
 
       @wbs_activity.wbs_activity_ratios.each do |wbs_activity_ratio|

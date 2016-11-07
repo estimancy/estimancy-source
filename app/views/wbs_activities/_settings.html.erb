@@ -115,7 +115,7 @@
           <%= text_field_tag "", convert_with_precision(v_ml, user_number_precision, true), disabled: true %>
         </td>
       <% else %>
-        <td><%= number_field_tag "values[most_likely]", v_ml, step: "any", style: "width: 100px;" %></td>
+        <td><%= number_field_tag "values[most_likely]", v_ml.to_f.round(user_number_precision), step: "any", style: "width: 100px;" %></td>
       <% end %>
 
 

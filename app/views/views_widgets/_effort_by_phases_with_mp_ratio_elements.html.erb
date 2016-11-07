@@ -47,17 +47,21 @@
 
             <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
             <%=
-                # if estimation_value.pe_attribute.alias == "cost"
-                if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-                  if level_value.nil?
-                    "-"
-                  else
-                    "#{convert_with_precision(level_value, user_number_precision, true)} #{@wbs_unit}"
-                  end
+                if mp_ratio_element.selected
+                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
+                      if level_value.nil?
+                        "-"
+                      else
+                        "#{convert_with_precision(level_value, user_number_precision, true)} #{@wbs_unit}"
+                      end
+                      else
+                      "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                    end
                 else
-                  "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                    "-"
                 end
             %>
+
           </span>
             </td>
         <% end %>

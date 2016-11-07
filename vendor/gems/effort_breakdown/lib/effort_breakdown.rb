@@ -204,25 +204,27 @@ module EffortBreakdown
 
       # get retained values in calculations
       changed_wbs_activity_element_ids = []
-      ##unless @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
-        @changed_mp_ratio_element_ids.each do |changed_value_id|
-          mp_ratio_element = ModuleProjectRatioElement.find(changed_value_id)
-          wbs_activity_element = mp_ratio_element.wbs_activity_element
-          wbs_activity_element_id = wbs_activity_element.id
+      @changed_mp_ratio_element_ids.each do |changed_value_id|
+        mp_ratio_element = ModuleProjectRatioElement.find(changed_value_id)
+        wbs_activity_element = mp_ratio_element.wbs_activity_element
+        wbs_activity_element_id = wbs_activity_element.id
 
-          element_effort = @changed_retained_effort_values["#{changed_value_id}"].to_f
-          output_effort[wbs_activity_element_id] = element_effort.to_f
+        element_effort = @changed_retained_effort_values["#{changed_value_id}"].to_f
+        output_effort[wbs_activity_element_id] = element_effort.to_f
 
-          changed_wbs_activity_element_ids << wbs_activity_element_id
+        changed_wbs_activity_element_ids << wbs_activity_element_id
 
-          # Add element short_name in calculator
-          element_phase_short_name = wbs_activity_element.phase_short_name
-          unless element_phase_short_name.nil?
-            calculator.store(:"#{element_phase_short_name}" => element_effort)
-          end
+        # Add element short_name in calculator
+        element_phase_short_name = wbs_activity_element.phase_short_name
+        unless element_phase_short_name.nil?
+          calculator.store(:"#{element_phase_short_name}" => element_effort)
         end
-      ##end
+      end
 
+
+      # need to compute all formula after reordering the dependencies
+      all_formula_to_compute = Hash.new
+      parents_to_compute_after = Array.new
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -255,25 +257,51 @@ module EffortBreakdown
                       normalized_formula_expression = nil
                     end
 
-                    element_effort = calculator.evaluate(normalized_formula_expression)
-                    output_effort[element.id] = element_effort
+                    ####element_effort = calculator.evaluate(normalized_formula_expression)
+                    ####output_effort[element.id] = element_effort
+
+                    all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name
                     unless element_phase_short_name.nil?
-                      calculator.store(:"#{element_phase_short_name}" => element_effort)
+                      ####calculator.store(:"#{element_phase_short_name}" => element_effort)
+                      all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
                     end
                   end
 
                 end
               else
-                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+                ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+
+                #### add element ID in the parents elements to compute
+                ###parents_to_compute_after << element.id
               end
 
             end
           end
         end
       end
+
+      ### Then compute all formula expression
+      output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
+
+      wbs_activity_root.children.each do |node|
+        # Sort node subtree by ancestry_depth
+        sorted_node_elements = node.subtree.order('ancestry_depth desc')
+        sorted_node_elements.each do |element|
+          if output_effort[element.id].nil?
+
+            # Element effort is really computed only on leaf element
+            if element.is_childless? || element.has_new_complement_child?
+              output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+            else
+              output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+            end
+          end
+        end
+      end
+
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
       output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort)
@@ -414,6 +442,9 @@ module EffortBreakdown
           end
         end
 
+        # need to compute all formula after reordering the dependencies
+        all_formula_to_compute = Hash.new
+        parents_to_compute_after = Array.new
 
         wbs_activity_root.children.each do |node|
           # Sort node subtree by ancestry_depth
@@ -439,26 +470,52 @@ module EffortBreakdown
                     rescue
                       normalized_formula_expression = nil
                     end
-                    element_effort = calculator.evaluate(normalized_formula_expression)
-                    output_effort[element.id] = element_effort
+
+                    ####element_effort = calculator.evaluate(normalized_formula_expression)
+                    ####output_effort[element.id] = element_effort
+
+                    all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name
                     unless element_phase_short_name.nil?
-                      calculator.store(:"#{element_phase_short_name}" => element_effort)
+                      ####calculator.store(:"#{element_phase_short_name}" => element_effort)
+                      all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
                     end
                   end
-
                 end
+              else
+                ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+
+                #### add element ID in the parents elements to compute 
+                parents_to_compute_after << element.id
+              end
+            end
+          end
+        end
+
+
+        ### Then compute all formula expression
+        output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
+
+        wbs_activity_root.children.each do |node|
+          # Sort node subtree by ancestry_depth
+          sorted_node_elements = node.subtree.order('ancestry_depth desc')
+          sorted_node_elements.each do |element|
+            if output_effort[element.id].nil?
+
+              # Element effort is really computed only on leaf element
+              if element.is_childless? || element.has_new_complement_child?
+                output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end
             end
           end
         end
+
         # After treating all leaf and node elements, the root element is going to compute by aggregation
         output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort)
-
 
 
         # Global output efforts

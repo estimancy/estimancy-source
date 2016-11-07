@@ -416,6 +416,22 @@ class WbsActivitiesController < ApplicationController
     input_effort_for_global_ratio = 0.0
     effort_total_for_global_ratio = 0.0
 
+    just_changed_values = params['is_just_changed']
+    # Il s'agit du bouton pour réinitialiser le calcul
+    if params['initialize_calculation']
+      just_changed_values = []
+    end
+
+    retained_effort_level = Hash.new
+    ["low", "most_likely", "high"].each do |level|
+      each_level_retained_effort = params["retained_effort_#{level}"]
+      each_level_retained_effort.each do |key, value|
+        each_level_retained_effort[key] = value.to_f * effort_unit_coefficient
+      end
+
+      retained_effort_level["#{level}"] = each_level_retained_effort
+    end
+
 
     current_pbs_estimations.each do |est_val|
 
@@ -455,28 +471,13 @@ class WbsActivitiesController < ApplicationController
 
           #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
-          just_changed_values = params['is_just_changed']
-          # Il s'agit du bouton pour réinitialiser le calcul
-          if params['initialize_calculation']
-            just_changed_values = []
-          end
-
-          level_retained_effort_most_likely = params["retained_effort_most_likely"]
-          level_retained_effort_most_likely.each do |key, value|
-            level_retained_effort_most_likely[key] = value.to_f * effort_unit_coefficient
-          end
-
           ["low", "most_likely", "high"].each do |level|
             if @wbs_activity.three_points_estimation?
               ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-              retained_effort_level = params["retained_effort_#{level}"]
-              retained_effort_level.each do |key, value|
-                retained_effort_level[key] = value.to_f * effort_unit_coefficient
-              end
-              eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level)
+              eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["#{level}"])
             else
               ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
-              eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, level_retained_effort_most_likely)
+              eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"])
             end
 
             @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => eb.send("get_#{est_val.pe_attribute.alias}") }
@@ -580,7 +581,7 @@ class WbsActivitiesController < ApplicationController
 
                   #if est_val.pe_attribute.alias == "cost"
                   if est_val.pe_attribute.alias.in?("theoretical_cost", "cost")
-                    eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, level_retained_effort_most_likely)
+                    eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"])
                     efforts_man_month = eb.get_effort  ### efforts_man_month = eb.get_theoretical_effort
 
                     res = Hash.new

@@ -21,7 +21,7 @@
           <% elt_position =  wbs_activity_ratio_element.wbs_activity_element.position %>
           <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
         </td>
-        <td><%= wbs_activity_ratio_element.wbs_activity_element.phase_short_name %></td>
+        <td><%= wbs_activity_ratio_element.wbs_activity_element.is_root? ? "-" : wbs_activity_ratio_element.wbs_activity_element.phase_short_name %></td>
 
         <td style="padding-left:<%=gap+(wbs_activity_ratio_element.wbs_activity_element.depth*2)%>em"><%= wbs_activity_ratio_element.wbs_activity_element.name %></td>
         <td><%= wbs_activity_ratio_element.wbs_activity_element.description %></td>
