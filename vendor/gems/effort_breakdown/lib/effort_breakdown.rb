@@ -350,7 +350,7 @@ module EffortBreakdown
           if output_effort[element.id].nil?
             mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable
-              if @changed_retained_effort_values[element.id].nil?
+              if @changed_retained_effort_values[element.id].nil? || @changed_retained_effort_values[element.id].to_f == 0
                 output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
