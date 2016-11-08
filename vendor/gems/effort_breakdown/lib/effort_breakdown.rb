@@ -53,7 +53,7 @@ module EffortBreakdown
       WbsActivityElement.rebuild_depth_cache!
 
       efforts_man_month = nil
-      if @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
+      if @changed_mp_ratio_element_ids.nil?
         efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula  ###get_effort_with_activities_elements
       else
         #some retained effort values have manuelly changed

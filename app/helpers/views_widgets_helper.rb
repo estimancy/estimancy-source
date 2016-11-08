@@ -717,7 +717,8 @@ module ViewsWidgetsHelper
                                                     ratio_reference: ratio_reference,
                                                     added_module_project_ratio_elements: added_module_project_ratio_elements,
                                                     pe_attribute_alias: pe_attribute_alias,
-                                                    wbs_unit: wbs_unit
+                                                    wbs_unit: wbs_unit,
+                                                    module_project_ratio_elements: module_project_ratio_elements
                                         } )
 
       when "stacked_bar_chart_effort_per_phases_profiles"
