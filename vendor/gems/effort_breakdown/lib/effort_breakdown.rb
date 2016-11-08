@@ -30,7 +30,7 @@ module EffortBreakdown
     include PemoduleEstimationMethods
 
     attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids,
-                  :changed_retained_effort_values, :module_project_ratio_elements #module input/output parameters
+                  :changed_retained_effort_values, :module_project_ratio_elements, :initialize_calculation #module input/output parameters
 
     #def initialize(c, mp, e, r)
     def initialize(*args)
@@ -43,6 +43,7 @@ module EffortBreakdown
       @changed_mp_ratio_element_ids = args[4]      # mp_ratio_element_ids dont l'effort retenu a été modifié manuellement
       @changed_retained_effort_values = args[5]    # valeurs des efforts retenus (modifiés ou non)
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@ratio, @pbs_project_element, false)
+      @initialize_calculation = args[6]
     end
 
     # Getters for module outputs
@@ -53,7 +54,7 @@ module EffortBreakdown
       WbsActivityElement.rebuild_depth_cache!
 
       efforts_man_month = nil
-      if @changed_mp_ratio_element_ids.nil?
+      if @initialize_calculation == true
         efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula  ###get_effort_with_activities_elements
       else
         #some retained effort values have manuelly changed
@@ -252,14 +253,15 @@ module EffortBreakdown
       end
 
 
-      # get retained values in calculations
+      # get retained values in calculations with wbs_activity_element_id
       changed_wbs_activity_element_ids = []
       @changed_mp_ratio_element_ids.each do |changed_value_id|
         mp_ratio_element = ModuleProjectRatioElement.find(changed_value_id)
         wbs_activity_element = mp_ratio_element.wbs_activity_element
         wbs_activity_element_id = wbs_activity_element.id
 
-        element_effort = @changed_retained_effort_values["#{changed_value_id}"].to_f
+        ####element_effort = @changed_retained_effort_values["#{changed_value_id}"].to_f
+        element_effort = @changed_retained_effort_values[wbs_activity_element_id].to_f
         output_effort[wbs_activity_element_id] = element_effort.to_f
 
         changed_wbs_activity_element_ids << wbs_activity_element_id
@@ -277,7 +279,7 @@ module EffortBreakdown
       output_effort_with_dependencies = HashWithIndifferentAccess.new
       parents_to_compute_after = Array.new
 
-      if !@changed_mp_ratio_element_ids.nil? && !@changed_mp_ratio_element_ids.empty?
+      ###if !@changed_mp_ratio_element_ids.nil? && !@changed_mp_ratio_element_ids.empty?
         wbs_activity_root.children.each do |node|
           # Sort node subtree by ancestry_depth
           sorted_node_elements = node.subtree.order('ancestry_depth desc')
@@ -312,7 +314,7 @@ module EffortBreakdown
                       ####element_effort = calculator.evaluate(normalized_formula_expression)
                       ####output_effort[element.id] = element_effort
 
-                      all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
+                      ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                       # Add element short_name in calculator
                       element_phase_short_name = element.phase_short_name
@@ -337,10 +339,9 @@ module EffortBreakdown
 
         ### Then compute all formula expression
         output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
-      else
-        output_effort_with_dependencies = @changed_retained_effort_values
-      end
-
+      ###else
+      ###  output_effort_with_dependencies = @changed_retained_effort_values
+      ###end
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -349,7 +350,11 @@ module EffortBreakdown
           if output_effort[element.id].nil?
             mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable
-              output_effort[element.id] = @changed_retained_effort_values["#{element.id}"].to_f
+              if @changed_retained_effort_values[element.id].nil?
+                output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+              else
+                output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
+              end
             else
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
@@ -534,7 +539,7 @@ module EffortBreakdown
                     ####element_effort = calculator.evaluate(normalized_formula_expression)
                     ####output_effort[element.id] = element_effort
 
-                    all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
+                    ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name
