@@ -42,6 +42,8 @@
           <% total_per_phase_to_sum = []   #value of the sum of all total per phase %>
 
           <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
+              <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
+
               <% effort_per_phase = nil %>
               <% unless wbs_activity_elt.is_root? %>
                   <% wbs_activity_elt_id = wbs_activity_elt.id %>
@@ -63,48 +65,53 @@
                         <% if project_organization_profiles.length > 0 %>
                             <% array_profile_sum = Array.new %>
                             <% project_organization_profiles.each do |profile| %>
-                                <!-- Get the percentage of profile -->
-                                <% if !wbs_activity_ratio_elt.nil?
-                                     # get the wbs_activity_ratio_profile
-                                     corresponding_ratio_profile = referenced_wbs_activity_ratio_profiles.where('wbs_activity_ratio_element_id = ? AND organization_profile_id = ?', wbs_activity_ratio_elt.id, profile.id).first
-                                     # Get current profile ratio value for the referenced ratio
-                                     profile_ratio_percentage = corresponding_ratio_profile.nil? ? nil : "#{corresponding_ratio_profile.ratio_value}%"
-                                   end %>
+                                <% if (mp_ratio_element && mp_ratio_element.selected) || mp_ratio_element.nil? %>
+                                    <!-- Get the percentage of profile -->
+                                    <% if !wbs_activity_ratio_elt.nil?
+                                         # get the wbs_activity_ratio_profile
+                                         corresponding_ratio_profile = referenced_wbs_activity_ratio_profiles.where('wbs_activity_ratio_element_id = ? AND organization_profile_id = ?', wbs_activity_ratio_elt.id, profile.id).first
+                                         # Get current profile ratio value for the referenced ratio
+                                         profile_ratio_percentage = corresponding_ratio_profile.nil? ? nil : "#{corresponding_ratio_profile.ratio_value}%"
+                                       end %>
 
-                                <% wbs_profiles_value = nil %>
-                                <% unless wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil? %>
-                                    <% if !wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil? %>
-                                        <% wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value] %>
+                                    <% wbs_profiles_value = nil %>
+                                    <% unless wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil? %>
+                                        <% if !wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil? %>
+                                            <% wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value] %>
 
-                                        <% if wbs_profiles_value.class == Hash %>
-                                            <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
+                                            <% if wbs_profiles_value.class == Hash %>
+                                                <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
+                                            <% end %>
+
+                                            <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
+                                            <% array_profile_sum << wbs_profiles_value.to_f %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
                                         <% end %>
-
-                                        <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
-                                        <% array_profile_sum << wbs_profiles_value.to_f %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
                                     <% end %>
-                                <% end %>
-                                <% if wbs_activity_elt.is_root? %>
-                                    <td style="text-align: right">
-                                      -
-                                    </td>
-                                <% elsif  wbs_profiles_value.nil? %>
-                                    <td style="text-align: right">
-                                      -
-                                    </td>
+                                    <% if wbs_activity_elt.is_root? %>
+                                        <td style="text-align: right">
+                                          -
+                                        </td>
+                                    <% elsif  wbs_profiles_value.nil? %>
+                                        <td style="text-align: right">
+                                          -
+                                        </td>
+                                    <% else %>
+                                        <td style="text-align: right">
+                                          <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
+                                          <% if wbs_profiles_value.class == Hash %>
+                                              <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
+                                              <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
+                                          <% end %>
+                                          <% array_root[profile.id] << wbs_profiles_value.to_f %>
+                                          <% effort_per_phase +=  wbs_profiles_value %>
+                                          <%= "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
+                                        </td>
+                                    <% end %>
                                 <% else %>
-                                    <td style="text-align: right">
-                                      <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
-                                      <% if wbs_profiles_value.class == Hash %>
-                                          <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
-                                          <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
-                                      <% end %>
-                                      <% array_root[profile.id] << wbs_profiles_value.to_f %>
-                                      <% effort_per_phase +=  wbs_profiles_value %>
-                                      <%= "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
-                                    </td>
+                                    <td style="text-align: right"> - </td>
                                 <% end %>
                             <% end %>
+
                         <% else %>
                             <td></td>
                         <% end %>
