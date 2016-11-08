@@ -1180,7 +1180,7 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
     // TEST
 
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
-    $('.selected_phase').change(function(){
+    $('.selected_phase_SAVE').change(function(){
 
         var $obj = $(this);
         var val = $obj.val();

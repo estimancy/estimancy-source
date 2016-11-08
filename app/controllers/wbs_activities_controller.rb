@@ -585,6 +585,7 @@ class WbsActivitiesController < ApplicationController
                     efforts_man_month = eb.get_effort  ### efforts_man_month = eb.get_theoretical_effort
 
                     res = Hash.new
+                    ####res = eb.get_cost
                     efforts_man_month.each do |key, value|
                       tmp = Hash.new
                       wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first

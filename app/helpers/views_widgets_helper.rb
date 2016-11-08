@@ -658,16 +658,16 @@ module ViewsWidgetsHelper
       pe_attribute_alias = "retained_#{pe_attribute_alias}"
     end
 
+    if ratio_reference.nil?
+      module_project_ratio_elements = []
+    else
+      module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
+    end
 
     case view_widget.widget_type
 
       when "table_effort_per_phase", "table_cost_per_phase"
 
-        if ratio_reference.nil?
-          module_project_ratio_elements = []
-        else
-          module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
-        end
 
         result = raw(render :partial => 'views_widgets/effort_by_phases_with_mp_ratio_elements',
                             :locals => { project_wbs_activity_elements: wbs_activity_elements,
@@ -698,7 +698,8 @@ module ViewsWidgetsHelper
                                                       ratio_reference: ratio_reference,
                                                       added_module_project_ratio_elements: added_module_project_ratio_elements,
                                                       pe_attribute_alias: pe_attribute_alias,
-                                                      wbs_unit: wbs_unit
+                                                      wbs_unit: wbs_unit,
+                                                      module_project_ratio_elements: module_project_ratio_elements
                                        } )
 
       when "cost_per_phases_profiles_table"
