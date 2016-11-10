@@ -226,6 +226,7 @@ public
 
     @user.auth_type = params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
+    @user.subscription_end_date = params[:user][:subscription_end_date]
 
     #validation conditions
     if params[:user][:password].blank?
