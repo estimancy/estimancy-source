@@ -808,6 +808,14 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
+    # if Initialize calculation, update the flagged attribute to false
+    if initialize_calculation == true
+      ## Update selected attribute
+      @module_project_ratio_elements.each do |mp_ratio_element|
+        mp_ratio_element.flagged = false
+        mp_ratio_element.save
+      end
+    end
 
     wai = WbsActivityInput.where(module_project_id: current_module_project.id,
                                  wbs_activity_id: @wbs_activity.id).first
