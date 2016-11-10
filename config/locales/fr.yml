@@ -1977,3 +1977,5 @@ fr:
   wbs_phase_formula: "Formule de calcul"
   initialize_calculation: "Initialiser le calcul"
   comments: "Commentaires"
+
+  new_status: "Nouveau statut de la nouvelle version"

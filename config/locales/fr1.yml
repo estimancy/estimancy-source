@@ -1618,3 +1618,5 @@ fr1:
   is_optional: "Est facultatif"
   initialize_calculation: "Initialiser le calcul"
   comments: "Commentaires"
+
+  new_status: "Nouveau statut de la nouvelle version"
