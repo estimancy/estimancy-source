@@ -328,11 +328,11 @@ class ViewsWidgetsController < ApplicationController
     worksheet = workbook[0]
 
     worksheet.add_cell(0, 0, I18n.t(:Project_name))
-    worksheet.add_cell(0, 1, I18n.t(:version))
+    worksheet.add_cell(0, 1, I18n.t(:version_number))
     worksheet.add_cell(0, 2, I18n.t(:start_date))
     worksheet.add_cell(0, 3, I18n.t(:Product_Name))
     worksheet.change_column_width(0, @project.title.to_s.length < I18n.t(:Project_name).length ? I18n.t(:Project_name).length : @project.title.to_s.length)
-    worksheet.change_column_width(1, @project.version.to_s.length < I18n.t(:version).length ? I18n.t(:version).length : @project.version.to_s.length)
+    worksheet.change_column_width(1, @project.version_number.to_s.length < I18n.t(:version_number).length ? I18n.t(:version_number).length : @project.version_number.to_s.length)
     worksheet.change_column_width(2, I18n.t(:start_date).length)
     worksheet.change_column_width(3, current_component.to_s.length < I18n.t(:Product_Name).length ? I18n.t(:Product_Name).length : current_component.to_s.length)
     worksheet.add_cell(0, 4, I18n.t(:phases))
@@ -343,7 +343,7 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 6, I18n.t(:unit_value))
         widget.module_project.wbs_activity.wbs_activity_elements.each  do |element|
           worksheet.add_cell(ind_y, 0, @project.title)
-          worksheet.add_cell(ind_y, 1, @project.version)
+          worksheet.add_cell(ind_y, 1, @project.version_number)
           #worksheet.add_cell(ind_y, 2, I18n.l(@project.start_date))
           tab_date = @project.start_date.to_s.split("-")
           worksheet.add_cell(ind_y, 2, '', "DATE(#{tab_date[0]},#{tab_date[1]},#{tab_date[2]})").set_number_format 'dd/mm/yy'
@@ -384,7 +384,7 @@ class ViewsWidgetsController < ApplicationController
             element.wbs_activity_ratio_elements.where(wbs_activity_ratio_id: ratio.id).each do |ware|
               ware.organization_profiles.each do |profil|
                 worksheet.add_cell(ind_y, 0, @project.title)
-                worksheet.add_cell(ind_y, 1, @project.version)
+                worksheet.add_cell(ind_y, 1, @project.version_number)
                 #worksheet.add_cell(ind_y, 2, I18n.l(@project.start_date))
                 tab_date = @project.start_date.to_s.split("-")
                 worksheet.add_cell(ind_y, 2, '', "DATE(#{tab_date[0]},#{tab_date[1]},#{tab_date[2]})").set_number_format 'dd/mm/yy'
@@ -409,7 +409,7 @@ class ViewsWidgetsController < ApplicationController
       end
     end
 
-    send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version}(#{("A".."B").to_a[widget.module_project.position_x - 1]},#{widget.module_project.position_y})-Effort-Phases-Profils-#{widget.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version_number}(#{("A".."B").to_a[widget.module_project.position_x - 1]},#{widget.module_project.position_y})-Effort-Phases-Profils-#{widget.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
 
   end
 

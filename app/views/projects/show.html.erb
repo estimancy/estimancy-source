@@ -21,7 +21,7 @@
       <%= hidden_field_tag :is_project_show_view, "true" %>
 
       <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :version, :input_html => {:class => 'input-large'}, :disabled => true %>
+      <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
       <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !can?(:alter_private_estimation_setup, @project) %>
 
       <table>

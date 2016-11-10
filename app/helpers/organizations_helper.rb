@@ -72,7 +72,7 @@ module OrganizationsHelper
         content_tag('th class="text_left"', I18n.t(column.caption))
       when :description
         content_tag('th class="text_left"', I18n.t(column.caption))
-      when :version
+      when :version_number
         content_tag('th class="center"', I18n.t(column.caption))
       when :status_name
         content_tag('th id="toto" style="width: 50px"', I18n.t(column.caption))
@@ -124,7 +124,7 @@ module OrganizationsHelper
         else
           content_tag('td', value)
         end
-      when :version
+      when :version_number
         content_tag("td class='center'", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)

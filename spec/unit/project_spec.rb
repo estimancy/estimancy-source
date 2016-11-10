@@ -84,7 +84,7 @@ describe Project do
   end
 
   it 'should return valid string' do
-    @project.to_s.should eql("#{@project.title} - #{@project.version}")
+    @project.to_s.should eql("#{@project.title} - #{@project.version_number}")
   end
 
 

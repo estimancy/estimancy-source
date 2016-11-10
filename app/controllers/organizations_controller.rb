@@ -371,7 +371,7 @@ class OrganizationsController < ApplicationController
       if can_show_estimation?(project) || can_see_estimation?(project)
           array_project << [
             project.title,
-            project.version,
+            project.version_number,
             (project.application.nil? ? project.application_name : project.application.name),
             "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text}",
             I18n.l(project.start_date),

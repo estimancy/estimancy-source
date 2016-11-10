@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161017130134) do
+ActiveRecord::Schema.define(:version => 20161110111808) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -848,6 +848,12 @@ ActiveRecord::Schema.define(:version => 20161017130134) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
@@ -902,6 +908,7 @@ ActiveRecord::Schema.define(:version => 20161017130134) do
     t.boolean  "is_optional"
     t.string   "ancestry"
     t.string   "phase_short_name"
+    t.boolean  "is_just_changed"
   end
 
   add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
@@ -1372,7 +1379,7 @@ ActiveRecord::Schema.define(:version => 20161017130134) do
 
   create_table "projects", :force => true do |t|
     t.string   "title"
-    t.string   "version",                 :limit => 64, :default => "1.0"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"
@@ -1510,6 +1517,8 @@ ActiveRecord::Schema.define(:version => 20161017130134) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
+    t.string   "label_x"
+    t.string   "label_y"
   end
 
   create_table "staffing_staffing_custom_data", :force => true do |t|

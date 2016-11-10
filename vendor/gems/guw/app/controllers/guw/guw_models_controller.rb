@@ -846,7 +846,7 @@ class Guw::GuwModelsController < ApplicationController
                                                   guw_model_id: @guw_model.id)
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
-    tab_size = [I18n.t(:estimation).length, I18n.t(:version).length,
+    tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
                 I18n.t(:group).length, I18n.t(:selected).length,
                 I18n.t(:name).length, I18n.t(:description).length,
                  20,
@@ -859,7 +859,7 @@ class Guw::GuwModelsController < ApplicationController
                 I18n.t(:likely).length, I18n.t(:high).length]
 
     [I18n.t(:estimation),
-     I18n.t(:version),
+     I18n.t(:version_number),
      I18n.t(:group),
      I18n.t(:selected),
      I18n.t(:name),
@@ -896,7 +896,7 @@ class Guw::GuwModelsController < ApplicationController
       tab_size[0]= tab_size[0] < current_module_project.project.title.length ? current_module_project.project.title.length : tab_size[0]
       worksheet.change_column_width(0, tab_size[0])
 
-      worksheet.add_cell(ind, 1, current_module_project.project.version)
+      worksheet.add_cell(ind, 1, current_module_project.project.version_number)
 
       worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
       tab_size[2] = tab_size[2] < guow.guw_unit_of_work_group.name.length ? guow.guw_unit_of_work_group.name.length : tab_size[2]
@@ -948,7 +948,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, 16 + i, guw_attribute.name)
     end
 
-    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def my_verrif_tab_error(tab_error, indexing_field_error)
