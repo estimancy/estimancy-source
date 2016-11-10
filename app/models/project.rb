@@ -20,7 +20,7 @@
 #############################################################################
 
 class Project < ActiveRecord::Base
-  attr_accessible :title, :description, :version, :alias, :state, :estimation_status_id, :status_comment,
+  attr_accessible :title, :description, :version_number, :version_label, :alias, :state, :estimation_status_id, :status_comment,
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
                   :private
@@ -59,15 +59,15 @@ class Project < ActiveRecord::Base
   has_many :pbs_project_elements, :through => :pe_wbs_projects
   has_many :wbs_project_elements, :through => :pe_wbs_projects
 
-  default_scope order('title ASC, version ASC')
+  default_scope order('title ASC, version_number ASC')
 
   serialize :included_wbs_activities, Array
 
   validates_presence_of :organization_id, :estimation_status_id, :creator_id
   # validates :title, :presence => true, :uniqueness => true
-  validates :title, :presence => true, :uniqueness => {  :scope => [:version,:organization_id], case_sensitive: false, :message => I18n.t(:error_validation_project) }
+  validates :title, :presence => true, :uniqueness => {  :scope => [:version_number,:organization_id], case_sensitive: false, :message => I18n.t(:error_validation_project) }
   ###validates :alias, :presence => true, :uniqueness => { :scope => :organization_id, case_sensitive: false, :message => I18n.t(:error_validation_project) }
-  # validates :version, :presence => true, :length => { :maximum => 64 }, :uniqueness => { scope: [:title, :organization_id],
+  # validates :version_number, :presence => true, :length => { :maximum => 64 }, :uniqueness => { scope: [:title, :organization_id],
   #                                                                                        case_sensitive: false,
   #                                                                                        message: I18n.t(:error_validation_project) }
 
@@ -86,8 +86,8 @@ class Project < ActiveRecord::Base
       new_project.copy_id = original_project.id
       new_project.title = "#{original_project.title}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.title}"
       new_project.alias = "#{original_project.alias}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.alias}"
-      #new_project.version = '1.0'
-      new_project.description = " #{original_project.description} \n \n This project is a duplication of project \"#{original_project.title} (#{original_project.alias}) - #{original_project.version}\" "
+      #new_project.version_number = '1.0'
+      new_project.description = " #{original_project.description} \n \n This project is a duplication of project \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
       new_project.copy_number = 0
       original_project.copy_number = new_copy_number
     })
@@ -102,7 +102,7 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:title, :sortable => "#{Project.table_name}.title", :caption => "label_project_name"),
       QueryColumn.new(:application, :sortable => "#{Application.table_name}.name", :caption => "application"),
       QueryColumn.new(:original_model, :sortable => "#{Project.table_name}.name", :caption => "original_model"),
-      QueryColumn.new(:version, :sortable => "#{Project.table_name}.version", :caption => "label_version"),
+      QueryColumn.new(:version_number, :sortable => "#{Project.table_name}.version_number", :caption => "label_version"),
       QueryColumn.new(:status_name, :sortable => "#{EstimationStatus.table_name}.name", :caption => "state"),
       QueryColumn.new(:project_area, :sortable => "#{ProjectArea.table_name}.name", :caption => "project_area"),
       QueryColumn.new(:project_category, :sortable => "#{ProjectCategory.table_name}.name", :caption => "category"),
@@ -121,11 +121,12 @@ class Project < ActiveRecord::Base
   #self.selected_inline_columns = self.available_inline_columns.select{ |column| column.name.to_s.in?(@current_organization.project_selected_columns)}
 
   class_attribute :default_selected_columns
-  self.default_selected_columns = ["application", "version", "start_date", "status_name", "description"]
+  self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
+
 
   def self.selectable_inline_columns
     [
-      [I18n.t(:label_product_name), "application"], [I18n.t(:label_project_name), "title"], [I18n.t(:label_version),"version"],
+      [I18n.t(:label_product_name), "application"], [I18n.t(:label_project_name), "title"], [I18n.t(:label_version),"version_number"],
       [I18n.t(:state), "estimation_status_id"], [ I18n.t(:project_area), "project_area_id"], [I18n.t(:category), "project_category_id"],
       [I18n.t(:label_acquisition), "acquisition_category_id"], [I18n.t(:label_platform), "platform_category_id"], [I18n.t(:description), "description"],
       [I18n.t(:start_date), "start_date"], [I18n.t(:author), "creator_id"], [I18n.t(:created_at), "created_at"], [I18n.t(:updated_at), "updated_at"]
@@ -224,7 +225,7 @@ class Project < ActiveRecord::Base
 
   #Override
   def to_s
-    "#{self.nil? ? '' : self.title} - #{self.nil? ? '' : self.version}"
+    "#{self.nil? ? '' : self.title} - #{self.nil? ? '' : self.version_number}"
   end
 
   # Change project status according to the project's organization estimation statuses
@@ -274,9 +275,9 @@ class Project < ActiveRecord::Base
 
   def self.json_tree(nodes)
     nodes.map do |node, sub_nodes|
-      #{:id => node.id.to_s, :name => node.title, :title => node.title, :version => node.version, :data => {}, :children => json_tree(sub_nodes).compact}
-      #{id: node.id.to_s, name: node.title, title: node.title, version: node.version, data: {}, children: json_tree(sub_nodes).compact}
-      {:id => node.id.to_s, :name => node.version, :data => {:title => node.title, :version => node.version, :state => node.status_name.to_s}, :children => json_tree(sub_nodes).compact}
+      #{:id => node.id.to_s, :name => node.title, :title => node.title, :version_number => node.version_number, :data => {}, :children => json_tree(sub_nodes).compact}
+      #{id: node.id.to_s, name: node.title, title: node.title, version_number: node.version_number, data: {}, children: json_tree(sub_nodes).compact}
+      {:id => node.id.to_s, :name => node.version_number, :data => {:title => node.title, :version_number => node.version_number, :state => node.status_name.to_s}, :children => json_tree(sub_nodes).compact}
     end
   end
 
@@ -297,7 +298,7 @@ class Project < ActiveRecord::Base
           #Update some parameters with the form input data
           new_prj.title = parameters['project']['title']
           new_prj.alias = parameters['project']['alias']
-          new_prj.version = parameters['project']['version']
+          new_prj.version_number = parameters['project']['version_number']
           new_prj.description = parameters['project']['description']
           start_date = (parameters['project']['start_date'].nil? || parameters['project']['start_date'].blank?) ? Time.now.to_date : parameters['project']['start_date']
           new_prj.start_date = start_date

@@ -1,7 +1,7 @@
 json.array!(@projects) do |project|
   json.id project.id
   json.project project.title
-  json.version project.version
+  json.version_number project.version_number
   json.description project.description
   json.state project.state
   json.start_date project.start_date

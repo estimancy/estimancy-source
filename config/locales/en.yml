@@ -1609,7 +1609,7 @@ en:
   unit_value: "Unit"
   estimation: "Estimation"
   group: "Group"
-  version: "Version"
+  version_number: "Version"
   UO_type_complexity: "UW complexity threshold"
   advice: "Caution: Do not modify the cells with bold font, that may cause problem for the file importation from the application.\nFor more utilisation advice: http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work"
   Edit_Units_Of_Work: "Edit Units Of Work"

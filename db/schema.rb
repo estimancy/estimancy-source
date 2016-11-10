@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161104101424) do
+ActiveRecord::Schema.define(:version => 20161110082432) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -848,6 +848,12 @@ ActiveRecord::Schema.define(:version => 20161104101424) do
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
 
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "master_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
@@ -1373,7 +1379,7 @@ ActiveRecord::Schema.define(:version => 20161104101424) do
 
   create_table "projects", :force => true do |t|
     t.string   "title"
-    t.string   "version",                 :limit => 64, :default => "1.0"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"

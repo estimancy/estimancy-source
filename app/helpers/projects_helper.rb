@@ -1142,7 +1142,7 @@ module ProjectsHelper
 
   #Helper method that build project history graph
   def build_project_history_graph
-    #Project.arrange_as_array.each{|n| "#{'-' * n.depth} #{n.version}" }
+    #Project.arrange_as_array.each{|n| "#{'-' * n.depth} #{n.version_number}" }
     Project.arrange_as_json.each do |n|
       project = Project.find(n[:id])
       "#{'-' * project.depth} #{n[:title]}"
@@ -1150,7 +1150,7 @@ module ProjectsHelper
   end
 
   def build_project_history_graph_as_array
-    #Project.arrange_as_array.each{|n| "#{'-' * n.depth} #{n.version}" }
+    #Project.arrange_as_array.each{|n| "#{'-' * n.depth} #{n.version_number}" }
     Project.arrange_as_array.each do |n|
       "#{'-' * n.depth} #{n.title}"
     end
@@ -1162,7 +1162,7 @@ module ProjectsHelper
 
   def helper_show_project_history
     @projects.each do |prj|
-      "#{'-' * prj[0].depth} #{prj[0].title}(#{prj[0].version})"
+      "#{'-' * prj[0].depth} #{prj[0].title}(#{prj[0].version_number})"
     end
   end
 
@@ -1180,9 +1180,9 @@ module ProjectsHelper
     module_graph = Digraph.new
 
     project_tree.each do |proj|
-      #proj.parent.each {|parent| module_graph.add_edge!(parent.version, proj.version) if proj != parent} unless proj.is_root?
-      module_graph.add_edge!(proj.parent.version, proj.version) unless proj.is_root?
-      proj.children.each {|child| module_graph.add_edge!(proj.version, child.version) if proj != child}
+      #proj.parent.each {|parent| module_graph.add_edge!(parent.version_number, proj.version_number) if proj != parent} unless proj.is_root?
+      module_graph.add_edge!(proj.parent.version_number, proj.version_number) unless proj.is_root?
+      proj.children.each {|child| module_graph.add_edge!(proj.version_number, child.version_number) if proj != child}
     end
 
     gv = module_graph.vertices.select {|v| v.to_s.match(/GRATR/)}
