@@ -57,11 +57,41 @@
                     </td>
                   </tr>
 
-                  <tr>
-                    <td colspan="2">
-                      <%= f.input :subscription_end_date, as: :string, disabled: true, :input_html => {:class => 'input-xxlarge'} %>
-                    </td>
-                  </tr>
+                  <% if current_user.super_admin? %>
+                    <tr>
+                      <td colspan="2">
+                        <%= f.input :subscription_end_date,
+                                    as: :string,
+                                    value: @user.subscription_end_date.nil? ? I18n.l(Time.parse(Time.now)) : I18n.l(@user.subscription_end_date),
+                                    input_html: {
+                                            class: 'input-xxlarge date-picker'
+                                    } %>
+                      </td>
+                    </tr>
+                  <% else %>
+                    <tr>
+                      <td colspan="2">
+                        <%= f.input :subscription_end_date,
+                                    as: :string,
+                                    disabled: true,
+                                    value: @user.subscription_end_date.nil? ? I18n.l(Time.parse(Time.now)) : I18n.l(@user.subscription_end_date),
+                                    input_html: {
+                                            class: 'input-xxlarge date-picker'
+                                    } %>
+                      </td>
+                    </tr>
+                  <% end %>
+
+                  <script>
+                    $(document).ready(function () {
+                      $(".date-picker").datepicker({
+                        language: '<%= set_user_language %>',
+                        autoclose: true,
+                        todayHighlight: true,
+                        todayBtn: true
+                      });
+                    });
+                  </script>
 
                   <% if current_user.super_admin? %>
                     <tr>
