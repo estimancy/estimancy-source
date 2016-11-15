@@ -325,33 +325,26 @@ class WbsActivitiesController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @pbs_project_element = current_component
-
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
-
     # Project wbs_activity
     @wbs_activity = current_module_project.wbs_activity
+    @module_project = current_module_project
+    @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
+
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient.to_f
 
-    @module_project = current_module_project
+    level_estimation_value = Hash.new
+    current_pbs_estimations = current_module_project.estimation_values
+    input_effort_for_global_ratio = 0.0
+    effort_total_for_global_ratio = 0.0
+    initialize_calculation = false
 
-    #======================  DEBUT create or save module_project Ratio Element Values =========================
-    # Save/Created the module_project Ratio Element Values
-    @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@ratio_reference, @pbs_project_element, false)
-
-    # To delete after verif
-    # @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
-    # #Create the ratio-elements if there is no ratio-elements for the current module_project
-    # if @module_project_ratio_elements.nil? || @module_project_ratio_elements.empty?
-    #   #create module_project ratio-elements for the current ratio-reference
-    #   @ratio_reference.wbs_activity_ratio_elements.each do |ratio_element|
-    #     mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id, wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_ratio_element_id: ratio_element.id,
-    #                                    multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true,
-    #                                    is_optional: ratio_element.is_optional, ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
-    #     mp_ratio_element.save
-    #   end
-    #   @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
-    # end
-    #=== FIN create or save module_project Ratio Element Values =====
+    just_changed_values = params['is_just_changed'] || []
+    # Il s'agit du bouton pour réinitialiser le calcul
+    if params['initialize_calculation']
+      just_changed_values = []
+      initialize_calculation = true
+    end
 
 
     #======= Voir si les attributs theoretical_effort et theoretical_cost existe sinon les créer ============
@@ -391,7 +384,51 @@ class WbsActivitiesController < ApplicationController
         end
       end
 
-      ## Update selected attribute
+
+      retained_effort_level = Hash.new
+      ["low", "most_likely", "high"].each do |level|
+        level_retained_effort_with_wbs_activity_elt_id = Hash.new
+        each_level_retained_effort = params["retained_effort_#{level}"]
+        each_level_retained_effort.each do |key, value|
+          mp_ratio_element = ModuleProjectRatioElement.find(key)
+          ###each_level_retained_effort[key] = value.to_f * effort_unit_coefficient
+          level_retained_effort_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = value.to_f * effort_unit_coefficient
+        end
+        retained_effort_level["#{level}"] = level_retained_effort_with_wbs_activity_elt_id
+      end
+
+      # Get the input effort values
+      probable_input_effort_values = params[:values]["most_likely"].to_f * effort_unit_coefficient
+      if @wbs_activity.three_points_estimation?
+        probable_input_effort_values = ((params[:values]["low"].to_f +  (4 * params[:values]["most_likely"].to_f) + params[:values]["high"])/6) * effort_unit_coefficient
+      end
+
+
+      #### Save the module_project_ratio_variables values from de probable value
+      calculator = Dentaku::Calculator.new
+      # Calculate the module_project_ratio_variable value_percentage
+      mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
+      mp_ratio_variables.each do |mp_var|
+        wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
+        percentage_of_input = wbs_ratio_variable.percentage_of_input
+        if wbs_ratio_variable.is_modifiable
+          percentage_of_input = params['mp_ratio_variable']["#{mp_var.id}"] ###mp_var.percentage_of_input
+        end
+        mp_var.percentage_of_input = percentage_of_input
+
+        # calculate value from percentage of input
+        if percentage_of_input.blank?
+          value_from_percentage = nil
+        else
+          value_from_percentage = calculator.evaluate("#{probable_input_effort_values.to_f} * #{percentage_of_input}")
+        end
+
+        mp_var.value_from_percentage = value_from_percentage
+        mp_var.save
+      end
+
+
+      ## Update module_project_ratio_element selected attribute
       @module_project_ratio_elements.each do |mp_ratio_element|
         selected_elements = params['selected']
         if !selected_elements.nil? && selected_elements.include?(mp_ratio_element.id.to_s)
@@ -410,32 +447,6 @@ class WbsActivitiesController < ApplicationController
 
     #===== Fin test =====
 
-
-    level_estimation_value = Hash.new
-    current_pbs_estimations = current_module_project.estimation_values
-    input_effort_for_global_ratio = 0.0
-    effort_total_for_global_ratio = 0.0
-    initialize_calculation = false
-
-    just_changed_values = params['is_just_changed'] || []
-    # Il s'agit du bouton pour réinitialiser le calcul
-    if params['initialize_calculation']
-      just_changed_values = []
-      initialize_calculation = true
-    end
-
-    retained_effort_level = Hash.new
-    ["low", "most_likely", "high"].each do |level|
-      level_retained_effort_with_wbs_activity_elt_id = Hash.new
-      each_level_retained_effort = params["retained_effort_#{level}"]
-      each_level_retained_effort.each do |key, value|
-        mp_ratio_element = ModuleProjectRatioElement.find(key)
-        ###each_level_retained_effort[key] = value.to_f * effort_unit_coefficient
-        level_retained_effort_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = value.to_f * effort_unit_coefficient
-      end
-
-      retained_effort_level["#{level}"] = level_retained_effort_with_wbs_activity_elt_id
-    end
 
 
     current_pbs_estimations.each do |est_val|
@@ -651,7 +662,6 @@ class WbsActivitiesController < ApplicationController
                       end
                     end
 
-
                     #Need to calculate the parents effort by profile : addition of its children values
                     # wbs_activity_elements.each do |wbs_activity_element_id|
                     #   begin
@@ -760,35 +770,6 @@ class WbsActivitiesController < ApplicationController
           if est_val.pe_attribute.alias == "effort"
             input_effort_for_global_ratio = pbs_input_probable_value
           end
-
-          #=================  Save the module_project_ratio_variables values from de probable value  =================================
-          # if est_val.pe_attribute.alias == "effort"
-          #   #initialize calculator
-          #   calculator = Dentaku::Calculator.new
-          #
-          #   root_probable_effort_value = pbs_input_probable_value
-          #   calculator.store(root_probable_effort_value: pbs_input_probable_value)
-          #
-          #   #mp_ratio_variables = @ratio_reference.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
-          #   mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
-          #   mp_ratio_variables.each do |mp_var|
-          #     wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
-          #     percentage_of_input = wbs_ratio_variable.percentage_of_input
-          #     if wbs_ratio_variable.is_modifiable
-          #      percentage_of_input = mp_var.percentage_of_input
-          #     end
-          #
-          #     # calculate value from percentage of input
-          #     if root_probable_effort_value.nil? || percentage_of_input.blank?
-          #       mp_var.update_attribute(:value_from_percentage, nil)
-          #     else
-          #       value_from_percentage = calculator.evaluate("#{root_probable_effort_value.to_f} * #{percentage_of_input}")
-          #       mp_var.update_attribute(:value_from_percentage, value_from_percentage)
-          #     end
-          #   end
-          # end
-          #=================  END Save module_project_ratio_variables  =================================
-
         end
       elsif est_val.pe_attribute.alias == "ratio"
         ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
