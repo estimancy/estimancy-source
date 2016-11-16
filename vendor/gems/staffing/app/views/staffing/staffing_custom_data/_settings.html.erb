@@ -12,12 +12,12 @@
 
    # unless previous_activity.nil?
 
-   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                              :module_project_id => current_module_project.id,
-                              :in_out => "input").first
-   effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+   # ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+   #                            :module_project_id => current_module_project.id,
+   #                            :in_out => "input").first
+   # effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
 
-   if effort == 0
+   # if effort == 0
      ev = EstimationValue.where(:pe_attribute_id => attribute.id,
                                 :module_project_id => current_module_project.previous.first,
                                 :in_out => "output").first
@@ -25,9 +25,13 @@
        previous_activity_root = current_module_project.previous.first.wbs_activity.wbs_activity_elements.first.root
        effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
      rescue
-      effort = 0
+       begin
+         effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+       rescue
+         effort = 0
+       end
      end
-   end
+   # end
 
    @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
 
@@ -60,7 +64,10 @@
         <% unless @staffing_model.enabled_input %>
           <%= hidden_field_tag "staffing_custom_datum[global_effort_value]", effort %>
           <label>Effort (<%= @staffing_model.effort_unit %>)</label>
-          <%= text_field_tag "", convert_with_precision(effort, user_number_precision), class: 'input-medium', disabled: true %>
+          <%= text_field_tag "",
+                             convert_with_precision(effort, user_number_precision),
+                             class: 'input-medium',
+                             disabled: true %>
         <% else %>
           <%= f.input :global_effort_value,
                       label: "Effort (#{@staffing_model.effort_unit})",
