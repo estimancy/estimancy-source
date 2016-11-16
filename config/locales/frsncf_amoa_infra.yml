@@ -1902,3 +1902,5 @@ frsncf_amoa_infra:
   data: "Données"
 
   confirm_deletion: "Confirmer la suppression de l'estimation"
+
+  skb_modules: "Base de connaissance de taille"
