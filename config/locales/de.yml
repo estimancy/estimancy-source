@@ -1421,6 +1421,7 @@ de:
   only_one_archive_status_possible: "It is not possible to define more than one archive status in the same organization"
   dont_archive_last_project_versions: "Don't archive last project's versions ?"
   archive_last_project_versions: "Archive the previous version(s) ?"
+  new_project_versions: "For <strong>new</strong> versions : automatic status change"
   last_project_versions_will_be_archived: "When creating a new version of an estimate, the older versions of this estimate will be automatically archived if you tick this box"
   warning_edit_instance_module: "Attention: When you change the module's configuration, all estimates which have been construct with the module are subject to get the change you do in the module, even if the estimates are already done and saved."
   duplicate_module: "Duplicate module"

@@ -1784,7 +1784,7 @@ public
       end
 
       new_prj.title = params['project']['title']
-      new_prj.version = params['project']['version']
+      new_prj.version_number = params['project']['version_number']
       new_prj.description = params['project']['description']
       # start_date = (params['project']['start_date'].nil? || params['project']['start_date'].blank?) ? Time.now.to_date : params['project']['start_date']
       new_prj.start_date = Time.now
@@ -2201,12 +2201,12 @@ public
       new_prj.parent_id = old_prj.id
       new_prj.creator_id = current_user.id
 
-      new_prj.version = params[:new_version]  #set_project_version(old_prj)
+      new_prj.version_number = params[:new_version]  #set_project_version(old_prj)
       if params[:new_version].nil? || params[:new_version].empty?
-        new_prj.version = set_project_version(old_prj)
+        new_prj.version_number = set_project_version(old_prj)
       end
 
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version, to_version: new_prj.version, current_user_name: current_user.name)}. \r\n"
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
 
       new_prj.transaction do
         if new_prj.save
@@ -2302,10 +2302,10 @@ public
               #Get the archive status of the project's organization
               archive_status = new_prj.organization.estimation_statuses.where(is_archive_status: true).first
               if archive_status
-                old_version = old_prj.version
+                old_version = old_prj.version_number
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
                   ancestor.save
                 end
               end
@@ -2318,9 +2318,9 @@ public
             #Get the archive status of the project's organization
             new_status = new_prj.organization.estimation_statuses.where(is_new_status: true).first
             if new_status
-              old_version = old_prj.version
+              old_version = old_prj.version_number
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
           end
@@ -2350,7 +2350,7 @@ private
   def set_project_version(project_to_checkout)
     #No authorize is required as method is private and could not be accessed by any route
     new_version = ''
-    parent_version = project_to_checkout.version
+    parent_version = project_to_checkout.version_number
 
     # The new version number is calculated according to the parent project position (if parent project has children or not)
     if project_to_checkout.is_childless?
@@ -2402,7 +2402,7 @@ private
   def is_project_version_available?(parent_title, parent_alias, new_version)
     begin
       #No authorize required
-      project = Project.where('(title=? AND version=?) OR (alias=? AND version=?)', parent_title, new_version, parent_alias, new_version).first
+      project = Project.where('(title=? AND version_number=?) OR (alias=? AND version_number=?)', parent_title, new_version, parent_alias, new_version).first
       if project
         false
       else
@@ -2528,11 +2528,11 @@ public
             session[:current_project_id] = current_user.projects.first
             session[:project_id] = current_user.projects.first
           else
-            flash_error += "\n\n" + I18n.t('project_is_not_collapsible', :project_title_version => "#{project.title}-#{project.version}")
+            flash_error += "\n\n" + I18n.t('project_is_not_collapsible', :project_title_version => "#{project.title}-#{project.version_number}")
             next
           end
         rescue CanCan::AccessDenied
-          flash_error += "\n\n" + I18n.t('project_is_not_collapsible', :project_title_version => "#{project.title}-#{project.version}") + "," +  I18n.t(:error_access_denied)
+          flash_error += "\n\n" + I18n.t('project_is_not_collapsible', :project_title_version => "#{project.title}-#{project.version_number}") + "," +  I18n.t(:error_access_denied)
           next
         end
       end

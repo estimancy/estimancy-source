@@ -1586,7 +1586,7 @@ frsncf_amoa_infra:
   attribute_description: "Attribut description"
   export_vignette: "Exporter la vignette \"%{value}\""
   effort_import: "Effort"
-  version: "Version"
+  version_number: "Version"
   estimation: "Estimation"
   unit_value: "Unité"
   group: "Groupe"

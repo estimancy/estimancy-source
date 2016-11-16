@@ -13,7 +13,7 @@
             <td>
               <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{project.title}", edit_project_path(project, anchor: "tabs-4")) %> </span>
             </td>
-            <td class="center"><%= project.version %></td>
+            <td class="center"><%= project.version_number %></td>
             <td><%= project.root_component %></td>
           </tr>
       <% end %>

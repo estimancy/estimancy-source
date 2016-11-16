@@ -497,7 +497,7 @@ class Kb::KbModelsController < ApplicationController
     end
     worksheet.sheet_data[my_helper][4].change_border(:bottom, 'thin')
     worksheet.sheet_data[my_helper][3].change_border(:bottom, 'thin')
-    send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version}-#{my_kb_model.name.gsub(" ", "_")}-(#{("A".."B").to_a[current_module_project.position_x - 1]},#{current_module_project.position_x})-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{my_kb_model.name.gsub(" ", "_")}-(#{("A".."B").to_a[current_module_project.position_x - 1]},#{current_module_project.position_x})-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def import_kb
