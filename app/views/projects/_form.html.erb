@@ -13,13 +13,9 @@
 
     <div id="tabs-1">
       <table>
-        <tr>
-          <td> <%= f.input :title, :label => I18n.t(:label_project_name), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %></td>
-          <td><%= f.input :version_number, :label => I18n.t('label_project_version'), :input_html => { :class => 'input-large' } %></td>
-        </tr>
-        <tr>
-          <td><%= f.input :private, :label => I18n.t(:private_estimation) %></td>
-        </tr>
+        <%= f.input :title, :label => I18n.t(:label_project_name), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+        <%= f.input :version_number, :label => I18n.t('label_project_version'), :input_html => { :class => 'input-large' } %>
+        <%= f.input :private, :label => I18n.t(:private_estimation) %>
         <tr>
           <% if action_name.in?(['new', 'create']) %>
             <td>
@@ -237,7 +233,6 @@
                                                                             "Module d'Effort Génériques (ax^b)" => @ge_models}), :prompt => '' %>
                 <script>
                   $(document).ready(function(){
-
                     $("#select_module").on('change', function() {
                       if ($("#select_module").val() !== "") {
                         return $.ajax({
@@ -252,6 +247,7 @@
                           success: function(data) {
                             //return alert("success");
                             //jsPlumb.repaintEverything();
+                            //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
                           },
                           error: function(XMLHttpRequest, textStatus, errorThrown) {
                             return alert("Error! :" + textStatus + ";" + errorThrown );
@@ -274,7 +270,7 @@
           <% end %>
         <% end %>
         <br>
-        <div class="module_box">
+        <div class="module_box" style="width: auto; overflow-x:auto;">
           <%= render :partial => 'module_projects/estimation_plan', :locals => { :module_projects => @project.module_projects } %>
         </div>
       </div>

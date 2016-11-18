@@ -859,7 +859,7 @@ class Guw::GuwModelsController < ApplicationController
                 I18n.t(:likely).length, I18n.t(:high).length]
 
     [I18n.t(:estimation),
-     I18n.t(:version),
+     I18n.t(:version_number),
      I18n.t(:group),
      I18n.t(:selected),
      I18n.t(:name),
