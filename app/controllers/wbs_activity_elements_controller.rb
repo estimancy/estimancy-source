@@ -114,6 +114,8 @@ class WbsActivityElementsController < ApplicationController
       phases_short_name_number = @wbs_activity.phases_short_name_number.to_i+1
       element_phases_short_name_number = "P#{phases_short_name_number}"
       @wbs_activity.phases_short_name_number = phases_short_name_number
+    else
+      element_phases_short_name_number = @wbs_activity_element.phase_short_name
     end
 
     if @wbs_activity_element.update_attributes(params[:wbs_activity_element].merge(phase_short_name: element_phases_short_name_number))

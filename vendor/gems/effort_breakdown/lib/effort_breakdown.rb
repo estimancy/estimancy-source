@@ -30,7 +30,7 @@ module EffortBreakdown
     include PemoduleEstimationMethods
 
     attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids,
-                  :changed_retained_effort_values, :module_project_ratio_elements, :initialize_calculation #module input/output parameters
+                  :changed_retained_effort_values, :changed_retained_cost_values, :module_project_ratio_elements, :initialize_calculation #module input/output parameters
 
     #def initialize(c, mp, e, r)
     def initialize(*args)
@@ -42,8 +42,10 @@ module EffortBreakdown
       args[2].nil? ? @input_effort = nil : @input_effort = args[2]
       @changed_mp_ratio_element_ids = args[4]      # mp_ratio_element_ids dont l'effort retenu a été modifié manuellement
       @changed_retained_effort_values = args[5]    # valeurs des efforts retenus (modifiés ou non)
+      @changed_retained_cost_values = args[6]    # valeurs des coûts retenus (modifiés ou non)
+      @initialize_calculation = args[7]
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@ratio, @pbs_project_element, false)
-      @initialize_calculation = args[6]
+
     end
 
     # Getters for module outputs
@@ -75,17 +77,80 @@ module EffortBreakdown
     end
 
 
+    # Proc that calculate each profile cost
+    calculate_warp_profile_cost = Proc.new do |element|
+      tmp = Hash.new
+      wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
+      unless wbs_activity_ratio_element.nil?
+        wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
+          tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
+        end
+      end
+      tmp
+    end  # end Proc
+
+
     # Calculate the Cost for each WBS-Project-Element/Phase
     # Cout Moyen
     def get_cost(*args)
       cost = Hash.new {|h,k| h[k]=[]}
-      res = Hash.new
+      output_cost = Hash.new
+
+      wbs_activity = @module_project.wbs_activity
+      wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
+      efforts_man_month = get_effort
+
+      wbs_activity_root.children.each do |node|
+        # Sort node subtree by ancestry_depth
+        sorted_node_elements = node.subtree.order('ancestry_depth desc')
+
+        sorted_node_elements.each do |element|
+          key = element.id   # wbs_activity_element_id
+          value = efforts_man_month[key].to_f
+
+          mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+
+          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable && @changed_retained_cost_values[element.id].to_f != 0
+            output_cost[element.id] = @changed_retained_cost_values[element.id].to_f
+          else
+            if element.is_childless? || element.has_new_complement_child?
+              # Calculate cost for each profile
+              tmp = Hash.new
+              wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
+              unless wbs_activity_ratio_element.nil?
+                wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
+                  tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
+                end
+              end
+
+              tmp.each do |k, v|
+                cost[key] << tmp[k]
+              end
+
+              output_cost[key] = cost[key].sum
+            else
+              output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
+            end
+          end
+        end
+      end
+
+      # After treating all leaf and node elements, the root element is going to compute by aggregation
+      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
+
+      output_cost
+    end
+
+
+    def get_theoretical_cost(*args)
+      cost = Hash.new {|h,k| h[k]=[]}
+      output_cost = Hash.new
 
       wbs_activity = @module_project.wbs_activity
 
       wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
 
-      efforts_man_month = get_effort
+      efforts_man_month = get_theoretical_effort
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -109,67 +174,22 @@ module EffortBreakdown
               cost[key] << tmp[k]
             end
 
-            res[key] = cost[key].sum
+            output_cost[key] = cost[key].sum
           else
-            res[key] = compact_array_and_compute_node_value(element, res)
+            output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
 
         end
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      res[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, res)
+      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
 
-      # efforts_man_month.each do |key, value|
-      #   tmp = Hash.new
-      #   wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
-      #   unless wbs_activity_ratio_element.nil?
-      #     wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-      #       tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * efforts_man_month[key].to_f * warp.ratio_value / 100
-      #     end
-      #   end
-      #
-      #   tmp.each do |k, v|
-      #     cost[key] << tmp[k]
-      #   end
-      #
-      #   cost.each do |k, v|
-      #     element = WbsActivityElement.find(k)
-      #     if element.is_childless? || element.has_new_complement_child?
-      #       res[key] = cost[k].sum
-      #     else
-      #       # For root and parent element
-      #       res[key] = compact_array_and_compute_node_value(element, res)
-      #     end
-      #
-      #     if WbsActivityElement.find(key).root?
-      #       res[key] = cost.values.sum.sum
-      #     else
-      #       res[key] = cost[k].sum
-      #     end
-      #
-      #   end
-      #
-      #
-      #   # Test if node is selected or not ( it will be taken in account only if the node is selected)
-      #   mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: key).first
-      #   if (mp_ratio_element && mp_ratio_element.selected==true)
-      #   end
-      #
-      #   cost.each do |k, v|
-      #     if WbsActivityElement.find(key).root?
-      #       res[key] = cost.values.sum.sum
-      #     else
-      #       res[key] = cost[k].sum
-      #     end
-      #   end
-      # end
-
-      res
+      output_cost
     end
 
 
-    def get_theoretical_cost(*args)
+    def get_theoretical_cost_save(*args)
       cost = Hash.new {|h,k| h[k]=[]}
       res = Hash.new
 
@@ -274,7 +294,11 @@ module EffortBreakdown
         # Add element short_name in calculator
         element_phase_short_name = wbs_activity_element.phase_short_name
         unless element_phase_short_name.nil?
-          calculator.store(:"#{element_phase_short_name}" => element_effort)
+          if mp_ratio_element.selected == true
+            calculator.store(:"#{element_phase_short_name}" => element_effort)
+          else
+            calculator.store(:"#{element_phase_short_name}" => 0.0)
+          end
         end
       end
 
@@ -284,66 +308,83 @@ module EffortBreakdown
       output_effort_with_dependencies = HashWithIndifferentAccess.new
       parents_to_compute_after = Array.new
 
-      ###if !@changed_mp_ratio_element_ids.nil? && !@changed_mp_ratio_element_ids.empty?
-        wbs_activity_root.children.each do |node|
-          # Sort node subtree by ancestry_depth
-          sorted_node_elements = node.subtree.order('ancestry_depth desc')
-          sorted_node_elements.each do |element|
+      wbs_activity_root.children.each do |node|
+        # Sort node subtree by ancestry_depth
+        sorted_node_elements = node.subtree.order('ancestry_depth desc')
+        sorted_node_elements.each do |element|
 
-            # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
-            unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
+          # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
+          unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
 
-              # Sauf si la valeur de l'élément n'est pas pas encore enregistrée ou que les valeurs retenues ne sont pas à prendre en compte
-              #if output_effort[element.id].nil?
-              if output_effort[element.id].nil? ###&& !@changed_mp_ratio_element_ids.nil? && !@changed_mp_ratio_element_ids.empty?) || @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
+            # Sauf si la valeur de l'élément n'est pas pas encore enregistrée ou que les valeurs retenues ne sont pas à prendre en compte
+            #if output_effort[element.id].nil?
+            if output_effort[element.id].nil?
 
-                # Element effort is really computed only on leaf element
-                if element.is_childless? || element.has_new_complement_child?
-                  # Get the ratio Value of current element
-                  corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
+              mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
-                  unless corresponding_ratio_elt.nil?
+              # Element effort is really computed only on leaf element
+              if element.is_childless? || element.has_new_complement_child?
+                # Get the ratio Value of current element
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
 
-                    formula = corresponding_ratio_elt.formula
+                unless corresponding_ratio_elt.nil?
 
-                    if current_output_effort.nil? || formula.blank?
-                      output_effort[element.id] = nil
-                    else
-                      formula_expression = "#{formula.downcase}"
-                      begin
-                        normalized_formula_expression = formula_expression.gsub('%', ' * 0.01')
-                      rescue
-                        normalized_formula_expression = nil
-                      end
+                  formula = corresponding_ratio_elt.formula
 
-                      ####element_effort = calculator.evaluate(normalized_formula_expression)
-                      ####output_effort[element.id] = element_effort
-
-                      ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
-
-                      # Add element short_name in calculator
-                      element_phase_short_name = element.phase_short_name
-                      unless element_phase_short_name.nil?
-                        ####calculator.store(:"#{element_phase_short_name}" => element_effort)
-                        all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
-                      end
+                  if current_output_effort.nil? || formula.blank?
+                    output_effort[element.id] = nil
+                  else
+                    formula_expression = "#{formula.downcase}"
+                    begin
+                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01')
+                    rescue
+                      normalized_formula_expression = nil
                     end
 
+                    ####element_effort = calculator.evaluate(normalized_formula_expression)
+                    ####output_effort[element.id] = element_effort
+
+                    ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
+
+                    # Add element short_name in calculator
+                    element_phase_short_name = element.phase_short_name
+                    unless element_phase_short_name.nil?
+                      if mp_ratio_element.selected == true
+                        all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
+                      else
+                        all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
+                        calculator.store(:"#{element_phase_short_name}" => 0.0)
+                      end
+                    end
                   end
-                else
-                  ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
 
-                  #### add element ID in the parents elements to compute
-                  ###parents_to_compute_after << element.id
                 end
+              else
+                parent_element_formula = ""
+                element.children.each do |child|
+                  child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
+                  if child_mp_ratio_element && child_mp_ratio_element.selected == true
+                    if parent_element_formula.blank?
+                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                    else
+                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                    end
+                  end
+                end
+                all_formula_to_compute[:"#{element.phase_short_name}"] = parent_element_formula
 
+                ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+                #### add element ID in the parents elements to compute
+                ###parents_to_compute_after << element.id
               end
+
             end
           end
         end
+      end
 
-        ### Then compute all formula expression
-        output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
+      ### Then compute all formula expression
+      output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
       ###else
       ###  output_effort_with_dependencies = @changed_retained_effort_values
       ###end
@@ -354,16 +395,21 @@ module EffortBreakdown
         sorted_node_elements.each do |element|
           if output_effort[element.id].nil?
             mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+            current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+            if !mp_ratio_element.selected == true
+              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
+            end
+
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable
               if @changed_retained_effort_values[element.id].nil? || @changed_retained_effort_values[element.id].to_f == 0
-                output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
               end
             else
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
-                output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end
@@ -498,7 +544,6 @@ module EffortBreakdown
           # Store the ratio_variables value in the calculator
           calculator.store(:"#{mp_var.name}" => mp_var.value_from_percentage.to_f)
 
-
           # wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
           # percentage_of_input = wbs_ratio_variable.percentage_of_input
           # if wbs_ratio_variable.is_modifiable
@@ -531,6 +576,8 @@ module EffortBreakdown
             unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
+                mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+
                 # Get the ratio Value of current element
                 corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
 
@@ -556,15 +603,34 @@ module EffortBreakdown
                     element_phase_short_name = element.phase_short_name
                     unless element_phase_short_name.nil?
                       ####calculator.store(:"#{element_phase_short_name}" => element_effort)
-                      all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
+                      if mp_ratio_element.selected == true
+                        all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
+                      else
+                        all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
+                        calculator.store(:"#{element_phase_short_name}" => 0.0)
+                      end
                     end
                   end
                 end
               else
+
+                parent_element_formula = ""
+                element.children.each do |child|
+                  child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
+                  if child_mp_ratio_element && child_mp_ratio_element.selected == true
+                    if parent_element_formula.blank?
+                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                    else
+                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                    end
+                  end
+                end
+                all_formula_to_compute[:"#{element.phase_short_name}"] = parent_element_formula
+
                 ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
 
                 #### add element ID in the parents elements to compute 
-                parents_to_compute_after << element.id
+                ###parents_to_compute_after << element.id
               end
             end
           end
@@ -579,10 +645,15 @@ module EffortBreakdown
           sorted_node_elements = node.subtree.order('ancestry_depth desc')
           sorted_node_elements.each do |element|
             if output_effort[element.id].nil?
+              mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+              if !mp_ratio_element.selected == true
+                current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
+              end
 
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
-                output_effort[element.id] = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                output_effort[element.id] = current_effort_with_dependencies ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end
