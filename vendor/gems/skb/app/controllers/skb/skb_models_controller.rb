@@ -119,7 +119,7 @@ class Skb::SkbModelsController < ApplicationController
     unless params[:file].nil?
       begin
         begin
-        file = Roo::Spreadsheet.open(params[:file].path, :extension => :xls)
+          file = Roo::Spreadsheet.open(params[:file].path, :extension => :xls)
         rescue
           file = Roo::Spreadsheet.open(params[:file].path, :extension => :xlsx)
         end
@@ -129,7 +129,15 @@ class Skb::SkbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[0]
-      @skb_model = Skb::SkbModel.find(params[:skb_model_id].to_i)
+
+      if params[:skb_model_id].blank?
+        @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
+                                       organization_id: @organization.id)
+        @skb_model.save(validate: false)
+      else
+        @skb_model = Skb::SkbModel.where(id: params[:skb_model_id],
+                                         organization_id: @organization.id).first
+      end
 
       unless @skb_model.nil?
         Skb::SkbData.delete_all("skb_model_id = #{@skb_model.id}")
