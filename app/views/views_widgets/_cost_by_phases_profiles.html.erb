@@ -57,9 +57,13 @@
                       <% wbs_estimation_profiles_values = wbs_probable_value["profiles"] %>
                       <tr>
                         <td>
-                      <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
-                        <%= mp_ratio_element.name %>
-                      </span>
+                          <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
+                            <% unless mp_ratio_element.nil? %>
+                              <%= mp_ratio_element.name %>
+                            <% else %>
+                              -
+                            <% end %>
+                          </span>
                         </td>
 
                         <% if project_organization_profiles.length > 0 %>
