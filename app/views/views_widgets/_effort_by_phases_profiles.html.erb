@@ -42,7 +42,7 @@
             <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
 
             <% effort_per_phase = nil %>
-            <% unless wbs_activity_elt.is_root? %>
+            <% unless wbs_activity_elt.is_root? || mp_ratio_element.nil? %>
               <% wbs_activity_elt_id = wbs_activity_elt.id %>
                 <% profile_ratio_percentage = "" %>
                 <% wbs_probable_value = estimation_pbs_probable_results[wbs_activity_elt.id] %>

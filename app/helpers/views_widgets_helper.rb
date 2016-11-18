@@ -547,7 +547,7 @@ module ViewsWidgetsHelper
               if ratio_reference.nil?
                 module_project_ratio_elements = []
               else
-                module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id)
+                module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id, selected: true)
               end
 
               if module_project_ratio_elements.empty? || module_project_ratio_elements.nil?
@@ -661,7 +661,7 @@ module ViewsWidgetsHelper
     if ratio_reference.nil?
       module_project_ratio_elements = []
     else
-      module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
+      module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
     end
 
     case view_widget.widget_type
