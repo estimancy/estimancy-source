@@ -123,7 +123,6 @@ class Project < ActiveRecord::Base
   class_attribute :default_selected_columns
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
 
-
   def self.selectable_inline_columns
     [
       [I18n.t(:label_product_name), "application"], [I18n.t(:label_project_name), "title"], [I18n.t(:label_version),"version_number"],

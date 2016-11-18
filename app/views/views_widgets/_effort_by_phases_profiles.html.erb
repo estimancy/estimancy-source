@@ -55,7 +55,11 @@
                   <tr>
                     <td>
                       <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
-                        <%= mp_ratio_element.name %>
+                        <% unless mp_ratio_element.nil? %>
+                          <%= mp_ratio_element.name %>
+                        <% else %>
+                          -
+                        <% end %>
                       </span>
                     </td>
 

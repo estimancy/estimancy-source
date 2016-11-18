@@ -1,7 +1,11 @@
-<h4>
+<h4 class="ui-widget">
   <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
+
   <% unless controller.action_name == 'new' %>
     <%= link_to I18n.t(:label_activate_project), dashboard_path(@project), class: "pull-right" %>
   <% end %>
 </h4>
-<%= render 'form' %>
+<div>
+  <%= render 'form' %>
+  <%#= render 'form_test' %>
+</div>
