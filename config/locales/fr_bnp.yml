@@ -1,4 +1,4 @@
-fr:
+fr_bnp:
   direction: ltr
   date:
     abbr_day_names:
@@ -880,10 +880,10 @@ fr:
   warning_session_account_not_active: "Ce compte n'est pas actif"
   error_account_ldap_association: "Votre compte est associé à un annuaire d'entreprise LDAP. Contacter votre administrateur système pour connaître vos identifiants."
   warning_session_bad_username: "Nous n'avons pas de compte utilisant ce nom de login ou ce courriel"
-  application: "Application"
-  applications: "Applications"
-  new_application: "Nouvelle application"
-  edit_application: "Editer application"
+  application: "Partenaire"
+  applications: "Partenaires"
+  new_application: "Nouveau partenaire"
+  edit_application: "Editer partenaire"
   notice_translation_successful_added: "Traduction ajoutée"
   notice_account_successful_created: "Votre compte a été créé avec succès"
   notice_account_successful_updated: "Votre compte a été mis à jour avec succès."
@@ -1027,7 +1027,7 @@ fr:
   text_index_permissions_guidance: "Liste toutes les permissions globales et projets"
   notice_end_of_estimation_execution: "Fin de l'exécution des modules"
   label_project_name: "Nom de l'estimation"
-  label_product_name: "Application"
+  label_product_name: "Partenaires"
   label_project_version: "Version"
   label_permission_access: "Accès"
   error_group_failed_update: "Une erreur s'est produite lors de la mise à jour."
@@ -1610,7 +1610,7 @@ fr:
   group: "Groupe"
   profile: "Profil"
   UO_type_complexity: "Seuils de complexité de lUO"
-  advice: "Attention: Ne pas modifier les cases contenant des caractères en gras, cela pourrait causer une incapacité à importer votre fichier depuis l'application.\npour plus de conseils d'utilisation: http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work"
+  advice: "Attention: Ne pas modifier les cases contenant des caractères en gras, cela pourrait causer une incapacité à importer votre fichier depuis l'application.\nPour plus de conseils d'utilisation: http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work"
   Edit_Units_Of_Work: "Editer unité d'oeuvre"
   New_Units_Of_Work: "Nouvelle unité d'oeuvre"
   Unit_of_work: "Unité d'oeuvre"
