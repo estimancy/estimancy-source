@@ -162,7 +162,7 @@ group :assets do
   gem 'coffee-rails'
   gem 'uglifier', '>= 1.0.3'
   gem 'jquery-datatables-rails'
-  gem 'jquery-ui-rails'
+  gem 'jquery-ui-rails', '5.0.5'
   gem 'sass'
 end
 
