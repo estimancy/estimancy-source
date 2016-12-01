@@ -55,6 +55,11 @@ Guw::Engine.routes.draw do
     resources :guw_unit_of_works
     resources :guw_weightings
     resources :guw_factors
+    resources :guw_outputs
+    resources :guw_coefficients
+    resources :guw_coefficients do
+      resources :guw_coefficient_elements
+    end
     resources :guw_work_units
     resources :guw_unit_of_work_groups
     resources :guw_types do
@@ -77,6 +82,8 @@ Guw::Engine.routes.draw do
   post "import_myexport" => "guw_models#import_myexport"
 
   post "guw_unit_of_works/save_guw_unit_of_works"
+  post "guw_unit_of_works/save_guw_unit_of_works_with_multiple_outputs"
+
   post "guw_complexity_work_units/save_complexity_work_units"
 
   get "change_selected_state" => "guw_unit_of_works#change_selected_state", as: "change_selected_state"
@@ -88,7 +95,9 @@ Guw::Engine.routes.draw do
   post "save_name" => "guw_unit_of_works#save_name", as: "save_name"
   post "save_comments" => "guw_unit_of_works#save_comments", as: "save_comments"
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
+
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
+  post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"
 
   post "auto_sizing" => "guw_models#auto_sizing", as: "auto_sizing"
 end

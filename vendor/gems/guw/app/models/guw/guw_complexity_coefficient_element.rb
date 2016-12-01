@@ -20,8 +20,8 @@
 #############################################################################
 
 module Guw
-  class GuwScaleModuleAttribute < ActiveRecord::Base
-    belongs_to :guw_output
-    belongs_to :guw_coefficient
+  class GuwComplexityCoefficientElement < ActiveRecord::Base
+    belongs_to :guw_coefficient_element
+    belongs_to :guw_complexity
   end
 end

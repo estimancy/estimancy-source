@@ -1,13 +1,25 @@
-<%= form_tag guw.save_uo_path, method: "post" do %>
+<%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post" do %>
 
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
-  <%= hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
-  <%= hidden_field_tag "guw_weighting_id", guow.guw_weighting_id %>
-  <%= hidden_field_tag "guw_factor_id", guow.guw_factor_id %>
+  <%# hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
+  <%# hidden_field_tag "guw_weighting_id", guow.guw_weighting_id %>
+  <%# hidden_field_tag "guw_factor_id", guow.guw_factor_id %>
   <%= hidden_field_tag "hidden_ajusted_size[#{guow.id}]", "" %>
   <%= hidden_field_tag "hidden_quantity[#{guow.id}]", guow.quantity %>
   <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
+  <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+
+    <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                         guw_coefficient_id: guw_coefficient.id).first %>
+
+    <% if guw_coefficient.coefficient_type == "Liste" %>
+      <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
+    <% else %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
+    <% end %>
+
+  <% end %>
 
   <div class="modal-header modal-drag">
     <h4 class="modal-title" id="myModalLabel<%= guow.id %>">

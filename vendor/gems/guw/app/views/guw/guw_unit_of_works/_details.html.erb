@@ -1,3 +1,5 @@
+<% guw_output = @guw_model.guw_outputs.where(output_type: "S").first %>
+
 <% unless @guw_model.guw_types.empty? %>
   <h5>
     Nombre d'unité d'oeuvre par type
@@ -17,7 +19,7 @@
           <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
         </td>
         <td>
-          <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map(&:ajusted_size).compact.sum.to_f %>
+          <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
         </td>
       </tr>
     <% end %>
@@ -43,7 +45,7 @@
           <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).count.to_i %>
         </td>
         <td>
-          <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).map(&:ajusted_size).compact.sum.to_f %>
+          <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
         </td>
       </tr>
     <% end %>
@@ -69,7 +71,7 @@
           <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).count.to_i %>
         </td>
         <td>
-          <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).map(&:ajusted_size).compact.sum.to_f %>
+          <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
         </td>
       </tr>
     <% end %>
@@ -95,7 +97,7 @@
           <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).count.to_i %>
         </td>
         <td>
-          <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).map(&:ajusted_size).compact.sum.to_f %>
+          <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
         </td>
       </tr>
     <% end %>

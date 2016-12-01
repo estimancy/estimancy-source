@@ -8,3 +8,9 @@ $("#hidden_ajusted_size_<%= @guw_unit_of_work.id %>").val(my_value)
 
 var my_quantity = $("#quantity_<%= @guw_unit_of_work.id %>").val()
 $("#hidden_quantity_<%= @guw_unit_of_work.id %>").val(my_quantity)
+
+<% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+  var i = $("#guw_coefficient_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val()
+  $("#hidden_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(i);
+  $("#hidden_coefficient_element_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(<%= guw_coefficient.id %>);
+<% end %>

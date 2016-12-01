@@ -1,0 +1,2 @@
+class Guw::GuwCoefficientElementUnitOfWorksController < ApplicationController
+end

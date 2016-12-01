@@ -9,7 +9,8 @@
 
   <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>  <!-- This line is replaced with de 2 lines to solve chart loading problems -->
 
-  <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+  <%# javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+  <%= javascript_include_tag "chartkick" %>
   <%= javascript_include_tag 'application', 'projestimate_script' %>
 
   <% if @online_support == "1" %>

@@ -12,13 +12,13 @@
         </a>
       </li>
       <li>
-        <a href="#tabs-factors">
+        <a href="#tabs-coefficients">
           Configurer les coefficients de pondération
         </a>
       </li>
       <li>
-        <a href="#tabs-matrix">
-          Configurer le calcul des sorties
+        <a href="#tabs-output">
+          Configurer les sorties
         </a>
       </li>
     <% end %>
@@ -28,33 +28,33 @@
     <div class="row-fluid">
       <div class="span6">
         <%= simple_form_for(@guw_model) do |f| %>
-            <%= f.error_notification %>
+          <%= f.error_notification %>
 
-            <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+          <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
 
-            <div class="form-inputs">
-              <%= f.input :name %>
-              <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
-              <%= f.input :coefficient_label, label: I18n.t(:work_unit_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= select_tag "coefficient_type", options_for_select(["Coefficient", "Pourcentage"]) %>
-              <%= f.input :weightings_label, label: I18n.t(:weightings_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= select_tag "weightings_type", options_for_select(["Coefficient", "Pourcentage"]) %>
-              <%= f.input :factors_label, label: I18n.t(:factors_label), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= select_tag "factors_type", options_for_select(["Coefficient", "Pourcentage"]) %>
-              <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
-              <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>
-              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-              <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
-              <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
-              <%# f.input :effort_unit, label: I18n.t(:effort_unit) %>
-              <%# f.input :cost_unit, label: I18n.t(:cost_unit) %>
-            </div>
+          <div class="form-inputs">
+            <%= f.input :name %>
+            <%= f.input :description, input_html: { class: "input-xxlarge", rows: "5"} %>
 
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <%= f.button :submit, I18n.t('save') %>
-              <%= f.button :submit, I18n.t('apply') %>
-            <% end %>
-            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+            <h5>Autres paramétrages</h5>
+            <%= f.input :allow_technology, label: I18n.t(:allow_technology) %>
+            <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>
+            <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+            <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
+            <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
+          </div>
+
+          <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name)).flatten.each do |item| %>
+            <p>
+              <%= item %> : <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
+            </p>
+          <% end %>
+
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save') %>
+            <%= f.button :submit, I18n.t('apply') %>
+          <% end %>
+          <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
         <% end %>
       </div>
 
@@ -91,45 +91,6 @@
   </div>
 
   <% unless @guw_model.new_record? %>
-    <%= form_tag guw.guw_model_save_scale_module_attributes_path(@guw_model), method: "post" do %>
-
-      <div id="tabs-matrix">
-        <table class="table table-bordered">
-          <tr>
-            <th></th>
-            <th>
-              <%= link_to "Taille calculée", "#", title: "Coefficient à prendre en compte dans la taille calculée", class: "attribute_tooltip" %>
-            </th>
-            <th>
-              <%= link_to "Calcul de l'effort", "#", title: "Coefficient à prendre en compte pour le calcul de l'effort à partir de la taille retenue", class: "attribute_tooltip" %>
-            </th>
-            <th>
-              <%= link_to "Calcul du coût", "#", title: "Coefficient à prendre en compte pour le calcul du coût à partir de la taille retenue", class: "attribute_tooltip" %>
-            </th>
-          </tr>
-
-          <% [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each do |ts| %>
-            <tr>
-              <td>
-                <b>
-                  <%= ts[0].to_s %>
-                </b>
-              </td>
-              <% ["size", "effort", "cost"].each do |ta| %>
-                <td class="center">
-                  <% gsma = Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model.id,
-                                                               type_attribute: ta,
-                                                               type_scale: ts[1]).first %>
-                  <%= check_box_tag "attributes_matrix[#{ts[1]}][#{ta}]", "enable", !gsma.nil?, class: "input-xmini" %>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
-        </table>
-        <%= submit_tag I18n.t(:save), class: "btn btn-mini pull-right" %>
-        <%= link_to I18n.t(:back), :back, :class => 'btn btn-mini pull-right button_margin_right' %>
-      </div>
-    <% end %>
 
     <div id="tabs-attributs">
       <table class="table table-bordered">
@@ -161,109 +122,87 @@
       <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
     </div>
 
-    <div id="tabs-factors">
-      <div class="row-fluid">
-        <div class="span4">
-          <b>
-            <%= @guw_model.coefficient_label %>
-          </b>
+    <div id="tabs-output">
+      <table class="table table-bordered">
+        <tr>
+          <th><%= I18n.t(:name) %></th>
+          <th></th>
+        </tr>
 
-          <table class="table table-bordered">
+        <% unless @guw_outputs.empty? %>
+          <% @guw_outputs.each do |guw_output| %>
             <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:value) %></th>
-              <th><%= I18n.t(:display_order) %></th>
-              <th><%= I18n.t(:actions) %></th>
+              <td><%= guw_output.name %></td>
+              <td class="center">
+                <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
+                <% if can? :manage_modules_instances, ModuleProject %>
+                  <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                <% end %>
+              </td>
             </tr>
-
-            <% @guw_work_units.order("display_order ASC").each do |guw_work_unit| %>
-              <tr>
-                <td class="align-center"><%= link_to guw_work_unit.name, edit_guw_model_guw_work_unit_path(@guw_model, guw_work_unit) %></td>
-                <td class="align-center"><%= guw_work_unit.value %></td>
-                <td class="align-center"><%= guw_work_unit.display_order %></td>
-                <td class="align-center">
-                  <%= link_to "", guw.edit_guw_model_guw_work_unit_path(@guw_model, guw_work_unit), class: "fa fa-pencil" %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to "", guw.guw_work_unit_path(guw_work_unit), method: :delete, class: "fa fa-trash" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.coefficient_label}", guw.new_guw_model_guw_work_unit_path(@guw_model), class: "btn" %>
           <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
-        </div>
-        <div class="span4">
-          <b>
-            <%= @guw_model.weightings_label %>
-          </b>
+        <% end %>
+      </table>
 
-          <table class="table table-bordered">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:value) %></th>
-              <th><%= I18n.t(:display_order) %></th>
-              <th><%= I18n.t(:actions) %></th>
-            </tr>
+      <br>
 
-            <% @guw_weightings.order("display_order ASC").each do |guw_weighting| %>
-              <tr>
-                <td class="align-center"><%= link_to guw_weighting.name, edit_guw_model_guw_weighting_path(@guw_model, guw_weighting) %></td>
-                <td class="align-center"><%= guw_weighting.value %></td>
-                <td class="align-center"><%= guw_weighting.display_order %></td>
-                <td class="align-center">
-                  <%= link_to "", guw.edit_guw_model_guw_weighting_path(@guw_model, guw_weighting), class: "fa fa-pencil" %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to "", guw.guw_weighting_path(guw_weighting), method: :delete, class: "fa fa-trash" %>
-                  <% end %>
-                </td>
-              </tr>
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= link_to "Nouvelle sortie", guw.new_guw_model_guw_output_path(@guw_model), class: "btn" %>
+      <% end %>
+      <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+    </div>
+
+    <div id="tabs-coefficients">
+      <% @guw_coefficients.each do |guw_coefficient| %>
+        <div class="row-fluid">
+          <div class="span12">
+            <b>
+              <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
+            </b>
+
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right" %>
             <% end %>
-          </table>
+            <%= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.weightings_label}", guw.new_guw_model_guw_weighting_path(@guw_model), class: "btn" %>
-          <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
-        </div>
-        <div class="span4">
-          <b>
-            <%= @guw_model.factors_label %>
-          </b>
-
-          <table class="table table-bordered">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:value) %></th>
-              <th><%= I18n.t(:display_order) %></th>
-              <th><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @guw_factors.order("display_order ASC").each do |guw_factor| %>
+            <table class="table table-bordered">
               <tr>
-                <td class="align-center"><%= link_to guw_factor.name, edit_guw_model_guw_factor_path(@guw_model, guw_factor) %></td>
-                <td class="align-center"><%= guw_factor.value %></td>
-                <td class="align-center"><%= guw_factor.display_order %></td>
-                <td class="align-center">
-                  <%= link_to "", guw.edit_guw_model_guw_factor_path(@guw_model, guw_factor), class: "fa fa-pencil" %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to "", guw.guw_factor_path(guw_factor), method: :delete, class: "fa fa-trash" %>
-                  <% end %>
-                </td>
+                <th>Nom</th>
+                <th>Valeur</th>
+                <th></th>
               </tr>
-            <% end %>
-          </table>
+              <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
+                <tr>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.name %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.value %>
+                  </td>
+                  <td class="align-center">
+                    <%= link_to "", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <%= link_to "", guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), method: :delete, class: "fa fa-trash" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn" %>
-          <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to "Nouvel élement", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn" %>
+            <% end %>
+          </div>
         </div>
-        </div>
-      </div>
+        <hr>
+      <% end %>
+
+      <hr>
+
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn" %>
+      <% end %>
+
     </div>
   <% end %>
 </div>

@@ -58,7 +58,7 @@
             <tr>
               <th></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th colspan="2">
+                <th colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size + 1 %>">
                   <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
                   <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type, guw_cplx) %>
                   <% if can? :manage_modules_instances, ModuleProject %>
@@ -71,10 +71,11 @@
             <tr>
               <th></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <% if guw_type.allow_criteria == true %>
-                  <th>Prod.</th>
-                <% end %>
-                <th colspan="<%= guw_type.allow_criteria == true ? '0' : '2' %>" >
+                <th colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>" >
+
+                  <% if guw_type.allow_criteria == true %>
+                    Prod. &nbsp;
+                  <% end %>
                   <% if guw_type.allow_criteria == true %>
                     [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %>
                   <% else %>
@@ -87,12 +88,10 @@
             <tr>
               <td>Seuils</td>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <% if guw_type.allow_criteria == true %>
-                  <td class="align-center">
-                    <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %>
-                  </td>
-                <% end %>
-                <td class="align-center" colspan="<%= guw_type.allow_criteria == true ? '0' : '2' %>">
+                <td class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size }" %>">
+                  <% if guw_type.allow_criteria == true %>
+                    <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;
+                  <% end %>
                   <% if guw_type.allow_criteria == true %>
                     [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
                   <% end %>
@@ -101,76 +100,40 @@
               <% end %>
             </tr>
 
-            <tr>
-              <th colspan="<%= guw_type.guw_complexities.size * 2 + 1 %>">
-                <b class="pull-left">
-                  <%= @guw_model.coefficient_label.blank? ? "Facteurs sans nom" : @guw_model.coefficient_label %>
-                </b>
-              </th>
-            </tr>
-
-            <% @guw_model.guw_work_units.order("display_order ASC").each do |work_unit| %>
+            <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
               <tr>
-                <td>
-                  <%= link_to work_unit.name, guw.edit_guw_model_guw_work_unit_path(@guw_model, work_unit) %> (<%= work_unit.value %>)
-                </td>
-
-                <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                  <td colspan="2" class="align-center">
-                    <% cwu = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: guw_cplx.id,
-                                                              guw_work_unit_id: work_unit.id).first %>
-                    <%= text_field_tag "work_unit_value[#{guw_cplx.id}][#{work_unit.id}]", cwu.nil? ? '' : cwu.value, class: "input-mini" %>
-                  </td>
+                <th>
+                  <b class="pull-left">
+                    <%= link_to guw_coefficient.name, "#" %>
+                  </b>
+                </th>
+                <% guw_type.guw_complexities.each do |gc| %>
+                  <% Guw::GuwOutput.where(guw_model_id: @guw_model.id).each do |guw_output| %>
+                    <th>
+                      <%= guw_output.name %>
+                    </th>
+                  <% end %>
                 <% end %>
-                </td>
-              </tr>
-            <% end %>
 
-            <tr>
-              <th colspan="<%= guw_type.guw_complexities.size * 2 + 1 %>">
-                <b class="pull-left">
-                  <%= @guw_model.weightings_label.blank? ? "Facteurs sans nom" : @guw_model.weightings_label %>
-                </b>
-              </th>
-            </tr>
+                <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
+                  <tr>
+                    <td>
+                      <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>)
+                    </td>
+                    <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
 
-            <% @guw_model.guw_weightings.order("display_order ASC").each do |guw_weighting| %>
-              <tr>
-                <td>
-                  <%= link_to guw_weighting.name, guw.edit_guw_model_guw_weighting_path(@guw_model, guw_weighting) %> (<%= guw_weighting.value %>)
-                </td>
+                        <% Guw::GuwOutput.where(guw_model_id: @guw_model.id).each do |guw_output| %>
 
-                <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                  <td colspan="2" class="align-center">
-                    <% cwe = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_cplx.id,
-                                                               guw_weighting_id: guw_weighting.id).first %>
-                    <%= text_field_tag "weightings_value[#{guw_cplx.id}][#{guw_weighting.id}]", cwe.nil? ? '' : cwe.value, class: "input-mini" %>
-                  </td>
-                <% end %>
-                </td>
-              </tr>
-            <% end %>
+                          <% cf = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: guw_cplx.id,
+                                                                             guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                             guw_output_id: guw_output.id).first %>
+                          <td class="align-center">
+                            <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", cf.nil? ? nil : cf.value, class: "input-mini" %>
+                          </td>
+                        <% end %>
+                    <% end %>
+                  </tr>
 
-            <tr>
-              <th colspan="<%= guw_type.guw_complexities.size * 2 + 1 %>">
-                <b class="pull-left">
-                  <%= @guw_model.factors_label.blank? ? "Facteurs sans nom" : @guw_model.factors_label %>
-                </b>
-              </th>
-            </tr>
-
-            <% @guw_model.guw_factors.order("display_order ASC").each do |guw_factor| %>
-              <tr>
-                <td>
-                  <%= link_to guw_factor.name, guw.edit_guw_model_guw_factor_path(@guw_model, guw_factor) %> (<%= guw_factor.value %>)
-                </td>
-
-                <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                  <td colspan="2" class="align-center">
-                    <% cf = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_cplx.id,
-                                                               guw_factor_id: guw_factor.id).first %>
-                    <%= text_field_tag "factors_value[#{guw_cplx.id}][#{guw_factor.id}]", cf.nil? ? '' : cf.value, class: "input-mini" %>
-                  </td>
                 <% end %>
                 </td>
               </tr>
@@ -196,7 +159,7 @@
                   <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
                     <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
                                                                   organization_technology_id: technology.id).first %>
-                    <td colspan="2" class="align-center">
+                    <td colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size %>" class="align-center">
                       <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "input-mini" %>
                     </td>
                   <% end %>
@@ -268,6 +231,7 @@
                       <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "input-mini" %>
                       <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "input-mini" %>
                       <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "input-mini" %>
+                      <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "input-mini" %>
                     </td>
                   <% end %>
                 </tr>

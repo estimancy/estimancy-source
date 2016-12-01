@@ -755,6 +755,8 @@ class Guw::GuwModelsController < ApplicationController
     @guw_work_units = @guw_model.guw_work_units
     @guw_weightings = @guw_model.guw_weightings
     @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "taille"), I18n.t(:new) => ""
     set_page_title I18n.t(:new_UO_model)
@@ -770,6 +772,8 @@ class Guw::GuwModelsController < ApplicationController
     @guw_work_units = @guw_model.guw_work_units
     @guw_weightings = @guw_model.guw_weightings
     @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -796,6 +800,10 @@ class Guw::GuwModelsController < ApplicationController
     @organization = @guw_model.organization
 
     if @guw_model.update_attributes(params[:guw_model])
+
+      @guw_model.orders = params[:items].to_hash
+      @guw_model.save
+
       if @guw_model.default_display == "list"
         redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil, guw.guw_model_all_guw_types_path(@guw_model)) and return
       else
@@ -1239,8 +1247,8 @@ class Guw::GuwModelsController < ApplicationController
       params['attributes_matrix'].each_with_index do |i, j|
         i[1].each do |k|
           Guw::GuwScaleModuleAttribute.create(guw_model_id: @guw_model.id,
-                                             type_attribute: k[0],
-                                             type_scale: i[0])
+                                              guw_output_id: k[0],
+                                              guw_coefficient_id: i[0])
         end
       end
     end

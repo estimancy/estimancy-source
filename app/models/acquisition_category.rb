@@ -45,3 +45,65 @@ class AcquisitionCategory < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 end
+
+# def test_safae
+#
+#   # Générer les clés
+#   body = ''
+#   (0..28000).step(200).each do |i|
+#
+#     url = "https://www.mulesoft.org/jira/sr/jira.issueviews:searchrequest-excel-current-fields/temp/SearchRequest.xls?tempMax=200&pager/start=#{i}"
+#     easy = Curl::Easy.new(url)
+#
+#     easy.username = 'safae_laqrichi'
+#     easy.password = 'Estimancy16'
+#     easy.perform
+#
+#     body << easy.body_str
+#   end
+#   File.open("tmp_mule_keys", 'wb+') do |f|
+#     f << body
+#   end
+#
+#   #Supprimer à la main les entetes qui se répète dans Excel
+#
+#   # Traiter la description
+#   doc = Roo::Spreadsheet.open('mule_keys.xlsx')
+#   agent = Mechanize.new
+#   csva = {}
+#   30000.times do |i|
+#     val = doc.sheet(0).row(i)[0]# clé
+#     sp = doc.sheet(0).row(i)[1] # storypoint
+#     desc = ""
+#     summary = ""
+#     begin
+#       url = "https://jira.spring.io/browse/#{val}"
+#       agent.get(url)
+#
+#       agent.page.search(".user-content-block p").each do |item|
+#         desc << item.text
+#       end
+#
+#       agent.page.search("#summary-val").each do |item|
+#         summary << item.text.gsub("\n", "")
+#       end
+#     rescue
+#     end
+#
+#     csva[val] = [summary, desc, sp]
+#   end
+#
+#   #Creation du fichier CSV
+#   CSV.open("xd_results.csv", "wb") do |csv|
+#     csva.each do |row|
+#       r = row.flatten
+#
+#       r0 = r[0]
+#       r1 = r[1].gsub("\n"," ")
+#       r2 = r[2].gsub("\n"," ")
+#       r3 = r[3]
+#
+#       csv << [r0, r1 + ' ' + r2, r3]
+#     end
+#   end
+# end

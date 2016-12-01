@@ -26,23 +26,57 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_model = @guw_type.guw_model
 
+    unless params[:coefficient_elements_value].nil?
+      params[:coefficient_elements_value].each do |i|
+        i.last.each do |j|
+          j.last.each do |k|
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            ce = Guw::GuwCoefficientElement.find(j.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
+
+            cwu = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: cplx.id,
+                                                             guw_coefficient_element_id: ce.id,
+                                                             guw_output_id: output.id).first
+            if cwu.nil?
+              Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: cplx.id,
+                                                          guw_coefficient_element_id: ce.id,
+                                                          guw_output_id: output.id,
+                                                          value: params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"],
+                                                          guw_type_id: @guw_type.id)
+            else
+              cwu.value = params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"]
+              cwu.guw_type_id = @guw_type.id
+              cwu.guw_output_id = output.id
+              cwu.save
+            end
+          end
+        end
+      end
+    end
+
     unless params[:work_unit_value].nil?
       params[:work_unit_value].each do |i|
         i.last.each do |j|
-          wu = Guw::GuwWorkUnit.find(j.first.to_i)
-          cplx = Guw::GuwComplexity.find(i.first.to_i)
-          # @guw_type = cplx.guw_type
+          j.last.each do |k|
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            wu = Guw::GuwWorkUnit.find(j.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
 
-          cwu = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: cplx.id, guw_work_unit_id: wu.id).first
-          if cwu.nil?
-            Guw::GuwComplexityWorkUnit.create(guw_complexity_id: cplx.id,
-                                              guw_work_unit_id: wu.id,
-                                              value: params[:work_unit_value]["#{cplx.id}"]["#{wu.id}"],
-                                              guw_type_id: @guw_type.id)
-          else
-            cwu.value = params[:work_unit_value]["#{cplx.id}"]["#{wu.id}"]
-            cwu.guw_type_id = @guw_type.id
-            cwu.save
+            cwu = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: cplx.id,
+                                                   guw_work_unit_id: wu.id,
+                                                   guw_output_id: output.id).first
+            if cwu.nil?
+              Guw::GuwComplexityWorkUnit.create(guw_complexity_id: cplx.id,
+                                                guw_work_unit_id: wu.id,
+                                                guw_output_id: output.id,
+                                                value: params[:work_unit_value]["#{cplx.id}"]["#{wu.id}"]["#{output.id}"],
+                                                guw_type_id: @guw_type.id)
+            else
+              cwu.value = params[:work_unit_value]["#{cplx.id}"]["#{wu.id}"]["#{output.id}"]
+              cwu.guw_type_id = @guw_type.id
+              cwu.guw_output_id = output.id
+              cwu.save
+            end
           end
         end
       end
@@ -51,48 +85,58 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     unless params[:weightings_value].nil?
       params[:weightings_value].each do |i|
         i.last.each do |j|
-          we = Guw::GuwWeighting.find(j.first.to_i)
-          cplx = Guw::GuwComplexity.find(i.first.to_i)
-          # @guw_type = cplx.guw_type
+          j.last.each do |k|
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            we = Guw::GuwWeighting.find(j.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
 
-          cwe = Guw::GuwComplexityWeighting.where(guw_complexity_id: cplx.id, guw_weighting_id: we.id).first
-          if cwe.nil?
-            Guw::GuwComplexityWeighting.create(guw_complexity_id: cplx.id,
-                                               guw_weighting_id: we.id,
-                                               value: params[:weightings_value]["#{cplx.id}"]["#{we.id}"],
-                                               guw_type_id: @guw_type.id)
-          else
-            cwe.value = params[:weightings_value]["#{cplx.id}"]["#{we.id}"]
-            cwe.guw_type_id = @guw_type.id
-            cwe.save
+            cwe = Guw::GuwComplexityWeighting.where(guw_complexity_id: cplx.id,
+                                                    guw_weighting_id: we.id,
+                                                    guw_output_id: output.id).first
+            if cwe.nil?
+              Guw::GuwComplexityWeighting.create(guw_complexity_id: cplx.id,
+                                                 guw_weighting_id: we.id,
+                                                 guw_output_id: output.id,
+                                                 value: params[:weightings_value]["#{cplx.id}"]["#{we.id}"]["#{output.id}"],
+                                                 guw_type_id: @guw_type.id)
+            else
+              cwe.value = params[:weightings_value]["#{cplx.id}"]["#{we.id}"]["#{output.id}"]
+              cwe.guw_type_id = @guw_type.id
+              cwe.guw_output_id = output.id
+              cwe.save
+            end
           end
-
         end
       end
     end
 
-    unless params[:factors_value].nil?
-      params[:factors_value].each do |i|
-        i.last.each do |j|
-          fa = Guw::GuwFactor.find(j.first.to_i)
-          cplx = Guw::GuwComplexity.find(i.first.to_i)
-          # @guw_type = cplx.guw_type
-
-          cfa = Guw::GuwComplexityFactor.where(guw_complexity_id: cplx.id, guw_factor_id: fa.id).first
-          if cfa.nil?
-            Guw::GuwComplexityFactor.create(guw_complexity_id: cplx.id,
-                                            guw_factor_id: fa.id,
-                                            value: params[:factors_value]["#{cplx.id}"]["#{fa.id}"],
-                                            guw_type_id: @guw_type.id)
-          else
-            cfa.value = params[:factors_value]["#{cplx.id}"]["#{fa.id}"]
-            cfa.guw_type_id = @guw_type.id
-            cfa.save
-          end
-
-        end
-      end
-    end
+    # unless params[:factors_value].nil?
+    #   params[:factors_value].each do |i|
+    #     i.last.each do |j|
+    #       j.last.each do |k|
+    #         cplx = Guw::GuwComplexity.find(i.first.to_i)
+    #         fa = Guw::GuwFactor.find(j.first.to_i)
+    #         output = Guw::GuwOutput.find(k.first.to_i)
+    #
+    #         cfa = Guw::GuwComplexityFactor.where(guw_complexity_id: cplx.id,
+    #                                              guw_factor_id: fa.id,
+    #                                              guw_output_id: output.id).first
+    #         if cfa.nil?
+    #           Guw::GuwComplexityFactor.create(guw_complexity_id: cplx.id,
+    #                                           guw_factor_id: fa.id,
+    #                                           guw_output_id: output.id,
+    #                                           value: params[:factors_value]["#{cplx.id}"]["#{fa.id}"]["#{output.id}"],
+    #                                           guw_type_id: @guw_type.id)
+    #         else
+    #           cfa.value = params[:factors_value]["#{cplx.id}"]["#{fa.id}"]["#{output.id}"]
+    #           cfa.guw_type_id = @guw_type.id
+    #           cfa.guw_output_id = output.id
+    #           cfa.save
+    #         end
+    #       end
+    #     end
+    #   end
+    # end
 
     unless params[:technology_value].nil?
       params[:technology_value].each do |i|
