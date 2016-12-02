@@ -1659,7 +1659,7 @@ frsncf_amoa_infra:
   number_of_uw: "Nombre d'U.O"
   number_of_uw_modifies: "Nombre d'U.O. modifiés"
   number_of_uw_selected: "Nombre d'U.O. sélectionnés"
-  number_of_uw_hs: "Nombre d'U.O. HS"
+  number_uo_hs: "Nombre d'U.O. HS"
   import_data_from_uw: "Import de donnée d'une unité d'oeuvre"
   new_acquisition_type: "Nouveau service"
   calculate_duration_and_size: "Calcul de la durée et de la taille des équipes"
