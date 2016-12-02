@@ -1658,7 +1658,7 @@ frsncf:
   close_without_calculate: "Fermer sans calculer"
   calculate: "Calculer"
   Calculated: "Calculé"
-  numerber_of_uw: "Nombre d'U.O"
+  numerber_of_uw: "Nombre de composant"
   numerber_of_uw_modifies: "Nombre d'U.O. modifiés"
   numerber_of_uw_selected: "Nombre d'U.O. sélectionnés"
   import_data_from_uw: "Import de donnée d'une unité d'oeuvre"

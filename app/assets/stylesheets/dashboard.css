@@ -222,7 +222,7 @@ input::-webkit-inner-spin-button {
 .table select{
     height: 23px;
     font-size: 11px;
-    margin-right: -12px;
+    /*margin-right: -12px;*/
     border-radius: 0px;
     padding-top: 2px;
 }

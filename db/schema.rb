@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161130161233) do
+ActiveRecord::Schema.define(:version => 20161201111724) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -678,8 +678,9 @@ ActiveRecord::Schema.define(:version => 20161130161233) do
     t.string   "name"
     t.string   "output_type"
     t.integer  "guw_model_id"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+    t.boolean  "allow_intermediate_value"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -715,6 +716,7 @@ ActiveRecord::Schema.define(:version => 20161130161233) do
     t.boolean  "allow_retained",             :default => true
     t.boolean  "allow_complexity"
     t.boolean  "allow_criteria",             :default => true
+    t.boolean  "display_threshold"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -777,6 +779,8 @@ ActiveRecord::Schema.define(:version => 20161130161233) do
     t.float    "work_unit_value"
     t.float    "weighting_value"
     t.float    "factor_value"
+    t.float    "intermediate_weight"
+    t.float    "intermediate_percent"
   end
 
   create_table "guw_guw_weightings", :force => true do |t|

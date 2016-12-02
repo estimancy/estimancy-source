@@ -74,7 +74,7 @@
                 <th colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>" >
 
                   <% if guw_type.allow_criteria == true %>
-                    Prod. &nbsp;
+                    Calcul. &nbsp;
                   <% end %>
                   <% if guw_type.allow_criteria == true %>
                     [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %>
@@ -193,11 +193,11 @@
                   Seuils de complexité
                 </th>
                 <% guw_type.guw_type_complexities.order("display_order asc").each do |type_complexity| %>
-                  <th colspan="2">
-                    <%= type_complexity.name %> -
+                  <th colspan="5">
+                    <%= type_complexity.name %> (<%= type_complexity.value %>) -
                     <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type, type_complexity) %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                        <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
+                      <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
                     <% end %>
                   </th>
                 <% end %>
@@ -205,13 +205,17 @@
 
               <tr>
                 <th>Attributs</th>
+                <th colspan="<%= (guw_type.guw_type_complexities.size) * 5 %>"></th>
+              </tr>
+
+              <tr>
+                <th></th>
                 <% guw_type.guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
-                  <% if guw_type.allow_criteria == true %>
-                    <th>Prod.</th>
-                  <% end %>
-                  <th>
-                    [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %> (<%= type_complexity.value %>)
-                  </th>
+                  <th>Calcul</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>A</th>
+                  <th>B</th>
                 <% end %>
               </tr>
 
@@ -229,8 +233,14 @@
                     </td>
                     <td class="align-center">
                       <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "input-mini" %>
+                    </td>
+                    <td class="align-center">
                       <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "input-mini" %>
+                    </td>
+                    <td class="align-center">
                       <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "input-mini" %>
+                    </td>
+                    <td class="align-center">
                       <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "input-mini" %>
                     </td>
                   <% end %>
