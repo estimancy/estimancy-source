@@ -35,7 +35,7 @@
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw) %> :
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw) %> :
         <span class="label label-info number_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.map(&:quantity)}.flatten.compact.sum %>
         </span>
@@ -106,19 +106,19 @@
                 </span>
               </span>
               <span class="label label-info">
-                 <%= I18n.t(:numerber_of_uw) %> :
+                 <%= I18n.t(:number_of_uw) %> :
                 <span class="<%= uowg.id %>_number">
                   <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
                 </span>
               </span>
               <span class="label label-info">
-                <%= I18n.t(:numerber_of_uw_modifies) %> :
+                <%= I18n.t(:number_of_uw_modifies) %> :
                 <span class="<%= uowg.id %>_flagged">
                   <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
                 </span>
               </span>
               <span class="label label-info">
-                <%= I18n.t(:numerber_of_uw_selected) %> :
+                <%= I18n.t(:number_of_uw_selected) %> :
                 <span class="<%= uowg.id %>_selected">
                   <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
                 </span>
