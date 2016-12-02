@@ -42,21 +42,21 @@
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw_modifies) %>
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_modifies) %>
         <span class="label label-info modified_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:numerber_of_uw_selected) %> :
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_selected) %> :
         <span class="label label-info selected_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; Nombre d'U.O. H.S. :
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_uo_hs) %>
         <span class="label label-info off_line_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity)}.flatten.compact.sum %>
         </span>
