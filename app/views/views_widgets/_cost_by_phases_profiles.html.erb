@@ -1,7 +1,7 @@
 <% unless ratio_reference.nil? %>
   <% wbs_activity = ratio_reference.wbs_activity  %>
+  <% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1 %>
 <% end %>
-<% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1 %>
 
 <div>
   <div class="pull-left">
@@ -89,7 +89,7 @@
                                                 <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
                                             <% end %>
 
-                                            <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
+                                            <% wbs_profiles_value = wbs_profiles_value.to_f / effort_unit_coefficient  %>
                                             <% array_profile_sum << wbs_profiles_value.to_f %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
                                         <% end %>
                                     <% end %>
@@ -106,7 +106,7 @@
                                           <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
                                           <% if wbs_profiles_value.class == Hash %>
                                               <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
-                                              <% wbs_profiles_value = wbs_profiles_value.to_f/effort_unit_coefficient  %>
+                                              <% wbs_profiles_value = wbs_profiles_value.to_f / effort_unit_coefficient  %>
                                           <% end %>
                                           <% array_root[profile.id] << wbs_profiles_value.to_f %>
                                           <% effort_per_phase +=  wbs_profiles_value %>
