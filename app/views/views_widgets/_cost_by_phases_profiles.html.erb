@@ -1,4 +1,6 @@
-<% wbs_activity = ratio_reference.wbs_activity  %>
+<% unless ratio_reference.nil? %>
+  <% wbs_activity = ratio_reference.wbs_activity  %>
+<% end %>
 <% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1 %>
 
 <div>
