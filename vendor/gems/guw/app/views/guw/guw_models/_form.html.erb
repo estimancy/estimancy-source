@@ -26,7 +26,7 @@
 
   <div id="tabs-model">
     <div class="row-fluid">
-      <div class="span6">
+      <div class="span9">
         <%= simple_form_for(@guw_model) do |f| %>
             <%= f.error_notification %>
 
@@ -46,8 +46,6 @@
               <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
               <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
               <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
-              <%# f.input :effort_unit, label: I18n.t(:effort_unit) %>
-              <%# f.input :cost_unit, label: I18n.t(:cost_unit) %>
             </div>
 
             <% if can? :manage_modules_instances, ModuleProject %>
@@ -59,31 +57,15 @@
       </div>
 
       <% unless @guw_model.new_record? %>
-        <div class="span6">
+        <div class="span3">
           <%= link_to I18n.t(:export), guw.guw_model_exportxl_path(@guw_model), :method => 'post', :class => 'btn btn-mini pull-right button_margin_right' %>
           <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right' %>
         </div>
       <% else %>
-        <a href="#import" role="button" class="btn btn-mini pull-right button_margin_right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-
-        <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="span3">
           <%= form_tag guw.importxl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header modal-drag">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
-            </div>
-            <div class="modal-body">
-              <%= file_field_tag :file %>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-            </div>
-            <div class="loading span11 hide">
-              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-            </div>
+            <%= file_field_tag :file %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-mini', :onclick => "$('.loading').show();" %>
           <% end %>
         </div>
       <% end %>

@@ -267,8 +267,7 @@
       <% if can? :show_modules_instances, ModuleProject %>
 
         <% if can? :manage_modules_instances, ModuleProject %>
-          <a href="#myWBSModal" role="button" class="btn pull-right" title="<%= I18n.t(:guide_import_wbs_activity) %>" data-toggle="modal"><%= I18n.t(:import_wbs_activity) %></a>
-          <%= link_to I18n.t(:new_wbs_activity), new_organization_wbs_activity_path(@organization), :class => 'btn pull-right', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+          <%= link_to I18n.t(:new_wbs_activity), new_organization_wbs_activity_path(@organization), :class => 'btn btn-mini pull-right', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
         <% end %>
         <br>
 
@@ -290,7 +289,6 @@
               <td class="center">
                 <%= link_to '', edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'icon-pencil', :title => I18n.t(:edit) %>
                 <% if can? :manage_modules_instances, ModuleProject %>
-                  <%#= link_to('', "wbs_activities/#{wbs_activity.id}/duplicate_wbs_activity", :class => 'button_attribute_tooltip icon-copy', :title => 'Duplicate') %>
                   <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'icon-copy', :title => I18n.t(:duplicate_module) %>
                   <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id}, :remote => true, :class => 'icon-map-marker', :title => I18n.t('button_find_use')) %>
                   <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'icon-trash', :title => I18n.t(:delete) %>
@@ -299,32 +297,6 @@
             </tr>
           <% end %>
         </table>
-
-        <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <%= form_tag import_wbs_activities_path, :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header modal-drag">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h3 id="myModalLabel"><%= I18n.t(:import) %> <%= I18n.t(:wbs_activity) %></h3>
-            </div>
-            <div class="modal-body">
-              <label><%= I18n.t(:file_csv) %></label>
-              <%= file_field_tag :file %>
-
-              <label><%= I18n.t(:separator) %>'<%= I18n.t(:general_csv_separator) %>') </label>
-              <%= text_field_tag :separator %>
-
-              <label><%= I18n.t(:encoding) %></label>
-              <%= select_tag :encoding, options_for_select(Project::encoding, :selected => I18n.t(:general_csv_encoding)) %>
-            </div>
-            <div class="modal-footer modal-drag">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-            </div>
-            <div class="loading span11 hide">
-              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-            </div>
-          <% end %>
-        </div>
       <% else %>
         <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
       <% end %>

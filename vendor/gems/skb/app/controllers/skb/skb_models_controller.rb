@@ -133,7 +133,11 @@ class Skb::SkbModelsController < ApplicationController
       if params[:skb_model_id].blank?
         @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
                                        organization_id: @organization.id)
-        @skb_model.save(validate: false)
+
+        unless @skb_model.save
+          flash[:error] = "Une erreur est survenue durant l'import du modèle."
+        end
+
       else
         @skb_model = Skb::SkbModel.where(id: params[:skb_model_id],
                                          organization_id: @organization.id).first
@@ -167,7 +171,7 @@ class Skb::SkbModelsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     @skb_model = Skb::SkbModel.new(params[:skb_model])
-    @skb_model.organization_id = @organization.id.to_i
+    @skb_model.organization_id = @current_organization.id
     if @skb_model.save
       redirect_to main_app.organization_module_estimation_path(@skb_model.organization_id, anchor: "taille")
     else
