@@ -25,5 +25,6 @@ module Ge
     belongs_to :ge_model
     belongs_to :ge_factor
     belongs_to :organization
+    belongs_to :project
   end
 end
