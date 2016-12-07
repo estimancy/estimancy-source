@@ -86,14 +86,14 @@
             </thead>
             <% @wbs_activity_ratios.each do |wbs_activity_ratio| %>
                 <tr>
-                  <td><%= link_to wbs_activity_ratio.name, edit_wbs_activity_path(@wbs_activity.id, :anchor => 'tabs-4') %></td>
+                  <td><%= link_to wbs_activity_ratio.name, edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-4') %></td>
                   <td><%= wbs_activity_ratio.description %></td>
                   <td class="align-center">
                     <%= link_to '', edit_wbs_activity_ratio_path(wbs_activity_ratio, :activity_id => wbs_activity_ratio.wbs_activity_id), :class => 'button_attribute_tooltip icon-pencil', :title => I18n.t(:edit) %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                        <%= link_to '', wbs_activity_ratio, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
-                        <%= link_to '', export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', :title => I18n.t(:export) %>
-                        <a href="#myWBSModal" role="button" class="button_attribute_tooltip icon-upload" data-toggle="modal" title="Import a CSV file"></a>
+                      <%= link_to '', wbs_activity_ratio, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
+                      <%= link_to '', export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', :title => I18n.t(:export) %>
+                      <a href="#myWBSModal" role="button" class="button_attribute_tooltip icon-upload" data-toggle="modal" title="Import a CSV file"></a>
                     <% end %>
                   </td>
                 </tr>

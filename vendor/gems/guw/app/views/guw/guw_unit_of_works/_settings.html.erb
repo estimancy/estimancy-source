@@ -6,7 +6,7 @@
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
         <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn btn-mini input-small" %>
-        <a href="#import_myexport" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+        <a href="#import_guw" role="button" class="btn btn-mini input-small" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
           <%= I18n.t(:import) %>
         </a>
       <% end %>
@@ -160,10 +160,14 @@
               <% if @guw_model.allow_technology == true %>
                 <th class=""><%= I18n.t :technology %></th>
               <% end %>
-              <th class=""><%= I18n.t :quantity %></th>
+
+              <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                <th class=""><%= I18n.t :quantity %></th>
+              <% end %>
 
               <th class=""><%= I18n.t :complexity %></th>
-              <% unless @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.empty? %>
+
+              <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                 <th>
                   <%= I18n.t :criteria %>
                 </th>
@@ -277,13 +281,15 @@
                   </td>
                 <% end %>
 
-                <td class="span2 quantity_label_<%= guow.id %>">
-                  <% unless guow.guw_type.nil? %>
-                    <% if guow.guw_type.allow_quantity == true %>
-                      <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, class: "input-mini" %>
+                <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                  <td class="span2 quantity_label_<%= guow.id %>">
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_quantity == true %>
+                        <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, class: "input-mini" %>
+                      <% end %>
                     <% end %>
-                  <% end %>
-                </td>
+                  </td>
+                <% end %>
 
                 <td>
                   <span class="cotation_label_<%= guow.id %>">
@@ -294,13 +300,12 @@
                       <% elsif guow.off_line_uo == true %>
                         <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: "input-small guw_complexity", prompt: "HSUO", disabled: !guow.guw_type.allow_complexity %>
                       <% elsif guow.guw_complexity.nil? %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] },
-                                                                                       selected: guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id),
-                                       guw: guow.id, class: "input-small guw_complexity",
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{ |i| [i.name, i.id] },
+                                                                                       selected: guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? nil : guow.guw_type.guw_complexities.where(default_value: true).first.id),
+                                       guw: guow.id,
+                                       class: "input-small guw_complexity",
                                        include_blank: true,
                                        disabled: !guow.guw_type.allow_complexity %>
-                        <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id %>
-
                       <% else %>
                         <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id, class: "input-small guw_complexity", include_blank: true, disabled: !guow.guw_type.allow_complexity %>
                       <% end %>
@@ -309,20 +314,22 @@
                   </span>
                 </td>
 
-                <td>
-                  <% unless guow.guw_type.nil? %>
-                    <% if guow.guw_type.allow_criteria == true %>
-                      <span class="text-center criteria_label_<%= guow.id %>">
-                        <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
-                        <% if counting.empty? %>
-                          <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
-                        <% else %>
-                          <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
-                        <% end %>
-                      </span>
+                <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                  <td>
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_criteria == true %>
+                        <span class="text-center criteria_label_<%= guow.id %>">
+                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
+                          <% if counting.empty? %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                          <% else %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                          <% end %>
+                        </span>
+                      <% end %>
                     <% end %>
-                  <% end %>
-                </td>
+                  </td>
+                <% end %>
 
                 <td>
                   <span class=" size_label_<%= guow.id %>">
@@ -384,8 +391,8 @@
 <% end %>
 
 
-<div id="import_myexport" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <%= form_tag guw.import_myexport_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+<div id="import_guw" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <%= form_tag guw.import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
     <div class="modal-header modal-drag">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>

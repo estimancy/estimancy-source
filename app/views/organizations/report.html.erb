@@ -86,20 +86,20 @@
             </div>
           </div>
           <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag "Avec module de Taille" %>
-              <%= check_box_tag "with_guw", "checked", true %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag "Module générique de taille" %>
-              <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]} ) %>
-            </div>
-          </div>
-          <br>
+          <!--<div class="row-fluid">-->
+            <!--<div class="span12">-->
+              <!--<%# label_tag "Avec module de Taille" %>-->
+              <!--<%# check_box_tag "with_guw", "checked", true %>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<br>-->
+          <!--<div class="row-fluid">-->
+            <!--<div class="span12">-->
+              <!--<%# label_tag "Module générique de taille" %>-->
+              <!--<%# select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]} ) %>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<br>-->
           <div class="row-fluid">
             <div class="span12">
               <%= submit_tag I18n.t(:Generate_Report), class: "btn pull-left" %>
