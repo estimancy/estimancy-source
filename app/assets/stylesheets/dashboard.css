@@ -1232,3 +1232,11 @@ tr.conversion_factor, td.conversion_factor {
     color: white;
     margin-right: 10px;
 }
+
+#factor_comments{
+    margin-left: 10px;
+    width: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

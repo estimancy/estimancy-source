@@ -50,10 +50,9 @@
                                   <%= key.humanize.upcase %>
                                  </span>
 
-
-                                <span class="float-right">
+                                <span class="factor_comments">
                                   <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, organization_id: @ge_model.organization_id).first_or_create %>
-                                   <%= link_to I18n.t(:comments), ge.edit_ge_model_factor_description_path(model_factor_description), id: "ge_model_factor_description", remote: true  %>
+                                   <%= link_to "", ge.edit_ge_model_factor_description_path(model_factor_description), id: "ge_model_factor_description", class: "icon icon-comment-alt", title: model_factor_description.description, remote: true %> <i><%= simple_format(model_factor_description.description) %></i>
                                 </span>
 
 

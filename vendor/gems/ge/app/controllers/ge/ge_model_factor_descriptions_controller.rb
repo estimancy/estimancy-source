@@ -50,12 +50,14 @@ module Ge
       @ge_factor = @ge_model_factor_description.ge_factor
       @organization = @ge_model.organization
 
-      if @ge_model_factor_description.update_attributes(params[:ge_model_factor_description])
-        redirect_to :back
-      else
-        render action: :edit
+      respond_to do |format|
+        if @ge_model_factor_description.update_attributes(params[:ge_model_factor_description])
+          format.js { render :js => "window.location.replace('#{main_app.dashboard_path(@project)}');"}
+        else
+          format.html { render action: :edit }
+          format.js   { render action: :edit }
+        end
       end
-
     end
 
   end
