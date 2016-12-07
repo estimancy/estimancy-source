@@ -35,7 +35,7 @@ module Ge
       @ge_model = @ge_model_factor_description.ge_model
       @ge_factor = @ge_model_factor_description.ge_factor
       @organization = @ge_model.organization
-
+      @project = Project.find(params[:project_id])
     end
 
     def create
@@ -49,6 +49,7 @@ module Ge
       @ge_model = @ge_model_factor_description.ge_model
       @ge_factor = @ge_model_factor_description.ge_factor
       @organization = @ge_model.organization
+      @project = Project.find(params[:project_id])
 
       respond_to do |format|
         if @ge_model_factor_description.update_attributes(params[:ge_model_factor_description])

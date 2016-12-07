@@ -4,6 +4,7 @@
       <%= f.input :ge_model_id, as: :hidden, :input_html => { value: @ge_model.id } %>
       <%= f.input :ge_factor_id, as: :hidden, :input_html => { value: @ge_factor.id } %>
       <%#= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
+      <%= hidden_field_tag 'project_id', @project.id %>
 
       <table>
         <tr>
