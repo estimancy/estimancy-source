@@ -48,7 +48,15 @@
                               <div class="span12">
                                 <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
                                   <%= key.humanize.upcase %>
+                                 </span>
+
+
+                                <span class="float-right">
+                                  <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, organization_id: @ge_model.organization_id).first_or_create %>
+                                   <%= link_to I18n.t(:comments), ge.edit_ge_model_factor_description_path(model_factor_description), id: "ge_model_factor_description", remote: true  %>
                                 </span>
+
+
                                 <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
                                 <% ids_list = values.map{ |f| f.id } %>
                                 <% js_factor_data = Hash.new %>

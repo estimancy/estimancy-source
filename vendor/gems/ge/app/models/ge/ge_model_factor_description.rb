@@ -19,19 +19,11 @@
 #
 #############################################################################
 
-Ge::Engine.routes.draw do
-  root :to => 'ge#index'
-  resources :ge_models
-  resources :ge_models do
-    post "save_efforts"
-    post "update_calculated_effort"
-    post "duplicate"
-    post "import"
-    get "data_export"
-    get "delete_all_factors_data"
+module Ge
+  class GeModelFactorDescription < ActiveRecord::Base
+
+    belongs_to :ge_model
+    belongs_to :ge_factor
+    belongs_to :organization
   end
-
-  resources :ge_model_factor_descriptions
-
-  match 'ge_models/import_ge_model_instance' => 'ge_models#import', as: "import_ge_model_instance"
 end
