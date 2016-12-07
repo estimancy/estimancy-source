@@ -52,6 +52,7 @@ module Ge
 
       respond_to do |format|
         if @ge_model_factor_description.update_attributes(params[:ge_model_factor_description])
+          format.html { redirect_to main_app.dashboard_path(@project) }
           format.js { render :js => "window.location.replace('#{main_app.dashboard_path(@project)}');"}
         else
           format.html { render action: :edit }

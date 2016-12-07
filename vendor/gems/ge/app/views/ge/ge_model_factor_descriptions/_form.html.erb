@@ -8,11 +8,10 @@
       <table>
         <tr>
           <td>
-            <%#= f.input :description, label: I18n.t(:description), input_html: { :class => 'input-large', rows: 10} %>
-            <%= tinymce %>
-            <%= f.input :description, label: I18n.t(:comments), input_html: { class: "input-xxlarge tinymce", rows: 10} %>
+            <%= f.input :description, label: I18n.t(:comments), input_html: { :class => 'input-xxlarge', rows: 16} %>
+            <%#= tinymce %>
+            <%#= f.input :description, label: I18n.t(:comments), input_html: { class: "input-xxlarge tinymce", rows: 10} %>
           </td>
-
         </tr>
 
       </table>
