@@ -54,7 +54,7 @@
 
                                 <span class="attribute_tooltip" id="ge_model_factor_description" title="<%= model_factor_description.description %>" style="margin-left: 10px;">
                                   <%= link_to (model_factor_description.description.nil? || model_factor_description.description.blank?) ? '...' :  model_factor_description.description.truncate(50),
-                                              ge.edit_ge_model_factor_description_path(model_factor_description, project_id= @project.id), remote: true %>
+                                              ge.edit_ge_model_factor_description_path(model_factor_description, project_id: @project.id), remote: true %>
                                 </span>
 
                                 <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
