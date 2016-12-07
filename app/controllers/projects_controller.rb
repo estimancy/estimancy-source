@@ -119,7 +119,7 @@ class ProjectsController < ApplicationController
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project.title}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
     @module_projects = @project.module_projects
@@ -1965,11 +1965,15 @@ public
         ### Wbs activity
         #create module_project ratio elements
         old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
-          mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
-                                    wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
-                                    wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
-                                    name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
-                                    ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
+          # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
+          #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
+          #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
+          #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
+          #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
+
+          mp_ratio_element = old_mp_ratio_elt.dup
+          mp_ratio_element.module_project_id = new_mp.id
+          mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
           pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
           mp_ratio_element.pbs_project_element_id = pbs_id

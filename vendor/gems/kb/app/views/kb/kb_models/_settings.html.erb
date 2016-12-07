@@ -104,9 +104,17 @@
 
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
-             size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                      :module_project_id => current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first.id,
-                                                      :in_out => "output").first
+             begin
+               mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+               size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                        :module_project_id => mpsize.id,
+                                                        :in_out => "output").first
+             rescue
+               mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+               size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                        :module_project_id => mpsize.id,
+                                                        :in_out => "output").first
+             end
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
                                                        :module_project_id => current_module_project.id,
