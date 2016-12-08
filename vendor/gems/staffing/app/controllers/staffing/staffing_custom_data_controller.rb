@@ -179,10 +179,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
         @staffing_custom_data.max_staffing = @staffing_trapeze
       end
 
-      x0D = x0 * @duration
-      x1D = x1 * @duration
-      x2D = x2 * @duration
-      x3D = x3 * @duration
+      x0D = x0 * @duration.to_f
+      x1D = x1 * @duration.to_f
+      x2D = x2 * @duration.to_f
+      x3D = x3 * @duration.to_f
 
       # Calcul de a, b, a', b' avec
       # a = M(1 - y0) / D(x1 - x2)
