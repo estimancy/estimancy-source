@@ -59,7 +59,7 @@
       </div>
 
       <% unless @guw_model.new_record? %>
-        <div class="span6">
+        <div class="span3">
           <%= link_to I18n.t(:export), guw.guw_model_exportxl_path(@guw_model), :method => 'post', :class => 'btn btn-mini pull-right button_margin_right' %>
           <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right' %>
         </div>

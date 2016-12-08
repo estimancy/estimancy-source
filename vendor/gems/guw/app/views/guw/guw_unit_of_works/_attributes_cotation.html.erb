@@ -15,7 +15,7 @@
 
     <% if guw_coefficient.coefficient_type == "Liste" %>
       <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
-    <% else %>
+    <% elsif guw_coefficient.coefficient_type == "Pourcentage"  %>
       <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
     <% end %>
 
@@ -49,7 +49,9 @@
 
       <%# Guw::GuwUnitOfWorkAttribute.includes(:guw_attribute).where(guw_unit_of_work_id: guow.id).order('guw_guw_attributes.name asc').each do |uowa, j| %>
       <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
-        <% begin %>
+        <%# begin %>
+          <% gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
+                                                guw_attribute_id: uowa.guw_attribute.id).first %>
           <tr>
             <% unless guw_type.nil? %>
               <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
@@ -66,7 +68,7 @@
               <% end %>
 
               <td>
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? gat.default_value : uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
 
               <% if @guw_model.three_points_estimation == true %>
@@ -77,8 +79,8 @@
 
             <% end %>
           </tr>
-        <% rescue %>
-        <% end %>
+        <%# rescue %>
+        <%# end %>
       <% end %>
     </table>
   </div>

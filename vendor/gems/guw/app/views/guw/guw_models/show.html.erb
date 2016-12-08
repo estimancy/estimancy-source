@@ -176,6 +176,7 @@
         <% end %>
 
         <br>
+        <hr>
 
         <% if guw_type.allow_criteria == true %>
 
@@ -222,7 +223,10 @@
               <% @guw_model.guw_attributes.order("name ASC").each do |guw_attribute| %>
                 <tr>
                   <td class="align-center">
-                    <%= link_to guw_attribute, guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute) %>
+                    <%# link_to guw_attribute, guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute) %>
+                    <% gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                                         guw_attribute_id: guw_attribute.id).first_or_create! %>
+                    <%= link_to "#{guw_attribute} (#{gat.default_value})", guw.edit_guw_model_guw_type_guw_attribute_type_path(@guw_model, guw_type, gat) %>
                   </td>
                   <% guw_type.guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
 

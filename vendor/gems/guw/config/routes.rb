@@ -64,6 +64,7 @@ Guw::Engine.routes.draw do
     resources :guw_unit_of_work_groups
     resources :guw_types do
       resources :guw_attribute_complexities
+      resources :guw_attribute_types
       resources :guw_complexities
       resources :guw_type_complexities
 

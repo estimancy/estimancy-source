@@ -1,0 +1,24 @@
+<div class="tabs">
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t(:pe_attributes) %>
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for([@guw_model, @guw_type, @guw_attribute_type]) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+        <%= f.input :default_value %>
+      </div>
+
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= f.button :submit, I18n.t('save')  %>
+      <% end %>
+      <%= link_to I18n.t(:back), :back, class: "btn" %>
+    <% end %>
+  </div>
+</div>
