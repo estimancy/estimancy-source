@@ -49,6 +49,14 @@
                                 <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
                                   <%= key.humanize.upcase %>
                                 </span>
+
+                                <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, project_id: @project.id, organization_id: @ge_model.organization_id).first_or_create %>
+
+                                <span class="attribute_tooltip" id="ge_model_factor_description" title="<%= model_factor_description.description %>" style="margin-left: 10px;">
+                                  <%= link_to (model_factor_description.description.nil? || model_factor_description.description.blank?) ? '...' :  model_factor_description.description.truncate(50),
+                                              ge.edit_ge_model_factor_description_path(model_factor_description, project_id: @project.id), remote: true %>
+                                </span>
+
                                 <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
                                 <% ids_list = values.map{ |f| f.id } %>
                                 <% js_factor_data = Hash.new %>
@@ -64,7 +72,6 @@
 
                                 <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="factor-slider" value="" />
                                 <hr>
-
                               </div>
 
                               <script type="text/javascript">
