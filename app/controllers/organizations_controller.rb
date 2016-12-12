@@ -625,7 +625,6 @@ class OrganizationsController < ApplicationController
 
         # new_prj.application_id = app.id
         # new_prj.save(validate: false)
-
         ap.save
       end
 
@@ -684,23 +683,18 @@ class OrganizationsController < ApplicationController
           new_mp.associated_module_projects << new_associated_mp
         end
 
-        # if the module_project view is nil
-        #if new_mp.view.nil?
-        #  default_view = new_organization.views.where('pemodule_id = ? AND is_default_view = ?', new_mp.pemodule_id, true).first
-        #  if default_view.nil?
-        #    default_view = View.create(name: "#{new_mp} view", description: "", pemodule_id: new_mp.pemodule_id, organization_id: new_organization_id)
-        #  end
-        #  new_mp.update_attribute(:view_id, default_view.id)
-        #end
-
-        #Recreate view for all moduleproject as the projects are not is the same organization
-        #Copy the views and widgets for the new project
-        #mp_default_view =
-        #if old_mp.view.nil?
-        #
-        #else
-        #
-        #end
+        # GeFactorDescription
+        old_mp.ge_model_factor_descriptions.each do |factor_description|
+          new_ge_model = new_organization.ge_models.where(copy_id: factor_description.ge_model_id).first
+          if new_ge_model
+            new_ge_factor = new_ge_model.ge_factors.where(copy_id: factor_description.ge_factor_id).first
+            if new_ge_factor
+              Ge::GeModelFactorDescription.create(ge_model_id: new_ge_model.id, ge_factor_id: new_ge_factor.id,
+                                                  factor_alias: new_ge_factor.alias, description: factor_description.description,
+                                                  module_project_id: new_mp.id, project_id: new_prj.id, organization_id: new_organization_id)
+            end
+          end
+        end
 
         new_view = View.create(organization_id: new_organization_id, pemodule_id: new_mp.pemodule_id, name: "#{new_prj.to_s} : view for #{new_mp.to_s}", description: "")
         # We have to copy all the selected view's widgets in a new view for the current module_project
@@ -1127,7 +1121,6 @@ class OrganizationsController < ApplicationController
 
           # Update the modules's GE Models instances
           new_organization.ge_models.each do |ge_model|
-            #===================  TEST  =======================
             #Terminate the model duplication with the copie of the factors values
             ge_model.transaction do
               #Then copy the factor values
@@ -1146,7 +1139,6 @@ class OrganizationsController < ApplicationController
                 end
               end
             end
-            #===================  TEST  =======================
 
             # Update all the new organization module_project's ge_model with the current ge_model
             ge_copy_id = ge_model.copy_id

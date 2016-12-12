@@ -56,6 +56,7 @@ class ModuleProject < ActiveRecord::Base
   has_many :module_project_ratio_elements, dependent: :destroy
   has_many :module_project_ratio_variables, dependent: :destroy
   has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
+  has_many :ge_model_factor_descriptions, class_name: "Ge::GeModelFactorDescription", dependent: :destroy
 
   default_scope :order => 'position_x ASC, position_y ASC'
 
@@ -261,50 +262,38 @@ class ModuleProject < ActiveRecord::Base
   end
 
 
-  ### Method is To be deleted after tests
-  def get_module_project_ratio_elements_SAVE(wbs_activity_ratio, pbs_project_element, sort_result=true)
-    # Module_project Ratio elements
-    mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.id)
+  # get the module_project_ratio_variable
+  def get_module_project_ratio_variables(wbs_activity_ratio, pbs_project_element)
+    module_project_ratio_variables = self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+    wbs_activity_ratio_variables = wbs_activity_ratio.wbs_activity_ratio_variables
 
-    if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
-      #create module_project ratio elements
-      wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
-        mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
-
-        if mp_ratio_elt.nil?
-          mp_ratio_elt = ModuleProjectRatioElement.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
-                               is_optional: ratio_element.is_optional, wbs_activity_ratio_element_id: ratio_element.id, multiple_references: ratio_element.multiple_references,
-                               wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-                               ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
-
-          current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id)
-          activity_elt = mp_ratio_elt.wbs_activity_element
-          activity_elt_ancestor_ids = activity_elt.ancestor_ids
-          new_ancestor_ids_list = []
-          unless activity_elt.is_root?
-            activity_elt_ancestor_ids.each do |ancestor_id|
-              ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
-              unless ancestor.nil?
-                new_ancestor_ids_list.push(ancestor.id)
-              end
-            end
-            new_ancestry = new_ancestor_ids_list.join('/')
-            mp_ratio_elt.ancestry = new_ancestry
-            mp_ratio_elt.save
-          end
-        end
-
+    if module_project_ratio_variables.all.empty?
+      if wbs_activity_ratio_variables.all.empty?
+        wbs_activity_ratio_variables = wbs_activity_ratio.get_wbs_activity_ratio_variables
       end
-      mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.id)
-    end
-
-    if sort_result
-      module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(mp_ratio_elements.arrange(order: 'position'))
+      # create the module_project_ratio_variable
+      wbs_activity_ratio_variables.each do |ratio_variable|
+        ModuleProjectRatioVariable.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
+                                                           wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
+                                                           name: ratio_variable.name, description: ratio_variable.description,
+                                                           percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+      end
     else
-      module_project_ratio_elements = mp_ratio_elements
+      wbs_activity_ratio_variables.each do |ratio_variable|
+        mp_ratio_variable = module_project_ratio_variables.where(wbs_activity_ratio_variable_id: ratio_variable.id).first
+        if mp_ratio_variable
+          mp_ratio_variable.update_attributes(name: ratio_variable.name, percentage_of_input: ratio_variable.percentage_of_input,
+                                              description: ratio_variable.description, is_modifiable: ratio_variable.is_modifiable)
+        else
+          ModuleProjectRatioVariable.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
+                                         wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
+                                         name: ratio_variable.name, description: ratio_variable.description,
+                                         percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+        end
+      end
     end
 
-    module_project_ratio_elements
+    module_project_ratio_variables = self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
   end
 
 
