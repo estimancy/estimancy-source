@@ -116,9 +116,9 @@ class Guw::GuwModelsController < ApplicationController
               route_flag = 2
               break
             end
-            # @guw_model = Guw::GuwModel.where(name: tab[0][1],
-            #                                  organization_id: @current_organization.id)
-            # if @guw_model.nil?
+            @guw_model = Guw::GuwModel.where(name: tab[0][1],
+                                             organization_id: @current_organization.id).first
+            if @guw_model.nil?
               @guw_model = Guw::GuwModel.create(name: tab[0][1],
                                                 description: tab[1][1],
                                                 coefficient_label: tab[2][1],
@@ -129,10 +129,10 @@ class Guw::GuwModelsController < ApplicationController
                                                 hour_coefficient_conversion: tab[7][1],
                                                 organization_id: @current_organization.id)
               critical_flag = false
-            # else
-            #   route_flag = 1
-            #   break
-            # end
+            else
+              route_flag = 1
+              break
+            end
           elsif index == 1
             if critical_flag || worksheet.sheet_name != I18n.t(:attribute_description)
               route_flag = 5
