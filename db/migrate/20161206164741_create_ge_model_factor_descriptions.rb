@@ -9,6 +9,8 @@ class CreateGeModelFactorDescriptions < ActiveRecord::Migration
       t.text :description
       t.integer :organization_id
 
+      t.timestamps
+
     end
   end
 

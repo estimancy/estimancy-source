@@ -263,24 +263,7 @@ class ProjectsController < ApplicationController
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
 
       # Module Project Ratio Variables
-      @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
-      if @module_project_ratio_variables.all.empty?
-        @wbs_activity_ratio_variables = @wbs_activity_ratio.wbs_activity_ratio_variables
-
-        if @wbs_activity_ratio_variables.all.empty?
-          @wbs_activity_ratio_variables = @wbs_activity_ratio.get_wbs_activity_ratio_variables
-        end
-        # create the module_project_ratio_variable
-        @wbs_activity_ratio_variables.each do |ratio_variable|
-          mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
-                                                             wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id, name: ratio_variable.name, description: ratio_variable.description,
-                                                             percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
-          mp_ratio_variable.save
-        end
-
-        @module_project_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
-      end
-
+      @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
 
     else
     end
@@ -2000,12 +1983,17 @@ public
 
         ### End wbs_activity
 
+        # For SKB-Input
         old_mp.skb_inputs.each do |skbi|
-          Skb::SkbInput.create(data: skbi.data,
-                               processing: skbi.processing,
-                               retained_size: skbi.retained_size,
-                               organization_id: @organization.id,
-                               module_project_id: new_mp.id)
+          Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
+                               organization_id: @organization.id, module_project_id: new_mp.id)
+        end
+
+        #For ge_model_factor_descriptions
+        old_mp.ge_model_factor_descriptions.each do |factor_description|
+          Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
+                                                                    factor_alias: factor_description.factor_alias, description: factor_description.description,
+                                                                    module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
         end
 
         # if the module_project is nil
