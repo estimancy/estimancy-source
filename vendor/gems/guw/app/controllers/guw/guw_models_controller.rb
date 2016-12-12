@@ -128,7 +128,7 @@ class Guw::GuwModelsController < ApplicationController
                                                 retained_size_unit: tab[6][1],
                                                 hour_coefficient_conversion: tab[7][1],
                                                 organization_id: @current_organization.id)
-              # critical_flag = false
+              critical_flag = false
             # else
             #   route_flag = 1
             #   break
