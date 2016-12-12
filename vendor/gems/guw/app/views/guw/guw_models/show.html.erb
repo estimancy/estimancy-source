@@ -79,7 +79,7 @@
                   <% if guw_type.allow_criteria == true %>
                     [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %>
                   <% else %>
-                    <%= I18n.t :weight %>
+                    <%= I18n.t :weight %> - Ordonnée à l'origine
                   <% end %>
                 </th>
               <% end %>
@@ -95,7 +95,7 @@
                   <% if guw_type.allow_criteria == true %>
                     [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
                   <% end %>
-                  <%= guw_cplx.weight %>
+                  <%= guw_cplx.weight %> - <%= guw_cplx.weight_b.nil? ? 0 : guw_cplx.weight_b %>
                 </td>
               <% end %>
             </tr>

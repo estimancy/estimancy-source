@@ -804,7 +804,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_low = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_low = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_low.to_f / 100)
+        uo_weight_low = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_low.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
       end
     end
 
@@ -812,7 +812,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_ml = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_most_likely.to_f / 100)
+        uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_most_likely.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
       end
     end
 
@@ -820,7 +820,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_high = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_high = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_high.to_f / 100)
+        uo_weight_high = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_high.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
       end
     end
 
@@ -1257,28 +1257,28 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @module_project.guw_model_id = @guw_model.id
     @module_project.save
 
-    guw_output = @guw_model.guw_outputs.where(output_type: "S").first
+    guw_output = @guw_model.guw_outputs.first
 
 
     retained_size = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                              pbs_project_element_id: current_component.id,
                                              guw_model_id: @guw_model.id,
-                                             selected: true).map{|i| i.size.nil? ? nil : i.size["#{guw_output.id}"]}.compact.sum
+                                             selected: true).map{|i| i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
     theorical_size = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                               pbs_project_element_id: current_component.id,
                                               guw_model_id: @guw_model.id,
-                                              selected: true).map{|i| i.size.nil? ? nil : i.size["#{guw_output.id}"]}.compact.sum
+                                              selected: true).map{|i| i.size.nil? ? nil : (i.size.is_a?(Numeric) ? i.size : i.size["#{guw_output.id}"])}.compact.sum
 
     effort = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                       pbs_project_element_id: current_component.id,
                                       guw_model_id: @guw_model.id,
-                                      selected: true).map{|i| i.size["#{guw_output.id}"]}.compact.sum
+                                      selected: true).map{|i| i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
     cost = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                       pbs_project_element_id: current_component.id,
                                       guw_model_id: @guw_model.id,
-                                      selected: true).map{|i| i.size["#{guw_output.id}"]}.compact.sum
+                                      selected: true).map{|i| i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
     number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id,
                                                            module_project_id: current_module_project.id).all.map{|i| i.guw_unit_of_works}.flatten.size

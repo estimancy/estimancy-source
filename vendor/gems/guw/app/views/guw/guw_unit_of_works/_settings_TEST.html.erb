@@ -293,7 +293,7 @@
                 </td>
 
                 <td>
-                  <%= guow.intermediate_weight %>
+                  <%= guow.intermediate_weight.nil? ? '-' : guow.intermediate_weight %>
                 </td>
 
                 <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
@@ -336,8 +336,8 @@
                       ??
                     </td>
                   <% end %>
-                  <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
-                    <% guw_output = Guw::GuwOutput.where(name: i[0]).first %>
+                <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
+                  <% guw_output = Guw::GuwOutput.where(name: i[0]).first %>
                     <td class="span2">
                       <% unless guow.guw_type.nil? %>
                         <span class=" size_label_<%= guow.id %>">

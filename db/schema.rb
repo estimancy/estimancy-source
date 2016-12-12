@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161207145342) do
+ActiveRecord::Schema.define(:version => 20161212110447) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -559,6 +559,7 @@ ActiveRecord::Schema.define(:version => 20161207145342) do
     t.boolean  "enable_value"
     t.integer  "display_order", :default => 0
     t.boolean  "default_value"
+    t.float    "weight_b"
   end
 
   create_table "guw_guw_complexity_coefficient_elements", :force => true do |t|
