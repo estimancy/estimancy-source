@@ -1491,3 +1491,6 @@ it:
   is_optional: "Est facultatif"
   initialize_calculation: "Initialize the calculation"
   comments: "Commentaires"
+  new_estimation_model: "New estimation model"
+  create_new_estimation_model: "Create new estimation model"
+  edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""

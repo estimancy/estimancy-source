@@ -293,7 +293,8 @@ class ProjectsController < ApplicationController
     @is_model = params[:is_model]
     if @is_model
       authorize! :manage_estimation_models, Project
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('new_project_from') => ""
+      #set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('new_project_from') => ""
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('create_new_estimation_model') => ""
       set_page_title I18n.t(:new_estimation_model)
     else
       authorize! :create_project_from_scratch, Project

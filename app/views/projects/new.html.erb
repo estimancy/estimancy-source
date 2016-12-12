@@ -1,4 +1,4 @@
 <h4>
-  <%= I18n.t(:new_project) %>
+  <%= params[:is_model] == "true" ? I18n.t(:new_estimation_model) : I18n.t(:new_project)%>
 </h4>
 <%= render 'form' %>
