@@ -208,7 +208,7 @@
 
                 <td class="text_field_text_overflow">
                   <span class="pull-left">
-                    <%= link_to "Unité d'oeuvre #{i}", title: guow.name, method: "post", remote: true %>
+                    <%= link_to guow.name, title: guow.name, method: "post", remote: true %>
                   </span>
                 </td>
 
@@ -272,6 +272,8 @@
                                          disabled: !guow.guw_type.allow_complexity,
                                          style: "width: 70px;" %>
                         <% end %>
+                      <% rescue Exception => e %>
+                        <%= e %>
                       <% end %>
                     <% else %>
                       <% if guow.guw_complexity.nil? %>

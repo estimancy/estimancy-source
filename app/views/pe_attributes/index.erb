@@ -33,7 +33,7 @@
                 <td><%= attribute.name %></td>
                 <td><%= attribute.alias %></td>
                 <td><%= attribute.description %></td>
-                <td><%= attribute.attr_type.humanize %></td>
+                <td><%= attribute.attr_type %></td>
                 <td class="center" style="min-width: 105px;">
                   <%= link_to '', edit_pe_attribute_path(attribute), :class => 'icon-pencil', :title => I18n.t('edit') %>
                   <%= link_to('', {:controller => 'pe_attributes',

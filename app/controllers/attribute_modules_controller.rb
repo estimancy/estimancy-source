@@ -20,9 +20,9 @@
 ##############################################################################
 
 class AttributeModulesController < ApplicationController
-  include DataValidationHelper #Module for master data changes validation
+  # include DataValidationHelper #Module for master data changes validation
 
-  before_filter :get_record_statuses
+  # before_filter :get_record_statuses
 
   def create
     authorize! :manage, PeAttribute
@@ -38,12 +38,12 @@ class AttributeModulesController < ApplicationController
   def destroy
     authorize! :manage, PeAttribute
     @attribute_module = AttributeModule.find(params[:id])
-    if @attribute_module.is_defined? || @attribute_module.is_custom?
+    # if @attribute_module.is_defined? || @attribute_module.is_custom?
       #logical deletion: delete don't have to suppress records anymore
-      @attribute_module.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
-    else
+      # @attribute_module.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+    # else
       @attribute_module.destroy
-    end
+    # end
 
     redirect_to edit_pemodule_path(@attribute_module.pemodule)
   end

@@ -22,19 +22,20 @@
 #Master table
 #Specific attribute for a module (Functionality)
 class AttributeModule < ActiveRecord::Base
-  attr_accessible :pe_attribute_id, :pemodule_id,:is_mandatory, :in_out, :description, :default_low, :default_most_likely, :default_high, :display_order,:custom_attribute, :project_value, :record_status_id, :custom_value, :change_comment
+  attr_accessible :pe_attribute_id, :pemodule_id, :is_mandatory, :in_out, :description, :default_low, :default_most_likely, :default_high, :display_order
+  # ,:custom_attribute, :project_value, :record_status_id, :custom_value, :change_comment
 
-  include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
+  # include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
 
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
+  # belongs_to :record_status
+  # belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   belongs_to :pemodule
   belongs_to :pe_attribute, :class_name => 'PeAttribute', :foreign_key => 'pe_attribute_id'
 
-  validates :uuid, :presence => true, :uniqueness => {:case_sensitive => false}
+  # validates :uuid, :presence => true, :uniqueness => {:case_sensitive => false}
   validates_presence_of :pe_attribute_id
-  validates :custom_value, :presence => true, :if => :is_custom?
+  # validates :custom_value, :presence => true, :if => :is_custom?
 
   # Verify if params val is validate
   def is_validate(val)

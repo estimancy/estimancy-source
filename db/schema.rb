@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161212110447) do
+ActiveRecord::Schema.define(:version => 20161213132726) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -133,6 +133,7 @@ ActiveRecord::Schema.define(:version => 20161212110447) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "display_order"
+    t.integer  "guw_model_id"
   end
 
   add_index "attribute_modules", ["record_status_id"], :name => "index_attribute_modules_on_record_status_id"

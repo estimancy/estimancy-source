@@ -7,7 +7,6 @@
       <th><%= I18n.t(:likely) %></th>
       <th><%= I18n.t(:high) %></th>
       <th><%= I18n.t(:in_out) %></th>
-      <th><%= I18n.t(:record_status) %></th>
       <th class="action"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
@@ -25,19 +24,7 @@
           <td class="center"><%= text_field_tag "default_most_likely[#{ma.id}]", ma.default_most_likely, :class => "input-mini ml #{ma.id}" %></td>
           <td class="center"><%= text_field_tag "default_high[#{ma.id}]", ma.default_high, :class => "input-mini high #{ma.id}" %></td>
           <td class="center"><%= select_tag "in_out[#{ma.id}]", options_for_select([['input'], ['output'], ['both']], :selected => ma.in_out), :prompt => I18n.t('helpers.select.prompt'), :class => 'input-small', :disabled => (@pemodule == @initialization_module) %> </td>
-          <td><%= ma.record_status %></td>
-          <td>
-            <%= link_to '', ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete') %>
-            <% if is_master_instance? && !ma.is_local_record? %>
-                <% if ma.is_retired? %>
-                    <%= link_to('', "/attribute_modules/#{ma.id}/restore_change", confirm: I18n.t('restoring'), :class => 'icon-undo pull-left', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                <% else %>
-                    <% unless ma.is_defined? %>
-                        <%= link_to('', "/attribute_modules/#{ma.id}/validate_change", confirm: I18n.t('validation'), :class => 'icon-ok pull-left', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                    <% end %>
-                <% end %>
-            <% end %>
-          </td>
+          <td><%= link_to '', ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete') %></td>
         </tr>
     <% end %>
     <%= render :partial => 'layouts/footer_table' %>

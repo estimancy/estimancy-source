@@ -126,6 +126,7 @@
       <table class="table table-bordered">
         <tr>
           <th><%= I18n.t(:name) %></th>
+          <th>Type de sortie</th>
           <th></th>
         </tr>
 
@@ -133,6 +134,7 @@
           <% @guw_outputs.each do |guw_output| %>
             <tr>
               <td><%= guw_output.name %></td>
+              <td><%= guw_output.output_type %></td>
               <td class="center">
                 <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
                 <% if can? :manage_modules_instances, ModuleProject %>

@@ -99,6 +99,7 @@ class PermissionsController < ApplicationController
 
   #Set all global rights : organization and modules permissions
   def set_rights
+    # if params
     authorize! :manage_organization_permissions, Permission
 
     if params[:organization_permissions] == I18n.t('cancel') || params[:modules_permissions] == I18n.t('cancel')
