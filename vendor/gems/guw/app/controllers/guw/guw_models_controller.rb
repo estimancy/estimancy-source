@@ -866,7 +866,7 @@ class Guw::GuwModelsController < ApplicationController
                 I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
                 I18n.t(:likely).length, I18n.t(:high).length]
 
-    [I18n.t(:estimation),
+    ([I18n.t(:estimation),
      I18n.t(:version_number),
      I18n.t(:group),
      I18n.t(:selected),
@@ -881,7 +881,8 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:tracability),
      I18n.t(:cotation),
      I18n.t(:results),
-     I18n.t(:retained_result)].each_with_index do |val, index|
+     I18n.t(:retained_result)] +
+        @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
@@ -901,62 +902,77 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.title)
+      
       tab_size[0]= tab_size[0] < current_module_project.project.title.length ? current_module_project.project.title.length : tab_size[0]
-      worksheet.change_column_width(0, tab_size[0])
-
+      # worksheet.change_column_width(0, tab_size[0])
       worksheet.add_cell(ind, 1, current_module_project.project.version_number)
-
       worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
+      
       tab_size[2] = tab_size[2] < guow.guw_unit_of_work_group.name.length ? guow.guw_unit_of_work_group.name.length : tab_size[2]
       worksheet.change_column_width(2, tab_size[2])
-
       worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
-
       worksheet.add_cell(ind, 4, guow.name)
+      
       tab_size[4] = tab_size[4] < guow.name.length ? guow.name.length : tab_size[4]
       worksheet.change_column_width(4, tab_size[4])
-
       worksheet.add_cell(ind, 6, guow.guw_type.name)
+      
       tab_size[6] = tab_size[6] < guow.guw_type.name.to_s.length ? guow.guw_type.name.to_s.length : tab_size[6]
       worksheet.change_column_width(6, tab_size[6])
-
       worksheet.add_cell(ind, 5, guow.comments)
-
       worksheet.add_cell(ind, 7, guow.guw_work_unit)
-
       worksheet.add_cell(ind, 8, guow.guw_weighting)
-
       worksheet.add_cell(ind, 9, guow.guw_factor)
-
       worksheet.add_cell(ind, 10, guow.organization_technology)
+      
       tab_size[10] = tab_size[10] < guow.organization_technology.to_s.length ? guow.organization_technology.to_s.length : tab_size[10]
       worksheet.change_column_width(8, tab_size[10])
-
       worksheet.add_cell(ind, 11, guow.quantity)
-
       worksheet.add_cell(ind, 12, guow.tracking)
-
       worksheet.add_cell(ind, 13, cplx)
+      
       tab_size[13] = tab_size[13] < cplx.length ? cplx.length : tab_size[13]
+      worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
+      worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
 
-      worksheet.add_cell(ind, 14, guow.size)
+      @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+        if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+          guw_coefficient = Guw::GuwCoefficient.where(name: i[0]).first
+          unless guw_coefficient.guw_coefficient_elements.empty?
+            results = guw_coefficient.guw_coefficient_elements
 
-      worksheet.add_cell(ind, 15, guow.ajusted_size)
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+                                                              guw_coefficient_id: guw_coefficient.id).first
+
+            if guw_coefficient.coefficient_type == "Pourcentage"
+              worksheet.add_cell(ind, 16+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+            else
+              worksheet.add_cell(ind, 16+j, (ceuw.nil? ? 100 : ceuw.guw_coefficient_element_id).to_s)
+            end
+          end
+
+        elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+          guw_output = Guw::GuwOutput.where(name: i[0]).first
+          unless guow.guw_type.nil?
+            worksheet.add_cell(ind, 16 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+          end
+        end
+      end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
         unless guowa.nil?
-          worksheet.add_cell(ind, 16 + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+          worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
         end
       end
-
     end
 
     @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-      worksheet.add_cell(0, 16 + i, guw_attribute.name)
+      worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
     end
 
-    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "heyho.xlsx", type: "application/vnd.ms-excel")
+    # send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def my_verrif_tab_error(tab_error, indexing_field_error)
