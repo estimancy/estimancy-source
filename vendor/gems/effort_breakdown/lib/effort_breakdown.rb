@@ -29,8 +29,10 @@ module EffortBreakdown
   class EffortBreakdown
     include PemoduleEstimationMethods
 
+    #module input/output parameters
     attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids,
-                  :changed_retained_effort_values, :changed_retained_cost_values, :module_project_ratio_elements, :initialize_calculation #module input/output parameters
+                  :changed_retained_effort_values, :changed_retained_cost_values, :module_project_ratio_elements, :initialize_calculation,
+                  :theoretical_effort, :retained_effort, :theoretical_cost, :retained_cost
 
     #def initialize(c, mp, e, r)
     def initialize(*args)
@@ -46,9 +48,59 @@ module EffortBreakdown
       @initialize_calculation = args[7]
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@ratio, @pbs_project_element, false)
 
+      # Output results
+      @theoretical_effort = HashWithIndifferentAccess.new
+      @retained_effort = HashWithIndifferentAccess.new
+      @theoretical_cost = HashWithIndifferentAccess.new
+      @retained_cost = HashWithIndifferentAccess.new
     end
 
     # Getters for module outputs
+
+    def input_effort
+      @input_effort
+    end
+
+    def input_effort=(new_effort)
+      @input_effort = new_effort
+    end
+
+    def theoretical_effort
+      @theoretical_effort
+    end
+
+    def retained_effort
+      @retained_effort
+    end
+
+    def theoretical_cost
+      @theoretical_cost
+    end
+
+    def retained_cost
+      @retained_cost
+    end
+
+
+    def changed_retained_effort_values=(retained_effort_values)
+      @changed_retained_effort_values = retained_effort_values
+    end
+
+    def changed_retained_cost_values=(retained_cost_values)
+      @changed_retained_cost_values = retained_cost_values
+    end
+
+
+    def calculate_estimations
+      @theoretical_effort = get_theoretical_effort
+      @retained_effort = get_effort
+
+      @theoretical_cost = get_theoretical_cost
+      @retained_cost = get_cost
+
+      theoretical_effort, theoretical_cost, retained_effort,retained_effort = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost]
+    end
+
 
     # Calculate each Wbs activity effort according to Ratio and Reference_Value and PBS effort
     def get_effort(*args)
@@ -73,6 +125,7 @@ module EffortBreakdown
 
       efforts_man_month = nil
       efforts_man_month = get_effort_with_module_project_ratio_elements_with_formula  ###get_effort_with_activities_elements
+
       efforts_man_month
     end
 
@@ -98,7 +151,11 @@ module EffortBreakdown
 
       wbs_activity = @module_project.wbs_activity
       wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
-      efforts_man_month = get_effort
+
+      efforts_man_month = @retained_effort
+      if efforts_man_month.empty?
+        efforts_man_month = get_effort
+      end
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -150,7 +207,10 @@ module EffortBreakdown
 
       wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
 
-      efforts_man_month = get_theoretical_effort
+      efforts_man_month = @theoretical_effort
+      if efforts_man_month.empty?
+        efforts_man_month = get_theoretical_effort
+      end
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -186,6 +246,29 @@ module EffortBreakdown
       output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
 
       output_cost
+    end
+
+
+    # Get the costs by profile
+    def get_cost_by_profile(efforts_man_month)
+
+      efforts_man_month.each do |key, value|
+        tmp = Hash.new
+        wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first
+        unless wbs_activity_ratio_element.nil?
+          wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
+            tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)
+          end
+        end
+        res[key] = tmp
+
+        current_activity_element = WbsActivityElement.find(key)
+        if current_activity_element.root?
+          res[key] = tmp.values.sum
+        else
+          res[key] = tmp
+        end
+      end
     end
 
 
@@ -302,7 +385,6 @@ module EffortBreakdown
         end
       end
 
-
       # need to compute all formula after reordering the dependencies
       all_formula_to_compute = Hash.new
       output_effort_with_dependencies = HashWithIndifferentAccess.new
@@ -317,7 +399,6 @@ module EffortBreakdown
           unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
 
             # Sauf si la valeur de l'élément n'est pas pas encore enregistrée ou que les valeurs retenues ne sont pas à prendre en compte
-            #if output_effort[element.id].nil?
             if output_effort[element.id].nil?
 
               mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
@@ -328,9 +409,7 @@ module EffortBreakdown
                 corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @ratio.id, element.id).first
 
                 unless corresponding_ratio_elt.nil?
-
                   formula = corresponding_ratio_elt.formula
-
                   if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
                   else
@@ -343,7 +422,6 @@ module EffortBreakdown
 
                     ####element_effort = calculator.evaluate(normalized_formula_expression)
                     ####output_effort[element.id] = element_effort
-
                     ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator

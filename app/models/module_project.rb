@@ -296,5 +296,4 @@ class ModuleProject < ActiveRecord::Base
     module_project_ratio_variables = self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
   end
 
-
 end

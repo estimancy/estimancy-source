@@ -635,6 +635,7 @@ module ViewsWidgetsHelper
     project_organization = module_project.project.organization
     ###wbs_activity_elements = wbs_activity.wbs_activity_elements
     wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity.wbs_activity_elements.arrange(:order => :position))
+    wbs_activity_element_root = wbs_activity_elements.first.root
 
     # We don't want to show element with nil ratio value
     project_organization_profiles = []
@@ -699,7 +700,8 @@ module ViewsWidgetsHelper
                                                       added_module_project_ratio_elements: added_module_project_ratio_elements,
                                                       pe_attribute_alias: pe_attribute_alias,
                                                       wbs_unit: wbs_unit,
-                                                      module_project_ratio_elements: module_project_ratio_elements
+                                                      module_project_ratio_elements: module_project_ratio_elements,
+                                                      wbs_activity_element_root: wbs_activity_element_root
                                        } )
 
       when "cost_per_phases_profiles_table"
@@ -718,7 +720,8 @@ module ViewsWidgetsHelper
                                                     added_module_project_ratio_elements: added_module_project_ratio_elements,
                                                     pe_attribute_alias: pe_attribute_alias,
                                                     wbs_unit: wbs_unit,
-                                                    module_project_ratio_elements: module_project_ratio_elements
+                                                    module_project_ratio_elements: module_project_ratio_elements,
+                                                    wbs_activity_element_root: wbs_activity_element_root
                                         } )
 
       when "stacked_bar_chart_effort_per_phases_profiles"

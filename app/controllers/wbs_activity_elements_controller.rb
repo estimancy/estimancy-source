@@ -78,7 +78,6 @@ class WbsActivityElementsController < ApplicationController
                                                                   :wbs_activity_ratio_id => wbs_activity_ratio.id,
                                                                   :wbs_activity_element_id => @wbs_activity_element.id)
                                                                   ###:dotted_id => @wbs_activity_element.dotted_id)
-
         @wbs_activity_ratio_element.save(:validate => false)
       end
       redirect_to edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), notice: "#{I18n.t (:notice_wbs_activity_element_successful_created)}"
@@ -96,14 +95,6 @@ class WbsActivityElementsController < ApplicationController
     @wbs_activity ||= WbsActivity.find_by_id(params[:wbs_activity_element][:wbs_activity_id])
     @potential_parents = @wbs_activity.wbs_activity_elements if @wbs_activity
     @selected_parent = @wbs_activity_element.parent
-    #@selected_record_status = RecordStatus.where('id = ? ', @wbs_activity_element.record_status_id).first
-
-    #unless is_master_instance?
-    #  if @wbs_activity_element.is_local_record?
-    #    @wbs_activity_element.custom_value = 'Locally edited'
-    #  end
-    #end
-
 
     if params[:wbs_activity_element][:wbs_activity_id]
       @wbs_activity = WbsActivity.find(params[:wbs_activity_element][:wbs_activity_id])
@@ -131,21 +122,7 @@ class WbsActivityElementsController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @wbs_activity_element = WbsActivityElement.find(params[:id])
-
-    #if is_master_instance?
-    #  if @wbs_activity_element.is_defined? || @wbs_activity_element.is_custom?
-    #    #logical deletion  delete don't have to suppress records anymore on Defined record
-    #    @wbs_activity_element.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
-    #  else
     @wbs_activity_element.destroy
-    #  end
-    #else
-    #  if @wbs_activity_element.is_local_record? || @wbs_activity_element.is_retired?
-    #    @wbs_activity_element.destroy
-    #  else
-    #    flash[:warning] = I18n.t (:warning_master_record_cant_be_delete)
-    #  end
-    #end
 
     redirect_to edit_wbs_activity_path(@wbs_activity_element.wbs_activity, :anchor => 'tabs-2')
   end
