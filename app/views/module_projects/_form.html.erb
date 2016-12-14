@@ -50,7 +50,7 @@
       <% if @module_project.pemodule.alias == "effort_breakdown" %>
         <hr>
 
-        <% effort_ids = PeAttribute.where(alias: ["effort", "effort_2", "effort_3"]).map(&:id).flatten %>
+        <% effort_ids = PeAttribute.where(alias: ["effort", "effort_2", "effort_3", "effort_4"]).map(&:id).flatten %>
         <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
         <% current_evs.each do |cev| %>
