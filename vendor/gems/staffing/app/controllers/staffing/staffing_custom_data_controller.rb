@@ -164,7 +164,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       y3 = trapeze_parameter_values[:y3].to_f / 100
 
       if constraint == "max_staffing_constraint"
-        @staffing_trapeze = @staffing_custom_data.max_staffing
+        @staffing_trapeze = @staffing_custom_data.max_staffing.to_f
 
         @duration = 1.5 * (effort / @staffing_trapeze) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
 

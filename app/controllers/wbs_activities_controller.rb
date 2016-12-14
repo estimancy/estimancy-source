@@ -455,9 +455,6 @@ class WbsActivitiesController < ApplicationController
 
     end
 
-    #===== Fin test =====
-
-
 
     current_pbs_estimations.each do |est_val|
 
@@ -618,7 +615,7 @@ class WbsActivitiesController < ApplicationController
                       wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first
                       unless wbs_activity_ratio_element.nil?
                         wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-                          tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)
+                          tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100.00)
                         end
                       end
                       res[key] = tmp
@@ -657,7 +654,7 @@ class WbsActivitiesController < ApplicationController
 
                   #Effort attribute
                   else
-                    estimation_value_profile = (hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100
+                    estimation_value_profile = (hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100.00
                     current_probable_profiles["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => { :value => estimation_value_profile } }
 
                     #the update the parent's value
@@ -694,7 +691,7 @@ class WbsActivitiesController < ApplicationController
                   ancestor_value = 0.0
                   # Update values for ancestors
                   wbs_activity_element.children.each do |child|
-                    ancestor_value = ancestor_value.to_f + parent_profile_est_value["#{child.id}"]
+                    ancestor_value = ancestor_value.to_f + parent_profile_est_value["#{child.id}"].to_f
                   end
                   parent_profile_est_value["#{wbs_activity_element.id}"] = ancestor_value
                 end
@@ -788,10 +785,10 @@ class WbsActivitiesController < ApplicationController
         rtu = @ratio_reference.module_project_ratio_variables.where(name: "RTU").first
         input_effort = input_effort_for_global_ratio
         effort_total = effort_total_for_global_ratio
-        if effort_total.nil? || effort_total == 0
+        if input_effort.nil? || input_effort == 0.0
           new_ratio_global = nil
         else
-          new_ratio_global = (input_effort.to_f / effort_total.to_f) * 100
+          new_ratio_global = (effort_total.to_f / input_effort.to_f ) * 100.00
         end
 
         #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
