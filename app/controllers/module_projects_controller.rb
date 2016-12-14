@@ -24,6 +24,7 @@ class ModuleProjectsController < ApplicationController
   load_resource
 
   def module_projects_reassign
+    #Reassing
     @module_project = ModuleProject.find(params[:mp])
       if params[:guw_model_id].present?
 
@@ -54,8 +55,18 @@ class ModuleProjectsController < ApplicationController
         @module_project.kb_model_id = params[:kb_model_id]
 
       end
-
     @module_project.save(validate: false)
+
+
+    #EV association
+    params[:preceding].each do |k, v|
+      curr_ev = EstimationValue.where(id: k.to_i).first
+      pre_ev = EstimationValue.where(id: v.to_i).first
+
+      curr_ev.estimation_value_id = pre_ev.id
+
+      curr_ev.save
+    end
 
     redirect_to :back
   end

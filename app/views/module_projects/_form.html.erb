@@ -6,54 +6,21 @@
         <%= I18n.t(:views_widgets_parameters) %>
       </a>
     </li>
-    <li>
-      <a href="#tabs-association-module">
-        Association d'attributs
-      </a>
-    </li>
     <% if current_user.super_admin == true %>
       <li>
         <a href="#mp">
-          Module Projects Settings
+          Configuration de l'instance du module
         </a>
       </li>
     <% end %>
   </ul>
 
   <!-- Parametres d'affichage de la vue -->
-  <div id="tabs-association-module">
-    <% if @module_project.pemodule.alias == "effort_breakdown" %>
-
-      <% effort_ids = PeAttribute.where(alias: ["effort", "effort_2", "effort_3"]).map(&:id).flatten %>
-      <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input").all %>
-      <% current_evs.each do |cev| %>
-        <div class="row-fluid">
-          <div class="span2">
-            <p>
-              <%= @module_project.preceding.last %>
-            </p>
-            <%= select_tag "preceding", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").all) %>
-          </div>
-
-          <div class="span2">
-            <p>
-              <%= @module_project %>
-            </p>
-            <%= select_tag "current", options_for_select(current_evs) %>
-          </div>
-        </div>
-      <% end %>
-
-      <%= submit_tag "Sauvegarder", class: "btn btn" %>
-
-    <% end %>
-  </div>
-
-  <!-- Parametres d'affichage de la vue -->
   <div id="tabs-view-widgets-parameters">
     <%= render partial: "module_projects/views_and_widgets", object: @module_project %>
   </div>
-  <!-- Parametres d'affichage de la vue -->
+
+
   <div id="mp">
     <%= form_tag(module_projects_reassign_path) do |f| %>
 
@@ -78,6 +45,29 @@
 
       <%= submit_tag I18n.t('save'), :class => 'btn ' %>
       <%= link_to I18n.t(:back), :back, class: "btn" %>
+
+
+      <% if @module_project.pemodule.alias == "effort_breakdown" %>
+        <hr>
+
+        <% effort_ids = PeAttribute.where(alias: ["effort", "effort_2", "effort_3"]).map(&:id).flatten %>
+        <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+
+        <% current_evs.each do |cev| %>
+          <div class="row-fluid">
+            <div class="span2">
+              <p>
+                <%= cev %>
+              </p>
+              <%= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id) %>
+            </div>
+          </div>
+        <% end %>
+
+        <br>
+        <%= submit_tag "Sauvegarder", class: "btn btn-mini" %>
+
+      <% end %>
 
     <% end %>
 

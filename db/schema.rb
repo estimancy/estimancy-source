@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161213132726) do
+ActiveRecord::Schema.define(:version => 20161214093830) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -264,6 +264,7 @@ ActiveRecord::Schema.define(:version => 20161213132726) do
     t.datetime "updated_at"
     t.integer  "display_order"
     t.text     "notes"
+    t.integer  "estimation_value_id"
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
@@ -717,8 +718,8 @@ ActiveRecord::Schema.define(:version => 20161213132726) do
     t.datetime "created_at",                                    :null => false
     t.datetime "updated_at",                                    :null => false
     t.integer  "guw_complexity_id"
-    t.float    "effort"
-    t.float    "ajusted_size"
+    t.text     "effort"
+    t.text     "ajusted_size"
     t.integer  "guw_model_id"
     t.integer  "module_project_id"
     t.integer  "pbs_project_element_id"
@@ -734,8 +735,8 @@ ActiveRecord::Schema.define(:version => 20161213132726) do
     t.float    "quantity"
     t.integer  "guw_weighting_id"
     t.integer  "guw_factor_id"
-    t.float    "size"
-    t.float    "cost"
+    t.text     "size"
+    t.text     "cost"
     t.integer  "guw_original_complexity_id"
     t.boolean  "missing_value",              :default => false
     t.float    "intermediate_weight"
