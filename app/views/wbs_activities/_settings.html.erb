@@ -36,6 +36,23 @@
                                :module_project_id => possible_module_projects.last,
                                :in_out => "output").first unless effort.nil? %>
 
+
+
+<% current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>
+  <% mp.estimation_values.where(in_out: "output").each do |ev| %>
+    <% gm = Guw::GuwModel.where(id: mp.guw_model_id).first %>
+    <% gm.guw_outputs.each do |go| %>
+      <% if (ev.pe_attribute.alias == go.name.underscore.gsub(" ", "_")) %>
+        <p>
+          <%= ev.pe_attribute.name %> :
+          <%= ev.string_data_probable[current_component.id] %>
+        </p>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+
 <% component_id = current_component.id %>
 <% organization = @project.organization %>
 <% wai = WbsActivityInput.where(module_project_id: current_module_project.id, wbs_activity_id: current_module_project.wbs_activity_id, pbs_project_element_id: current_component.id)
