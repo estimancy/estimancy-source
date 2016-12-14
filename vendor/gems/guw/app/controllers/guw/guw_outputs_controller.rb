@@ -70,14 +70,14 @@ class Guw::GuwOutputsController < ApplicationController
 
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
-                             description: @guw_output.name).first_or_create
+                             description: @guw_output.name).first_or_create!
 
     pm = Pemodule.where(alias: "guw").first
 
     am = AttributeModule.where(pe_attribute_id: attr.id,
                                pemodule_id: pm.id,
                                in_out: "both",
-                               guw_model_id: @guw_output.guw_model.id).first_or_create
+                               guw_model_id: @guw_output.guw_model.id).first_or_create!
 
     set_page_title I18n.t(:Edit_Units_Of_Work)
     redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
