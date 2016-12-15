@@ -232,8 +232,11 @@ class Staffing::StaffingCustomDataController < ApplicationController
         trapeze_theorical_staffing_values << ["#{t}", t_staffing]
       end
 
-      @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
-      @staffing_custom_data.save
+      begin
+        @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
+        @staffing_custom_data.save
+      rescue
+      end
 
       # Calcul du Staffing f(x) pour la duree indiquee : intervalle de temps par defaut = 1 semaine
       rayleigh_chart_theoretical_coordinates = []
@@ -322,7 +325,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
       end
     end
 
-    @staffing_custom_data.save
+    begin
+      @staffing_custom_data.save
+    rescue
+    end
 
     update_staffing_estimation_values
 

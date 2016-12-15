@@ -1,0 +1,29 @@
+<%#= simple_form_for(@ge_model_factor_description, method: :put, :remote => true, id: "ge_model_factor_description_form") do |f| %>
+<%= simple_form_for(@ge_model_factor_description, id: "factor_description_form_#{@ge_factor.alias}") do |f| %>
+    <%= f.error_notification %>
+    <div class="form-inputs">
+      <%= f.input :ge_model_id, as: :hidden, :input_html => { value: @ge_model.id } %>
+      <%= f.input :ge_factor_id, as: :hidden, :input_html => { value: @ge_factor.id } %>
+      <%#= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
+      <%= hidden_field_tag 'project_id', @project.id %>
+
+      <table>
+        <tr>
+          <td>
+            <%#= text_field_tag 'factor_index', 3, input_html: { id: "factor_index_#{@ge_factor.alias}"} %>
+            <%= f.input :description, label: I18n.t(:comments), input_html: { :class => 'input-xxlarge', rows: 16} %>
+            <%#= tinymce %>
+            <%#= f.input :description, label: I18n.t(:comments), input_html: { class: "input-xxlarge tinymce", rows: 10} %>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+
+    <div class="actions">
+      <%# if can?(:alter_estimation_plan, @project) %>
+          <%= submit_tag I18n.t('save'), id: "submit_factor_description_#{@ge_factor.alias}", :class => 'btn' %>
+      <%# end %>
+      <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+    </div>
+<% end %>
