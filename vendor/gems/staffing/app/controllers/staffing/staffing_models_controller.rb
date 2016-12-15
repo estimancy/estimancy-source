@@ -146,7 +146,20 @@
 
     #Duplicate the staffing model
     def duplicate
+      @staffing = Staffing::StaffingModel.find(params[:staffing_model_id])
 
+      new_copy_number = @staffing.copy_number.to_i + 1
+
+      new_staffing = @staffing.dup
+      new_staffing.name = "#{@staffing.name}(#{new_copy_number})"
+      new_staffing.copy_number = 0
+
+      @staffing.copy_number = new_copy_number
+
+      @staffing.save
+      new_staffing.save
+
+      redirect_to main_app.organization_module_estimation_path(@staffing.organization_id, anchor: "team", notice: 'Staffing model was successfully created.' )
     end
 
 
