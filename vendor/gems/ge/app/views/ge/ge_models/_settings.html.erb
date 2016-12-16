@@ -220,7 +220,7 @@
     <div class="span6">
       <% attr = PeAttribute.find_by_alias("effort") %>
       <% unless @ge_model.output_pe_attribute.nil? %>
-          <% attr = @ge_model.output_pe_attribute %>
+        <% attr = @ge_model.output_pe_attribute %>
       <% end %>
 
       <% ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first %>
@@ -231,7 +231,7 @@
 
       <h4>
         <b>
-          <%#= I18n.t(:cal_effort_for, parameter: convert_label(ev.nil? ? '': ev.send("string_data_probable")[component_id], @project.organization))%>
+          <%#= I18n.t(:cal_effort_for, parameter: convert_label(ev.nil? ? '': ev.send("string_data_probable")[component_id], @project.organization)) %>
           <% case attr.alias %>
           <% when "retained_size" %>
               <%= I18n.t(:cal_size_for, parameter: @ge_model.output_size_unit)%>
@@ -253,6 +253,7 @@
           <% if @ge_model.three_points_estimation == true %>
             <th><%= I18n.t(:top)%></th>
           <% end %>
+          <th>Ratio de Trasnformation</th>
         </tr>
         <tr>
           <% if @ge_model.three_points_estimation == true %>
@@ -295,12 +296,20 @@
               <% end %>
             </td>
           <% end %>
+          <td>
+            <%=
+                (ev.nil? ? '': convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) /
+                (current_ev.nil? ? 1 : (current_ev.send("string_data_most_likely")[component_id].nil? ? 1 : current_ev.send("string_data_most_likely")[component_id].to_f))
+            %>
+          </td>
         </tr>
       </table>
     </div>
 
     <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-default btn-mini pull-right"><%= I18n.t(:save) %></button>
+      <button type="submit" class="btn btn-default btn-mini pull-right">
+        <%= I18n.t(:save) %>
+      </button>
     <% end %>
 
     <br>
