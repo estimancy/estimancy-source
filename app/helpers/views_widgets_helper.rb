@@ -95,7 +95,7 @@ module ViewsWidgetsHelper
 
     begin
       if correct_syntax?(formula)
-        eval(formula).round(current_user.number_precision).to_s + " #{view_widget.kpi_unit.to_s}"
+        eval(formula).round(current_user.number_precision).to_s
       else
         '-'
       end
