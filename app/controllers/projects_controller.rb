@@ -1799,9 +1799,20 @@ public
                 new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
 
-                new_view_widget = ViewsWidget.new(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id, name: old_view_widget.name, show_name: old_view_widget.show_name,
-                                                     icon_class: old_view_widget.icon_class, color: old_view_widget.color, show_min_max: old_view_widget.show_min_max, widget_type: old_view_widget.widget_type,
-                                                     width: old_view_widget.width, height: old_view_widget.height, position: old_view_widget.position, position_x: old_view_widget.position_x, position_y: old_view_widget.position_y)
+                new_view_widget = ViewsWidget.new(view_id: new_view.id,
+                                                  module_project_id: new_view_widget_mp_id,
+                                                  estimation_value_id: estimation_value_id,
+                                                  name: old_view_widget.name,
+                                                  show_name: old_view_widget.show_name,
+                                                  icon_class: old_view_widget.icon_class,
+                                                  color: old_view_widget.color,
+                                                  show_min_max: old_view_widget.show_min_max,
+                                                  widget_type: old_view_widget.widget_type,
+                                                  width: old_view_widget.width,
+                                                  height: old_view_widget.height,
+                                                  position: old_view_widget.position,
+                                                  position_x: old_view_widget.position_x,
+                                                  position_y: old_view_widget.position_y)
 
                 if new_view_widget.save
                   #Update the copied project_fields
