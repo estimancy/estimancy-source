@@ -63,6 +63,47 @@ module ViewsWidgetsHelper
     end
   end
 
+  def get_kpi_value_without_unit(view_widget)
+    eq = view_widget.equation
+    ev = view_widget.estimation_value
+    formula = eq["formula"].to_s
+
+    unless eq["A"].blank?
+      a_value = get_ev_value(eq["A"].first, current_component.id)
+      formula = formula.gsub("A", a_value)
+    end
+
+    unless eq["B"].blank?
+      b_value = get_ev_value(eq["B"].first, current_component.id)
+      formula = formula.gsub("B", b_value)
+    end
+
+    unless eq["C"].blank?
+      c_value = get_ev_value(eq["C"].first, current_component.id)
+      formula = formula.gsub("C", c_value)
+    end
+
+    unless eq["D"].blank?
+      d_value = get_ev_value(eq["D"].first, current_component.id)
+      formula = formula.gsub("D", d_value)
+    end
+
+    unless eq["E"].blank?
+      e_value = get_ev_value(eq["E"].first, current_component.id)
+      formula = formula.gsub("E", e_value)
+    end
+
+    begin
+      if correct_syntax?(formula)
+        eval(formula).round(current_user.number_precision).to_s + " #{view_widget.kpi_unit.to_s}"
+      else
+        '-'
+      end
+    rescue
+      '-'
+    end
+  end
+
   def get_ev_value(ev_id, current_component_id)
     unless ev_id.to_i == 0
       ev = EstimationValue.find(ev_id.to_i)
