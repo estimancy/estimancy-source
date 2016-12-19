@@ -273,7 +273,7 @@ class ViewsWidgetsController < ApplicationController
         #  @views_widget.update_attribute(:pe_attribute_id, widget_attribute_id)
         #end
 
-        redirect_to dashboard_path(@project) and return
+        format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
       else
         flash[:error] = "Erreur lors de la mise à jour du Widget dans la vue"
         @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x
@@ -294,8 +294,7 @@ class ViewsWidgetsController < ApplicationController
         else
           @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
         end
-        # format.js { render action: :edit }
-        redirect_to dashboard_path(@project) and return
+        format.js { render action: :edit }
       end
     end
   end
