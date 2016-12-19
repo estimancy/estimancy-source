@@ -297,10 +297,20 @@
             </td>
           <% end %>
           <td>
-            <%=
-                (ev.nil? ? '': convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) /
-                (current_ev.nil? ? 1 : (current_ev.send("string_data_most_likely")[component_id].nil? ? 1 : current_ev.send("string_data_most_likely")[component_id].to_f))
-            %>
+
+            <% if (@ge_model.modify_theorical_effort && can?(:alter_estimation_plan, @project)) %>
+              <% a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% else %>
+              <% a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% end %>
+
+            <% if (@ge_model.modify_theorical_effort && can?(:alter_estimation_plan, @project)) %>
+              <% b = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% else %>
+              <% b = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% end %>
+
+            <%= a / b %>
           </td>
         </tr>
       </table>
