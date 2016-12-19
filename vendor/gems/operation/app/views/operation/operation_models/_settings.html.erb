@@ -37,7 +37,7 @@
                   <% res = ev[mp.wbs_activity.root_element.id][:value].to_f %>
                 <% end %>
 
-                <%= res %>
+                <%= res.round(user_number_precision) %>
               </td>
             <% end %>
           </tr>
