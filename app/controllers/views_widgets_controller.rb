@@ -179,7 +179,7 @@ class ViewsWidgetsController < ApplicationController
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
 
-        redirect_to dashboard_path(@project) and return
+        format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
       else
         flash[:error] = "Erreur d'ajout de Vignette"
         @position_x = 1; @position_y = 1
@@ -196,8 +196,8 @@ class ViewsWidgetsController < ApplicationController
           @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
         end
 
-        redirect_to dashboard_path(@project) and return
-
+        format.html { render action: :new }
+        format.js   { render action: :new }
       end
     end
   end
