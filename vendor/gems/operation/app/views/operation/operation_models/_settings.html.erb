@@ -22,27 +22,29 @@
           <% end %>
         </tr>
         <% current_module_project.previous.each do |mp| %>
-          <tr>
-            <td><%= mp %></td>
-            <% ["most_likely"].each do |level| %>
+          <% unless mp.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+            <tr>
+              <td><%= mp %></td>
+              <% ["most_likely"].each do |level| %>
 
-              <% ev = EstimationValue.where(:pe_attribute_id => effort.id,
-                                            :module_project_id => mp.id,
-                                            :in_out => "output").first %>
+                <% ev = EstimationValue.where(:pe_attribute_id => effort.id,
+                                              :module_project_id => mp.id,
+                                              :in_out => "output").first %>
 
-              <td>
-                <% begin %>
-                  <% res = ev.nil? ? 0 : ev.string_data_most_likely[current_component.id].to_f %>
-                <% rescue %>
-                  <% res = ev[mp.wbs_activity.root_element.id][:value].to_f %>
-                <% end %>
+                <td>
+                  <% begin %>
+                    <% res = ev.nil? ? 0 : ev.string_data_most_likely[current_component.id].to_f %>
+                  <% rescue %>
+                    <% res = ev[mp.wbs_activity.root_element.id][:value].to_f %>
+                  <% end %>
 
-                <%= res %>
-              </td>
-            <% end %>
-          </tr>
+                  <%= res.round(user_number_precision) %>
+                </td>
+              <% end %>
+            </tr>
 
-          <% @elements[mp.id] = res %>
+            <% @elements[mp.id] = res %>
+          <% end %>
         <% end %>
         <tr>
           <td>

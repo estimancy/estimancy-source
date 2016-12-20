@@ -253,7 +253,7 @@
           <% if @ge_model.three_points_estimation == true %>
             <th><%= I18n.t(:top)%></th>
           <% end %>
-          <th>Ratio de Trasnformation</th>
+          <th>Ratio de Transformation</th>
         </tr>
         <tr>
           <% if @ge_model.three_points_estimation == true %>
@@ -298,19 +298,14 @@
           <% end %>
           <td>
 
-            <% if (@ge_model.modify_theorical_effort && can?(:alter_estimation_plan, @project)) %>
-              <% a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-            <% else %>
-              <% a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-            <% end %>
+            <% a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% b = Ge::GeModel::display_size(previous_ev, current_ev, "most_likely", component_id, @ge_model).to_f.round(user_number_precision) %>
 
-            <% if (@ge_model.modify_theorical_effort && can?(:alter_estimation_plan, @project)) %>
-              <% b = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-            <% else %>
-              <% b = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+            <% begin %>
+              <%= (a.to_f / b.to_f).round(user_number_precision) %>
+            <% rescue %>
+              -
             <% end %>
-
-            <%= a / b %>
           </td>
         </tr>
       </table>
