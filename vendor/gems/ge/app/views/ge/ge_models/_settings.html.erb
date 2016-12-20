@@ -253,7 +253,7 @@
           <% if @ge_model.three_points_estimation == true %>
             <th><%= I18n.t(:top)%></th>
           <% end %>
-          <th>Ratio de Trasnformation</th>
+          <th>Ratio de Transformation</th>
         </tr>
         <tr>
           <% if @ge_model.three_points_estimation == true %>
@@ -302,7 +302,7 @@
             <% b = Ge::GeModel::display_size(previous_ev, current_ev, "most_likely", component_id, @ge_model).to_f.round(user_number_precision) %>
 
             <% begin %>
-              <%= a.to_f / b.to_f %>
+              <%= (a.to_f / b.to_f).round(user_number_precision) %>
             <% rescue %>
               -
             <% end %>
