@@ -224,7 +224,87 @@
       </div>
     </div>
 
-  <% end %>
+    <div class="row-fluid">
+      <div class="span5">
+        <h4>
+          Ajustement du délai
+        </h4>
+        <hr>
+        <input type="text" name='ajust_staffings' id='ajust_staffing' class="factor-slider" value="<%= effort %>" />
+      </div>
+      <div class="span7">
+        <h4>
+          Ajustement de l'effort
+        </h4>
+        <hr>
+        <p>
+          <b>
+            Effort :
+          </b>
+            <span class="effort">
+              <%= effort %> <%= @staffing_model.effort_unit %>
+            </span>
+            <span class="reference_effort hide">
+              <%= effort %>
+            </span>
+        </p>
+        <p>
+          <b>
+            Coefficient d'impact :
+          </b>
+            <span class="impact">
+              <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) / (effort.nil? ? 1 : effort) %>
+            </span>
+        </p>
+        <p>
+          Durée :
+            <span class="reference_duration hide">
+              <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) %>
+            </span>
+            <span class="duration">
+              <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) %>
+            </span>
+        </p>
+        <p>
+          Staffing (Trapeze) :
+            <span class="staffing">
+              <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+            </span>
+            <span class="reference_staffing hide">
+              <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+            </span>
+        </p>
+        <p>
+          Staffing (Rayleigh):
+            <span class="staffing_rayleigh">
+              <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+            </span>
+            <span class="reference_staffing_rayleigh hide">
+              <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+            </span>
+        </p>
+      </div>
+
+      <script>
+        $('#ajust_staffing').ionRangeSlider({
+          min: 70,
+          max: 150,
+          from: 100,
+          grid: true,
+          postfix: "%",
+          onChange: function (data) {
+            var effort = $(".reference_effort").html();
+            var duration = $(".reference_duration").html();
+            var new_effort = (parseFloat(effort) * (parseFloat(data.from)) / 100);
+            $(".effort").html(new_effort.toFixed(2));
+            $(".impact").html((duration/new_effort).toFixed(2));
+          }
+        });
+      </script>
+    </div>
+
+
+<% end %>
 
 <script>
 
