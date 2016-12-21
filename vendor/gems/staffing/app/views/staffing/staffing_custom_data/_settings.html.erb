@@ -301,17 +301,9 @@
           grid: true,
           postfix: "%",
           onChange: function (data) {
-//            var stf = $(".reference_staffing").html();
-//            var stf_r = $(".reference_staffing_rayleigh").html();
             var effort = $(".reference_effort").html();
             var duration = $(".reference_duration").html();
-
-//            var new_stf = (parseFloat(stf) / (parseFloat(data.from)) * 100);
-//            var new_stf_r = (parseFloat(stf_r) / (parseFloat(data.from)) * 100);
             var new_effort = (parseFloat(effort) * (parseFloat(data.from)) / 100);
-
-//            $(".staffing").html(new_stf.toFixed(2));
-//            $(".staffing_rayleigh").html(new_stf_r.toFixed(2));
             $(".effort").html(new_effort.toFixed(2));
             $(".impact").html((duration/new_effort).toFixed(2));
           }
