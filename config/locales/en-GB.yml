@@ -1583,3 +1583,6 @@ en-gb:
   comments: "Comments"
 
   new_status: "New status in new version"
+  new_estimation_model: "New estimation model"
+  create_new_estimation_model: "Create new estimation model"
+  edit_estimation_model: "Edit estimation model \"%{value}\""

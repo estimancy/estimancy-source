@@ -1958,3 +1958,6 @@ frsncf_amoa_infra:
   comments: "Commentaires"
 
   skb_modules: "Base de connaissance de taille"
+  new_estimation_model: "Nouveau modèle d'estimation"
+  create_new_estimation_model: "Créer un nouveau modèle d'estimation"
+  edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
