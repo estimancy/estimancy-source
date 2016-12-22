@@ -33,12 +33,11 @@
     y0 =  @staffing_model.trapeze_default_values[:y0].to_f / 100
     y3 =  @staffing_model.trapeze_default_values[:y3].to_f / 100
 
-    staffing_trapeze = 1.5 * (effort / @md_duration * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2))))
+    staffing_trapeze = (effort / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
 
     form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
-    difficulty_coef = 2 * effort * form_coef
-    t_max_staffing = Math.sqrt(1/(2*form_coef))
-    staffing_rayleigh = effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
+    staffing_rayleigh = Math.sqrt(1/(2*form_coef))
+    # staffing_rayleigh = effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
 %>
 
   <%= simple_form_for @staffing_custom_data, url: staffing.staffing_custom_datum_save_staffing_custom_data_path(@staffing_custom_data), method: :post do |f| %>
@@ -49,100 +48,144 @@
         <table class="table">
           <tr>
             <th></th>
-            <th>Standard</th>
-            <th>Adapté</th>
-            <th>Ecart</th>
-            <th>%</th>
+            <th>
+              <span class="pull-right">
+                Standard
+              </span>
+            </th>
+            <th>
+              <span class="pull-right">
+                Adapté
+              </span>
+            </th>
+            <th>
+              <span class="pull-right">
+                Ecart
+              </span>
+            </th>
+            <th>
+              <span class="pull-right">
+                %
+              </span>
+            </th>
           </tr>
           <tr>
-            <td>Effort (<%= @staffing_model.effort_unit %>)</td>
             <td>
-              <span class="reference_effort">
+              <span class="pull-left">
+                Effort (<%= @staffing_model.effort_unit %>)
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                &nbsp; <%= @staffing_model.effort_unit %>
+              </span>
+              <span class="reference_effort pull-right">
                 <%= effort.to_f.round(2) %>
               </span>
             </td>
             <td>
-              <span class="effort">
-                <%= @staffing_custom_data.global_effort_value %>
-              </span> <%= @staffing_model.effort_unit %>
-            </td>
-            <td>
-              <span class="gap_effort">
-                <%= (effort.to_f - @staffing_custom_data.global_effort_value).round(2) %>
-              </span> <%= @staffing_model.effort_unit %>
-            </td>
-            <td>
-              <span class="percent_effort">
-                <%= (effort.to_f / @staffing_custom_data.global_effort_value * 100).round(2) %>
-              </span> %
-            </td>
-          </tr>
-          <tr>
-            <td>Durée (semaines)</td>
-            <td>
-              <span class="reference_duration">
-                <%= @md_duration.to_f.round(2) %>
+              <span class="effort pull-right">
+                <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %> <%= @staffing_model.effort_unit %>
               </span>
             </td>
             <td>
-              <span class="duration">
-                <%= @staffing_custom_data.duration %>
+              <span class="gap_effort pull-right">
+                <%= (effort.to_f - @staffing_custom_data.global_effort_value).round(user_number_precision) %> <%= @staffing_model.effort_unit %>
               </span>
             </td>
             <td>
-              <span class="gap_duration">
-                <%= (@staffing_custom_data.duration - @md_duration.to_f).round(2) %>
-              </span> semaines
-            </td>
-            <td>
-              <span class="percent_duration">
-                <%= (@staffing_custom_data.duration / @md_duration.to_f * 100).round(2) %>
-              </span> %
-            </td>
-          </tr>
-          <tr>
-            <td>Trapeze</td>
-            <td>
-              <span class="reference_staffing_trapeze">
-                <%= staffing_trapeze.to_f.round(2) %>
-              </span>
-            </td>
-            <td>
-              <span class="staffing_trapeze">
-                <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
-              </span>
-            </td>
-            <td>
-              <span class="gap_trapeze">
-                <%= ( @staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f).round(user_number_precision) %>
-              </span>
-            </td>
-            <td>
-              <span class="percent_trapeze">
-                <%= (@staffing_custom_data.max_staffing.to_f / staffing_trapeze.to_f).round(user_number_precision) * 100 %>
+              <span class="percent_effort pull-right">
+                <%= (effort.to_f / @staffing_custom_data.global_effort_value * 100).round(user_number_precision) %> %
               </span>
             </td>
           </tr>
           <tr>
-            <td>Rayleigh</td>
             <td>
-              <span class="reference_staffing_rayleigh">
-                <%= staffing_rayleigh.to_f.round(2) %>
+              <span class="pull-left">
+                Durée (semaines)
               </span>
             </td>
             <td>
-              <span class="staffing_rayleigh">
-                <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+              <span class="pull-right">
+                &nbsp; semaines
+              </span>
+              <span class="reference_duration pull-right">
+                <%= @md_duration.to_f.round(user_number_precision) %>
               </span>
             </td>
             <td>
-              <span class="gap_rayleigh">
-                <%= (@staffing_custom_data.max_staffing_rayleigh.to_f - staffing_rayleigh).round(user_number_precision) %>
+              <span class="duration pull-right">
+                <%= @staffing_custom_data.duration.round(user_number_precision) %> semaines
               </span>
             </td>
             <td>
-              <span class="percent_rayleigh">
-                <%= (@staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision / staffing_rayleigh) * 100).round(user_number_precision) %>
+              <span class="gap_duration pull-right">
+                <%= (@staffing_custom_data.duration - @md_duration.to_f).round(user_number_precision) %> semaines
+              </span>
+            </td>
+            <td>
+              <span class="percent_duration pull-right">
+                <%= (@staffing_custom_data.duration / @md_duration.to_f * 100).round(user_number_precision) %> %
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="pull-left">
+                Staffing Trapeze
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                &nbsp; personnes
+              </span>
+              <span class="reference_staffing_trapeze pull-right">
+                <%= staffing_trapeze.to_f.round(user_number_precision) %>
+              </span>
+            </td>
+            <td>
+              <span class="staffing_trapeze pull-right">
+                <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %> personnes
+              </span>
+            </td>
+            <td>
+              <span class="gap_trapeze pull-right">
+                <%= ( @staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f).round(user_number_precision) %> personnes
+              </span>
+            </td>
+            <td>
+              <span class="percent_trapeze pull-right">
+                <%= ((@staffing_custom_data.max_staffing.to_f / staffing_trapeze.to_f) * 100).round(user_number_precision) %> %
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="pull-left">
+                Staffing Rayleigh
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                &nbsp; personnes
+              </span>
+              <span class="reference_staffing_rayleigh pull-right">
+                <%= staffing_rayleigh.to_f.round(user_number_precision) %>
+              </span>
+            </td>
+            <td>
+              <span class="staffing_rayleigh pull-right">
+                <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %> personnes
+              </span>
+            </td>
+            <td>
+              <span class="gap_rayleigh pull-right">
+                <%= (@staffing_custom_data.max_staffing_rayleigh.to_f - staffing_rayleigh).round(user_number_precision) %> personnes
+              </span>
+            </td>
+            <td>
+              <span class="percent_rayleigh pull-right">
+                <%= ((@staffing_custom_data.max_staffing_rayleigh.to_f / staffing_rayleigh) * 100).round(user_number_precision) %> %
               </span>
             </td>
           </tr>
@@ -182,11 +225,11 @@
             var staffing_trapeze = $(".reference_staffing_trapeze").html();
             var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
             var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
-            $(".effort").html(new_effort.toFixed(2));
+            $(".effort").html(new_effort.toFixed(2) + " <%= @staffing_model.effort_unit %>");
             $(".new_effort").val(new_effort.toFixed(2));
 
             var new_duration = (duration * (parseFloat(data.from)) / 100);
-            $(".duration").html(new_duration.toFixed(2));
+            $(".duration").html(new_duration.toFixed(2) + " semaines");
             $(".new_duration").val(new_duration.toFixed(2));
 
             x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
@@ -195,28 +238,27 @@
             x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
             y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
             y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
-            var new_staffing_trapeze = 1.5 * (new_effort / new_duration * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2))));
-            $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));
+            var new_staffing_trapeze = (new_effort / new_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)));
+            $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2) + " personnes");
             $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
 
 
             var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
-            var difficulty_coef = 2 * new_effort * form_coef;
             var t_max_staffing = Math.sqrt(1/(2*form_coef));
-            var new_staffing_rayleigh = new_effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
-            $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
-            $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));
+            var new_staffing_rayleigh = new_effort / (t_max_staffing * Math.sqrt(Math.exp(1))) / 2
+            $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2) + " personnes");
+            $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2) + " personnes");
 
 
-            $(".percent_effort").html(((new_effort/effort)*100).toFixed(2));
-            $(".percent_duration").html(((new_duration/duration)*100).toFixed(2));
-            $(".percent_trapeze").html(((new_staffing_trapeze/staffing_trapeze)*100).toFixed(2));
-            $(".percent_rayleigh").html(((new_staffing_rayleigh/staffing_rayleigh)*100).toFixed(2));
+            $(".percent_effort").html(((new_effort/effort)*100).toFixed(2) + " %");
+            $(".percent_duration").html(((new_duration/duration)*100).toFixed(2) + " %");
+            $(".percent_trapeze").html(((new_staffing_trapeze/staffing_trapeze)*100).toFixed(2) + " %");
+            $(".percent_rayleigh").html(((new_staffing_rayleigh/staffing_rayleigh)*100).toFixed(2) + " %");
 
-            $(".gap_effort").html((new_effort-effort).toFixed(2));
-            $(".gap_duration").html((new_duration-duration).toFixed(2));
-            $(".gap_trapeze").html((new_staffing_trapeze-staffing_trapeze).toFixed(2));
-            $(".gap_rayleigh").html((new_staffing_rayleigh-staffing_rayleigh).toFixed(2));
+            $(".gap_effort").html((new_effort-effort).toFixed(2) + " <%= @staffing_model.effort_unit %>");
+            $(".gap_duration").html((new_duration-duration).toFixed(2) + " semaines");
+            $(".gap_trapeze").html((new_staffing_trapeze-staffing_trapeze).toFixed(2) + " personnes");
+            $(".gap_rayleigh").html((new_staffing_rayleigh-staffing_rayleigh).toFixed(2) + " personnes");
 
           }
         });
@@ -266,6 +308,14 @@
         name: "Répartition Rayleigh ajusté",
         data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>,
         color: '#CC0000',
+        marker: {
+          enabled: false
+        }
+      },{
+        type: 'spline',
+        name: '<%= I18n.t("Répartition optimal") %>',
+        data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>,
+        color: '#000000',
         marker: {
           enabled: false
         }

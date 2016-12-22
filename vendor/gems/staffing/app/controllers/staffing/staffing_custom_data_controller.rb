@@ -109,209 +109,184 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
     # begin
 
-      @component = current_component
-      @module_project = current_module_project
-      @staffing_model = @module_project.staffing_model
-      trapeze_default_values = @staffing_model.trapeze_default_values
+    @component = current_component
+    @module_project = current_module_project
+    @staffing_model = @module_project.staffing_model
+    trapeze_default_values = @staffing_model.trapeze_default_values
 
-      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
+    @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
-      @staffing_custom_data.percent = params[:percents]
-      @staffing_custom_data.global_effort_value = params[:new_effort]
-      @staffing_custom_data.duration = params[:new_duration]
-      @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
-      @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
-      @staffing_custom_data.percent = params[:percents]
+    @staffing_custom_data.percent = params[:percents]
+    @staffing_custom_data.global_effort_value = params[:new_effort]
+    @staffing_custom_data.duration = params[:new_duration]
+    @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
+    @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
+    @staffing_custom_data.percent = params[:percents]
 
-      # @staffing_model.trapeze_default_values =  { :x0 => trapeze_default_values[:x0],
-      #                                             :y0 => trapeze_default_values[:y0],
-      #                                             :x1 => trapeze_default_values[:x1],
-      #                                             :x2 => trapeze_default_values[:x2],
-      #                                             :x3 => trapeze_default_values[:x3],
-      #                                             :y3 => trapeze_default_values[:y3] }
-      #
-      # if @staffing_custom_data.nil?
-      #   @staffing_custom_data = Staffing::StaffingCustomDatum.create( staffing_model_id: @staffing_model.id,
-      #                                                                 module_project_id: @module_project.id,
-      #                                                                 pbs_project_element_id: @component.id,
-      #                                                                 mc_donell_coef: 6,
-      #                                                                 puissance_n: 0.33,
-      #                                                                 trapeze_default_values: { :x0 => trapeze_default_values[:x0],
-      #                                                                                           :y0 => trapeze_default_values[:y0],
-      #                                                                                           :x1 => trapeze_default_values[:x1],
-      #                                                                                           :x2 => trapeze_default_values[:x2],
-      #                                                                                           :x3 => trapeze_default_values[:x3],
-      #                                                                                           :y3 => trapeze_default_values[:y3] },
-      #                                                                 trapeze_parameter_values: { :x0 => trapeze_default_values[:x0],
-      #                                                                                             :y0 => trapeze_default_values[:y0],
-      #                                                                                             :x1 => trapeze_default_values[:x1],
-      #                                                                                             :x2 => trapeze_default_values[:x2],
-      #                                                                                             :x3 => trapeze_default_values[:x3],
-      #                                                                                             :y3 => trapeze_default_values[:y3] } )
-      # end
-
-      # if @staffing_custom_data.update_attributes(params[:staffing_custom_datum])
-
-        # @staffing_custom_data.global_effort_value = params[:staffing_custom_datum]['global_effort_value']
-        # @staffing_custom_data.staffing_constraint = params[:option_radios]
-        # @staffing_custom_data.trapeze_parameter_values = @staffing_model.trapeze_default_values
-        # @staffing_custom_data.save
-
-        # constraint = @staffing_custom_data.staffing_constraint
-
-        # effort = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f / (@staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f)
-
-        # =====================================================================================================================================
-        # Trapeze
-
-
-        # if constraint == "max_staffing_constraint"
-        #   @staffing_trapeze = @staffing_custom_data.max_staffing
-        #
-        #   @duration = 1.5 * (effort / @staffing_trapeze) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
-        #
-        #   @staffing_custom_data.duration = @duration
-        #
-        # elsif constraint == "duration_constraint"
-        #
-        #   @duration = (@staffing_custom_data.duration == 0) ? (@staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) ** @staffing_model.puissance_n) : @staffing_custom_data.duration
-        #
-        #   @staffing_trapeze = 1.5 * (effort / (@duration.nil? ? 1 : @duration)) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
-        #
-        #   @staffing_custom_data.max_staffing = @staffing_trapeze
-        # end
-
-        trapeze_parameter_values = @staffing_custom_data.trapeze_parameter_values
-
-        x0 = trapeze_parameter_values[:x0].to_f / 100
-        x1 = trapeze_parameter_values[:x1].to_f / 100
-        x2 = trapeze_parameter_values[:x2].to_f / 100
-        x3 = trapeze_parameter_values[:x3].to_f / 100
-        y0 = trapeze_parameter_values[:y0].to_f / 100
-        y3 = trapeze_parameter_values[:y3].to_f / 100
-
-        @duration = @staffing_custom_data.duration
-        @staffing_trapeze = @staffing_custom_data.max_staffing
-
-        x0D = x0 * @duration
-        x1D = x1 * @duration
-        x2D = x2 * @duration
-        x3D = x3 * @duration
-
-        coef_a = (@staffing_trapeze*(1-y0)) / (@duration*(x1-x0))
-        @staffing_custom_data.coef_a = coef_a
-
-        coef_b = (@staffing_trapeze * ((x1*y0) - x0)) / (x1-x0)
-        @staffing_custom_data.coef_b = coef_b
-
-        coef_a_prime = (@staffing_trapeze * (1-y3)) / (@duration*(x2-x3))
-        @staffing_custom_data.coef_a_prime = coef_a_prime
-
-        coef_b_prime = (@staffing_trapeze * ((x2*y3) - x3)) / (x2-x3)
-        @staffing_custom_data.coef_b_prime = coef_b_prime
-
-        # Calcul du Staffing f(x) pour la duree indiquee : intervalle de temps par defaut = 1 semaine
-        # Creation du jeu de donnees pour le tracer la courbe
-        trapeze_theorical_staffing_values = []
-
-        for t in 0..@duration
-          case t
-            when 0..x0D
-              t_staffing = 0
-            when x0D..x1D
-              t_staffing = (coef_a * t) + coef_b
-            when x1D..x2D
-              t_staffing = @staffing_trapeze
-            when x2D..x3D
-              t_staffing = (coef_a_prime * t) + coef_b_prime
-            else
-              t_staffing = 0
-          end
-          trapeze_theorical_staffing_values << ["#{t}", t_staffing]
-        end
-        @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
-        @staffing_custom_data.save
-      #
-      #   # Calcul du Staffing f(x) pour la duree indiquee : intervalle de temps par defaut = 1 semaine
-        rayleigh_chart_theoretical_coordinates = []
-      #   mcdonnell_chart_theorical_coordinates = []
-      #
-      #
-      #   # =====================================================================================================================================
-      #   # Rayleigh
-      #   # Contrainte de Staffing Max
-      #
-        @staffing_rayleigh = @staffing_custom_data.max_staffing_rayleigh
-      #
-        # coefficient de forme : a
-        form_coef = -Math.log(1-0.97) / (@duration * @duration)
-        difficulty_coef = 2 * @staffing_custom_data.global_effort_value * form_coef
-
-        @staffing_custom_data.form_coef = form_coef
-
-        t_max_staffing = Math.sqrt(1/(2*form_coef))
-        @staffing_custom_data.t_max_staffing = t_max_staffing
-
-        for t in 0..@duration
-          t_staffing = 2 * @staffing_custom_data.global_effort_value * form_coef * t * Math.exp(-form_coef*t*t)
-          rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
-        end
-
-        @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
-
-      #   # =====================================================================================================================================
-      #
-      #   #For mcdonnell
-      #   @md_duration = @staffing_model.mc_donell_coef * effort ** @staffing_model.puissance_n
-      #
-      #   # coefficient de forme : a
-      #   form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
-      #   @staffing_custom_data.form_coef = form_coef
-      #
-      #   # coefficient de difficulté
-      #   difficulty_coef = 2*effort*form_coef
-      #   @staffing_custom_data.difficulty_coef = difficulty_coef
-      #
-      #   # numero de la semaine au Pic de Staffing
-      #   t_max_staffing = Math.sqrt(1/(2*form_coef))
-      #   @staffing_custom_data.t_max_staffing = t_max_staffing
-      #
-      #   # MAx Staffing
-      #   #max_staffing = effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
-      #   # @staffing_custom_data.max_staffing_rayleigh = @staffing
-      #
-      #   for t in 0..@md_duration
-      #     # E(t) = 2 * K * a * t * e(-a*t*t)
-      #     t_staffing = 2 * effort * form_coef * t * Math.exp(-form_coef*t*t)
-      #     mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
-      #   end
-      #   @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
-      #
-      #   if params["actuals_based_on"].present?
-      #     if params["actuals_based_on"]["mcdonell"]
-      #       @staffing_custom_data.duration = @md_duration
-      #       @staffing_custom_data.save
-      #     end
-      #   end
-      #
-      #   if params["actuals_based_on"].present?
-      #     if params["actuals_based_on"]["custom"]
-      #       if params[:actuals].present?
-      #         @staffing_custom_data.chart_actual_coordinates = actual_staffing_values.first
-      #       end
-      #     else
-      #       @staffing_custom_data.chart_actual_coordinates = trapeze_theorical_staffing_values
-      #     end
-      #   end
-      # end
-
-      # begin
-        @staffing_custom_data.save
-      # rescue
-      # end
-    # rescue
-      # A corriger ?!
+    # @staffing_model.trapeze_default_values =  { :x0 => trapeze_default_values[:x0],
+    #                                             :y0 => trapeze_default_values[:y0],
+    #                                             :x1 => trapeze_default_values[:x1],
+    #                                             :x2 => trapeze_default_values[:x2],
+    #                                             :x3 => trapeze_default_values[:x3],
+    #                                             :y3 => trapeze_default_values[:y3] }
+    #
+    # if @staffing_custom_data.nil?
+    #   @staffing_custom_data = Staffing::StaffingCustomDatum.create( staffing_model_id: @staffing_model.id,
+    #                                                                 module_project_id: @module_project.id,
+    #                                                                 pbs_project_element_id: @component.id,
+    #                                                                 mc_donell_coef: 6,
+    #                                                                 puissance_n: 0.33,
+    #                                                                 trapeze_default_values: { :x0 => trapeze_default_values[:x0],
+    #                                                                                           :y0 => trapeze_default_values[:y0],
+    #                                                                                           :x1 => trapeze_default_values[:x1],
+    #                                                                                           :x2 => trapeze_default_values[:x2],
+    #                                                                                           :x3 => trapeze_default_values[:x3],
+    #                                                                                           :y3 => trapeze_default_values[:y3] },
+    #                                                                 trapeze_parameter_values: { :x0 => trapeze_default_values[:x0],
+    #                                                                                             :y0 => trapeze_default_values[:y0],
+    #                                                                                             :x1 => trapeze_default_values[:x1],
+    #                                                                                             :x2 => trapeze_default_values[:x2],
+    #                                                                                             :x3 => trapeze_default_values[:x3],
+    #                                                                                             :y3 => trapeze_default_values[:y3] } )
     # end
+
+    # if @staffing_custom_data.update_attributes(params[:staffing_custom_datum])
+
+      # @staffing_custom_data.global_effort_value = params[:staffing_custom_datum]['global_effort_value']
+      # @staffing_custom_data.staffing_constraint = params[:option_radios]
+      # @staffing_custom_data.trapeze_parameter_values = @staffing_model.trapeze_default_values
+      # @staffing_custom_data.save
+
+      # constraint = @staffing_custom_data.staffing_constraint
+
+      # effort = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f / (@staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f)
+
+      # =====================================================================================================================================
+
+
+      # if constraint == "max_staffing_constraint"
+      #   @staffing_trapeze = @staffing_custom_data.max_staffing
+      #
+      #   @duration = 1.5 * (effort / @staffing_trapeze) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+      #
+      #   @staffing_custom_data.duration = @duration
+      #
+      # elsif constraint == "duration_constraint"
+      #
+      #   @duration = (@staffing_custom_data.duration == 0) ? (@staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) ** @staffing_model.puissance_n) : @staffing_custom_data.duration
+      #
+        # @staffing_trapeze = 1.5 * (effort / (@duration.nil? ? 1 : @duration)) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+      #
+      #   @staffing_custom_data.max_staffing = @staffing_trapeze
+      # end
+
+      # Trapeze
+
+      trapeze_parameter_values = @staffing_custom_data.trapeze_parameter_values
+
+      x0 = trapeze_parameter_values[:x0].to_f / 100
+      x1 = trapeze_parameter_values[:x1].to_f / 100
+      x2 = trapeze_parameter_values[:x2].to_f / 100
+      x3 = trapeze_parameter_values[:x3].to_f / 100
+      y0 = trapeze_parameter_values[:y0].to_f / 100
+      y3 = trapeze_parameter_values[:y3].to_f / 100
+
+      @duration = @staffing_custom_data.duration
+      @staffing_trapeze = @staffing_custom_data.max_staffing
+
+      x0D = x0 * @duration
+      x1D = x1 * @duration
+      x2D = x2 * @duration
+      x3D = x3 * @duration
+
+      coef_a = (@staffing_trapeze*(1-y0)) / (@duration*(x1-x0))
+      @staffing_custom_data.coef_a = coef_a
+
+      coef_b = (@staffing_trapeze * ((x1*y0) - x0)) / (x1-x0)
+      @staffing_custom_data.coef_b = coef_b
+
+      coef_a_prime = (@staffing_trapeze * (1-y3)) / (@duration*(x2-x3))
+      @staffing_custom_data.coef_a_prime = coef_a_prime
+
+      coef_b_prime = (@staffing_trapeze * ((x2*y3) - x3)) / (x2-x3)
+      @staffing_custom_data.coef_b_prime = coef_b_prime
+
+      # Calcul du Staffing f(x) pour la duree indiquee : intervalle de temps par defaut = 1 semaine
+      # Creation du jeu de donnees pour le tracer la courbe
+      trapeze_theorical_staffing_values = []
+
+      for t in 0..@duration
+        case t
+          when 0..x0D
+            t_staffing = 0
+          when x0D..x1D
+            t_staffing = (coef_a * t) + coef_b
+          when x1D..x2D
+            t_staffing = @staffing_trapeze
+          when x2D..x3D
+            t_staffing = (coef_a_prime * t) + coef_b_prime
+          else
+            t_staffing = 0
+        end
+        trapeze_theorical_staffing_values << ["#{t}", t_staffing]
+      end
+      @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
+      @staffing_custom_data.save
+
+      rayleigh_chart_theoretical_coordinates = []
+
+
+
+    # Rayleigh
+    form_coef = -Math.log(1-0.97) / (@duration * @duration)
+
+    @staffing_custom_data.form_coef = form_coef
+
+    t_max_staffing = Math.sqrt(1/(2*form_coef))
+    @staffing_custom_data.t_max_staffing = t_max_staffing
+
+    for t in 0..@duration
+      t_staffing = @staffing_custom_data.global_effort_value * form_coef * t * Math.exp(-form_coef*t*t)
+      rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
+    end
+
+    @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
+
+
+
+
+    # Graphe d'origine
+    attribute = PeAttribute.find_by_alias("effort")
+    ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+                               :module_project_id => current_module_project.previous.last,
+                               :in_out => "output").first
+    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
+
+    begin
+      begin
+        previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+        effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+      rescue
+        effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+      end
+    rescue
+      begin
+        effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+      rescue
+        effort = 0
+      end
+    end
+
+    @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
+    form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
+    mcdonnell_chart_theorical_coordinates = []
+    for t in 0..@md_duration
+      t_staffing = effort * form_coef * t * Math.exp(-form_coef*t*t)
+      mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
+    end
+    @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
+
+    @staffing_custom_data.save
 
     update_staffing_estimation_values
 
