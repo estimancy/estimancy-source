@@ -1,5 +1,9 @@
 <h4 class="ui-widget">
-  <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
+  <% if params[:is_model] == "true" %>
+      <%= I18n.t(:edit_estimation_model, :value => "#{@project.title} (version:#{@project.version_number})") %>
+  <% else %>
+    <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
+  <% end %>
 
   <% unless controller.action_name == 'new' %>
     <%= link_to I18n.t(:label_activate_project), dashboard_path(@project), class: "pull-right" %>

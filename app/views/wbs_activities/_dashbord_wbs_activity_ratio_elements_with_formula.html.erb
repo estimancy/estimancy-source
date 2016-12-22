@@ -64,7 +64,7 @@
                           <% if mp_ratio_variable.value_from_percentage.nil? %>
                             <%= "de la valeur d'entrée" %>
                           <% else %>
-                            <%= convert_with_precision(mp_ratio_variable.value_from_percentage.to_f / effort_unit_coeff, user_number_precision, true) %> <%= effort_unit %>
+                            <%= convert_with_precision((mp_ratio_variable.value_from_percentage.to_f / effort_unit_coeff), user_number_precision, true) %> <%= effort_unit %>
                           <% end %>
                       <% end %>
                     </span>
@@ -239,7 +239,7 @@
                            'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
                            :class => "input-mini retained_effort",  :tabindex => i, readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
                   </td>
-                  <td><%= number_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-mini', :tabindex => i,
+                  <td><%= number_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-mini ', :tabindex => i,
                                            readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
               <% end %>
 
@@ -307,3 +307,10 @@
   </div>
 
 </div>
+
+<script>
+    $('.input-mini').each(function(){
+        $(this).css('text-align', 'right');
+        $(this).val(parseFloat($(this).val()).toFixed(<%= user_number_precision %>));
+    });
+</script>

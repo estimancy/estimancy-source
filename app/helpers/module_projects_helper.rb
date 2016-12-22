@@ -99,9 +99,9 @@ module ModuleProjectsHelper
       input_data.each do |key, value|
         unless not_integer_or_float.include?(key.to_s)
           if key.to_s.eql?("ml")
-            sum_of_not_null = sum_of_not_null + (4*value.to_f)
+            sum_of_not_null = sum_of_not_null.to_f + (4*value.to_f)
           else
-            sum_of_not_null = sum_of_not_null + value.to_f
+            sum_of_not_null = sum_of_not_null.to_f + value.to_f
           end
         end
       end
@@ -109,7 +109,7 @@ module ModuleProjectsHelper
       if number_of_not_null.zero?
         computed_probable_value = 0.0
       else
-        computed_probable_value = sum_of_not_null / number_of_not_null
+        computed_probable_value = sum_of_not_null.to_f / number_of_not_null.to_f
       end
 
     end
@@ -119,7 +119,7 @@ module ModuleProjectsHelper
       ###if estimation_value.pe_attribute.attr_type.eql?("integer") && !computed_probable_value.nan?
       ###if computed_probable_value.is_a?(Integer) || (computed_probable_value.is_a?(Float) && !computed_probable_value.nan?)
       unless computed_probable_value.is_a?(Float) && computed_probable_value.nan?
-        computed_probable_value = computed_probable_value.round
+        computed_probable_value = computed_probable_value
       end
     end
 
