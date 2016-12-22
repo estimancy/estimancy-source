@@ -139,7 +139,7 @@
         Ajustement du délai
       </h3>
       <hr>
-      <input type="text" name='ajust_staffings' id='ajust_staffing' class="factor-slider" value="<%= effort %>" />
+      <input type="text" name='percents' id='percent' class="factor-slider" value="<%= @staffing_custom_data.percent %>" />
     </div>
     <div class="span7">
       <h3>
@@ -157,14 +157,6 @@
 
         <span class="reference_effort hide">
           <%= effort %>
-        </span>
-      </p>
-      <p>
-        <b>
-          Coefficient d'impact :
-        </b>
-        <span class="impact">
-          <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) / (effort.nil? ? 1 : effort) %>
         </span>
       </p>
       <p>
@@ -196,11 +188,16 @@
       </p>
     </div>
 
+    <%= hidden_field_tag "new_effort", effort, id: "new_effort" %>
+    <%= hidden_field_tag "new_duration", (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f), id: "new_duration" %>
+    <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), id: "new_staffing_rayleigh" %>
+    <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), id: "new_staffing_trapeze" %>
+
     <script>
-      $('#ajust_staffing').ionRangeSlider({
+      $('#percent').ionRangeSlider({
         min: 70,
         max: 150,
-        from: 100,
+        from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
         grid: true,
         postfix: "%",
         onChange: function (data) {
@@ -208,10 +205,13 @@
           var duration = $(".reference_duration").html();
           var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
           $(".effort").html(new_effort.toFixed(2));
+          $("#new_effort").html(new_effort.toFixed(2));
+
           $(".impact").html((duration/new_effort).toFixed(2));
 
           var new_duration = <%= @staffing_model.mc_donell_coef %> * Math.pow((new_effort * <%= @staffing_model.standard_unit_coefficient.to_f %> / <%= effort_week_unit %>), <%= @staffing_model.puissance_n %>).toFixed(2);
           $(".duration").html(new_duration.toFixed(2));
+          $("#new_duration").html(new_duration.toFixed(2));
 
           x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
           x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
@@ -222,12 +222,14 @@
 
           var new_staffing = 1.5 * (new_effort / new_duration * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2))));
           $(".staffing").html(new_staffing.toFixed(2));
+          $("#new_staffing_trapeze").html(new_staffing.toFixed(2));
 
           var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
           var difficulty_coef = 2 * new_effort * form_coef;
           var t_max_staffing = Math.sqrt(1/(2*form_coef));
           var new_staffing_rayleigh = new_effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
           $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
+          $("#new_staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
 
         }
       });

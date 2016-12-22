@@ -327,6 +327,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
         end
       end
 
+      @staffing_custom_data.percent = params[:percents]
+
       begin
         @staffing_custom_data.save
       rescue
@@ -364,19 +366,24 @@ class Staffing::StaffingCustomDataController < ApplicationController
           size = params[:"retained_size_most_likely"].to_f
         end
 
+        new_effort = params[:new_effort]
+        new_duration = params[:new_duration]
+        new_staffing_rayleigh = params[:new_staffing_rayleigh]
+        new_staffing_trapeze = params[:new_staffing_trapeze]
+
         if am.pe_attribute.alias == "effort"
-          effort = @staffing_custom_data.global_effort_value
-          ev.send("string_data_#{level}")[current_component.id] = effort * @staffing_model.standard_unit_coefficient
+          # effort = @staffing_custom_data.global_effort_value
+          ev.send("string_data_#{level}")[current_component.id] = new_effort * @staffing_model.standard_unit_coefficient
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
         elsif am.pe_attribute.alias == "duration"
-          duration = @staffing_custom_data.duration
-          ev.send("string_data_#{level}")[current_component.id] = duration
+          # duration = @staffing_custom_data.duration
+          ev.send("string_data_#{level}")[current_component.id] = new_duration
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
         elsif am.pe_attribute.alias == "staffing"
-          max_staffing = @staffing_custom_data.max_staffing
-          ev.send("string_data_#{level}")[current_component.id] = max_staffing
+          # max_staffing = @staffing_custom_data.max_staffing
+          ev.send("string_data_#{level}")[current_component.id] = new_staffing_rayleigh
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
         end

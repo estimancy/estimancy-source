@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161208092620) do
+ActiveRecord::Schema.define(:version => 20161222085245) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -472,13 +472,15 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer "ge_model_id"
-    t.integer "ge_factor_id"
-    t.string  "factor_alias"
-    t.text    "description"
-    t.integer "organization_id"
-    t.integer "project_id"
-    t.integer "module_project_id"
+    t.integer  "ge_model_id"
+    t.integer  "ge_factor_id"
+    t.string   "factor_alias"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "project_id"
+    t.integer  "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -562,6 +564,14 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
     t.boolean  "enable_value"
   end
 
+  create_table "guw_guw_attribute_types", :force => true do |t|
+    t.integer  "guw_type_id"
+    t.integer  "guw_attribute_id"
+    t.float    "default_value"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
   create_table "guw_guw_attributes", :force => true do |t|
     t.string   "name"
     t.text     "description"
@@ -569,6 +579,43 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
     t.datetime "updated_at",   :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
+  end
+
+  create_table "guw_guw_coefficient_element_unit_of_works", :force => true do |t|
+    t.integer  "guw_unit_of_work_id"
+    t.integer  "guw_coefficient_element_id"
+    t.integer  "guw_coefficient_id"
+    t.float    "percent"
+    t.float    "intermediate_value"
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
+
+  create_table "guw_guw_coefficient_elements", :force => true do |t|
+    t.string   "name"
+    t.integer  "guw_coefficient_id"
+    t.float    "value"
+    t.integer  "display_order"
+    t.integer  "guw_model_id"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|
+    t.integer  "guw_coefficient_id"
+    t.integer  "guw_guw_coefficient_element_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  create_table "guw_guw_coefficients", :force => true do |t|
+    t.string   "name"
+    t.string   "coefficient_type"
+    t.integer  "guw_model_id"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+    t.string   "coefficient_calc"
+    t.boolean  "allow_intermediate_value"
   end
 
   create_table "guw_guw_complexities", :force => true do |t|
@@ -584,6 +631,16 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
     t.boolean  "enable_value"
     t.integer  "display_order", :default => 0
     t.boolean  "default_value"
+  end
+
+  create_table "guw_guw_complexity_coefficient_elements", :force => true do |t|
+    t.integer  "guw_complexity_id"
+    t.integer  "guw_coefficient_element_id"
+    t.integer  "guw_output_id"
+    t.integer  "guw_type_id"
+    t.float    "value"
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
   end
 
   create_table "guw_guw_complexity_factors", :force => true do |t|
@@ -651,6 +708,15 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
     t.string   "effort_unit"
     t.string   "cost_unit"
     t.boolean  "allow_technology",            :default => true
+  end
+
+  create_table "guw_guw_outputs", :force => true do |t|
+    t.string   "name"
+    t.string   "output_type"
+    t.integer  "guw_model_id"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+    t.boolean  "allow_intermediate_value"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -857,12 +923,6 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1567,6 +1627,7 @@ ActiveRecord::Schema.define(:version => 20161208092620) do
     t.string   "actuals_based_on"
     t.text     "mcdonnell_chart_theorical_coordinates"
     t.float    "max_staffing_rayleigh"
+    t.float    "percent"
   end
 
   create_table "staffing_staffing_models", :force => true do |t|
