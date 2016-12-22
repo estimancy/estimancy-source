@@ -173,9 +173,12 @@ class ViewsWidgetsController < ApplicationController
     respond_to do |format|
       if @views_widget.save
         unless params["field"].blank?
-          ProjectField.create( project_id: @project.id, field_id: params["field"], views_widget_id: @views_widget.id,
+          ProjectField.create( project_id: @project.id,
+                               field_id: params["field"],
+                               views_widget_id: @views_widget.id,
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
+
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
       else
         flash[:error] = "Erreur d'ajout de Vignette"
@@ -200,7 +203,7 @@ class ViewsWidgetsController < ApplicationController
   end
 
   def update
-    authorize! :manage_estimation_widgets, @project
+    # authorize! :manage_estimation_widgets, @project
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
@@ -233,24 +236,26 @@ class ViewsWidgetsController < ApplicationController
     else
       pf = ProjectField.where(views_widget_id: @views_widget.id).last
 
-      if @views_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
-        begin
-          @value = @views_widget.estimation_value.string_data_probable[current_component.id][@views_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-        rescue
+      unless @views_widget.estimation_value.nil?
+        if @views_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
           begin
-            @value = @views_widget.estimation_value.string_data_probable[current_component.id]
+            @value = @views_widget.estimation_value.string_data_probable[current_component.id][@views_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
           rescue
-            @value = 0
+            begin
+              @value = @views_widget.estimation_value.string_data_probable[current_component.id]
+            rescue
+              @value = 0
+            end
           end
+        else
+          @value = @views_widget.estimation_value.string_data_probable[current_component.id]
         end
-      else
-        @value = @views_widget.estimation_value.string_data_probable[current_component.id]
       end
 
       if pf.nil?
         ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
       else
-        pf.value = @value
+        pf.value = get_kpi_value_without_unit(@views_widget)
         pf.views_widget_id = @views_widget.id
         pf.field_id = params["field"].to_i
         pf.project_id = project.id
@@ -292,8 +297,6 @@ class ViewsWidgetsController < ApplicationController
         format.js { render action: :edit }
       end
     end
-
-    #redirect_to dashboard_path(@project)
   end
 
   def destroy

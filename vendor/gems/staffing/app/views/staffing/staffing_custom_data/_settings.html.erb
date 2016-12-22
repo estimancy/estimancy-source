@@ -4,20 +4,20 @@
 
 <%
    attribute = PeAttribute.find_by_alias("effort")
-   unless current_module_project.previous.first.nil?
-     previous_activity = current_module_project.previous.first.wbs_activity
-   end
+   # unless current_module_project.previous.first.nil?
+   #   previous_activity = current_module_project.previous.first.wbs_activity
+   # end
 
    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
 
    # unless previous_activity.nil?
 
-   # ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-   #                            :module_project_id => current_module_project.id,
-   #                            :in_out => "input").first
-   # effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+                              :module_project_id => current_module_project.id,
+                              :in_out => "input").first
+   effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
 
-   # if effort == 0
+   if effort == 0
      ev = EstimationValue.where(:pe_attribute_id => attribute.id,
                                 :module_project_id => current_module_project.previous.last,
                                 :in_out => "output").first
@@ -35,7 +35,9 @@
          effort = 0
        end
      end
-   # end
+   else
+
+   end
 
    @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
 
@@ -131,7 +133,109 @@
 
     <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-mini pull-right button_margin_right"%>
 
-    <h4>
+  <div class="row-fluid">
+    <div class="span5">
+      <h3>
+        Ajustement du délai
+      </h3>
+      <hr>
+      <input type="text" name='ajust_staffings' id='ajust_staffing' class="factor-slider" value="<%= effort %>" />
+    </div>
+    <div class="span7">
+      <h3>
+        Résulats
+      </h3>
+      <hr>
+      <p>
+        <b>
+          Effort :
+        </b>
+        <span class="effort">
+          <%= effort %>
+        </span>
+        <%= @staffing_model.effort_unit %>
+
+        <span class="reference_effort hide">
+          <%= effort %>
+        </span>
+      </p>
+      <p>
+        <b>
+          Coefficient d'impact :
+        </b>
+        <span class="impact">
+          <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) / (effort.nil? ? 1 : effort) %>
+        </span>
+      </p>
+      <p>
+        Durée :
+          <span class="reference_duration hide">
+            <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) %>
+          </span>
+          <span class="duration">
+            <%= (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f) %>
+          </span>
+      </p>
+      <p>
+        Staffing (Trapeze) :
+          <span class="staffing">
+            <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+          </span>
+          <span class="reference_staffing hide">
+            <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+          </span>
+      </p>
+      <p>
+        Staffing (Rayleigh):
+          <span class="staffing_rayleigh">
+            <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+          </span>
+          <span class="reference_staffing_rayleigh hide">
+            <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+          </span>
+      </p>
+    </div>
+
+    <script>
+      $('#ajust_staffing').ionRangeSlider({
+        min: 70,
+        max: 150,
+        from: 100,
+        grid: true,
+        postfix: "%",
+        onChange: function (data) {
+          var effort = $(".reference_effort").html();
+          var duration = $(".reference_duration").html();
+          var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
+          $(".effort").html(new_effort.toFixed(2));
+          $(".impact").html((duration/new_effort).toFixed(2));
+
+          var new_duration = <%= @staffing_model.mc_donell_coef %> * Math.pow((new_effort * <%= @staffing_model.standard_unit_coefficient.to_f %> / <%= effort_week_unit %>), <%= @staffing_model.puissance_n %>).toFixed(2);
+          $(".duration").html(new_duration.toFixed(2));
+
+          x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
+          x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+          x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+          x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+          y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+          y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+
+          var new_staffing = 1.5 * (new_effort / new_duration * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2))));
+          $(".staffing").html(new_staffing.toFixed(2));
+
+          var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
+          var difficulty_coef = 2 * new_effort * form_coef;
+          var t_max_staffing = Math.sqrt(1/(2*form_coef));
+          var new_staffing_rayleigh = new_effort / (t_max_staffing * Math.sqrt(Math.exp(1)))
+          $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
+
+        }
+      });
+    </script>
+  </div>
+
+  <hr>
+  <h4>
       <b>
         <%= I18n.t(:graphical_output)%>
       </b>
@@ -222,7 +326,7 @@
       </div>
     </div>
 
-  <% end %>
+<% end %>
 
 <script>
 
