@@ -279,12 +279,12 @@
                       <% if guow.guw_complexity.nil? %>
                         -
                       <% else %>
-                        <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
+                        <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight.to_f / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
                                              style: "width: 43px;",
                                              class: "complexity_weight-#{uowg.id}",
                                              disabled: true %>
                         <% if guow.guw_type.allow_complexity %>
-                          <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
+                          <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight.to_f / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
                                                style: "width: 43px;",
                                                class: "complexity_weight-#{uowg.id}",
                                                step: 0.001 %>
