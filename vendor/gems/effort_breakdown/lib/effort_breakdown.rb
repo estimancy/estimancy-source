@@ -339,7 +339,7 @@ module EffortBreakdown
       mp_ratio_variables.each do |mp_var|
 
         # Store the ratio_variables value in the calculator
-        calculator.store(:"#{mp_var.name}" => mp_var.value_from_percentage)
+        calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage)
 
         # wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
         # percentage_of_input = wbs_ratio_variable.percentage_of_input
@@ -378,9 +378,9 @@ module EffortBreakdown
         element_phase_short_name = wbs_activity_element.phase_short_name
         unless element_phase_short_name.nil?
           if mp_ratio_element.selected == true
-            calculator.store(:"#{element_phase_short_name}" => element_effort)
+            calculator.store(:"#{element_phase_short_name.downcase}" => element_effort)
           else
-            calculator.store(:"#{element_phase_short_name}" => 0.0)
+            calculator.store(:"#{element_phase_short_name.downcase}" => 0.0)
           end
         end
       end
@@ -415,7 +415,7 @@ module EffortBreakdown
                   else
                     formula_expression = "#{formula.downcase}"
                     begin
-                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01')
+                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01 ')
                     rescue
                       normalized_formula_expression = nil
                     end
@@ -425,7 +425,7 @@ module EffortBreakdown
                     ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
-                    element_phase_short_name = element.phase_short_name
+                    element_phase_short_name = element.phase_short_name.downcase
                     unless element_phase_short_name.nil?
                       if mp_ratio_element.selected == true
                         all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
@@ -443,13 +443,13 @@ module EffortBreakdown
                   child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
                   if child_mp_ratio_element && child_mp_ratio_element.selected == true
                     if parent_element_formula.blank?
-                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
                     else
-                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
                     end
                   end
                 end
-                all_formula_to_compute[:"#{element.phase_short_name}"] = parent_element_formula
+                all_formula_to_compute[:"#{element.phase_short_name.downcase}"] = parent_element_formula
 
                 ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
                 #### add element ID in the parents elements to compute
@@ -462,10 +462,7 @@ module EffortBreakdown
       end
 
       ### Then compute all formula expression
-      output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
-      ###else
-      ###  output_effort_with_dependencies = @changed_retained_effort_values
-      ###end
+      output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -473,7 +470,7 @@ module EffortBreakdown
         sorted_node_elements.each do |element|
           if output_effort[element.id].nil?
             mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
-            current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+            current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
             if !mp_ratio_element.selected == true
               current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
             end
@@ -620,7 +617,7 @@ module EffortBreakdown
         mp_ratio_variables.each do |mp_var|
 
           # Store the ratio_variables value in the calculator
-          calculator.store(:"#{mp_var.name}" => mp_var.value_from_percentage.to_f)
+          calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage.to_f)
 
           # wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
           # percentage_of_input = wbs_ratio_variable.percentage_of_input
@@ -667,7 +664,7 @@ module EffortBreakdown
                   else
                     formula_expression = "#{formula.downcase}"
                     begin
-                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01')
+                      normalized_formula_expression = formula_expression.gsub('%', ' * 0.01 ')
                     rescue
                       normalized_formula_expression = nil
                     end
@@ -678,14 +675,14 @@ module EffortBreakdown
                     ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
-                    element_phase_short_name = element.phase_short_name
+                    element_phase_short_name = element.phase_short_name.downcase
                     unless element_phase_short_name.nil?
                       ####calculator.store(:"#{element_phase_short_name}" => element_effort)
                       if mp_ratio_element.selected == true
-                        all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
+                        all_formula_to_compute[:"#{element_phase_short_name.downcase}"] = normalized_formula_expression
                       else
                         all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
-                        calculator.store(:"#{element_phase_short_name}" => 0.0)
+                        calculator.store(:"#{element_phase_short_name.downcase}" => 0.0)
                       end
                     end
                   end
@@ -697,13 +694,13 @@ module EffortBreakdown
                   child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
                   if child_mp_ratio_element && child_mp_ratio_element.selected == true
                     if parent_element_formula.blank?
-                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
                     else
-                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name}"
+                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
                     end
                   end
                 end
-                all_formula_to_compute[:"#{element.phase_short_name}"] = parent_element_formula
+                all_formula_to_compute[:"#{element.phase_short_name.downcase}"] = parent_element_formula
 
                 ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
 
@@ -716,7 +713,7 @@ module EffortBreakdown
 
 
         ### Then compute all formula expression
-        output_effort_with_dependencies = calculator.solve!(all_formula_to_compute)
+        output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
 
         wbs_activity_root.children.each do |node|
           # Sort node subtree by ancestry_depth
@@ -724,14 +721,14 @@ module EffortBreakdown
           sorted_node_elements.each do |element|
             if output_effort[element.id].nil?
               mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
-              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name}"]
+              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
               if !mp_ratio_element.selected == true
                 current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
               end
 
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
-                output_effort[element.id] = current_effort_with_dependencies ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                output_effort[element.id] = current_effort_with_dependencies.to_f ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end

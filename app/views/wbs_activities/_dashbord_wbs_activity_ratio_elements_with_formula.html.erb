@@ -64,7 +64,7 @@
                           <% if mp_ratio_variable.value_from_percentage.nil? %>
                             <%= "de la valeur d'entrée" %>
                           <% else %>
-                            <%= convert_with_precision(mp_ratio_variable.value_from_percentage.to_f / effort_unit_coeff, user_number_precision, true) %> <%= effort_unit %>
+                            <%= convert_with_precision((mp_ratio_variable.value_from_percentage.to_f / effort_unit_coeff), user_number_precision, true) %> <%= effort_unit %>
                           <% end %>
                       <% end %>
                     </span>
@@ -310,6 +310,7 @@
 
 <script>
     $('.input-mini').each(function(){
+        $(this).css('text-align', 'right');
         $(this).val(parseFloat($(this).val()).toFixed(<%= user_number_precision %>));
     });
 </script>

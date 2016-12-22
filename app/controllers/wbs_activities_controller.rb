@@ -331,7 +331,7 @@ class WbsActivitiesController < ApplicationController
     @module_project = current_module_project
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
 
-    effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient.to_f
+    effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
 
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values
@@ -416,7 +416,7 @@ class WbsActivitiesController < ApplicationController
       probable_input_effort_values = input_effort_values["most_likely"] ###params[:values]["most_likely"].to_f * effort_unit_coefficient
       if @wbs_activity.three_points_estimation?
         ###probable_input_effort_values = ((params[:values]["low"].to_f + (4 * params[:values]["most_likely"].to_f) + params[:values]["high"])/6) * effort_unit_coefficient
-        probable_input_effort_values = (input_effort_values["low"] + (4 * input_effort_values["most_likely"]) + input_effort_values["high"])/6
+        probable_input_effort_values = (input_effort_values["low"].to_f + (4 * input_effort_values["most_likely"].to_f) + input_effort_values["high"].to_f)/6
       end
 
 
@@ -536,10 +536,10 @@ class WbsActivitiesController < ApplicationController
               mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
 
               # Then update retained values if necessary
-              element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
-              if element_retained_mp_value.nil?
-                mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
-              end
+              #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
+              #if element_retained_mp_value.nil?
+              #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
+              #end
 
               mp_ratio_element.save
             end
@@ -739,10 +739,10 @@ class WbsActivitiesController < ApplicationController
             mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
             # get the retained attribute value
-            mp_retained_alias = "retained_#{mp_ratio_element_attribute_alias}_probable"
-            if mp_ratio_element.send("#{mp_retained_alias}").nil?
-              mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
-            end
+            #mp_retained_alias = "retained_#{mp_ratio_element_attribute_alias}_probable"
+            #if mp_ratio_element.send("#{mp_retained_alias}").nil?
+            #  mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
+            #end
 
 
             # if value is manually updated, update the flagged attribute
