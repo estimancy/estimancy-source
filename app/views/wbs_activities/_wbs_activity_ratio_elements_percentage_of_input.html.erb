@@ -59,6 +59,15 @@
   <% unless @selected_ratio.nil? %>
       <%= hidden_field_tag 'wbs_activity_ratio_id', @selected_ratio.id %>
       <%= hidden_field_tag 'wbs_activity_id', @selected_ratio.wbs_activity_id %>
+
+      <div>
+        Les entrées de la WBS-Activité <br>
+        <%# wbs_inputs = PeAttribute.where(alias: ["effort_1", "effort_2", "effort_3", "effort_4"]) %>
+        <% PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).each_with_index do |effort, index | %>
+         <span><%= "Entrée #{index+1} = #{effort.alias}" %></span> <br>
+        <% end %>
+      </div>
+
       <% @selected_ratio.wbs_activity_ratio_variables.each do |wbs_arv| %>
           <tr>
             <td class="align-center"><%= text_field_tag "name[#{wbs_arv.id}]", wbs_arv.name, :class => 'input-xl' %></td>

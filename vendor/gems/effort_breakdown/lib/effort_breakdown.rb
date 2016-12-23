@@ -55,8 +55,9 @@ module EffortBreakdown
       @retained_cost = HashWithIndifferentAccess.new
     end
 
-    # Getters for module outputs
+    Dentaku.enable_ast_cache!
 
+    # Getters for module outputs
     def input_effort
       @input_effort
     end
@@ -334,6 +335,13 @@ module EffortBreakdown
       current_output_effort = @input_effort
       calculator = Dentaku::Calculator.new
 
+      #store entries value
+      effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+      current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
+      current_inputs_evs.each do |ev|
+        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+      end
+
       # Calculate the module_project_ratio_variable value_percentage
       mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
       mp_ratio_variables.each do |mp_var|
@@ -410,7 +418,7 @@ module EffortBreakdown
 
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
-                  if current_output_effort.nil? || formula.blank?
+                  if formula.blank? ###if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
                   else
                     formula_expression = "#{formula.downcase}"
@@ -612,6 +620,13 @@ module EffortBreakdown
         current_output_effort = @input_effort
         calculator = Dentaku::Calculator.new
 
+        #store entries value
+        effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+        current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
+        current_inputs_evs.each do |ev|
+          calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+        end
+
         # Calculate the module_project_ratio_variable value_percentage
         mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
         mp_ratio_variables.each do |mp_var|
@@ -659,7 +674,7 @@ module EffortBreakdown
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
 
-                  if current_output_effort.nil? || formula.blank?
+                  if formula.blank? ###if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
                   else
                     formula_expression = "#{formula.downcase}"
