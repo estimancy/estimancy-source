@@ -958,29 +958,30 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.save
           else
             ce = Guw::GuwCoefficientElement.where(id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
-            cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-                                                             guw_coefficient_element_id: ce.id,
-                                                             guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+            unless ce.nil?
+              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+                                                               guw_coefficient_element_id: ce.id,
+                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
-                                                              guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
-                                                                                                                     guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                     guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
+                                                                guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
+                                                                                                                       guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                                       guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
-            # @final_value = @final_value.to_f * (cce.value.nil? ? 1 : cce.value)
+              # @final_value = @final_value.to_f * (cce.value.nil? ? 1 : cce.value)
 
-            unless ceuw.nil?
-              ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
-              ceuw.guw_coefficient_id = guw_coefficient.id
-              ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-              # ceuw.intermediate_value = @final_value
-              ceuw.save
+              unless ceuw.nil?
+                ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                ceuw.guw_coefficient_id = guw_coefficient.id
+                ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+                # ceuw.intermediate_value = @final_value
+                ceuw.save
+              end
+
+              unless cce.nil?
+                selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
+              end
             end
-
-            unless cce.nil?
-              selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
-            end
-
           end
         end
 
@@ -1167,19 +1168,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                              guw_coefficient_element_id: guw_coefficient_element.id,
                                                              guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
-            unless cce.value.blank?
-              pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-              # if pc.to_f < 0
-                percents << (pc.to_f / 100)
-              # else
-              #   percents << (pc.to_f / 100).to_f
-              # end
+            unless cce.nil?
+              unless cce.value.blank?
+                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+                # if pc.to_f < 0
+                  percents << (pc.to_f / 100)
+                # else
+                #   percents << (pc.to_f / 100).to_f
+                # end
 
-              # if guw_coefficient.allow_intermediate_value == true
-              #   ceuw.intermediate_value = @fv * pc.to_f
-              # end
-            else
-              percents << 1
+                # if guw_coefficient.allow_intermediate_value == true
+                #   ceuw.intermediate_value = @fv * pc.to_f
+                # end
+              else
+                percents << 1
+              end
             end
           end
 

@@ -45,9 +45,13 @@
           </div>
 
           <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name)).flatten.each do |item| %>
-            <p>
-              <%= item %> : <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
-            </p>
+            <% begin %>
+              <p>
+                <%= item %> : <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
+              </p>
+            <% rescue Exception => e %>
+              <%= e %>
+            <% end %>
           <% end %>
 
           <% if can? :manage_modules_instances, ModuleProject %>
