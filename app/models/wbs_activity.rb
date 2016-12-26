@@ -24,6 +24,8 @@ class WbsActivity < ActiveRecord::Base
                   :cost_unit, :cost_unit_coefficient, :effort_unit, :effort_unit_coefficient, :three_points_estimation, :enabled_input,
                   :organization_profile_ids, :phases_short_name_number
 
+  EFFORT_ENTRY_NAMES = ["E1", "E2", "E3", "E4"]   ###["effort_1", "effort_2", "effort_3", "effort_4"]
+
   include AASM
 
   aasm :column => :state do # defaults to aasm_state

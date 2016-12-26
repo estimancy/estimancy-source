@@ -390,9 +390,15 @@ class WbsActivitiesController < ApplicationController
       input_effort_values = Hash.new
 
       ["low", "most_likely", "high"].each do |level|
-
         # Input Effort
-        input_effort_values["#{level}"] = params[:values]["#{level}"].to_f * effort_unit_coefficient
+        #input_effort_values["#{level}"] = params[:values]["#{level}"].to_f * effort_unit_coefficient
+        input_effort_values["#{level}"] = Hash.new
+        current_entry_value = params[:values]["most_likely"]
+        unless current_entry_value.nil?
+          current_entry_value.each do |key, value|
+            input_effort_values["#{level}"]["#{key}"] = value.to_f * effort_unit_coefficient
+          end
+        end
 
         # Retained Effort
         level_retained_effort_with_wbs_activity_elt_id = Hash.new
@@ -422,6 +428,15 @@ class WbsActivitiesController < ApplicationController
 
       #### Save the module_project_ratio_variables values from de probable value
       calculator = Dentaku::Calculator.new
+
+      #store entries value
+      effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+      current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
+      current_inputs_evs.each do |ev|
+        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => params['values']['most_likely']["#{ev.id}"])
+      end
+
+
       # Calculate the module_project_ratio_variable value_percentage
       mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
       mp_ratio_variables.each do |mp_var|
@@ -436,10 +451,18 @@ class WbsActivitiesController < ApplicationController
         if percentage_of_input.blank?
           value_from_percentage = nil
         else
-          value_from_percentage = calculator.evaluate("#{probable_input_effort_values.to_f} * #{percentage_of_input}")
+          ###value_from_percentage = calculator.evaluate("#{probable_input_effort_values.to_f} * #{percentage_of_input}")
+          formula_expression = "#{percentage_of_input.downcase}"
+          begin
+            normalized_formula_expression = formula_expression.gsub('%', ' * 0.01 ')
+          rescue
+            normalized_formula_expression = nil
+          end
+
+          value_from_percentage = calculator.evaluate("#{normalized_formula_expression}")
         end
 
-        mp_var.value_from_percentage = value_from_percentage
+        mp_var.value_from_percentage = value_from_percentage.to_f
         mp_var.save
       end
 
@@ -755,18 +778,32 @@ class WbsActivitiesController < ApplicationController
             mp_ratio_element.save
           end
 
-        elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+        ###elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+        elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort", "E1", "E2", "E3", "E4")
           in_result = Hash.new
           tmp_prbl = Array.new
           ['low', 'most_likely', 'high'].each do |level|
             level_estimation_value = Hash.new
 
+            entry_level_value = nil
             if @wbs_activity.three_points_estimation?
-              level_estimation_value[@pbs_project_element.id] = params[:values][level].to_f * effort_unit_coefficient
+              if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+                entry_level_value = params[:values][level].first.last
+              else
+                entry_level_value = params[:values][level][est_val.id]
+              end
+              ###level_estimation_value[@pbs_project_element.id] = params[:values][level].to_f * effort_unit_coefficient
+              level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
               in_result["string_data_#{level}"] = level_estimation_value
+
             else
-              level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
-              #in_result["string_data_most_likely"] = level_estimation_value
+              if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+                entry_level_value = params[:values]["most_likely"].first.last
+              else
+                entry_level_value = params[:values]["most_likely"][est_val.id]
+              end
+              ###level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
+              level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
               in_result["string_data_#{level}"] = level_estimation_value
             end
 

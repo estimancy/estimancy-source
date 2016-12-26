@@ -55,8 +55,9 @@ module EffortBreakdown
       @retained_cost = HashWithIndifferentAccess.new
     end
 
-    # Getters for module outputs
+    ###Dentaku.enable_ast_cache!
 
+    # Getters for module outputs
     def input_effort
       @input_effort
     end
@@ -93,10 +94,15 @@ module EffortBreakdown
 
     def calculate_estimations
       @theoretical_effort = get_theoretical_effort
-      @retained_effort = get_effort
-
       @theoretical_cost = get_theoretical_cost
-      @retained_cost = get_cost
+
+      if @initialize_calculation == true
+        @retained_effort = @theoretical_effort
+        @retained_cost = @theoretical_cost
+      else
+        @retained_effort = get_effort
+        @retained_cost = get_cost
+      end
 
       theoretical_effort, theoretical_cost, retained_effort,retained_effort = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost]
     end
@@ -334,32 +340,19 @@ module EffortBreakdown
       current_output_effort = @input_effort
       calculator = Dentaku::Calculator.new
 
+      #store entries value
+      effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+      current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
+      current_inputs_evs.each do |ev|
+        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+      end
+
       # Calculate the module_project_ratio_variable value_percentage
       mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
       mp_ratio_variables.each do |mp_var|
-
         # Store the ratio_variables value in the calculator
         calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage)
-
-        # wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
-        # percentage_of_input = wbs_ratio_variable.percentage_of_input
-        # if wbs_ratio_variable.is_modifiable
-        #   percentage_of_input = mp_var.percentage_of_input
-        # end
-        #
-        # # calculate value from percentage of input
-        # if current_output_effort.nil? || percentage_of_input.blank?
-        #   mp_var.update_attribute(:value_from_percentage, nil)
-        # else
-        #   value_from_percentage = calculator.evaluate("#{current_output_effort.to_f} * #{percentage_of_input}")
-        #   mp_var.update_attribute(:value_from_percentage, value_from_percentage)
-        #
-        #   # Store the ratio_variables value in the calculator
-        #   calculator.store(:"#{mp_var.name}" => value_from_percentage)
-        # end
-
       end
-
 
       # get retained values in calculations with wbs_activity_element_id
       changed_wbs_activity_element_ids = []
@@ -410,7 +403,7 @@ module EffortBreakdown
 
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
-                  if current_output_effort.nil? || formula.blank?
+                  if formula.blank? ###if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
                   else
                     formula_expression = "#{formula.downcase}"
@@ -612,30 +605,18 @@ module EffortBreakdown
         current_output_effort = @input_effort
         calculator = Dentaku::Calculator.new
 
+        #store entries value
+        effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+        current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
+        current_inputs_evs.each do |ev|
+          calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+        end
+
         # Calculate the module_project_ratio_variable value_percentage
         mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
         mp_ratio_variables.each do |mp_var|
-
           # Store the ratio_variables value in the calculator
           calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage.to_f)
-
-          # wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
-          # percentage_of_input = wbs_ratio_variable.percentage_of_input
-          # if wbs_ratio_variable.is_modifiable
-          #   percentage_of_input = mp_var.percentage_of_input
-          # end
-          #
-          # # calculate value from percentage of input
-          # if current_output_effort.nil? || percentage_of_input.blank?
-          #   mp_var.update_attribute(:value_from_percentage, nil)
-          # else
-          #   value_from_percentage = calculator.evaluate("#{current_output_effort.to_f} * #{percentage_of_input}")
-          #   mp_var.update_attribute(:value_from_percentage, value_from_percentage)
-          #
-          #   # Store the ratio_variables value in the calculator
-          #   calculator.store(:"#{mp_var.name}" => value_from_percentage)
-          # end
-
         end
 
         # need to compute all formula after reordering the dependencies
@@ -659,7 +640,7 @@ module EffortBreakdown
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
 
-                  if current_output_effort.nil? || formula.blank?
+                  if formula.blank? ###if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
                   else
                     formula_expression = "#{formula.downcase}"

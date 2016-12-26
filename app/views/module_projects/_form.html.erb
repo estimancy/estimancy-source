@@ -1,11 +1,6 @@
 <div class="tabs">
 
   <ul>
-    <li>
-      <a href="#tabs-view-widgets-parameters">
-        <%= I18n.t(:views_widgets_parameters) %>
-      </a>
-    </li>
     <% if current_user.super_admin == true %>
       <li>
         <a href="#mp">
@@ -13,6 +8,11 @@
         </a>
       </li>
     <% end %>
+    <li>
+      <a href="#tabs-view-widgets-parameters">
+        <%= I18n.t(:views_widgets_parameters) %>
+      </a>
+    </li>
   </ul>
 
   <!-- Parametres d'affichage de la vue -->
@@ -50,16 +50,14 @@
       <% if @module_project.pemodule.alias == "effort_breakdown" %>
         <hr>
 
-        <% effort_ids = PeAttribute.where(alias: ["effort", "effort_2", "effort_3", "effort_4"]).map(&:id).flatten %>
+        <% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
         <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
         <% current_evs.each do |cev| %>
           <div class="row-fluid">
             <div class="span2">
-              <p>
-                <%= cev %>
-              </p>
-              <%= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id) %>
+              <p><%= cev %></p>
+              <%= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id, include_blank: true) %>
             </div>
           </div>
         <% end %>
@@ -68,7 +66,6 @@
         <%= submit_tag "Sauvegarder", class: "btn btn-mini" %>
 
       <% end %>
-
     <% end %>
 
   </div>
