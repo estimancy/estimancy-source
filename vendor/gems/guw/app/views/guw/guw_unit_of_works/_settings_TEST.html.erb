@@ -339,7 +339,7 @@
                     </td>
                   <% end %>
                 <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
-                  <% guw_output = Guw::GuwOutput.where(name: i[0]).first %>
+                  <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <td class="span2">
                       <% unless guow.guw_type.nil? %>
                         <span class=" size_label_<%= guow.id %>">

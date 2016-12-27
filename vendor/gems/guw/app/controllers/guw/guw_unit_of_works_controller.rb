@@ -1294,7 +1294,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @evs.each do |ev|
         @guw_model.guw_outputs.each do |guw_output|
 
-
           value = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                            pbs_project_element_id: current_component.id,
                                            guw_model_id: @guw_model.id,
