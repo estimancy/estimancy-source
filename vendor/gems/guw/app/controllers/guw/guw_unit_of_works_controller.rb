@@ -727,7 +727,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
                 if (low >= guw_ac.bottom_range) and (low < guw_ac.top_range)
                   if guw_ac.enable_value == true
-                    @lows << (guw_ac.value.to_f * low + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                    @lows << (guw_ac.value.to_f * low.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                   else
                     @lows << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                   end
@@ -748,7 +748,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
               if (most_likely >= guw_ac.bottom_range) and (most_likely < guw_ac.top_range)
                 if guw_ac.enable_value == true
-                  @mls << (guw_ac.value.to_f * most_likely + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                  @mls << (guw_ac.value.to_f * most_likely.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
                   @mls << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                 end
@@ -768,7 +768,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
               if (high >= guw_ac.bottom_range) and (high < guw_ac.top_range)
                 if guw_ac.enable_value == true
-                  @highs << (guw_ac.value.to_f * high + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                  @highs << (guw_ac.value.to_f * high + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
                   @highs << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                 end
