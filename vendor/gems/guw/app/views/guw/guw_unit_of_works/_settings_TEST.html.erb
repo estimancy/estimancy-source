@@ -300,7 +300,7 @@
 
                 <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                   <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                    <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0]).first %>
+                    <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <% unless guw_coefficient.guw_coefficient_elements.empty? %>
                       <% results = guw_coefficient.guw_coefficient_elements %>
                       <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
