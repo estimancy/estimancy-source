@@ -21,7 +21,7 @@
 
 class WbsActivityRatio < ActiveRecord::Base
   attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :wbs_activity_id,
-                  :use_real_base_percentage, :allow_modify_retained_effort, :allow_modify_ratio_value, :allow_modify_ratio_reference, :allow_add_new_phase
+                  :do_not_show_cost, :do_not_show_phases_with_zero_value, :allow_modify_retained_effort, :allow_modify_ratio_value, :allow_modify_ratio_reference, :allow_add_new_phase
 
   ###has_many :wbs_project_elements
   has_many :pbs_project_elements
@@ -95,11 +95,31 @@ class WbsActivityRatio < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
-  #get the current ratio wbs_activity_ratio_variable
-  def get_wbs_activity_ratio_variables
+  # Create the ratio wbs_activity_ratio_variables
+  def create_wbs_activity_ratio_variables
     [["RTU", "100%"], ["TEST", ""], ["", ""], ["", ""]].each do |var|
       variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
       variable.save
+    end
+
+    self.wbs_activity_ratio_variables
+  end
+
+  #get the current ratio wbs_activity_ratio_variable
+  def get_wbs_activity_ratio_variables
+    nb_ratio_variables = self.wbs_activity_ratio_variables.all.length
+    if  nb_ratio_variables <= 0
+      [["RTU", "100%"], ["TEST", ""], ["", ""], ["", ""]].each do |var|
+        variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
+        variable.save
+      end
+    elsif nb_ratio_variables < 4
+      begin
+        variable = WbsActivityRatioVariable.new(name: "",  percentage_of_input: "", wbs_activity_ratio_id: self.id)
+        if variable.save
+          nb_ratio_variables += 1
+        end
+      end while nb_ratio_variables < 4
     end
 
     self.wbs_activity_ratio_variables

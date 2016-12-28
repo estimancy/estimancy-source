@@ -1893,3 +1893,6 @@ es:
   new_estimation_model: "New estimation model"
   create_new_estimation_model: "Create new estimation model"
   edit_estimation_model: "Edit estimation model \"%{value}\""
+  do_not_show_phases_with_zero_value: "Do not show phases where ratained effort is zero"
+  is_used_in_ratio_calculation: "Is used in Ratio calculation"
+  do_not_show_cost: "Do not show cost"

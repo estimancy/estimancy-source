@@ -575,7 +575,7 @@ module ViewsWidgetsHelper
               value_to_show = "" #I18n.t(:error_invalid_date)
             end
 
-          when "table_effort_per_phase", "table_cost_per_phase"
+          when "table_effort_per_phase", "table_cost_per_phase", "table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero"
             unless estimation_value.in_out == "input"
               wbs_activity = module_project.wbs_activity
               wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
@@ -616,7 +616,7 @@ module ViewsWidgetsHelper
 
             value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
 
-          when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table"
+          when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"
 
             unless estimation_value.in_out == "input"
               value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
@@ -706,10 +706,14 @@ module ViewsWidgetsHelper
       module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
     end
 
+    if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
+                                    "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
+      module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL && retained_effort_probable <> ? && retained_effort_most_likely <> ?", 0, 0)
+    end
+
     case view_widget.widget_type
 
-      when "table_effort_per_phase", "table_cost_per_phase"
-
+      when "table_effort_per_phase", "table_cost_per_phase", "table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero"
 
         result = raw(render :partial => 'views_widgets/effort_by_phases_with_mp_ratio_elements',
                             :locals => { project_wbs_activity_elements: wbs_activity_elements,
@@ -720,11 +724,13 @@ module ViewsWidgetsHelper
                                             estimation_pbs_probable_results: pbs_probable_est_value,
                                             ratio_reference: ratio_reference,
                                             pe_attribute_alias: pe_attribute_alias,
-                                            module_project_ratio_elements: module_project_ratio_elements
+                                            module_project_ratio_elements: module_project_ratio_elements,
+                                            wbs_activity_element_root: wbs_activity_element_root,
+                                            view_widget_type: view_widget.widget_type
                                        } )
 
 
-      when "effort_per_phases_profiles_table"
+      when "effort_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero"
         if ratio_reference.nil?
           added_module_project_ratio_elements = []
         else
@@ -742,10 +748,11 @@ module ViewsWidgetsHelper
                                                       pe_attribute_alias: pe_attribute_alias,
                                                       wbs_unit: wbs_unit,
                                                       module_project_ratio_elements: module_project_ratio_elements,
-                                                      wbs_activity_element_root: wbs_activity_element_root
+                                                      wbs_activity_element_root: wbs_activity_element_root,
+                                                      view_widget_type: view_widget.widget_type
                                        } )
 
-      when "cost_per_phases_profiles_table"
+      when "cost_per_phases_profiles_table", "cost_per_phases_profiles_table_without_zero"
         if ratio_reference.nil?
           added_module_project_ratio_elements = []
         else
@@ -762,7 +769,8 @@ module ViewsWidgetsHelper
                                                     pe_attribute_alias: pe_attribute_alias,
                                                     wbs_unit: wbs_unit,
                                                     module_project_ratio_elements: module_project_ratio_elements,
-                                                    wbs_activity_element_root: wbs_activity_element_root
+                                                    wbs_activity_element_root: wbs_activity_element_root,
+                                                    view_widget_type: view_widget.widget_type
                                         } )
 
       when "stacked_bar_chart_effort_per_phases_profiles"

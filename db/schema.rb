@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161214093830) do
+ActiveRecord::Schema.define(:version => 20161223154615) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -474,13 +474,15 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer "ge_model_id"
-    t.integer "ge_factor_id"
-    t.string  "factor_alias"
-    t.text    "description"
-    t.integer "organization_id"
-    t.integer "project_id"
-    t.integer "module_project_id"
+    t.integer  "ge_model_id"
+    t.integer  "ge_factor_id"
+    t.string   "factor_alias"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "project_id"
+    t.integer  "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -698,8 +700,8 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_id"
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.boolean  "three_points_estimation"
     t.string   "retained_size_unit"
     t.boolean  "one_level_model"
@@ -712,7 +714,7 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
     t.string   "work_unit_type"
     t.string   "weighting_type"
     t.string   "factor_type"
@@ -759,14 +761,14 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
   end
 
@@ -1027,6 +1029,7 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.boolean  "is_modifiable",                  :default => false
     t.datetime "created_at",                                        :null => false
     t.datetime "updated_at",                                        :null => false
+    t.boolean  "is_used_in_ratio_calculation"
   end
 
   create_table "module_projects", :force => true do |t|
@@ -1805,7 +1808,7 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1964,9 +1967,10 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.string   "name"
     t.text     "description"
     t.string   "percentage_of_input"
-    t.boolean  "is_modifiable",         :default => false
-    t.datetime "created_at",                               :null => false
-    t.datetime "updated_at",                               :null => false
+    t.boolean  "is_modifiable",                :default => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+    t.boolean  "is_used_in_ratio_calculation"
   end
 
   create_table "wbs_activity_ratios", :force => true do |t|
@@ -1974,19 +1978,19 @@ ActiveRecord::Schema.define(:version => 20161214093830) do
     t.string   "name"
     t.text     "description"
     t.integer  "wbs_activity_id"
-    t.boolean  "use_real_base_percentage"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.boolean  "do_not_show_cost"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_number",                  :default => 0
+    t.integer  "copy_number",                        :default => 0
     t.integer  "copy_id"
     t.boolean  "allow_modify_retained_effort"
-    t.boolean  "allow_modify_ratio_value"
+    t.boolean  "do_not_show_phases_with_zero_value"
     t.boolean  "allow_modify_ratio_reference"
     t.boolean  "allow_add_new_phase"
   end

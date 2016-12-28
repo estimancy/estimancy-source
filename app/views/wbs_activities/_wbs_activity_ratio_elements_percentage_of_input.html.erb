@@ -1,17 +1,23 @@
-<% use_real_base_percentage = (@selected_ratio.nil? ? nil : @selected_ratio.use_real_base_percentage) %>
+<% do_not_show_cost = (@selected_ratio.nil? ? nil : @selected_ratio.do_not_show_cost) %>
+<% do_not_show_phases_with_zero_value = (@selected_ratio.nil? ? nil : @selected_ratio.do_not_show_phases_with_zero_value) %>
+
 <% allow_modify_retained_effort = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_retained_effort) %>
 <% allow_modify_ratio_reference = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_ratio_reference) %>
-<% allow_modify_ratio_value = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_ratio_value) %>
 <% allow_add_new_phase = (@selected_ratio.nil? ? nil : @selected_ratio.allow_add_new_phase) %>
 
-<!--<span>-->
-  <!--<label class="checkbox pull-left" style="margin-left: 40px; margin-top: 10px">-->
-    <!--<%#= check_box_tag :use_real_base_percentage, 1, use_real_base_percentage %>-->
-    <!--<%#= I18n.t(:use_real_base_percentage ) %>-->
-  <!--</label>-->
-<!--</span>-->
+<span>
+  <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+    <%= check_box_tag :do_not_show_cost, 1, do_not_show_cost %>
+    <%= I18n.t(:do_not_show_cost ) %>
+  </label>
+</span>
 
-
+<span>
+    <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+    <%= check_box_tag :do_not_show_phases_with_zero_value, 1, do_not_show_phases_with_zero_value %>
+    <%= I18n.t(:do_not_show_phases_with_zero_value ) %>
+    </label>
+</span>
 <br>
 
 <div class="pull-left">
@@ -26,13 +32,6 @@
       <!--<label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">-->
         <!--<%#= check_box_tag :allow_modify_ratio_reference, 1, allow_modify_ratio_reference %>-->
         <!--<%#= I18n.t(:allow_modify_ratio_reference ) %>-->
-      <!--</label>-->
-    <!--</span>-->
-
-    <!--<span>-->
-      <!--<label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">-->
-        <!--<%#= check_box_tag :allow_modify_ratio_value, 1, allow_modify_ratio_value %>-->
-        <!--<%#= I18n.t(:allow_modify_ratio_value ) %>-->
       <!--</label>-->
     <!--</span>-->
 
@@ -53,6 +52,7 @@
     <th><%= I18n.t(:variable_name) %></th>
     <th><%= I18n.t(:percentage_of_input) %></th>
     <th><%= I18n.t(:is_modifiable) %></th>
+    <th><%= I18n.t(:is_used_in_ratio_calculation) %></th>
     <th><%= I18n.t(:description) %></th>
   </tr>
 
@@ -68,11 +68,12 @@
         <% end %>
       </div>
 
-      <% @selected_ratio.wbs_activity_ratio_variables.each do |wbs_arv| %>
+      <% @selected_ratio.get_wbs_activity_ratio_variables.each do |wbs_arv| %>
           <tr>
             <td class="align-center"><%= text_field_tag "name[#{wbs_arv.id}]", wbs_arv.name, :class => 'input-xl' %></td>
             <td class="align-center"><%= text_field_tag "percentage_of_input[#{wbs_arv.id}]", wbs_arv.percentage_of_input, :class => 'input-xl' %></td>
             <td class="align-center"><%= check_box_tag 'wbs_arv_is_modifiable[]', wbs_arv.id, wbs_arv.is_modifiable %></td>
+            <td class="align-center"><%= check_box_tag 'wbs_arv_is_used_in_ratio_calculation[]', wbs_arv.id, wbs_arv.is_used_in_ratio_calculation %></td>
             <td class="align-center"><%= text_field_tag "description[#{wbs_arv.id}]", wbs_arv.description, :class => 'input-xxl' %></td>
           </tr>
       <% end %>

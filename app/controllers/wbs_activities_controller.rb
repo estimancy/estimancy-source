@@ -433,12 +433,14 @@ class WbsActivitiesController < ApplicationController
       effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
-        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => params['values']['most_likely']["#{ev.id}"])
+        effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient
+        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => effort_value)
       end
 
 
       # Calculate the module_project_ratio_variable value_percentage
-      mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
+      #mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
+      mp_ratio_variables = @module_project.get_module_project_ratio_variables(@ratio_reference, @pbs_project_element)
       mp_ratio_variables.each do |mp_var|
         wbs_ratio_variable  = mp_var.wbs_activity_ratio_variable
         percentage_of_input = wbs_ratio_variable.percentage_of_input
@@ -463,7 +465,12 @@ class WbsActivitiesController < ApplicationController
         end
 
         mp_var.value_from_percentage = value_from_percentage.to_f
-        mp_var.save
+
+        if mp_var.save
+          if mp_var.wbs_activity_ratio_variable.is_used_in_ratio_calculation == true
+            input_effort_for_global_ratio += value_from_percentage.to_f
+          end
+        end
       end
 
 
@@ -501,10 +508,9 @@ class WbsActivitiesController < ApplicationController
         ratio_name = @ratio_reference.name
         est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })
 
-      #elsif est_val.pe_attribute.alias == "effort" || est_val.pe_attribute.alias == "cost"
-      #elsif est_val.pe_attribute.alias == "theoretical_effort" || est_val.pe_attribute.alias == "theoretical_cost"
-      elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
-        if (est_val.in_out == 'output') #&& (est_val.pe_attribute.alias != "effort")
+      #elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
+      elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
+        if (est_val.in_out == 'output') && (est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost"))
 
           @results = Hash.new
           tmp_prbl = Array.new
@@ -566,7 +572,6 @@ class WbsActivitiesController < ApplicationController
 
               mp_ratio_element.save
             end
-
           end
           #=========== END Save results in the Module-Project Ratio Elements  ===================
 
@@ -779,7 +784,8 @@ class WbsActivitiesController < ApplicationController
           end
 
         ###elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
-        elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort", "E1", "E2", "E3", "E4")
+        #elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort", "E1", "E2", "E3", "E4")
+        elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("E1", "E2", "E3", "E4")
           in_result = Hash.new
           tmp_prbl = Array.new
           ['low', 'most_likely', 'high'].each do |level|
@@ -790,7 +796,7 @@ class WbsActivitiesController < ApplicationController
               if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
                 entry_level_value = params[:values][level].first.last
               else
-                entry_level_value = params[:values][level][est_val.id]
+                entry_level_value = params[:values][level]["#{est_val.id}"]
               end
               ###level_estimation_value[@pbs_project_element.id] = params[:values][level].to_f * effort_unit_coefficient
               level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
@@ -800,7 +806,7 @@ class WbsActivitiesController < ApplicationController
               if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
                 entry_level_value = params[:values]["most_likely"].first.last
               else
-                entry_level_value = params[:values]["most_likely"][est_val.id]
+                entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]
               end
               ###level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
               level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
@@ -814,27 +820,27 @@ class WbsActivitiesController < ApplicationController
           pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
           est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
 
-          if est_val.pe_attribute.alias == "effort"
-            input_effort_for_global_ratio = pbs_input_probable_value
-          end
+          #if est_val.pe_attribute.alias == "effort"
+          #  input_effort_for_global_ratio = pbs_input_probable_value
+          #end
         end
       elsif est_val.pe_attribute.alias == "ratio"
         ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
 
         #nouvelle calcul du ratio
-        rtu = @ratio_reference.module_project_ratio_variables.where(name: "RTU").first
         input_effort = input_effort_for_global_ratio
         effort_total = effort_total_for_global_ratio
-        if effort_total.nil? || effort_total == 0
+        if input_effort.nil? || input_effort == 0
           new_ratio_global = nil
         else
-          new_ratio_global = (input_effort.to_f / effort_total.to_f) * 100
+          new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
         end
 
         #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
         est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
       end
     end
+
 
     # if Initialize calculation, update the flagged attribute to false
     if initialize_calculation == true
