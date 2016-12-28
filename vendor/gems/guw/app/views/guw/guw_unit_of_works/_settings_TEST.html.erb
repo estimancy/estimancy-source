@@ -274,18 +274,24 @@
                         <%= e %>
                       <% end %>
                     <% else %>
-                      <% if guow.guw_complexity.nil? %>
-                        -
+                      <% if guow.off_line == true %>
+                        HSAT
+                      <% elsif  guow.off_line_uo == true %>
+                        HSUO
                       <% else %>
-                        <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight.to_f / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
-                                             style: "width: 43px;",
-                                             class: "complexity_weight-#{uowg.id}",
-                                             disabled: true %>
-                        <% if guow.guw_type.allow_complexity %>
+                        <% if guow.guw_complexity.nil? %>
+                          -
+                        <% else %>
                           <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight.to_f / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
                                                style: "width: 43px;",
                                                class: "complexity_weight-#{uowg.id}",
-                                               step: 0.001 %>
+                                               disabled: true %>
+                          <% if guow.guw_type.allow_complexity %>
+                            <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.nil? ? (guow.intermediate_weight.to_f / guow.guw_complexity.weight)*100 : guow.intermediate_percent,
+                                                 style: "width: 43px;",
+                                                 class: "complexity_weight-#{uowg.id}",
+                                                 step: 0.001 %>
+                          <% end %>
                         <% end %>
                       <% end %>
                     <% end %>
@@ -304,14 +310,14 @@
                         <% if guw_coefficient.coefficient_type == "Pourcentage" %>
                           <td class="span3 <%= guw_coefficient.id %>_<%= guow.id %>">
 
-                            <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? 100 : ceuw.percent.to_f.round(2),
+                            <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                  style: "width: 43px;",
                                                  class: "complexity_weight-#{uowg.id}",
                                                  readonly: (guw_coefficient.allow_intermediate_value == true),
                                                  step: 0.001 %>
 
                             <% if guw_coefficient.allow_intermediate_value == true %>
-                              <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? 100 : ceuw.percent.to_f.round(2),
+                              <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                    style: "width: 43px;",
                                                    class: "complexity_weight-#{uowg.id}",
                                                    step: 0.001 %>
@@ -320,7 +326,7 @@
                           </td>
                         <% else %>
                           <td class="span2">
-                            <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]}, selected: ceuw.nil? ? 100 : ceuw.guw_coefficient_element_id),
+                            <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]}, selected: ceuw.nil? ? results.first.value : ceuw.guw_coefficient_element_id),
                                            class: "guw_coefficient",
                                            guw: guow.id,
                                            required: true,
