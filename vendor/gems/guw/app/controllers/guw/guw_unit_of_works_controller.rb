@@ -1303,7 +1303,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                            pbs_project_element_id: current_component.id,
                                            guw_model_id: @guw_model.id,
                                            selected: true).map{ |i|
-            i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
+            i.ajusted_size.nil? ? nil :
+                (i.ajusted_size.is_a?(Numeric) ?
+                    i.ajusted_size :
+                    i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
           tmp_prbl = Array.new
           ["low", "most_likely", "high"].each do |level|
