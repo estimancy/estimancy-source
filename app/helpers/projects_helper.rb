@@ -1058,9 +1058,9 @@ module ProjectsHelper
           "#{convert(value, @project.organization).round(precision)} #{convert_label(value, @project.organization)}"
         else
           begin
-            value
-          rescue
             value.round(user_number_precision)
+          rescue
+            value
           end
       end
     end
