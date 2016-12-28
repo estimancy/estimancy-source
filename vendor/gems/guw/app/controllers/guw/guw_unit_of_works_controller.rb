@@ -1212,7 +1212,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           unless cce.nil?
-            selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)# * (ce.value.nil? ? 1 : ce.value)
+            selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
             unless cce.value.nil?
               selected_coefficient_values["#{guw_output.id}"] << (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value)
             end
@@ -1327,11 +1327,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_prbl << ev.send("string_data_#{level}")[@component.id]
             end
 
-            # ev.send(:"string_data_#{level}=", ev.send("string_data_#{level}"))
-          # end
-          #
-          # if ev.in_out == "output" && am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
+            ev.send(:"string_data_#{level}=", ev.send("string_data_#{level}"))
+          end
 
+          if ev.in_out == "output" && am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
             h = Hash.new
             h = {
                   :"string_data_low" => { @component.id => tmp_prbl[0] },
@@ -1339,7 +1338,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
                   :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
             }
-
             ev.update_attributes(h)
           end
         end
