@@ -727,7 +727,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
                 if (low >= guw_ac.bottom_range) and (low < guw_ac.top_range)
                   if guw_ac.enable_value == true
-                    @lows << (guw_ac.value.to_f * low + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                    @lows << (guw_ac.value.to_f * low.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                   else
                     @lows << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                   end
@@ -748,7 +748,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
               if (most_likely >= guw_ac.bottom_range) and (most_likely < guw_ac.top_range)
                 if guw_ac.enable_value == true
-                  @mls << (guw_ac.value.to_f * most_likely + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                  @mls << (guw_ac.value.to_f * most_likely.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
                   @mls << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                 end
@@ -768,7 +768,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
               if (high >= guw_ac.bottom_range) and (high < guw_ac.top_range)
                 if guw_ac.enable_value == true
-                  @highs << (guw_ac.value.to_f * high + guw_ac.value_b) * guw_ac.guw_type_complexity.value.to_f
+                  @highs << (guw_ac.value.to_f * high + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
                   @highs << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
                 end
@@ -904,8 +904,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             if params["complexity_coeff"].present?
               cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"]
+              guw_unit_of_work.intermediate_percent = cplx_coeff
             end
-            guw_unit_of_work.intermediate_percent = cplx_coeff
 
             if cplx_coeff.nil?
               intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
@@ -916,7 +916,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
             @final_value = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
 
-            guw_unit_of_work.intermediate_weight = @final_value
+            guw_unit_of_work.intermediate_percent = intermediate_percent * 100
 
           end
         end
@@ -980,6 +980,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               unless cce.nil?
                 selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
+                unless cce.value.nil?
+                  selected_coefficient_values["#{guw_output.id}"] << (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value)
+                end
               end
             end
           end
@@ -1144,7 +1147,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     #gestion des valeurs intermédiaires
     @final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
-    guw_unit_of_work.intermediate_weight = @final_value
+    # guw_unit_of_work.intermediate_weight = @final_value
 
     guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
     guw_unit_of_work.save
@@ -1211,6 +1214,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           unless cce.nil?
             selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
+            unless cce.value.nil?
+              selected_coefficient_values["#{guw_output.id}"] << (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value)
+            end
           end
 
         end
@@ -1294,11 +1300,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @evs.each do |ev|
         @guw_model.guw_outputs.each do |guw_output|
 
-
           value = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                            pbs_project_element_id: current_component.id,
                                            guw_model_id: @guw_model.id,
-                                           selected: true).map{|i| i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
+                                           selected: true).map{ |i|
+            i.ajusted_size.nil? ? nil :
+                (i.ajusted_size.is_a?(Numeric) ?
+                    i.ajusted_size :
+                    i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
           tmp_prbl = Array.new
           ["low", "most_likely", "high"].each do |level|
@@ -1322,11 +1331,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_prbl << ev.send("string_data_#{level}")[@component.id]
             end
 
-            ev.update_attribute(:"string_data_#{level}", ev.send("string_data_#{level}"))
+            ev.send(:"string_data_#{level}=", ev.send("string_data_#{level}"))
           end
 
           if ev.in_out == "output" && am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
-
             h = Hash.new
             h = {
                   :"string_data_low" => { @component.id => tmp_prbl[0] },
@@ -1334,7 +1342,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
                   :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
             }
-
             ev.update_attributes(h)
           end
         end

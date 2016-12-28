@@ -1057,7 +1057,12 @@ module ProjectsHelper
         when 'integer'
           "#{convert(value, @project.organization).round(precision)} #{convert_label(value, @project.organization)}"
         else
-          value
+          begin
+            guw_model = module_project.guw_model
+            "#{value.to_f.round(user_number_precision)} #{guw_model.effort_unit}"
+          rescue
+            value
+          end
       end
     end
   end

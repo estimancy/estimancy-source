@@ -67,17 +67,33 @@ class Guw::GuwOutputsController < ApplicationController
   def update
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_output.update_attributes(params[:guw_output])
+    @guw_model = @guw_output.guw_model
 
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
-                             description: @guw_output.name).first_or_create!
+                             description: @guw_output.name).first
 
-    pm = Pemodule.where(alias: "guw").first
+    if attr.nil?
 
-    am = AttributeModule.where(pe_attribute_id: attr.id,
-                               pemodule_id: pm.id,
-                               in_out: "both",
-                               guw_model_id: @guw_output.guw_model.id).first_or_create!
+      at = PeAttribute.create(name: @guw_output.name,
+                              alias: @guw_output.name.underscore.gsub(" ", "_"),
+                              description: @guw_output.name)
+
+      pm = Pemodule.where(alias: "guw").first
+
+      AttributeModule.create(pe_attribute_id: at.id,
+                             pemodule_id: pm.id,
+                             in_out: "both",
+                             guw_model_id: @guw_model.id)
+    else
+      attr.name = @guw_output.name
+      attr.alias = @guw_output.name.underscore.gsub(" ", "_")
+      attr.description = @guw_output.name
+
+      attr.save
+    end
+
+    @guw_model.save
 
     set_page_title I18n.t(:Edit_Units_Of_Work)
     redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
@@ -87,6 +103,22 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_model = @guw_output.guw_model
     @guw_output.delete
+
+
+    #Pas encore bon !
+    attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_")).first
+    attr_name = attr.name
+    pm = Pemodule.where(alias: "guw").first
+    AttributeModule.where(pe_attribute_id: attr.id, pemodule_id: pm.id, guw_model_id: @guw_output.guw_model.id).all.each do |am|
+      am.delete
+    end
+    attr.delete
+
+    orders = @guw_model.orders
+    orders.delete(attr_name)
+    @guw_model.orders = orders
+
+
     if @guw_model.default_display == "list"
       redirect_to guw.guw_model_all_guw_types_path(@guw_model)
     else
