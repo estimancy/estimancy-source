@@ -915,8 +915,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
             @final_value = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
-
-            guw_unit_of_work.intermediate_weight = @final_value
+            # guw_unit_of_work.intermediate_weight = @final_value
 
           end
         end
@@ -979,6 +978,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               unless cce.nil?
+                selected_coefficient_values["#{guw_output.id}"] << (ce.value.nil? ? 1 : ce.value)
                 selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
               end
             end
@@ -1144,7 +1144,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     #gestion des valeurs intermédiaires
     @final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
-    guw_unit_of_work.intermediate_weight = @final_value
+    # guw_unit_of_work.intermediate_weight = @final_value
 
     guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
     guw_unit_of_work.save
@@ -1210,6 +1210,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           unless cce.nil?
+            selected_coefficient_values["#{guw_output.id}"] << (ce.value.nil? ? 1 : ce.value)
             selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
           end
 
@@ -1297,7 +1298,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           value = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                            pbs_project_element_id: current_component.id,
                                            guw_model_id: @guw_model.id,
-                                           selected: true).map{|i| i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
+                                           selected: true).map{ |i|
+            i.ajusted_size.nil? ? nil : (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size : i.ajusted_size["#{guw_output.id}"])}.compact.sum
 
           tmp_prbl = Array.new
           ["low", "most_likely", "high"].each do |level|
@@ -1321,7 +1323,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_prbl << ev.send("string_data_#{level}")[@component.id]
             end
 
-            ev.update_attribute(:"string_data_#{level}", ev.send("string_data_#{level}"))
+            ev.send(:"string_data_#{level}=", ev.send("string_data_#{level}"))
           end
 
           if ev.in_out == "output" && am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
