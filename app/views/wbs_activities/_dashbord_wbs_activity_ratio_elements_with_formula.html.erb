@@ -138,6 +138,9 @@
            root_mp_ratio_element_id = root_mp_ratio_element.nil? ? nil : root_mp_ratio_element.id
           %>
 
+          <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
+            <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable.to_f ==0 || element.retained_effort_most_likely.to_f==0 } %>
+          <% end %>
           <% @module_project_ratio_elements.each_with_index do |mp_ratio_element, i| %>
 
             <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
