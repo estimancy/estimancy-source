@@ -763,7 +763,7 @@ class WbsActivitiesController < ApplicationController
             else
               wbs_probable_value = ((wbs_probable_value[:value].is_a?(Float) && wbs_probable_value[:value].nan?) ? nil : wbs_probable_value[:value].to_f)
             end
-            # save théorétical values
+            # save theoretical values
             mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
             # get the retained attribute value
