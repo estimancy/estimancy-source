@@ -998,7 +998,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if params["ajusted_size"].nil?
             tmp_hash_res["#{guw_output.id}"] = nil
           else
-            tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
           end
           guw_unit_of_work.ajusted_size = tmp_hash_res
           guw_unit_of_work.size = tmp_hash_res
@@ -1008,13 +1008,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           pct = percents.compact.inject(&:*)
 
           tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+          tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
 
           if guw_unit_of_work.guw_type.allow_retained == false
-            guw_unit_of_work.ajusted_size = tmp_hash_res
+            guw_unit_of_work.ajusted_size = tmp_hash_ares
             guw_unit_of_work.size = tmp_hash_res
           else
             if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-              guw_unit_of_work.ajusted_size = tmp_hash_res
+              guw_unit_of_work.ajusted_size = tmp_hash_ares
               guw_unit_of_work.size = tmp_hash_res
             else
               guw_unit_of_work.size = tmp_hash_res

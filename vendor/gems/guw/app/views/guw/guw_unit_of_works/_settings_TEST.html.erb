@@ -210,14 +210,14 @@
                   </span>
                 </td>
 
-                <td class="span2">
+                <td class="span3">
                   <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_model.guw_types.map do |i|
                                                                               default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first
                                                                               ["#{i.name} (#{default_complexity.nil? ? nil : default_complexity.weight})", i.id]
                                                                             end,
                                                                             selected: guow.guw_type_id),
                                  class: "guw_type",
-                                 style: "width: 70px;" %>
+                                 style: "width: 90px;" %>
                 </td>
 
                 <td>
@@ -235,7 +235,7 @@
                   <% end %>
                 </td>
 
-                <td class="span3">
+                <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
                     <% if guow.guw_type.display_threshold == true %>
                       <% begin %>
