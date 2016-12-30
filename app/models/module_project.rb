@@ -275,8 +275,8 @@ class ModuleProject < ActiveRecord::Base
       wbs_activity_ratio_variables.each do |ratio_variable|
         ModuleProjectRatioVariable.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
                                                            wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
-                                                           name: ratio_variable.name, description: ratio_variable.description,
-                                                           percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+                                                           name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
+                                                           is_modifiable: ratio_variable.is_modifiable, is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
       end
     else
       wbs_activity_ratio_variables.each do |ratio_variable|
@@ -287,8 +287,8 @@ class ModuleProject < ActiveRecord::Base
         else
           ModuleProjectRatioVariable.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
                                          wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
-                                         name: ratio_variable.name, description: ratio_variable.description,
-                                         percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
+                                         name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
+                                         is_modifiable: ratio_variable.is_modifiable, is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
         end
       end
     end

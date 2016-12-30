@@ -45,7 +45,8 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #Select ratio and elements
     wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
-    wbs_activity_ratio.update_attributes( allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase])
+    wbs_activity_ratio.update_attributes( allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase],
+                                          do_not_show_cost: params[:do_not_show_cost], do_not_show_phases_with_zero_value: params[:do_not_show_phases_with_zero_value])
 
 
     wbs_activity_ratio.wbs_activity_ratio_variables.each do |warv|
@@ -63,6 +64,17 @@ class WbsActivityRatioElementsController < ApplicationController
       else
         warv.is_modifiable = false
       end
+
+      if params[:wbs_arv_is_used_in_ratio_calculation]
+        if params[:wbs_arv_is_used_in_ratio_calculation].include?("#{warv.id}")
+          warv.is_used_in_ratio_calculation = true
+        else
+          warv.is_used_in_ratio_calculation = false
+        end
+      else
+        warv.is_used_in_ratio_calculation = false
+      end
+
 
       warv.save
     end
@@ -160,7 +172,7 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #Select ratio and elements
     wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
-    wbs_activity_ratio.update_attributes(use_real_base_percentage: params[:use_real_base_percentage], allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase], allow_modify_ratio_value: params[:allow_modify_ratio_value], allow_modify_ratio_reference: params[:allow_modify_ratio_reference])
+    wbs_activity_ratio.update_attributes(do_not_show_cost: params[:do_not_show_cost], allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase], do_not_show_phases_with_zero_value: params[:do_not_show_phases_with_zero_value], allow_modify_ratio_reference: params[:allow_modify_ratio_reference])
 
     #set ratio reference (all to false then one to true)
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |wbs_activity_ratio_element|

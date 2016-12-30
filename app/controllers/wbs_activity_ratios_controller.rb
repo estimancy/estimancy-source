@@ -115,7 +115,7 @@ class WbsActivityRatiosController < ApplicationController
       end
 
       # create wbs_activity_ratio_variables for this ratio
-      @wbs_activity_ratio.get_wbs_activity_ratio_variables
+      @wbs_activity_ratio.create_wbs_activity_ratio_variables
 
       redirect_to redirect_apply(nil, new_wbs_activity_ratio_path(:activity_id => @wbs_activity_ratio.wbs_activity_id),edit_wbs_activity_path(@wbs_activity_ratio.wbs_activity_id, :anchor => 'tabs-3'))
     else
