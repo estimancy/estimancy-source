@@ -48,9 +48,12 @@ end
 
 # def test_safae
 #
+#   url_key = "https://jira.appcelerator.org/sr/jira.issueviews:searchrequest-excel-current-fields/17934/SearchRequest-17934.xls?tempMax=1000"
+#   url_task = "https://jira.appcelerator.org/browse/"
+#
 #   body = ''
-#   (0..20000).step(200).each do |i|
-#     url = "https://jira.talendforge.org/sr/jira.issueviews:searchrequest-excel-current-fields/24846/SearchRequest-24846.xls?tempMax=200&pager/start=#{i}"
+#   (0..20000).step(1000).each do |i|
+#     url = "#{url_key}&pager/start=#{i}"
 #     easy = Curl::Easy.new(url)
 #
 #     easy.username = 'safae.laqrichi'
@@ -59,21 +62,21 @@ end
 #
 #     body << easy.body_str
 #   end
-#   File.open("tdq", 'wb+') do |f|
+#   File.open("timob", 'wb+') do |f|
 #     f << body
 #   end
 #
 #
-#   doc = Roo::Spreadsheet.open('tdq_keys.xlsx')
+#   doc = Roo::Spreadsheet.open('timob_keys.xlsx')
 #   agent = Mechanize.new
 #   csva = {}
-#   15000.times do |i|
+#   20000.times do |i|
 #     val = doc.sheet(0).row(i)[0]# clé
 #     sp = doc.sheet(0).row(i)[1] # storypoint
 #     desc = ""
 #     summary = ""
 #     begin
-#       url = "https://jira.talendforge.org/browse/#{val}"
+#       url = "#{url_task}#{val}"
 #
 #       agent.get(url)
 #
@@ -91,16 +94,16 @@ end
 #   end
 #
 #
-  # CSV.open("tdq_results.csv", "wb") do |csv|
-  #   csva.each do |row|
-  #     r = row.flatten
-  #
-  #     r0 = r[0]
-  #     r1 = r[1].gsub("\n"," ")
-  #     r2 = r[2].gsub("\n"," ")
-  #     r3 = r[3]
-  #
-  #     csv << [r0, r1 + ' ' + r2, r3]
-  #   end
-  # end
+#   CSV.open("timob_results.csv", "wb") do |csv|
+#     csva.each do |row|
+#       r = row.flatten
+#
+#       r0 = r[0]
+#       r1 = r[1].gsub("\n"," ")
+#       r2 = r[2].gsub("\n"," ")
+#       r3 = r[3]
+#
+#       csv << [r0, r1 + ' ' + r2, r3]
+#     end
+#   end
 # end

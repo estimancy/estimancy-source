@@ -785,6 +785,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
+    unless params["comments"].nil?
+      guowa.comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+    end
+
     guowa.low = low
     guowa.most_likely = most_likely
     guowa.high = high
