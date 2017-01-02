@@ -96,7 +96,7 @@
             </td>
             <td>
               <span class="percent_effort pull-right">
-                <%= sign((effort.to_f / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
+                <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value) / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -126,7 +126,7 @@
             </td>
             <td>
               <span class="percent_duration pull-right">
-                <%= sign((@staffing_custom_data.duration / @md_duration.to_f * 100).round(user_number_precision)) %> %
+                <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -156,7 +156,7 @@
             </td>
             <td>
               <span class="percent_trapeze pull-right">
-                <%= sign(((@staffing_custom_data.max_staffing.to_f / staffing_trapeze.to_f) * 100).round(user_number_precision)) %> %
+                <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -181,12 +181,12 @@
             </td>
             <td>
               <span class="gap_rayleigh pull-right">
-                <%= sign((@staffing_custom_data.max_staffing_rayleigh.to_f - staffing_rayleigh).round(user_number_precision)) %> pers.
+                <%= sign((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh).to_f.round(user_number_precision)) %> pers.
               </span>
             </td>
             <td>
               <span class="percent_rayleigh pull-right">
-                <%= sign(((@staffing_custom_data.max_staffing_rayleigh.to_f / staffing_rayleigh) * 100).round(user_number_precision)) %> %
+                <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
