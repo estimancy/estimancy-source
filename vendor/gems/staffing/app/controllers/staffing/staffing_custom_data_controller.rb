@@ -112,7 +112,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @component = current_component
     @module_project = current_module_project
     @staffing_model = @module_project.staffing_model
-    trapeze_default_values = @staffing_model.trapeze_default_values
 
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
@@ -222,8 +221,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
 
     #### Trapeze
-
-    trapeze_parameter_values = @staffing_custom_data.trapeze_parameter_values
+    trapeze_parameter_values = @staffing_model.trapeze_default_values
 
     x0 = trapeze_parameter_values[:x0].to_f / 100
     x1 = trapeze_parameter_values[:x1].to_f / 100
@@ -273,16 +271,13 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.save
 
 
-
-
-
     ###########
     # Graphe Ajusté
     ###########
 
     ##### Trapeze
 
-    trapeze_parameter_values = @staffing_custom_data.trapeze_parameter_values
+    trapeze_parameter_values = @staffing_model.trapeze_default_values
 
     x0 = trapeze_parameter_values[:x0].to_f / 100
     x1 = trapeze_parameter_values[:x1].to_f / 100

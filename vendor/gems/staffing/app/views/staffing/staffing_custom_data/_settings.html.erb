@@ -91,12 +91,12 @@
             </td>
             <td>
               <span class="gap_effort pull-right">
-                <%= (effort.to_f - @staffing_custom_data.global_effort_value).round(user_number_precision) %> <%= @staffing_model.effort_unit %>
+                <%= sign((effort.to_f - @staffing_custom_data.global_effort_value).round(user_number_precision)) %> <%= @staffing_model.effort_unit %>
               </span>
             </td>
             <td>
               <span class="percent_effort pull-right">
-                <%= (effort.to_f / @staffing_custom_data.global_effort_value * 100).round(user_number_precision) %> %
+                <%= sign((effort.to_f / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -121,12 +121,12 @@
             </td>
             <td>
               <span class="gap_duration pull-right">
-                <%= (@staffing_custom_data.duration - @md_duration.to_f).round(user_number_precision) %> sem.
+                <%= sign((@staffing_custom_data.duration - @md_duration.to_f).round(user_number_precision)) %> sem.
               </span>
             </td>
             <td>
               <span class="percent_duration pull-right">
-                <%= (@staffing_custom_data.duration / @md_duration.to_f * 100).round(user_number_precision) %> %
+                <%= sign((@staffing_custom_data.duration / @md_duration.to_f * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -151,12 +151,12 @@
             </td>
             <td>
               <span class="gap_trapeze pull-right">
-                <%= ( @staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f).round(user_number_precision) %> pers.
+                <%= sign((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f).round(user_number_precision)) %> pers.
               </span>
             </td>
             <td>
               <span class="percent_trapeze pull-right">
-                <%= ((@staffing_custom_data.max_staffing.to_f / staffing_trapeze.to_f) * 100).round(user_number_precision) %> %
+                <%= sign(((@staffing_custom_data.max_staffing.to_f / staffing_trapeze.to_f) * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -181,12 +181,12 @@
             </td>
             <td>
               <span class="gap_rayleigh pull-right">
-                <%= (@staffing_custom_data.max_staffing_rayleigh.to_f - staffing_rayleigh).round(user_number_precision) %> pers.
+                <%= sign((@staffing_custom_data.max_staffing_rayleigh.to_f - staffing_rayleigh).round(user_number_precision)) %> pers.
               </span>
             </td>
             <td>
               <span class="percent_rayleigh pull-right">
-                <%= ((@staffing_custom_data.max_staffing_rayleigh.to_f / staffing_rayleigh) * 100).round(user_number_precision) %> %
+                <%= sign(((@staffing_custom_data.max_staffing_rayleigh.to_f / staffing_rayleigh) * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -252,18 +252,26 @@
             $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2) + " pers.");
 
 
-            $(".percent_effort").html(((new_effort/effort)*100).toFixed(2) + " %");
-            $(".percent_duration").html(((new_duration/duration)*100).toFixed(2) + " %");
-            $(".percent_trapeze").html(((new_staffing_trapeze/staffing_trapeze)*100).toFixed(2) + " %");
-            $(".percent_rayleigh").html(((new_staffing_rayleigh/staffing_rayleigh)*100).toFixed(2) + " %");
+            $(".percent_effort").html(sign((((new_effort-effort)/effort)*100).toFixed(2)) + " %");
+            $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(2)) + " %");
+            $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(2)) + " %");
+            $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(2)) + " %");
 
-            $(".gap_effort").html((new_effort-effort).toFixed(2) + " <%= @staffing_model.effort_unit %>");
-            $(".gap_duration").html((new_duration-duration).toFixed(2) + " sem.");
-            $(".gap_trapeze").html((new_staffing_trapeze-staffing_trapeze).toFixed(2) + " pers.");
-            $(".gap_rayleigh").html((new_staffing_rayleigh-staffing_rayleigh).toFixed(2) + " pers.");
+            $(".gap_effort").html(sign((new_effort-effort).toFixed(2)) + " <%= @staffing_model.effort_unit %>");
+            $(".gap_duration").html(sign((new_duration-duration).toFixed(2)) + " sem.");
+            $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)) + " pers.");
+            $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)) + " pers.");
 
           }
         });
+
+        function sign(value){
+          if (value > 0) {
+            return "+" + value;
+          } else {
+            return value;
+          }
+        }
     </script>
   </div>
 
