@@ -62,12 +62,12 @@ end
 #
 #     body << easy.body_str
 #   end
-#   File.open("timob", 'wb+') do |f|
+#   File.open("tistud", 'wb+') do |f|
 #     f << body
 #   end
 #
 #
-#   doc = Roo::Spreadsheet.open('timob_keys.xlsx')
+#   doc = Roo::Spreadsheet.open('tistud_keys.xlsx')
 #   agent = Mechanize.new
 #   csva = {}
 #   20000.times do |i|
@@ -94,7 +94,7 @@ end
 #   end
 #
 #
-#   CSV.open("timob_results.csv", "wb") do |csv|
+#   CSV.open("tistud_results.csv", "wb") do |csv|
 #     csva.each do |row|
 #       r = row.flatten
 #
