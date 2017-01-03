@@ -96,10 +96,39 @@
             </td>
             <td>
               <span class="percent_effort pull-right">
-                <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
+                <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %> %
               </span>
             </td>
           </tr>
+
+          <tr>
+            <td>
+              <span class="pull-left">
+                Début : <%= @project.start_date.strftime("%d/%m/%Y") %>
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                <%= (@project.start_date + @md_duration.weeks).strftime("%d/%m/%Y") %>
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                <%= (@project.start_date + @staffing_custom_data.duration.weeks).strftime("%d/%m/%Y") %>
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                <%= sign((((@project.start_date + @staffing_custom_data.duration.weeks) - (@project.start_date + @md_duration.weeks)).to_f / 7).round(user_number_precision)) %> sem.
+              </span>
+            </td>
+            <td>
+              <span class="pull-right">
+                -
+              </span>
+            </td>
+          </tr>
+
           <tr>
             <td>
               <span class="pull-left">
@@ -126,7 +155,7 @@
             </td>
             <td>
               <span class="percent_duration pull-right">
-                <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(user_number_precision)) %> %
+                <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %> %
               </span>
             </td>
           </tr>
@@ -189,6 +218,7 @@
                 <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(user_number_precision)) %> %
               </span>
             </td>
+
           </tr>
         </table>
         <input type="text" name='percents' id='percent' class="factor-slider" value="<%= @staffing_custom_data.percent %>" />
