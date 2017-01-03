@@ -91,12 +91,12 @@
             </td>
             <td>
               <span class="gap_effort pull-right">
-                <%= sign((effort.to_f - @staffing_custom_data.global_effort_value).round(user_number_precision)) %> <%= @staffing_model.effort_unit %>
+                <%= sign((effort.to_f - @staffing_custom_data.global_effort_value.to_f).round(user_number_precision)) %> <%= @staffing_model.effort_unit %>
               </span>
             </td>
             <td>
               <span class="percent_effort pull-right">
-                <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value) / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
+                <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(user_number_precision)) %> %
               </span>
             </td>
           </tr>
@@ -251,8 +251,7 @@
             $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2) + " pers.");
             $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2) + " pers.");
 
-
-            $(".percent_effort").html(sign((((new_effort-effort)/effort)*100).toFixed(2)) + " %");
+            $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(2)) + " %");
             $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(2)) + " %");
             $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(2)) + " %");
             $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(2)) + " %");
