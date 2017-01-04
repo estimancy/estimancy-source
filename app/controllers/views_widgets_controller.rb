@@ -363,6 +363,17 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
+
+  # Show the effort display unit if the attribute alias is part of Effort attributes
+  def show_widget_effort_display_unit
+    estimation_value_id = params['estimation_value_id']
+    if !estimation_value_id.nil? && estimation_value_id != 'undefined'
+      @estimation_value = EstimationValue.find(estimation_value_id)
+      @pe_attribute = @estimation_value.pe_attribute
+    end
+  end
+
+
   def export_vignette
     workbook = RubyXL::Workbook.new
     widget = ViewsWidget.find(params[:view_widget_id])

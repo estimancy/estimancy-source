@@ -1989,3 +1989,8 @@ fr:
   do_not_show_phases_with_zero_value: "Ne pas afficher les phases dont l'effort retenu est à zéro"
   is_used_in_ratio_calculation: "Entre dans la calcul du Ratio"
   do_not_show_cost: "Ne pas afficher le coût"
+  effort_display_unit: "Unité d'affichage de l'effort"
+  organization_effort_unit: "Unité d'effort de l'organisation"
+  module_instance_effort_unit: "Unité d'effort de l'instance du module"
+  select_associated_attribute: "Choisir l'attribut associé"
+  select_effort_unit: "Choisir l'unité de l'effort"

@@ -53,6 +53,14 @@
           <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
         </td>
       </tr>
+
+      <%# if !@views_widget.new_record? && @views_widget.pe_attribute.alias.in?(Projestimate::Application::EFFORT_DISPLAY_UNIT) %>
+          <tr>
+            <td>
+              <%= f.input :effort_display_unit, as: :select, collection: Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }, label: I18n.t(:effort_display_unit), include_blank: true %>
+            </td>
+          </tr>
+      <%# end %>
     </table>
   </div>
 
@@ -112,6 +120,19 @@
             });
         }
     });
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_estimation_value_id").change(function() {
+        var attibute_alias = $(this).val();
+        if (attibute_alias !== ""){
+            return $.ajax({
+                url: "/show_widget_effort_display_unit",
+                method: "GET",
+                data: "estimation_value_id=" + $(this).val()
+            });
+        }
+    });
+
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();

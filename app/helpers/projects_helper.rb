@@ -106,6 +106,49 @@ module ProjectsHelper
     end
   end
 
+  #Conversion en fonction des seuils et de la précision de l'utilisateur #> 12.12300 (si precision = 5)
+  # Affiche l'unité en plus
+  def convert_effort_with_organization_unit(v, organization_effort_limit_coeff, organization_effort_unit)
+    unless v.class == Hash
+      value = v.to_f
+      convert_with_precision(value / organization_effort_limit_coeff, user_number_precision, true)
+    else
+      0
+    end
+  end
+
+
+  def get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, pe_attribute_alias)
+    min_effort_value = nil
+    effort_values = module_project_ratio_elements.map(&:"#{pe_attribute_alias}")
+    unless effort_values.nil? || effort_values.empty?
+      effort_values_without_zero = effort_values.compact.reject{ |i| i == 0}
+      min_effort_value = effort_values_without_zero.min
+    end
+    min_effort_value
+  end
+
+  # Get the organization effort limit and unit according to the smaller value
+  def get_organization_effort_limit_and_unit(v, organization)
+    unless v.class == Hash
+      value = v.to_f
+      if value < organization.limit1.to_i
+        [organization.limit1_coef.to_f, organization.limit1_unit]
+      elsif value < organization.limit2.to_i
+        [organization.limit2_coef.to_f, organization.limit2_unit]
+      elsif value < organization.limit3.to_i
+        [organization.limit3_coef.to_f, organization.limit3_unit]
+      elsif value < organization.limit4.to_i
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      else
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      end
+    else
+      []
+    end
+  end
+
+
   #Conversion en fonction des seuils et de la précision en params #> 12.123 (si precision = 5) ou 12.12 si (si precision = 2)
   def convert_with_specific_precision(v, organization, precision)
     unless v.class == Hash
@@ -996,7 +1039,7 @@ module ProjectsHelper
     end
   end
 
-  def display_value(value, est_val, mp_id)
+  def display_value(value, est_val, mp_id, view_widget_effort_display_unit=nil)
     module_project = ModuleProject.find(mp_id)
     est_val_pe_attribute = est_val.pe_attribute
     precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
@@ -1020,8 +1063,8 @@ module ProjectsHelper
         "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
       end
 
-    #elsif est_val_pe_attribute.alias == "effort"
-    elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
+    #elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
+    elsif est_val_pe_attribute.alias.in?( Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
         effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
@@ -1033,6 +1076,21 @@ module ProjectsHelper
         end
 
         "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
+
+      elsif module_project.pemodule.alias == "effort_breakdown"
+        wbs_activity = module_project.wbs_activity
+        if wbs_activity
+          effort_unit_coefficient = wbs_activity.effort_unit_coefficient
+
+          if view_widget_effort_display_unit == "module_instance_effort_unit" && !effort_unit_coefficient.nil?
+            "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
+          else
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+            "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+          end
+        else
+          "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
+        end
       else
         "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
       end

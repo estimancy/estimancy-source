@@ -1,24 +1,29 @@
 <%
+   levels = ['probable']
+   colspan = 1
+   rowspan = 1
+
+   view_widget = ViewsWidget.find(view_widget_id)
    pbs_project_element = current_component
    pemodule = module_project.pemodule
    precision = estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision
 
-   # Only the Modules with activities
-   #with_activities = pemodule.yes_for_output_with_ratio? || pemodule.yes_for_output_without_ratio? || pemodule.yes_for_input_output_with_ratio? || pemodule.yes_for_input_output_without_ratio?
-   #return String.new unless with_activities
-
    wbs_activity = module_project.wbs_activity
-
-   if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-     @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+   if wbs_activity
+    effort_unit_coefficient = wbs_activity.effort_unit_coefficient
    else
-     @wbs_unit = wbs_activity.effort_unit
+     effort_unit_coefficient = nil
    end
 
+   module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(:order => :position))
 
-   levels = ['probable']
-   colspan = 1
-   rowspan = 1
+   unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+     if view_widget.effort_display_unit != "module_instance_effort_unit"
+        min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
+        organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+     end
+   end
+
 
 %>
 
@@ -31,6 +36,7 @@
       </span>
     </th>
   </tr>
+
 
   <% module_project_ratio_elements.each do |mp_ratio_element| %>
       <% completion_consistency = "" %>
@@ -52,10 +58,15 @@
                       if level_value.nil?
                         "-"
                       else
-                        "#{convert_with_precision(level_value, user_number_precision, true)} #{@wbs_unit}"
+                        "#{convert_with_precision(level_value, user_number_precision, true)} #{wbs_unit}"
                       end
                     else
-                      "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                      if view_widget.effort_display_unit == "module_instance_effort_unit" && !effort_unit_coefficient.nil?
+                        "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}"
+                      else
+                        # "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                        "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}"
+                      end
                     end
                 else
                     "-"
