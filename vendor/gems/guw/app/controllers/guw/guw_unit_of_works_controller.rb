@@ -785,6 +785,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
+    unless params["comments"].nil?
+      guowa.comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+    end
+
     guowa.low = low
     guowa.most_likely = most_likely
     guowa.high = high
@@ -880,6 +884,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.quantity = 1
       end
 
+      unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
+        guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
+        guw_unit_of_work.guw_complexity_id = guw_complexity_id
+      end
+
       #Pour le calcul des valeurs intermédiares, on prend uniquement le premier attributs (pour l'instant)
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
@@ -937,15 +946,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
               unless cce.value.blank?
                 pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                # if pc.to_f < 0
-                  percents << (pc.to_f / 100)
-                # else
-                  # percents << (pc.to_f / 100)
-                # end
-
-                # if guw_coefficient.allow_intermediate_value == true
-                #   ceuw.intermediate_value = @fv * pc.to_f
-                # end
+                percents << (pc.to_f / 100)
               else
                 percents << 1
               end
@@ -996,11 +997,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if @final_value.nil?
           guw_unit_of_work.size = nil
           if params["ajusted_size"].nil?
-            tmp_hash_res["#{guw_output.id}"] = nil
+            tmp_hash_ares["#{guw_output.id}"] = nil
           else
-            tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
           end
-          guw_unit_of_work.ajusted_size = tmp_hash_res
+          guw_unit_of_work.ajusted_size = tmp_hash_ares
           guw_unit_of_work.size = tmp_hash_res
         else
 
@@ -1009,12 +1010,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
 
+          if params["ajusted_size"].nil?
+            tmp_hash_ares["#{guw_output.id}"] = nil
+          else
+            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+          end
+
           if guw_unit_of_work.guw_type.allow_retained == false
-            guw_unit_of_work.ajusted_size = tmp_hash_res
+            guw_unit_of_work.ajusted_size = tmp_hash_ares
             guw_unit_of_work.size = tmp_hash_res
           else
             if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-              guw_unit_of_work.ajusted_size = tmp_hash_res
+              guw_unit_of_work.ajusted_size = tmp_hash_ares
               guw_unit_of_work.size = tmp_hash_res
             else
               guw_unit_of_work.size = tmp_hash_res
