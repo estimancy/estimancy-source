@@ -26,6 +26,34 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_model = @guw_type.guw_model
 
+    unless params[:config].nil?
+      params[:config].each do |i|
+        i.last.each do |j|
+          j.last.each do |k|
+
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            a_output = Guw::GuwOutput.find(j.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
+
+            oa = Guw::GuwOutputAssociation.where( guw_complexity_id: cplx.id,
+                                                  guw_output_associated_id: a_output.id,
+                                                  guw_output_id: output.id).first
+            if oa.nil?
+              Guw::GuwOutputAssociation.create(guw_complexity_id: cplx.id,
+                                               guw_output_associated_id: a_output.id,
+                                               guw_output_id: output.id,
+                                               value: params[:config]["#{cplx.id}"]["#{output.id}"]["#{a_output.id}"])
+
+            else
+              oa.value = params[:config]["#{cplx.id}"]["#{output.id}"]["#{a_output.id}"]
+              oa.save
+            end
+          end
+        end
+      end
+    end
+
+
     unless params[:coefficient_elements_value].nil?
       params[:coefficient_elements_value].each do |i|
         i.last.each do |j|

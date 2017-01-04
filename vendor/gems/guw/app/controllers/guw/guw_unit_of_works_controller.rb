@@ -946,15 +946,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
               unless cce.value.blank?
                 pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                # if pc.to_f < 0
-                  percents << (pc.to_f / 100)
-                # else
-                  # percents << (pc.to_f / 100)
-                # end
-
-                # if guw_coefficient.allow_intermediate_value == true
-                #   ceuw.intermediate_value = @fv * pc.to_f
-                # end
+                percents << (pc.to_f / 100)
               else
                 percents << 1
               end

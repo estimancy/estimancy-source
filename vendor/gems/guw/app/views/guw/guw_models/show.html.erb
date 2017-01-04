@@ -58,7 +58,7 @@
             <tr>
               <th></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size + 1 %>">
+                <th colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size %>">
                   <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
                   <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type, guw_cplx) %>
                   <% if can? :manage_modules_instances, ModuleProject %>
@@ -87,23 +87,37 @@
 
             <tr>
               <th></th>
-              <% @guw_model.guw_outputs.each do |guw_output| %>
-                <th><%= guw_output.name %></th>
+              <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
+                <% @guw_model.guw_outputs.each do |guw_output| %>
+                  <th>
+                    <%= guw_output.name %>
+                  </th>
+                <% end %>
               <% end %>
             </tr>
-            <% @guw_model.guw_outputs.each do |guw_output| %>
+            <% @guw_model.guw_outputs.each do |aguw_output| %>
               <tr>
-                <td><%= guw_output.name %></td>
+                <td>
+                  <%= aguw_output.name %>
+                </td>
+                <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                   <% @guw_model.guw_outputs.each do |guw_output| %>
-                    <td><%= text_field_tag "", "", class: "input-mini" %></td>
+
+                    <% oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+                                                             guw_output_associated_id: aguw_output.id,
+                                                             guw_output_id: guw_output.id).first %>
+                    <td class="align-center">
+                      <%= text_field_tag "config[#{guw_complexity.id}][#{aguw_output.id}][#{guw_output.id}]", oa.nil? ? '' : oa.value, class: "input-mini" %>
+                    </td>
                   <% end %>
+                <% end %>
               </tr>
             <% end %>
 
             <tr>
               <th>Seuils</th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size }" %>">
+                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>">
                   <% if guw_type.allow_criteria == true %>
                     <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;
                   <% end %>

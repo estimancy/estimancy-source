@@ -371,6 +371,13 @@
                     <% end %>
                   <% end %>
                 <% end %>
+
+                <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                  <td>
+                    <%= I18n.t :quantity %>
+                  </td>
+                <% end %>
+
                 <td>
                   <% if can? :execute_estimation_plan, @project %>
                     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
