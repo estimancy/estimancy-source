@@ -156,9 +156,11 @@
               <th class=""><%= I18n.t :name %></th>
               <th class="">UO</th>
 
-              <th>
-                <%= I18n.t :criteria %>
-              </th>
+              <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                <th>
+                  <%= I18n.t :criteria %>
+                </th>
+              <% end %>
 
               <th class="">
                 COEF
@@ -220,20 +222,23 @@
                                  style: "width: 90px;" %>
                 </td>
 
-                <td>
-                  <% unless guow.guw_type.nil? %>
-                    <% if guow.guw_type.allow_criteria == true %>
-                      <span class="text-center criteria_label_<%= guow.id %>">
-                        <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
-                        <% if counting.empty? %>
-                          <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
-                        <% else %>
-                          <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
-                        <% end %>
-                      </span>
+                <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                  <td>
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_criteria == true %>
+                        <span class="text-center criteria_label_<%= guow.id %>">
+                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
+                          <% if counting.empty? %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                          <% else %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                          <% end %>
+                        </span>
+                      <% end %>
                     <% end %>
-                  <% end %>
-                </td>
+                  </td>
+                <% end %>
+
 
                 <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
