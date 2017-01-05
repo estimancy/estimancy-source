@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170104095835) do
+ActiveRecord::Schema.define(:version => 20170102111356) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -727,15 +727,6 @@ ActiveRecord::Schema.define(:version => 20170104095835) do
     t.text     "orders"
   end
 
-  create_table "guw_guw_output_associations", :force => true do |t|
-    t.integer  "guw_output_id"
-    t.integer  "guw_output_associated_id"
-    t.integer  "guw_complexity_id"
-    t.float    "value"
-    t.datetime "created_at",               :null => false
-    t.datetime "updated_at",               :null => false
-  end
-
   create_table "guw_guw_outputs", :force => true do |t|
     t.string   "name"
     t.string   "output_type"
@@ -791,7 +782,6 @@ ActiveRecord::Schema.define(:version => 20170104095835) do
     t.integer  "guw_attribute_complexity_id"
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
-    t.text     "comments"
   end
 
   create_table "guw_guw_unit_of_work_groups", :force => true do |t|
@@ -961,6 +951,12 @@ ActiveRecord::Schema.define(:version => 20170104095835) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1867,6 +1863,7 @@ ActiveRecord::Schema.define(:version => 20170104095835) do
     t.boolean  "is_kpi_widget"
     t.text     "equation"
     t.string   "kpi_unit"
+    t.string   "effort_display_unit"
   end
 
   create_table "wbs_activities", :force => true do |t|

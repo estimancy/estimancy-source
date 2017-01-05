@@ -91,7 +91,17 @@
                                         <% end %>
                                       </span>
                                     <% end %>
+
+                                    <!-- Show the selected Ratio name -->
+                                    <% if view_widget.show_wbs_activity_ratio %>
+                                        <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity, module_project_id: view_widget.module_project_id).first %>
+                                        <span class="widget_name" style="float: right; width: auto">
+                                          <%= "#{I18n.t(:ratio)}:" %>  <%= wa_input.nil? ? "-" : wa_input.wbs_activity_ratio %>
+                                        </span>
+                                    <% end %>
+
                                   </span>
+
                                   <span id="show_view_widget_params_<%= view_widget.id %>" class="span3 widget_icon_edit">
                                     <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && view_widget.project_fields.empty? ) %>
                                       <%= link_to(' ', view_widget, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
@@ -105,13 +115,13 @@
 
                                 <span class="row-fluid widget_values">
 
-                                  <!--Show the selected Ratio name-->
-                                  <% if view_widget.show_wbs_activity_ratio %>
-                                    <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity, module_project_id: view_widget.module_project_id).first %>
-                                    <span class="widget_name" style="margin-left: 5px;">
-                                      <%= "#{I18n.t(:ratio)}:" %>  <%= wa_input.nil? ? "-" : wa_input.wbs_activity_ratio %>
-                                    </span>
-                                  <% end %>
+                                  <!--&lt;!&ndash;Show the selected Ratio name&ndash;&gt;-->
+                                  <!--<%# if view_widget.show_wbs_activity_ratio %>-->
+                                    <!--<%# wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity, module_project_id: view_widget.module_project_id).first %>-->
+                                    <!--<span class="widget_name" style="margin-left: 5px;">-->
+                                      <!--<%#= "#{I18n.t(:ratio)}:" %>  <%#= wa_input.nil? ? "-" : wa_input.wbs_activity_ratio %>-->
+                                    <!--</span>-->
+                                  <!--<%# end %>-->
 
                                   <% if view_widget.show_min_max && effort_per_phase_class.empty? %>
                                     <% one_height = "one_height" %>

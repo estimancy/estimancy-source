@@ -457,7 +457,7 @@ module ViewsWidgetsHelper
           probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id)
         else
           if is_number?(data_probable)
-            probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id)
+            probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.effort_display_unit)
           else
             probable_value_text = data_probable
           end
@@ -724,9 +724,12 @@ module ViewsWidgetsHelper
                                             estimation_pbs_probable_results: pbs_probable_est_value,
                                             ratio_reference: ratio_reference,
                                             pe_attribute_alias: pe_attribute_alias,
+                                            wbs_unit: wbs_unit,
                                             module_project_ratio_elements: module_project_ratio_elements,
                                             wbs_activity_element_root: wbs_activity_element_root,
-                                            view_widget_type: view_widget.widget_type
+                                            view_widget_type: view_widget.widget_type,
+                                            view_widget_id: view_widget.id
+
                                        } )
 
 
@@ -749,7 +752,8 @@ module ViewsWidgetsHelper
                                                       wbs_unit: wbs_unit,
                                                       module_project_ratio_elements: module_project_ratio_elements,
                                                       wbs_activity_element_root: wbs_activity_element_root,
-                                                      view_widget_type: view_widget.widget_type
+                                                      view_widget_type: view_widget.widget_type,
+                                                      view_widget_id: view_widget.id
                                        } )
 
       when "cost_per_phases_profiles_table", "cost_per_phases_profiles_table_without_zero"
@@ -770,7 +774,8 @@ module ViewsWidgetsHelper
                                                     wbs_unit: wbs_unit,
                                                     module_project_ratio_elements: module_project_ratio_elements,
                                                     wbs_activity_element_root: wbs_activity_element_root,
-                                                    view_widget_type: view_widget.widget_type
+                                                    view_widget_type: view_widget.widget_type,
+                                                     view_widget_id: view_widget.id
                                         } )
 
       when "stacked_bar_chart_effort_per_phases_profiles"

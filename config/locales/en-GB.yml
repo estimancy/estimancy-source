@@ -1589,3 +1589,8 @@ en-gb:
   do_not_show_phases_with_zero_value: "Do not show phases where ratained effort is zero"
   is_used_in_ratio_calculation: "Is used in Ratio calculation"
   do_not_show_cost: "Do not show cost"
+  effort_display_unit: "Effort display unit"
+  organization_effort_unit: "Organization effort unit"
+  module_instance_effort_unit: "Module instance effort unit"
+  select_associated_attribute: "Select associated attribute"
+  select_effort_unit: "Select effort unit"
