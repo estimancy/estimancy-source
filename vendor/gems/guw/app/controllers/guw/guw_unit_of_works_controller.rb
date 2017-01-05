@@ -1021,7 +1021,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
           unless goa.nil?
             if goa.aguw_output.allow_intermediate_value == true
-              tmp_hash_res["#{guw_output.id}"] = tmp_hash_ares["#{goa.aguw_output.id}"] * (tmp/tmp_hash_res["#{goa.aguw_output.id}"])
+              tmp_hash_res["#{guw_output.id}"] = tmp_hash_ares["#{goa.aguw_output.id}"].to_f * (tmp.to_f / tmp_hash_res["#{goa.aguw_output.id}"].to_f)
             else
               tmp_hash_res["#{guw_output.id}"] = tmp
             end
