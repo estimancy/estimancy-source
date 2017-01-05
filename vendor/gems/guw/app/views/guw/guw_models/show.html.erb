@@ -107,7 +107,7 @@
                                                              guw_output_associated_id: aguw_output.id,
                                                              guw_output_id: guw_output.id).first %>
                     <td class="align-center">
-                      <%= text_field_tag "config[#{guw_complexity.id}][#{aguw_output.id}][#{guw_output.id}]", oa.nil? ? '' : oa.value, class: "input-mini" %>
+                      <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "input-mini" %>
                     </td>
                   <% end %>
                 <% end %>

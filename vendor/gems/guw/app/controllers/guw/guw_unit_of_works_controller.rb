@@ -1008,12 +1008,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
 
-          tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+          goa = Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
+                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                                value: 1).first
 
           if params["ajusted_size"].nil?
             tmp_hash_ares["#{guw_output.id}"] = nil
           else
             tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+          end
+
+          tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+          unless goa.nil?
+            if goa.aguw_output.allow_intermediate_value == true
+              tmp_hash_res["#{guw_output.id}"] = tmp_hash_ares["#{goa.aguw_output.id}"].to_f * (tmp.to_f / tmp_hash_res["#{goa.aguw_output.id}"].to_f)
+            else
+              tmp_hash_res["#{guw_output.id}"] = tmp
+            end
+          else
+            tmp_hash_res["#{guw_output.id}"] = tmp
           end
 
           if guw_unit_of_work.guw_type.allow_retained == false
@@ -1025,7 +1038,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guw_unit_of_work.size = tmp_hash_res
             else
               guw_unit_of_work.size = tmp_hash_res
-              tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+              # tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
               guw_unit_of_work.ajusted_size = tmp_hash_ares
             end
           end
