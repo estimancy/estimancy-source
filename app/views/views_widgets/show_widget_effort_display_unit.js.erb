@@ -1,12 +1,14 @@
 <% if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS) %>
-$(".views_widget_effort_display_unit").show();
-//$("#widget_effort_display_unit_div").show();
+    $(".views_widget_effort_display_unit").show();
+    //$("#widget_effort_display_unit_div").show();
 
-$(".views_widget_effort_display_unit").html("<label><%= I18n.t(:effort_display_unit) %></label> <%=raw j(select_tag 'views_widget[effort_display_unit]',
-                                                        options_for_select(Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }),
-                                                        label: I18n.t(:effort_display_unit), prompt: I18n.t(:select_effort_unit)) %>");
+    $(".views_widget_effort_display_unit").html("<label><%= I18n.t(:effort_display_unit) %></label> <%=raw j(select_tag 'views_widget[effort_display_unit]',
+                                                            options_for_select(Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }),
+                                                            label: I18n.t(:effort_display_unit), prompt: I18n.t(:select_effort_unit)) %>");
+    $(".modal .modal-body").css('height', '500px');
+
 <% else %>
     $(".views_widget_effort_display_unit").hide();
-//    $("#widget_effort_display_unit_div").hide();
+    $(".modal .modal-body").css('height', '450px');
 <% end %>
 
