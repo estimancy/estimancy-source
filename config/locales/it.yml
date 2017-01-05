@@ -1502,3 +1502,4 @@ it:
   module_instance_effort_unit: "Unité d'effort de l'instance du module"
   select_associated_attribute: "Choisir l'attribut associé"
   select_effort_unit: "Choisir l'unité de l'effort"
+  duplicate_ratio: "Dupliquer le ratio"

@@ -148,6 +148,28 @@ class WbsActivityRatiosController < ApplicationController
     redirect_to redirect(edit_wbs_activity_path(@wbs_activity_ratio.wbs_activity, :anchor => 'tabs-3'))
   end
 
+
+  # duplicate Ratio
+  def duplicate_wbs_activity_ratio
+    authorize! :manage_modules_instances, ModuleProject
+    @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+
+    new_wbs_activity_ratio = @wbs_activity_ratio.amoeba_dup
+    new_wbs_activity_ratio.name = "#{new_wbs_activity_ratio.name} - #{Time.now}"
+    #wbs_activity_ratio_elements et wbs_activity_ratio_profiles sont copiés dans le amoeba_dup
+    if new_wbs_activity_ratio.save
+      #wbs_activity_ratio_variables
+      @wbs_activity_ratio.wbs_activity_ratio_variables.each do |wbs_activity_ratio_variable|
+        new_ratio_variable = wbs_activity_ratio_variable.dup
+        new_ratio_variable.wbs_activity_ratio_id = new_wbs_activity_ratio.id
+        new_ratio_variable.save
+      end
+    end
+
+    redirect_to edit_wbs_activity_path(@wbs_activity_ratio.wbs_activity, :anchor => 'tabs-3')
+  end
+
+
   def validate_ratio
     authorize! :manage_modules_instances, ModuleProject
 

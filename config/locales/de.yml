@@ -1549,5 +1549,6 @@ de:
   organization_effort_unit: "Organization effort unit"
   module_instance_effort_unit: "Module instance effort unit"
   select_associated_attribute: "Select associated attribute"
+  duplicate_ratio: "Duplicate ratio"
 
 

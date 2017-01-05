@@ -133,6 +133,7 @@ Projestimate::Application.routes.draw do
     collection { match 'wbs_activity_ratios/import' => 'wbs_activity_ratios#import', :as => 'import' }
   end
   match 'wbs_activity_ratios/:ratio_id/validate_ratio' => 'wbs_activity_ratios#validate_ratio', :as => 'validate_ratio'
+  match 'wbs_activity_ratios/:wbs_activity_ratio_id/duplicate_wbs_activity_ratio' => 'wbs_activity_ratios#duplicate_wbs_activity_ratio', :as => 'duplicate_wbs_activity_ratio'
   get 'refresh_ratio_elements' => 'wbs_activities#refresh_ratio_elements', :as => 'refresh_ratio_elements'
 
   resources :wbs_activity_ratio_elements
