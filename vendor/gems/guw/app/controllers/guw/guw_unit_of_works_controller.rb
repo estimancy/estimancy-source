@@ -923,7 +923,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @final_value = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
+            @weight = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
 
             guw_unit_of_work.intermediate_percent = intermediate_percent * 100
 
@@ -993,56 +993,74 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #
         # prod = ces.compact.inject(&:*)
         # @final_value = @final_value.to_f * (prod.nil? ? 1 : prod.to_f)
-
-        if @final_value.nil?
-          guw_unit_of_work.size = nil
-          if params["ajusted_size"].nil?
-            tmp_hash_ares["#{guw_output.id}"] = nil
-          else
-            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
-          end
-          guw_unit_of_work.ajusted_size = tmp_hash_ares
-          guw_unit_of_work.size = tmp_hash_res
+        oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity.id,
+                                             guw_output_id: guw_output.id,
+                                             value: 1).first
+        if oc.nil?
+          @final_value = nil
         else
+          @final_value = @weight
+        end
+
+        # if @final_value.nil?
+        #   guw_unit_of_work.size = nil
+        #   if params["ajusted_size"].nil?
+        #     tmp_hash_ares["#{guw_output.id}"] = nil
+        #   else
+        #     tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+        #   end
+        #   guw_unit_of_work.ajusted_size = tmp_hash_ares
+        #   guw_unit_of_work.size = tmp_hash_res
+        # else
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
 
-          goa = Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                                value: 1).first
+          oa_value = []
+          Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
+                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                          value: 1).each do |goa|
 
-          if params["ajusted_size"].nil?
-            tmp_hash_ares["#{guw_output.id}"] = nil
-          else
-            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+            oa_value << tmp_hash_res["#{goa.aguw_output.id}"]
+
           end
 
-          tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
-          unless goa.nil?
-            if goa.aguw_output.allow_intermediate_value == true
-              tmp_hash_res["#{guw_output.id}"] = tmp_hash_ares["#{goa.aguw_output.id}"].to_f * (tmp.to_f / tmp_hash_res["#{goa.aguw_output.id}"].to_f)
-            else
-              tmp_hash_res["#{guw_output.id}"] = tmp
-            end
+
+          # @final_value =
+          #
+          # if @final_value == 0
+          inter_value = oa_value.compact.sum.to_f
+
+          if inter_value == 0
+            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
           else
+            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+          end
+
+          # tmp_hash_res["#{guw_output.id}"] = tmp
+
+          # if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
             tmp_hash_res["#{guw_output.id}"] = tmp
-          end
+            tmp_hash_ares["#{guw_output.id}"] = tmp
+          # else
+          #   tmp_hash_res["#{guw_output.id}"] = tmp
+          #   tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+          # end
 
-          if guw_unit_of_work.guw_type.allow_retained == false
-            guw_unit_of_work.ajusted_size = tmp_hash_ares
-            guw_unit_of_work.size = tmp_hash_res
-          else
-            if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-              guw_unit_of_work.ajusted_size = tmp_hash_ares
+          # if guw_unit_of_work.guw_type.allow_retained == false
+          #   guw_unit_of_work.ajusted_size = tmp_hash_ares
+          #   guw_unit_of_work.size = tmp_hash_res
+          # else
+          #   # if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          #     # guw_unit_of_work.ajusted_size = tmp_hash_res
+          #     # guw_unit_of_work.size = tmp_hash_res
+          #   # else
               guw_unit_of_work.size = tmp_hash_res
-            else
-              guw_unit_of_work.size = tmp_hash_res
-              # tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
               guw_unit_of_work.ajusted_size = tmp_hash_ares
-            end
-          end
-        end
+          #   # end
+          # end
+
+        # end
       end
 
       guw_unit_of_work.save
