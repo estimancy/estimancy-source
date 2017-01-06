@@ -86,6 +86,21 @@
             </tr>
 
             <tr>
+              <th>Seuils</th>
+              <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
+                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>">
+                  <% if guw_type.allow_criteria == true %>
+                    <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;&nbsp;&nbsp;
+                  <% end %>
+                  <% if guw_type.allow_criteria == true %>
+                    [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
+                  <% end %> &nbsp;&nbsp;&nbsp;
+                  <%= guw_cplx.weight %> x + <%= guw_cplx.weight_b.nil? ? 0 : guw_cplx.weight_b %>
+                </th>
+              <% end %>
+            </tr>
+
+            <tr>
               <th></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
@@ -127,21 +142,6 @@
                 <% end %>
               </tr>
             <% end %>
-
-            <tr>
-              <th>Seuils</th>
-              <% guw_type.guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>">
-                  <% if guw_type.allow_criteria == true %>
-                    <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;
-                  <% end %>
-                  <% if guw_type.allow_criteria == true %>
-                    [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
-                  <% end %>
-                  <%= guw_cplx.weight %> - <%= guw_cplx.weight_b.nil? ? 0 : guw_cplx.weight_b %>
-                </th>
-              <% end %>
-            </tr>
 
             <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
               <tr>

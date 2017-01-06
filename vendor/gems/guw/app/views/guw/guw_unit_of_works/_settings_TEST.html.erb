@@ -350,7 +350,7 @@
                         <% unless guow.guw_type.nil? %>
                           <span class=" size_label_<%= guow.id %>">
                             <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)),
-                                                 class: "size-#{uowg.id} retained-#{uowg.id} guw_number_field_tag",
+                                                 class: "size-#{uowg.id} guw_number_field_tag",
                                                  readonly: true,
                                                  style: "width: 43px;",
                                                  step: 0.001 %>
