@@ -1021,14 +1021,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                           value: 1).each do |goa|
 
-            oa_value << tmp_hash_res["#{goa.aguw_output.id}"]
+            # if guw_output.allow_intermediate_value == true
+              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"]
+            # else
+            #   oa_value << tmp_hash_res["#{goa.aguw_output.id}"]
+            # end
 
           end
 
-
-          # @final_value =
-          #
-          # if @final_value == 0
           inter_value = oa_value.compact.sum.to_f
 
           if inter_value == 0
@@ -1037,15 +1037,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
           end
 
-          # tmp_hash_res["#{guw_output.id}"] = tmp
-
-          # if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
             tmp_hash_res["#{guw_output.id}"] = tmp
             tmp_hash_ares["#{guw_output.id}"] = tmp
-          # else
-          #   tmp_hash_res["#{guw_output.id}"] = tmp
-          #   tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-          # end
+          else
+            tmp_hash_res["#{guw_output.id}"] = tmp
+            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+          end
 
           # if guw_unit_of_work.guw_type.allow_retained == false
           #   guw_unit_of_work.ajusted_size = tmp_hash_ares
