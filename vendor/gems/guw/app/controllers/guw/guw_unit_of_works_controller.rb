@@ -1018,14 +1018,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           oa_value = []
           Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                          value: 1).each do |goa|
+                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |goa|
 
-            # if guw_output.allow_intermediate_value == true
-              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"]
-            # else
-            #   oa_value << tmp_hash_res["#{goa.aguw_output.id}"]
-            # end
+            unless goa.value.to_f == 0
+              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"] * goa.value.to_f
+            end
 
           end
 
