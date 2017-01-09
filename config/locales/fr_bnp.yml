@@ -1996,3 +1996,4 @@ fr_bnp:
   select_associated_attribute: "Choisir l'attribut associé"
   select_effort_unit: "Choisir l'unité de l'effort"
   duplicate_ratio: "Dupliquer le ratio"
+  wbs_activity_profiles: "Profils à prendre en compte dans la WBS activité"

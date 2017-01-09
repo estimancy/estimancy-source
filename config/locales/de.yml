@@ -1550,5 +1550,6 @@ de:
   module_instance_effort_unit: "Module instance effort unit"
   select_associated_attribute: "Select associated attribute"
   duplicate_ratio: "Duplicate ratio"
+  wbs_activity_profiles: "Profiles to be considered in the WBS activity"
 
 

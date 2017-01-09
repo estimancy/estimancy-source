@@ -9,55 +9,89 @@
   </ul>
 
     <div id="tabs-1">
-      <%= simple_form_for(@wbs_activity) do |f| %>
-        <%= f.error_notification %>
+      <div class="row-fluid">
+        <div class="span9">
+          <%= simple_form_for(@wbs_activity) do |f| %>
+            <%= f.error_notification %>
 
-        <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
-        <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
-          <%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => WbsActivity.aasm.states_for_select, :input_html => {:class => 'input-xxlarge'} %>
-        <% else %>
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-          <%= f.input :three_points_estimation, :label => I18n.t(:three_points_estimation) %>
-          <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
-          <%= f.input :effort_unit, :label => I18n.t(:Wording_of_the_module_unit_effort) %>
-          <%= f.input :effort_unit_coefficient, :label => I18n.t(:Conversion_factor_standard_effort) %>
-        <% end %>
+            <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
+            <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
+              <%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => WbsActivity.aasm.states_for_select, :input_html => {:class => 'input-xxlarge'} %>
+            <% else %>
+              <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+              <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+              <%= f.input :three_points_estimation, :label => I18n.t(:three_points_estimation) %>
+              <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+              <%= f.input :effort_unit, :label => I18n.t(:Wording_of_the_module_unit_effort) %>
+              <%= f.input :effort_unit_coefficient, :label => I18n.t(:Conversion_factor_standard_effort) %>
+            <% end %>
 
-        <div id="accordion_wbs_profile" class="accordion">
-          <div class="accordion-group accordion-caret">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
-              </a>
-            </div>
-            <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
-              <div class="accordion-inner">
-                <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
-                <% for profile in @organization.organization_profiles %>
-                  <div>
-                    <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
-                    <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+            <div id="accordion_wbs_profile" class="accordion">
+              <div class="accordion-group accordion-caret">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
+                    <i class="fa fa-caret-down"></i>
+                    <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
+                  </a>
+                </div>
+                <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
+                  <div class="accordion-inner">
+                    <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
+                    <% for profile in @organization.organization_profiles %>
+                      <div>
+                        <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
+                        <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+                      </div>
+                    <% end %>
                   </div>
-                <% end %>
+                </div>
               </div>
             </div>
-          </div>
+
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <% if action_name == 'new' || action_name == 'create' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <% elsif action_name == 'edit' || action_name == 'update' %>
+                <%= submit_tag I18n.t('save'), :class => 'btn' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <% end %>
+            <% end %>
+
+            <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+          <% end %>
         </div>
 
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <% if action_name == 'new' || action_name == 'create' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-          <% elsif action_name == 'edit' || action_name == 'update' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-          <% end %>
+        <% unless @wbs_activity.new_record? %>
+            <div class="span3">
+              <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-mini pull-right button_margin_right' %>
+            </div>
+        <% else %>
+            <a href="#import" role="button" class="btn btn-mini pull-right button_margin_right" title="<%= I18n.t(:import_from_excel)%>" data-toggle="modal">
+              <%= I18n.t(:import) %>
+            </a>
+
+            <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                  <div class="modal-header modal-drag">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
+                  </div>
+                  <div class="modal-body">
+                    <%= file_field_tag :file %>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                  </div>
+                  <div class="loading span11 hide">
+                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+                  </div>
+              <% end %>
+            </div>
         <% end %>
 
-        <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
-      <% end %>
-    </div>
+      </div>
+
 
     <% if action_name.in?(%w(edit update)) %>
         <div id="tabs-2">

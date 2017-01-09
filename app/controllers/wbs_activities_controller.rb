@@ -21,25 +21,13 @@
 
 require 'will_paginate/array'
 require 'dentaku'
+require 'rubyXL'
 
 class WbsActivitiesController < ApplicationController
   #include DataValidationHelper #Module for master data changes validation
   include ModuleProjectsHelper
   load_resource
 
-  #Import a new WBS-Activities from a CVS file
-  def import
-
-    begin
-      WbsActivityElement.import(params[:file], params[:separator])
-      flash[:notice] = I18n.t (:notice_wbs_activity_element_import_successful)
-    rescue => e
-      flash[:error] = I18n.t (:error_wbs_activity_failed_file_integrity)
-      flash[:warning] = "#{e}"
-    end
-
-    redirect_to :back
-  end
 
   def refresh_ratio_elements
 
@@ -875,6 +863,78 @@ class WbsActivitiesController < ApplicationController
 
     @wbs_activity_ratio = @ratio_reference
     redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
+  end
+
+
+  #Export the WBS
+  def export_xlsx
+    authorize! :show_modules_instances, ModuleProject
+
+    @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
+
+    if @wbs_activity
+
+      @wbs_activity_elements = @wbs_activity.wbs_activity_elements
+      @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
+      wbs_organization_profiles = @wbs_activity.organization_profiles
+
+
+      workbook = RubyXL::Workbook.new
+      workbook.add_worksheet("WBS-Activity-Elements")
+      workbook.add_worksheet("Ratios")
+      workbook.add_worksheet("Ratio Elements")
+
+      # add worksheet to workbook
+      model_worksheet = workbook[0]
+      activity_elements_worksheet = workbook[1]
+      ratios_worksheet = workbook[2]
+      ratio_elements_worksheet = workbook[3]
+
+      model_worksheet.sheet_name = "Model"
+
+      first_page = [[I18n.t(:model_name),  @wbs_activity.name],
+                    [I18n.t(:model_description), @wbs_activity.description ],
+                    [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
+                    [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ],
+                    [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
+                    [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
+                    [I18n.t(:select_wbs_activity_profiles), wbs_organization_profiles.map(&:name).join(",")],
+                    [I18n.t(:advice_ge), ""]]
+
+      first_page.each_with_index do |row, index|
+        model_worksheet.add_cell(index, 0, row[0])
+        model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+        ["bottom", "right"].each do |symbole|
+          model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
+          model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
+        end
+      end
+      model_worksheet.change_column_bold(0,true)
+      model_worksheet.change_column_width(0, 45)
+      model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
+
+      send_data(workbook.stream.string, filename: "#{@wbs_activity.organization.name[0..4]}-#{@wbs_activity.name.gsub(" ", "_")}_wbs_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+
+    else
+      flash[:error] = "WBS-Activity introuvable"
+    end
+
+  end
+
+
+  #Import a new WBS-Activities from a CVS file
+  def import_wbs_from_xl
+
+    begin
+      WbsActivityElement.import(params[:file], params[:separator])
+      flash[:notice] = I18n.t (:notice_wbs_activity_element_import_successful)
+
+    rescue => e
+      flash[:error] = I18n.t (:error_wbs_activity_failed_file_integrity)
+      flash[:warning] = "#{e}"
+    end
+
+    redirect_to :back
   end
 
 

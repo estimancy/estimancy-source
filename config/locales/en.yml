@@ -1977,3 +1977,4 @@ en:
   select_associated_attribute: "Select associated attribute"
   select_effort_unit: "Select effort unit"
   duplicate_ratio: "Duplicate ratio"
+  wbs_activity_profiles: "Profiles to be considered in the WBS activity"

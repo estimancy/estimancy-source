@@ -146,8 +146,9 @@ Projestimate::Application.routes.draw do
   get 'update_status_collection' => 'wbs_activity_elements#update_status_collection', :as => 'update_status_collection'
 
   resources :wbs_activities do
-    collection { post :import }
+    get 'export_xlsx'
   end
+  post "import_wbs_from_xl" => "wbs_activities#import_wbs_from_xl", as: 'import_wbs_from_xl'
 
   match 'homes/update_install' => 'homes#update_install', :as => 'update_install'
 
