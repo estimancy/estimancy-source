@@ -1793,7 +1793,28 @@ public
             new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
             new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
             widget_est_val = old_view_widget.estimation_value
-            unless widget_est_val.nil?
+            if old_view_widget.is_kpi_widget || widget_est_val.nil?
+              # Vignette Commentaires et Vignette KPI
+              new_view_widget = ViewsWidget.new(view_id: new_view.id,
+                                                module_project_id: new_view_widget_mp_id,
+                                                name: old_view_widget.name,
+                                                show_name: old_view_widget.show_name,
+                                                is_label_widget: old_view_widget.is_label_widget,
+                                                comment: old_view_widget.comment,
+                                                is_kpi_widget: old_view_widget.is_kpi_widget,
+                                                kpi_unit: old_view_widget.kpi_unit,
+                                                equation: old_view_widget.equation,
+                                                icon_class: old_view_widget.icon_class,
+                                                color: old_view_widget.color,
+                                                show_min_max: old_view_widget.show_min_max,
+                                                widget_type: old_view_widget.widget_type,
+                                                width: old_view_widget.width,
+                                                height: old_view_widget.height,
+                                                position: old_view_widget.position,
+                                                position_x: old_view_widget.position_x,
+                                                position_y: old_view_widget.position_y)
+              new_view_widget.save
+            else
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
               unless new_view_widget_mp.nil?
@@ -1805,10 +1826,13 @@ public
                                                   estimation_value_id: estimation_value_id,
                                                   name: old_view_widget.name,
                                                   show_name: old_view_widget.show_name,
+                                                  show_wbs_activity_ratio: old_view_widget.show_wbs_activity_ratio,
+                                                  is_label_widget: old_view_widget.is_label_widget,
                                                   icon_class: old_view_widget.icon_class,
                                                   color: old_view_widget.color,
                                                   show_min_max: old_view_widget.show_min_max,
                                                   widget_type: old_view_widget.widget_type,
+                                                  effort_display_unit: old_view_widget.effort_display_unit,
                                                   width: old_view_widget.width,
                                                   height: old_view_widget.height,
                                                   position: old_view_widget.position,
