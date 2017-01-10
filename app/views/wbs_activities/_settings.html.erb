@@ -101,7 +101,7 @@
     <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
     <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
 
-    <% if current_ev.blank? %>
+    <% if current_ev.blank? ||  current_ev == 0 %>
         <% entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
     <% else %>
         <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
