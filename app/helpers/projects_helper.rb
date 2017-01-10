@@ -1095,6 +1095,8 @@ module ProjectsHelper
         "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
       end
 
+    elsif est_val_pe_attribute.alias == "ratio"
+      "#{value.to_f.round(user_number_precision)}"
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
     #elsif est_val_pe_attribute.alias == "cost"
