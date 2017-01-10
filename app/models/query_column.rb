@@ -43,20 +43,23 @@ class QueryColumn
     end
   end
 
-  def project_field_value(object)
-    field = Field.find(self.field_id)
+  def project_field_value(pfs, object, fields_coefficients)
     value = '-'
-    unless field.coefficient.nil?
-      project_field = ProjectField.where(field_id: self.field_id, project_id: object.id).last
+    coefficient = fields_coefficients[self.field_id]
+    unless coefficient.nil?
+      # project_field = ProjectField.where(field_id: self.field_id, project_id: object.id).last
+      # project_field = object.project_fields.where(field_id: self.field_id).last
 
-      if project_field.nil?
+      v = pfs["#{object.id}_#{self.field_id}"]
+
+
+      if v.nil?
         value = '-'
-      elsif is_number?(project_field.value)
-        value = convert_with_precision(project_field.value.to_f / field.coefficient.to_f, 2)
+      elsif is_number?(v)
+        value = convert_with_precision(v.to_f / coefficient.to_f, 2)
       else
-        value = project_field.value
+        value = v
       end
-
     end
 
     value
