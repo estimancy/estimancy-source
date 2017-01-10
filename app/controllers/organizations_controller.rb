@@ -587,6 +587,19 @@ class OrganizationsController < ApplicationController
       tmp2 = @organization.projects.where(creator_id: current_user.id, is_model: false, private: true).all
       @projects = (tmp1 + tmp2).uniq
     end
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      @pfs["#{pf.project_id}_#{pf.field_id}"] = pf.value
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   # New organization from image
