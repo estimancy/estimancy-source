@@ -86,17 +86,12 @@ class Ability
           else
             can perm[0], perm[1]
           end
-          #p "#{perm[0]}, #{perm[1]}"
         end
       end
 
       #For "manage_estimation_models", only models will be taken in account
       #When user can create a project template, he also can edit the model
       alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
-
-      #@array_users = Hash.new {|h,k| h[k]=[]}
-      #@array_status_groups = Hash.new {|h,k| h[k]=[]}
-      #@array_groups = Hash.new {|h,k| h[k]=[]}
 
       @array_users = Array.new
       @array_status_groups = Array.new
@@ -111,7 +106,7 @@ class Ability
           unless prj_scrt.project_security_level.nil?
             project = prj_scrt.project
             unless project.nil?
-              project.organization.estimation_statuses.each do |es|
+              organization.estimation_statuses.each do |es|
                 prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
                   if permission.alias == "manage" and permission.category == "Project"
                     can :manage, project, estimation_status_id: es.id
@@ -159,7 +154,7 @@ class Ability
             project = prj_scrt.project
             if user.id == project.creator_id
               unless project.nil?
-                project.organization.estimation_statuses.each do |es|
+                organization.estimation_statuses.each do |es|
                   prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
                     if permission.alias == "manage" and permission.category == "Project"
                       can :manage, project, estimation_status_id: es.id
@@ -184,7 +179,7 @@ class Ability
             project = prj_scrt.project
             unless project.nil?
               unless prj_scrt.project_security_level.nil?
-                project.organization.estimation_statuses.each do |es|
+                organization.estimation_statuses.each do |es|
                   prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
                     if prj_scrt.project.private == true && project.is_model != true
                       @array_groups << []

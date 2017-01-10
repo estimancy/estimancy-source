@@ -33,7 +33,7 @@
               </td>
 
               <% selected_inline_columns.each do |column| %>
-                <%= column_content(column, project)%>
+                <%= column_content(@pfs, column, project, @fields_coefficients)%>
               <% end %>
 
               <td style="min-width: 130px;">
