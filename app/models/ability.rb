@@ -93,6 +93,7 @@ class Ability
       #For "manage_estimation_models", only models will be taken in account
       #When user can create a project template, he also can edit the model
       alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
+      alias_action :delete_project, :is_model => true, :to => :manage_estimation_models
 
       #@array_users = Hash.new {|h,k| h[k]=[]}
       #@array_status_groups = Hash.new {|h,k| h[k]=[]}
