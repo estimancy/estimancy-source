@@ -350,7 +350,7 @@
                         <% unless guow.guw_type.nil? %>
                           <span class=" size_label_<%= guow.id %>">
                             <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)),
-                                                 class: "size-#{uowg.id} retained-#{uowg.id} guw_number_field_tag",
+                                                 class: "size-#{uowg.id} guw_number_field_tag",
                                                  readonly: true,
                                                  style: "width: 43px;",
                                                  step: 0.001 %>
@@ -374,7 +374,11 @@
 
                 <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                   <td>
-                    <%= I18n.t :quantity %>
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_quantity == true %>
+                        <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, style: "width: 43px;" %>
+                      <% end %>
+                    <% end %>
                   </td>
                 <% end %>
 

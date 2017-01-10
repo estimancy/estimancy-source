@@ -53,6 +53,30 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
       end
     end
 
+    unless params[:config].nil?
+      params[:config].each do |i|
+        i.last.each do |j|
+          j.last.each do |k|
+
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
+
+            oc = Guw::GuwOutputComplexity.where( guw_complexity_id: cplx.id,
+                                                 guw_output_id: output.id).first
+            if oc.nil?
+              Guw::GuwOutputComplexity.create(guw_complexity_id: cplx.id,
+                                              guw_output_id: output.id,
+                                              value: params[:value_cplx]["#{cplx.id}"]["#{output.id}"])
+
+            else
+              oc.value = params[:value_cplx]["#{cplx.id}"]["#{output.id}"]
+              oc.save
+            end
+          end
+        end
+      end
+    end
+
 
     unless params[:coefficient_elements_value].nil?
       params[:coefficient_elements_value].each do |i|

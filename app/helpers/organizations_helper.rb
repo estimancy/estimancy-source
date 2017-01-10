@@ -85,9 +85,9 @@ module OrganizationsHelper
     end
   end
 
-  def column_content(column, project)
+  def column_content(pfs, column, project, fields_coefficients)
     if column.field_id
-      value = column.project_field_value(project)
+      value = column.project_field_value(pfs, project, fields_coefficients)
     else
       value = column.value_object(project)
     end
