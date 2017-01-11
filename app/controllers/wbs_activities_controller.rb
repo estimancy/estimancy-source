@@ -478,8 +478,6 @@ class WbsActivitiesController < ApplicationController
         ratio_name = @ratio_reference.name
         est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })
 
-      #elsif est_val.pe_attribute.alias == "effort" || est_val.pe_attribute.alias == "cost"
-      #elsif est_val.pe_attribute.alias == "theoretical_effort" || est_val.pe_attribute.alias == "theoretical_cost"
       elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
         if (est_val.in_out == 'output') #&& (est_val.pe_attribute.alias != "effort")
 

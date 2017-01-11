@@ -123,6 +123,21 @@ module ViewsWidgetsHelper
   end
 
 
+  # Get the Attribute Alias/name to display
+  def get_attribute_human_name(pe_attribute)
+    case pe_attribute.alias
+      when "effort", "cost"
+        I18n.t("retained_#{pe_attribute.alias}")
+      when "theoretical_effort", "theoretical_cost"
+        I18n.t("#{pe_attribute.alias}")
+      when "E1", "E2", "E3", "E4"
+        "#{pe_attribute.alias}"
+      else
+        ""
+    end
+  end
+
+
   def get_ev_value_SAVE(ev_id, current_component_id)
     unless ev_id.to_i == 0
       ev = EstimationValue.find(ev_id.to_i)
@@ -172,7 +187,6 @@ module ViewsWidgetsHelper
         "#{convert_with_precision(value.to_f, precision, true)}"
       end
 
-    #elsif est_val_pe_attribute.alias == "effort"
     elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
@@ -191,7 +205,6 @@ module ViewsWidgetsHelper
 
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
-    #elsif est_val_pe_attribute.alias == "cost"
     elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
       unless value.class == Hash
         "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
@@ -720,7 +733,8 @@ module ViewsWidgetsHelper
                                             estimation_pbs_probable_results: pbs_probable_est_value,
                                             ratio_reference: ratio_reference,
                                             pe_attribute_alias: pe_attribute_alias,
-                                            module_project_ratio_elements: module_project_ratio_elements
+                                            module_project_ratio_elements: module_project_ratio_elements,
+                                            wbs_unit: wbs_unit
                                        } )
 
 
@@ -843,7 +857,7 @@ module ViewsWidgetsHelper
             chart_data << ["#{wbs_activity_elt.name}", 0]
           else
             wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
-            if estimation_value.pe_attribute.alias == "effort"
+            if estimation_value.pe_attribute.alias.in?("effort", "theoretical_effort")
               chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value, @current_organization)]
             else
               chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value, user_number_precision, true)]
@@ -900,7 +914,7 @@ module ViewsWidgetsHelper
 
     res << "<th colspan='#{colspan}'>
               <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias == "cost" ? "(#{@project.organization.currency})" : ''}
+                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{@project.organization.currency})" : ''}
               </span>
             </th>"
 
@@ -944,13 +958,13 @@ module ViewsWidgetsHelper
 
           if wbs_activity_elt.is_root?
             begin
-              if estimation_value.pe_attribute.alias == "cost"
+              if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
                 @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
               else
                 @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
               end
             rescue
-              if estimation_value.pe_attribute.alias == "cost"
+              if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
                 @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
               else
                 @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
@@ -959,7 +973,7 @@ module ViewsWidgetsHelper
           end
 
           begin
-            if estimation_value.pe_attribute.alias == "cost"
+            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
               if pbs_estimation_values.nil?
                 res << "-"
               else
@@ -969,7 +983,7 @@ module ViewsWidgetsHelper
               res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true)} #{@wbs_unit}"
             end
           rescue
-            if estimation_value.pe_attribute.alias == "cost"
+            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
               if pbs_estimation_values.nil?
                 res << "-"
               else

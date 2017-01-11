@@ -9,13 +9,6 @@
 
    wbs_activity = module_project.wbs_activity
 
-   if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-     @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
-   else
-     @wbs_unit = wbs_activity.effort_unit
-   end
-
-
    levels = ['probable']
    colspan = 1
    rowspan = 1
@@ -27,7 +20,7 @@
     <th rowspan=""<%= rowspan %>">Phases</th>
     <th colspan=<%= colspan %>>
       <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-        <%= estimation_value.pe_attribute.name %> <%= estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{@project.organization.currency})" : '' %>
+        <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{wbs_unit})" : '' %>
       </span>
     </th>
   </tr>
@@ -48,14 +41,14 @@
             <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
             <%=
                 if mp_ratio_element.selected
-                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
+                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
                       if level_value.nil?
                         "-"
                       else
-                        "#{convert_with_precision(level_value, user_number_precision, true)} #{@wbs_unit}"
+                        "#{convert_with_precision(level_value, user_number_precision, true)} #{wbs_unit}"
                       end
                     else
-                      "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                      "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{wbs_unit}"
                     end
                 else
                     "-"
