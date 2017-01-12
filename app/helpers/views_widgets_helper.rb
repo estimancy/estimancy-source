@@ -123,6 +123,21 @@ module ViewsWidgetsHelper
   end
 
 
+  # Get the Attribute Alias/name to display
+  def get_attribute_human_name(pe_attribute)
+    case pe_attribute.alias
+      when "effort", "cost"
+        I18n.t("retained_#{pe_attribute.alias}")
+      when "theoretical_effort", "theoretical_cost"
+        I18n.t("#{pe_attribute.alias}")
+      when "E1", "E2", "E3", "E4"
+        "#{pe_attribute.alias}"
+      else
+        ""
+    end
+  end
+
+
   def get_ev_value_SAVE(ev_id, current_component_id)
     unless ev_id.to_i == 0
       ev = EstimationValue.find(ev_id.to_i)
@@ -512,6 +527,15 @@ module ViewsWidgetsHelper
           when "bar_chart"
             value_to_show = column_chart(chart_level_values, height: "1000px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
+            # Now with google-chart
+            # value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
+            #                            :locals => { level_values: chart_level_values,
+            #                                         widget_id: view_widget.id,
+            #                                         chart_title: chart_title,
+            #                                         chart_height: chart_height,
+            #                                         chart_vAxis_title: chart_vAxis
+            #                            })
+
           when "area_chart"
             value_to_show =  line_chart([ {name: I18n.t(:low), data: {Time.new => data_low} },  #10
                                           {name: I18n.t(:most_likely), data: {Time.new => data_most_likely} }, #30
@@ -520,6 +544,14 @@ module ViewsWidgetsHelper
 
           when "pie_chart"
             value_to_show = pie_chart(chart_level_values, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
+
+            # Now with google-chart
+            # value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
+            #                            :locals => { level_values: chart_level_values,
+            #                                         widget_id: view_widget.id,
+            #                                         chart_title: chart_title,
+            #                                         chart_height: chart_height
+            #                            })
 
           when "stacked_bar_chart"
             value_to_show = probable_value_text
@@ -571,6 +603,13 @@ module ViewsWidgetsHelper
 
             if is_ok == true
               value_to_show = timeline(timeline_data, library: {backgroundColor: "transparent", title: view_widget_attribute_name})
+              # Now with google-chart
+              # value_to_show = raw(render :partial => 'views_widgets/g_timeline_chart',
+              #                            :locals => { level_values: timeline_data,
+              #                                         widget_id: view_widget.id,
+              #                                         chart_title: view_widget_attribute_name,
+              #                                         chart_height: chart_height
+              #                            })
             else
               value_to_show = "" #I18n.t(:error_invalid_date)
             end
@@ -605,6 +644,15 @@ module ViewsWidgetsHelper
               chart_height = height+10
               chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
               value_to_show = column_chart(chart_data, width: "1px", height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
+
+              # Now with google-chart
+              # value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
+              #                            :locals => { level_values: chart_data,
+              #                                         widget_id: view_widget.id,
+              #                                         chart_title: chart_title,
+              #                                         chart_height: chart_height,
+              #                                         chart_vAxis_title: chart_vAxis
+              #                            })
             end
 
           when "pie_chart_effort_per_phase", "pie_chart_cost_per_phase"
@@ -615,6 +663,15 @@ module ViewsWidgetsHelper
             end
 
             value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
+
+            # Now with google-chart
+            # value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
+            #                            #value_to_show = raw(render :partial => 'views_widgets/g_bubble_test2',
+            #                            :locals => { level_values: chart_data,
+            #                                         widget_id: view_widget.id,
+            #                                         chart_title: chart_title,
+            #                                         chart_height: chart_height
+            #                            })
 
           when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"
 
@@ -628,6 +685,22 @@ module ViewsWidgetsHelper
               chart_height = height-90
               stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
               value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+
+              # Now with google chart
+              # wbs_activity = module_project.wbs_activity
+              # wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity.wbs_activity_elements.arrange(:order => :position))
+              # stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
+              # ###value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+              # value_to_show = raw(render :partial => 'views_widgets/g_stacked_bar_chart',
+              #                            :locals => { level_values: stacked_chart_data,
+              #                                         widget_id: view_widget.id,
+              #                                         widget_name: view_widget.name,
+              #                                         chart_title: chart_title,
+              #                                         chart_height: chart_height,
+              #                                         chart_vAxis_title: chart_vAxis,
+              #                                         wbs_activity_elements: wbs_activity_elements
+              #                            })
+
             end
 
           when "stacked_bar_chart_cost_per_phases_profiles"
@@ -856,7 +929,7 @@ module ViewsWidgetsHelper
             chart_data << ["#{wbs_activity_elt.name}", 0]
           else
             wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
-            if estimation_value.pe_attribute.alias == "effort"
+            if estimation_value.pe_attribute.alias.in?("effort", "theoretical_effort")
               chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value, @current_organization)]
             else
               chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value, user_number_precision, true)]
@@ -913,7 +986,7 @@ module ViewsWidgetsHelper
 
     res << "<th colspan='#{colspan}'>
               <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias == "cost" ? "(#{@project.organization.currency})" : ''}
+                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{@project.organization.currency})" : ''}
               </span>
             </th>"
 
@@ -957,13 +1030,13 @@ module ViewsWidgetsHelper
 
           if wbs_activity_elt.is_root?
             begin
-              if estimation_value.pe_attribute.alias == "cost"
+              if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
                 @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
               else
                 @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
               end
             rescue
-              if estimation_value.pe_attribute.alias == "cost"
+              if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
                 @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
               else
                 @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
@@ -972,7 +1045,7 @@ module ViewsWidgetsHelper
           end
 
           begin
-            if estimation_value.pe_attribute.alias == "cost"
+            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
               if pbs_estimation_values.nil?
                 res << "-"
               else
@@ -982,7 +1055,7 @@ module ViewsWidgetsHelper
               res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true)} #{@wbs_unit}"
             end
           rescue
-            if estimation_value.pe_attribute.alias == "cost"
+            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
               if pbs_estimation_values.nil?
                 res << "-"
               else
