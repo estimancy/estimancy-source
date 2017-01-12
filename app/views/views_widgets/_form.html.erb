@@ -9,7 +9,7 @@
     <table>
       <tr>
         <td><%= f.input :name, label: I18n.t(:name) %></td>
-        <td>
+        <td class="">
           <label class="checkbox"></label>
           <%= f.input :show_name, label: I18n.t(:show_name) %>
         </td>
@@ -26,7 +26,7 @@
       </tr>
       <tr>
         <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
-        <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr"}, include_blank: false %></td>
+        <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr input-xxl"}, include_blank: false %></td>
       </tr>
       <tr>
         <td>
@@ -55,16 +55,37 @@
       </tr>
 
       <%# if !@views_widget.new_record? && @views_widget.pe_attribute.alias.in?(Projestimate::Application::EFFORT_DISPLAY_UNIT) %>
-          <tr>
-            <td>
-              <%= f.input :effort_display_unit, as: :select, collection: Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }, label: I18n.t(:effort_display_unit), include_blank: true %>
-            </td>
-          </tr>
+          <!--<tr>-->
+            <!--<td>-->
+              <%#= f.input :effort_display_unit, as: :select, collection: Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }, label: I18n.t(:effort_display_unit), include_blank: false %>
+              <%#= f.input :effort_display_unit, as: :select, collection: [[I18n.t(:organization_effort_unit, value: @current_organization), "organization_effort_unit"], [I18n.t(:module_instance_effort_unit, value: @views_widget.module_project), "module_instance_effort_unit"]], label: I18n.t(:effort_display_unit), include_blank: false %>
+              <%#= f.collection_radio_buttons :effort_display_unit, Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}", value: @current_organization), effort_unit] }, :last, :first, label: I18n.t(:effort_display_unit) %>
+              <%#= f.collection_radio_buttons :effort_display_unit, [["organization_effort_unit", I18n.t(:organization_effort_unit, value: @current_organization)], ["module_instance_effort_unit", I18n.t(:module_instance_effort_unit, value: @views_widget.module_project)]], :first, :last, :style =>"display:inline", :default => true %>
+              <%#= f.input :effort_display_unit, collection: [["organization_effort_unit", I18n.t(:organization_effort_unit, value: @current_organization)], ["module_instance_effort_unit", I18n.t(:module_instance_effort_unit, value: @views_widget.module_project)]],
+                          :label_method => :last, :value_method => :first,
+                          :as => :radio_buttons,
+                          :item_wrapper_class => 'inline',
+                          #:checked => ["organization_effort_unit", I18n.t(:organization_effort_unit, value: @current_organization)],
+                          :checked => @views_widget.effort_display_unit || "organization_effort_unit",
+                          label: I18n.t(:effort_display_unit)
+              %>
+            <!--</td>-->
+          <!--</tr>-->
       <%# end %>
     </table>
   </div>
 
-  <div class="actions">
+  <div style="margin-top: 10px;">
+    <%= f.input :effort_display_unit, collection: [["organization_effort_unit", I18n.t(:organization_effort_unit, value: @current_organization)], ["module_instance_effort_unit", I18n.t(:module_instance_effort_unit, value: @views_widget.module_project)]],
+                :label_method => :last, :value_method => :first,
+                :as => :radio_buttons,
+                :item_wrapper_class => 'inline',
+                #:checked => ["organization_effort_unit", I18n.t(:organization_effort_unit, value: @current_organization)],
+                :checked => @views_widget.effort_display_unit || "organization_effort_unit",
+                label: I18n.t(:effort_display_unit) %>
+  </div>
+
+  <div class="actions" style="margin-top: 50px;">
     <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
         <%= submit_tag I18n.t('save'), :class => 'btn' %>
     <% end %>
@@ -73,6 +94,10 @@
 <% end %>
 
 <script>
+
+    $(".modal").css('height', '650px');
+    $(".modal .modal-body").css('height', '600px');
+    $(".radio.inline + .radio.inline").css('margin-left', '0px');
 
     $("#views_widget_color").spectrum({
         showPaletteOnly: true,
@@ -128,7 +153,10 @@
             return $.ajax({
                 url: "/show_widget_effort_display_unit",
                 method: "GET",
-                data: "estimation_value_id=" + $(this).val()
+                data: {
+                    estimation_value_id: $(this).val(),
+                    view_widget_id: "<%= @views_widget.id %>"
+                }
             });
         }
     });

@@ -41,7 +41,9 @@
 
 <% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
 <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+<% if current_inputs_evs.empty? %>
 
+<% end %>
 <!-- FIN TEST -->
 
 
