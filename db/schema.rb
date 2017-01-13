@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170105153957) do
+ActiveRecord::Schema.define(:version => 20170113151011) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -751,6 +751,7 @@ ActiveRecord::Schema.define(:version => 20170105153957) do
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
     t.boolean  "allow_intermediate_value"
+    t.boolean  "allow_subtotal"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -787,6 +788,7 @@ ActiveRecord::Schema.define(:version => 20170105153957) do
     t.boolean  "allow_complexity"
     t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
+    t.string   "attribute_type"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
