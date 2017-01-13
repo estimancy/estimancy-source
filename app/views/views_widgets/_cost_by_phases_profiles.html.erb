@@ -87,11 +87,10 @@
                                                 <% wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value] %>
 
                                                 <% if wbs_profiles_value.class == Hash %>
-                                                    <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
+                                                    <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
                                                 <% end %>
-
-                                                <% wbs_profiles_value = wbs_profiles_value.to_f / effort_unit_coefficient  %>
-                                                <% array_profile_sum << wbs_profiles_value.to_f %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
+                                                <% wbs_profiles_value = wbs_profiles_value.nil? ? nil : (wbs_profiles_value.to_f / effort_unit_coefficient)  %>
+                                                <% array_profile_sum << wbs_profiles_value %> <%# array_profile_sum << wbs_profiles_value.to_i / 8 %>
                                             <% end %>
                                         <% end %>
                                         <% if wbs_activity_elt.is_root? %>
@@ -104,14 +103,20 @@
                                             </td>
                                         <% else %>
                                             <td style="text-align: right">
-                                              <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase.to_f %>
+                                              <% effort_per_phase = effort_per_phase.nil? ? nil : effort_per_phase.to_f %>
                                               <% if wbs_profiles_value.class == Hash %>
-                                                  <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil.to_f : wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f) %>
-                                                  <% wbs_profiles_value = wbs_profiles_value.to_f / effort_unit_coefficient  %>
+                                                  <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil : wbs_profiles_value[wbs_activity_elt.id][profile.id]) %>
+                                                  <% wbs_profiles_value = wbs_profiles_value.nil? ? nil : (wbs_profiles_value.to_f / effort_unit_coefficient)  %>
                                               <% end %>
-                                              <% array_root[profile.id] << wbs_profiles_value.to_f %>
-                                              <% effort_per_phase +=  wbs_profiles_value %>
-                                              <%= "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
+                                              <% array_root[profile.id] << wbs_profiles_value %>
+                                              <% unless wbs_profiles_value.nil? %>
+                                                  <% if effort_per_phase.nil? %>
+                                                    <% effort_per_phase =  wbs_profiles_value %>
+                                                  <% else %>
+                                                    <% effort_per_phase +=  wbs_profiles_value %>
+                                                  <% end %>
+                                              <% end %>
+                                              <%= wbs_profiles_value.nil? ? "-" : "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
                                             </td>
                                         <% end %>
                                     <% else %>
@@ -156,8 +161,15 @@
                               <% unless  array_root[profile.id].empty? %>
                                   <%# root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
                                   <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum %>
-                                  <% root_effort_per_phase = root_effort_per_phase.nil? ? root_effort_per_phase.to_f : root_effort_per_phase %>
-                                  <% root_effort_per_phase +=  root_effort_per_profile %>
+                                  <% root_effort_per_phase = root_effort_per_phase.nil? ? nil : root_effort_per_phase.to_f %>
+
+                                  <% unless root_effort_per_profile.nil? %>
+                                      <% if root_effort_per_phase.nil? %>
+                                        <% root_effort_per_phase = root_effort_per_profile %>
+                                      <% else %>
+                                        <% root_effort_per_phase +=  root_effort_per_profile %>
+                                      <% end %>
+                                  <% end %>
                               <% end %>
                               <br />
                               <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(root_effort_per_profile, user_number_precision, true)} #{wbs_unit}" %>
