@@ -13,4 +13,5 @@ $("#hidden_quantity_<%= @guw_unit_of_work.id %>").val(my_quantity)
   var i = $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val()
   $("#hidden_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(i);
   $("#hidden_coefficient_element_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val("<%= guw_coefficient.id %>");
+  $("#hidden_complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val("<%= guw_coefficient.id %>");
 <% end %>

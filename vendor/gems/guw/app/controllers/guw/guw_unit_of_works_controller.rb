@@ -911,8 +911,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
             result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
 
-            if params["complexity_coeff"].present?
-              cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"]
+            if params["complexity_coeff_ajusted"].present?
+              cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
+              guw_unit_of_work.intermediate_weight = cplx_coeff
+            else
+              cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
               guw_unit_of_work.intermediate_percent = cplx_coeff
             end
 
@@ -925,7 +928,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
             @weight = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
 
-            guw_unit_of_work.intermediate_percent = intermediate_percent * 100
+            # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
+            # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
 
           end
         end
