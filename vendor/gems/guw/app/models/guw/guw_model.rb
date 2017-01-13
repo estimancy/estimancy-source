@@ -31,6 +31,7 @@ module Guw
     has_many :guw_factors, dependent: :destroy
     has_many :guw_outputs, dependent: :destroy
     has_many :guw_coefficients, dependent: :destroy
+    has_many :guw_coefficient_elements, dependent: :destroy
     has_many :guw_scale_module_attributes, dependent: :destroy
 
     belongs_to :organization
