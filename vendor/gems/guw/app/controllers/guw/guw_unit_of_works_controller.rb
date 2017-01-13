@@ -930,7 +930,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        ces = []
+        coeffs = []
         percents = []
         selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
         @guw_model.guw_coefficients.each do |guw_coefficient|
@@ -957,6 +957,29 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
             ceuw.save
+          elsif  guw_coefficient.coefficient_type == "Coefficient"
+
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
+                                                              guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                                      guw_coefficient_id: guw_coefficient.id)
+
+            guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+                                                               guw_coefficient_element_id: guw_coefficient_element.id,
+                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
+              unless cce.value.blank?
+                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+                coeffs << pc.to_f
+              else
+                coeffs << 1
+              end
+            end
+
+            ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.guw_coefficient_id = guw_coefficient.id
+            ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+
+            ceuw.save
           else
             ce = Guw::GuwCoefficientElement.where(id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
             unless ce.nil?
@@ -968,8 +991,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                 guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
                                                                                                                        guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                        guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-
-              # @final_value = @final_value.to_f * (cce.value.nil? ? 1 : cce.value)
 
               unless ceuw.nil?
                 ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
@@ -1015,6 +1036,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
+          coef = coeffs.compact.inject(&:*)
 
           oa_value = []
           Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
@@ -1029,9 +1051,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           inter_value = oa_value.compact.sum.to_f
 
           if inter_value == 0
-            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : pcts.to_f)
           else
-            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : pcts.to_f)
           end
 
           if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
@@ -1190,7 +1212,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model.guw_outputs.each_with_index do |guw_output, index|
 
-      ces = []
+      coeffs = []
       percents = []
       selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
       @guw_model.guw_coefficients.each do |guw_coefficient|
@@ -1208,7 +1230,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless cce.value.blank?
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 # if pc.to_f < 0
-                  percents << (pc.to_f / 100)
+                percents << (pc.to_f / 100)
                 # else
                 #   percents << (pc.to_f / 100).to_f
                 # end
@@ -1227,6 +1249,32 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
           ceuw.save
+        elsif guw_coefficient.coefficient_type == "Coefficient"
+
+        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
+                                                          guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                                  guw_coefficient_id: guw_coefficient.id)
+
+          guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+            cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+                                                             guw_coefficient_element_id: guw_coefficient_element.id,
+                                                             guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+            unless cce.nil?
+              unless cce.value.blank?
+                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+                coeffs << pc.to_f
+              else
+                coeffs << 1
+              end
+            end
+          end
+
+          ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+          ceuw.guw_coefficient_id = guw_coefficient.id
+          ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+
+          ceuw.save
+
         else
           ce = Guw::GuwCoefficientElement.where(id: params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
           cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
@@ -1268,8 +1316,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
         pct = percents.compact.inject(&:*)
+        coef = coeffs.compact.inject(&:*)
 
-        tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f)
+        tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
 
         guw_unit_of_work.ajusted_size = tmp_hash_res
         guw_unit_of_work.size = tmp_hash_res
@@ -1285,13 +1334,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   private
-  # def reorder(group)
-  #   group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
-  #     u.display_order = i
-  #     u.save
-  #   end
-  # end
-
   def update_estimation_values
     #we save the effort now in estimation values
     @guw_model = current_module_project.guw_model

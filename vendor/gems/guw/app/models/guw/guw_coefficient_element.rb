@@ -3,5 +3,7 @@ module Guw
     belongs_to :guw_model
     belongs_to :guw_coefficient
 
+    has_many :guw_complexity_coefficient_elements
+
   end
 end
