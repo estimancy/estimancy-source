@@ -370,9 +370,6 @@ class ViewsWidgetsController < ApplicationController
     if !estimation_value_id.nil? && estimation_value_id != 'undefined'
       @estimation_value = EstimationValue.find(estimation_value_id)
       @pe_attribute = @estimation_value.pe_attribute
-      unless params['view_widget_id'].empty?
-        @view_widget = ViewsWidget.find(params['view_widget_id'])
-      end
     end
   end
 

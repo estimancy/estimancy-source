@@ -1,21 +1,7 @@
 <% if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS) %>
-    $(".views_widget_effort_display_unit").show();
-    //$("#widget_effort_display_unit_div").show();
-
-    //$(".views_widget_effort_display_unit_save").html("<label><%#= I18n.t(:effort_display_unit) %></label> <%#=raw j(select_tag 'views_widget[effort_display_unit]',
-                                                            #options_for_select(Projestimate::Application::EFFORT_DISPLAY_UNIT.map{ |effort_unit| [I18n.t("#{effort_unit}"), effort_unit] }),
-                                                            #label: I18n.t(:effort_display_unit), prompt: I18n.t(:select_effort_unit)) %>");
-  <% if @view_widget %>
-    $(".views_widget_effort_display_unit").html("<label><%= I18n.t(:effort_display_unit) %></label><input type='radio' name='views_widget[effort_display_unit]' value='organization_effort_unit' <%= @view_widget.effort_display_unit=="organization_effort_unit" ? "checked" : "" %> > <%= I18n.t(:organization_effort_unit, value: @current_organization) %><br> <input type='radio' name='views_widget[effort_display_unit]' value='module_instance_effort_unit' <%= @view_widget.effort_display_unit=="module_instance_effort_unit" ? "checked" : "" %>> <%= I18n.t(:module_instance_effort_unit, value: "") %><br>");
-  <% else %>
-    $(".views_widget_effort_display_unit").html("<label><%= I18n.t(:effort_display_unit) %></label><input type='radio' name='views_widget[effort_display_unit]' value='organization_effort_unit' checked> <%= I18n.t(:organization_effort_unit, value: @current_organization) %><br> <input type='radio' name='views_widget[effort_display_unit]' value='module_instance_effort_unit'> <%= I18n.t(:module_instance_effort_unit, value: "") %><br>");
-  <% end %>
-
-  $(".modal").css('height', '600px');
-  $(".modal .modal-body").css('height', '600px');
-
+    $("#views_widget_use_organization_effort_unit").prop('disabled', false);
 <% else %>
-    $(".views_widget_effort_display_unit").hide();
-    $(".modal").css('height', '550px');
-    $(".modal .modal-body").css('height', '500px');
+    $("#views_widget_use_organization_effort_unit").attr('checked', false);
+    $("#views_widget_use_organization_effort_unit").prop('disabled', 'disabled');
 <% end %>
+

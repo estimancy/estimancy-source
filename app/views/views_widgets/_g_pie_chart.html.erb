@@ -1,0 +1,44 @@
+
+<script type="text/javascript">
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.charts.setOnLoadCallback(drawPieChart);
+
+  // Callback that creates and populates a data table,
+  // instantiates the pie chart, passes in the data and
+  // draws it.
+  function drawPieChart() {
+
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Topping');
+      data.addColumn('number', 'Slices');
+
+//          data.addRows([
+//              ['Mushrooms', 3],
+//              ['Onions', 1],
+//              ['Olives', 1],
+//              ['Zucchini', 1],
+//              ['Pepperoni', 2]
+//          ]);
+
+      var r_data = <%= level_values.to_json.html_safe %>;
+      data.addRows(r_data);
+
+      // Set chart options
+      var pie_chart_options = { 'title':'<%= chart_title %>',
+                                'width':500,
+                                'height':300,
+                                is3D: true
+      };
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.PieChart(document.getElementById('<%= "pie_chart_div_#{widget_id}" %>'));
+      chart.draw(data, pie_chart_options);
+  }
+</script>
+
+
+<!--Div that will hold the pie chart-->
+<div id='<%= "pie_chart_div_#{widget_id}" %>'></div>
+

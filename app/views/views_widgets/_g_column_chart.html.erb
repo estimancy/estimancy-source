@@ -1,0 +1,35 @@
+
+<script type="text/javascript">
+
+    google.charts.setOnLoadCallback(drawColumnChart);
+    function drawColumnChart() {
+
+        <% colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679'] %>
+        <% level_values.each_with_index { |value, i | value << colors[i] }  %>
+        <% level_values.insert(0, ["Element", "Density", { role: "style" } ]) %>
+        var r_data = <%= level_values.to_json.html_safe %>;
+
+        var data = google.visualization.arrayToDataTable(r_data);
+
+        var view = new google.visualization.DataView(data);
+
+        view.setColumns([0, 1,
+            { calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation" },
+            2]);
+
+        var options = {
+            title: '<%= chart_title %>',
+            width: 600,
+            height: 400,
+            bar: {groupWidth: "95%"},
+            legend: { position: "none" }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById('<%= "column_chart_div_#{widget_id}" %>'));
+        chart.draw(view, options);
+    }
+</script>
+
+<div id='<%= "column_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>

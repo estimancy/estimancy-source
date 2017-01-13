@@ -153,12 +153,14 @@
                     <% if project_organization_profiles.length > 0 %>
                         <% project_organization_profiles.each do |profile| %>
                             <td style="text-align: right">
-                              <%# root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
-                              <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
-                              <% root_effort_per_phase = root_effort_per_phase.nil? ? root_effort_per_phase.to_f : root_effort_per_phase %>
-                              <% root_effort_per_phase +=  root_effort_per_profile %>
+                              <% unless  array_root[profile.id].empty? %>
+                                  <%# root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
+                                  <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum %>
+                                  <% root_effort_per_phase = root_effort_per_phase.nil? ? root_effort_per_phase.to_f : root_effort_per_phase %>
+                                  <% root_effort_per_phase +=  root_effort_per_profile %>
+                              <% end %>
                               <br />
-                              <%= "#{convert_with_precision(root_effort_per_profile, user_number_precision, true)} #{wbs_unit}" %>
+                              <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(root_effort_per_profile, user_number_precision, true)} #{wbs_unit}" %>
                             </td>
                         <% end %>
                     <% else %>

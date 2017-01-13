@@ -7,8 +7,10 @@
   <%= stylesheet_link_tag 'application', media: 'screen' %>
   <%= stylesheet_link_tag 'print', media: 'print' %>
 
-  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>  <!-- This line is replaced with de 2 lines to solve chart loading problems -->
+  <!--Load the Google charts API-->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>
 
   <% if @online_support == "1" %>
     <script type="text/javascript" src="http://www.spark-angels.com/panserver3/multiwidget/spk_multiwidget.js"></script>

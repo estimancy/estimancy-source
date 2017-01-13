@@ -1832,7 +1832,7 @@ public
                                                   color: old_view_widget.color,
                                                   show_min_max: old_view_widget.show_min_max,
                                                   widget_type: old_view_widget.widget_type,
-                                                  effort_display_unit: old_view_widget.effort_display_unit,
+                                                  use_organization_effort_unit: old_view_widget.use_organization_effort_unit,
                                                   width: old_view_widget.width,
                                                   height: old_view_widget.height,
                                                   position: old_view_widget.position,

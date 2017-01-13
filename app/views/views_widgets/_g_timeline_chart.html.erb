@@ -1,0 +1,32 @@
+
+<script type="text/javascript">
+
+    google.charts.setOnLoadCallback(drawTimelineChart);
+    function drawTimelineChart() {
+
+      var container = document.getElementById('<%= "timeline_chart_div_#{widget_id}" %>');
+      var chart = new google.visualization.Timeline(container);
+
+      var r_data = <%= level_values.to_json.html_safe %>;
+
+      var data = google.visualization.DataTable();
+      data.addColumn({ type: 'string', id: 'Activity'});
+      data.addColumn({ type: 'date', id: 'Start'});
+      data.addColumn({ type: 'date', id: 'End'});
+
+      //data.addRows(r_data);
+      data.addRows([
+        [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+        [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+        [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ]]);
+
+      var options = {
+            title: '<%= chart_title %>',
+            legend: { position: "none" }
+      };
+
+      chart.draw(data, options);
+    }
+</script>
+
+<div id='<%= "timeline_chart_div_#{widget_id}" %>' style="height: 300px;"></div>

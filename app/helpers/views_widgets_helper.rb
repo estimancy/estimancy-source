@@ -472,7 +472,7 @@ module ViewsWidgetsHelper
           probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id)
         else
           if is_number?(data_probable)
-            probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.effort_display_unit)
+            probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
           else
             probable_value_text = data_probable
           end
@@ -525,33 +525,33 @@ module ViewsWidgetsHelper
                                           {name: I18n.t(:high), data: {Time.new => data_high} } ],  #50
                                           {height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, hAxis: {title: "Level", format: 'MMM y'}, vAxis: {title: chart_vAxis}}})
           when "bar_chart"
-            value_to_show = column_chart(chart_level_values, height: "1000px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+            #value_to_show = column_chart(chart_level_values, height: "1000px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
             # Now with google-chart
-            # value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
-            #                            :locals => { level_values: chart_level_values,
-            #                                         widget_id: view_widget.id,
-            #                                         chart_title: chart_title,
-            #                                         chart_height: chart_height,
-            #                                         chart_vAxis_title: chart_vAxis
-            #                            })
+            value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
+                                       :locals => { level_values: chart_level_values,
+                                                    widget_id: view_widget.id,
+                                                    chart_title: chart_title,
+                                                    chart_height: chart_height,
+                                                    chart_vAxis_title: chart_vAxis
+                                       })
 
           when "area_chart"
             value_to_show =  line_chart([ {name: I18n.t(:low), data: {Time.new => data_low} },  #10
                                           {name: I18n.t(:most_likely), data: {Time.new => data_most_likely} }, #30
                                           {name: I18n.t(:high), data: {Time.new => data_high} } ],  #50
-                                        {height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, hAxis: {title: "Level", format: 'MMM y'}, vAxis: {title: chart_vAxis}}})
+                                          {height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, hAxis: {title: "Level", format: 'MMM y'}, vAxis: {title: chart_vAxis}}})
 
           when "pie_chart"
-            value_to_show = pie_chart(chart_level_values, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
+            #value_to_show = pie_chart(chart_level_values, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
 
             # Now with google-chart
-            # value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
-            #                            :locals => { level_values: chart_level_values,
-            #                                         widget_id: view_widget.id,
-            #                                         chart_title: chart_title,
-            #                                         chart_height: chart_height
-            #                            })
+            value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
+                                       :locals => { level_values: chart_level_values,
+                                                    widget_id: view_widget.id,
+                                                    chart_title: chart_title,
+                                                    chart_height: chart_height
+                                       })
 
           when "stacked_bar_chart"
             value_to_show = probable_value_text
@@ -559,7 +559,8 @@ module ViewsWidgetsHelper
           when "timeline"
             timeline_data = []
 
-            delay = PeAttribute.where(alias: "delay").first
+            #delay = PeAttribute.where(alias: "delay").first
+            delay = PeAttribute.where(alias: "duration").first
             end_date = PeAttribute.where(alias: "end_date").first
             staffing = PeAttribute.where(alias: "staffing").first
             effort = PeAttribute.where(alias: "effort").first
@@ -570,7 +571,7 @@ module ViewsWidgetsHelper
 
             products.each_with_index do |element, i|
               dev = nil
-              est_val = module_project.estimation_values.where(pe_attribute_id: delay.id).first
+              est_val = module_project.estimation_values.where(pe_attribute_id: delay.id).last
               unless est_val.nil?
                 str_data_probable = est_val.string_data_probable
                 str_data_probable.nil? ? nil : (dev = str_data_probable[element.id])
@@ -586,7 +587,10 @@ module ViewsWidgetsHelper
                   dh = d.hours
                 end
 
-                ed = module_project.estimation_values.where(pe_attribute_id: end_date.id).first.string_data_probable[element.id]
+                end_date_ev = module_project.estimation_values.where(pe_attribute_id: end_date.id).last
+                unless end_date_ev.nil?
+                  ed = end_date_ev.string_data_probable[element.id]
+                end
 
                 begin
                   timeline_data << [
@@ -602,14 +606,15 @@ module ViewsWidgetsHelper
             end
 
             if is_ok == true
-              value_to_show = timeline(timeline_data, library: {backgroundColor: "transparent", title: view_widget_attribute_name})
+              ###value_to_show = timeline(timeline_data, library: {backgroundColor: "transparent", title: view_widget_attribute_name})
+
               # Now with google-chart
-              # value_to_show = raw(render :partial => 'views_widgets/g_timeline_chart',
-              #                            :locals => { level_values: timeline_data,
-              #                                         widget_id: view_widget.id,
-              #                                         chart_title: view_widget_attribute_name,
-              #                                         chart_height: chart_height
-              #                            })
+              value_to_show = raw(render :partial => 'views_widgets/g_timeline_chart',
+                                         :locals => { level_values: timeline_data,
+                                                      widget_id: view_widget.id,
+                                                      chart_title: view_widget_attribute_name,
+                                                      chart_height: chart_height
+                                         })
             else
               value_to_show = "" #I18n.t(:error_invalid_date)
             end
@@ -643,16 +648,16 @@ module ViewsWidgetsHelper
             unless estimation_value.in_out == "input"
               chart_height = height+10
               chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
-              value_to_show = column_chart(chart_data, width: "1px", height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
+              ###value_to_show = column_chart(chart_data, width: "1px", height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
 
               # Now with google-chart
-              # value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
-              #                            :locals => { level_values: chart_data,
-              #                                         widget_id: view_widget.id,
-              #                                         chart_title: chart_title,
-              #                                         chart_height: chart_height,
-              #                                         chart_vAxis_title: chart_vAxis
-              #                            })
+              value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
+                                         :locals => { level_values: chart_data,
+                                                      widget_id: view_widget.id,
+                                                      chart_title: chart_title,
+                                                      chart_height: chart_height,
+                                                      chart_vAxis_title: chart_vAxis
+                                         })
             end
 
           when "pie_chart_effort_per_phase", "pie_chart_cost_per_phase"
