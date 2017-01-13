@@ -108,10 +108,14 @@ module ProjectsHelper
 
   #Conversion en fonction des seuils et de la précision de l'utilisateur #> 12.12300 (si precision = 5)
   # Affiche l'unité en plus
-  def convert_effort_with_organization_unit(v, organization_effort_limit_coeff, organization_effort_unit)
+  def convert_effort_with_organization_unit(v, organization_effort_limit_coeff=1, organization_effort_unit)
     unless v.class == Hash
-      value = v.to_f
-      convert_with_precision(value / organization_effort_limit_coeff, user_number_precision, true)
+      begin
+        value = v.to_f
+        convert_with_precision(value / organization_effort_limit_coeff, user_number_precision, true)
+      rescue
+        0
+      end
     else
       0
     end
@@ -1039,7 +1043,7 @@ module ProjectsHelper
     end
   end
 
-  def display_value(value, est_val, mp_id, view_widget_effort_display_unit=nil)
+  def display_value(value, est_val, mp_id, use_organization_effort_unit=false)
     module_project = ModuleProject.find(mp_id)
     est_val_pe_attribute = est_val.pe_attribute
     precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
@@ -1082,9 +1086,11 @@ module ProjectsHelper
         if wbs_activity
           effort_unit_coefficient = wbs_activity.effort_unit_coefficient
 
-          if view_widget_effort_display_unit == "module_instance_effort_unit" && !effort_unit_coefficient.nil?
+          # By default use module instance effort unit
+          if use_organization_effort_unit.nil? || use_organization_effort_unit == false
             "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
           else
+            # Use orgnization effort unit
             organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
             "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
           end
