@@ -797,6 +797,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_seuil(guw_unit_of_work, guw_c, value_pert)
 
+    guw_type = guw_unit_of_work.guw_type
+
     if (value_pert >= guw_c.bottom_range) and (value_pert < guw_c.top_range)
       guw_unit_of_work.guw_complexity_id = guw_c.id
       guw_unit_of_work.guw_original_complexity_id = guw_c.id
@@ -808,7 +810,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_low = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_low = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_low.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        if guw_type.attribute_type == "Pourcentage"
+          uo_weight_low = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_low.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        else
+          uo_weight_low = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_low.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        end
       end
     end
 
@@ -816,7 +822,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_ml = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_most_likely.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        if guw_type.attribute_type == "Pourcentage"
+          uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_most_likely.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        else
+          uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_most_likely.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        end
       end
     end
 
@@ -824,13 +834,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if guw_c.enable_value == false
         uo_weight_high = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
-        uo_weight_high = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_high.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        if guw_type.attribute_type == "Pourcentage"
+          uo_weight_high = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_high.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        else
+          uo_weight_high = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_high.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+        end
       end
     end
 
-    ipl = (1 + guw_unit_of_work.result_low.to_f / 100)
-    ipm = (1 + guw_unit_of_work.result_most_likely.to_f / 100)
-    iph = (1 + guw_unit_of_work.result_high.to_f / 100)
+    if guw_type.attribute_type == "Pourcentage"
+      ipl = (1 + guw_unit_of_work.result_low.to_f / 100)
+      ipm = (1 + guw_unit_of_work.result_most_likely.to_f / 100)
+      iph = (1 + guw_unit_of_work.result_high.to_f / 100)
+    else
+      ipl = guw_unit_of_work.result_low.to_f
+      ipm = guw_unit_of_work.result_most_likely.to_f
+      iph = guw_unit_of_work.result_high.to_f
+    end
+
 
     guw_unit_of_work.intermediate_percent = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
     guw_unit_of_work.save

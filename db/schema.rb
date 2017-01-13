@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170112145336) do
+ActiveRecord::Schema.define(:version => 20170113151011) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -751,6 +751,7 @@ ActiveRecord::Schema.define(:version => 20170112145336) do
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
     t.boolean  "allow_intermediate_value"
+    t.boolean  "allow_subtotal"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -787,6 +788,7 @@ ActiveRecord::Schema.define(:version => 20170112145336) do
     t.boolean  "allow_complexity"
     t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
+    t.string   "attribute_type"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -969,12 +971,6 @@ ActiveRecord::Schema.define(:version => 20170112145336) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"
@@ -1870,8 +1866,8 @@ ActiveRecord::Schema.define(:version => 20170112145336) do
     t.string   "height"
     t.string   "widget_type"
     t.boolean  "show_min_max"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
     t.integer  "position"
     t.boolean  "show_name"
     t.boolean  "show_wbs_activity_ratio"
@@ -1881,7 +1877,7 @@ ActiveRecord::Schema.define(:version => 20170112145336) do
     t.boolean  "is_kpi_widget"
     t.text     "equation"
     t.string   "kpi_unit"
-    t.boolean  "use_organization_effort_unit"
+    t.string   "effort_display_unit"
   end
 
   create_table "wbs_activities", :force => true do |t|
