@@ -1376,7 +1376,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @evs = EstimationValue.where(:module_project_id => @module_project.id,
                                    :pe_attribute_id => am.pe_attribute.id).all
       @evs.each do |ev|
-        @guw_model.guw_outputs.each do |guw_output|
+        @guw_outputs.each do |guw_output|
 
           value = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
                                            pbs_project_element_id: current_component.id,
