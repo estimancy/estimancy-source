@@ -882,7 +882,8 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:tracability),
      I18n.t(:cotation),
      I18n.t(:results),
-     I18n.t(:retained_result)] +
+     I18n.t(:retained_result),
+      "COEF"] +
         @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
@@ -936,26 +937,28 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
       worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
 
+      worksheet.add_cell(ind, 16, guow.intermediate_weight)
+
       @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-          guw_coefficient = Guw::GuwCoefficient.where(name: i[0]).first
+          guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guw_coefficient.guw_coefficient_elements.empty?
-            results = guw_coefficient.guw_coefficient_elements
-
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                               guw_coefficient_id: guw_coefficient.id).first
 
             if guw_coefficient.coefficient_type == "Pourcentage"
-              worksheet.add_cell(ind, 16+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+            elsif guw_coefficient.coefficient_type == "Coefficient"
+              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
             else
-              worksheet.add_cell(ind, 16+j, (ceuw.nil? ? 100 : ceuw.guw_coefficient_element_id).to_s)
+              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.name)
             end
           end
 
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-          guw_output = Guw::GuwOutput.where(name: i[0]).first
+          guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
-            worksheet.add_cell(ind, 16 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+            worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
           end
         end
       end
@@ -1038,12 +1041,12 @@ class Guw::GuwModelsController < ApplicationController
     if !params[:file].nil? &&
         (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      worksheet =workbook[0]
+      worksheet = workbook[0]
       tab = worksheet.extract_data
 
       tab.each_with_index  do |row, index|
         if index > 0
-          if row[4] && row[2] && row[6]  && !row[4].empty? &&  !row[2].empty? && !row[6].empty?
+          # if row[4] && row[2] && row[6]  && !row[4].empty? &&  !row[2].empty? && !row[6].empty?
             guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2],
                                                           module_project_id: current_module_project.id,
                                                           pbs_project_element_id: @component.id,).first_or_create
@@ -1074,6 +1077,20 @@ class Guw::GuwModelsController < ApplicationController
                                                    quantity: row[11].nil? ? 1 : row[11],
                                                    size: row[14].nil? ? nil : row[14],
                                                    ajusted_size: row[15].nil? ? nil : row[15])
+
+                @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+                  if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+                    guw_coefficient = Guw::GuwCoefficient.where(name: i[0]).first
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_uow,
+                                                                       guw_coefficient_id: guw_coefficient.id)
+
+                  elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+                    guw_output = Guw::GuwOutput.where(name: i[0]).first
+                    # guw_uow.size["#{guw_output.id}"] = []
+                    # guw_uow.ajusted_size["#{guw_output.id}"] = []
+                  end
+                end
+
                 if !row[7].nil?
                   @guw_model.guw_work_units.each do |wu|
                     if wu.name == row[7]
@@ -1091,12 +1108,7 @@ class Guw::GuwModelsController < ApplicationController
                   else
                     guw_uow.guw_work_unit_id = nil
                   end
-                  # ind += 1
-                  # indexing_field_error[1][0] = true
                 end
-                # unless indexing_field_error[1][0]
-                #   indexing_field_error[1] << index
-                # end
 
                 if !row[8].nil?
                   @guw_model.guw_weightings.each do |wu|
@@ -1137,18 +1149,11 @@ class Guw::GuwModelsController < ApplicationController
                 @guw_model.guw_types.each do |type|
                   if row[6] == type.name
                     guw_uow.guw_type_id = type.id
-                    indexing_field_error[0][0] = true
-                    if !row[13].nil? && row[13] != "-"
+                    if !row[13].nil?
                       type.guw_complexities.each do |complexity|
                         if row[13] == complexity.name
                           guw_uow.guw_complexity_id = complexity.id
-                          indexing_field_error[3][0] = true
-                          break
                         end
-                        indexing_field_error[3][0] = false
-                      end
-                      unless indexing_field_error[3][0]
-                        indexing_field_error[3] << index
                       end
                     end
                     if @guw_model.allow_technology == true
@@ -1182,14 +1187,11 @@ class Guw::GuwModelsController < ApplicationController
                     end
 
                     @guw_model.guw_attributes.all.each do |gac|
-                      guw_uow.save
+                      guw_uow.save(validate: false);
                       finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
                                                                  guw_unit_of_work_id: guw_uow.id,
                                                                  guw_attribute_id: gac.id).first_or_create
-                      # guw_uow_save = guw_uow.id
-                      # finder.low = row[15] == "N/A" ? nil : row[15]
-                      # finder.most_likely = row[16] == "N/A" ? nil : row[16]
-                      # finder.high = row[17] == "N/A" ? nil : row[17]
+
                       finder.save
                     end
 
@@ -1202,36 +1204,30 @@ class Guw::GuwModelsController < ApplicationController
                   indexing_field_error[0] << index
                 end
                 guw_uow.save
-                if ind == 3
-                  guw_uow.save
-                else
-                  tab_error << index
-                end
-                ind = 0
-                already_exist = row
             end
-          else
-            if row[4].nil? || row[4].empty?
-              tab_error[0][0] = true
-              tab_error[0] << index
-            end
-            if row[2].nil? || row[2].empty?
-              tab_error[1][0] = true
-              tab_error[1] << index
-            end
-            if row[6].nil? || row[6].empty?
-              tab_error[2][0] = true
-              tab_error[2] << index
-            end
-            if row[7].nil? || row[7].empty?
-              tab_error[3][0] = true
-              tab_error[3] << index
-            end
-            if row[8].nil? || row[8].empty?
-              tab_error[4][0] = true
-              tab_error[4] << index
-            end
-          end
+          # else
+          #
+          #   if row[4].nil? || row[4].empty?
+          #     tab_error[0][0] = true
+          #     tab_error[0] << index
+          #   end
+          #   if row[2].nil? || row[2].empty?
+          #     tab_error[1][0] = true
+          #     tab_error[1] << index
+          #   end
+          #   if row[6].nil? || row[6].empty?
+          #     tab_error[2][0] = true
+          #     tab_error[2] << index
+          #   end
+          #   if row[7].nil? || row[7].empty?
+          #     tab_error[3][0] = true
+          #     tab_error[3] << index
+          #   end
+          #   if row[8].nil? || row[8].empty?
+          #     tab_error[4][0] = true
+          #     tab_error[4] << index
+          #   end
+          # end
         end
         ok = true
       end
