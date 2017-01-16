@@ -735,7 +735,8 @@ module ViewsWidgetsHelper
     ###return result if probable_est_value.nil? || pbs_probable_est_value.nil?
 
     wbs_activity = module_project.wbs_activity
-    wbs_activity_element_root = wbs_activity.wbs_activity_elements.first.root
+
+    return nil if wbs_activity.nil?
 
     wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
 

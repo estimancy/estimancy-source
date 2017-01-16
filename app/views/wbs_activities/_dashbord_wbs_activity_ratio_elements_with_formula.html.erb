@@ -128,7 +128,7 @@
             <% end %>
 
             <th><%= "#{I18n.t(:description)} / #{I18n.t(:comments)}" %></th>
-            <th><%= I18n.t(:actions) %></th>
+            <!--<th><%#= I18n.t(:actions) %></th>-->
           </tr>
 
           <% gap = 1 %>
@@ -335,12 +335,12 @@
               <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
               <%= hidden_field_tag 'wbs_activity_id', mp_ratio_element.wbs_activity_ratio.wbs_activity_id %>
 
-              <td>
-                <% if can?(:execute_estimation_plan, @project) && allow_add_new_phase && mp_ratio_element.wbs_activity_ratio_element.nil? %>
-                    <%= link_to "", edit_module_project_ratio_element_path(mp_ratio_element, module_project_id: current_module_project.id), class: "fa fa-pencil", title: I18n.t(:edit), remote: true%>
-                    <%= link_to "", module_project_ratio_element_path(mp_ratio_element), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete) %>
-                <% end %>
-              </td>
+              <!--<td>-->
+                <!--<%# if can?(:execute_estimation_plan, @project) && allow_add_new_phase && mp_ratio_element.wbs_activity_ratio_element.nil? %>-->
+                    <!--<%#= link_to "", edit_module_project_ratio_element_path(mp_ratio_element, module_project_id: current_module_project.id), class: "fa fa-pencil", title: I18n.t(:edit), remote: true%>-->
+                    <!--<%#= link_to "", module_project_ratio_element_path(mp_ratio_element), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete) %>-->
+                <!--<%# end %>-->
+              <!--</td>-->
             </tr>
           <% end %>
 <!--
