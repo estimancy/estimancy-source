@@ -169,12 +169,12 @@ module EffortBreakdown
 
         sorted_node_elements.each do |element|
           key = element.id   # wbs_activity_element_id
-          value = efforts_man_month[key].to_f
+          value = efforts_man_month[key]
 
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
           if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable && @changed_retained_cost_values[element.id].to_f != 0
-            output_cost[element.id] = @changed_retained_cost_values[element.id].to_f
+            output_cost[element.id] = @changed_retained_cost_values[element.id].nil? ? nil : @changed_retained_cost_values[element.id].to_f
           else
             if element.is_childless? || element.has_new_complement_child?
               # Calculate cost for each profile
@@ -182,7 +182,11 @@ module EffortBreakdown
               wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
               unless wbs_activity_ratio_element.nil?
                 wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-                  tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
+                  if value.nil? || warp.ratio_value.nil?
+                    tmp[warp.organization_profile.id] = nil
+                  else
+                    tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
+                  end
                 end
               end
 
@@ -190,7 +194,11 @@ module EffortBreakdown
                 cost[key] << tmp[k]
               end
 
-              output_cost[key] = cost[key].sum
+              if cost[key].empty?
+                output_cost[key] = nil
+              else
+                output_cost[key] = cost[key].compact.sum
+              end
             else
               output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
             end
@@ -232,7 +240,11 @@ module EffortBreakdown
             wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
             unless wbs_activity_ratio_element.nil?
               wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-                tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * efforts_man_month[key].to_f * warp.ratio_value.to_f / 100
+                if efforts_man_month[key].nil? || warp.ratio_value.nil?
+                  tmp[warp.organization_profile.id] = nil
+                else
+                  tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
+                end
               end
             end
 
@@ -240,7 +252,11 @@ module EffortBreakdown
               cost[key] << tmp[k]
             end
 
-            output_cost[key] = cost[key].sum
+            if cost[key].empty?
+              output_cost[key] = nil
+            else
+              output_cost[key] = cost[key].compact.sum
+            end
           else
             output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
@@ -676,7 +692,7 @@ module EffortBreakdown
                         all_formula_to_compute[:"#{element_phase_short_name.downcase}"] = normalized_formula_expression
                       else
                         all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
-                        calculator.store(:"#{element_phase_short_name.downcase}" => 0.0)
+                        calculator.store(:"#{element_phase_short_name.downcase}" => 0.0)  #mettre a nil
                       end
                     end
                   end
@@ -716,7 +732,7 @@ module EffortBreakdown
             begin
               output_effort_with_dependencies[var] = calculator.evaluate(formula)
             rescue
-              output_effort_with_dependencies[var] = 0.0
+              output_effort_with_dependencies[var] = 0.0 #mettre a nil
             end
           end
         end
@@ -853,6 +869,7 @@ module EffortBreakdown
       # Global output efforts
       output_effort
     end
+
 
 
     # Calculate the WBS-Activity effort according to the selected value as ratio

@@ -111,7 +111,9 @@
                                         <% wbs_profiles_value = wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f %>
                                       <% end %>
                                       <% array_root[profile.id] << wbs_profiles_value %>
-                                      <% effort_per_phase +=  wbs_profiles_value %>
+                                      <% unless wbs_profiles_value.nil? %>
+                                        <% effort_per_phase +=  wbs_profiles_value %>
+                                      <% end %>
                                       <%#= "#{convert_with_precision(convert(wbs_profiles_value, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
 
                                       <% if view_widget.use_organization_effort_unit == true %>

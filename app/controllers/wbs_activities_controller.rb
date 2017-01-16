@@ -398,8 +398,8 @@ class WbsActivitiesController < ApplicationController
 
         each_level_retained_effort.each do |key, value|
           mp_ratio_element = ModuleProjectRatioElement.find(key)
-          level_retained_effort_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = value.to_f * effort_unit_coefficient
-          level_retained_cost_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = each_level_retained_cost["#{mp_ratio_element.id}"].to_f
+          level_retained_effort_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = value.empty? ? nil : (value.to_f * effort_unit_coefficient)
+          level_retained_cost_with_wbs_activity_elt_id[mp_ratio_element.wbs_activity_element_id] = each_level_retained_cost["#{mp_ratio_element.id}"].empty? ? nil : each_level_retained_cost["#{mp_ratio_element.id}"].to_f
         end
 
         retained_effort_level["#{level}"] = level_retained_effort_with_wbs_activity_elt_id
@@ -548,7 +548,7 @@ class WbsActivitiesController < ApplicationController
               if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
                 element_level_estimation_value = nil
               else
-                element_level_estimation_value = element_level_estimation_value.to_f
+                element_level_estimation_value = element_level_estimation_value
               end
               mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
 
@@ -641,14 +641,18 @@ class WbsActivitiesController < ApplicationController
                       wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first
                       unless wbs_activity_ratio_element.nil?
                         wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-                          tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)
+                          if efforts_man_month[key].nil?
+                            tmp[warp.organization_profile.id] = nil
+                          else
+                            tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)
+                          end
                         end
                       end
                       res[key] = tmp
 
                       current_activity_element = WbsActivityElement.find(key)
                       if current_activity_element.root?
-                        res[key] = tmp.values.sum
+                        res[key] = tmp.values.compact.sum
                       else
                         res[key] = tmp
                       end
@@ -667,7 +671,7 @@ class WbsActivitiesController < ApplicationController
 
                       current_wbs = WbsActivityElement.find(wbs_id)
                       if current_wbs.is_childless?
-                        estimation_value_profile = res_hash_value[profile.id].to_f
+                        estimation_value_profile = res_hash_value[profile.id]
                         parent_profile_est_value["#{wbs_id}"] = estimation_value_profile
                         probable_estimation_value[@pbs_project_element.id][wbs_id]["profiles"]["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] =  { :value => estimation_value_profile }
 
@@ -749,7 +753,11 @@ class WbsActivitiesController < ApplicationController
             if wbs_probable_value.nil? || (wbs_probable_value.is_a?(Float) && wbs_probable_value.nan?)
               wbs_probable_value = nil
             else
-              wbs_probable_value = ((wbs_probable_value[:value].is_a?(Float) && wbs_probable_value[:value].nan?) ? nil : wbs_probable_value[:value].to_f)
+              if wbs_probable_value[:value].is_a?(Float) && wbs_probable_value[:value].nan?
+              wbs_probable_value = nil
+              else
+              wbs_probable_value =  wbs_probable_value[:value].nil? ? nil : wbs_probable_value[:value].to_f
+              end
             end
             # save theoretical values
             mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
