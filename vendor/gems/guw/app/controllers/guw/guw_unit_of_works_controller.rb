@@ -916,7 +916,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
-      guw_unit_of_work.save
+      # guw_unit_of_work.save
 
       @guw_model.guw_outputs.each_with_index do |guw_output, index|
 
