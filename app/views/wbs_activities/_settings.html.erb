@@ -47,19 +47,19 @@
 <!-- FIN TEST -->
 
 
-<% current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>
-  <% mp.estimation_values.where(in_out: "output").each do |ev| %>
-    <% gm = Guw::GuwModel.where(id: mp.guw_model_id).first %>
-    <% gm.guw_outputs.each do |go| %>
-      <% if (ev.pe_attribute.alias == go.name.underscore.gsub(" ", "_")) %>
-        <p>
-          <%= ev.pe_attribute.name %> :
-          <%= ev.string_data_probable[current_component.id] %>
-        </p>
-      <% end %>
-    <% end %>
-  <% end %>
-<% end %>
+<%# current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>
+  <%# mp.estimation_values.where(in_out: "output").each do |ev| %>
+    <%# gm = Guw::GuwModel.where(id: mp.guw_model_id).first %>
+    <%# gm.guw_outputs.each do |go| %>
+      <%# if (ev.pe_attribute.alias == go.name.underscore.gsub(" ", "_")) %>
+        <!--<p>-->
+          <%#= "#{ev.pe_attribute.name} :" %>
+          <%#= ev.string_data_probable[current_component.id] %>
+        <!--</p>-->
+      <%# end %>
+    <%# end %>
+  <%# end %>
+<%# end %>
 
 
 <% component_id = current_component.id %>
