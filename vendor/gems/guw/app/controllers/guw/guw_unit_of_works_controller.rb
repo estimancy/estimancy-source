@@ -869,6 +869,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id)
 
+    @guw_coefficients = @guw_model.guw_coefficients
+
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
       guw_unit_of_work.ajusted_size = nil
@@ -914,9 +916,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
-      @guw_model.guw_outputs.each_with_index do |guw_output, index|
+      guw_unit_of_work.save
 
-        guw_unit_of_work.save
+      @guw_model.guw_outputs.each_with_index do |guw_output, index|
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
@@ -958,7 +960,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         coeffs = []
         percents = []
         selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
-        @guw_model.guw_coefficients.each do |guw_coefficient|
+
+        @guw_coefficients.each do |guw_coefficient|
           if guw_coefficient.coefficient_type == "Pourcentage"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1035,10 +1038,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        # tmp_hash_res["#{guw_output.id}"] = @final_value.to_f * percents.compact.inject(&:*)# * selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
-        #
-        # prod = ces.compact.inject(&:*)
-        # @final_value = @final_value.to_f * (prod.nil? ? 1 : prod.to_f)
         oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity.id,
                                              guw_output_id: guw_output.id,
                                              value: 1).first
@@ -1047,17 +1046,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         else
           @final_value = @weight
         end
-
-        # if @final_value.nil?
-        #   guw_unit_of_work.size = nil
-        #   if params["ajusted_size"].nil?
-        #     tmp_hash_ares["#{guw_output.id}"] = nil
-        #   else
-        #     tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
-        #   end
-        #   guw_unit_of_work.ajusted_size = tmp_hash_ares
-        #   guw_unit_of_work.size = tmp_hash_res
-        # else
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
@@ -1089,20 +1077,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
           end
 
-          # if guw_unit_of_work.guw_type.allow_retained == false
-          #   guw_unit_of_work.ajusted_size = tmp_hash_ares
-          #   guw_unit_of_work.size = tmp_hash_res
-          # else
-          #   # if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-          #     # guw_unit_of_work.ajusted_size = tmp_hash_res
-          #     # guw_unit_of_work.size = tmp_hash_res
-          #   # else
-              guw_unit_of_work.size = tmp_hash_res
-              guw_unit_of_work.ajusted_size = tmp_hash_ares
-          #   # end
-          # end
-
-        # end
+          guw_unit_of_work.size = tmp_hash_res
+          guw_unit_of_work.ajusted_size = tmp_hash_ares
       end
 
       guw_unit_of_work.save

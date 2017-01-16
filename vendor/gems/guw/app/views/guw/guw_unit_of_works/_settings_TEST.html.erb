@@ -294,7 +294,7 @@
                           <% if guow.guw_type.allow_complexity %>
                             <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
                                                  style: "width: 43px;",
-                                                 class: "complexity_weight-#{uowg.id}",
+                                                 class: "complexity_weight-#{uowg.id} retained-#{uowg.id}",
                                                  step: 0.001 %>
                           <% end %>
                         <% end %>

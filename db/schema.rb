@@ -1866,8 +1866,8 @@ ActiveRecord::Schema.define(:version => 20170113151011) do
     t.string   "height"
     t.string   "widget_type"
     t.boolean  "show_min_max"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
     t.integer  "position"
     t.boolean  "show_name"
     t.boolean  "show_wbs_activity_ratio"
@@ -1877,7 +1877,7 @@ ActiveRecord::Schema.define(:version => 20170113151011) do
     t.boolean  "is_kpi_widget"
     t.text     "equation"
     t.string   "kpi_unit"
-    t.string   "effort_display_unit"
+    t.boolean  "use_organization_effort_unit"
   end
 
   create_table "wbs_activities", :force => true do |t|
