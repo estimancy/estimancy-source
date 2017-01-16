@@ -870,6 +870,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_model_id: @guw_model.id)
 
     @guw_coefficients = @guw_model.guw_coefficients
+    @guw_outputs = @guw_model.guw_outputs
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
@@ -918,7 +919,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       # guw_unit_of_work.save
 
-      @guw_model.guw_outputs.each_with_index do |guw_output, index|
+      @guw_outputs.each_with_index do |guw_output, index|
+
+        @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity.id,
+                                              guw_output_id: guw_output.id,
+                                              value: 1).first
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
@@ -1038,10 +1043,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity.id,
-                                             guw_output_id: guw_output.id,
-                                             value: 1).first
-        if oc.nil?
+        if @oc.nil?
           @final_value = nil
         else
           @final_value = @weight
