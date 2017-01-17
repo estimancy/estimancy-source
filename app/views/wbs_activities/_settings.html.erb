@@ -99,10 +99,15 @@
 <% unless current_inputs_evs.empty? %>
     <% current_inputs_evs.each do |ev| %>
         <% current_ev = ev.string_data_most_likely[component_id] %>
-        <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+        <% begin %>
+            <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+        <% rescue %>
+            <% previous_mp_ev = nil %>
+        <% end %>
+
         <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
 
-        <% if current_ev.blank? %>
+        <% if current_ev.nil? || current_ev.blank? %>
             <% entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
         <% else %>
             <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
@@ -153,7 +158,7 @@
                     <span>
                       <%= ev.pe_attribute.alias %> :
                       <%= hidden_field_tag "values[low][#{ev.id}]", entry_values[ev.id] %>
-                      <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
+                      <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
                     </span><br>
                 <% end %>
             <% end %>
@@ -168,7 +173,7 @@
                 <% current_inputs_evs.each do |ev| %>
                     <span>
                       <%= ev.pe_attribute.alias %> :
-                      <%= number_field_tag "values[low][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px;" %>
+                      <%= number_field_tag "values[low][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
                     </span> <br>
                 <% end %>
             <% end %>
@@ -189,7 +194,7 @@
                 <span>
                   <%= ev.pe_attribute.alias %> :
                   <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_values[ev.id] %>
-                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
+                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
                 </span><br>
               <% end %>
           <% end %>
@@ -202,7 +207,7 @@
           <% current_inputs_evs.each do |ev| %>
             <span>
               <%= ev.pe_attribute.alias %> :
-              <%= number_field_tag "values[most_likely][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px;" %>
+              <%= number_field_tag "values[most_likely][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
             </span> <br>
           <% end %>
         </td>
@@ -220,7 +225,7 @@
                 <span>
                   <%= ev.pe_attribute.alias %> :
                   <%= hidden_field_tag "values[high][#{ev.id}]", entry_values[ev.id] %>
-                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
+                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
                 </span><br>
             <% end %>
 
@@ -232,7 +237,7 @@
             <% current_inputs_evs.each do |ev| %>
                 <span>
                   <%= ev.pe_attribute.alias %> :
-                  <%= number_field_tag "values[high][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px;" %>
+                  <%= number_field_tag "values[high][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
                 </span> <br>
             <% end %>
           </td>

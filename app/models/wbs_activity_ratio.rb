@@ -97,7 +97,7 @@ class WbsActivityRatio < ActiveRecord::Base
 
   # Create the ratio wbs_activity_ratio_variables
   def create_wbs_activity_ratio_variables
-    [["RTU", "100%"], ["TEST", ""], ["", ""], ["", ""]].each do |var|
+    [["RTU", ""], ["TEST", ""], ["", ""], ["", ""]].each do |var|
       variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
       variable.save
     end
