@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20161222085245) do
+ActiveRecord::Schema.define(:version => 20170117103056) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -472,15 +472,13 @@ ActiveRecord::Schema.define(:version => 20161222085245) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer  "ge_model_id"
-    t.integer  "ge_factor_id"
-    t.string   "factor_alias"
-    t.text     "description"
-    t.integer  "organization_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-    t.integer  "project_id"
-    t.integer  "module_project_id"
+    t.integer "ge_model_id"
+    t.integer "ge_factor_id"
+    t.string  "factor_alias"
+    t.text    "description"
+    t.integer "organization_id"
+    t.integer "project_id"
+    t.integer "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -710,6 +708,23 @@ ActiveRecord::Schema.define(:version => 20161222085245) do
     t.boolean  "allow_technology",            :default => true
   end
 
+  create_table "guw_guw_output_associations", :force => true do |t|
+    t.integer  "guw_output_id"
+    t.integer  "guw_output_associated_id"
+    t.integer  "guw_complexity_id"
+    t.float    "value"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+  end
+
+  create_table "guw_guw_output_complexities", :force => true do |t|
+    t.integer  "guw_output_id"
+    t.integer  "guw_complexity_id"
+    t.float    "value"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
   create_table "guw_guw_outputs", :force => true do |t|
     t.string   "name"
     t.string   "output_type"
@@ -717,6 +732,7 @@ ActiveRecord::Schema.define(:version => 20161222085245) do
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false
     t.boolean  "allow_intermediate_value"
+    t.boolean  "allow_subtotal"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -952,29 +968,29 @@ ActiveRecord::Schema.define(:version => 20161222085245) do
     t.string   "name"
     t.text     "description"
     t.float    "ratio_value"
-    t.float    "theoretical_effort_probable"
-    t.float    "theoretical_cost_probable"
-    t.float    "retained_effort_probable"
-    t.float    "retained_cost_probable"
+    t.decimal  "theoretical_effort_probable",    :precision => 15, :scale => 5
+    t.decimal  "theoretical_cost_probable",      :precision => 20, :scale => 6
+    t.decimal  "retained_effort_probable",       :precision => 15, :scale => 5
+    t.decimal  "retained_cost_probable",         :precision => 20, :scale => 6
     t.text     "comments"
-    t.float    "theoretical_effort_low"
-    t.float    "theoretical_effort_high"
-    t.float    "theoretical_effort_most_likely"
-    t.float    "theoretical_cost_low"
-    t.float    "theoretical_cost_high"
-    t.float    "theoretical_cost_most_likely"
-    t.float    "retained_effort_low"
-    t.float    "retained_effort_high"
-    t.float    "retained_effort_most_likely"
-    t.float    "retained_cost_low"
-    t.float    "retained_cost_high"
-    t.float    "retained_cost_most_likely"
+    t.decimal  "theoretical_effort_low",         :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_high",        :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_most_likely", :precision => 15, :scale => 5
+    t.decimal  "theoretical_cost_low",           :precision => 20, :scale => 6
+    t.decimal  "theoretical_cost_high",          :precision => 20, :scale => 6
+    t.decimal  "theoretical_cost_most_likely",   :precision => 20, :scale => 6
+    t.decimal  "retained_effort_low",            :precision => 15, :scale => 5
+    t.decimal  "retained_effort_high",           :precision => 15, :scale => 5
+    t.decimal  "retained_effort_most_likely",    :precision => 15, :scale => 5
+    t.decimal  "retained_cost_low",              :precision => 20, :scale => 6
+    t.decimal  "retained_cost_high",             :precision => 20, :scale => 6
+    t.decimal  "retained_cost_most_likely",      :precision => 20, :scale => 6
     t.integer  "copy_id"
     t.float    "position"
     t.boolean  "flagged"
     t.boolean  "selected"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at",                                                    :null => false
+    t.datetime "updated_at",                                                    :null => false
     t.boolean  "is_optional"
     t.string   "ancestry"
     t.string   "phase_short_name"
@@ -1647,6 +1663,7 @@ ActiveRecord::Schema.define(:version => 20161222085245) do
     t.string   "effort_unit"
     t.string   "staffing_method"
     t.integer  "effort_week_unit"
+    t.string   "config_type"
   end
 
   create_table "status_transitions", :force => true do |t|
