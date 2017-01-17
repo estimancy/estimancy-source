@@ -167,8 +167,8 @@ module EffortBreakdown
 
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
-          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable && @changed_retained_cost_values[element.id].to_f != 0
-            output_cost[element.id] = @changed_retained_cost_values[element.id].to_f
+          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable #&& @changed_retained_cost_values[element.id].to_f != 0
+            output_cost[element.id] = @changed_retained_cost_values[element.id].nil? ? nil : @changed_retained_cost_values[element.id].to_f
           else
             if element.is_childless? || element.has_new_complement_child?
               # Calculate cost for each profile
