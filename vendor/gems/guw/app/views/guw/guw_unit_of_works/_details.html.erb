@@ -1,105 +1,118 @@
-<% guw_output = @guw_model.guw_outputs.where(output_type: "S").first %>
-
-<% unless @guw_model.guw_types.empty? %>
-  <h5>
-    Nombre d'unité d'oeuvre par type
-  </h5>
-  <table class="table">
-    <tr>
-      <th>Type</th>
-      <th>Nombre d'UO</th>
-      <th>Poids Total</th>
-    </tr>
-    <% @guw_model.guw_types.uniq.each do |guw_type| %>
+<% @guw_model.guw_outputs.each do |guw_output| %>
+  <% unless @guw_model.guw_types.empty? %>
+    <h5>
+      Nombre d'unité d'oeuvre par type
+    </h5>
+    <table class="table">
       <tr>
-        <td>
-          <%= guw_type.name %>
-        </td>
-        <td>
-          <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
-        </td>
-        <td>
-          <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-        </td>
+        <th>Type</th>
+        <th>Nombre d'UO</th>
+        <th>Poids Total</th>
       </tr>
-    <% end %>
-  </table>
-<% end %>
+      <% @guw_model.guw_types.uniq.each do |guw_type| %>
+        <tr>
+          <td>
+            <%= guw_type.name %>
+          </td>
+          <td>
+            <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
+          </td>
+          <td>
+            <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 
-<% unless @guw_model.guw_work_units.empty? %>
-  <h5>
-    Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
-  </h5>
-  <table class="table">
-    <tr>
-      <th><%= @guw_model.coefficient_label %></th>
-      <th>Nombre d'UO</th>
-      <th>Poids Total</th>
-    </tr>
-    <% @guw_model.guw_work_units.uniq.each do |guw_work_unit| %>
+  <% unless @guw_model.guw_work_units.empty? %>
+    <h5>
+      Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
+    </h5>
+    <table class="table">
       <tr>
-        <td>
-          <%= guw_work_unit.name %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).count.to_i %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-        </td>
+        <th><%= @guw_model.coefficient_label %></th>
+        <th>Nombre d'UO</th>
+        <th>Poids Total</th>
       </tr>
-    <% end %>
-  </table>
-<% end %>
+      <% @guw_model.guw_work_units.uniq.each do |guw_work_unit| %>
+        <tr>
+          <td>
+            <%= guw_work_unit.name %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).count.to_i %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 
-<% unless @guw_model.guw_weightings.empty? %>
-  <h5>
-    Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
-  </h5>
-  <table class="table">
-    <tr>
-      <th><%= @guw_model.coefficient_label %></th>
-      <th>Nombre d'UO</th>
-      <th>Poids Total</th>
-    </tr>
-    <% @guw_model.guw_weightings.uniq.each do |guw_weighting| %>
+  <% unless @guw_model.guw_weightings.empty? %>
+    <h5>
+      Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
+    </h5>
+    <table class="table">
       <tr>
-        <td>
-          <%= guw_weighting.name %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).count.to_i %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-        </td>
+        <th><%= @guw_model.coefficient_label %></th>
+        <th>Nombre d'UO</th>
+        <th>Poids Total</th>
       </tr>
-    <% end %>
-  </table>
-<% end %>
+      <% @guw_model.guw_weightings.uniq.each do |guw_weighting| %>
+        <tr>
+          <td>
+            <%= guw_weighting.name %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).count.to_i %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 
-<% unless @guw_model.guw_factors.empty? %>
-  <h5>
-    Nombre d'unité d'oeuvre par <%= @guw_model.factors_label %> (<%= @guw_model.retained_size_unit %>)
-  </h5>
-  <table class="table">
-    <tr>
-      <th><%= @guw_model.coefficient_label %></th>
-      <th>Nombre d'UO</th>
-      <th>Poids Total</th>
-    </tr>
-    <% @guw_model.guw_factors.uniq.each do |guw_factor| %>
+  <% unless @guw_model.guw_factors.empty? %>
+    <h5>
+      Nombre d'unité d'oeuvre par <%= @guw_model.factors_label %> (<%= @guw_model.retained_size_unit %>)
+    </h5>
+    <table class="table">
       <tr>
-        <td>
-          <%= guw_factor.name %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).count.to_i %>
-        </td>
-        <td>
-          <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-        </td>
+        <th><%= @guw_model.coefficient_label %></th>
+        <th>Nombre d'UO</th>
+        <th>Poids Total</th>
       </tr>
-    <% end %>
-  </table>
+      <% @guw_model.guw_factors.uniq.each do |guw_factor| %>
+        <tr>
+          <td>
+            <%= guw_factor.name %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).count.to_i %>
+          </td>
+          <td>
+            <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+
+  <% @guw_model.guw_coefficients.each do |coefficient| %>
+    <h5>
+      Nombre d'unité d'oeuvre par <%= coefficient.name %>
+    </h5>
+    <table class="table">
+      <tr>
+        <th><%= coefficient.name %></th>
+        <th>Nombre d'UO</th>
+        <th>Poids Total</th>
+      </tr>
+    </table>
+  <% end %>
 <% end %>

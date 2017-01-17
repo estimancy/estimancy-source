@@ -197,11 +197,11 @@ class Ability
           end
         end
 
-        grp.estimation_status_group_roles.includes(:project_security_level).each do |esgr|
+        grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).each do |esgr|
           esgr_security_level = esgr.project_security_level
           unless esgr_security_level.nil?
             esgr_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
-              esgr.organization.projects.each do |project|
+              organization.projects.each do |project|
                 if permission.alias == "manage" and permission.category == "Project"
                   can :manage, project, estimation_status_id: esgr.estimation_status.id
                 else
