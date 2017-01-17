@@ -1,10 +1,10 @@
 <div id="estimation_graph_box">
   <% if current_module_project.pemodule.alias == "guw" %>
-    <%# begin %>
-      <%#= render partial: "guw/guw_unit_of_works/settings" %>
-    <%# rescue %>
+    <% if @guw_model.config_type == "old" %>
+      <%= render partial: "guw/guw_unit_of_works/settings" %>
+    <% else %>
       <%= render partial: "guw/guw_unit_of_works/settings_TEST" %>
-    <%# end %>
+    <% end %>
   <% elsif current_module_project.pemodule.alias == "kb" %>
     <%= render partial: "kb/kb_models/settings" %>
   <% elsif current_module_project.pemodule.alias == "skb" %>

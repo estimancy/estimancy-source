@@ -54,13 +54,11 @@
         </td>
       </tr>
 
-      <%# if !@views_widget.new_record? && @views_widget.pe_attribute.alias.in?(Projestimate::Application::EFFORT_DISPLAY_UNIT) %>
-          <tr>
-            <td>
-              <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
-            </td>
-          </tr>
-      <%# end %>
+      <tr>
+        <td>
+          <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
+        </td>
+      </tr>
     </table>
   </div>
 

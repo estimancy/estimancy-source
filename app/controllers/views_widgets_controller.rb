@@ -46,6 +46,8 @@ class ViewsWidgetsController < ApplicationController
     @pbs_project_element_id = current_component.id
     @project_pbs_project_elements = @module_project.project.pbs_project_elements#.reject{|i| i.is_root?}
 
+    # estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
+
     # Get the possible attribute grouped by type (input, output)
     @module_project_attributes = get_module_project_attributes_input_output(@module_project)
 

@@ -1225,34 +1225,67 @@ class ProjectsController < ApplicationController
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
       @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
-      #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
-      my_module_project.pemodule.attribute_modules.each do |am|
-        if am.in_out == 'both'
-          ['input', 'output'].each do |in_out|
+      if @pemodule.alias == "guw"
+        #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
+        my_module_project.pemodule.attribute_modules.where(guw_model_id: my_module_project.guw_model_id).each do |am|
+          if am.in_out == 'both'
+            ['input', 'output'].each do |in_out|
+              mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                           :module_project_id => my_module_project.id,
+                                           :in_out => in_out,
+                                           :is_mandatory => am.is_mandatory,
+                                           :description => am.description,
+                                           :display_order => am.display_order,
+                                           :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                           :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                           :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                           :custom_attribute => am.custom_attribute,
+                                           :project_value => am.project_value)
+            end
+          else
             mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
                                          :module_project_id => my_module_project.id,
-                                         :in_out => in_out,
+                                         :in_out => am.in_out,
                                          :is_mandatory => am.is_mandatory,
-                                         :description => am.description,
                                          :display_order => am.display_order,
+                                         :description => am.description,
                                          :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
                                          :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
                                          :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
                                          :custom_attribute => am.custom_attribute,
                                          :project_value => am.project_value)
           end
-        else
-          mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                       :module_project_id => my_module_project.id,
-                                       :in_out => am.in_out,
-                                       :is_mandatory => am.is_mandatory,
-                                       :display_order => am.display_order,
-                                       :description => am.description,
-                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                       :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                       :custom_attribute => am.custom_attribute,
-                                       :project_value => am.project_value)
+        end
+      else
+        #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
+        my_module_project.pemodule.attribute_modules.each do |am|
+          if am.in_out == 'both'
+            ['input', 'output'].each do |in_out|
+              mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                           :module_project_id => my_module_project.id,
+                                           :in_out => in_out,
+                                           :is_mandatory => am.is_mandatory,
+                                           :description => am.description,
+                                           :display_order => am.display_order,
+                                           :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                           :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                           :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                           :custom_attribute => am.custom_attribute,
+                                           :project_value => am.project_value)
+            end
+          else
+            mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                         :module_project_id => my_module_project.id,
+                                         :in_out => am.in_out,
+                                         :is_mandatory => am.is_mandatory,
+                                         :display_order => am.display_order,
+                                         :description => am.description,
+                                         :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                         :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                         :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                         :custom_attribute => am.custom_attribute,
+                                         :project_value => am.project_value)
+          end
         end
       end
 
