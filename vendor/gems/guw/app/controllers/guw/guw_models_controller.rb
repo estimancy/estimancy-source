@@ -788,6 +788,27 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model.organization_id = params[:guw_model][:organization_id].to_i
 
     if @guw_model.save
+
+      if @guw_model.config_type == "new"
+
+        #Common attributes
+        attrs = [
+            ["Number of modified unit of work", "flagged_unit_of_work"],
+            ["Number of offlined unit of work", "offline_unit_of_work"],
+            ["Number of selected unit of work", "selected_of_unit_of_work"],
+            ["Number of unit of work", "number_of_unit_of_work"],
+        ]
+        attrs.each do |attr|
+          at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0]).first
+          pm = Pemodule.where(alias: "guw").first
+
+          AttributeModule.where(pe_attribute_id: at.id,
+                                pemodule_id: pm.id,
+                                in_out: "both",
+                                guw_model_id: @guw_model.id).first_or_create
+        end
+      end
+
       redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil, guw.guw_model_path(@guw_model))
     else
       render action: :new
@@ -804,6 +825,25 @@ class Guw::GuwModelsController < ApplicationController
 
       @guw_model.orders = params[:items].to_hash
       @guw_model.save
+
+      if @guw_model.config_type == "new"
+        #Common attributes
+        attrs = [
+            ["Number of modified unit of work", "flagged_unit_of_work"],
+            ["Number of offlined unit of work", "offline_unit_of_work"],
+            ["Number of selected unit of work", "selected_of_unit_of_work"],
+            ["Number of unit of work", "number_of_unit_of_work"],
+        ]
+        attrs.each do |attr|
+          at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0]).first
+          pm = Pemodule.where(alias: "guw").first
+
+            AttributeModule.where(pe_attribute_id: at.id,
+                                   pemodule_id: pm.id,
+                                   in_out: "both",
+                                   guw_model_id: @guw_model.id).first_or_create
+        end
+      end
 
       if @guw_model.default_display == "list"
         redirect_to redirect_apply(guw.edit_guw_model_path(@guw_model, organization_id: @organization.id), nil, guw.guw_model_all_guw_types_path(@guw_model)) and return
