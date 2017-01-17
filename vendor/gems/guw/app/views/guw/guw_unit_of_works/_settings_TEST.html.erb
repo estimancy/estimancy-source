@@ -314,7 +314,7 @@
                         <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
                                                                              guw_coefficient_id: guw_coefficient.id).first %>
 
-                        <% if guw_coefficient.coefficient_type == "Pourcentage" %>
+                        <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
                           <td class="span3 <%= guw_coefficient.id %>_<%= guow.id %>">
 
                             <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
