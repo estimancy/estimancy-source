@@ -667,16 +667,21 @@ module ViewsWidgetsHelper
               chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
             end
 
-            value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
+            #value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
 
             # Now with google-chart
-            # value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
-            #                            #value_to_show = raw(render :partial => 'views_widgets/g_bubble_test2',
-            #                            :locals => { level_values: chart_data,
-            #                                         widget_id: view_widget.id,
-            #                                         chart_title: chart_title,
-            #                                         chart_height: chart_height
-            #                            })
+            g_chart_data = [] #["Phases", "Effort par phase"]
+            chart_data.each do |key, value|
+              g_chart_data << [key, value.to_s.gsub(',', '.').to_f]
+            end
+
+            value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
+                                       #value_to_show = raw(render :partial => 'views_widgets/g_bubble_test2',
+                                       :locals => { level_values: g_chart_data,
+                                                    widget_id: view_widget.id,
+                                                    chart_title: chart_title,
+                                                    chart_height: chart_height
+                                       })
 
           when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"
 

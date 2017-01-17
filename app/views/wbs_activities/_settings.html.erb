@@ -37,16 +37,6 @@
                                :in_out => "output").first unless effort.nil? %>
 
 
-<!-- TEST -->
-
-<% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
-<% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
-<% if current_inputs_evs.empty? %>
-
-<% end %>
-<!-- FIN TEST -->
-
-
 <%# current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>
   <%# mp.estimation_values.where(in_out: "output").each do |ev| %>
     <%# gm = Guw::GuwModel.where(id: mp.guw_model_id).first %>
@@ -97,18 +87,30 @@
     <% end %>
 <% end %>
 
-<% entry_values = {} %>
-<% current_inputs_evs.each do |ev| %>
-    <% current_ev = ev.string_data_most_likely[component_id] %>
-    <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
-    <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
+<!-- TEST -->
+<% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
+<% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
-    <% if current_ev.blank? %>
-        <% entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-    <% else %>
-        <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+<% entry_values = {} %>
+<% if current_inputs_evs.empty? %>
+    <% current_inputs_evs = current_module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio.id, component_id, v_low*coeff, v_ml*coeff, v_high*coeff) %>
+<% end %>
+
+<% unless current_inputs_evs.empty? %>
+    <% current_inputs_evs.each do |ev| %>
+        <% current_ev = ev.string_data_most_likely[component_id] %>
+        <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+        <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
+
+        <% if current_ev.blank? %>
+            <% entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+        <% else %>
+            <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+        <% end %>
     <% end %>
 <% end %>
+
+<!-- FIN TEST -->
 
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
@@ -141,29 +143,34 @@
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
           <td>
-            <%#= hidden_field_tag "values[low]", v_low %>
-            <%#= text_field_tag "", convert_with_precision(v_low, user_number_precision, true), disabled: true %>
-
-            <!-- nouvelles entrees -->
-            <% current_inputs_evs.each do |ev| %>
-                <span>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= hidden_field_tag "values[low][#{ev.id}]", entry_values[ev.id] %>
-                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
-                </span><br>
+            <% if current_inputs_evs.empty? %>
+                <!-- Anciennes valeurs -->
+                <%= hidden_field_tag "values[low]", v_low %>
+                <%= text_field_tag "", convert_with_precision(v_low, user_number_precision, true), disabled: true %>
+            <% else %>
+                <!-- nouvelles entrees -->
+                <% current_inputs_evs.each do |ev| %>
+                    <span>
+                      <%= ev.pe_attribute.alias %> :
+                      <%= hidden_field_tag "values[low][#{ev.id}]", entry_values[ev.id] %>
+                      <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
+                    </span><br>
+                <% end %>
             <% end %>
-
           </td>
         <% else %>
           <td>
-            <%#= number_field_tag "values[low]", v_low, step: "any", style: "width: 100px;" %>
-
-            <!-- nouvelles entrees -->
-            <% current_inputs_evs.each do |ev| %>
-                <span>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= number_field_tag "values[low][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px;" %>
-                </span> <br>
+            <% if current_inputs_evs.empty? %>
+                <!-- Anciennes valeurs -->
+                <%= number_field_tag "values[low]", v_low, step: "any", style: "width: 100px;" %>
+            <% else %>
+                <!-- nouvelles entrees -->
+                <% current_inputs_evs.each do |ev| %>
+                    <span>
+                      <%= ev.pe_attribute.alias %> :
+                      <%= number_field_tag "values[low][#{ev.id}]", entry_values[ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px;" %>
+                    </span> <br>
+                <% end %>
             <% end %>
           </td>
         <% end %>
@@ -172,18 +179,20 @@
 
       <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
         <td>
-          <%#= hidden_field_tag "values[most_likely]", v_ml %>
-          <%#= text_field_tag "", convert_with_precision(v_ml, user_number_precision, true), disabled: true %>
-
-          <!-- nouvelles entrees -->
-          <% current_inputs_evs.each do |ev| %>
-            <span>
-              <%= ev.pe_attribute.alias %> :
-              <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_values[ev.id] %>
-              <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
-            </span><br>
+          <% if current_inputs_evs.empty? %>
+              <!-- Anciennes valeurs -->
+              <%= hidden_field_tag "values[most_likely]", v_ml %>
+              <%= text_field_tag "", convert_with_precision(v_ml, user_number_precision, true), disabled: true %>
+          <% else %>
+              <!-- nouvelles entrees -->
+              <% current_inputs_evs.each do |ev| %>
+                <span>
+                  <%= ev.pe_attribute.alias %> :
+                  <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_values[ev.id] %>
+                  <%= text_field_tag "", convert_with_precision(entry_values[ev.id], user_number_precision, true), disabled: true %>
+                </span><br>
+              <% end %>
           <% end %>
-
         </td>
       <% else %>
         <td>
