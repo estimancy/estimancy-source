@@ -246,7 +246,7 @@
                 <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
                     <% if guow.guw_type.display_threshold == true %>
-                      <% begin %>
+                      <%# begin %>
                         <% if guow.off_line == true %>
                           <% @default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first %>
                           <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
@@ -263,14 +263,13 @@
                                          disabled: !guow.guw_type.allow_complexity,
                                          style: "width: 70px;" %>
                         <% elsif guow.guw_complexity.nil? %>
-                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] },
-                                                                                         selected: guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id),
+                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id),
                                          guw: guow.id,
                                          class: "guw_complexity",
                                          include_blank: true,
                                          disabled: !guow.guw_type.allow_complexity,
                                          style: "width: 70px;" %>
-                          <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_type.guw_complexities.where(default_value: true).first.id.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id %>
+                          <%# hidden_field_tag "hidden_guw_complexity_#{guow.id}", guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id %>
                         <% else %>
                           <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                          class: "guw_complexity",
@@ -278,9 +277,9 @@
                                          disabled: !guow.guw_type.allow_complexity,
                                          style: "width: 70px;" %>
                         <% end %>
-                      <% rescue Exception => e %>
-                        <%= e %>
-                      <% end %>
+                      <%# rescue Exception => e %>
+                        <%# e %>
+                      <%# end %>
                     <% else %>
                       <% if guow.off_line == true %>
                         HSAT
