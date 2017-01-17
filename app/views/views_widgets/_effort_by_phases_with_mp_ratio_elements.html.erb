@@ -31,8 +31,8 @@
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
     <th colspan=<%= colspan %>>
-      <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-        <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{wbs_unit})" : '' %>
+      <span class='attribute_tooltip' title='<%= "#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}" %>'>
+        <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= "(#{wbs_unit})" %>
       </span>
     </th>
   </tr>
