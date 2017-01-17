@@ -107,7 +107,7 @@ class Ability
             project = prj_scrt.project
             unless project.nil?
               organization.estimation_statuses.each do |es|
-                prj_scrt.project_security_level.joins(:permissions).permissions.select{|i| i.is_permission_project }.map do |permission|
+                prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
                   if permission.alias == "manage" and permission.category == "Project"
                     can :manage, project, estimation_status_id: es.id
                   else
