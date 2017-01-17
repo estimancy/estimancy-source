@@ -43,6 +43,7 @@ class Ability
     #For organization and estimations permissions
     alias_action :show_estimations_permissions, :to => :manage_estimations_permissions
     alias_action :manage_estimations_permissions, :show_organization_permissions, :to => :manage_organization_permissions
+    alias_action :show_global_permissions, :to => :manage_global_permissions
 
     # For projects selected columns
     alias_action :show_projects_selected_columns, :to => :manage_projects_selected_columns
@@ -93,6 +94,7 @@ class Ability
       #For "manage_estimation_models", only models will be taken in account
       #When user can create a project template, he also can edit the model
       alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
+      alias_action :delete_project, :is_model => true, :to => :manage_estimation_models
 
       #@array_users = Hash.new {|h,k| h[k]=[]}
       #@array_status_groups = Hash.new {|h,k| h[k]=[]}

@@ -53,7 +53,7 @@ module ProjectsHelper
   # Display the units of attributes
   def get_attribute_unit(pe_attribute)
     case pe_attribute.alias
-      when "effort"
+      when "effort", "theoretical_effort", "E1", "E2", "E3", "E4"
         I18n.t(:unit_effort_person_hour)
       when "staffing"
         I18n.t(:unit_staffing)
@@ -61,12 +61,12 @@ module ProjectsHelper
         "jj/mm/aaaa"
       when "delay"
         I18n.t(:delay)
-      when "cost"
+      when "cost", "theoretical_cost"
         #@project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.name.underscore.pluralize}"
         @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
       else
         ""
-      end
+    end
   end
 
   def convert_wbs_activity_value(v, effort_unit_coefficient)
@@ -1020,7 +1020,6 @@ module ProjectsHelper
         "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
       end
 
-    #elsif est_val_pe_attribute.alias == "effort"
     elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
