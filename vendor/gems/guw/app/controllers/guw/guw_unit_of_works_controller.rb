@@ -1343,6 +1343,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @module_project = current_module_project
     @module_project.guw_model_id = @guw_model.id
     @module_project.save
+    @guw_outputs = @guw_model.guw_outputs
 
     # theorical_size = Guw::GuwUnitOfWork.where(module_project_id: @module_project.id,
     #                                           pbs_project_element_id: current_component.id,
