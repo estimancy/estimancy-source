@@ -804,8 +804,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.guw_original_complexity_id = guw_c.id
     end
 
-    guw_unit_of_work.save
-
     if (guw_unit_of_work.result_low.to_f >= guw_c.bottom_range) and (guw_unit_of_work.result_low.to_i < guw_c.top_range)
       if guw_c.enable_value == false
         uo_weight_low = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
@@ -985,6 +983,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless cce.value.blank?
                 pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 percents << (pc.to_f / 100)
+                percents << cce.value.to_f
               else
                 percents << 1
               end
@@ -1071,9 +1070,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           inter_value = oa_value.compact.sum.to_f
 
           if inter_value == 0
-            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : pcts.to_f)
+            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           else
-            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : pcts.to_f)
+            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
 
           if params["ajusted_size"].present?
@@ -1241,15 +1240,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless cce.nil?
               unless cce.value.blank?
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                # if pc.to_f < 0
                 percents << (pc.to_f / 100)
-                # else
-                #   percents << (pc.to_f / 100).to_f
-                # end
-
-                # if guw_coefficient.allow_intermediate_value == true
-                #   ceuw.intermediate_value = @fv * pc.to_f
-                # end
+                percents << cce.value.to_f
               else
                 percents << 1
               end

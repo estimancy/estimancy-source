@@ -218,7 +218,7 @@
                 <td class="span3">
                   <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_model.guw_types.map do |i|
                                                                               default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first
-                                                                              ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight + ')'}", i.id]
+                                                                              ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
                                                                             end,
                                                                             selected: guow.guw_type_id),
                                  class: "guw_type",
@@ -314,7 +314,7 @@
                         <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
                                                                              guw_coefficient_id: guw_coefficient.id).first %>
 
-                        <% if guw_coefficient.coefficient_type == "Pourcentage" %>
+                        <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
                           <td class="span3 <%= guw_coefficient.id %>_<%= guow.id %>">
 
                             <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
