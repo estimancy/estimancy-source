@@ -25,11 +25,11 @@
     <div class="pull-right">
       <% @guw_model.guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
-          Total <%= guw_output %> retenu :
+          Total <%= guw_output.name %> retenu :
           <span class="label label-success ajusted_size">
             <%= @group_unit_of_works.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
-                i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f
+                i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
           </span>
@@ -38,11 +38,11 @@
 
       <% @guw_model.guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
-          Total <%= guw_output %> théorique :
+          Total <%= guw_output.name %> théorique :
           <span class="label label-success ajusted_size">
             <%= @group_unit_of_works.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
-                i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f
+                i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
           </span>
@@ -293,7 +293,7 @@
                           <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
                                                style: "width: 43px;",
                                                class: "complexity_weight-#{uowg.id}",
-                                               disabled: true %>
+                                               readonly: true %>
                           <% if guow.guw_type.allow_complexity %>
                             <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
                                                  style: "width: 43px;",

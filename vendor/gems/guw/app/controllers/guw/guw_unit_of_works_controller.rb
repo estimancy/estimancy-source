@@ -940,11 +940,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
 
             if params["complexity_coeff_ajusted"].present?
-              cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
-              guw_unit_of_work.intermediate_weight = cplx_coeff
+              if params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].blank?
+                cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
+                guw_unit_of_work.intermediate_percent = cplx_coeff
+                guw_unit_of_work.intermediate_weight = cplx_coeff
+              else
+                cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
+                guw_unit_of_work.intermediate_weight = cplx_coeff
+              end
             else
-              cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
-              guw_unit_of_work.intermediate_percent = cplx_coeff
+              #??
             end
 
             if cplx_coeff.nil?
@@ -1205,7 +1210,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     #gestion des valeurs intermédiaires
     @final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
-    # guw_unit_of_work.intermediate_weight = @final_value
 
     guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
     guw_unit_of_work.save
