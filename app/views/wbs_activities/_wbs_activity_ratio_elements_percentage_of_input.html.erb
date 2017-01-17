@@ -71,7 +71,7 @@
       <% @selected_ratio.get_wbs_activity_ratio_variables.each do |wbs_arv| %>
           <tr>
             <td class="align-center"><%= text_field_tag "name[#{wbs_arv.id}]", wbs_arv.name, :class => 'input-xl' %></td>
-            <td class="align-center"><%= text_field_tag "percentage_of_input[#{wbs_arv.id}]", wbs_arv.percentage_of_input, :class => 'input-xl' %></td>
+            <td class="align-center"><%= text_field_tag "percentage_of_input[#{wbs_arv.id}]", wbs_arv.percentage_of_input, :class => 'input-xl', placeholder: "x% * En " %></td>
             <td class="align-center"><%= check_box_tag 'wbs_arv_is_modifiable[]', wbs_arv.id, wbs_arv.is_modifiable %></td>
             <td class="align-center"><%= check_box_tag 'wbs_arv_is_used_in_ratio_calculation[]', wbs_arv.id, wbs_arv.is_used_in_ratio_calculation %></td>
             <td class="align-center"><%= text_field_tag "description[#{wbs_arv.id}]", wbs_arv.description, :class => 'input-xxl' %></td>

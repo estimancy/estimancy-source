@@ -795,7 +795,11 @@ class WbsActivitiesController < ApplicationController
                 entry_level_value = params[:values][level]["#{est_val.id}"]
               end
               ###level_estimation_value[@pbs_project_element.id] = params[:values][level].to_f * effort_unit_coefficient
-              level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
+              if entry_level_value.nil? || entry_level_value.empty?
+                level_estimation_value[@pbs_project_element.id] = nil
+              else
+                level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
+              end
               in_result["string_data_#{level}"] = level_estimation_value
 
             else
@@ -805,7 +809,12 @@ class WbsActivitiesController < ApplicationController
                 entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]
               end
               ###level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
-              level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
+              if entry_level_value.nil? || entry_level_value.empty?
+                level_estimation_value[@pbs_project_element.id] = nil
+              else
+                level_estimation_value[@pbs_project_element.id] = entry_level_value.to_f * effort_unit_coefficient
+              end
+
               in_result["string_data_#{level}"] = level_estimation_value
             end
 
