@@ -959,7 +959,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @weight = (weight.nil? ? 1 : weight.to_f) * intermediate_percent
+            @final_value = (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
             # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
@@ -1048,11 +1048,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        if @oc.nil?
-          @final_value = nil
-        else
-          @final_value = @weight
-        end
+        # if @oc.nil?
+        #   @final_value = nil
+        # else
+        #   @final_value = @weight
+        # end
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
@@ -1076,12 +1076,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : pcts.to_f)
           end
 
-          if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-            tmp_hash_res["#{guw_output.id}"] = tmp
-            tmp_hash_ares["#{guw_output.id}"] = tmp
+          if params["ajusted_size"].present?
+            if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = tmp
+            else
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+            end
           else
             tmp_hash_res["#{guw_output.id}"] = tmp
-            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+            tmp_hash_ares["#{guw_output.id}"] = tmp
           end
 
           guw_unit_of_work.size = tmp_hash_res
