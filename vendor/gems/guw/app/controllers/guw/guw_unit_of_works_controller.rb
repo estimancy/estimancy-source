@@ -921,7 +921,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_outputs.each_with_index do |guw_output, index|
 
-        @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity.id,
+        @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                               guw_output_id: guw_output.id,
                                               value: 1).first
 
