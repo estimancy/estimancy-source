@@ -63,7 +63,7 @@ class ModuleProjectsController < ApplicationController
       params[:preceding].each do |k, v|
         curr_ev = EstimationValue.where(id: k.to_i).first
         pre_ev = EstimationValue.where(id: v.to_i).first
-        curr_ev.estimation_value_id = pre_ev.id
+        curr_ev.estimation_value_id = pre_ev.nil? ? nil : pre_ev.id
         curr_ev.save
       end
     end

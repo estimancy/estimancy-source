@@ -37,7 +37,7 @@
     </th>
   </tr>
 
-
+  <% module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(order: 'position')) %>
   <% module_project_ratio_elements.each do |mp_ratio_element| %>
       <% completion_consistency = "" %>
       <% title = "" %>

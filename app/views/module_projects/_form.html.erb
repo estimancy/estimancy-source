@@ -57,7 +57,7 @@
           <div class="row-fluid">
             <div class="span2">
               <p><%= cev %></p>
-              <%= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id, include_blank: true) %>
+              <%= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
             </div>
           </div>
         <% end %>
