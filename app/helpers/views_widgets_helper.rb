@@ -665,6 +665,14 @@ module ViewsWidgetsHelper
 
             unless estimation_value.in_out == "input"
               chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
+
+              # if ratio_reference.nil?
+              #   module_project_ratio_elements = []
+              # else
+              #   module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id, selected: true)
+              # end
+
+              ###chart_data = get_google_chart_data_effort_and_cost(module_project_ratio_elements, pbs_project_elt, module_project, estimation_value, view_widget)
             end
 
             #value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
@@ -679,7 +687,7 @@ module ViewsWidgetsHelper
                                        #value_to_show = raw(render :partial => 'views_widgets/g_bubble_test2',
                                        :locals => { level_values: g_chart_data,
                                                     widget_id: view_widget.id,
-                                                    chart_title: chart_title,
+                                                    chart_title: "#{chart_title} : #{get_attribute_human_name(estimation_value.pe_attribute)}",
                                                     chart_height: chart_height
                                        })
 
@@ -826,6 +834,7 @@ module ViewsWidgetsHelper
 
         result = raw(render :partial => 'views_widgets/effort_by_phases_profiles',
                                         :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                                      estimation_value: estimation_value,
                                                       pe_attribute: estimation_value.pe_attribute,
                                                       module_project: module_project,
                                                       project_organization_profiles: project_organization_profiles,
@@ -848,6 +857,7 @@ module ViewsWidgetsHelper
         end
         result = raw(render :partial => 'views_widgets/cost_by_phases_profiles',
                                         :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                                    estimation_value: estimation_value,
                                                     pe_attribute: estimation_value.pe_attribute,
                                                     module_project: module_project,
                                                     project_organization_profiles: project_organization_profiles,
@@ -910,6 +920,59 @@ module ViewsWidgetsHelper
 
     end
     ###result
+  end
+
+
+  def get_google_chart_data_effort_and_cost(module_project_ratio_elements, pbs_project_element, module_project, estimation_value, view_widget)
+    chart_data = []
+    effort_breakdown_stacked_bar_dataset = {}
+
+    return chart_data if (!module_project.pemodule.alias.eql?(Projestimate::Application::EFFORT_BREAKDOWN) || estimation_value.nil?)
+
+    wbs_activity = module_project.wbs_activity
+    wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
+    view_widget.show_min_max ? (levels = ['low', 'most_likely', 'high', 'probable']) : (levels = ['probable'])
+
+    if view_widget.show_min_max
+      #  # get all project's wbs-project_elements
+      wbs_activity_elements = wbs_activity.wbs_activity_elements
+      wbs_activity_elements.each do |wbs_activity_elt|
+        effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+      end
+    else
+
+      # Test
+      module_project_ratio_elements.each do |mp_ratio_element|
+
+        pe_attribute_alias = estimation_value.pe_attribute.alias
+        if estimation_value.pe_attribute.alias.in?("cost", "effort")
+          pe_attribute_alias = "retained_#{pe_attribute_alias}"
+        end
+
+        level_value = mp_ratio_element.send("#{pe_attribute_alias}_probable")
+
+        if mp_ratio_element.wbs_activity_element.is_childless? && mp_ratio_element.selected
+          if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
+            chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(level_value, user_number_precision, true)]
+          else
+            # for Effort attribute
+            if view_widget.use_organization_effort_unit == true
+              #chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)]
+              chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert(level_value, @current_organization)]
+            else
+              # use module instance effort unit
+              #chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), user_number_precision, true)]
+              chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert(level_value, @current_organization)]
+            end
+          end
+        else
+          chart_data << ["#{mp_ratio_element.name}", 0]
+        end
+      end
+
+      # Fin test
+    end
+    chart_data
   end
 
 
