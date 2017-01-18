@@ -131,14 +131,14 @@
             <!--<th><%#= I18n.t(:actions) %></th>-->
           </tr>
 
-          <% gap = 1 %>
+        <%# @module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(@module_project_ratio_elements.arrange(order: 'position')) %>
+
+        <% gap = 1 %>
           <% wbs_activity_elt_root = @wbs_activity_ratio.wbs_activity.wbs_activity_elements.first.root
            ###root_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt_root.id).first
            root_mp_ratio_element = @module_project_ratio_elements.select{ |e| e.wbs_activity_element_id == wbs_activity_elt_root.id }.first
            root_mp_ratio_element_id = root_mp_ratio_element.nil? ? nil : root_mp_ratio_element.id
           %>
-
-          <% @module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(@module_project_ratio_elements.arrange(order: 'position')) %>
 
           <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
             <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable.to_f ==0 || element.retained_effort_most_likely.to_f==0 } %>
