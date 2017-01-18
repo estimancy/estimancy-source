@@ -997,7 +997,9 @@ module ViewsWidgetsHelper
       probable_est_value = estimation_value.send("string_data_probable")
       pbs_probable_for_consistency = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
       wbs_activity.wbs_activity_elements.each do |wbs_activity_elt|
-        if wbs_activity_elt != wbs_activity_root
+        if wbs_activity_elt.is_childless? #!= wbs_activity_root
+          #mp_ratio_element = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
+
           level_estimation_values = probable_est_value
           if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
             chart_data << ["#{wbs_activity_elt.name}", 0]
