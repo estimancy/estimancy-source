@@ -107,7 +107,7 @@
 
         <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
 
-        <% if current_ev.nil? || current_ev.blank? %>
+        <% if !current_module_project.wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
             <% entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
         <% else %>
             <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
