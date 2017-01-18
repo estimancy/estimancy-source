@@ -821,7 +821,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         uo_weight_ml = guw_c.weight.nil? ? 1 : guw_c.weight.to_f
       else
         if guw_type.attribute_type == "Pourcentage"
-          uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_most_likely.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
+          uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * (1 + guw_unit_of_work.result_most_likely.to_f / 100) + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
         else
           uo_weight_ml = (guw_c.weight.nil? ? 1 : guw_c.weight.to_f) * guw_unit_of_work.result_most_likely.to_f + (guw_c.weight_b.nil? ? 0 : guw_c.weight_b.to_f)
         end
@@ -852,6 +852,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
     guw_unit_of_work.intermediate_percent = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
+    if guw_unit_of_work.intermediate_weight.nil?
+      guw_unit_of_work.intermediate_weight = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
+    end
+
     guw_unit_of_work.save
 
     result = compute_probable_value(uo_weight_low.to_f, uo_weight_ml.to_f, uo_weight_high.to_f)[:value]

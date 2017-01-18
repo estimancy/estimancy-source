@@ -31,7 +31,7 @@
              id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>"
              style="top: <%= top_position %>; left: <%= left_position %>">
 
-            <% if current_user.super_admin == true && pmod.id != @initialization_module_project.id %>
+            <% if pmod.id != @initialization_module_project.id %>
               <%= link_to pmod, edit_module_project_path(pmod), class: "a_white" %>
             <% else %>
               <%= link_to pmod, "#", class: "a_white" %> <%#= pmod %>

@@ -1,25 +1,25 @@
 <div class="tabs">
 
   <ul>
+    <li>
+      <a href="#mp">
+        Configuration de l'instance du module
+      </a>
+    </li>
     <% if current_user.super_admin == true %>
       <li>
-        <a href="#mp">
-          Configuration de l'instance du module
+        <a href="#tabs-view-widgets-parameters">
+          <%= I18n.t(:views_widgets_parameters) %>
         </a>
       </li>
     <% end %>
-    <li>
-      <a href="#tabs-view-widgets-parameters">
-        <%= I18n.t(:views_widgets_parameters) %>
-      </a>
-    </li>
   </ul>
 
-  <!-- Parametres d'affichage de la vue -->
-  <div id="tabs-view-widgets-parameters">
-    <%= render partial: "module_projects/views_and_widgets", object: @module_project %>
-  </div>
-
+  <% if current_user.super_admin == true %>
+    <div id="tabs-view-widgets-parameters">
+      <%= render partial: "module_projects/views_and_widgets", object: @module_project %>
+    </div>
+  <% end %>
 
   <div id="mp">
     <%= form_tag(module_projects_reassign_path) do |f| %>
