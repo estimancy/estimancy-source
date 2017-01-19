@@ -827,6 +827,17 @@ class OrganizationsController < ApplicationController
                   ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
                   ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
                   ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                  # update ev attribute links (input attribute link from preceding module_project)
+                  unless ev.estimation_value_id.nil?
+                    project_id = new_prj.id
+                    new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                    new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                    if new_ev
+                      ev.estimation_value_id = new_ev.id
+                    end
+                  end
+
                   ev.save
                 end
               end
@@ -1034,6 +1045,17 @@ class OrganizationsController < ApplicationController
                       end
                     end
                   end
+
+                  #Update Wbs-activity-ratio-varibales
+                  old_ratio = old_wbs_activity.wbs_activity_ratios.where(id: ratio.copy_id).first
+                  if old_ratio
+                    old_ratio.wbs_activity_ratio_variables.each do |old_ratio_variable|
+                      new_ratio_variable = old_ratio_variable.dup
+                      new_ratio_variable.wbs_activity_ratio_id = ratio.id
+                      new_ratio_variable.save
+                    end
+                  end
+
                 end
 
                 #Managing the component tree
