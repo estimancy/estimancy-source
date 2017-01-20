@@ -1396,7 +1396,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
 
       unless @http.body_str.to_s.blank?
-        @guw_type = Guw::GuwType.where(name: @http.body_str).first
+        @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_model.id).first
       end
 
       @guw_unit_of_work.guw_type_id = @guw_type.id

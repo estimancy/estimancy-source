@@ -193,7 +193,7 @@
             </tr>
 
            <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
-              <% @guw_type = @guw_type %>
+              <% @guw_type = guow.guw_type %>
               <tr>
 
                 <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>" class="span1">
