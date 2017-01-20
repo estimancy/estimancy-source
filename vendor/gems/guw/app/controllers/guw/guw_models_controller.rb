@@ -1106,17 +1106,17 @@ class Guw::GuwModelsController < ApplicationController
               end
             else
               guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
-                                                   name: row[4],
-                                                   comments: row[5],
-                                                   guw_unit_of_work_group_id: guw_uow_group.id,
-                                                   module_project_id: current_module_project.id,
-                                                   pbs_project_element_id: @component.id,
-                                                   guw_model_id: @guw_model.id,
-                                                   display_order: my_order,
-                                                   tracking: row[12],
-                                                   quantity: row[11].nil? ? 1 : row[11],
-                                                   size: row[14].nil? ? nil : row[14],
-                                                   ajusted_size: row[15].nil? ? nil : row[15])
+                                                  name: row[4],
+                                                  comments: row[5],
+                                                  guw_unit_of_work_group_id: guw_uow_group.id,
+                                                  module_project_id: current_module_project.id,
+                                                  pbs_project_element_id: @component.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  display_order: my_order,
+                                                  tracking: row[12],
+                                                  quantity: row[11].nil? ? 1 : row[11],
+                                                  size: row[14].nil? ? nil : row[14],
+                                                  ajusted_size: row[15].nil? ? nil : row[15])
 
                 @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
                   if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient

@@ -23,7 +23,8 @@
   <div class="row-fluid">
     <hr>
     <div class="pull-right">
-      <% @guw_model.guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+      <% @guw_outputs = @guw_model.guw_outputs %>
+      <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
           Total <%= guw_output.name %> retenu :
           <span class="label label-success ajusted_size">
@@ -36,7 +37,7 @@
         </span>
       <% end %>
 
-      <% @guw_model.guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+      <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
           Total <%= guw_output.name %> théorique :
           <span class="label label-success ajusted_size">
@@ -151,22 +152,27 @@
 
       <div id="collapse<%= uowg.id %>" class="accordion-body collapse in">
 
+        <% @guw_types = @guw_model.guw_types %>
+
         <div class="accordion-inner">
           <table class="table table-bordered table-condensed">
             <tr>
-              <th class=""></th>
-              <th class="">#</th>
+              <th class="span1">#</th>
               <th class=""><%= I18n.t :name %></th>
               <th class="">UO</th>
 
-              <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+              <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                 <th>
                   <%= I18n.t :criteria %>
                 </th>
               <% end %>
 
               <th class="">
-                COEF
+                <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                  COEF
+                <% else %>
+                  Complexité
+                <% end %>
               </th>
 
               <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
@@ -177,19 +183,7 @@
                 <% end %>
               <% end %>
 
-              <%# @guw_model.guw_coefficients.each do |guw_coefficient| %>
-                <!--<th colspan="2">-->
-                  <%# guw_coefficient.name %>
-                <!--</th>-->
-              <%# end %>
-
-              <%# @guw_model.guw_outputs.each do |guw_output| %>
-                <!--<th>-->
-                  <%# guw_output.name %>
-                <!--</th>-->
-              <%# end %>
-
-              <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+              <% if @guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                 <th class="">
                   <%= I18n.t :quantity %>
                 </th>
@@ -199,38 +193,43 @@
             </tr>
 
            <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
+              <% @guw_type = guow.guw_type %>
               <tr>
 
-                <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>"></td>
-
-                <td>
+                <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>" class="span1">
                   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id,disabled: !can?(:execute_estimation_plan, @project) %>
                   <%= hidden_field_tag "", uowg.id, class: "#{guow.id}_group" %>
                   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
                 </td>
 
-                <td class="text_field_text_overflow">
+                <td class="text_field_text_overflow span2">
                   <span class="pull-left">
                     <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
                   </span>
                 </td>
 
                 <td class="span3">
-                  <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_model.guw_types.map do |i|
-                                                                              default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first
-                                                                              ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
-                                                                            end,
-                                                                            selected: guow.guw_type_id),
-                                 class: "guw_type",
-                                 style: "width: 90px;" %>
+                  <% unless @guw_type.nil? %>
+                    <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map do |i|
+                                                                                default_complexity = @guw_type.guw_complexities.where(default_value: true).first
+                                                                                ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
+                                                                              end,
+                                                                              selected: @guw_type.id),
+                                   class: "guw_type",
+                                   style: "width: 90px;" %>
+                  <% else %>
+                    <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+                                   class: "guw_type",
+                                   style: "width: 90px;" %>
+                  <% end %>
                 </td>
 
-                <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                   <td>
-                    <% unless guow.guw_type.nil? %>
-                      <% if guow.guw_type.allow_criteria == true %>
+                    <% unless @guw_type.nil? %>
+                      <% if @guw_type.allow_criteria == true %>
                         <span class="text-center criteria_label_<%= guow.id %>">
-                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
+                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id).map(&:most_likely).compact %>
                           <% if counting.empty? %>
                             <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                           <% else %>
@@ -245,59 +244,61 @@
 
                 <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
-                    <% if guow.guw_type.display_threshold == true %>
-                      <%# begin %>
-                        <% if guow.off_line == true %>
-                          <% @default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first %>
-                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                         guw: guow.id,
-                                         class: "guw_complexity",
-                                         prompt: "HSAT",
-                                         disabled: !guow.guw_type.allow_complexity,
-                                         style: "width: 70px;" %>
-                        <% elsif guow.off_line_uo == true %>
-                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                         guw: guow.id,
-                                         class: "guw_complexity",
-                                         prompt: "HSUO",
-                                         disabled: !guow.guw_type.allow_complexity,
-                                         style: "width: 70px;" %>
-                        <% elsif guow.guw_complexity.nil? %>
-                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id),
-                                         guw: guow.id,
-                                         class: "guw_complexity",
-                                         include_blank: true,
-                                         disabled: !guow.guw_type.allow_complexity,
-                                         style: "width: 70px;" %>
-                          <%# hidden_field_tag "hidden_guw_complexity_#{guow.id}", guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : guow.guw_type.guw_complexities.where(default_value: true).first.id %>
-                        <% else %>
-                          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                                         class: "guw_complexity",
-                                         include_blank: true,
-                                         disabled: !guow.guw_type.allow_complexity,
-                                         style: "width: 70px;" %>
-                        <% end %>
-                      <%# rescue Exception => e %>
-                        <%# e %>
-                      <%# end %>
-                    <% else %>
-                      <% if guow.off_line == true %>
-                        HSAT
-                      <% elsif  guow.off_line_uo == true %>
-                        HSUO
+                    <% unless @guw_type.nil? %>
+                      <% if @guw_type.display_threshold == true %>
+                        <%# begin %>
+                          <% if guow.off_line == true %>
+                            <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
+                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                           guw: guow.id,
+                                           class: "guw_complexity",
+                                           prompt: "HSAT",
+                                           disabled: !@guw_type.allow_complexity,
+                                           style: "width: 70px;" %>
+                          <% elsif guow.off_line_uo == true %>
+                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                           guw: guow.id,
+                                           class: "guw_complexity",
+                                           prompt: "HSUO",
+                                           disabled: !@guw_type.allow_complexity,
+                                           style: "width: 70px;" %>
+                          <% elsif guow.guw_complexity.nil? %>
+                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
+                                           guw: guow.id,
+                                           class: "guw_complexity",
+                                           include_blank: true,
+                                           disabled: !@guw_type.allow_complexity,
+                                           style: "width: 70px;" %>
+                            <%# hidden_field_tag "hidden_guw_complexity_#{guow.id}", @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id %>
+                          <% else %>
+                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
+                                           class: "guw_complexity",
+                                           include_blank: true,
+                                           disabled: !@guw_type.allow_complexity,
+                                           style: "width: 70px;" %>
+                          <% end %>
+                        <%# rescue Exception => e %>
+                          <%# e %>
+                        <%# end %>
                       <% else %>
-                        <% if guow.guw_complexity.nil? %>
-                          -
+                        <% if guow.off_line == true %>
+                          HSAT
+                        <% elsif  guow.off_line_uo == true %>
+                          HSUO
                         <% else %>
-                          <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
-                                               style: "width: 43px;",
-                                               class: "complexity_weight-#{uowg.id}",
-                                               readonly: true %>
-                          <% if guow.guw_type.allow_complexity %>
-                            <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
+                          <% if guow.guw_complexity.nil? %>
+                            -
+                          <% else %>
+                            <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
                                                  style: "width: 43px;",
-                                                 class: "complexity_weight-#{uowg.id} retained-#{uowg.id}",
-                                                 step: 0.001 %>
+                                                 class: "complexity_weight-#{uowg.id}",
+                                                 readonly: true %>
+                            <% if @guw_type.allow_complexity %>
+                              <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
+                                                   style: "width: 43px;",
+                                                   class: "complexity_weight-#{uowg.id} retained-#{uowg.id}",
+                                                   step: 0.001 %>
+                            <% end %>
                           <% end %>
                         <% end %>
                       <% end %>
@@ -333,7 +334,7 @@
                           </td>
                         <% else %>
                           <td class="span2">
-                            <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                            <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                             <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]}, selected: ceuw.nil? ? results.first.value : ceuw.guw_coefficient_element_id),
                                            class: "guw_coefficient",
                                            guw: guow.id,
@@ -350,7 +351,7 @@
                   <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
                     <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                       <td class="span2">
-                        <% unless guow.guw_type.nil? %>
+                        <% unless @guw_type.nil? %>
                           <span class=" size_label_<%= guow.id %>">
                             <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)),
                                                  class: "size-#{uowg.id} guw_number_field_tag",
@@ -361,7 +362,7 @@
                         <% end %>
 
                         <% if guw_output.allow_intermediate_value == true %>
-                          <% unless guow.guw_type.nil? %>
+                          <% unless @guw_type.nil? %>
                             <span class="ajusted_size_<%= guow.id %>">
                               <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output.id}"].to_f.round(2)),
                                                    step: 0.001,
@@ -375,18 +376,20 @@
                   <% end %>
                 <% end %>
 
-                <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                <% if @guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                   <td>
-                    <% unless guow.guw_type.nil? %>
-                      <% if guow.guw_type.allow_quantity == true %>
+                    <% unless @guw_type.nil? %>
+                      <% if @guw_type.allow_quantity == true %>
                         <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, style: "width: 43px;" %>
                       <% end %>
                     <% end %>
                   </td>
                 <% end %>
 
-                <td>
+                <td class="span3">
                   <% if can? :execute_estimation_plan, @project %>
+                    <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
+
                     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
                     <%= link_to "", guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up", title: I18n.t(:up) %>
                     <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down", title: I18n.t(:down) %>
@@ -555,37 +558,36 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="ml" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header modal-drag">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">
-          Comptage automatique
-        </h4>
-      </div>
-      <div class="modal-body" style="height: inherit;">
-        <h5>
-          Importer un modèle d'estimation
-        </h5>
-        <%= form_tag "", :method => 'post', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.ml_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
-          <%= file_field_tag :file %>
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Comptage automatique
+          </h4>
+        </div>
 
-          <h5>
-            Importer un modèle
-          </h5>
+        <div class="modal-body" style="height: inherit;">
 
-          <%= select_tag "", options_for_select(["Réseau de neurones - Story Point", "Réseau de neurones - Autres"]), prompt: "Sélectionner un fichier" %>
+          <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-            Importer un fichier Word (format doc, docx)
-          </h5>
+              Sélectionner un modèle d'IA
+            </h5>
+            <%= select_tag "ml_model", options_for_select(["DT - Arbre de décision (75%)", "SVC - Support Vector Classification", "Autres (en cours de développement)"]) %>
 
-          <%= file_field_tag :file %>
-        <% end %>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-      </div>
+            <h5>
+              Importer un fichier Excel (xlsx uniquement)
+            </h5>
+            <%= file_field_tag :file %>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        </div>
+
+      <% end %>
     </div>
   </div>
 </div>
