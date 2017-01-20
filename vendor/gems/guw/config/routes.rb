@@ -96,6 +96,7 @@ Guw::Engine.routes.draw do
   post "save_name" => "guw_unit_of_works#save_name", as: "save_name"
   post "save_comments" => "guw_unit_of_works#save_comments", as: "save_comments"
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
+  post "ml" => "guw_unit_of_works#ml", as: "ml"
 
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
   post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"

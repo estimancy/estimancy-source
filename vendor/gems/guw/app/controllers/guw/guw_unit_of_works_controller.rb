@@ -37,7 +37,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def create
-    @guw_type = Guw::GuwType.find(params[:guw_unit_of_work][:guw_type_id])
+    unless params[:guw_unit_of_work][:guw_type_id].blank?
+      @guw_type = Guw::GuwType.find(params[:guw_unit_of_work][:guw_type_id])
+    end
     @guw_model = Guw::GuwModel.find(params[:guw_unit_of_work][:guw_model_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.new(params[:guw_unit_of_work])
 
@@ -65,7 +67,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
-          guw_type_id: @guw_type.id,
+          guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
           guw_unit_of_work_id: @guw_unit_of_work.id,
           guw_attribute_id: gac.id)
     end
@@ -1066,7 +1068,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |goa|
 
             unless goa.value.to_f == 0
-              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"] * goa.value.to_f
+              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
             end
 
           end
@@ -1339,6 +1341,70 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_view_widgets_and_project_fields
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
+  end
+
+
+  def ml
+    if params[:file].present?
+      if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+
+        @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+        @guw_group = current_module_project.guw_unit_of_work_groups.first
+
+        if @guw_group.nil?
+          @guw_group = Guw::GuwUnitOfWorkGroup.create(name: "Groupe 1",
+                                                      module_project_id: current_module_project.id,
+                                                      pbs_project_element_id: current_component.id)
+        end
+
+        workbook = RubyXL::Parser.parse(params[:file].path)
+        worksheet = workbook[0]
+        tab = worksheet.extract_data
+        tab.each_with_index  do |row, index|
+
+          unless row[0].blank?
+
+            @http = Curl.post("http://localhost:5001/estimate", { us: row[0] } )
+
+            complete_str = row[0].to_s
+            reduce_str = row[0].to_s.truncate(60)
+
+            p "#{row[0]} ===> #{@http.body_str}"
+
+            unless @http.body_str.to_s.blank?
+              @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_model.id).first
+            end
+
+            Guw::GuwUnitOfWork.create(name: reduce_str,
+                                      comments: complete_str,
+                                      guw_unit_of_work_group_id: @guw_group.id,
+                                      module_project_id: current_module_project.id,
+                                      pbs_project_element_id: current_component.id,
+                                      guw_model_id: @guw_model.id,
+                                      display_order: index.to_i,
+                                      tracking: complete_str,
+                                      quantity: 1,
+                                      guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+          end
+        end
+      end
+
+      redirect_to :back and return
+
+    else
+      @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+      @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
+
+      unless @http.body_str.to_s.blank?
+        @guw_type = Guw::GuwType.where(name: @http.body_str).first
+      end
+
+      @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.save
+
+      redirect_to :back and return
+    end
+
   end
 
   private
