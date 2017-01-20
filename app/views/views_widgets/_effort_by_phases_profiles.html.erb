@@ -86,7 +86,7 @@
                         <% if project_organization_profiles.length > 0 %>
                           <% array_profile_sum = Array.new %>
                           <% project_organization_profiles.each do |profile| %>
-                            <% if (mp_ratio_element && mp_ratio_element.selected) || mp_ratio_element.nil? %>
+                            <% if (mp_ratio_element && mp_ratio_element.selected) #|| mp_ratio_element.nil? %>
                                 <!-- Get the percentage of profile -->
                                 <% if !wbs_activity_ratio_elt.nil?
                                      # get the wbs_activity_ratio_profile
@@ -116,7 +116,11 @@
                                       <% if wbs_profiles_value.class == Hash %>
                                         <% wbs_profiles_value = wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f %>
                                       <% end %>
-                                      <% array_root[profile.id] << wbs_profiles_value %>
+
+                                      <!-- on ajoute que les descendants directs -->
+                                      <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
+                                        <% array_root[profile.id] << wbs_profiles_value %>
+                                      <% end %>
                                       <% unless wbs_profiles_value.nil? %>
                                         <% effort_per_phase +=  wbs_profiles_value %>
                                       <% end %>
@@ -139,7 +143,10 @@
                             <td></td>
                         <% end %>
 
-                        <% total_per_phase_to_sum <<  effort_per_phase %>
+                        <!-- on ajoute que les descendants directs -->
+                        <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
+                            <% total_per_phase_to_sum <<  effort_per_phase %>
+                        <% end %>
                         <td style="text-align: right">
                           <%#= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(convert(effort_per_phase, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
                           <% if view_widget.use_organization_effort_unit == true %>

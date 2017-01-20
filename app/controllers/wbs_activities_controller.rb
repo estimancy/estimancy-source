@@ -607,7 +607,8 @@ class WbsActivitiesController < ApplicationController
           @wbs_activity.organization_profiles.each do |profile|
             profiles_probable_value["profile_id_#{profile.id}"] = Hash.new
             # Parent values are reset to zero
-            wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt.id}"] = 0.0 }
+            #wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt.id}"] = 0.0 }
+            wbs_activity_elements.each{ |elt| parent_profile_est_value["#{elt.id}"] = nil }
 
             probable_estimation_value[@pbs_project_element.id].each do |wbs_activity_elt_id, hash_value|
               # Get the probable value profiles values
@@ -696,7 +697,8 @@ class WbsActivitiesController < ApplicationController
                   #Effort attribute
                   else
                     if wbs_activity_element.is_childless?
-                      estimation_value_profile = (hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100
+                      estimation_value_profile = hash_value[:value].nil? ? nil : ((hash_value[:value].to_f * corresponding_ratio_profile_value.to_f) / 100)
+
                       current_probable_profiles["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => { :value => estimation_value_profile } }
 
                       #the update the parent's value
@@ -704,14 +706,13 @@ class WbsActivitiesController < ApplicationController
                       ###parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
 
                       # Update values for ancestors if the element it self is selected
-                      mp_ratio_element_for_effort_profile = @module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_element).first
-                      if (mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected==true) || mp_ratio_element_for_effort_profile.nil?
-                        # wbs_activity_element.ancestors.each do |ancestor|
-                        #   parent_profile_est_value["#{ancestor.id}"] = parent_profile_est_value["#{ancestor.id}"].to_f + estimation_value_profile
-                        # end
-
-                        parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
-                      end
+                      # mp_ratio_element_for_effort_profile = @module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_element).first
+                      # if (mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected==true) #|| mp_ratio_element_for_effort_profile.nil?
+                      #   # wbs_activity_element.ancestors.each do |ancestor|
+                      #   #   parent_profile_est_value["#{ancestor.id}"] = parent_profile_est_value["#{ancestor.id}"].to_f + estimation_value_profile
+                      #   # end
+                      #   parent_profile_est_value["#{wbs_activity_element.parent_id}"] = parent_profile_est_value["#{wbs_activity_element.parent_id}"].to_f + estimation_value_profile
+                      # end
 
                         #Need to calculate the parents effort by profile : addition of its children values
                         # wbs_activity_elements.each do |wbs_activity_element_id|
@@ -729,21 +730,52 @@ class WbsActivitiesController < ApplicationController
             end
 
             # #Need to calculate the parents effort / cost by profile : addition of its children values
-            wbs_activity_elements.each do |wbs_activity_element|
-              begin
-                ###probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => parent_profile_est_value["#{wbs_activity_element.id}"]} }
-                if wbs_activity_element.has_children?
-                  ancestor_value = 0.0
-                  # Update values for ancestors
-                  wbs_activity_element.children.each do |child|
-                    ancestor_value = ancestor_value.to_f + parent_profile_est_value["#{child.id}"]
+            wbs_activity_root.children.each do |node|
+              # Sort node subtree by ancestry_depth
+              sorted_node_elements = node.subtree.order('ancestry_depth desc')
+              sorted_node_elements.each do |wbs_activity_element|
+              #wbs_activity_elements.each do |wbs_activity_element|
+                #begin
+                  ###probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => parent_profile_est_value["#{wbs_activity_element.id}"]} }
+                  if wbs_activity_element.has_children?
+                    ancestor_value = nil
+                    # Update values for ancestors
+                    wbs_activity_element.children.each do |child|
+                      mp_ratio_element_for_effort_profile = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
+                      if mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected==true
+                        unless parent_profile_est_value["#{child.id}"].nil?
+                          if ancestor_value.nil?
+                            ancestor_value = parent_profile_est_value["#{child.id}"].to_f
+                          else
+                            ancestor_value = ancestor_value + parent_profile_est_value["#{child.id}"].to_f
+                          end
+                        end
+                      end
+                    end
+                    parent_profile_est_value["#{wbs_activity_element.id}"] = ancestor_value
                   end
-                  parent_profile_est_value["#{wbs_activity_element.id}"] = ancestor_value
-                end
 
-                probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] =  { :value => parent_profile_est_value["#{wbs_activity_element.id}"] }
-              rescue
-              end
+                  if probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"].nil?
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"] = Hash.new
+                  end
+
+                  if probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"].empty?
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"] = { "profile_id_#{profile.id}" => { "ratio_id_#{@ratio_reference.id}" => { :value => parent_profile_est_value["#{wbs_activity_element.id}"] } } }
+
+                  elsif probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"].nil?
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] = Hash.new
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] =  { "ratio_id_#{@ratio_reference.id}" => { :value => parent_profile_est_value["#{wbs_activity_element.id}"] } }
+
+                  elsif probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"].empty?
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] =  { "ratio_id_#{@ratio_reference.id}" => { :value => parent_profile_est_value["#{wbs_activity_element.id}"] } }
+
+                  else
+                    probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] =  { :value => parent_profile_est_value["#{wbs_activity_element.id}"] }
+                  end
+
+                #rescue
+                #end
+              end  ####
             end
           end
 
