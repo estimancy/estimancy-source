@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170117141636) do
+ActiveRecord::Schema.define(:version => 20170118101308) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -326,6 +326,7 @@ ActiveRecord::Schema.define(:version => 20170117141636) do
     t.integer  "display_order"
     t.text     "notes"
     t.integer  "estimation_value_id"
+    t.integer  "copy_id"
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
@@ -972,6 +973,12 @@ ActiveRecord::Schema.define(:version => 20170117141636) do
   add_index "languages", ["record_status_id"], :name => "index_languages_on_record_status_id"
   add_index "languages", ["reference_id"], :name => "index_languages_on_parent_id"
   add_index "languages", ["uuid"], :name => "index_languages_on_uuid", :unique => true
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "master_settings", :force => true do |t|
     t.string   "key"

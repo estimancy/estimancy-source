@@ -228,22 +228,25 @@ class ModuleProject < ActiveRecord::Base
                                                         wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
                                                         ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
 
-        current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id)
-        activity_elt = mp_ratio_elt.wbs_activity_element
-        activity_elt_ancestor_ids = activity_elt.ancestor_ids
-        new_ancestor_ids_list = []
-        unless activity_elt.is_root?
-          activity_elt_ancestor_ids.each do |ancestor_id|
-            ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
-            unless ancestor.nil?
-              new_ancestor_ids_list.push(ancestor.id)
-            end
-          end
-          new_ancestry = new_ancestor_ids_list.join('/')
-          mp_ratio_elt.ancestry = new_ancestry
-          mp_ratio_elt.save
-        end
       end
+
+      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id)
+      activity_elt = mp_ratio_elt.wbs_activity_element
+      activity_elt_ancestor_ids = activity_elt.ancestor_ids
+      new_ancestor_ids_list = []
+      unless activity_elt.is_root?
+        activity_elt_ancestor_ids.each do |ancestor_id|
+          ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+          unless ancestor.nil?
+            new_ancestor_ids_list.push(ancestor.id)
+          end
+        end
+        new_ancestry = new_ancestor_ids_list.join('/')
+        mp_ratio_elt.ancestry = new_ancestry
+        mp_ratio_elt.save
+      end
+
+      #end
     end
 
     # il faut supprimer les mp_ratio_elements dont les wsb_activity_element n'existent plus.

@@ -221,6 +221,16 @@ class WbsActivitiesController < ApplicationController
             ratio.wbs_activity_ratio_elements.each do |ratio_elt|
               new_wbs_activity_ratio_elts << ratio_elt
             end
+
+            #Update Wbs-activity-ratio-varibales
+            old_ratio = old_wbs_activity.wbs_activity_ratios.where(id: ratio.copy_id).first
+            if old_ratio
+              old_ratio.wbs_activity_ratio_variables.each do |old_ratio_variable|
+                new_ratio_variable = old_ratio_variable.dup
+                new_ratio_variable.wbs_activity_ratio_id = ratio.id
+                new_ratio_variable.save
+              end
+            end
           end
 
           #Managing the component tree
@@ -246,6 +256,7 @@ class WbsActivitiesController < ApplicationController
             end
             new_elt.save(:validate => false)
           end
+
         else
           flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"
         end

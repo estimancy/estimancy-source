@@ -50,8 +50,8 @@
           <% total_per_phase_to_sum = []   #value of the sum of all total per phase %>
 
           <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
-              <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
-
+            <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
+            <% if mp_ratio_element %>
               <% unless view_widget_type.to_s=="effort_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
                   <% effort_per_phase = nil %>
                   <% unless wbs_activity_elt.is_root? || mp_ratio_element.nil? %>
@@ -140,6 +140,7 @@
                       <% end %>
                   <% end %>
               <% end %>
+            <% end %>
           <% end %>
 
           <%# added_module_project_ratio_elements.each do |added_phase| %>

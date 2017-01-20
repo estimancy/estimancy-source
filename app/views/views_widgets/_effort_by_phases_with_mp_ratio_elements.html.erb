@@ -15,7 +15,7 @@
      effort_unit_coefficient = 1
    end
 
-   module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(:order => :position))
+   #module_project_ratio_elementss = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(:order => :position))
 
    unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
      if view_widget.use_organization_effort_unit == true
@@ -37,8 +37,10 @@
     </th>
   </tr>
 
-
-  <% module_project_ratio_elements.each do |mp_ratio_element| %>
+  <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
+    <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
+    <% if mp_ratio_element %>
+      <%# module_project_ratio_elements.each do |mp_ratio_element| %>
       <% completion_consistency = "" %>
       <% title = "" %>
       <tr>
@@ -76,5 +78,6 @@
             </td>
         <% end %>
         <tr>
+    <% end %>
   <% end %>
 </table>

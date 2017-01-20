@@ -259,6 +259,8 @@ class ProjectsController < ApplicationController
       ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
       @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
+      @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
+
       # Module_project Ratio elements
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
 
@@ -2098,6 +2100,17 @@ public
                   ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
                   ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
                   ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                  # update ev attribute links
+                  unless ev.estimation_value_id.nil?
+                    project_id = new_prj.id
+                    new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                    new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                    if new_ev
+                      ev.estimation_value_id = new_ev.id
+                    end
+                  end
+
                   ev.save
                 end
               end
@@ -2484,6 +2497,17 @@ public
                       ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
                       ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
                       ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                      # update ev attribute links
+                      unless ev.estimation_value_id.nil?
+                        project_id = new_prj.id
+                        new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                        new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                        if new_ev
+                          ev.estimation_value_id = new_ev.id
+                        end
+                      end
+
                       ev.save
                     end
                   end

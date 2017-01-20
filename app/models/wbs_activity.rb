@@ -50,6 +50,8 @@ class WbsActivity < ActiveRecord::Base
   #Relation needed to delete wbs_activity_ratio_profiles when organization_profiles is unselected on WBS
   has_many :wbs_activity_ratio_elements, through: :wbs_activity_ratios
   has_many :wbs_activity_ratio_profiles, through: :wbs_activity_ratio_elements, dependent: :destroy
+  #wbs-activity-ratio-variables
+  has_many :wbs_activity_ratio_variables, through: :wbs_activity_ratios
 
   ###validates :organization_id, :presence => true
   validates :name, :presence => true, :uniqueness => { :scope => :organization_id }
