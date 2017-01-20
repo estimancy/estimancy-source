@@ -335,7 +335,7 @@
                         <% else %>
                           <td class="span2">
                             <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
-                            <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]}, selected: ceuw.nil? ? results.first.value : ceuw.guw_coefficient_element_id),
+                            <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]}, selected: ceuw.nil? ? (results.nil? ? nil : results.first.value) : ceuw.guw_coefficient_element_id),
                                            class: "guw_coefficient",
                                            guw: guow.id,
                                            required: true,
