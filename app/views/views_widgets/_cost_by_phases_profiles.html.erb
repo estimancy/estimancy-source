@@ -114,7 +114,11 @@
                                                   <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil : wbs_profiles_value[wbs_activity_elt.id][profile.id]) %>
                                                   <% wbs_profiles_value = wbs_profiles_value.nil? ? nil : (wbs_profiles_value.to_f / effort_unit_coefficient)  %>
                                               <% end %>
-                                              <% array_root[profile.id] << wbs_profiles_value %>
+
+                                              <!-- on ajoute que les descendants directs -->
+                                              <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
+                                                <% array_root[profile.id] << wbs_profiles_value %>
+                                              <% end %>
                                               <% unless wbs_profiles_value.nil? %>
                                                   <% if effort_per_phase.nil? %>
                                                     <% effort_per_phase =  wbs_profiles_value %>
@@ -134,7 +138,10 @@
                                 <td></td>
                             <% end %>
 
-                            <% total_per_phase_to_sum <<  effort_per_phase %>
+                            <!-- on ajoute que les descendants directs -->
+                            <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
+                                <% total_per_phase_to_sum <<  effort_per_phase %>
+                            <% end %>
                             <td style="text-align: right"><%= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></td>
                           </tr>
                       <% end %>

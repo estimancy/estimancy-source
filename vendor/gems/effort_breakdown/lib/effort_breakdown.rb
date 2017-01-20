@@ -32,7 +32,9 @@ module EffortBreakdown
     #module input/output parameters
     attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids,
                   :changed_retained_effort_values, :changed_retained_cost_values, :module_project_ratio_elements, :initialize_calculation,
-                  :theoretical_effort, :retained_effort, :theoretical_cost, :retained_cost
+                  :theoretical_effort, :retained_effort, :theoretical_cost, :retained_cost,
+                  :theoretical_effort_by_phase_profiles, :retained_effort_by_phase_profiles,
+                  :theoretical_cost_by_phase_profiles, :retained_cost_by_phase_profiles
 
     #def initialize(c, mp, e, r)
     def initialize(*args)
@@ -53,6 +55,13 @@ module EffortBreakdown
       @retained_effort = HashWithIndifferentAccess.new
       @theoretical_cost = HashWithIndifferentAccess.new
       @retained_cost = HashWithIndifferentAccess.new
+
+      # Output results by phase profiles
+      @theoretical_effort_by_phase_profiles = HashWithIndifferentAccess.new
+      @retained_effort_by_phase_profiles = HashWithIndifferentAccess.new
+      @theoretical_cost_by_phase_profiles = HashWithIndifferentAccess.new
+      @retained_cost_by_phase_profiles = HashWithIndifferentAccess.new
+
     end
 
     ###Dentaku.enable_ast_cache!
@@ -104,6 +113,19 @@ module EffortBreakdown
         @retained_cost = get_cost
       end
 
+      # Calculate the Efforts and Costs per Phases Profiles
+      # @theoretical_effort_by_phase_profiles = get_efforts_by_phase_profiles(@theoretical_effort)
+      # @theoretical_cost_by_phase_profiles = get_costs_by_phase_profiles(@theoretical_cost)
+      #
+      # if @initialize_calculation == true
+      #   @retained_effort_by_phase_profiles = @theoretical_effort_by_phase_profiles
+      #   @retained_cost_by_phase_profiles = @theoretical_cost_by_phase_profiles
+      # else
+      #   @retained_effort_by_phase_profiles = get_efforts_by_phase_profiles(@retained_effort)
+      #   @retained_cost_by_phase_profiles = get_costs_by_phase_profiles(@retained_cost)
+      # end
+
+      # Return all results
       theoretical_effort, theoretical_cost, retained_effort,retained_effort = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost]
     end
 
@@ -270,6 +292,15 @@ module EffortBreakdown
       output_cost
     end
 
+    # Get the theoretical or retained Effort by phases profiles
+    def get_efforts_by_phase_profiles(efforts_by_phase)
+
+    end
+
+    # Get the theoretical or retained Cost by phases profiles
+    def get_costs_by_phase_profiles(costs_by_phase)
+
+    end
 
     # Get the costs by profile
     def get_cost_by_profile(efforts_man_month)
