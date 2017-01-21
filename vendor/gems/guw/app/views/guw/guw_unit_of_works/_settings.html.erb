@@ -96,13 +96,13 @@
               <span class="label label-success">
                 Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
                 <span class="<%= uowg.id %>_ajusted">
-                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.to_f }.flatten.sum.to_f.round(3) %>
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : 0) }.flatten.sum.to_f.round(3) %>
                 </span>
               </span>
               <span class="label label-success">
                 Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
                 <span class="<%= uowg.id %>_theorical">
-                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.to_f}.sum.to_f.round(3) %>
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.is_a?(Numeric) ? i.size.to_f : 0 }.sum.to_f.round(3) %>
                 </span>
               </span>
               <span class="label label-info">
