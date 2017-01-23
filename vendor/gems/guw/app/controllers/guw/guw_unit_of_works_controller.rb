@@ -1345,10 +1345,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
   def ml
+    @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
-        @guw_model = Guw::GuwModel.find(params[:guw_model_id])
         @guw_group = current_module_project.guw_unit_of_work_groups.first
 
         if @guw_group.nil?
@@ -1371,8 +1372,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             p "#{row[0]} ===> #{@http.body_str}"
 
-            unless @http.body_str.to_s.blank?
+            unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
               @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_model.id).first
+            else
+              @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
             end
 
             Guw::GuwUnitOfWork.create(name: reduce_str,
@@ -1384,19 +1387,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                       display_order: index.to_i,
                                       tracking: complete_str,
                                       quantity: 1,
+                                      selected: true,
                                       guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
           end
         end
       end
 
       redirect_to :back and return
-
     else
       @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
       @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
 
-      unless @http.body_str.to_s.blank?
+      unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
         @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_unit_of_work.guw_model.id).first
+      else
+        @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
       end
 
       @guw_unit_of_work.guw_type_id = @guw_type.id
