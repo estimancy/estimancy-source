@@ -289,7 +289,6 @@ class Kb::KbModelsController < ApplicationController
           @project_list << i
         end
       end
-
     end
 
     if @project_list.blank?

@@ -96,15 +96,15 @@ class Skb::SkbModelsController < ApplicationController
     worksheet.add_cell(2, 1, @skb_model.size_unit)
 
     worksheet = workbook.add_worksheet("Données")
-    kb_model_datas = @skb_model.skb_datas
+    skb_model_datas = @skb_model.skb_datas
     default_attributs = ["Nom", "Description", "Données", "Traitements"]
 
-    if !kb_model_datas.nil? && !kb_model_datas.empty?
-      kb_model_datas.each_with_index do |kb_data, index|
-        worksheet.add_cell(index + 1, 0, kb_data.name).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 1, kb_data.description).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 2, kb_data.data).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 3, kb_data.processing).change_horizontal_alignment('center')
+    if !skb_model_datas.nil? && !skb_model_datas.empty?
+      skb_model_datas.each_with_index do |skb_data, index|
+        worksheet.add_cell(index + 1, 0, skb_data.name).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 1, skb_data.description).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 2, skb_data.data).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 3, skb_data.processing).change_horizontal_alignment('center')
       end
     end
 
@@ -148,21 +148,53 @@ class Skb::SkbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[1]
+
       ((file.first_row + 1)..file.last_row).each do |line|
         name = file.cell(line, 'A')
         description = file.cell(line, 'B')
         data = file.cell(line, 'C')
         traitement   = file.cell(line, 'D')
 
+        h = Hash.new
+        ('D'..'ZZ').each_with_index do |letter, i|
+          if i < file.last_column
+            begin
+              h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
+            rescue
+            end
+          end
+        end
+
         Skb::SkbData.create(name: name,
                             description: description,
                             data: data,
                             processing: traitement,
+                            custom_attributes: h,
                             skb_model_id: @skb_model.id)
       end
     end
 
     redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @skb_model.organization_id)
+  end
+
+  def save_filters
+    @skb_model = Skb::SkbModel.find(params[:skb_model_id])
+    @skb_model.filter_a = params["filter_a"]
+    @skb_model.filter_b = params["filter_b"]
+    @skb_model.filter_c = params["filter_c"]
+    @skb_model.filter_d = params["filter_d"]
+    @skb_model.save(validate: false)
+    redirect_to skb.edit_skb_model_path(@skb_model)
+  end
+
+  def update_size
+    @skb_model = Skb::SkbModel.find(params[:skb_model_id])
+    @skb_input = @skb_model.skb_inputs.where(module_project_id: current_module_project.id).first
+    @filters = params["filters"]
+    @skb_input.filters = params["filters"]
+
+    @skb_input.save
+    redirect_to :back
   end
 
   def create
@@ -177,13 +209,24 @@ class Skb::SkbModelsController < ApplicationController
     else
       render action: :new
     end
-
   end
 
   def update
     authorize! :manage_modules_instances, ModuleProject
 
     @skb_model = Skb::SkbModel.find(params[:id])
+
+    if params[:selected_attributes].nil?
+      @skb_model.selected_attributes = []
+      @skb_model.save
+    else
+      arr = []
+      params[:selected_attributes].keys.each do |i|
+        arr << i
+      end
+      @skb_model.selected_attributes = arr
+      @skb_model.save
+    end
 
     if @skb_model.update_attributes(params[:skb_model])
       redirect_to skb.edit_skb_model_path(@skb_model)
