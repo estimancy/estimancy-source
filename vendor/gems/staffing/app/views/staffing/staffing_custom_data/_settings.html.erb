@@ -124,7 +124,7 @@
             </td>
             <td>
               <span class="pull-right end_date">
-                <% unless @md_duration.nil? %>
+                <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
                   <%= (@project.start_date + @staffing_custom_data.duration.weeks).strftime("%d/%m/%Y") %>
                 <% end %>
               </span>
