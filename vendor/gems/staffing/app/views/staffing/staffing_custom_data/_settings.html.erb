@@ -131,7 +131,7 @@
             </td>
             <td>
               <span class="pull-right gap_date">
-                <% unless @staffing_custom_data.duration || @md_duration.nil? %>
+                <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
                   <%= sign((((@project.start_date + @staffing_custom_data.duration.weeks) - (@project.start_date + @md_duration.weeks)).to_f / 7).round(user_number_precision)) %> sem.
                 <% end %>
               </span>
@@ -154,7 +154,7 @@
                 &nbsp; sem.
               </span>
               <span class="reference_duration pull-right">
-                <% unless md_duration %>
+                <% unless md_duration.nil? %>
                   <%= @md_duration.to_f.round(user_number_precision) %>
                 <% end %>
               </span>
@@ -168,14 +168,14 @@
             </td>
             <td>
               <span class="gap_duration pull-right">
-                <% unless @staffing_custom_data.duration || @md_duration.nil? %>
+                <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
                   <%= sign((@staffing_custom_data.duration - @md_duration.to_f).round(user_number_precision)) %> sem.
                 <% end %>
               </span>
             </td>
             <td>
               <span class="percent_duration pull-right">
-                <% unless @staffing_custom_data.duration || @md_duration.nil? %>
+                <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
                   <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %> %
                 <% end %>
               </span>
