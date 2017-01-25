@@ -187,7 +187,6 @@ module ViewsWidgetsHelper
         "#{convert_with_precision(value.to_f, precision, true)}"
       end
 
-    #elsif est_val_pe_attribute.alias == "effort"
     elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
@@ -206,7 +205,6 @@ module ViewsWidgetsHelper
 
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
-    #elsif est_val_pe_attribute.alias == "cost"
     elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
       unless value.class == Hash
         "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"

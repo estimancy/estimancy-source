@@ -24,6 +24,7 @@ Staffing::Engine.routes.draw do
   resources :staffing_custom_data
   resources :staffing_custom_data do
     post 'save_staffing_custom_data'
+    post 'old_save_staffing_custom_data'
   end
 
   post 'save_legend' => "staffing_custom_data#save_legend", as: "save_legend"
