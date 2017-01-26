@@ -1,7 +1,7 @@
 //$("#module_project_ratio_section").html("<%#= j(render(:partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements', :object => @module_project_ratio_elements,
                                                          locals: {wbs_activity_ratio: @wbs_activity_ratio, wai: @wbs_activity_input, effort_unit_coeff: @effort_coefficient, project_organization: @organization})) %>");
 
-$("#module_project_ratio_section").html("<%= j(render(:partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula', :object => @module_project_ratio_elements,
+$("#module_project_ratio_section").html("<%= j(render(:partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula', :object => [@module_project_ratio_elements, @project_wbs_activity_elements],
                                                          locals: {wbs_activity_ratio: @wbs_activity_ratio, wai: @wbs_activity_input, effort_unit_coeff: @effort_coefficient, project_organization: @organization})) %>");
 
 
