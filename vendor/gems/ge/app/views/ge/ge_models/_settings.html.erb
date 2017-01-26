@@ -27,13 +27,13 @@
                 <% else %>
                   <% factor_type = type.gsub(/( )/, '_').downcase %>
                   <div class="span4 factor_group">
-                    <div class="accordion-group">
+                    <div class="accordion-group" style="border: none;">
                       <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_factor" href="#<%= factor_type %>">
                           <b><%= type %></b>
                         </a>
                       </div>
-                      <div id="<%= factor_type %>" class="accordion-body collapse in">
+                      <div id="<%= factor_type %>" class="accordion-body collapse in" style="overflow: inherit;">
                         <div class="accordion-inner">
 
                           <% factor_values.each do |key, values| %>
