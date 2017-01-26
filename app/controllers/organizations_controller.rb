@@ -596,7 +596,7 @@ class OrganizationsController < ApplicationController
     fields = @organization.fields
 
     ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}"] = pf.value
+      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
     end
 
     fields.each do |f|

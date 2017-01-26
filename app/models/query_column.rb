@@ -50,8 +50,7 @@ class QueryColumn
       # project_field = ProjectField.where(field_id: self.field_id, project_id: object.id).last
       # project_field = object.project_fields.where(field_id: self.field_id).last
 
-      v = pfs["#{object.id}_#{self.field_id}"]
-
+      v = pfs["#{object.id}_#{self.field_id}".to_sym]
 
       if v.nil?
         value = '-'
