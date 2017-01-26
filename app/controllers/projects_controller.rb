@@ -1009,19 +1009,23 @@ class ProjectsController < ApplicationController
     set_page_title I18n.t(:confirm_deletion)
 
     @project = Project.find(params[:project_id])
-    authorize! :delete_project, @project
+    if @project.is_childless?
+      authorize! :delete_project, @project
 
-    @from_tree_history_view = params[:from_tree_history_view]
-    @current_showed_project_id = params['current_showed_project_id']
+      @from_tree_history_view = params[:from_tree_history_view]
+      @current_showed_project_id = params['current_showed_project_id']
 
-    #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
-    if @project.has_children?
-      if @from_tree_history_view
-        redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
-      else
-        flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
-        redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+      #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
+      if @project.has_children?
+        if @from_tree_history_view
+          redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
+        else
+          flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
+          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+        end
       end
+    else
+      redirect_to :back
     end
   end
 
@@ -2306,8 +2310,10 @@ public
   #Set the checkout version
   def set_checkout_version
     @project = Project.find(params[:project_id])
-    @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
-    @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
+    unless @project.is_childless?
+      @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
+      @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
+    end
   end
 
   #Checkout the project : create a new version of the project
