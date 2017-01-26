@@ -410,12 +410,16 @@ module ViewsWidgetsHelper
     ############################ Get the view_widget estimation value  ############################
 
     view_widget_est_val = view_widget.estimation_value
+    user_precision = user_number_precision
+    effort_unit_coefficient = 1
 
     unless view_widget_est_val.nil?
       est_val_in_out = view_widget_est_val.in_out
       view_widget_attribute = view_widget_est_val.pe_attribute #view_widget.pe_attribute
-      view_widget_attribute_name = view_widget_attribute.nil? ? "" : view_widget_attribute.name
+      view_widget_attribute_name = view_widget_attribute.nil? ? "" : get_attribute_human_name(view_widget_attribute) #view_widget_attribute.name
       estimation_value = module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', view_widget_attribute.id, view_widget_est_val.in_out).last
+
+      attribute_unit_label = get_attribute_unit(view_widget_attribute)
 
       unless estimation_value.nil?
         data_low = estimation_value.string_data_low[pbs_project_elt.id]
@@ -423,8 +427,17 @@ module ViewsWidgetsHelper
         data_most_likely = estimation_value.string_data_most_likely[pbs_project_elt.id]
         data_probable = estimation_value.string_data_probable[pbs_project_elt.id]
 
+        min_value_text = nil
+        max_value_text = nil
+        probable_value_text = nil
+
         # Get the project wbs_project_element root if module with activities
         if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+          # root element
+          wbs_activity_elt_root = module_project.wbs_activity.wbs_activity_elements.first.root
+          return if wbs_activity_elt_root.nil?
+
+          wbs_activity_elt_root_id = wbs_activity_elt_root.id
 
           # get the wbs_activity_selected ratio
           ratio_reference = @wbs_activity_ratio
@@ -438,11 +451,12 @@ module ViewsWidgetsHelper
             end
           end
 
+
           if estimation_value.in_out == "output"
             unless estimation_value.pe_attribute.alias == "ratio" || estimation_value.pe_attribute.alias == "ratio_name"
-              wbs_activity_elt_root = module_project.wbs_activity.wbs_activity_elements.first.root
 
               wbs_data_low = data_low.nil? ? nil : data_low
+              wbs_data_most_likely = data_most_likely.nil? ? nil : data_most_likely
               wbs_data_high = data_high.nil? ? nil : data_high
               wbs_data_probable = data_probable.nil? ? nil : data_probable
 
@@ -460,26 +474,39 @@ module ViewsWidgetsHelper
               end
 
               if wbs_activity_elt_root_data_probable.nil? || wbs_activity_elt_root_data_probable.empty?
-                data_probable = nil
+                text_data_probable = nil
               else
-                data_probable = (wbs_data_probable.nil? || wbs_data_probable.empty?) ? nil : wbs_activity_elt_root_data_probable[:value]
+                text_data_probable = (wbs_data_probable.nil? || wbs_data_probable.empty?) ? nil : wbs_activity_elt_root_data_probable[:value]
               end
             end
           end
-        end
 
-        if data_probable.nil?
-          probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id)
-        else
-          if is_number?(data_probable)
-            probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
+          if data_probable.nil?
+            probable_value_text = "-"#display_value(data_probable.to_f, estimation_value, module_project_id)
           else
-            probable_value_text = data_probable
+            if is_number?(text_data_probable)
+              probable_value_text = display_value(text_data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
+            else
+              probable_value_text = text_data_probable
+            end
           end
-        end
 
-        max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high, estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-        min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+        else
+          if data_probable.nil?
+            probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)
+          else
+            if is_number?(data_probable)
+              probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
+            else
+              probable_value_text = data_probable
+            end
+          end
+
+          max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high, estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+        end
 
         #Update the widget data
         #widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable, max_value_text: max_value_text, min_value_text: min_value_text, probable_value_text: probable_value_text }
@@ -493,18 +520,61 @@ module ViewsWidgetsHelper
 
         #WIDGETS_TYPE = [["Simple text", "text"], ["Line chart", "line_chart"], ["Bar chart", "bar_chart"], ["Area chart", "area_chart"], ["Pie chart","pie_chart"], ["Timeline", "timeline"], ["Stacked bar chart", "stacked_bar_chart"] ]
         #According to the widget type, we will show simple text, charts, timeline, etc
+
+
         #get  rounded values before use
-        user_precision = user_number_precision
-        data_low = data_low.is_a?(Hash) ? data_low.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_low
-        data_most_likely = data_most_likely.is_a?(Hash) ? data_most_likely.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_most_likely
-        data_high = data_high.is_a?(Hash) ? data_high.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_high
-        data_probable = data_probable.is_a?(Hash) ? data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_probable
+        if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+
+          ### TEST
+
+          # if wbs_activity
+          #   effort_unit_coefficient = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient
+          #
+          #   if view_widget.use_organization_effort_unit == true
+          #      min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
+          #      organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+          #
+          #      effort_unit_coefficient = organization_effort_limit_coeff
+          #      attribute_unit_label = organization_effort_unit
+          #   end
+          # end
+          #
+          # # récuperer l'unité de l'effort de l'organisation
+          # if view_widget.use_organization_effort_unit == true
+          #   # Use orgnization effort unit
+          #   organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+          #   "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+          # else
+          #   # Use orgnization effort unit
+          #   "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
+          # end
+
+
+          ### FIN TEST
+
+
+          data_low = data_low.is_a?(Hash) ? data_low.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_low
+          data_most_likely = data_most_likely.is_a?(Hash) ? data_most_likely.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_most_likely
+          data_high = data_high.is_a?(Hash) ? data_high.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_high
+
+          #data_probable = data_probable.is_a?(Hash) ? (data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first) : data_probable
+          if data_probable.is_a?(Hash)
+            data_probable = data_probable.map{|key,value| (value.nil? || value.empty?) ? 0 : value[:value].round(user_precision) }
+          else
+            data_probable = data_probable
+          end
+        else
+          data_low = data_low.is_a?(Hash) ? data_low.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_low
+          data_most_likely = data_most_likely.is_a?(Hash) ? data_most_likely.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_most_likely
+          data_high = data_high.is_a?(Hash) ? data_high.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_high
+          data_probable = data_probable.is_a?(Hash) ? (data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first) : data_probable
+        end
 
         chart_level_values = []
-        chart_level_values << [I18n.t(:low), data_low]
-        chart_level_values << [I18n.t(:most_likely), data_most_likely]
-        chart_level_values << [I18n.t(:high), data_high]
-        chart_level_values << [I18n.t(:probable), data_probable]
+        chart_level_values << [I18n.t(:value_low), data_low]
+        chart_level_values << [I18n.t(:value_most_likely), data_most_likely]
+        chart_level_values << [I18n.t(:value_high), data_high]
+        chart_level_values << [I18n.t(:value_probable), data_probable]
 
         widget_data[:chart_level_values] = chart_level_values
         chart_height = height-50
@@ -527,9 +597,17 @@ module ViewsWidgetsHelper
           when "bar_chart"
             #value_to_show = column_chart(chart_level_values, height: "1000px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
+            # new data
+            bar_chart_level_values = Array.new
+            bar_chart_level_values << [I18n.t(:value_low), wbs_data_low[wbs_activity_elt_root_id]]
+            bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely[wbs_activity_elt_root_id]]
+            bar_chart_level_values << [I18n.t(:value_high), wbs_data_high[wbs_activity_elt_root_id]]
+            bar_chart_level_values << [I18n.t(:value_probable), wbs_data_probable[wbs_activity_elt_root_id][:value]]
+
             # Now with google-chart
             value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
-                                       :locals => { level_values: chart_level_values,
+                                       :locals => { level_values: bar_chart_level_values,  #chart_level_values,
+                                                    estimation_value: estimation_value,
                                                     widget_id: view_widget.id,
                                                     chart_title: chart_title,
                                                     chart_height: chart_height,
@@ -653,6 +731,7 @@ module ViewsWidgetsHelper
               # Now with google-chart
               value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
                                          :locals => { level_values: chart_data,
+                                                      estimation_value: estimation_value,
                                                       widget_id: view_widget.id,
                                                       chart_title: chart_title,
                                                       chart_height: chart_height,
@@ -697,31 +776,43 @@ module ViewsWidgetsHelper
               value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
             end
 
-          when "stacked_bar_chart_effort_per_phases_profiles"
+          when "stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles",
+              "stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles"
 
             unless estimation_value.in_out == "input"
               chart_height = height-90
-              stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
-              value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+              #stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
+              #value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
               # Now with google chart
-              # wbs_activity = module_project.wbs_activity
-              # wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity.wbs_activity_elements.arrange(:order => :position))
-              # stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget)
-              # ###value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
-              # value_to_show = raw(render :partial => 'views_widgets/g_stacked_bar_chart',
-              #                            :locals => { level_values: stacked_chart_data,
-              #                                         widget_id: view_widget.id,
-              #                                         widget_name: view_widget.name,
-              #                                         chart_title: chart_title,
-              #                                         chart_height: chart_height,
-              #                                         chart_vAxis_title: chart_vAxis,
-              #                                         wbs_activity_elements: wbs_activity_elements
-              #                            })
+              wbs_activity = module_project.wbs_activity
+              wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity.wbs_activity_elements.arrange(:order => :position))
+              stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
+              ###value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
+
+              if view_widget.widget_type.in?("stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles")
+                value_to_show = raw(render :partial => 'views_widgets/g_stacked_bar_chart',
+                                         :locals => { level_values: stacked_chart_data,
+                                                      widget_id: view_widget.id,
+                                                      widget_name: view_widget.name,
+                                                      chart_title: "#{chart_title} : #{get_attribute_human_name(estimation_value.pe_attribute)}",
+                                                      chart_height: chart_height,
+                                                      chart_vAxis_title: chart_vAxis,
+                                                      wbs_activity_elements: wbs_activity_elements
+                                         })
+              elsif view_widget.widget_type.in?("stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles")
+                value_to_show = raw(render :partial => 'views_widgets/g_stacked_grouped_bar_chart',
+                                           :locals => { level_values: stacked_chart_data,
+                                                        widget_id: view_widget.id,
+                                                        widget_name: view_widget.name,
+                                                        chart_title: "#{chart_title} : #{get_attribute_human_name(estimation_value.pe_attribute)}",
+                                                        chart_height: chart_height,
+                                                        chart_vAxis_title: chart_vAxis,
+                                                        wbs_activity_elements: wbs_activity_elements
+                                           })
+              end
 
             end
-
-          when "stacked_bar_chart_cost_per_phases_profiles"
 
           else
             value_to_show = probable_value_text
@@ -872,51 +963,84 @@ module ViewsWidgetsHelper
                                                      view_widget_id: view_widget.id
                                         } )
 
-      when "stacked_bar_chart_effort_per_phases_profiles"
+      when "stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles",
+           "stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles"
+
+        wbs_activity_elements_root = wbs_activity_elements.first.root
+        root_profiles_wbs_data = Hash.new
+        colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679']
+        stacked_chart_data = Array.new
+        # entête des données
+        header_data = ['Phases']
 
         if project_organization_profiles.length > 0
           project_organization_profiles.each do |profile|
+            header_data << profile.name
             #Create individual hash for the profile data
-            profiles_wbs_data["profile_id_#{profile.id}"] = Hash.new
+            root_profiles_wbs_data["profile_id_#{profile.id}"] = 0
           end
+
+          header_data << { role: 'style' } #{ role: 'annotation' }
+          stacked_chart_data << header_data
 
           #Update chart data
           wbs_activity_elements.each do |wbs_activity_elt|
-            wbs_probable_value = pbs_probable_est_value[wbs_activity_elt.id]
-            unless wbs_probable_value.nil?
-              wbs_estimation_profiles_values = wbs_probable_value["profiles"]
-              project_organization_profiles.each do |profile|
-                wbs_profiles_value = nil
-                unless wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil?
-                  if !wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil?
-                    wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value]
-                  end
-                end
-                if !wbs_activity_elt.is_root?
-                  if wbs_profiles_value.nil?
-                    profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = 0
+            if !wbs_activity_elt.is_root?
+              activity_profiles = Array.new
+              activity_profiles << wbs_activity_elt.name
+              root_wbs_profiles_value = 0
+
+              wbs_probable_value = pbs_probable_est_value[wbs_activity_elt.id]
+              unless wbs_probable_value.nil?
+                wbs_estimation_profiles_values = wbs_probable_value["profiles"]
+                project_organization_profiles.each do |profile|
+                  wbs_profiles_value = nil
+                  if wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil?
+                    wbs_profiles_value = nil
                   else
-                    value = number_with_delimiter(wbs_profiles_value.round(estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision))
-                    profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = value
+                    if wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil?
+                      wbs_profiles_value = nil
+                    else
+                      wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value]
+                    end
+                  end
+                  #if !wbs_activity_elt.is_root?
+                    if wbs_profiles_value.nil?
+                      wbs_profiles_value = 0
+                    else
+                      value = wbs_profiles_value.round(user_number_precision)
+                      wbs_profiles_value = value.to_s.gsub(',', '.').to_f
+                    end
+                  #end
+
+                  activity_profiles << wbs_profiles_value
+
+                  # update root value
+                  if wbs_activity_elt.parent_id == wbs_activity_elements_root.id
+                    root_wbs_profiles_value = root_profiles_wbs_data["profile_id_#{profile.id}"]
+                    root_wbs_profiles_value += wbs_profiles_value
+                    root_profiles_wbs_data["profile_id_#{profile.id}"] = root_wbs_profiles_value
                   end
                 end
               end
+
+              activity_profiles << '' #colors[i]
+              stacked_chart_data << activity_profiles
             end
           end
 
-          # Update stacked chart data
+          # For the root element
+          root_value_per_profile = [wbs_activity_elements_root.name]
           project_organization_profiles.each do |profile|
-            #Prepare the final Stacked data hash for each profile
-            profile_hash = Hash.new
-            profile_hash["name"] = profile.name
-            profile_hash["data"] = Hash.new
-            profile_hash["data"] = profiles_wbs_data["profile_id_#{profile.id}"]
-            stacked_data << profile_hash
+            root_value_per_profile << root_profiles_wbs_data["profile_id_#{profile.id}"]
           end
+          root_value_per_profile << ''
+          stacked_chart_data.insert(1, root_value_per_profile)
         end
-        stacked_data
 
-      when "stacked_bar_chart_cost_per_phases_profiles"
+        stacked_chart_data
+
+      #when "stacked_bar_chart_cost_per_phases_profiles"
 
     end
     ###result
@@ -976,6 +1100,67 @@ module ViewsWidgetsHelper
   end
 
 
+  # Get Stacked bar chart data (for Effort and Cost per phase profiles)
+  # A supprimer après test
+  def get_stacked_bar_chart_data_effort_and_cost_per_phase_profile(pbs_project_element, module_project, estimation_value, view_widget)
+    effort_breakdown_stacked_bar_dataset = {}
+
+    wbs_activity = module_project.wbs_activity
+    wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
+    effort_unit_coefficient = wbs_activity.effort_unit_coefficient
+
+    view_widget.show_min_max ? (levels = ['low', 'most_likely', 'high', 'probable']) : (levels = ['probable'])
+
+    #  # get all project's wbs-project_elements
+    wbs_activity_elements = wbs_activity.wbs_activity_elements
+    wbs_activity_elements.each do |wbs_activity_elt|
+      effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+    end
+
+
+    if project_organization_profiles.length > 0
+      project_organization_profiles.each do |profile|
+        #Create individual hash for the profile data
+        profiles_wbs_data["profile_id_#{profile.id}"] = Hash.new
+      end
+
+      #Update chart data
+      wbs_activity_elements.each do |wbs_activity_elt|
+        wbs_probable_value = pbs_probable_est_value[wbs_activity_elt.id]
+        unless wbs_probable_value.nil?
+          wbs_estimation_profiles_values = wbs_probable_value["profiles"]
+          project_organization_profiles.each do |profile|
+            wbs_profiles_value = nil
+            unless wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty? || wbs_estimation_profiles_values["profile_id_#{profile.id}"].nil?
+              if !wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"].nil?
+                wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value]
+              end
+            end
+            if !wbs_activity_elt.is_root?
+              if wbs_profiles_value.nil?
+                profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = 0
+              else
+                value = number_with_delimiter(wbs_profiles_value.round(estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision))
+                profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = value
+              end
+            end
+          end
+        end
+      end
+
+      # Update stacked chart data
+      project_organization_profiles.each do |profile|
+        #Prepare the final Stacked data hash for each profile
+        profile_hash = Hash.new
+        profile_hash["name"] = profile.name
+        profile_hash["data"] = Hash.new
+        profile_hash["data"] = profiles_wbs_data["profile_id_#{profile.id}"]
+        stacked_data << profile_hash
+      end
+    end
+    stacked_data
+  end
+
   # Get the BAR or PIE CHART data for effort per phase or Cost per phase
   def get_chart_data_effort_and_cost(pbs_project_element, module_project, estimation_value, view_widget)
     chart_data = []
@@ -985,6 +1170,8 @@ module ViewsWidgetsHelper
 
     wbs_activity = module_project.wbs_activity
     wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
+    effort_unit_coefficient = wbs_activity.effort_unit_coefficient
+
     view_widget.show_min_max ? (levels = ['low', 'most_likely', 'high', 'probable']) : (levels = ['probable'])
 
     if view_widget.show_min_max
@@ -996,21 +1183,43 @@ module ViewsWidgetsHelper
     else
       probable_est_value = estimation_value.send("string_data_probable")
       pbs_probable_for_consistency = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
+
+      # Get min value
+      # min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+      # organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+
       wbs_activity.wbs_activity_elements.each do |wbs_activity_elt|
         if wbs_activity_elt.is_childless? #!= wbs_activity_root
           #mp_ratio_element = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
 
+          activity_value = 0
           level_estimation_values = probable_est_value
           if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
-            chart_data << ["#{wbs_activity_elt.name}", 0]
+            #chart_data << ["#{wbs_activity_elt.name}", 0]
+            activity_value = 0
           else
             wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
-            if estimation_value.pe_attribute.alias.in?("effort", "theoretical_effort")
-              chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value, @current_organization)]
+            if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
+
+              #chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value.to_f, @current_organization)]
+              activity_value = convert(wbs_value.to_f, @current_organization)
+
+              # if view_widget.use_organization_effort_unit == true
+              #   # use the organization effort unit
+              #   chart_data << ["#{wbs_activity_elt.name}", wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)]
+              # else
+              #   # use module instance effort unit
+              #   chart_data << ["#{wbs_activity_elt.name}", wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)]
+              # end
+
             else
-              chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value, user_number_precision, true)]
+              #chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value.to_f, user_number_precision, true)]
+              activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
             end
           end
+
+          chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
+
         end
       end
     end

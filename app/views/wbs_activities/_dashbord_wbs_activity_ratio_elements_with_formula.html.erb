@@ -308,7 +308,7 @@
                     <% if @wbs_activity_ratio.do_not_show_cost %>
                       <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, :class => "input-mini",  disabled: true, :step => 0.000001 %></td>
                     <% else %>
-                      <td><%= number_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high %></td>
+                      <td><%= number_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :class => "input-mini" %></td>
                     <% end %>
 
                       <td><%= number_field_tag "retained_effort_high[#{mp_ratio_element.id}]",

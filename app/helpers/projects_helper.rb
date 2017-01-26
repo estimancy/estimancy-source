@@ -51,7 +51,7 @@ module ProjectsHelper
   end
 
   # Display the units of attributes
-  def get_attribute_unit(pe_attribute)
+  def get_attribute_unit(pe_attribute, view_widget=nil)
     case pe_attribute.alias
       when "effort", "theoretical_effort", "E1", "E2", "E3", "E4"
         I18n.t(:unit_effort_person_hour)
@@ -1068,7 +1068,7 @@ module ProjectsHelper
       end
 
     #elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
-    elsif est_val_pe_attribute.alias.in?( Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
+    elsif est_val_pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
       if module_project.pemodule.alias == "ge"
         ge_model = module_project.ge_model
         effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
@@ -1087,12 +1087,13 @@ module ProjectsHelper
           effort_unit_coefficient = wbs_activity.effort_unit_coefficient
 
           # By default use module instance effort unit
-          if use_organization_effort_unit.nil? || use_organization_effort_unit == false
-            "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
-          else
+          if use_organization_effort_unit == true
             # Use orgnization effort unit
             organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
             "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+          else
+            # Use orgnization effort unit
+            "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
           end
         else
           "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"

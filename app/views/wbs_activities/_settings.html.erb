@@ -91,6 +91,7 @@
 <% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
 <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
+<% initial_entry_values = {} %>
 <% entry_values = {} %>
 <% if current_inputs_evs.empty? %>
     <% current_inputs_evs = current_module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio.id, component_id, v_low*coeff, v_ml*coeff, v_high*coeff) %>
@@ -112,6 +113,9 @@
         <% else %>
             <% entry_values[ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
         <% end %>
+
+        <!-- Les valeurs d'entree initiales -->
+        <% initial_entry_values[ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
     <% end %>
 <% end %>
 
@@ -120,6 +124,20 @@
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
   <table class="table table-bordered">
+
+    <% if current_module_project.wbs_activity.enabled_input %>
+      <tr>
+        <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
+
+        <% if current_module_project.wbs_activity.three_points_estimation? %>
+            <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
+        <% else %>
+            <th><%= I18n.t(:retained_input_value) %></th>
+        <% end %>
+        <th colspan="7"></th>
+      </tr>
+    <% end %>
+
     <tr>
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <th>Effort (L)</th>
@@ -143,7 +161,19 @@
       <th>Ratio global</th>
       <th><%= I18n.t(:comment) %></th>
     </tr>
+
     <tr>
+      <!-- Les valeurs d'entreé initiales venant du module du dessous -->
+      <% if current_module_project.wbs_activity.enabled_input %>
+       <td>
+         <% current_inputs_evs.each do |ev| %>
+            <span>
+              <%= ev.pe_attribute.alias %> :
+              <%= text_field_tag "", convert_with_precision(initial_entry_values[ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
+            </span><br>
+         <% end %>
+       </td>
+      <% end %>
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>

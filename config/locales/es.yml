@@ -1904,3 +1904,10 @@ es:
   select_effort_unit: "Select effort unit"
   duplicate_ratio: "Duplicate ratio"
   wbs_activity_profiles: "Profiles to be considered in the WBS activity"
+
+  value_low: "Low value"
+  value_most_likely: "Most likely value"
+  value_high: "High value"
+  value_probable: "Probable value"
+  initial_input_value: "Initial input Effort"
+  retained_input_value: "Retained input Effort"

@@ -1,0 +1,37 @@
+
+<script type="text/javascript">
+
+    google.charts.setOnLoadCallback(drawStackedBarChart);
+
+    function drawStackedBarChart() {
+
+        var r_data = <%= level_values.to_json.html_safe %>;
+        var data = google.visualization.arrayToDataTable(r_data);
+
+        var options = {
+            title: '<%= chart_title %>',
+            subtitle: '<%= widget_name %>',
+            legend: { position: 'top', maxLines: 3 },
+            hAxis: {
+                title: 'Phases',
+            },
+            vAxis: {
+                title: '<%= chart_vAxis_title %>'
+            },
+
+            //bar: { groupWidth: '75%' },
+            //isStacked: true,
+
+            bars: 'horizontal'
+        };
+
+        var view = new google.visualization.DataView(data);
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('<%= "stacked_bar_chart_div_#{widget_id}" %>'));
+        chart.draw(view, options);
+
+    }
+</script>
+
+<!--<div id='<%#= "stacked_bar_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>-->
+<div id='<%= "stacked_bar_chart_div_#{widget_id}" %>' style="min-width: 600px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>

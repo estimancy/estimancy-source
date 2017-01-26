@@ -174,14 +174,14 @@ module Projestimate
     ]
 
     # Avec Google chart
-    GLOBAL_WIDGETS_TYPE = [ ["", [  ["Simple text", "text"], ["Line chart", "line_chart"], ["Bar chart", "bar_chart"], ["Pie chart","pie_chart"], ["Timeline", "timeline"] ] ] ]
+    GLOBAL_WIDGETS_TYPE = [ ["", [  ["Simple text", "text"], ["Histogramme", "bar_chart"] ] ] ]
 
     BREAKDOWN_WIDGETS_TYPE = [
-        ["", [  ["Simple text", "text"], ["Line chart", "line_chart"], ["Bar chart", "bar_chart"], ["Pie chart","pie_chart"], ["Timeline", "timeline"] ] ],
-        ["Effort per phase", [ ["Table", "table_effort_per_phase"], ["Table sans phases à zéro", "table_effort_per_phase_without_zero"], ["Histogram", "histogram_effort_per_phase"], ["Pie chart", "pie_chart_effort_per_phase"] ] ],
-        ["Cost per phase", [ ["Table", "table_cost_per_phase"], ["Table sans phases à zéro", "table_cost_per_phase_without_zero"], ["Histogram", "histogram_cost_per_phase"], ["Pie chart", "pie_chart_cost_per_phase"] ] ],
-        ["Effort per phases and profiles", [ ["Table", "effort_per_phases_profiles_table"], ["Table sans phases à zéro", "effort_per_phases_profiles_table_without_zero"], ["Stacked bar chart", "stacked_bar_chart_effort_per_phases_profiles"] ] ],
-        ["Cost per phases and profiles", [ ["Table", "cost_per_phases_profiles_table"], ["Table sans phases à zéro", "cost_per_phases_profiles_table_without_zero"], ["Stacked bar chart", "stacked_bar_chart_cost_per_phases_profiles"] ] ]
+        ["", [  ["Simple text", "text"], ["Histogramme", "bar_chart"] ] ],
+        ["Effort per phase", [ ["Table", "table_effort_per_phase"], ["Table sans phases à zéro", "table_effort_per_phase_without_zero"], ["Histogramme", "histogram_effort_per_phase"], ["Diagramme en camembert", "pie_chart_effort_per_phase"] ] ],
+        ["Cost per phase", [ ["Table", "table_cost_per_phase"], ["Table sans phases à zéro", "table_cost_per_phase_without_zero"], ["Histogramme", "histogram_cost_per_phase"], ["Diagramme en camembert", "pie_chart_cost_per_phase"] ] ],
+        ["Effort per phases and profiles", [ ["Table", "effort_per_phases_profiles_table"], ["Table sans phases à zéro", "effort_per_phases_profiles_table_without_zero"], ["Histogramme empilé ", "stacked_bar_chart_effort_per_phases_profiles"], ["Histogramme groupé", "stacked_grouped_bar_chart_effort_per_phases_profiles"] ] ],
+        ["Cost per phases and profiles", [ ["Table", "cost_per_phases_profiles_table"], ["Table sans phases à zéro", "cost_per_phases_profiles_table_without_zero"], ["Histogramme empilé", "stacked_bar_chart_cost_per_phases_profiles"], ["Histogramme groupé", "stacked_grouped_bar_chart_cost_per_phases_profiles"]] ]
     ]
 
     # Non concern value : "text", table_effort_per_phase", "effort_per_phases_profiles_table", "cost_per_phases_profiles_table",

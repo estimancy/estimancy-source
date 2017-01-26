@@ -6,7 +6,8 @@
 
         <% colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679'] %>
         <% level_values.each_with_index { |value, i | value << colors[i] }  %>
-        <% level_values.insert(0, ["Element", "Density", { role: "style" } ]) %>
+        <% level_values.insert(0, ["Phase", "#{get_attribute_human_name(estimation_value.pe_attribute)}", { role: "style" } ]) %>
+
         var r_data = <%= level_values.to_json.html_safe %>;
 
         var data = google.visualization.arrayToDataTable(r_data);
@@ -22,8 +23,8 @@
 
         var options = {
             title: '<%= chart_title %>',
-            width: 600,
-            height: 400,
+            //width: 600,
+            //height: 400,
             bar: {groupWidth: "95%"},
             legend: { position: "none" }
         };
@@ -32,4 +33,5 @@
     }
 </script>
 
-<div id='<%= "column_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>
+<!--<div id='<%#= "column_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>-->
+<div id='<%= "column_chart_div_#{widget_id}" %>' style="min-width: 900px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>

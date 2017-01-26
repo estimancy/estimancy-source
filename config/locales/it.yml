@@ -1504,3 +1504,10 @@ it:
   select_effort_unit: "Choisir l'unité de l'effort"
   duplicate_ratio: "Dupliquer le ratio"
   wbs_activity_profiles: "Profils à prendre en compte dans la WBS activité"
+
+  value_low: "Valeur basse"
+  value_most_likely: "Valeur la plus vraisemblable"
+  value_high: "Valeur haute"
+  value_probable: "Valeur probable"
+  initial_input_value: "Effort d'entrée initial"
+  retained_input_value: "Effort d'entrée retenu"
