@@ -13,7 +13,6 @@
 //= require jit
 //= require highcharts
 //= require highcharts/highcharts-more
-//= require highcharts/adapters/standalone-framework
 //= require_self
 //= require_tree .
 //= require cookies_eu
