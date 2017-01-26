@@ -52,14 +52,15 @@ class Guw::GuwOutputsController < ApplicationController
 
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
-                             description: @guw_output.name).first_or_create!
+                             description: @guw_output.name,
+                             guw_model_id: @guw_output.guw_model_id).first_or_create!
 
     pm = Pemodule.where(alias: "guw").first
 
     am = AttributeModule.where(pe_attribute_id: attr.id,
                                pemodule_id: pm.id,
                                in_out: "both",
-                               guw_model_id: @guw_output.guw_model.id).first_or_create!
+                               guw_model_id: @guw_output.guw_model_id).first_or_create!
 
     redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
   end
@@ -71,15 +72,17 @@ class Guw::GuwOutputsController < ApplicationController
 
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
-                             description: @guw_output.name).first
+                             description: @guw_output.name,
+                             guw_model_id: @guw_model.id).first
+
+    pm = Pemodule.where(alias: "guw").first
 
     if attr.nil?
 
       at = PeAttribute.create(name: @guw_output.name,
                               alias: @guw_output.name.underscore.gsub(" ", "_"),
-                              description: @guw_output.name)
-
-      pm = Pemodule.where(alias: "guw").first
+                              description: @guw_output.name,
+                              guw_model_id: @guw_model.id)
 
       AttributeModule.create(pe_attribute_id: at.id,
                              pemodule_id: pm.id,
@@ -89,7 +92,15 @@ class Guw::GuwOutputsController < ApplicationController
       attr.name = @guw_output.name
       attr.alias = @guw_output.name.underscore.gsub(" ", "_")
       attr.description = @guw_output.name
+      attr.guw_model_id = @guw_model.id
 
+      am = AttributeModule.where(pe_attribute_id: attr.id,
+                            pemodule_id: pm.id,
+                            guw_model_id: nil).first
+
+      am.guw_model_id = @guw_model.id
+
+      am.save
       attr.save
     end
 
