@@ -533,7 +533,7 @@ module EffortBreakdown
                 begin
                   output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 rescue
-                  output_effort[element.id] = nil ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                  output_effort[element.id] = 0 ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 end
               else
                 output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
@@ -545,7 +545,7 @@ module EffortBreakdown
                 begin
                   output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 rescue
-                  output_effort[element.id] = nil ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                  output_effort[element.id] = 0 ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 end
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
@@ -793,7 +793,7 @@ module EffortBreakdown
                 begin
                   output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 rescue
-                  output_effort[element.id] = nil ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                  output_effort[element.id] = 0 ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 end
 
               else
