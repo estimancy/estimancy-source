@@ -91,8 +91,14 @@ class ModuleProjectRatioElementsController < ApplicationController
       @organization = @wbs_activity.organization
       @effort_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient
 
+      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+      @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
+
       # # Module_project Ratio elements
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+
+
     end
 
     #@total = @module_project_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
