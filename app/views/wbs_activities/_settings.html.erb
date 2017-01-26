@@ -33,7 +33,7 @@
 
 <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort) %>
 <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => possible_module_projects.last,
+                               :module_project_id => possible_module_projects.last.id,
                                :in_out => "output").first unless effort.nil? %>
 
 
@@ -109,7 +109,7 @@
     <% unless current_inputs_evs.empty? %>
         <% current_inputs_evs.each do |ev| %>
 
-            <% if @module_project.pemodule.alias == "guw" %>
+            <%# if @module_project.pemodule.alias == "guw" %>
                 <% current_ev = ev.string_data_most_likely[component_id] %>
                 <% begin %>
                     <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
@@ -128,16 +128,16 @@
                 <!-- Les valeurs d'entree initiales -->
                 <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
 
-            <% else %>
-                <% if ev.pe_attribute.alias == "E1" %>
-                    <% entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
-                    <% initial_entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
-                <% else %>
-                    <% entry_values["#{level}"][ev.id] = nil %>
-                    <% initial_entry_values["#{level}"][ev.id] = nil %>
-                <% end %>
+            <%# else %>
+                <%# if ev.pe_attribute.alias == "E1" %>
+                    <%# entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
+                    <%# initial_entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
+                <%# else %>
+                    <%# entry_values["#{level}"][ev.id] = nil %>
+                    <%# initial_entry_values["#{level}"][ev.id] = nil %>
+                <%# end %>
 
-            <% end %>
+            <%# end %>
         <% end %>
     <% end %>
 <% end %>

@@ -797,6 +797,7 @@ class Guw::GuwModelsController < ApplicationController
             ["Number of offlined unit of work", "offline_unit_of_work"],
             ["Number of selected unit of work", "selected_of_unit_of_work"],
             ["Number of unit of work", "number_of_unit_of_work"],
+            # ["Effort", "effort"],
         ]
         attrs.each do |attr|
           at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0]).first
@@ -833,6 +834,7 @@ class Guw::GuwModelsController < ApplicationController
             ["Number of offlined unit of work", "offline_unit_of_work"],
             ["Number of selected unit of work", "selected_of_unit_of_work"],
             ["Number of unit of work", "number_of_unit_of_work"],
+            # ["Effort", "effort"],
         ]
         attrs.each do |attr|
           at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0], guw_model_id: @guw_model.id).first_or_create
