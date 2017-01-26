@@ -70,12 +70,12 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_output.update_attributes(params[:guw_output])
     @guw_model = @guw_output.guw_model
 
+    pm = Pemodule.where(alias: "guw").first
+
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
                              description: @guw_output.name,
-                             guw_model_id: nil).first
-
-    pm = Pemodule.where(alias: "guw").first
+                             guw_model_id: @guw_model.id).first
 
     if attr.nil?
 
@@ -89,14 +89,15 @@ class Guw::GuwOutputsController < ApplicationController
                              in_out: "both",
                              guw_model_id: @guw_model.id)
     else
+
       attr.name = @guw_output.name
       attr.alias = @guw_output.name.underscore.gsub(" ", "_")
       attr.description = @guw_output.name
       attr.guw_model_id = @guw_model.id
 
       am = AttributeModule.where(pe_attribute_id: attr.id,
-                            pemodule_id: pm.id,
-                            guw_model_id: nil).first
+                                 pemodule_id: pm.id,
+                                 guw_model_id: nil).first
 
       am.guw_model_id = @guw_model.id
 
