@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170125104739) do
+ActiveRecord::Schema.define(:version => 20170126094357) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1243,6 +1243,7 @@ ActiveRecord::Schema.define(:version => 20170125104739) do
     t.integer  "precision"
     t.integer  "attribute_category_id"
     t.boolean  "single_entry_attribute"
+    t.integer  "guw_model_id"
   end
 
   add_index "pe_attributes", ["record_status_id"], :name => "index_attributes_on_record_status_id"
@@ -1685,6 +1686,7 @@ ActiveRecord::Schema.define(:version => 20170125104739) do
     t.string   "actuals_based_on"
     t.text     "mcdonnell_chart_theorical_coordinates"
     t.float    "max_staffing_rayleigh"
+    t.float    "percent"
   end
 
   create_table "staffing_staffing_models", :force => true do |t|
@@ -1704,6 +1706,7 @@ ActiveRecord::Schema.define(:version => 20170125104739) do
     t.string   "effort_unit"
     t.string   "staffing_method"
     t.integer  "effort_week_unit"
+    t.string   "config_type"
   end
 
   create_table "status_transitions", :force => true do |t|

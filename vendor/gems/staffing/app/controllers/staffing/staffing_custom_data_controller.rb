@@ -541,7 +541,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     current_module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+      ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).last
       ["low", "most_likely", "high"].each do |level|
 
         if @staffing_model.three_points_estimation?

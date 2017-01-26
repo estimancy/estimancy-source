@@ -53,6 +53,7 @@
                 <th><%= I18n.t(:pe_attribute_name) %></th>
                 <th class="filter-select"><%= I18n.t(:selected) %></th>
                 <th><%= I18n.t(:description) %></th>
+                <th>Instance de module</th>
               </tr>
               </thead>
               <tbody>
@@ -66,6 +67,7 @@
                       </span>
                       <%= check_box_tag 'pemodule[pe_attribute_ids][]', attr.id, @attribute_settings.map(&:pe_attribute_id).include?(attr.id), :disabled => @pemodule == @initialization_module %>
                     <td><%= attr.description %></td>
+                    <td><%= attr.guw_model_id %></td>
                   </tr>
               <% end %>
               <%= render :partial => 'layouts/footer_table' %>

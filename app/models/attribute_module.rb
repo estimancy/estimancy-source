@@ -22,7 +22,7 @@
 #Master table
 #Specific attribute for a module (Functionality)
 class AttributeModule < ActiveRecord::Base
-  attr_accessible :pe_attribute_id, :pemodule_id, :is_mandatory, :in_out, :description, :default_low, :default_most_likely, :default_high, :display_order
+  attr_accessible :pe_attribute_id, :pemodule_id, :is_mandatory, :in_out, :description, :default_low, :default_most_likely, :default_high, :display_order, :guw_model_id
   # ,:custom_attribute, :project_value, :record_status_id, :custom_value, :change_comment
 
   # include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)

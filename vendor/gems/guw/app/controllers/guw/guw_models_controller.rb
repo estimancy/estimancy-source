@@ -835,13 +835,13 @@ class Guw::GuwModelsController < ApplicationController
             ["Number of unit of work", "number_of_unit_of_work"],
         ]
         attrs.each do |attr|
-          at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0]).first
+          at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0], guw_model_id: @guw_model.id).first_or_create
           pm = Pemodule.where(alias: "guw").first
 
             AttributeModule.where(pe_attribute_id: at.id,
-                                   pemodule_id: pm.id,
-                                   in_out: "both",
-                                   guw_model_id: @guw_model.id).first_or_create
+                                  pemodule_id: pm.id,
+                                  in_out: "both",
+                                  guw_model_id: @guw_model.id).first_or_create
         end
       end
 
