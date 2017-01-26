@@ -146,7 +146,7 @@
         <% @project_wbs_activity_elements.each do |wbs_activity_elt| %>
             <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
             <%# @module_project_ratio_elements.each_with_index do |mp_ratio_element, i| %>
-          <% if mp_ratio_element %>
+          <% unless mp_ratio_element.nil? %>
             <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
             <%= hidden_field_tag 'wbs_activity_id', mp_ratio_element.wbs_activity_ratio.wbs_activity_id %>
 
