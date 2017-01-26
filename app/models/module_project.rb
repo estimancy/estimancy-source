@@ -283,6 +283,24 @@ class ModuleProject < ActiveRecord::Base
       end
     else
       wbs_activity_ratio_variables.each do |ratio_variable|
+
+        case ratio_variable.name.downcase
+          when "rtu"
+            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+               !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+
+              ratio_variable.percentage_of_input = "E1"
+              ratio_variable.save
+            end
+          when "test"
+            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+                !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+
+              ratio_variable.percentage_of_input = "E2"
+              ratio_variable.save
+            end
+        end
+
         mp_ratio_variable = module_project_ratio_variables.where(wbs_activity_ratio_variable_id: ratio_variable.id).first
         if mp_ratio_variable
           mp_ratio_variable.update_attributes(name: ratio_variable.name, percentage_of_input: ratio_variable.percentage_of_input,

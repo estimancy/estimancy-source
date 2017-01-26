@@ -397,7 +397,7 @@
                locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
 
         <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
+                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
                    locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
       </div>
   </div>

@@ -107,13 +107,36 @@ class WbsActivityRatio < ActiveRecord::Base
 
   #get the current ratio wbs_activity_ratio_variable
   def get_wbs_activity_ratio_variables
-    nb_ratio_variables = self.wbs_activity_ratio_variables.all.length
+    wbs_activity_ratio_variables = self.wbs_activity_ratio_variables
+    nb_ratio_variables = wbs_activity_ratio_variables.all.length
+
     if  nb_ratio_variables <= 0
-      [["RTU", "100%"], ["TEST", ""], ["", ""], ["", ""]].each do |var|
+      [["RTU", ""], ["TEST", ""], ["", ""], ["", ""]].each do |var|
         variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
         variable.save
       end
     elsif nb_ratio_variables < 4
+
+      wbs_activity_ratio_variables.each do |ratio_variable|
+        case ratio_variable.name.downcase
+          when "rtu"
+            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+                !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+
+              ratio_variable.percentage_of_input = "E1"
+              ratio_variable.save
+            end
+
+          when "test"
+            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+                !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+
+              ratio_variable.percentage_of_input = "E2"
+              ratio_variable.save
+            end
+        end
+      end
+
       begin
         variable = WbsActivityRatioVariable.new(name: "",  percentage_of_input: "", wbs_activity_ratio_id: self.id)
         if variable.save

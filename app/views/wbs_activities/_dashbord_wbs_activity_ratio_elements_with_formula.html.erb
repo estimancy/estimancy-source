@@ -133,15 +133,15 @@
 
 
         <% gap = 1 %>
-          <% wbs_activity_elt_root = @wbs_activity_ratio.wbs_activity.wbs_activity_elements.first.root
+        <% wbs_activity_elt_root = @wbs_activity_ratio.wbs_activity.wbs_activity_elements.first.root
            ###root_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt_root.id).first
            root_mp_ratio_element = @module_project_ratio_elements.select{ |e| e.wbs_activity_element_id == wbs_activity_elt_root.id }.first
            root_mp_ratio_element_id = root_mp_ratio_element.nil? ? nil : root_mp_ratio_element.id
-          %>
+        %>
 
-          <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
-            <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable.to_f ==0 || element.retained_effort_most_likely.to_f==0 } %>
-          <% end %>
+        <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
+            <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable==0 || element.retained_effort_most_likely==0 } %>
+        <% end %>
 
         <% @project_wbs_activity_elements.each do |wbs_activity_elt| %>
             <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>

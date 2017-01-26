@@ -530,14 +530,23 @@ module EffortBreakdown
 
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable
               if @changed_retained_effort_values[element.id].nil? || @changed_retained_effort_values[element.id].to_f == 0
-                output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                begin
+                  output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                rescue
+                  output_effort[element.id] = nil ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                end
               else
                 output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
               end
             else
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
-                output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                #output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                begin
+                  output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                rescue
+                  output_effort[element.id] = nil ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                end
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end
@@ -781,7 +790,12 @@ module EffortBreakdown
 
               # Element effort is really computed only on leaf element
               if element.is_childless? || element.has_new_complement_child?
-                output_effort[element.id] = current_effort_with_dependencies.to_f ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                begin
+                  output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                rescue
+                  output_effort[element.id] = nil ####output_effort_with_dependencies[:"#{element.phase_short_name}"]
+                end
+
               else
                 output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
               end

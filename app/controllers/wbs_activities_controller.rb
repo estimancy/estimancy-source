@@ -401,6 +401,7 @@ class WbsActivitiesController < ApplicationController
 
         # Retained Effort
         level_retained_effort_with_wbs_activity_elt_id = Hash.new
+        each_level_retained_effort = []
         each_level_retained_effort = params["retained_effort_#{level}"]
 
         # Retained Cost
