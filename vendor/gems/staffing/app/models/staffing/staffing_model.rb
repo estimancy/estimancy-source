@@ -23,7 +23,7 @@ module Staffing
   class StaffingModel < ActiveRecord::Base
     attr_accessible :puissance_n, :mc_donell_coef, :copy_id, :copy_number, :enabled_input, :name,
                     :description, :organization_id, :trapeze_default_values, :three_points_estimation,
-                    :effort_unit, :standard_unit_coefficient, :staffing_method, :effort_week_unit
+                    :effort_unit, :standard_unit_coefficient, :staffing_method, :effort_week_unit, :config_type
     attr_accessor :x0, :y0, :x1, :x2, :x3, :y3
 
     serialize :trapeze_default_values, Hash

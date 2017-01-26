@@ -99,8 +99,14 @@ class PermissionsController < ApplicationController
 
   #Set all global rights : organization and modules permissions
   def set_rights
-    # if params
-    authorize! :manage_organization_permissions, Permission
+    if params['organization_permissions']
+      authorize! :manage_organization_permissions, Permission
+    elsif params['global_permissions']
+      authorize! :manage_global_permissions, Permission
+    else
+      authorize! :manage_organization_permissions, Permission
+      authorize! :manage_global_permissions, Permission
+    end
 
     if params[:organization_permissions] == I18n.t('cancel') || params[:modules_permissions] == I18n.t('cancel')
       flash[:notice] = I18n.t(:notice_permission_successful_cancelled)

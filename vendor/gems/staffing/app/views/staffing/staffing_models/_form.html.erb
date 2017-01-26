@@ -28,6 +28,7 @@
       <div class="form-inputs">
         <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
         <%= f.input :name, label: I18n.t(:name) %>
+        <%= f.input :config_type, as: :select, collection: [["Ancienne Configuration", "old"], ["Nouvelle Configuration", "new"]], selected: @staffing_model.config_type, label: "Type de configuration" %>
         <%= f.input :description, label: I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 5 } %>
         <%= f.input :staffing_method, as: :select, collection: [["Trapeze", "trapeze"], ["Rayleigh", "rayleigh"]], selected: @staffing_model.staffing_method, label: 'Méthode de staffing' %>
         <%= f.input :mc_donell_coef, label: 'McDonell Coef' , input_html: { placeholder: "Valeur conseillé : 6" } %>

@@ -22,6 +22,7 @@
 module Kb
   class KbData < ActiveRecord::Base
     belongs_to :kb_model
+
     serialize :custom_attributes, Hash
 
   end

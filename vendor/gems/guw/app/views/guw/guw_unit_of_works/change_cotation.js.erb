@@ -55,7 +55,7 @@ $(".technology_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_technol
   $(".factor_<%= @guw_unit_of_work.id %>").html("")
 <% end %>
 
-$(".ajusted_size_<%= @guw_unit_of_work.id %>").html("<%= j(number_field_tag "ajusted_size[#{@guw_unit_of_work.id}]", @guw_unit_of_work.ajusted_size.nil? ? '' : @guw_unit_of_work.ajusted_size.round(3), class: "input-mini retained-#{@guw_unit_of_work.guw_unit_of_work_group.id}", step: 0.001, readonly: !((@guw_unit_of_work.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project))) %>")
+//$(".ajusted_size_<%# @guw_unit_of_work.id %>").html("<%# j(number_field_tag "ajusted_size[#{@guw_unit_of_work.id}]", @guw_unit_of_work.ajusted_size.nil? ? '' : @guw_unit_of_work.ajusted_size.round(3), class: "input-mini retained-#{@guw_unit_of_work.guw_unit_of_work_group.id}", step: 0.001, readonly: !((@guw_unit_of_work.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project))) %>")
 
 <% if @guw_unit_of_work.guw_type.allow_criteria == true %>
   <% counting = @guw_unit_of_work.guw_unit_of_work_attributes.where(guw_type_id: @guw_unit_of_work.guw_type_id).map(&:most_likely).compact %>

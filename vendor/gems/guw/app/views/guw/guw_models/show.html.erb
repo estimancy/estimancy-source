@@ -269,9 +269,10 @@
                     <%# link_to guw_attribute, guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute) %>
                     <% gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
                                                          guw_attribute_id: guw_attribute.id).first %>
-                    <% begin %>
+                    <% if gat.nil? %>
+                      <%= link_to guw_attribute, "#" %>
+                    <% else %>
                       <%= link_to "#{guw_attribute} (#{gat.default_value})", guw.edit_guw_model_guw_type_guw_attribute_type_path(@guw_model, guw_type, gat) %>
-                    <% rescue %>
                     <% end %>
                   </td>
                   <% guw_type.guw_type_complexities.order("display_order ASC").each do |type_complexity| %>

@@ -22,6 +22,10 @@
   <% elsif current_module_project.pemodule.alias == "effort_breakdown" %>
     <%= render partial: "wbs_activities/settings", object: @wbs_activity_ratio %>
   <% elsif current_module_project.pemodule.alias == "staffing" %>
+    <% if @staffing_model.config_type == "old" %>
+      <%= render partial: "staffing/staffing_custom_data/settings_old" %>
+    <% else %>
       <%= render partial: "staffing/staffing_custom_data/settings" %>
+    <% end %>
   <% end %>
 </div>

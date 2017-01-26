@@ -23,7 +23,7 @@ if File.exist?(database_file)
       case adapter
         when 'mysql2'
           gem 'mysql2', '~> 0.3.11'
-        # when /postgres/
+        when /postgres/
           # gem 'pg'
         else
           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")

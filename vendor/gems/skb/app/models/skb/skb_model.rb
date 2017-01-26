@@ -30,6 +30,8 @@ module Skb
     has_many :skb_datas, :dependent => :destroy
     has_many :skb_inputs, :dependent => :destroy
 
+    serialize :selected_attributes, Array
+
     amoeba do
       enable
       exclude_association [:module_projects]
