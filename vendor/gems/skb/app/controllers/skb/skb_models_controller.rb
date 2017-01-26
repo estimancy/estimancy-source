@@ -156,7 +156,7 @@ class Skb::SkbModelsController < ApplicationController
         traitement   = file.cell(line, 'D')
 
         h = Hash.new
-        ('D'..'ZZ').each_with_index do |letter, i|
+        ('E'..'ZZ').each_with_index do |letter, i|
           if i < file.last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
