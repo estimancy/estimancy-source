@@ -73,7 +73,7 @@ class Guw::GuwOutputsController < ApplicationController
     attr = PeAttribute.where(name: @guw_output.name,
                              alias: @guw_output.name.underscore.gsub(" ", "_"),
                              description: @guw_output.name,
-                             guw_model_id: @guw_model.id).first
+                             guw_model_id: nil).first
 
     pm = Pemodule.where(alias: "guw").first
 
