@@ -79,6 +79,10 @@
        end
      end
 
+     if @project_list.blank?
+       @project_list = @skb_model.skb_datas
+     end
+
      @project_list.map do |i|
        @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
      end
@@ -88,7 +92,6 @@
                         z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
                         name: @project.to_s,
                         description: @project.description.to_s }
-
   %>
 
   <div class="row-fluid">
@@ -187,11 +190,47 @@
           series: [{
             name: 'Taille de <%= @project.to_s %>',
             color: 'rgba(255, 50, 50, 0.8)',
-            data: <%= raw(@my_skb_input.to_json) %>
+            data: <%= raw(@my_skb_input.to_json) %>,
+            events: {
+              selection: function (event) {
+                alert("?");
+                for (var s in this.series) {
+                  this.series[s].update({
+                    dataLabels: {
+                      style: {
+                        maxPadding: 4
+                      }
+                    },
+                    bubble: {
+                      minSize: 100,
+                      maxSize: 100
+                    }
+                  });
+                }
+              }
+            }
           },{
             name: "Base de connaissance '<%= @skb_model.name %>'",
             color: 'rgba(50, 50, 255, 0.8)',
-            data: <%= raw(@my_skb_datas.to_json) %>
+            data: <%= raw(@my_skb_datas.to_json) %>,
+            events: {
+              selection: function (event) {
+                alert("?");
+                for (var s in this.series) {
+                  this.series[s].update({
+                    dataLabels: {
+                      style: {
+                        maxPadding: 4
+                      }
+                    },
+                    bubble: {
+                      minSize: 100,
+                      maxSize: 100
+                    }
+                  });
+                }
+              }
+            }
           }]
         })
       </script>
