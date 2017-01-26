@@ -557,7 +557,7 @@ module ViewsWidgetsHelper
 
           #data_probable = data_probable.is_a?(Hash) ? (data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first) : data_probable
           if data_probable.is_a?(Hash)
-            data_probable = data_probable.map{|key,value| (value.nil? || value.empty?) ? 0 : value[:value].round(user_precision) }
+            data_probable = data_probable.map{|key,value| (value.nil? || value.empty?) ? 0 : (value[:value].nil? ? 0 : value[:value].round(user_precision)) }
           else
             data_probable = data_probable
           end
