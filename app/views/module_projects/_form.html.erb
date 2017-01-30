@@ -46,13 +46,21 @@
       <%= submit_tag I18n.t('save'), :class => 'btn ' %>
       <%= link_to I18n.t(:back), :back, class: "btn" %>
 
+      <hr>
 
-      <% if @module_project.pemodule.alias == "effort_breakdown" %>
-        <hr>
+      <% effort_ids = [] %>
+      <% case @module_project.pemodule.alias  %>
+        <% when "effort_breakdown" %>
+            <% effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+        <% when "ge" %>
+            <% effort_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+        <% else %>
+            <% effort_ids = PeAttribute.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+      <% end %>
 
-        <% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
-        <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+      <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
+      <% unless current_evs.all.empty? %>
         <% current_evs.each do |cev| %>
           <div class="row-fluid">
             <div class="span2">
@@ -64,8 +72,8 @@
 
         <br>
         <%= submit_tag "Sauvegarder", class: "btn btn-mini" %>
-
       <% end %>
+
     <% end %>
 
   </div>

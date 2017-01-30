@@ -21,6 +21,9 @@
 
 module Ge
   class GeModel < ActiveRecord::Base
+
+    INPUT_EFFORTS_ALIAS = ["effort"]
+
     #validates_presence_of :name####, :organization_id
     validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
     validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true

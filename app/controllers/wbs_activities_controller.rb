@@ -430,7 +430,7 @@ class WbsActivitiesController < ApplicationController
       calculator = Dentaku::Calculator.new
 
       #store entries value
-      effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+      effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
         effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient

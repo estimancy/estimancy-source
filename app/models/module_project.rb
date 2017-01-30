@@ -322,11 +322,11 @@ class ModuleProject < ActiveRecord::Base
   # Get the Efforts Attributes (E1, E2, E3, E4) estimations values
   def get_wbs_efforts_attributes_estimation_values(wbs_activity_ratio_id, pbs_id, input_low, input_ml, input_high)
     wbs_activity_ratio = WbsActivityRatio.find(wbs_activity_ratio_id)
-    wbs_effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+    wbs_effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
 
     if current_inputs_evs.empty?
-      # WbsActivity::EFFORT_ENTRY_NAMES.each_with_index do |effort_alias, index|
+      # WbsActivity::INPUT_EFFORTS_ALIAS.each_with_index do |effort_alias, index|
       #   pe_attr = PeAttribute.where(alias: effort_alias).first_or_create(name: "Effort #{index+1}", alias: effort_alias, description: "Effort #{index+1} = entrée #{index+1} = #{effort_alias}",
       #                      attr_type: "float", options: ["float", ">=", "0"])
       # end

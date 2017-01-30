@@ -388,7 +388,7 @@ module EffortBreakdown
       calculator = Dentaku::Calculator.new
 
       #store entries value
-      effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+      effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
         calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
@@ -675,7 +675,7 @@ module EffortBreakdown
         calculator = Dentaku::Calculator.new
 
         #store entries value
-        effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+        effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
         current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
         current_inputs_evs.each do |ev|
           calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])

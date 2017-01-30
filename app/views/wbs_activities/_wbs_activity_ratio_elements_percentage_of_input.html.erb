@@ -63,7 +63,7 @@
       <div>
         Les entrées de la WBS-Activité <br>
         <%# wbs_inputs = PeAttribute.where(alias: ["effort_1", "effort_2", "effort_3", "effort_4"]) %>
-        <% PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).each_with_index do |effort, index | %>
+        <% PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).each_with_index do |effort, index | %>
          <span><%= "Entrée #{index+1} = #{effort.alias}" %></span> <br>
         <% end %>
       </div>
