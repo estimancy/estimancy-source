@@ -174,7 +174,7 @@ class Skb::SkbModelsController < ApplicationController
       end
     end
 
-    redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @skb_model.organization_id)
+    redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @organization.id)
   end
 
   def save_filters
