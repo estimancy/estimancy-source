@@ -97,7 +97,7 @@
           <% cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
 
           <% if cev_attr_possible_module_projects.nil? || cev_attr_possible_module_projects.empty? %>
-                <% cev_attr_possible_module_projects = guw_preceding_module_project %>
+                <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project %>
           <% end %>
 
           <% if !cev.estimation_value_id.nil?
@@ -106,7 +106,7 @@
              end
 
              if preceding_outputs_estimation_values.nil?
-                preceding_outputs_estimation_values = guw_outputs_estimation_values
+                preceding_outputs_estimation_values = [] #guw_outputs_estimation_values
              end
           %>
 
@@ -114,6 +114,7 @@
             <div class="span2">
               <p>
                 <%= "Modules" %> <br>
+                <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
                 <%= select_tag "preceding_module_project[#{cev.id}]", options_for_select(cev_attr_possible_module_projects.map{|mp| [mp.to_s, mp.id]}, selected: (cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil?)), :include_blank => true %>
               </p>
             </div>
