@@ -929,6 +929,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                               guw_output_id: guw_output.id,
                                               value: 1).first
 
+        @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                                            guw_output_id: guw_output.id).first
+
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
 
@@ -963,7 +966,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @final_value = (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            @final_value = @oci.init_value.to_f + (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
             # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
