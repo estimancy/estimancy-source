@@ -123,6 +123,13 @@ module ProjectsHelper
 
 
   def get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, pe_attribute_alias)
+    case pe_attribute_alias
+      when "effort"
+        pe_attribute_alias = "retained_effort_probable"
+      when "theoretical_effort"
+        pe_attribute_alias = "theoretical_effort_probable"
+    end
+
     min_effort_value = nil
     effort_values = module_project_ratio_elements.map(&:"#{pe_attribute_alias}")
     unless effort_values.nil? || effort_values.empty?
@@ -134,6 +141,10 @@ module ProjectsHelper
 
   # Get the organization effort limit and unit according to the smaller value
   def get_organization_effort_limit_and_unit(v, organization)
+    if v.class == Array
+      v = v.compact.reject{ |i| i == 0}.min
+    end
+
     unless v.class == Hash
       value = v.to_f
       if value < organization.limit1.to_i
