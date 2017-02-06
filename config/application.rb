@@ -190,7 +190,7 @@ module Projestimate
 
     # Widgets Effort display Unit
     EFFORT_DISPLAY_UNIT = ["organization_effort_unit", "module_instance_effort_unit"]
-    EFFORT_ATTRIBUTES_ALIAS = ["effort", "theoretical_effort", "retained_effort", "E1", "E2", "E3", "E4"]
+    EFFORT_ATTRIBUTES_ALIAS = ["effort", "theoretical_effort", "retained_effort", "E1", "E2", "E3", "E4", "retained_size"]
 
     CHART_COLORS = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679']
   end

@@ -29,6 +29,8 @@ class EstimationValue < ActiveRecord::Base
   belongs_to :module_project
   belongs_to :pbs_project_element
 
+  belongs_to :associated_estimation_value, class_name: "EstimationValue", foreign_key: :estimation_value_id
+
   has_many :views_widgets
 
 

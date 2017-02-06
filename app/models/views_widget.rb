@@ -27,6 +27,8 @@ class ViewsWidget < ActiveRecord::Base
 
   serialize :equation, Hash
 
+  WIDGETS_COLORS = ['#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
+
   #after_create :update_widget_pe_attribute
 
   belongs_to :view

@@ -7,6 +7,10 @@
     <div class="span12">
 
       <% effort = PeAttribute.find_by_alias("effort") %>
+
+      <% current_ev =  EstimationValue.where(:pe_attribute_id => effort.id,
+                                             :module_project_id => current_module_project.id,
+                                             :in_out => "input").first %>
       <% res = 0 %>
       <% @elements = Hash.new %>
 
@@ -27,9 +31,15 @@
               <td><%= mp %></td>
               <% ["most_likely"].each do |level| %>
 
-                <% ev = EstimationValue.where(:pe_attribute_id => effort.id,
+                <% if !current_ev.estimation_value_id.nil?
+                     ev = EstimationValue.find(current_ev.estimation_value_id) %>
+
+                <% else %>
+                  <% ev = EstimationValue.where(:pe_attribute_id => effort.id,
                                               :module_project_id => mp.id,
                                               :in_out => "output").first %>
+
+                <% end %>
 
                 <td>
                   <% begin %>

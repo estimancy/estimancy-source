@@ -6,10 +6,19 @@
    attribute = PeAttribute.find_by_alias("effort")
    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
 
-   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+   current_ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+                              :module_project_id => current_module_project.id,
+                              :in_out => "input").first
+
+   if current_ev && !current_ev.estimation_value_id.nil?
+     ev = EstimationValue.find(current_ev.estimation_value_id)
+   else
+     ev = EstimationValue.where(:pe_attribute_id => attribute.id,
                               :module_project_id => current_module_project.previous.last,
                               :in_out => "output").first
-    begin
+   end
+
+   begin
       begin
         previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
         effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)

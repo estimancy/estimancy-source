@@ -1,0 +1,4 @@
+
+$('#<%= "preceding_#{@current_estimation_value.id}" %>').html("<%=raw j(select_tag "preceding[#{@current_estimation_value.id}]",
+                                                                options_for_select(@preceding_estimations_values.map{|i| [i.pe_attribute.name, i.id]}),
+                                                                :include_blank => true) %>");

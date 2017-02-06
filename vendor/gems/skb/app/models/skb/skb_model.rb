@@ -32,6 +32,8 @@ module Skb
 
     serialize :selected_attributes, Array
 
+    INPUT_ATTRIBUTES_ALIAS = ["retained_size"]
+
     amoeba do
       enable
       exclude_association [:module_projects]
