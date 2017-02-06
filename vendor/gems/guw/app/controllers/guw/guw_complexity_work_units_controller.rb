@@ -61,6 +61,30 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
             cplx = Guw::GuwComplexity.find(i.first.to_i)
             output = Guw::GuwOutput.find(k.first.to_i)
 
+            oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: cplx.id,
+                                                              guw_output_id: output.id).first
+            if oci.nil?
+              Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: cplx.id,
+                                                            guw_output_id: output.id,
+                                                            init_value: params[:value_init]["#{cplx.id}"]["#{output.id}"])
+
+            else
+              oci.init_value = params[:value_init]["#{cplx.id}"]["#{output.id}"]
+              oci.save
+            end
+          end
+        end
+      end
+    end
+
+    unless params[:config].nil?
+      params[:config].each do |i|
+        i.last.each do |j|
+          j.last.each do |k|
+
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            output = Guw::GuwOutput.find(k.first.to_i)
+
             oc = Guw::GuwOutputComplexity.where( guw_complexity_id: cplx.id,
                                                  guw_output_id: output.id).first
             if oc.nil?

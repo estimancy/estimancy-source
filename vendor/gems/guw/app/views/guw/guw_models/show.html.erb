@@ -115,7 +115,11 @@
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <td class="align-center">
-                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", 1, class: "input-mini" %>
+
+                    <% oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id,
+                                                                          guw_output_id: guw_output.id).first %>
+
+                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? 1 : oci.init_value, class: "input-mini" %>
                   </td>
                 <% end %>
               <% end %>
