@@ -1,12 +1,20 @@
 
-<% if @ge_model.three_points_estimation? %>
-    $("#number_effort_low").val(<%= convert_with_standard_unit_coefficient(@calculated["low"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
-<% end %>
+<% @output_attribute_evs.each do |ev| %>
 
-$("#number_effort_most_likely").val(<%= convert_with_standard_unit_coefficient(@calculated["most_likely"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    <% if @ge_model.three_points_estimation? %>
+        $('#<%="number_effort_most_low_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["low"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    <% end %>
 
-<% if @ge_model.three_points_estimation? %>
-    $("#number_effort_most_high").val(<%= convert_with_standard_unit_coefficient(@calculated["high"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    $('#<%="number_effort_most_likely_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["most_likely"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+
+    <% if @ge_model.three_points_estimation? %>
+        $('#<%="number_effort_most_high_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["high"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    <% end %>
+
+    <!-- le ratio -->
+    $('#<%="ratio_#{ev.id}"%>').html(<%= @calculated_ratio["#{ev.id}"].to_f.round(2) %>);
+
+
 <% end %>
 
 //console.log("success");
