@@ -142,6 +142,7 @@ class Ge::GeModelsController < ApplicationController
                   [I18n.t(:three_points_estimation), @ge_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:modification_entry_valur), @ge_model.enabled_input ],
                   [I18n.t(:enabled_theorical_effort_modification), @ge_model.modify_theorical_effort],
+                  [I18n.t(:transform_size_and_effort), @ge_model.transform_size_and_effort],
                   [I18n.t(:module_input_attribute), @ge_model.input_pe_attribute.nil? ? nil : @ge_model.input_pe_attribute.alias],
                   [I18n.t(:module_output_attribute), @ge_model.output_pe_attribute.nil? ? nil : @ge_model.output_pe_attribute.alias],
                   ["#{I18n.t(:label_Factor)} a", @ge_model.coeff_a ],
@@ -420,6 +421,7 @@ class Ge::GeModelsController < ApplicationController
         else
           #there is no model, we will create new model from the model attributes data of the file to import
           model_sheet_order = { :"0" => "name", :"1" => "description", :"2" => "three_points_estimation", :"3" => "enabled_input", :"4" => "modify_theorical_effort",
+                                :"41" => "transform_size_and_effort",
                                 :"5" =>"input_pe_attribute_id", :"6" => "output_pe_attribute_id", :"7" => "coeff_a", :"8" => "coeff_b", :"9" => "p_calculation_method",
                                 :"10" => "c_calculation_method", :"11" => "s_calculation_method", :"12" => "input_size_unit", :"13" => "output_size_unit", :"14" => "input_effort_unit", :"15" => "output_effort_unit", :"16" => "input_effort_standard_unit_coefficient", :"17" => "output_effort_standard_unit_coefficient" }
           model_worksheet = workbook['Model']
