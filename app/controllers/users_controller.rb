@@ -93,17 +93,22 @@ public
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
-      if @organization
-        @organization_id = @organization.id
-        OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+    else
+      @organization = @current_organization
+    end
 
-        @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
-        @user.groups << @user_group
-      else
-        if params[:organizations]
-          params[:organizations].keys.each do |organization_id|
-            OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
-          end
+    @user.save(validate: false)
+
+    if @organization
+      @organization_id = @organization.id
+      OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+
+      @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
+      @user.groups << @user_group
+    else
+      if params[:organizations]
+        params[:organizations].keys.each do |organization_id|
+          OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
         end
       end
     end
