@@ -124,10 +124,10 @@ module ProjectsHelper
 
   def get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, pe_attribute_alias)
     case pe_attribute_alias
-      when "effort"
-        pe_attribute_alias = "retained_effort_probable"
-      when "theoretical_effort"
-        pe_attribute_alias = "theoretical_effort_probable"
+      when "effort", "cost"
+        pe_attribute_alias = "retained_#{pe_attribute_alias}_probable"
+      when "theoretical_effort", "theoretical_cost"
+        pe_attribute_alias = "#{pe_attribute_alias}_probable"
     end
 
     min_effort_value = nil
