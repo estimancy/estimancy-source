@@ -153,7 +153,7 @@
       end %>
 
 
-      <h4 style="text-align: center">
+      <h4>
         <b>
           <% case attr.alias %>
             <% when "retained_size" %>
@@ -177,9 +177,6 @@
 
       <% component_id = current_component.id %>
       <% precision = attr.precision.nil? ? user_number_precision : attr.precision %>
-
-
-      <!--   TEST   -->
 
       <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
       <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
@@ -259,9 +256,6 @@
               <% end %>
           <% end %>
       <% end %>
-
-
-      <!--   FIN TEST   -->
 
 
       <table class="table table-condensed table-striped">
@@ -442,7 +436,7 @@
       <% theorical_ev = EstimationValue.where(pe_attribute_id: theorical_effort_attr.id, module_project_id: current_module_project.id, in_out: "output").last %>
       <% component_id = current_component.id %>
 
-      <h4 style="text-align: center">
+      <h4>
         <b>
           <%#= I18n.t(:cal_effort_for, parameter: convert_label(ev.nil? ? '': ev.send("string_data_probable")[component_id], @project.organization)) %>
           <% case attr.alias %>
@@ -561,8 +555,8 @@
               <% end %>
               </td>
           <% end %>
-          <td>
 
+          <td>
             <%# a = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
             <%# b = Ge::GeModel::display_size(previous_ev, current_ev, "most_likely", component_id, @ge_model).to_f.round(user_number_precision) %>
             <%#= (a.to_f / b.to_f).round(user_number_precision) %>

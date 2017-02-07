@@ -468,7 +468,7 @@ class Ge::GeModelsController < ApplicationController
             else
               existing_ge_model_name = Ge::GeModel.where(name: @ge_model.name).first
               if existing_ge_model_name
-                tab_error << "Erreur : le nom '#{@ge_model.name}' existe déjà"
+                tab_error << "Erreur : une instance avec le nom '#{@ge_model.name}' existe déjà"
               else
                 tab_error << "Erreur lors de la sauvegarde du modèle"
               end
@@ -570,7 +570,7 @@ class Ge::GeModelsController < ApplicationController
     if @ge_model && @ge_model.save
       redirect_to ge.edit_ge_model_path(@ge_model, anchor: "tabs-2")
     else
-      redirect_to request.referer + "#tabs-2" #redirect_to :back
+      redirect_to request.referer + "#tabs-1" #redirect_to :back
     end
   end
 
