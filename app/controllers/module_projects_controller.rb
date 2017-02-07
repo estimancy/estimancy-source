@@ -49,13 +49,18 @@ class ModuleProjectsController < ApplicationController
       @current_module_project = ModuleProject.find(module_project_id)
       @current_estimation_value = EstimationValue.find(params['current_estimation_value_id']) if params['current_estimation_value_id']
 
-      if params['preceding_module_project_id'].nil?
+      begin
+        if params['preceding_module_project_id'].nil? || params['preceding_module_project_id'].empty? || params['preceding_module_project_id'] == "undefined"
+          @preceding_estimations_values = []
+        else
+          @preceding_selected_module_project = ModuleProject.find(params['preceding_module_project_id'])
+          @preceding_estimations_values = @preceding_selected_module_project.estimation_values.where(in_out: "output")
+        end
+      rescue
         @preceding_estimations_values = []
-      else
-        @preceding_selected_module_project = ModuleProject.find(params['preceding_module_project_id'])
-        @preceding_estimations_values = @preceding_selected_module_project.estimation_values.where(in_out: "output")
       end
     end
+
   end
 
 

@@ -143,6 +143,7 @@ class Ge::GeModelsController < ApplicationController
                   [I18n.t(:modification_entry_valur), @ge_model.enabled_input ],
                   [I18n.t(:enabled_theorical_effort_modification), @ge_model.modify_theorical_effort],
                   [I18n.t(:transform_size_and_effort), @ge_model.transform_size_and_effort],
+                  [I18n.t(:display_size_and_effort_attributes), @ge_model.display_size_and_effort_attributes],
                   [I18n.t(:module_input_attribute), @ge_model.input_pe_attribute.nil? ? nil : @ge_model.input_pe_attribute.alias],
                   [I18n.t(:module_output_attribute), @ge_model.output_pe_attribute.nil? ? nil : @ge_model.output_pe_attribute.alias],
                   ["#{I18n.t(:label_Factor)} a", @ge_model.coeff_a ],
@@ -420,10 +421,24 @@ class Ge::GeModelsController < ApplicationController
 
         else
           #there is no model, we will create new model from the model attributes data of the file to import
-          model_sheet_order = { :"0" => "name", :"1" => "description", :"2" => "three_points_estimation", :"3" => "enabled_input", :"4" => "modify_theorical_effort",
-                                :"41" => "transform_size_and_effort",
-                                :"5" =>"input_pe_attribute_id", :"6" => "output_pe_attribute_id", :"7" => "coeff_a", :"8" => "coeff_b", :"9" => "p_calculation_method",
-                                :"10" => "c_calculation_method", :"11" => "s_calculation_method", :"12" => "input_size_unit", :"13" => "output_size_unit", :"14" => "input_effort_unit", :"15" => "output_effort_unit", :"16" => "input_effort_standard_unit_coefficient", :"17" => "output_effort_standard_unit_coefficient" }
+          model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "modify_theorical_effort",
+                                          "transform_size_and_effort", "display_size_and_effort_attributes", "input_pe_attribute_id",
+                                          "output_pe_attribute_id", "coeff_a", "coeff_b", "p_calculation_method", "c_calculation_method",
+                                          "s_calculation_method", "input_size_unit", "output_size_unit", "input_effort_unit", "output_effort_unit",
+                                          "input_effort_standard_unit_coefficient", "output_effort_standard_unit_coefficient"]
+
+          # model_sheet_order = { :"0" => "name", :"1" => "description", :"2" => "three_points_estimation", :"3" => "enabled_input",
+          #                       :"4" => "modify_theorical_effort", :"5" => "transform_size_and_effort", :"6" => "display_size_and_effort_attributes",
+          #                       :"7" =>"input_pe_attribute_id", :"8" => "output_pe_attribute_id", :"9" => "coeff_a", :"10" => "coeff_b", :"11" => "p_calculation_method",
+          #                       :"12" => "c_calculation_method", :"13" => "s_calculation_method", :"14" => "input_size_unit",
+          #                       :"15" => "output_size_unit", :"16" => "input_effort_unit", :"17" => "output_effort_unit",
+          #                       :"18" => "input_effort_standard_unit_coefficient", :"19" => "output_effort_standard_unit_coefficient" }
+
+          model_sheet_order = Hash.new
+          model_sheet_order_attributes.each_with_index do |attr_name, index|
+            model_sheet_order["#{index}".to_sym] = attr_name
+          end
+
           model_worksheet = workbook['Model']
 
           if !model_worksheet.nil?
@@ -451,7 +466,12 @@ class Ge::GeModelsController < ApplicationController
             if @ge_model.save
               flash[:notice] = "Modèle créé avec succès"
             else
-              tab_error << "Erreur lors de la sauvegarde du modèle"
+              existing_ge_model_name = Ge::GeModel.where(name: @ge_model.name).first
+              if existing_ge_model_name
+                tab_error << "Erreur : le nom '#{@ge_model.name}' existe déjà"
+              else
+                tab_error << "Erreur lors de la sauvegarde du modèle"
+              end
             end
           else
             tab_error << "Les attributs du modèle ne sont pas définis dans le fichier importé"
@@ -547,7 +567,7 @@ class Ge::GeModelsController < ApplicationController
       flash[:error] =  I18n.t(:route_flag_error_17)
     end
 
-    if @ge_model
+    if @ge_model && @ge_model.save
       redirect_to ge.edit_ge_model_path(@ge_model, anchor: "tabs-2")
     else
       redirect_to request.referer + "#tabs-2" #redirect_to :back

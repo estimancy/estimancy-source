@@ -47,7 +47,7 @@
             <% end %>
 
             <%= submit_tag I18n.t('save'), :class => 'btn ' %>
-            <%= link_to I18n.t(:back), :back, class: "btn" %>
+            <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
         <% end %>
       </div>
     </div>
@@ -97,7 +97,7 @@
           <% cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
 
           <% if cev_attr_possible_module_projects.nil? || cev_attr_possible_module_projects.empty? %>
-                <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project %>
+                <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : [guw_preceding_module_project] %>
           <% end %>
 
           <% if !cev.estimation_value_id.nil?
@@ -121,7 +121,7 @@
 
             <div class="span2">
               <p>
-                <%= cev %>
+                <%= cev %><br>
                 <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
                 <%= select_tag "preceding[#{cev.id}]", options_for_select(preceding_outputs_estimation_values.map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
               </p>
@@ -131,7 +131,7 @@
           <script>
             // Update the view_widget attribute according to the selected module
             $('#<%= "preceding_module_project_#{cev.id}" %>').change(function() {
-                if ($(this).val() !== ""){
+                //if ($(this).val() !== "undefined"){
                     return $.ajax({
                         url: "/update_associated_estimation_values_data",
                         method: "GET",
@@ -141,7 +141,7 @@
                             current_estimation_value_id: <%= cev.id %>
                         }
                     });
-                }
+                //}
             });
           </script>
 
@@ -149,6 +149,7 @@
 
         <br>
         <%= submit_tag "Sauvegarder", class: "btn btn-mini" %>
+        <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
       <% end %>
     <% end %>
 
