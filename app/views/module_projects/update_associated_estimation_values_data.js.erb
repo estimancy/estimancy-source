@@ -3,21 +3,5 @@
     $('#<%= "preceding_#{@current_estimation_value.id}" %>').html("<%=raw j(select_tag "preceding[#{@current_estimation_value.id}]",
                                                                 options_for_select(@preceding_estimations_values.map{|i| [i.pe_attribute.name, i.id]}),
                                                                 :include_blank => true) %>");
-
-
-$('#<%= "preceding_module_project_#{@current_estimation_value.id}" %>').change(function() {
-    if ($(this).val() !== ""){
-        return $.ajax({
-            url: "/update_associated_estimation_values_data",
-            method: "GET",
-            data: {
-                preceding_module_project_id: $(this).val(),
-                current_module_project_id: <%= @current_module_project.id %>,
-                current_estimation_value_id: <%= @current_estimation_value.id %>
-            }
-        });
-    }
-});
-
 <% end %>
 
