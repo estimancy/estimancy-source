@@ -91,7 +91,7 @@
     <% end %>
 <% end %>
 
-<% effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten %>
+<% effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
 <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
 <% initial_entry_values = {} %>
@@ -109,7 +109,7 @@
     <% unless current_inputs_evs.empty? %>
         <% current_inputs_evs.each do |ev| %>
 
-            <%# if @module_project.pemodule.alias == "guw" %>
+            <%# if !possible_module_projects.all.empty? possible_module_projects.last.pemodule.alias == "guw" %>
                 <% current_ev = ev.string_data_most_likely[component_id] %>
                 <% begin %>
                     <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
@@ -149,18 +149,27 @@
 
     <% if current_module_project.wbs_activity.enabled_input %>
       <tr>
-        <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
-
         <% if current_module_project.wbs_activity.three_points_estimation? %>
+            <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
             <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
         <% else %>
+            <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
             <th><%= I18n.t(:retained_input_value) %></th>
         <% end %>
+
         <th colspan="7"></th>
       </tr>
     <% end %>
 
+
     <tr>
+
+      <% if current_module_project.wbs_activity.enabled_input && current_module_project.wbs_activity.three_points_estimation? %>
+        <th>L</th>
+        <th>M</th>
+        <th>H</th>
+      <% end %>
+
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <th>Effort (L)</th>
       <% end %>
@@ -190,9 +199,10 @@
        <% levels.each do |level| %>
            <td>
              <% current_inputs_evs.each do |ev| %>
+                 <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
                 <span>
                   <%= ev.pe_attribute.alias %> :
-                  <%= text_field_tag "", convert_with_precision(initial_entry_values["#{level}"][ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
+                  <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                 </span><br>
              <% end %>
            </td>
@@ -205,14 +215,15 @@
             <% if current_inputs_evs.empty? %>
                 <!-- Anciennes valeurs -->
                 <%= hidden_field_tag "values[low]", v_low %>
-                <%= text_field_tag "", convert_with_precision(v_low, user_number_precision, true), disabled: true %>
+                <%= text_field_tag "", v_low.nil? ? nil : convert_with_precision(v_low, user_number_precision, true), disabled: true %>
             <% else %>
                 <!-- nouvelles entrees -->
                 <% current_inputs_evs.each do |ev| %>
+                    <% entry_low_value =  entry_values["low"][ev.id] %>
                     <span>
                       <%= ev.pe_attribute.alias %> :
-                      <%= hidden_field_tag "values[low][#{ev.id}]", entry_values["low"][ev.id] %>
-                      <%= text_field_tag "", convert_with_precision(entry_values["low"][ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
+                      <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
+                      <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                     </span><br>
                 <% end %>
             <% end %>
@@ -221,13 +232,14 @@
           <td>
             <% if current_inputs_evs.empty? %>
                 <!-- Anciennes valeurs -->
-                <%= number_field_tag "values[low]", v_low, step: "any", style: "width: 100px;" %>
+                <%= number_field_tag "values[low]", v_low, step: "any", style: "width: 60px;" %>
             <% else %>
                 <!-- nouvelles entrees -->
                 <% current_inputs_evs.each do |ev| %>
+                    <% entry_low_value =  entry_values["low"][ev.id] %>
                     <span>
                       <%= ev.pe_attribute.alias %> :
-                      <%= number_field_tag "values[low][#{ev.id}]", entry_values["low"][ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
+                      <%= number_field_tag "values[low][#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
                     </span> <br>
                 <% end %>
             <% end %>
@@ -246,9 +258,10 @@
               <!-- nouvelles entrees -->
               <% current_inputs_evs.each do |ev| %>
                 <span>
+                  <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                   <%= ev.pe_attribute.alias %> :
-                  <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_values["most_likely"][ev.id] %>
-                  <%= text_field_tag "", convert_with_precision(entry_values["most_likely"][ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
+                  <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
+                  <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                 </span><br>
               <% end %>
           <% end %>
@@ -259,9 +272,10 @@
 
           <!-- Nouvelles entrees -->
           <% current_inputs_evs.each do |ev| %>
+            <% entry_ml_value = entry_values["most_likely"][ev.id] %>
             <span>
               <%= ev.pe_attribute.alias %> :
-              <%= number_field_tag "values[most_likely][#{ev.id}]", entry_values["most_likely"][ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
+              <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
             </span> <br>
           <% end %>
         </td>
@@ -276,10 +290,11 @@
 
             <!-- nouvelles entrees -->
             <% current_inputs_evs.each do |ev| %>
+                <% entry_high_value = entry_values["high"][ev.id] %>
                 <span>
                   <%= ev.pe_attribute.alias %> :
-                  <%= hidden_field_tag "values[high][#{ev.id}]", entry_values["high"][ev.id] %>
-                  <%= text_field_tag "", convert_with_precision(entry_values["high"][ev.id], user_number_precision, true), disabled: true, style: "width: 100px; text-align: right" %>
+                  <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
+                  <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                 </span><br>
             <% end %>
 
@@ -289,9 +304,10 @@
             <%#= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %>
 
             <% current_inputs_evs.each do |ev| %>
+                <% entry_high_value = entry_values["high"][ev.id] %>
                 <span>
                   <%= ev.pe_attribute.alias %> :
-                  <%= number_field_tag "values[high][#{ev.id}]", entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", class: ".input-mini", style: "width: 100px; text-align: right" %>
+                  <%= number_field_tag "values[high][#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
                 </span> <br>
             <% end %>
           </td>

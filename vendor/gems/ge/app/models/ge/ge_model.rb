@@ -21,6 +21,10 @@
 
 module Ge
   class GeModel < ActiveRecord::Base
+
+    INPUT_EFFORTS_ALIAS = ["retained_size", "effort"]
+    OUTPUT_ATTRIBUTES_ALIAS = ["retained_size", "effort", "introduced_defects"]
+
     #validates_presence_of :name####, :organization_id
     validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
     validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
@@ -84,5 +88,6 @@ module Ge
         nil
       end
     end
+
   end
 end

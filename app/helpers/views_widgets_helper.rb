@@ -551,7 +551,6 @@ module ViewsWidgetsHelper
           #   "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
           # end
 
-
           ### FIN TEST
 
 
@@ -582,7 +581,20 @@ module ViewsWidgetsHelper
         chart_height = height-50
         chart_width = width -40
         chart_title = view_widget.name
-        chart_vAxis = "#{view_widget_attribute_name} (#{get_attribute_unit(view_widget_attribute)})"
+        attribute_unit = get_attribute_unit(view_widget_attribute)
+
+        ### Organization effort unit coefficient
+        # Get min value and organization effort unit coeff
+        if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
+          if view_widget.use_organization_effort_unit == true
+            min_value = data_low #get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+
+            attribute_unit = organization_effort_unit
+          end
+        end
+
+        chart_vAxis = "#{view_widget_attribute_name} (#{attribute_unit})"
         chart_hAxis = "Level"
 
         case view_widget.widget_type
@@ -629,7 +641,7 @@ module ViewsWidgetsHelper
             value_to_show = raw(render :partial => 'views_widgets/g_pie_chart',
                                        :locals => { level_values: chart_level_values,
                                                     widget_id: view_widget.id,
-                                                    chart_title: chart_title,
+                                                    chart_title: chart_vAxis, #chart_title,
                                                     chart_height: chart_height
                                        })
 
@@ -727,7 +739,7 @@ module ViewsWidgetsHelper
 
             unless estimation_value.in_out == "input"
               chart_height = height+10
-              chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
+              chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
               ###value_to_show = column_chart(chart_data, width: "1px", height: "#{chart_height}px", library: {backgroundColor: "transparent", weight: "normal", title: chart_title, vAxis: {title: chart_vAxis}})
 
               # Now with google-chart
@@ -745,17 +757,8 @@ module ViewsWidgetsHelper
             chart_height = height-90
 
             unless estimation_value.in_out == "input"
-              chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget)
-
-              # if ratio_reference.nil?
-              #   module_project_ratio_elements = []
-              # else
-              #   module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_elt.id, selected: true)
-              # end
-
-              ###chart_data = get_google_chart_data_effort_and_cost(module_project_ratio_elements, pbs_project_elt, module_project, estimation_value, view_widget)
+              chart_data = get_chart_data_effort_and_cost(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
             end
-
             #value_to_show = pie_chart(chart_data, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title})
 
             # Now with google-chart
@@ -768,7 +771,7 @@ module ViewsWidgetsHelper
                                        #value_to_show = raw(render :partial => 'views_widgets/g_bubble_test2',
                                        :locals => { level_values: g_chart_data,
                                                     widget_id: view_widget.id,
-                                                    chart_title: "#{chart_title} : #{get_attribute_human_name(estimation_value.pe_attribute)}",
+                                                    chart_title: chart_vAxis, #"#{chart_title} : #{get_attribute_human_name(estimation_value.pe_attribute)}",
                                                     chart_height: chart_height
                                        })
 
@@ -857,6 +860,7 @@ module ViewsWidgetsHelper
     else
       wbs_unit = wbs_activity.effort_unit
     end
+    effort_unit_coefficient = wbs_activity.effort_unit_coefficient || 1
 
     project_organization = module_project.project.organization
     ###wbs_activity_elements = wbs_activity.wbs_activity_elements
@@ -895,6 +899,20 @@ module ViewsWidgetsHelper
                                     "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
       module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL && retained_effort_probable <> ? && retained_effort_most_likely <> ?", 0, 0)
     end
+
+
+    ### TEST
+    # Get min value and organization effort unit coeff
+    if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
+      if view_widget.use_organization_effort_unit == true
+        min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+        organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+
+        wbs_unit = organization_effort_unit
+      end
+    end
+    ### FIN TEST
+
 
     case view_widget.widget_type
 
@@ -970,7 +988,7 @@ module ViewsWidgetsHelper
 
         wbs_activity_elements_root = wbs_activity_elements.first.root
         root_profiles_wbs_data = Hash.new
-        colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679']
+        ###colors = ViewsWidget::WIDGETS_COLORS #['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679']
         stacked_chart_data = Array.new
         # entête des données
         header_data = ['Phases']
@@ -1010,7 +1028,23 @@ module ViewsWidgetsHelper
                     if wbs_profiles_value.nil?
                       wbs_profiles_value = 0
                     else
-                      value = wbs_profiles_value.round(user_number_precision)
+
+                      ###value = wbs_profiles_value.round(user_number_precision)
+
+                      ### TEST
+                      if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
+                        if view_widget.use_organization_effort_unit == true
+                          # use the organization effort unit
+                          value = convert_with_precision(convert_effort_with_organization_unit(wbs_profiles_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
+                        else
+                          # use module instance effort unit
+                          value = convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)
+                        end
+                      else
+                        value = convert_with_precision(wbs_profiles_value.to_f, user_number_precision, true)
+                      end
+                      ### FIN TEST
+
                       wbs_profiles_value = value.to_s.gsub(',', '.').to_f
                     end
                   #end
@@ -1046,59 +1080,6 @@ module ViewsWidgetsHelper
 
     end
     ###result
-  end
-
-
-  def get_google_chart_data_effort_and_cost(module_project_ratio_elements, pbs_project_element, module_project, estimation_value, view_widget)
-    chart_data = []
-    effort_breakdown_stacked_bar_dataset = {}
-
-    return chart_data if (!module_project.pemodule.alias.eql?(Projestimate::Application::EFFORT_BREAKDOWN) || estimation_value.nil?)
-
-    wbs_activity = module_project.wbs_activity
-    wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
-    view_widget.show_min_max ? (levels = ['low', 'most_likely', 'high', 'probable']) : (levels = ['probable'])
-
-    if view_widget.show_min_max
-      #  # get all project's wbs-project_elements
-      wbs_activity_elements = wbs_activity.wbs_activity_elements
-      wbs_activity_elements.each do |wbs_activity_elt|
-        effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
-      end
-    else
-
-      # Test
-      module_project_ratio_elements.each do |mp_ratio_element|
-
-        pe_attribute_alias = estimation_value.pe_attribute.alias
-        if estimation_value.pe_attribute.alias.in?("cost", "effort")
-          pe_attribute_alias = "retained_#{pe_attribute_alias}"
-        end
-
-        level_value = mp_ratio_element.send("#{pe_attribute_alias}_probable")
-
-        if mp_ratio_element.wbs_activity_element.is_childless? && mp_ratio_element.selected
-          if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
-            chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(level_value, user_number_precision, true)]
-          else
-            # for Effort attribute
-            if view_widget.use_organization_effort_unit == true
-              #chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)]
-              chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert(level_value, @current_organization)]
-            else
-              # use module instance effort unit
-              #chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), user_number_precision, true)]
-              chart_data << ["#{mp_ratio_element.name}", level_value.nil? ? 0 : convert(level_value, @current_organization)]
-            end
-          end
-        else
-          chart_data << ["#{mp_ratio_element.name}", 0]
-        end
-      end
-
-      # Fin test
-    end
-    chart_data
   end
 
 
@@ -1164,7 +1145,7 @@ module ViewsWidgetsHelper
   end
 
   # Get the BAR or PIE CHART data for effort per phase or Cost per phase
-  def get_chart_data_effort_and_cost(pbs_project_element, module_project, estimation_value, view_widget)
+  def get_chart_data_effort_and_cost(pbs_project_element, module_project, estimation_value, view_widget, ratio_reference=nil)
     chart_data = []
     effort_breakdown_stacked_bar_dataset = {}
 
@@ -1186,9 +1167,16 @@ module ViewsWidgetsHelper
       probable_est_value = estimation_value.send("string_data_probable")
       pbs_probable_for_consistency = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
 
-      # Get min value
-      # min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
-      # organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+      # Get min value and organization effort unit coeff
+      if ratio_reference.nil?
+        module_project_ratio_elements = []
+      else
+        module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
+      end
+
+      # get phases min value
+      min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+      organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
 
       wbs_activity.wbs_activity_elements.each do |wbs_activity_elt|
         if wbs_activity_elt.is_childless? #!= wbs_activity_root
@@ -1197,23 +1185,21 @@ module ViewsWidgetsHelper
           activity_value = 0
           level_estimation_values = probable_est_value
           if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
-            #chart_data << ["#{wbs_activity_elt.name}", 0]
-            activity_value = 0
+            activity_value = 0 #chart_data << ["#{wbs_activity_elt.name}", 0]
           else
             wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
             if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
 
               #chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value.to_f, @current_organization)]
-              activity_value = convert(wbs_value.to_f, @current_organization)
+              ###activity_value = convert(wbs_value.to_f, @current_organization)
 
-              # if view_widget.use_organization_effort_unit == true
-              #   # use the organization effort unit
-              #   chart_data << ["#{wbs_activity_elt.name}", wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)]
-              # else
-              #   # use module instance effort unit
-              #   chart_data << ["#{wbs_activity_elt.name}", wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)]
-              # end
-
+              if view_widget.use_organization_effort_unit == true
+                # use the organization effort unit
+                activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
+              else
+                # use module instance effort unit
+                activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
+              end
             else
               #chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value.to_f, user_number_precision, true)]
               activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)

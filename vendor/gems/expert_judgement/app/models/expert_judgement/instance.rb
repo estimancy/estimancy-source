@@ -27,6 +27,8 @@ module ExpertJudgement
 
     validates_presence_of :name###, :organization_id
 
+    INPUT_ATTRIBUTES_ALIAS = ["retained_size", "effort", "cost"]
+
     amoeba do
       enable
       customize(lambda { |original_expert_judgment_id, new_expert_judgment_id|

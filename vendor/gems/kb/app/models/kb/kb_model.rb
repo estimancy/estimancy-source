@@ -33,6 +33,8 @@ module Kb
 
     serialize :selected_attributes, Array
 
+    INPUT_ATTRIBUTES_ALIAS = ["effort", "retained_size"]
+
     amoeba do
       enable
       exclude_association [:module_projects]

@@ -104,29 +104,52 @@
 
             <%
              size_attr = PeAttribute.find_by_alias("retained_size")
-             begin
-               mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
-               size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                        :module_project_id => mpsize.id,
-                                                        :in_out => "output").first
-             rescue
-               mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
-               size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                        :module_project_id => mpsize.id,
-                                                        :in_out => "output").first
-             end
 
              size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                       :module_project_id => current_module_project.id,
-                                                       :in_out => "input").first
+                                                     :module_project_id => current_module_project.id,
+                                                     :in_out => "input").first
+             begin
+               if size_current_ev && !size_current_ev.estimation_value_id.nil?
+                 size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
+               else
+                  size_possible_module_projects = current_module_project.possible_previous_mp_for_attribute(size_attr)
+                  mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+                  size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                           :module_project_id => mpsize.id,
+                                                           :in_out => "output").first
+               end
+             rescue
+               begin
+                mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+                size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                        :module_project_id => mpsize.id,
+                                                        :in_out => "output").first
+               rescue
+                 size_previous_ev = nil
+               end
+             end
+
+
+
              @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id)
 
 
              effort_attr = PeAttribute.find_by_alias("effort")
+             effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                       :module_project_id => current_module_project.id,
+                                                       :in_out => "input").first
+             effort_possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort_attr)
+
              if current_module_project.previous.size > 1
-               ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
-                                                        module_project_id: current_module_project.previous.last.id,
-                                                        in_out: "output").first
+
+               if effort_current_ev && !effort_current_ev.estimation_value_id.nil?
+                 ev = EstimationValue.find(effort_current_ev.estimation_value_id)
+               else
+                  ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
+                                             module_project_id: current_module_project.previous.last.id,
+                                             in_out: "output").first
+               end
+
                if ev
                  if ev.module_project.pemodule.alias == "effort_breakdown"
                    @previous_effort = ev.send("string_data_probable")[current_component.id][current_module_project.previous.last.wbs_activity.root_element.id][:value].to_f
@@ -134,7 +157,8 @@
                    @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
                  end
                end
-             end %>
+             end
+            %>
 
             <% unless @kb_model.enabled_input %>
                <%= hidden_field_tag "size", @size %>

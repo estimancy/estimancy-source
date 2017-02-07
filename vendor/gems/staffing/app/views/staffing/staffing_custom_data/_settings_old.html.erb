@@ -12,11 +12,18 @@
    ev = EstimationValue.where(:pe_attribute_id => attribute.id,
                               :module_project_id => current_module_project.id,
                               :in_out => "input").first
+
    effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
    if effort == 0
-     ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+
+     if !ev.estimation_value_id.nil?
+       ev = EstimationValue.find(ev.estimation_value_id)
+     else
+        ev = EstimationValue.where(:pe_attribute_id => attribute.id,
                                 :module_project_id => current_module_project.previous.last,
                                 :in_out => "output").first
+     end
+
      begin
        begin
          previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root

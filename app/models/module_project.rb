@@ -322,11 +322,11 @@ class ModuleProject < ActiveRecord::Base
   # Get the Efforts Attributes (E1, E2, E3, E4) estimations values
   def get_wbs_efforts_attributes_estimation_values(wbs_activity_ratio_id, pbs_id, input_low, input_ml, input_high)
     wbs_activity_ratio = WbsActivityRatio.find(wbs_activity_ratio_id)
-    wbs_effort_ids = PeAttribute.where(alias: WbsActivity::EFFORT_ENTRY_NAMES).map(&:id).flatten
+    wbs_effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
 
     if current_inputs_evs.empty?
-      # WbsActivity::EFFORT_ENTRY_NAMES.each_with_index do |effort_alias, index|
+      # WbsActivity::INPUT_EFFORTS_ALIAS.each_with_index do |effort_alias, index|
       #   pe_attr = PeAttribute.where(alias: effort_alias).first_or_create(name: "Effort #{index+1}", alias: effort_alias, description: "Effort #{index+1} = entrée #{index+1} = #{effort_alias}",
       #                      attr_type: "float", options: ["float", ">=", "0"])
       # end
@@ -397,5 +397,53 @@ class ModuleProject < ActiveRecord::Base
 
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
   end
+
+
+  # Get Estimation_values or Create them if not exist
+  def get_mp_estimation_values
+
+    input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+    current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
+
+    if current_inputs_evs.empty?
+
+      #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
+      self.pemodule.attribute_modules.each do |am|
+
+        if am.in_out == 'both'
+          ['input', 'output'].each do |in_out|
+            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
+                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                                      :module_project_id => self.id,
+                                      :in_out => in_out,
+                                      :is_mandatory => am.is_mandatory,
+                                      :description => am.description,
+                                      :display_order => am.display_order,
+                                      :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                      :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                      :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                      :custom_attribute => am.custom_attribute,
+                                      :project_value => am.project_value)
+          end
+        else
+          ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
+                   .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                                    :module_project_id => self.id,
+                                    :in_out => am.in_out,
+                                    :is_mandatory => am.is_mandatory,
+                                    :display_order => am.display_order,
+                                    :description => am.description,
+                                    :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                    :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                    :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high },
+                                    :custom_attribute => am.custom_attribute,
+                                    :project_value => am.project_value)
+        end
+      end
+    end
+
+    self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
+  end
+
 
 end

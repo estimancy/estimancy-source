@@ -42,6 +42,7 @@
         ]);
 
         var data = google.visualization.arrayToDataTable(r_data);
+        var chart_colors = <%= ViewsWidget::WIDGETS_COLORS.to_json.html_safe %>;
 
         var options = {
             //width: 600,
@@ -56,6 +57,7 @@
                 title: '<%= chart_vAxis_title %>'
             },
 
+            colors: chart_colors,
             bar: { groupWidth: '75%' },
             isStacked: true,
         };

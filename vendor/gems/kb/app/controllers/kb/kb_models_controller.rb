@@ -280,13 +280,14 @@ class Kb::KbModelsController < ApplicationController
     es_array = Array.new
 
     @filters = params["filters"]
-
     @kb_input.filters = params["filters"]
 
     @kb_datas.each do |i|
-      params["filters"].each do |f|
-        if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
-          @project_list << i
+      unless params["filters"].nil?
+        params["filters"].each do |f|
+          if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
+            @project_list << i
+          end
         end
       end
     end

@@ -41,9 +41,15 @@
                                                        module_project_id: current_module_project.id,
                                                        pbs_project_element_id: current_component.id).first %>
 
-      <% ev = EstimationValue.where(:pe_attribute_id => eja.id,
-                                    :module_project_id => current_module_project.previous.first,
-                                    :in_out => "output").first %>
+      <% current_ev =  EstimationValue.where(:pe_attribute_id => eja.id,
+                                             :module_project_id => current_module_project.id,
+                                             :in_out => "input").first %>
+
+      <% if current_ev && !current_ev.estimation_value_id.nil? %>
+        <% ev = EstimationValue.find(current_ev.estimation_value_id) %>
+      <% else %>
+        <% ev = EstimationValue.where(:pe_attribute_id => eja.id, :module_project_id => current_module_project.previous.first, :in_out => "output").first %>
+      <% end %>
 
       <tr>
         <td>

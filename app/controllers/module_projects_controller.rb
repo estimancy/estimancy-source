@@ -23,9 +23,48 @@ class ModuleProjectsController < ApplicationController
 
   load_resource
 
+  # Associate current module_project inputs with the preceding module_project ouputs
+  def associate_module_projects_inputs_outputs
+
+    @module_project = ModuleProject.find(params[:mp])
+
+    #Estimation-Values association
+    if params[:preceding].present?
+      params[:preceding].each do |k, v|
+        curr_ev = EstimationValue.where(id: k.to_i).first
+        pre_ev = EstimationValue.where(id: v.to_i).first
+        curr_ev.estimation_value_id = pre_ev.nil? ? nil : pre_ev.id
+        curr_ev.save
+      end
+    end
+
+    redirect_to :back
+  end
+
+  #Update the module_project corresponding data of view
+  def update_associated_estimation_values_data
+    module_project_id = params['current_module_project_id']
+
+    if !module_project_id.nil? && module_project_id != 'undefined'
+      @current_module_project = ModuleProject.find(module_project_id)
+      @current_estimation_value = EstimationValue.find(params['current_estimation_value_id']) if params['current_estimation_value_id']
+
+      if params['preceding_module_project_id'].nil?
+        @preceding_estimations_values = []
+      else
+        @preceding_selected_module_project = ModuleProject.find(params['preceding_module_project_id'])
+        @preceding_estimations_values = @preceding_selected_module_project.estimation_values.where(in_out: "output")
+      end
+    end
+  end
+
+
+
+  # Reassing the current mp instance module
   def module_projects_reassign
     #Reassing
-    @module_project = ModuleProject.find(params[:mp])
+    @module_project = ModuleProject.find(params[:current_mp])
+
       if params[:guw_model_id].present?
 
         @module_project.guw_model_id = params[:guw_model_id]
@@ -57,16 +96,6 @@ class ModuleProjectsController < ApplicationController
       end
     @module_project.save(validate: false)
 
-
-    #EV association
-    if params[:preceding].present?
-      params[:preceding].each do |k, v|
-        curr_ev = EstimationValue.where(id: k.to_i).first
-        pre_ev = EstimationValue.where(id: v.to_i).first
-        curr_ev.estimation_value_id = pre_ev.nil? ? nil : pre_ev.id
-        curr_ev.save
-      end
-    end
 
     redirect_to :back
   end

@@ -179,8 +179,10 @@ Projestimate::Application.routes.draw do
   get 'edit_module_project_view_config' => 'module_projects#edit_module_project_view_config', as: 'edit_module_project_view_config'
   match 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
   post 'module_projects_reassign' => 'module_projects#module_projects_reassign', as: 'module_projects_reassign'
+  post 'associate_module_projects_inputs_outputs' => 'module_projects#associate_module_projects_inputs_outputs', as: 'associate_module_projects_inputs_outputs'
   get 'update_module_project_dynamic_connections' => 'module_projects#update_module_project_dynamic_connections', as: 'update_module_project_dynamic_connections'
   get 'update_module_project_left_and_top_positions' => 'module_projects#update_module_project_left_and_top_positions', as: 'update_module_project_left_and_top_positions'
+  get 'update_associated_estimation_values_data' => 'module_projects#update_associated_estimation_values_data', :as => 'update_associated_estimation_values_data'
 
   resources :module_project_ratio_elements do
     post "load_comments"

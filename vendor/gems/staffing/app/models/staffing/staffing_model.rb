@@ -37,6 +37,8 @@ module Staffing
     has_many :module_projects, :dependent => :destroy
     has_many :staffing
 
+    INPUT_EFFORTS_ALIAS = ["effort"]
+
     def to_s(mp=nil)
       if mp.nil?
         self.name

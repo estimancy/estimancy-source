@@ -4,7 +4,8 @@
     google.charts.setOnLoadCallback(drawColumnChart);
     function drawColumnChart() {
 
-        <% colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679'] %>
+        <%# colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679'] %>
+        <% colors = ViewsWidget::WIDGETS_COLORS %>
         <% level_values.each_with_index { |value, i | value << colors[i] }  %>
         <% level_values.insert(0, ["Phase", "#{get_attribute_human_name(estimation_value.pe_attribute)}", { role: "style" } ]) %>
 
@@ -26,7 +27,14 @@
             //width: 600,
             //height: 400,
             bar: {groupWidth: "95%"},
-            legend: { position: "none" }
+            legend: { position: "none" },
+
+            hAxis: {
+                title: 'Phases',
+            },
+            vAxis: {
+                title: '<%= chart_vAxis_title %>'
+            },
         };
         var chart = new google.visualization.ColumnChart(document.getElementById('<%= "column_chart_div_#{widget_id}" %>'));
         chart.draw(view, options);
