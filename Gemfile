@@ -23,8 +23,8 @@ if File.exist?(database_file)
       case adapter
         when 'mysql2'
           gem 'mysql2', '~> 0.3.11'
-        # when /postgres/
-          # gem 'pg'
+        when /postgres/
+          gem 'pg'
         else
           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
@@ -44,7 +44,8 @@ gem 'thin'
 gem 'curb'
 
 #Permissions
-gem 'cancan'
+# gem 'cancan'
+gem 'cancancan'
 
 #Authentication for tests
 gem "warden"
@@ -210,7 +211,7 @@ gem 'remotipart', '~> 1.2'
 gem 'yaml_db'
 
 gem 'test-unit'
-gem 'bullet', group: :development
+# gem 'bullet', group: :development
 
 local_gemfile = File.join(File.dirname(__FILE__), 'Gemfile.local')
 if File.exists?(local_gemfile)

@@ -163,11 +163,6 @@
     end
 
 
-    #Save staffing
-    def save_staffing
-
-    end
-
     def export_staffing
       staffing_data = Staffing::StaffingCustomDatum.find(params[:staffing_model_id])
       workbook = RubyXL::Workbook.new
