@@ -230,10 +230,11 @@
                   <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
 
                   <% if !current_module_project.ge_model.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
-                      <% if previous_mp_ev.nil? %>
+                      <% if previous_mp_ev.nil? || previous_ev.nil? %>
                         <% entry_values["#{level}"][ev.id] = nil %>
                       <% else %>
                           <% if previous_mp_ev.module_project.pemodule.alias == "effort_breakdown" %>
+                            <%# if previous_ev[wbs_root_element_id].nil? || previous_ev[wbs_root_element_id].empty? %>
                             <% wbs_root_value = (previous_ev[wbs_root_element_id].nil? || previous_ev[wbs_root_element_id].empty?) ? nil : (previous_ev[wbs_root_element_id][:value].to_f / coeff) %>
                             <% entry_values["#{level}"][ev.id] = wbs_root_value %>
                           <% else %>

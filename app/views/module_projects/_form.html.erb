@@ -47,7 +47,7 @@
             <% end %>
 
             <%= submit_tag I18n.t('save'), :class => 'btn ' %>
-            <%= link_to I18n.t(:back), :back, class: "btn" %>
+            <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
         <% end %>
       </div>
     </div>
@@ -149,6 +149,7 @@
 
         <br>
         <%= submit_tag "Sauvegarder", class: "btn btn-mini" %>
+        <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
       <% end %>
     <% end %>
 
