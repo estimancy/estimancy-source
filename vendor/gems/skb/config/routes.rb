@@ -28,6 +28,8 @@ Skb::Engine.routes.draw do
     get "data_export"
     post "duplicate"
     post "raz"
+    post "save_filters"
+    post "update_size"
   end
 
   match 'skb_models/import_skb_model' => 'skb_models#import', as: "import_skb_model"

@@ -30,14 +30,18 @@ module Skb
     has_many :skb_datas, :dependent => :destroy
     has_many :skb_inputs, :dependent => :destroy
 
+    serialize :selected_attributes, Array
+
+    INPUT_ATTRIBUTES_ALIAS = ["retained_size"]
+
     amoeba do
       enable
       exclude_association [:module_projects]
 
       customize(lambda { |original_skb_model, new_skb_model|
-        new_skb_model.copy_id = original_skb_model.id
-        new_skb_model.size_unit = original_skb_model.size_unit
-      })
+                  new_skb_model.copy_id = original_skb_model.id
+                  new_skb_model.size_unit = original_skb_model.size_unit
+                })
     end
 
     def to_s(mp=nil)

@@ -22,5 +22,7 @@
 module Skb
   class SkbInput < ActiveRecord::Base
     belongs_to :skb_model
+
+    serialize :filters, Hash
   end
 end
