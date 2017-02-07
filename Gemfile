@@ -44,7 +44,7 @@ gem 'thin'
 gem 'curb'
 
 #Permissions
-gem 'cancan'
+# gem 'cancan'
 gem 'cancancan'
 
 #Authentication for tests
