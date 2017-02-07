@@ -45,6 +45,7 @@ gem 'curb'
 
 #Permissions
 gem 'cancan'
+gem 'cancancan'
 
 #Authentication for tests
 gem "warden"
