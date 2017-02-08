@@ -1019,7 +1019,7 @@ fral:
   notice_pe_attribute_successful_updated: "Attribut mis à jour avec succès."
   text_index_permissions_guidance: "Liste toutes les permissions globales et projets"
   notice_end_of_estimation_execution: "Fin de l'exécution des modules"
-  label_project_name: "N° du devis"
+  label_project_name: "Nom de l'estimation"
   label_product_name: "Nom de l'application"
   label_project_version: "Version"
   label_permission_access: "Accès"
