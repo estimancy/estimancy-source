@@ -69,7 +69,7 @@ public
     end
 
     @user = User.new
-    @user.auth_type = AuthMethod.first.id
+    @user.auth_type = AuthMethod.where(name: "Application").first.id
     @generated_password = SecureRandom.hex(4)
     @organizations = current_user.organizations
   end
