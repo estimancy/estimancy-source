@@ -320,8 +320,10 @@
                         <% current_inputs_evs.each do |ev| %>
                             <% entry_low_value =  entry_values["low"][ev.id] %>
                             <div class="row-fluid">
-                              <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                              <div class="span3">
+                              <div class="span4">
+                                <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                              <!--</div>-->
+                              <!--<div class="span3">-->
                                   <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
                                   <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                               </div>
@@ -339,8 +341,10 @@
                         <% current_inputs_evs.each do |ev| %>
                             <% entry_low_value =  entry_values["low"][ev.id] %>
                             <div class="row-fluid">
-                              <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                              <div class="span3">
+                              <div class="span4">
+                                <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                              <!--</div>-->
+                              <!--<div class="span3">-->
                                 <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
                               </div>
                             </div>
@@ -362,8 +366,10 @@
                     <% current_inputs_evs.each do |ev| %>
                       <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                       <div class="row-fluid">
-                        <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                        <div class="span3">
+                        <div class="span4">
+                          <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                        <!--</div>-->
+                        <!--<div class="span3">-->
                           <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
                           <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                         </div>
@@ -377,8 +383,10 @@
                 <% current_inputs_evs.each do |ev| %>
                     <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                     <div class="row-fluid">
-                      <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                      <div class="span3">
+                      <div class="span4">
+                        <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                      <!--</div>-->
+                      <!--<div class="span3">-->
                         <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
                       </div>
                     </div>
@@ -393,8 +401,10 @@
                     <% current_inputs_evs.each do |ev| %>
                         <% entry_high_value = entry_values["high"][ev.id] %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                             <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
                             <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
                           </div>
@@ -407,8 +417,10 @@
                     <% current_inputs_evs.each do |ev| %>
                         <% entry_high_value = entry_values["high"][ev.id] %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                             <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
                           </div>
                         </div>
@@ -476,8 +488,10 @@
 
                     <% current_outputs_evs.each do |ev| %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> :</div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                             <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_low")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "input-mini" %>
                           </div>
                         </div>
@@ -488,8 +502,10 @@
                     <%#= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_low")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "input-medium", disabled: true %>
                     <% current_outputs_evs.each do |ev| %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> :</div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                               <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
                               <%= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_low")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "input-mini", disabled: true %>
                           </div>
@@ -505,8 +521,10 @@
                 <%#= number_field_tag "effort_most_likely", ev.nil? ? '': convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-medium" %>
                 <% current_outputs_evs.each do |ev| %>
                     <div class="row-fluid">
-                      <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> :</div>
-                      <div class="span3">
+                      <div class="span4">
+                        <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                      <!--</div>-->
+                      <!--<div class="span3">-->
                         <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil: convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-mini" %>
                       </div>
                     </div>
@@ -516,8 +534,10 @@
                 <%#= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}",  class: "input-medium", disabled: true %>
                 <% current_outputs_evs.each do |ev| %>
                     <div class="row-fluid">
-                      <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                      <div class="span3">
+                      <div class="span4">
+                       <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                        <!--</div>-->
+                       <!--<div class="span3">-->
                         <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
                         <%= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}",  class: "input-mini", disabled: true %>
                       </div>
@@ -532,8 +552,10 @@
                     <%#= number_field_tag "effort_high", ev.nil? ? '': convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-medium" %>
                     <% current_outputs_evs.each do |ev| %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                             <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
                           </div>
                         </div>
@@ -544,8 +566,10 @@
                     <%#= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-medium", disabled: true %>
                     <% current_outputs_evs.each do |ev| %>
                         <div class="row-fluid">
-                          <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> : </div>
-                          <div class="span3">
+                          <div class="span4">
+                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                          <!--</div>-->
+                          <!--<div class="span3">-->
                               <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
                               <%= number_field_tag "", ev.nil? ? '' : convert_with_standard_unit_coefficient(ev, ev.send("string_data_high")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>
                           </div>
@@ -563,8 +587,11 @@
 
             <% current_outputs_evs.each do |ev| %>
                 <div class="row-fluid">
-                  <div class="span3"><%= ge_effort_size_translation[ev.pe_attribute.alias] %> :</div>
-                  <div class="span3" id='<%="ratio_#{ev.id}"%>'>
+                  <div class="span4">
+                    <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                  <!--</div>-->
+                  <!--<div class="span3" id='<%="ratio_#{ev.id}"%>'>-->
+                  <span id='<%="ratio_#{ev.id}"%>' style="margin-left: 10px;">
                     <% begin %>
                         <% output = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
 
@@ -578,10 +605,10 @@
                         <% input = (entry_value.nil? ? 1 : convert_with_standard_unit_coefficient(corresponding_input_ev, entry_value.to_f, @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
 
                         <%=  (output.to_f/input.to_f).round(user_number_precision) %>
-                  <% rescue %>
+                    <% rescue %>
                         -
                     <% end %>
-                  </div>
+                  </span></div>
                 </div>
             <% end %>
 
