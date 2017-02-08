@@ -125,13 +125,13 @@
        @project_list = @skb_model.skb_datas
      end
      @project_list.map do |i|
-       @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: i.description.to_s }
+       @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: simple_format(i.description.to_s) }
      end
      @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
                         y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
                         z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
                         name: @project.to_s,
-                        description: @project.description.to_s }
+                        description: simple_format(@project.description) }
   %>
 
   <div class="row-fluid">
@@ -244,7 +244,6 @@
             data: <%= raw(@my_skb_datas.to_json) %>,
             events: {
               selection: function (event) {
-                alert("?");
                 for (var s in this.series) {
                   this.series[s].update({
                     dataLabels: {
