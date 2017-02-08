@@ -344,15 +344,15 @@ fral:
 
   #Project settings
   activity_categories: "Catégories d'activités"
-  acquisition_categories: "Services"
+  acquisition_categories: "Métiers"
   platform_categories: "Catégories de plates-formes"
   project_categories: "Catégories de projets"
   project_areas: "Catégorie"
-  acquisition_category: "Service"
+  acquisition_category: "Métier"
   platform_category: "Catégorie de plate-forme"
   project_category: "Catégorie de projet"
   project_area: "Catégorie"
-  label_acquisition: "Service"
+  label_acquisition: "Métier"
   label_platform: "Plateforme"
   label_version: "Vers."
 
