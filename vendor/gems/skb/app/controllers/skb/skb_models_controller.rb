@@ -97,14 +97,21 @@ class Skb::SkbModelsController < ApplicationController
 
     worksheet = workbook.add_worksheet("Données")
     skb_model_datas = @skb_model.skb_datas
-    default_attributs = ["Nom", "Description", "Données", "Traitements"]
+    default_attributs = ["Nom", "Description", "Date", "Données", "Traitements"]
 
     if !skb_model_datas.nil? && !skb_model_datas.empty?
       skb_model_datas.each_with_index do |skb_data, index|
         worksheet.add_cell(index + 1, 0, skb_data.name).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 1, skb_data.description).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 2, skb_data.data).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 3, skb_data.processing).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 2, skb_data.project_date).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 3, skb_data.data).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 4, skb_data.processing).change_horizontal_alignment('center')
+        skb_data.custom_attributes.each_with_index  do |(custom_attr_k, custom_attr_v),index_2|
+          worksheet.add_cell(index + 1, index_2 + 4, custom_attr_v).change_horizontal_alignment('center')
+          if index_2 + 3 > 2
+            default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
+          end
+        end
       end
     end
 
