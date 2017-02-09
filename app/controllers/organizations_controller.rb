@@ -1440,7 +1440,8 @@ class OrganizationsController < ApplicationController
                                 object_per_page: 50,
                                 auth_type: auth_method,
                                 locked_at: line[8] ==  0 ? nil : Time.now,
-                                number_precision: 2)
+                                number_precision: 2,
+                                subcription_end_date: Time.now + 1.year)
                 if line[5].upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
