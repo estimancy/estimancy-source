@@ -86,6 +86,7 @@ public
     @user.auth_type = params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
     @user.project_ids = params[:user][:project_ids]
+    @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
 
     if auth_type.name == "SAML"
       @user.skip_confirmation!
