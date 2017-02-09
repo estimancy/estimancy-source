@@ -462,7 +462,18 @@ module EffortBreakdown
       end
 
       ### Then compute all formula expression
-      output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
+      begin
+        output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
+      rescue => e
+        output_effort_with_dependencies = Hash.new
+        all_formula_to_compute.each do |var, formula|
+          begin
+            output_effort_with_dependencies[var] = calculator.evaluate(formula)
+          rescue
+            output_effort_with_dependencies[var] = 0.0
+          end
+        end
+      end
 
       wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
@@ -713,7 +724,19 @@ module EffortBreakdown
 
 
         ### Then compute all formula expression
-        output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
+        begin
+          output_effort_with_dependencies = calculator.solve(all_formula_to_compute)
+        rescue => e
+          #p e#.unbound_variables
+          output_effort_with_dependencies = Hash.new
+          all_formula_to_compute.each do |var, formula|
+            begin
+              output_effort_with_dependencies[var] = calculator.evaluate(formula)
+            rescue
+              output_effort_with_dependencies[var] = 0.0 #mettre a nil
+            end
+          end
+        end
 
         wbs_activity_root.children.each do |node|
           # Sort node subtree by ancestry_depth
