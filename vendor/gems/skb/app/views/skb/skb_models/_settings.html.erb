@@ -21,7 +21,12 @@
      @project_list = []
      @skb_model.skb_datas.each_with_index do |i, index_i|
        @skb_input.filters.each_with_index do |f, index_f|
-         if (@skb_input.filters.values.reject { |c| c.empty? }[0]) == (i.custom_attributes.values[0].to_s) && (@skb_input.filters.values.reject { |c| c.empty? }[1]) == (i.custom_attributes.values[1].to_s)
+
+         cond0 = @skb_input.filters.values[0].empty?
+         cond1 = @skb_input.filters.values[1].empty?
+
+         if (cond0 ? true : ((@skb_input.filters.values[0])) == (i.custom_attributes.values[0])) &&
+            (cond1 ? true : ((@skb_input.filters.values[1])) == (i.custom_attributes.values[1]))
            @project_list << i
          end
        end
@@ -54,7 +59,7 @@
     <div class="span12">
       <h5>
         <strong>
-          Nombre de projets sélectionnée
+          Nombre de projets sélectionnée :
           <span class="project_numbers">
             <%= @project_list.size %>
           </span>
