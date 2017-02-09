@@ -1,11 +1,72 @@
 <%= form_tag skb.skb_model_update_size_path(@skb_model), method: "post" do %>
 
+  <%
+
+     if @skb_model.date_min.nil? || @skb_model.date_max.nil?
+       if @skb_model.n_max.nil?
+         @skb_datas = @skb_model.skb_datas
+       else
+         @skb_datas = @skb_model.skb_datas.take(@skb_model.n_max.to_i)
+       end
+     else
+       if @skb_model.n_max.nil?
+         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s)
+       else
+         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s).take(@skb_model.n_max.to_i)
+       end
+     end
+
+     @my_skb_datas = []
+     @my_skb_input = []
+     @project_list = []
+     @skb_model.skb_datas.each_with_index do |i, index_i|
+       @skb_input.filters.each_with_index do |f, index_f|
+         if (@skb_input.filters.values.reject { |c| c.empty? }[0]) == (i.custom_attributes.values[0].to_s) && (@skb_input.filters.values.reject { |c| c.empty? }[1]) == (i.custom_attributes.values[1].to_s)
+           @project_list << i
+         end
+       end
+     end
+
+     if @project_list.blank?
+       @project_list = @skb_model.skb_datas.uniq
+     end
+
+     @project_list = @project_list.uniq
+
+     @project_list.map do |i|
+       @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: simple_format(i.description.to_s) }
+     end
+     @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
+                        y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
+                        z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
+                        name: @project.to_s,
+                        description: simple_format(@project.description) }
+  %>
+
   <h3 id="skb">
     <strong>
       <%= @skb_model %>
     </strong>
     <hr>
   </h3>
+
+
+
+  <% unless @skb_model.date_min.nil? %>
+    <div class="row-fluid">
+      <div class="span12">
+        <h5>
+          <strong>
+            Nombre de projets sélectionnée
+            <span class="project_numbers">
+              <%= @project_list.size %> -
+              <%= @my_skb_datas.size %>
+            </span>
+          </strong>
+        </h5>
+      </div>
+    </div>
+  <% end %>
 
   <% unless @skb_model.date_min.nil? %>
     <div class="row-fluid">
@@ -94,46 +155,6 @@
   <p>
     <%= I18n.t :move_your_cursor %>
   </p>
-
-  <%
-
-     if @skb_model.date_min.nil? || @skb_model.date_max.nil?
-       if @skb_model.n_max.nil?
-         @skb_datas = @skb_model.skb_datas
-       else
-         @skb_datas = @skb_model.skb_datas.take(@skb_model.n_max.to_i)
-       end
-     else
-       if @skb_model.n_max.nil?
-         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s)
-       else
-         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s).take(@skb_model.n_max.to_i)
-       end
-     end
-
-     @my_skb_datas = []
-     @my_skb_input = []
-     @project_list = []
-     @skb_model.skb_datas.each do |i|
-       @skb_input.filters.each do |f|
-         if (@skb_input.filters.values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
-           @project_list << i
-         end
-       end
-     end
-
-     if @project_list.blank?
-       @project_list = @skb_model.skb_datas
-     end
-     @project_list.map do |i|
-       @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: simple_format(i.description.to_s) }
-     end
-     @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
-                        y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
-                        z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
-                        name: @project.to_s,
-                        description: simple_format(@project.description) }
-  %>
 
   <div class="row-fluid">
     <div class="span12">
