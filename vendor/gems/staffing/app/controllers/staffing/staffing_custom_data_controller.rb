@@ -536,46 +536,60 @@ class Staffing::StaffingCustomDataController < ApplicationController
   #Update estimation values
   def update_staffing_estimation_values
     @staffing_model = @module_project.staffing_model
-    @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
+    @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last#first
 
     current_module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
-      ["low", "most_likely", "high"].each do |level|
+      in_out = []
 
-        if @staffing_model.three_points_estimation?
-          size = params[:"retained_size_#{level}"].to_f
-        else
-          size = params[:"retained_size_most_likely"].to_f
-        end
-
-        # new_effort = params[:new_effort]
-        # new_duration = params[:new_duration]
-        # new_staffing_rayleigh = params[:new_staffing_rayleigh]
-        # new_staffing_trapeze = params[:new_staffing_trapeze]
-
-        if am.pe_attribute.alias == "effort"
-          ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
-        elsif am.pe_attribute.alias == "duration"
-          ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
-        elsif am.pe_attribute.alias == "staffing"
-          ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.max_staffing
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
-        end
+      if am.in_out == "both"
+        in_out = ["input", "output"]
+      else
+        in_out = ["#{am.in_out}"]
       end
 
-      unless @staffing_model.three_points_estimation?
-        tmp_prbl[0] = tmp_prbl[1]
-        tmp_prbl[2] = tmp_prbl[1]
-      end
+      evs = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: in_out)
 
-      ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+      evs.each do |ev|
+        #ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+        ["low", "most_likely", "high"].each do |level|
+
+          if @staffing_model.three_points_estimation?
+            size = params[:"retained_size_#{level}"].to_f
+          else
+            size = params[:"retained_size_most_likely"].to_f
+          end
+
+          # new_effort = params[:new_effort]
+          # new_duration = params[:new_duration]
+          # new_staffing_rayleigh = params[:new_staffing_rayleigh]
+          # new_staffing_trapeze = params[:new_staffing_trapeze]
+
+          if am.pe_attribute.alias == "effort"
+
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+          elsif am.pe_attribute.alias == "duration"
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+          elsif am.pe_attribute.alias == "staffing"
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.max_staffing
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+          end
+        end
+
+        unless @staffing_model.three_points_estimation?
+          tmp_prbl[0] = tmp_prbl[1]
+          tmp_prbl[2] = tmp_prbl[1]
+        end
+
+        ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+    end
+
     end
   end
 end
