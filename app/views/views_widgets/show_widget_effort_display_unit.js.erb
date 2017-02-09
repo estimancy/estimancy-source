@@ -1,4 +1,8 @@
-<% if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS) %>
+<%#= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %>
+
+$('#views_widget_widget_type').html("<%= escape_javascript(grouped_options_for_select(@views_widget_types)) %>");
+
+<% if @pe_attribute && @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS) %>
     $("#views_widget_use_organization_effort_unit").prop('disabled', false);
 <% else %>
     $("#views_widget_use_organization_effort_unit").attr('checked', false);

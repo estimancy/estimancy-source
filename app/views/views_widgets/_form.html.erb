@@ -135,7 +135,8 @@
                 method: "GET",
                 data: {
                     estimation_value_id: $(this).val(),
-                    view_widget_id: "<%= @views_widget.id %>"
+                    view_widget_id: "<%= @views_widget.id %>",
+                    module_project_id: $("#views_widget_module_project_id").val()
                 }
             });
         //}

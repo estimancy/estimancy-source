@@ -369,10 +369,30 @@ class ViewsWidgetsController < ApplicationController
   # Show the effort display unit if the attribute alias is part of Effort attributes
   def show_widget_effort_display_unit
     estimation_value_id = params['estimation_value_id']
-    if !estimation_value_id.nil? && estimation_value_id != 'undefined'
-      @estimation_value = EstimationValue.find(estimation_value_id)
-      @pe_attribute = @estimation_value.pe_attribute
-    end
+    #begin
+      @module_project = ModuleProject.find(params['module_project_id'])
+
+      if estimation_value_id.nil? || estimation_value_id == 'undefined'
+        @views_widget_types = []
+      else
+        @estimation_value = EstimationValue.find(estimation_value_id)
+        @pe_attribute = @estimation_value.pe_attribute
+
+        if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+          if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
+            @views_widget_types = Projestimate::Application::BREAKDOWN_EFFORT_WIDGETS_TYPE
+          elsif @pe_attribute.alias.in?("cost, retained_cost", "theoretical_cost")
+            @views_widget_types = Projestimate::Application::BREAKDOWN_COST_WIDGETS_TYPE
+          else
+            @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
+          end
+        else
+          @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
+        end
+      end
+    # rescue
+    #   @views_widget_types = []
+    # end
   end
 
 
