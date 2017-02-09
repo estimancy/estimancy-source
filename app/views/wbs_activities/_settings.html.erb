@@ -36,8 +36,6 @@
 <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
                                :module_project_id => possible_module_projects.last,
                                :in_out => "output").first unless effort.nil? %>
-<%# if  %>
-<%# end  %>
 
 <% component_id = current_component.id %>
 <% organization = @project.organization %>
