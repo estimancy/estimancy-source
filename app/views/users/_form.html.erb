@@ -62,9 +62,9 @@
                       <td colspan="2">
                         <%= f.input :subscription_end_date,
                                     as: :string,
-                                    value: @user.subscription_end_date.nil? ? (Time.now + 1.year) : I18n.l(@user.subscription_end_date),
+                                    value: @user.subscription_end_date.nil? ? I18n.l(Time.now + 1.year, format: "%d/%m/%Y") : I18n.l(@user.subscription_end_date, format: "%d/%m/%Y"),
                                     input_html: {
-                                            class: 'input-xxlarge date-picker'
+                                            class: 'input-xxlarge'
                                     } %>
                       </td>
                     </tr>
