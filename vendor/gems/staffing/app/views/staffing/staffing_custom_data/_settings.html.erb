@@ -121,20 +121,20 @@
         <tr>
           <td>
               <span class="pull-left">
-                Début : <%= @project.start_date.strftime("%d/%m/%Y") %>
+                Début : <%= I18n.l(@project.start_date, format: "%d/%m/%Y") %>
               </span>
           </td>
           <td>
               <span class="pull-right">
                 <% unless @md_duration.nil? %>
-                  <%= (@project.start_date + @md_duration.weeks).strftime("%d/%m/%Y") %>
+                  <%= I18n.l((@project.start_date + @md_duration.weeks), format: "%d/%m/%Y") %>
                 <% end %>
               </span>
           </td>
           <td>
               <span class="pull-right end_date">
                 <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
-                  <%= (@project.start_date + @staffing_custom_data.duration.weeks).strftime("%d/%m/%Y") %>
+                  <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
                 <% end %>
               </span>
           </td>
