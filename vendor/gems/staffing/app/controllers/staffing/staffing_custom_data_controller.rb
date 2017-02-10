@@ -536,11 +536,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
   #Update estimation values
   def update_staffing_estimation_values
     @staffing_model = @module_project.staffing_model
-    @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last#first
+    @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last #first
 
     current_module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
-
       in_out = []
 
       if am.in_out == "both"
@@ -567,7 +566,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
           # new_staffing_trapeze = params[:new_staffing_trapeze]
 
           if am.pe_attribute.alias == "effort"
-
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient
             ev.save
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
