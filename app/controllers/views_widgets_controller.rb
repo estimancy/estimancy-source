@@ -52,11 +52,7 @@ class ViewsWidgetsController < ApplicationController
     @module_project_attributes = get_module_project_attributes_input_output(@module_project)
 
     #the view_widget type
-    if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-      @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-    else
-      @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
-    end
+    @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
   end
 
   def edit
@@ -78,11 +74,8 @@ class ViewsWidgetsController < ApplicationController
     @module_project_attributes = get_module_project_attributes_input_output(@module_project)
 
     #the view_widget type
-    if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-      @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-    else
-      @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
-    end
+    @views_widget_types = show_widget_effort_display_unit(@module_project.id, @views_widget.estimation_value_id)
+
   end
 
   def create
@@ -192,10 +185,10 @@ class ViewsWidgetsController < ApplicationController
         @module_project_attributes = get_module_project_attributes_input_output(@module_project)
 
         #the view_widget type
-        if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-          @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-        else
-          @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
+        begin
+          @views_widget_types = show_widget_effort_display_unit(@module_project.id, @views_widget.estimation_value_id)
+        rescue
+          @views_widget_types = []
         end
 
         format.html { render action: :new }
@@ -291,11 +284,12 @@ class ViewsWidgetsController < ApplicationController
         @module_project_attributes = get_module_project_attributes_input_output(@module_project)
 
         #the view_widget type
-        if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-          @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-        else
-          @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
+        begin
+          @views_widget_types = show_widget_effort_display_unit(@module_project.id, @views_widget.estimation_value_id)
+        rescue
+          @views_widget_types = []
         end
+
         format.js { render action: :edit }
       end
     end
@@ -355,22 +349,32 @@ class ViewsWidgetsController < ApplicationController
       else
         @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
         @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
+
         #the widget type
-        if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-          @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-        else
-          @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
-        end
+        # if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+        #   @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
+        # else
+        #   @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
+        # end
+        @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
       end
     end
   end
 
 
   # Show the effort display unit if the attribute alias is part of Effort attributes
-  def show_widget_effort_display_unit
-    estimation_value_id = params['estimation_value_id']
+  def show_widget_effort_display_unit(module_project_id=nil, estimation_value_id=nil)
+
+    if estimation_value_id.nil?
+      estimation_value_id = params['estimation_value_id']
+    end
+
     #begin
-      @module_project = ModuleProject.find(params['module_project_id'])
+      if module_project_id.nil?
+        @module_project = ModuleProject.find(params['module_project_id'])
+      else
+        @module_project = ModuleProject.find(module_project_id)
+      end
 
       if estimation_value_id.nil? || estimation_value_id == 'undefined'
         @views_widget_types = []
@@ -379,9 +383,9 @@ class ViewsWidgetsController < ApplicationController
         @pe_attribute = @estimation_value.pe_attribute
 
         if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-          if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
+          if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS.reject{|e| e == "retained_size"})
             @views_widget_types = Projestimate::Application::BREAKDOWN_EFFORT_WIDGETS_TYPE
-          elsif @pe_attribute.alias.in?("cost, retained_cost", "theoretical_cost")
+          elsif @pe_attribute.alias.in?("cost", "retained_cost", "theoretical_cost")
             @views_widget_types = Projestimate::Application::BREAKDOWN_COST_WIDGETS_TYPE
           else
             @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
@@ -393,6 +397,8 @@ class ViewsWidgetsController < ApplicationController
     # rescue
     #   @views_widget_types = []
     # end
+
+    @views_widget_types
   end
 
 
