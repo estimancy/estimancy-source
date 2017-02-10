@@ -22,7 +22,6 @@
 module Skb
   class SkbModel < ActiveRecord::Base
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    validates :size_unit, :presence => true
 
     belongs_to :organization
 
