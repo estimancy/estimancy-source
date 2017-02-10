@@ -32,9 +32,12 @@
                                :in_out => "output").first unless effort.nil? %>
 
 <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort) %>
+
 <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
                                :module_project_id => possible_module_projects.last.id,
                                :in_out => "output").first unless effort.nil? %>
+<%# if  %>
+<%# end  %>
 
 
 <%# current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>

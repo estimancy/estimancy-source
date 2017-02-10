@@ -29,7 +29,7 @@
               <strong>
                  Date Min:
                 <span class="project_numbers">
-                  <%= @kb_model.date_min %>
+                  <%= @kb_model.date_min.strftime("%d %b %Y") %>
                 </span>
               </strong>
             </h5>
@@ -44,7 +44,7 @@
               <strong>
                  Date Max:
                 <span class="project_numbers">
-                  <%= @kb_model.date_max %>
+                  <%= @kb_model.date_max.strftime("%d %b %Y") %>
                 </span>
               </strong>
             </h5>

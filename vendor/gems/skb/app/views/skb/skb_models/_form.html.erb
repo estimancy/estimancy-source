@@ -46,6 +46,25 @@
         <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
         <%= f.input :enabled_input, label: I18n.t(:modification_of_the_input_value_allow) %>
 
+
+        <%= f.input :date_min, label: I18n.t(:start_date) do %>
+          <% if @skb_model.date_min.nil? %>
+            <%= text_field_tag "skb_model[date_min]", "", class: "date-picker" %>
+          <% else %>
+            <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "date-picker" %>
+          <% end %>
+        <% end %>
+
+        <%= f.input :date_max, label: I18n.t(:end_date) do %>
+          <% if @skb_model.date_max.nil? %>
+            <%= text_field_tag "skb_model[date_max]", "", class: "date-picker" %>
+          <% else %>
+            <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "date-picker" %>
+          <% end %>
+        <% end %>
+
+        <%= f.input :n_max, label: "N derniers projets" %>
+
         <%= f.input :size_unit, label: I18n.t(:size_unit) %>
 
         <% unless @skb_model.skb_datas.empty? %>
@@ -57,61 +76,53 @@
                 <%= k %>
               </label>
             </div>
-
           <% end %>
         <% end %>
       </div>
-
       <% if can? :manage_modules_instances, ModuleProject %>
-         <%= f.button :submit, I18n.t('save') %>
+        <%= f.button :submit, I18n.t('save') %>
       <% end %>
       <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
     <% end %>
   </div>
-
   <% if action_name.in?(%w(edit update)) %>
-
     <div id="tabs-2">
       <div class="row-fluid">
         <div class="span3">
-
           <%= form_tag skb.skb_model_import_path(@skb_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
-
             <div class="form-inputs">
               <label><%= I18n.t(:import) %> </label>
               <%= file_field_tag :file %>
-
               <%= hidden_field_tag :skb_model_id, @skb_model.id %>
               <%= hidden_field_tag :organization_id, @organization.id %>
             </div>
             <%= submit_tag I18n.t(:import), :class => 'btn btn-mini btn-primary' %>
           <% end %>
         </div>
-
         <div class="span1">
           <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-mini' %>
         </div>
-
         <div class="span8">
           <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>
             <% unless @skb_model.skb_datas.empty? %>
               <table class="table table-bordered tablesorterPager">
                 <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Données</th>
-                    <th>Traitements</th>
-                    <th>Taille (D+P)</th>
-                    <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
-                      <th>
-                        <%= k %>
-                      </th>
-                    <% end %>
-                  </tr>
-                </thead>
-
                 <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Données</th>
+                  <th>Traitements</th>
+                  <th>Taille (D+P)</th>
+                  <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
+                    <th>
+                      <%= k %>
+                    </th>
+                  <% end %>
+                </tr>
+                </thead>
+                <tr>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -127,26 +138,24 @@
                     </th>
                   <% end %>
                 </tr>
-
                 <tbody>
-                  <% @skb_model.skb_datas.each do |skb_data| %>
-                    <tr>
-                      <td><%= skb_data.name %></td>
-                      <td><%= skb_data.description %></td>
-                      <td><%= skb_data.data %></td>
-                      <td><%= skb_data.processing %></td>
-                      <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
-                      <% skb_data.custom_attributes.values.each do |v| %>
-                        <td>
-                          <%= v %>
-                        </td>
-                      <% end %>
-                    </tr>
-                  <% end %>
+                <% @skb_model.skb_datas.each do |skb_data| %>
+                  <tr>
+                    <td><%= skb_data.name %></td>
+                    <td><%= skb_data.description %></td>
+                    <td><%= skb_data.project_date %></td>
+                    <td><%= skb_data.data %></td>
+                    <td><%= skb_data.processing %></td>
+                    <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
+                    <% skb_data.custom_attributes.values.each do |v| %>
+                      <td>
+                        <%= v %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
                 </tbody>
-
                 <%= render :partial => 'layouts/footer_table' %>
-
               </table>
             <% end %>
             <%= submit_tag "Save Filters", class: "btn btn-info pull-right" %>

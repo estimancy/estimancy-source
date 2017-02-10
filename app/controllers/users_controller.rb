@@ -69,7 +69,7 @@ public
     end
 
     @user = User.new
-    @user.auth_type = AuthMethod.first.id
+    @user.auth_type = AuthMethod.where(name: "Application").first.id
     @generated_password = SecureRandom.hex(4)
     @organizations = current_user.organizations
   end
@@ -86,6 +86,7 @@ public
     @user.auth_type = params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
     @user.project_ids = params[:user][:project_ids]
+    @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
 
     if auth_type.name == "SAML"
       @user.skip_confirmation!
@@ -93,17 +94,22 @@ public
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
-      if @organization
-        @organization_id = @organization.id
-        OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+    else
+      @organization = @current_organization
+    end
 
-        @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
-        @user.groups << @user_group
-      else
-        if params[:organizations]
-          params[:organizations].keys.each do |organization_id|
-            OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
-          end
+    @user.save(validate: false)
+
+    if @organization
+      @organization_id = @organization.id
+      OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+
+      @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
+      @user.groups << @user_group
+    else
+      if params[:organizations]
+        params[:organizations].keys.each do |organization_id|
+          OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
         end
       end
     end
@@ -226,7 +232,7 @@ public
 
     @user.auth_type = params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
-    @user.subscription_end_date = params[:user][:subscription_end_date]
+    @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
 
     #validation conditions
     if params[:user][:password].blank?

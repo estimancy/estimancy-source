@@ -62,22 +62,16 @@
                       <td colspan="2">
                         <%= f.input :subscription_end_date,
                                     as: :string,
-                                    value: @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date),
+                                    value: @user.subscription_end_date.nil? ? I18n.l(Time.now + 1.year, format: "%d/%m/%Y") : I18n.l(@user.subscription_end_date, format: "%d/%m/%Y"),
                                     input_html: {
-                                            class: 'input-xxlarge date-picker'
+                                            class: 'input-xxlarge'
                                     } %>
                       </td>
                     </tr>
                   <% else %>
                     <tr>
                       <td colspan="2">
-                        <%= f.input :subscription_end_date,
-                                    as: :string,
-                                    disabled: true,
-                                    value: @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date),
-                                    input_html: {
-                                            class: 'input-xxlarge date-picker'
-                                    } %>
+                        Date de fin d'abonnement : <%= @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date) %>
                       </td>
                     </tr>
                   <% end %>
@@ -135,14 +129,14 @@
 
                   <% if @user.new_record? %>
                     <tr class="password_row">
-                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method && @user.auth_method.name == 'Application') }, :required => false %></td>
-                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method && @user.auth_method.name == 'Application') } %></td>
+                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') }, :required => false %></td>
+                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') } %></td>
                     </tr>
                   <% else %>
-                    <tr><td><%= f.input :current_password, :label => I18n.t(:current_password), required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'input-xlarge', :disabled => !(@user.auth_method && @user.auth_method.name == 'Application') }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td></tr>
+                    <tr><td><%= f.input :current_password, :label => I18n.t(:current_password), required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application')}, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td></tr>
                     <tr class="password_row">
-                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('new_password'), :input_html => {:value => (@user_password if @user_password), :class => 'input-xlarge', :disabled => !(@user.auth_method && @user.auth_method.name == 'Application') }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
-                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('confirm_new_password'), :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'input-xlarge', :disabled => !(@user.auth_method && @user.auth_method.name == 'Application') }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
+                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('new_password'), :input_html => {:value => (@user_password if @user_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
+                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('confirm_new_password'), :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
                     </tr>
                   <% end %>
 
@@ -188,7 +182,6 @@
                         <%= f.text_field :previous_login, :value => (I18n.l(@user.previous_login) unless @user.previous_login.nil?), :disabled => true %>
                       <% end %>
                     </td>
-
                   </tr>
                 </table>
               </div>
@@ -282,7 +275,7 @@
       <% end %>
 
       <div class="actions">
-        <% if can? :manage, User %>
+        <% if (can? :manage, User) || current_user == @user %>
           <% if action_name.in?(%w(new create)) %>
             <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
           <% end %>
