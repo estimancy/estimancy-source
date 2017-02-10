@@ -149,11 +149,7 @@ class Skb::SkbModelsController < ApplicationController
       if params[:skb_model_id].blank?
         @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
                                        organization_id: @organization.id)
-
-        unless @skb_model.save
-          flash[:error] = "Une erreur est survenue durant l'import du modèle."
-        end
-
+        @skb_model.save(validate: false)
       else
         @skb_model = Skb::SkbModel.where(id: params[:skb_model_id],
                                          organization_id: @organization.id).first
