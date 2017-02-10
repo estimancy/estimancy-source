@@ -98,7 +98,7 @@ class ApplicationController < ActionController::Base
     end
 
     if user_signed_in?
-      unless current_user.super_admin == true
+      unless current_user.super_admin == true || current_user.subscription_end_date.nil?
         if current_user.subscription_end_date < Time.now
           flash[:error] = "La licence de votre compte est expirée."
           reset_session

@@ -211,7 +211,7 @@ gem 'remotipart', '~> 1.2'
 gem 'yaml_db'
 
 gem 'test-unit'
-gem 'bullet', group: :development
+# gem 'bullet', group: :development
 
 local_gemfile = File.join(File.dirname(__FILE__), 'Gemfile.local')
 if File.exists?(local_gemfile)
