@@ -1,7 +1,7 @@
 <%= form_tag({ :controller => 'organizations', :action => 'set_available_inline_columns', :project_id => @project }, :method => :get, :id => 'query_form') do %>
     <table id="query-columns">
       <tr>
-        <td><%= I18n.t(:field_column_names) %></td>
+        <!--<td><%#= I18n.t(:field_column_names) %></td>-->
         <td style="padding-left:0">
           <%= label_tag "available_columns", I18n.t(:label_available_columns) %>
           <br />
@@ -10,7 +10,7 @@
                          :multiple => true, :size => 10, :style => "width:160px",
                          :ondblclick => "moveOptions(this.form.available_columns, this.form.selected_columns);" %>
         </td>
-        <td class="buttons">
+        <td class="buttons" style="padding: 10px;">
           <p><input type="button" value="&#8594;"
                  onclick="moveOptions(this.form.available_columns, this.form.selected_columns);" /></p>
           <input type="button" value="&#8592;"
@@ -24,7 +24,7 @@
                          :id => 'selected_columns', :multiple => true, :size => 10, :style => "width:160px",
                          :ondblclick => "moveOptions(this.form.selected_columns, this.form.available_columns);" %>
         </td>
-        <td class="buttons">
+        <td class="buttons" style="padding: 10px;">
           <!--<p><input type="button" value="&#8648;" onclick="moveOptionTop(this.form.selected_columns);" /></p>-->
           <p><input type="button" value="&#8593;" onclick="moveOptionUp(this.form.selected_columns);" /></p>
           <p><input type="button" value="&#8595;" onclick="moveOptionDown(this.form.selected_columns);" /></p>
@@ -35,7 +35,7 @@
 
     <br>
     <% if can? :manage_projects_selected_columns, Organization %>
-        <span><%= submit_tag I18n.t(:label_save), class: "btn" %></span>
+        <span><%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %></span>
     <% end %>
 
     <%= javascript_tag do %>
