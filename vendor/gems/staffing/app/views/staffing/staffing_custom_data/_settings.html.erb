@@ -269,12 +269,12 @@
       <input type="text" name='percents' id='percent' class="factor-slider" value="<%= @staffing_custom_data.percent %>" />
 
       <% if can? :execute_estimation_plan, @project %>
-        <button name="actuals_based_on[custom]" type="submit" class="btn btn-mini pull-right button_margin_right">
-          Valider
+        <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
+          Calculer
         </button>
       <% end %>
 
-      <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-mini pull-right button_margin_right"%>
+      <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn pull-right button_margin_right"%>
     </div>
 
     <div class="span6">

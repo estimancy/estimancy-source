@@ -379,7 +379,7 @@
             <% unless @unit_of_work_groups.empty? %>
               <%= link_to I18n.t('new_unit_of_work'), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
             <% end %>
-            <button type="submit" class="btn btn-primary pull-right"><%= I18n.t(:save) %></button>
+            <button type="submit" class="btn btn-primary pull-right"><%= I18n.t(:calculate) %></button>
             <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained button_margin_right pull-right", onclick: "raz(#{uowg.id})" %>
           <% end %>
         </div>
