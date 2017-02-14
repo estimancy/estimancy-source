@@ -7,7 +7,9 @@
 
     <td colspan=2 style="text-align:right;">
       <% if can? :manage_estimation_models, Project %>
-        <%= link_to I18n.t('new_estimation_model'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'btn' %>
+          <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'btn' %>
+          </div>
       <% end %>
     </td>
   </tr>

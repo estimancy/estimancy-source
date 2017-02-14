@@ -21,10 +21,10 @@
       <% if can? :manage, Application %>
         <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn' %>
-          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn'%>
           <a href="#myWBSModal" role="button" class="btn" title="Import applications from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
+          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn'%>
         </div>
 
           <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -80,11 +80,13 @@
     <% if can? :show_project_areas, ProjectArea %>
 
       <% if can? :manage, ProjectArea %>
-         <%= link_to I18n.t('new_project_area'), new_organization_project_area_path(@organization), :class => 'btn pull-right' %>
-          <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn pull-right button_margin_right'%>
-          <a href="#ImportProjectAreas" role="button" class="btn pull-right button_margin_right" title="Import project areas from excel" data-toggle="modal">
+        <div class="group_button">
+         <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn' %>
+          <a href="#ImportProjectAreas" role="button" class="btn" title="Import project areas from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
+          <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn'%>
+        </div>
 
           <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -141,12 +143,13 @@
     <% if can? :show_project_categories, ProjectCategory %>
 
       <% if can? :manage, ProjectCategory %>
-        <%= link_to I18n.t('new_project_category'), new_organization_project_category_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn pull-right button_margin_right'%>
-        <a href="#import_project_category" role="button" class="btn pull-right button_margin_right" title="Import project category from Excel" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-
+        <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_organization_project_category_path(@organization), :class => 'btn' %>
+            <a href="#import_project_category" role="button" class="btn" title="Import project category from Excel" data-toggle="modal">
+              <%= I18n.t(:import) %>
+            </a>
+          <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn'%>
+        </div>
         <div id="import_project_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_project_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
             <div class="modal-header modal-drag">
@@ -203,12 +206,13 @@
     <% if can? :show_platform_categories, PlatformCategory %>
 
       <% if can? :manage, PlatformCategory %>
-      <%= link_to I18n.t('new_platform_category'), new_organization_platform_category_path(@organization), :class => 'btn pull-right' %>
-      <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn pull-right button_margin_right'%>
-      <a href="#import_platform_category" role="button" class="btn pull-right button_margin_right" title="Import platform category from Excel" data-toggle="modal">
-        <%= I18n.t(:import) %>
-      </a>
-
+        <div class="group_button">
+          <%= link_to I18n.t('create_button'), new_organization_platform_category_path(@organization), :class => 'btn' %>
+          <a href="#import_platform_category" role="button" class="btn" title="Import platform category from Excel" data-toggle="modal">
+            <%= I18n.t(:import) %>
+          </a>
+          <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn'%>
+        </div>
       <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
           <div class="modal-header modal-drag">
@@ -262,8 +266,10 @@
   <div id="tabs-wet">
     <% if can? :show_work_element_types, WorkElementType %>
       <% if can? :manage, WorkElementType %>
-        <%= link_to I18n.t(:new_work_element_type), new_organization_work_element_type_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
+        <div class="group_button">
+            <%= link_to I18n.t(:create_button), new_organization_work_element_type_path(@organization), :class => 'btn' %>
+            <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn' %>
+        </div>
       <% end %>
 
       <table id="table_list_4" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
@@ -301,12 +307,13 @@
   <div id="tabs-acquisition-categories">
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
-        <%= link_to I18n.t('new_acquisition_category'), new_organization_acquisition_category_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn pull-right button_margin_right' %>
-        <a href="#import_acquisition_category" role="button" class="btn pull-right button_margin_right" title="Import acquisition category from Excel" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-
+        <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn' %>
+            <a href="#import_acquisition_category" role="button" class="btn" title="Import acquisition category from Excel" data-toggle="modal">
+              <%= I18n.t(:import) %>
+            </a>
+          <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn' %>
+        </div>
         <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
             <div class="modal-header modal-drag">
@@ -363,9 +370,11 @@
     <% if can? :show_organization_technologies, OrganizationTechnology %>
 
       <% if can? :manage, OrganizationTechnology %>
-            <%= link_to I18n.t('new_organization_technology'), new_organization_technology_path(:organization_id => @organization.id), :class => 'btn pull-right' %>
-            <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationTechnology"), :class => 'btn pull-right button_margin_right'%>
-      <% end %>
+        <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_organization_technology_path(:organization_id => @organization.id), :class => 'btn' %>
+            <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationTechnology"), :class => 'btn'%>
+        </div>
+        <% end %>
 
       <table id="table_list_6" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
         <thead>
@@ -412,7 +421,9 @@
 
     <% if can? :show_custom_fields, Field %>
         <% if can? :manage, Field %>
-            <%= link_to I18n.t(:new_field), new_organization_field_path(@organization), class: "btn pull-right" %>
+            <div class="group_button">
+                <%= link_to I18n.t(:create_button), new_organization_field_path(@organization), class: "btn" %>
+            </div>
         <% end %>
 
         <table class="table tablesorter table-striped table-bordered table-condensed">
@@ -454,7 +465,9 @@
     <br>
     <% if can? :show_estimation_statuses, EstimationStatus %>
         <% if can? :manage, EstimationStatus %>
-            <%= link_to I18n.t('new_estimation_status'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn pull-right' %>
+            <div class="group_button">
+                <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn' %>
+            </div>
         <% end %>
         <%= render "estimation_statuses/statuses_management", object: [@organization, @organization_group] %>
     <% else %>
