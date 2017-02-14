@@ -11,7 +11,7 @@
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:new_UO_model), guw.new_guw_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+        <%= link_to I18n.t(:new_UO_model), guw.new_guw_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
       <% end %>
       <br>
 
@@ -59,7 +59,7 @@
 
       <% if can? :show_modules_instances, ModuleProject %>
         <% if can? :manage_modules_instances, ModuleProject %>
-          <%= link_to "Nouvelle base de connaissance de taille", skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+          <%= link_to "Nouvelle base de connaissance de taille", skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
         <% end %>
         <br>
 
@@ -104,7 +104,7 @@
 
         <% if can? :show_modules_instances, ModuleProject %>
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:new_instance_of_effort), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+            <%= link_to I18n.t(:new_instance_of_effort), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
             <hr>
           <% end %>
 
@@ -145,7 +145,7 @@
 
         <% if can? :show_modules_instances, ModuleProject %>
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:New_knowledge_base), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+            <%= link_to I18n.t(:New_knowledge_base), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
             <hr>
         <% end %>
 
@@ -188,7 +188,7 @@
 
         <% if can? :show_modules_instances, ModuleProject %>
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:new_instance_of_effort), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+            <%= link_to I18n.t(:new_instance_of_effort), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
             <hr>
           <% end %>
 
@@ -227,7 +227,7 @@
 
         <b><%= I18n.t(:Judgment_Expert) %></b>
         <% if can? :manage_modules_instances, ModuleProject %>
-          <%= link_to I18n.t(:New_model_of_Judgment_Expert), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+          <%= link_to I18n.t(:New_model_of_Judgment_Expert), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
         <% end %>
         <hr>
 
@@ -267,7 +267,7 @@
       <% if can? :show_modules_instances, ModuleProject %>
 
         <% if can? :manage_modules_instances, ModuleProject %>
-          <%= link_to I18n.t(:new_wbs_activity), new_organization_wbs_activity_path(@organization), :class => 'btn btn-mini pull-right', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+          <%= link_to I18n.t(:new_wbs_activity), new_organization_wbs_activity_path(@organization), :class => 'btn  pull-right', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
         <% end %>
         <br>
 
@@ -307,7 +307,7 @@
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:New_Team_module_instance), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-mini pull-right' %>
+        <%= link_to I18n.t(:New_Team_module_instance), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn  pull-right' %>
       <% end %>
 
       <table class="table table-bordered">
