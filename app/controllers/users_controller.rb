@@ -47,6 +47,8 @@ public
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:users)
+    set_breadcrumbs I18n.t(:users) => ""
+
     owner_key = AdminSetting.find_by_key("Estimation Owner")
     if owner_key.nil?
       @users = User.all

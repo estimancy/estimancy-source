@@ -6,15 +6,9 @@
   </ul>
 
   <div id="tabs-1">
-
-    <table border="0" width="100%">
-      <tr>
-        <td colspan=3 style="text-align:right;">
-          <%= link_to I18n.t('new_user'), new_user_path, :class => 'btn' %>
-        </td>
-      </tr>
-    </table>
-
+    <div class="group_button">
+        <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn' %>
+    </div>
 
     <div id="users" style="width:100%;overflow:auto;">
       <%= render :partial => 'users', :object => @users %>
