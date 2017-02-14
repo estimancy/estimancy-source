@@ -1368,7 +1368,7 @@ frsncf:
   label_SizeUnit: "Unité de taille"
   label_SizeUnitType: "Type d'unité de taille"
   label_Subcontractor: "Sous-traitant"
-  label_Guw_model: "Modèle d'unité d'oeuvres génériques"
+  label_Guw_model: "Module d'unité d'oeuvres génériques"
 
   cotation: "Cotation"
   technology: "Technologie"
@@ -1966,3 +1966,9 @@ frsncf:
   edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
 
   create_button: "Créer"
+  created_date: "Date de création"
+  knowledge_base_module: "Module Base de connaissance"
+  operation_module: "Module d'opération"
+  Judgment_Expert_module: "Module de Jugement d'expert"
+  wbs_activities_module: "Module WBS Activités"
+
