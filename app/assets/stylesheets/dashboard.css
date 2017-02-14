@@ -1248,3 +1248,11 @@ tr.conversion_factor, td.conversion_factor {
 form{
     margin: 0px;
 }
+
+.well-rounded{
+    background-color: #ffffff;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    border-width: 4px;
+}

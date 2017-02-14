@@ -42,7 +42,7 @@
 
 
 <% if  @organization.estimation_statuses.length > 0 %>
-    <fieldset>
+    <div class="well well-rounded">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_workflow) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_workflow) %></h5>
 
@@ -75,13 +75,13 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
-    </fieldset><br>
+    </div><br>
 
-    <fieldset>
+    <div class="well well-rounded">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_roles) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_group_roles) %></h5>
 
@@ -140,9 +140,9 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
-    </fieldset>
+    </div>
 <% end %>
