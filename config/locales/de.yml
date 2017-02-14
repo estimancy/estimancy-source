@@ -1543,3 +1543,11 @@ de:
   create_new_estimation_model: "Create new estimation model"
   edit_estimation_model: "Edit estimation model \"%{value}\""
 
+  created_date: "Created date"
+  label_Guw_model: "Generic unit of work module"
+  knowledge_base_module: "Module Base de connaissance"
+  knowledge_base_module: "Knowledge base module"
+  operation_module: "Operation module"
+  team_module: "Team module"
+  Judgment_Expert_module: "Expert judgment module"
+  wbs_activities_module: "WBS Activities module"
