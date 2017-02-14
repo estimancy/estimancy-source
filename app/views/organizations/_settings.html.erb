@@ -417,8 +417,6 @@
   </div>
 
   <div id="tabs-fields">
-    <b><%= I18n.t(:fields) %></b>
-
     <% if can? :show_custom_fields, Field %>
         <% if can? :manage, Field %>
             <div class="group_button">
@@ -452,7 +450,6 @@
   </div>
 
   <div id="tabs-profile">
-    <b><%= I18n.t(:profiles) %></b>
     <% if can? :show_organization_profiles, OrganizationProfile %>
         <%= render :partial => 'organizations/profiles' %>
     <% else %>
@@ -475,8 +472,6 @@
   </div>
 
   <div id="tabs-estimation-models">
-    <b><%= I18n.t(:estimation_models) %></b>
-
     <%= render partial: "projects/estimation_models", object: @estimation_models %>
   </div>
 
@@ -491,8 +486,6 @@
   </div>
 
   <div id="tabs-select-columns-list" style="min-height: 50px;">
-    <b><%= I18n.t(:select_columns_list) %></b>
-    <br>
     <% if can? :show_projects_selected_columns, Organization %>
       <%= render partial: "organizations/select_project_columns_to_display" %>
     <% else %>
