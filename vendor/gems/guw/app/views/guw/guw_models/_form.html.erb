@@ -57,14 +57,14 @@
 
       <% unless @guw_model.new_record? %>
         <div class="span3">
-          <%= link_to I18n.t(:export), guw.guw_model_exportxl_path(@guw_model), :method => 'post', :class => 'btn btn-mini pull-right button_margin_right' %>
-          <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right' %>
+          <%= link_to I18n.t(:export), guw.guw_model_exportxl_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+          <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
         </div>
       <% else %>
         <div class="span3">
           <%= form_tag guw.importxl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
             <%= file_field_tag :file %>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-mini', :onclick => "$('.loading').show();" %>
+            <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
           <% end %>
         </div>
       <% end %>
@@ -107,8 +107,8 @@
             </tr>
           <% end %>
         </table>
-        <%= submit_tag I18n.t(:save), class: "btn btn-mini pull-right" %>
-        <%= link_to I18n.t(:back), :back, :class => 'btn btn-mini pull-right button_margin_right' %>
+        <%= submit_tag I18n.t(:save), class: "btn btn-primary pull-right" %>
+        <%= link_to I18n.t(:back), :back, :class => 'btn btn-primary pull-right button_margin_right' %>
       </div>
     <% end %>
 
@@ -137,7 +137,7 @@
       <br>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:new_pe_attribute), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn" %>
+        <%= link_to I18n.t(:new_pe_attribute), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
       <% end %>
       <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
     </div>
@@ -173,7 +173,7 @@
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.coefficient_label}", guw.new_guw_model_guw_work_unit_path(@guw_model), class: "btn" %>
+            <%= link_to "#{I18n.t(:new)} #{@guw_model.coefficient_label}", guw.new_guw_model_guw_work_unit_path(@guw_model), class: "btn btn-primary" %>
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
         </div>
@@ -206,7 +206,7 @@
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.weightings_label}", guw.new_guw_model_guw_weighting_path(@guw_model), class: "btn" %>
+            <%= link_to "#{I18n.t(:new)} #{@guw_model.weightings_label}", guw.new_guw_model_guw_weighting_path(@guw_model), class: "btn btn-primary" %>
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
         </div>
@@ -239,7 +239,7 @@
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn" %>
+            <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn btn-primary" %>
           <% end %>
           <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
         </div>
