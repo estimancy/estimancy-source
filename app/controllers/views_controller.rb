@@ -48,6 +48,9 @@ class ViewsController < ApplicationController
     @view = View.new
     @organization = Organization.find_by_id(params[:organization_id])
 
+    set_page_title I18n.t(:views)
+    set_breadcrumbs I18n.t(:views) => organization_setting_path(@current_organization, anchor: "tabs-views"), I18n.t('new_view') => ""
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @view }
@@ -59,6 +62,7 @@ class ViewsController < ApplicationController
     @view = View.find(params[:id])
     @organization = @view.organization
     set_page_title I18n.t(:edit_view_2)
+    set_breadcrumbs I18n.t(:views) => organization_setting_path(@organization, anchor: "tabs-views"), I18n.t('edit_view_2') => ""
   end
 
   # POST /views

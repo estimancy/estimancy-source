@@ -274,7 +274,7 @@
         </div>
       <% end %>
 
-      <div class="actions-tabs">
+      <div class="actions-tabss">
         <% if (can? :manage, User) || current_user == @user %>
           <% if action_name.in?(%w(new create)) %>
             <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
@@ -283,9 +283,9 @@
           <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
         <% end %>
         <% if @organization.nil? %>
-          <%= link_to I18n.t('back'), users_path, :class => 'btn btn-primary' %>
+          <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
         <% else %>
-          <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+          <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
         <% end %>
       </div>
     </div>

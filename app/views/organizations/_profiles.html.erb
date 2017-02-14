@@ -29,7 +29,7 @@
       <td class="align-center">
         <%= link_to '', edit_organization_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
         <% if can? :manage, OrganizationProfile %>
-          <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+          <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
         <% end %>
       </td>
     </tr>
