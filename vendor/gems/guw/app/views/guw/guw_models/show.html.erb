@@ -119,7 +119,7 @@
                     <% oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id,
                                                                           guw_output_id: guw_output.id).first %>
 
-                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? 1 : oci.init_value, class: "input-mini" %>
+                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "input-mini" %>
                   </td>
                 <% end %>
               <% end %>

@@ -295,12 +295,12 @@
                           <% else %>
                             <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
                                                  style: "width: 43px;",
-                                                 class: "complexity_weight-#{uowg.id} retained-uo-#{guow.id}",
+                                                 class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
                                                  readonly: true %>
                             <% if @guw_type.allow_complexity %>
                               <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
                                                    style: "width: 43px;",
-                                                   class: "complexity_weight-#{uowg.id} retained-#{uowg.id} retained-uo-#{guow.id}",
+                                                   class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id}",
                                                    step: 0.001 %>
                             <% end %>
                           <% end %>
@@ -325,14 +325,14 @@
 
                               <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                    style: "width: 43px;",
-                                                   class: "complexity_weight-#{uowg.id} retained-uo-#{guow.id}",
+                                                   class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
                                                    readonly: (guw_coefficient.allow_intermediate_value == true),
                                                    step: 0.001 %>
 
                               <% if guw_coefficient.allow_intermediate_value == true %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                      style: "width: 43px;",
-                                                     class: "complexity_weight-#{uowg.id} retained-uo-#{guow.id}",
+                                                     class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id}",
                                                      step: 0.001 %>
                               <% end %>
 
@@ -343,7 +343,7 @@
                                 <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                                 <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                                         selected: ceuw.nil? ? (results.first.nil? ? nil : results.first.value) : ceuw.guw_coefficient_element_id),
-                                               class: "guw_coefficient retained-uo-#{guow.id}",
+                                               class: "guw_coefficient guw-#{guow.id}",
                                                guw: guow.id,
                                                required: true,
                                                readonly: !can?(:execute_estimation_plan, @project),
@@ -363,7 +363,7 @@
                         <% unless @guw_type.nil? %>
                           <span class=" size_label_<%= guow.id %>">
                             <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
-                                                 class: "size-#{uowg.id} retained-uo-#{guow.id} guw_number_field_tag",
+                                                 class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
                                                  readonly: true,
                                                  style: "width: 43px;",
                                                  step: 0.001 %>
@@ -375,7 +375,7 @@
                             <span class="ajusted_size_<%= guow.id %>">
                               <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                    step: 0.001,
-                                                   class: "retained-#{uowg.id} retained-uo-#{guow.id} guw_number_field_tag",
+                                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag",
                                                    style: "width: 43px;" %>
                             </span>
                           <% end %>
@@ -398,7 +398,7 @@
                 <td class="span3">
                   <% if can? :execute_estimation_plan, @project %>
                     <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
-                    <%= link_to "", "#!", onclick: "razuo(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
+                    <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
 
                     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
                     <%= link_to "", guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up", title: I18n.t(:up) %>
@@ -456,13 +456,19 @@
 
 <script>
   function raz(group){
-    $('.retained-' + group).val('');
+    $('.retained-gp-' + group).val('');
     return false; // prevent default click action from happening!
     e.preventDefault();
   }
 
-  function razuo(uo){
-    $('.retained-uo-' + uo).val('');
+  function raz_line(uo){
+    $('.retained-guw-' + uo).val('');
+    return false; // prevent default click action from happening!
+    e.preventDefault();
+  }
+
+  function reset(uo){
+    $('.guw-' + uo).val('');
     return false; // prevent default click action from happening!
     e.preventDefault();
   }
@@ -494,7 +500,7 @@
     });
 
     $('.guw_type').change(function(){
-      razuo($(this).attr("guw"));
+      reset($(this).attr("guw"));
       $.ajax({
         url: "<%= guw.change_cotation_path %>",
         data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")

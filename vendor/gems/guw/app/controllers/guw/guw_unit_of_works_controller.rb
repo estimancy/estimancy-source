@@ -862,9 +862,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
     guw_unit_of_work.intermediate_percent = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
-    if guw_unit_of_work.intermediate_weight.nil?
+    # if guw_unit_of_work.intermediate_weight.nil?
       guw_unit_of_work.intermediate_weight = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
-    end
+    # end
 
     guw_unit_of_work.save
 
