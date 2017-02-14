@@ -24,7 +24,7 @@
             <%= hidden_field_tag :organization_id, @organization.id %>
             <%= file_field_tag :file %>
             <%= hidden_field_tag :ge_model_id, nil %>
-            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
           </div>
           <hr>
         <% end %>
@@ -98,11 +98,11 @@
               <%= hidden_field_tag :kb_model_id, @kb_model.id %>
               <%= hidden_field_tag :organization_id, @organization.id %>
             </div>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t(:import), :class => 'btn' %>
           <% end %>
         </div>
         <div class="span1">
-          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-primary' %>
+          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn' %>
         </div>
         <div class="span8">
           <%= form_tag kb.kb_model_save_filters_path(@kb_model) do %>

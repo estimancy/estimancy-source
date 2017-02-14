@@ -64,7 +64,7 @@
         <div class="span3">
           <%= form_tag guw.importxl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
             <%= file_field_tag :file %>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+            <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
           <% end %>
         </div>
       <% end %>
