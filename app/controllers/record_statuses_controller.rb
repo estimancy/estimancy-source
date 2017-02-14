@@ -29,6 +29,8 @@ class RecordStatusesController < ApplicationController
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:record_status)
+    set_breadcrumbs I18n.t(:record_status) => record_statuses_path, I18n.t('record_status') => ""
+
     @record_statuses = RecordStatus.all
 
     respond_to do |format|

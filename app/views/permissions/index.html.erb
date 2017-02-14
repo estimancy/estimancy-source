@@ -5,17 +5,14 @@
 
   <div id="tabs-1">
 
-    <b>
-      <%= I18n.t(:text_index_permissions_guidance) %> : <%= @permissions.size %> permissions
-    </b>
-
-    <%= link_to I18n.t('new_permission'), new_permission_path, :class => 'btn pull-right' %>
-
-    <%= link_to I18n.t(:export), export_permissions_path, class: "btn pull-right button_margin_right" %>
-
-    <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Importer et mettre à jour les permissions" data-toggle="modal">
-      <%= I18n.t(:import) %>
-    </a>
+    <h5 class="blue"><%= I18n.t(:text_index_permissions_guidance) %> : <%= @permissions.size %> permissions</h5>
+    <div class="group_button">
+        <%= link_to I18n.t('create_button'), new_permission_path, :class => 'btn' %>
+        <a href="#myWBSModal" role="button" class="btn" title="Importer et mettre à jour les permissions" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+        <%= link_to I18n.t(:export), export_permissions_path, class: "btn" %>
+    </div>
 
     <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <%= form_tag import_permissions_path, :multipart => true, :class => 'simple_form' do %>

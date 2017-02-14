@@ -33,7 +33,7 @@ class AuthMethod < ActiveRecord::Base
 
   has_many :users, :foreign_key => 'auth_type'
 
-  #belongs_to :record_status
+  belongs_to :record_status
   #belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   # before_save :encrypt_password
