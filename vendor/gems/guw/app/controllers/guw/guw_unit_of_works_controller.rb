@@ -966,7 +966,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @final_value = @oci.init_value.to_f * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            @final_value = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
             # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
@@ -1334,7 +1334,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         pct = percents.compact.inject(&:*)
         coef = coeffs.compact.inject(&:*)
 
-        tmp_hash_res["#{guw_output.id}"] = @oci.init_value.to_f * @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+        tmp_hash_res["#{guw_output.id}"] = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f) * @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
 
         guw_unit_of_work.ajusted_size = tmp_hash_res
         guw_unit_of_work.size = tmp_hash_res
