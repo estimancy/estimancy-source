@@ -5,7 +5,7 @@
 
   <div id="tabs-1">
     <% if can? :create_organizations, Organization %>
-      <div style="float: right">
+      <div class="group_button">
         <%= link_to I18n.t('new_organization'), new_organization_path, :class => 'btn' %>
         <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn' %>
       </div>

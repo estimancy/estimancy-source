@@ -7,13 +7,13 @@
     <% if can? :show_organization_users, User %>
 
       <% if can? :manage, User, :organization_id => @organization.id %>
-        <%= link_to I18n.t('new_user'), new_organization_user_path(@organization), :class => 'btn pull-right' %>
-
-        <%= link_to I18n.t(:Export_Users), organization_export_user_path(@organization), :class => 'btn pull-right button_margin_right', method: "post" %>
-        <%#= link_to I18n.t(:Import_Users), organization_import_user_path(@organization), :class => 'btn pull-right button_margin_right', method: "post" %>
-        <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import users from excel" data-toggle="modal">
-          <%= I18n.t(:Import_Users) %>
-        </a>
+        <div class="group_button">
+          <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
+          <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
+          <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
+            <%= I18n.t(:import) %>
+          </a>
+        </div>
 
       <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
