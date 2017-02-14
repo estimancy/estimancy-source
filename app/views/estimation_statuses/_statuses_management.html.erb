@@ -1,6 +1,5 @@
 <div>
-  <h5 class="blue"><%= I18n.t(:estimations_statuses) %></h5>
-
+  <!--<h5 class="blue"><%#= I18n.t(:estimations_statuses) %></h5>-->
   <table class="table tablesorterPager table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -41,8 +40,9 @@
   </table>
 </div><br>
 
+
 <% if  @organization.estimation_statuses.length > 0 %>
-    <div>
+    <fieldset>
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_workflow) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_workflow) %></h5>
 
@@ -79,9 +79,9 @@
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
-    </div><br>
+    </fieldset><br>
 
-    <div>
+    <fieldset>
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_roles) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_group_roles) %></h5>
 
@@ -144,5 +144,5 @@
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
-    </div>
+    </fieldset>
 <% end %>
