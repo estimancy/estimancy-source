@@ -927,6 +927,29 @@ class WbsActivitiesController < ApplicationController
   end
 
 
+
+  def the_most_largest(my_string)
+    ind = 0
+    len = 0
+    len2 = 0
+    if my_string.nil?
+      return 1
+    end
+    while my_string[ind]
+      if my_string[ind] == "\n" || my_string[ind + 1] == nil
+        if len2 < len
+          len2 = len
+        end
+        len = 0
+      else
+        len += 1
+      end
+      ind += 1
+    end
+    len2
+  end
+
+
   #Export the WBS
   def export_xlsx
     authorize! :show_modules_instances, ModuleProject
@@ -935,21 +958,29 @@ class WbsActivitiesController < ApplicationController
 
     if @wbs_activity
 
-      @wbs_activity_elements = @wbs_activity.wbs_activity_elements
+      wbs_activity_elements_list = @wbs_activity.wbs_activity_elements.arrange(order: 'position')
+      @wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity_elements_list)
+
       @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
       wbs_organization_profiles = @wbs_activity.organization_profiles
 
-
       workbook = RubyXL::Workbook.new
-      workbook.add_worksheet("WBS-Activity-Elements")
+      workbook.add_worksheet(I18n.t(:wbs_elements))  #workbook.add_worksheet("WBS-Activity-Elements")
       workbook.add_worksheet("Ratios")
       workbook.add_worksheet("Ratio Elements")
 
+      ind = 0
+      ind1 = 0
+      ind2 = 1
+      ind3 = 5
+      used_column = []
+
       # add worksheet to workbook
       model_worksheet = workbook[0]
-      activity_elements_worksheet = workbook[1]
+      elements_worksheet = workbook[1]
       ratios_worksheet = workbook[2]
-      ratio_elements_worksheet = workbook[3]
+      #ratio_elements_worksheet = workbook[3]
+      new_workbook_number = 3
 
       model_worksheet.sheet_name = "Model"
 
@@ -971,9 +1002,104 @@ class WbsActivitiesController < ApplicationController
         end
       end
       model_worksheet.change_column_bold(0,true)
-      model_worksheet.change_column_width(0, 45)
+      model_worksheet.change_column_width(0, 60)
+      model_worksheet.change_column_width(1, 100)
       model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
 
+
+      # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
+      # activity_elements_worksheet
+      counter_line = 1
+      elements_worksheet.add_cell(0, 0, I18n.t(:name))
+      elements_worksheet.add_cell(0, 1, I18n.t(:description))
+      elements_worksheet.add_cell(0, 2, I18n.t('parent'))
+      elements_worksheet.add_cell(0, 3, I18n.t('position'))
+      elements_worksheet.change_row_bold(0,true)
+
+      elements_worksheet.change_row_horizontal_alignment(0, 'center')
+      @wbs_activity_elements.each_with_index do |activity_element, index|
+        elements_worksheet.add_cell(index + 1, 0, activity_element.name)
+        elements_worksheet.add_cell(index + 1, 1, activity_element.description)
+        elements_worksheet.add_cell(index + 1, 2, (activity_element.parent.nil? ? nil : activity_element.parent.name))
+        elements_worksheet.add_cell(index + 1, 3, activity_element.position)
+
+        if ind < activity_element.name.size
+          elements_worksheet.change_column_width(0, activity_element.name.size)
+          elements_worksheet.change_column_width(2, activity_element.name.size)
+          ind = activity_element.name.size
+        end
+        if ind2 < the_most_largest(activity_element.description)
+          elements_worksheet.change_column_width(1, the_most_largest(activity_element.description))
+          ind2 = the_most_largest(activity_element.description)
+        end
+        counter_line += 1
+      end
+
+      counter_line.times.each do |line|
+        ["bottom", "right"].each do |symbole|
+          elements_worksheet[line][0].change_border(symbole.to_sym, 'thin')
+          elements_worksheet[line][1].change_border(symbole.to_sym, 'thin')
+        end
+      end
+
+
+      #WBS ACTIVITY RATIO - ratios_worksheet
+      ind = 0
+      ind2 = 1
+      counter_line = 1
+      ratios_worksheet.add_cell(0, 0, I18n.t(:name))
+      ratios_worksheet.add_cell(0, 1, I18n.t(:description))
+      ratios_worksheet.change_row_bold(0,true)
+
+      ratios_worksheet.change_row_horizontal_alignment(0, 'center')
+      @wbs_activity_ratios.each_with_index do |ratio, index|
+        ratios_worksheet.add_cell(index + 1, 0, ratio.name)
+        ratios_worksheet.add_cell(index + 1, 1, ratio.description)
+
+        if ind < ratio.name.size
+          ratios_worksheet.change_column_width(0, ratio.name.size)
+          ind = ratio.name.size
+        end
+        if ind2 < the_most_largest(ratio.description)
+          ratios_worksheet.change_column_width(1, the_most_largest(ratio.description))
+          ind2 = the_most_largest(ratio.description)
+        end
+        counter_line += 1
+      end
+
+      counter_line.times.each do |line|
+        ["bottom", "right"].each do |symbole|
+          elements_worksheet[line][0].change_border(symbole.to_sym, 'thin')
+          elements_worksheet[line][1].change_border(symbole.to_sym, 'thin')
+        end
+      end
+
+      # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
+      # Les attributs de ratio-element
+      ratio_element_attributes = ["do_not_show_cost", "do_not_show_phases_with_zero_value", ""]
+
+      # On cree une feuille par element de ratio
+      @wbs_activity_ratios.each_with_index do |ratio, index|
+        # on cree une feuille pour tous les elments de ce ratio
+        workbook.add_worksheet("Ratio #{index+1}")
+        ratio_elements_worksheet = workbook[new_workbook_number]
+        new_workbook_number += 1
+
+        #ratio_elements = ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+        #wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+        ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
+        ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
+        ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
+
+        ratio_elements_worksheet.add_cell(0, 1, ratio.name)
+        ratio_elements_worksheet.add_cell(0, 1, ratio.name)
+        ratio_elements_worksheet.add_cell(0, 1, ratio.name)
+
+      end
+
+
+      # Send the file
       send_data(workbook.stream.string, filename: "#{@wbs_activity.organization.name[0..4]}-#{@wbs_activity.name.gsub(" ", "_")}_wbs_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
 
     else

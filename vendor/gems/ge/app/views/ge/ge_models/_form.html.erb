@@ -49,8 +49,14 @@
         <%#= f.association :input_pe_attribute, collection: PeAttribute.where(alias: ["retained_size", "effort"]).order("name desc"), label: "Sélectionner l'attribut en entrée du module", include_blank: false %>
         <%#= f.association :output_pe_attribute, collection: PeAttribute.where(alias: ["retained_size", "effort", "introduced_defects"]), label: "Sélectionner l'attribut de sortie du module", include_blank: false %>
 
-        <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-        <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% ge_generic_module = Pemodule.where(alias: "ge").first %>
+        <% if ge_generic_module %>
+          <% input_attribute_ids = ge_generic_module.pe_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+          <% output_attribute_ids = ge_generic_module.pe_attributes.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% else %>
+            <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+            <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% end %>
 
         <div id="input_output_attributes">
           <%= f.association :input_pe_attribute, collection: PeAttribute.where(id: input_attribute_ids).order("name desc"), label: "Sélectionner l'attribut en entrée du module", include_blank: false %>

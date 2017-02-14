@@ -401,6 +401,7 @@ class Guw::GuwModelsController < ApplicationController
     len2
   end
 
+
   def exportxl
 
     workbook = RubyXL::Workbook.new
