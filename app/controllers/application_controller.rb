@@ -309,7 +309,8 @@ class ApplicationController < ActionController::Base
     as = AdminSetting.find_by_key(args)
     r = RecordStatus.find_by_name('Defined')
     unless as.nil?
-      AdminSetting.where(key: args, record_status_id: r.id).first.value
+      #AdminSetting.where(key: args, record_status_id: r.id).first.value
+      AdminSetting.where(key: args).first.value
     end
   end
 
