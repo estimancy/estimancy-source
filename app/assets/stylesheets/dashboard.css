@@ -1240,3 +1240,7 @@ tr.conversion_factor, td.conversion_factor {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.group_button{
+    margin-bottom: 10px;
+}

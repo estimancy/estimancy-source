@@ -19,11 +19,13 @@
     <% if can? :show_applications, Application %>
 
       <% if can? :manage, Application %>
-        <%= link_to I18n.t('new_application'), new_organization_application_path(@organization), :class => 'btn pull-right' %>
-        <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn pull-right button_margin_right'%>
-          <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import applications from excel" data-toggle="modal">
+        <div class="group_button">
+          <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn' %>
+          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn'%>
+          <a href="#myWBSModal" role="button" class="btn" title="Import applications from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
+        </div>
 
           <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
