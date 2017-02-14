@@ -1228,7 +1228,7 @@ class Guw::GuwModelsController < ApplicationController
                     end
 
                     @guw_model.guw_attributes.all.each do |gac|
-                      guw_uow.save(validate: false);
+                      guw_uow.save(validate: false)
                       finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
                                                                  guw_unit_of_work_id: guw_uow.id,
                                                                  guw_attribute_id: gac.id).first_or_create

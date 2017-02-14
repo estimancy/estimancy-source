@@ -566,6 +566,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
+    @guw_model.guw_attributes.all.each do |gac|
+      finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                 guw_unit_of_work_id: @guw_unit_of_work.id,
+                                                 guw_attribute_id: gac.id).first_or_create
+      finder.save
+    end
+
+
     technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
     @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
 

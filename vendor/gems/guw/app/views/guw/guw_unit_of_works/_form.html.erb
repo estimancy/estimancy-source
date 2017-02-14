@@ -32,16 +32,18 @@
                         include_blank: true,
                         input_html: { class: "input-xxlarge" } %>
 
-            <% unless @guw_model.coefficient_label.blank? %>
-              <%= f.input :guw_work_unit_id, as: :select, collection: @guw_model.guw_work_units, label: @guw_model.coefficient_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
-            <% end %>
+            <% if @guw_model.config_type == "old" %>
+              <% unless @guw_model.coefficient_label.blank? %>
+                <%= f.input :guw_work_unit_id, as: :select, collection: @guw_model.guw_work_units, label: @guw_model.coefficient_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% end %>
 
-            <% unless @guw_model.weightings_label.blank? %>
-              <%= f.input :guw_weighting_id, as: :select, collection: @guw_model.guw_weightings, label: @guw_model.weightings_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
-            <% end %>
+              <% unless @guw_model.weightings_label.blank? %>
+                <%= f.input :guw_weighting_id, as: :select, collection: @guw_model.guw_weightings, label: @guw_model.weightings_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% end %>
 
-            <% unless @guw_model.factors_label.blank? %>
-              <%= f.input :guw_factor_id, as: :select, collection: @guw_model.guw_factors, label: @guw_model.factors_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% unless @guw_model.factors_label.blank? %>
+                <%= f.input :guw_factor_id, as: :select, collection: @guw_model.guw_factors, label: @guw_model.factors_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% end %>
             <% end %>
 
             <% default_technology = Guw::GuwUnitOfWorkGroup.find(params[:g]).organization_technology %>
