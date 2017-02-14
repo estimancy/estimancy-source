@@ -15,11 +15,11 @@
         <%= f.input :description, :input_html => { rows: 10, class: 'input-xxlarge' } %>
       </div>
 
-      <div class="actions">
+      <div class="actions-tabs">
         <% if can? :manage, View %>
-            <%= submit_tag I18n.t('save'), :class => 'btn' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-views'), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-views'), :class => 'btn btn-primary' %>
       </div>
     <% end %>
   </div>

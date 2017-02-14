@@ -183,18 +183,16 @@
 
       <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'} %>
 
-      <br>
-
       <div class="actions-tabs">
         <% if action_name.in?(['edit', 'update']) %>
           <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-              <%= submit_tag I18n.t('save'), :class => 'btn submit_project' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn submit_project' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary submit_project' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
           <% end %>
 
           <% elsif action_name.in?(['new', 'create']) %>
             <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn submit_project' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
             <% end %>
           <% end %>
 
@@ -325,9 +323,11 @@
                     <%= render :partial => 'layouts/footer_table' %>
                   </table>
 
-                  <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn' %>
-                  <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn', :anchor_value => params[:anchor_value] %>
-                  <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                  <div class="actions-tabs">
+                    <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                  </div>
                 </div>
               </div>
             </div>
@@ -404,10 +404,11 @@
                     </tbody>
                   <% end %>
                 </table>
-
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn', :anchor_value => params[:anchor_value] %>
-                <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <div class="actions-tabs">
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                </div>
               </div>
             </div>
           </div>
@@ -454,9 +455,11 @@
                       <% end %>
                   </table>
 
-                  <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                  <%= submit_tag I18n.t('apply'), :class => 'btn', :anchor_value => params[:anchor_value] %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  <div class="actions-tabs">
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  </div>
                 </div>
               </div>
             </div>

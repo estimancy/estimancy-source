@@ -22,13 +22,15 @@
   </div>
 
   <br/>
-  <div class="actions"><%= submit_tag I18n.t('send_request') %></div>
+  <div class="actions-tabs"><%= submit_tag I18n.t('send_request') %></div>
   <div>
-      <br/>
+    <br/>
       <%= simple_format(I18n.t(:ask_new_account_help)) %>
-      <br/>
+    <br/>
   </div>
-  <br/>
-<div class="actions"><%= link_to I18n.t('back'), '' %></div>
+
+  <div class="actions-tabs">
+    <%= link_to I18n.t('back'), '' %>
+  </div>
 <% end %>
 

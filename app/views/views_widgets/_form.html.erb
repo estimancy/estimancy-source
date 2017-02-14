@@ -57,7 +57,7 @@
     </table>
   </div>
 
-  <div class="actions">
+  <div class="actions-tabs">
     <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
         <%= submit_tag I18n.t('save'), :class => 'btn' %>
     <% end %>

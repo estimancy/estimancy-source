@@ -32,7 +32,7 @@ div.actions {
     margin:20px;
 }
 div.actions-tabs {
-    margin:0px;
+    margin-top: 30px;
 }
 
 .overflow{
@@ -1243,4 +1243,8 @@ tr.conversion_factor, td.conversion_factor {
 
 .group_button{
     margin-bottom: 10px;
+}
+
+form{
+    margin: 0px;
 }

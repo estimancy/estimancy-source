@@ -274,18 +274,18 @@
         </div>
       <% end %>
 
-      <div class="actions">
+      <div class="actions-tabs">
         <% if (can? :manage, User) || current_user == @user %>
           <% if action_name.in?(%w(new create)) %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
           <% end %>
-          <%= submit_tag I18n.t('save'), :class => 'btn' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
         <% end %>
         <% if @organization.nil? %>
-          <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
+          <%= link_to I18n.t('back'), users_path, :class => 'btn btn-primary' %>
         <% else %>
-          <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
+          <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
         <% end %>
       </div>
     </div>
