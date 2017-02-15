@@ -133,8 +133,8 @@
 
                   <% if @user.new_record? %>
                     <tr class="password_row">
-                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') }, :required => false %></td>
-                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application') } %></td>
+                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' }, :required => false %></td>
+                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' } %></td>
                     </tr>
                   <% else %>
                     <tr><td><%= f.input :current_password, :label => I18n.t(:current_password), required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'input-xlarge', :disabled => !(@user.auth_method.name == 'Application')}, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td></tr>

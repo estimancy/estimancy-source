@@ -52,14 +52,6 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id])
     set_page_title I18n.t(:edit_profile, value: @profile.name)
     set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('profile_edition') => ""
-
-    unless @profile.child_reference.nil?
-      if @profile.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_profile_cant_be_edit)
-        redirect_to profiles_path
-      end
-    end
-
   end
 
   # POST /profiles

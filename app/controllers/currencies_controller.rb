@@ -50,12 +50,6 @@ class CurrenciesController < ApplicationController
 
     @currency = Currency.find(params[:id])
 
-    unless @currency.child_reference.nil?
-      if @currency.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_currency_cant_be_edit)
-        redirect_to currencies_path
-      end
-    end
   end
 
   # POST /currencies
@@ -81,12 +75,6 @@ class CurrenciesController < ApplicationController
 
     @currency = nil
     current_currency = Currency.find(params[:id])
-    if current_currency.is_defined?
-      @currency = current_currency.amoeba_dup
-      @currency.owner_id = current_user.id
-    else
-      @currency = current_currency
-    end
 
     if @currency.update_attributes(params[:currency])
       redirect_to redirect(currencies_url), notice: "#{I18n.t (:notice_currency_successful_updated)}"

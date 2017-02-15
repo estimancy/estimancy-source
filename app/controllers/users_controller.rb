@@ -232,7 +232,7 @@ public
       params[:user].delete :password_confirmation
     end
 
-    @user.auth_type = params[:user][:auth_type]
+    @user.auth_type = params[:user][:auth_type].nil? ? AuthMethod.find_by_name('Application').id : params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
 
