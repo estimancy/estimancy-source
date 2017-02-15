@@ -12,7 +12,7 @@
 
           <div class="well input-xxlarge">
              <span><%= I18n.t(:select_profile_or_fill_text_fields) %></span><br>
-             <%= select_tag 'profile_id_for_organization', options_for_select(Profile.defined.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
+             <%= select_tag 'profile_id_for_organization', options_for_select(Profile.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
 
           </div>
 

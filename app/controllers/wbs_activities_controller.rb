@@ -1346,28 +1346,4 @@ class WbsActivitiesController < ApplicationController
 
   end
 
-
-
-protected
-
-  #Function that enable/disable to update
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    if is_master_instance?
-      true
-    else
-      if params[:action] == 'new'
-        true
-      elsif params[:action] == 'edit'
-        @wbs_activity = WbsActivity.find(params[:id])
-        #if @wbs_activity.is_local_record? && @wbs_activity.defined?
-        if @wbs_activity.is_defined? || @wbs_activity.defined?
-          false
-        else
-          true
-        end
-      end
-    end
-  end
-
 end

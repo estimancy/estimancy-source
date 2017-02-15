@@ -31,33 +31,9 @@ class ProjectsController < ApplicationController
   load_resource
 
   helper_method :sort_direction, :is_collapsible?, :set_attribute_unit
-  helper_method :enable_update_in_local?  #For the wbs-activity-element
   helper_method :show_status_change_comments
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
-
-
-
-  # This function is only use to show the WBS-Activity tree view
-  # in the link_activity_element function in wbs_activity_elements_helper
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    if is_master_instance?
-      true
-    else
-      if params[:action] == 'new'
-        true
-      elsif params[:action] == 'edit'
-        @wbs_activity_element = WbsActivityElement.find(params[:id])
-        if @wbs_activity_element.is_defined? || @wbs_activity_element.defined?
-          false
-        else
-          true
-        end
-      end
-    end
-  end
-
 
   #protected
   private
