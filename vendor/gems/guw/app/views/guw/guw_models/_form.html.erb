@@ -57,11 +57,6 @@
             <% end %>
           <% end %>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= f.button :submit, I18n.t('save') %>
-            <%= f.button :submit, I18n.t('apply') %>
-          <% end %>
-          <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
             <div class="actions-tabs">
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>

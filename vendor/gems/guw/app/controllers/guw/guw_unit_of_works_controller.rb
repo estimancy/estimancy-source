@@ -1482,7 +1482,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ["low", "most_likely", "high"].each do |level|
 
             if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
-              ev.send("string_data_#{level}")[current_component.id] = value.round(user_number_precision)
+              ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
               tmp_prbl << ev.send("string_data_#{level}")[@component.id]
             end
 

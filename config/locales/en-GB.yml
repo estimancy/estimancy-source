@@ -1608,7 +1608,8 @@ en-gb:
   ge_effort: "Effort"
   ge_size: "Size"
   associate_inputs_with_outputs: "Associating the input attributes of \"%{current_mp}\" with the output attributes of preceding modules"
-  change_module_project_instance: "Change the module instance"  edit_estimation_model: "Edit estimation model \"%{value}\""
+  change_module_project_instance: "Change the module instance"
+  edit_estimation_model: "Edit estimation model \"%{value}\""
 
   create_button: "Create"
   created_date: "Created date"
