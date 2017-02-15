@@ -1847,7 +1847,7 @@ fral:
   enabled_theorical_effort_modification: "Autoriser la modification de l'effort théorique calculé"
   factors_setting: "Paramétrage des facteurs"
   import_factors_setting: "Importer les facteurs pour la configuration"
-  import_instance_model: "Importer une instance du modèle"
+  import_instance_model: "Importer"
   warning_update_wbs_organization_profile: "Attention!!! Si vous avez modifié la liste des profils, vérifier la contribution des profils par phase (onglet \"Elements des Ratios\")."
   total_per_phase: "Total par phase"
   error_message_not_found_2: "Il se peut que le lien utilisé soit rompu ou que vous ayez tapé une adresse (URL) incorrecte."
