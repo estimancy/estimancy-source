@@ -23,8 +23,6 @@ class WbsActivityRatioElement < ActiveRecord::Base
   attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :record_status_id, :custom_value, :change_comment, :wbs_activity_element_id,
                   :formula, :is_modifiable, :is_optional
 
-  ###include MasterDataHelper
-
   has_ancestry
 
   belongs_to :wbs_activity_ratio

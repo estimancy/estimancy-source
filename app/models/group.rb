@@ -25,7 +25,7 @@
 class Group < ActiveRecord::Base
   attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id
 
-  include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
+  # include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
 
   has_and_belongs_to_many :users
   has_and_belongs_to_many :projects
@@ -42,7 +42,7 @@ class Group < ActiveRecord::Base
   has_many :groups_users, class_name: 'GroupsUsers'
   has_many :users, through: :groups_users
 
-  belongs_to :record_status
+  # belongs_to :record_status
   #belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   #validates :record_status, :presence => true ##, :if => :on_master_instance?   #defined in MasterDataHelper

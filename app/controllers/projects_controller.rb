@@ -35,7 +35,7 @@ class ProjectsController < ApplicationController
   helper_method :show_status_change_comments
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
-  before_filter :get_record_statuses
+
 
 
   # This function is only use to show the WBS-Activity tree view

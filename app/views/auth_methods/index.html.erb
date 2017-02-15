@@ -13,7 +13,6 @@
       <thead>
       <tr>
         <th><%= I18n.t(:name) %></th>
-        <th class="filter-select"><%= I18n.t(:record_status) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -22,7 +21,6 @@
       <% @auth_methods.each do |auth_method| %>
           <tr>
             <td><%= auth_method.name %></td>
-            <td><%= auth_method.record_status.nil? ? nil : auth_method.record_status.name %> <%= auth_method.custom_value %></td>
             <td class="center">
               <%= link_to '', edit_auth_method_path(auth_method), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>

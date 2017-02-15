@@ -68,24 +68,24 @@ class User < ActiveRecord::Base
   has_many :organizations, through: :organizations_users, :source => :organization, uniq: true
 
   #Master and Special Data Tables
-  has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'
-  has_many :change_on_attributes, :foreign_key => 'owner_id', :class_name => 'PeAttribute'
-  has_many :change_on_attribute_modules, :foreign_key => 'owner_id', :class_name => 'AttributeModule'
-  has_many :change_on_currencies, :foreign_key => 'owner_id', :class_name => 'Currency'
-  has_many :change_on_event_types, :foreign_key => 'owner_id', :class_name => 'EventType'
-  has_many :change_on_languages, :foreign_key => 'owner_id', :class_name => 'Language'
-  has_many :change_on_pemodules, :foreign_key => 'owner_id', :class_name => 'Pemodule'
-  has_many :change_on_platform_categories, :foreign_key => 'owner_id', :class_name => 'PlatformCategory'
-  has_many :change_on_project_areas, :foreign_key => 'owner_id', :class_name => 'ProjectArea'
-  has_many :change_on_project_categories, :foreign_key => 'owner_id', :class_name => 'ProjectCategory'
-  has_many :change_on_project_security_levels, :foreign_key => 'owner_id', :class_name => 'ProjectSecurityLevel'
-  has_many :change_on_record_statuses, :foreign_key => 'owner_id', :class_name => 'RecordStatus'
-  has_many :change_on_work_element_types, :foreign_key => 'owner_id', :class_name => 'WorkElementType'
-
-  has_many :change_on_admin_settings, :foreign_key => 'owner_id', :class_name => 'AdminSetting'
-  has_many :change_on_auth_methods, :foreign_key => 'owner_id', :class_name => 'AuthMethod'
-  has_many :change_on_groups, :foreign_key => 'owner_id', :class_name => 'Group'
-  has_many :change_on_permissions, :foreign_key => 'owner_id', :class_name => 'Permission'
+  # has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'
+  # has_many :change_on_attributes, :foreign_key => 'owner_id', :class_name => 'PeAttribute'
+  # has_many :change_on_attribute_modules, :foreign_key => 'owner_id', :class_name => 'AttributeModule'
+  # has_many :change_on_currencies, :foreign_key => 'owner_id', :class_name => 'Currency'
+  # has_many :change_on_event_types, :foreign_key => 'owner_id', :class_name => 'EventType'
+  # has_many :change_on_languages, :foreign_key => 'owner_id', :class_name => 'Language'
+  # has_many :change_on_pemodules, :foreign_key => 'owner_id', :class_name => 'Pemodule'
+  # has_many :change_on_platform_categories, :foreign_key => 'owner_id', :class_name => 'PlatformCategory'
+  # has_many :change_on_project_areas, :foreign_key => 'owner_id', :class_name => 'ProjectArea'
+  # has_many :change_on_project_categories, :foreign_key => 'owner_id', :class_name => 'ProjectCategory'
+  # has_many :change_on_project_security_levels, :foreign_key => 'owner_id', :class_name => 'ProjectSecurityLevel'
+  # has_many :change_on_record_statuses, :foreign_key => 'owner_id', :class_name => 'RecordStatus'
+  # has_many :change_on_work_element_types, :foreign_key => 'owner_id', :class_name => 'WorkElementType'
+  #
+  # has_many :change_on_admin_settings, :foreign_key => 'owner_id', :class_name => 'AdminSetting'
+  # has_many :change_on_auth_methods, :foreign_key => 'owner_id', :class_name => 'AuthMethod'
+  # has_many :change_on_groups, :foreign_key => 'owner_id', :class_name => 'Group'
+  # has_many :change_on_permissions, :foreign_key => 'owner_id', :class_name => 'Permission'
 
   has_many :estimations, :foreign_key => 'creator_id', :class_name => 'Project'
 
@@ -143,7 +143,7 @@ class User < ActiveRecord::Base
   end
 
   def is_an_automatic_account_activation?
-    as = AdminSetting.where(:record_status_id => RecordStatus.find_by_name('Defined').id, :key => 'self-registration').first.value
+    as = AdminSetting.where(key 'self-registration').first.value
     as == 'automatic account activation'
   end
 

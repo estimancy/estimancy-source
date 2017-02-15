@@ -27,23 +27,6 @@
               <td><%= f.input :for_project_security, :label => I18n.t('project_permissions'), :as => :boolean, :input_html => {:class => 'input-xxlarge'} %></td>
             </tr>
           </table>
-          <% if is_master_instance? && @organization.nil? %>
-            <table>
-              <tr>
-                <td>
-                  <%= f.input :record_status_id, :as => :select, :label => I18n.t('record_status'), :required => (is_master_instance? ? true : false),
-                              :collection => @group.record_status_collection,
-                              :input_html => {:class => 'record_status'},
-                              :selected => (@group.is_defined_or_nil? ? @proposed_status.id : @group.record_status_id),
-                              :disabled => (true if @group.is_retired?) %>
-                </td>
-                <td>
-                  <%= f.input :custom_value, :label => I18n.t('custom_value'), :input_html => {:class => 'custom_value'}, :disabled => (true unless @group.is_custom?) %>
-                </td>
-              </tr>
-            </table>
-            <%= f.input :change_comment, :label => I18n.t('change_comment'), :input_html => {:class => 'input-xxlarge', :rows => 2} %>
-          <% end %>
         </div>
 
       <% if can? :manage, Group %>

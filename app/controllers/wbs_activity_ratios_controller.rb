@@ -97,18 +97,11 @@ class WbsActivityRatiosController < ApplicationController
     @wbs_activity_ratio = WbsActivityRatio.new(params[:wbs_activity_ratio])
     @wbs_activity_ratio.owner_id = current_user.id
 
-    #If we are on local instance, Status is set to "Local"
-    unless is_master_instance?   #so not on master
-      @wbs_activity_ratio.record_status = @local_status
-    end
-
     if @wbs_activity_ratio.save
       @wbs_activity_ratio.wbs_activity.wbs_activity_elements.each do |wbs_activity_element|
         ware = WbsActivityRatioElement.new(:ratio_value => nil,
                                            :wbs_activity_ratio_id => @wbs_activity_ratio.id,
-                                           :wbs_activity_element_id => wbs_activity_element.id,
-                                           :record_status_id => @wbs_activity_ratio.record_status_id)
-                                           ###:dotted_id => wbs_activity_element.dotted_id)
+                                           :wbs_activity_element_id => wbs_activity_element.id)
 
         ware.uuid = UUIDTools::UUID.random_create.to_s
         ware.save(:validate => false)
@@ -152,7 +145,6 @@ class WbsActivityRatiosController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @ratio = WbsActivityRatio.find(params[:ratio_id])
-    @ratio.record_status =  @defined_status
     @ratio.transaction do
       if @ratio.save
         @ratio.wbs_activity_ratio_elements.update_all(:record_status_id => @defined_status.id)

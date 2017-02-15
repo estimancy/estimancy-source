@@ -67,7 +67,6 @@ class ApplicationController < ActionController::Base
   helper_method :current_module_project
   helper_method :current_balancing_attribute
   helper_method :load_admin_setting
-  helper_method :get_record_statuses
   helper_method :set_locale_from_browser
   helper_method :set_user_language
   helper_method :initialization_module
@@ -267,8 +266,7 @@ class ApplicationController < ActionController::Base
     if @project.nil?
       nil
     else
-      @defined_record_status = RecordStatus.find_by_name('Defined')
-      pemodule = Pemodule.find_by_alias_and_record_status_id('initialization', @defined_record_status)
+      pemodule = Pemodule.find_by_alias('initialization')
       default_current_module_project = ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
         session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
@@ -285,7 +283,6 @@ class ApplicationController < ActionController::Base
 
   # Get the current selected attribute for the Balancing Module
   def current_balancing_attribute
-    @defined_record_status = RecordStatus.find_by_name('Defined')
     begin
       @default_balancing_attribute = current_module_project.pemodule.pe_attributes.where('alias = ?', Projestimate::Application::EFFORT).defined.last
       if current_module_project.pemodule.alias == Projestimate::Application::BALANCING_MODULE
@@ -300,16 +297,13 @@ class ApplicationController < ActionController::Base
 
   # Get the initialization module (module that get attribute values from the project organization)
   def initialization_module
-    @defined_record_status = RecordStatus.where('name = ?', 'Defined').last
-    @initialization_module = Pemodule.where(alias: 'initialization', record_status_id: @defined_record_status.id).first unless @defined_record_status.nil?
+    @initialization_module = Pemodule.where(alias: 'initialization').first
   end
 
   # Get all the adminSetting parameters
   def load_admin_setting(args)
     as = AdminSetting.find_by_key(args)
-    r = RecordStatus.find_by_name('Defined')
     unless as.nil?
-      #AdminSetting.where(key: args, record_status_id: r.id).first.value
       AdminSetting.where(key: args).first.value
     end
   end
@@ -355,13 +349,13 @@ class ApplicationController < ActionController::Base
   end
 
   #Get record statuses
-  def get_record_statuses
-    @retired_status = RecordStatus.find_by_name('Retired')
-    @proposed_status = RecordStatus.find_by_name('Proposed')
-    @defined_status = RecordStatus.find_by_name('Defined')
-    @custom_status = RecordStatus.find_by_name('Custom')
-    @local_status = RecordStatus.find_by_name('Local')
-  end
+  # def get_record_statuses
+  #   @retired_status = RecordStatus.find_by_name('Retired')
+  #   @proposed_status = RecordStatus.find_by_name('Proposed')
+  #   @defined_status = RecordStatus.find_by_name('Defined')
+  #   @custom_status = RecordStatus.find_by_name('Custom')
+  #   @local_status = RecordStatus.find_by_name('Local')
+  # end
 
   def set_locale_from_browser
     if  request.env['HTTP_ACCEPT_LANGUAGE'].nil?

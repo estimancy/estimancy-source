@@ -20,11 +20,11 @@
 #############################################################################
 
 class CurrenciesController < ApplicationController
-  include DataValidationHelper #Module for master data changes validation
+   #Module for master data changes validation
   load_resource
   #load_and_authorize_resource
 
-  before_filter :get_record_statuses
+
 
   def index
     authorize! :manage_master_data, :all

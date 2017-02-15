@@ -23,18 +23,10 @@
 class ProjectCategory < ActiveRecord::Base
   attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :organization_id
 
-  #include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
 
   has_many :projects
-  # has_and_belongs_to_many :project_areas
 
-  #belongs_to :record_status
-  #belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
-
-  # validates_presence_of :description#, :record_status
-  #validates :uuid, :presence => true, :uniqueness => {:case_sensitive => false}
-  validates :name, :presence => true#, :uniqueness => {:case_sensitive => false, :scope => :record_status_id}
-  #validates :custom_value, :presence => true, :if => :is_custom?
+  validates :name, :presence => true
 
   default_scope order('name ASC')
 

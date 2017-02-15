@@ -13,7 +13,6 @@
       <tr>
         <th><%= I18n.t(:name) %></th>
         <th><%= I18n.t(:description) %></th>
-        <th class="filter-select"><%= I18n.t(:record_status) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -22,19 +21,9 @@
           <tr>
             <td><%= record_status.name %></td>
             <td><%= record_status.description %></td>
-            <td><%= record_status.record_status.name unless record_status.record_status.nil? %><%= record_status.show_custom_value %></td>
             <td class="center">
               <%= link_to '', edit_record_status_path(record_status), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', record_status, method: :delete, data: {confirm: I18n.t('are_you_sure')}, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-              <% if is_master_instance? && !record_status.is_local_record? %>
-                  <% if record_status.is_retired? %>
-                      <%= link_to('', "record_statuses/#{record_status.id}/restore_change", confirm: I18n.t('restoring'),:class => 'icon-undo', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                  <% else %>
-                      <% unless record_status.is_defined? %>
-                          <%= link_to('', "record_statuses/#{record_status.id}/validate_change", confirm: I18n.t('validation'),:class => 'icon-ok', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                      <% end %>
-                  <% end %>
-              <% end %>
             </td>
           </tr>
       <% end %>

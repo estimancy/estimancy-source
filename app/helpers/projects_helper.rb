@@ -483,9 +483,9 @@ module ProjectsHelper
 
         # For WBS-ACTIVITY-COMPLETION MODULE
         if current_module_project_pemodule.alias == "wbs_activity_completion"
-          @defined_status = RecordStatus.find_by_name("Defined")
+          # @defined_status = RecordStatus.find_by_name("Defined")
           last_estimation_result = nil
-          effort_breakdown_module = Pemodule.where("alias = ? AND record_status_id = ?", "effort_breakdown", @defined_status.id).first
+          effort_breakdown_module = Pemodule.where("alias = ?", "effort_breakdown").first
 
           unless effort_breakdown_module.nil?
             #refer_module_potential_ids = module_project.associated_module_projects ###+ module_project.inverse_associated_module_projects

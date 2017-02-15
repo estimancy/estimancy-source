@@ -1408,7 +1408,7 @@ frsncf_amoa_infra:
   warning_no_modify_permission_on_project_status: "Vous n'avez pas les autorisations nécessaires pour modifier le devis dans son statut actuel"
 
   is_image_organization: "Organisation image"
-  new_organization_from_image: "Créer une organisation à partir d'une image"
+  new_organization_from_image: "Créer à partir d'une image"
   coefficient: "Coefficient"
   label_organization_name: "Nom de l'organisation"
   label_organization_image: "Organisation image"

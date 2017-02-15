@@ -18,7 +18,6 @@
             <th><%= I18n.t(:iso_code) %></th>
             <th><%= I18n.t(:currency_sign) %></th>
             <th><%= I18n.t(:conversion_rate) %></th>
-            <th class="filter-select"><%= I18n.t(:record_status) %></th>
             <th  class="action"><%= I18n.t(:actions) %></th>
           </tr>
       </thead>
@@ -32,19 +31,9 @@
             <td><%= currency.iso_code %></td>
             <td><%= currency.sign %></td>
             <td><%= currency.conversion_rate %></td>
-            <td><%= currency.record_status.name unless currency.record_status.nil? %> <%= currency.show_custom_value %></td>
             <td class="center">
               <%= link_to '', edit_currency_path(currency), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', currency, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-              <% if is_master_instance? && !currency.is_local_record? %>
-                  <% if currency.is_retired? %>
-                      <%= link_to('', "currencies/#{currency.id}/restore_change", confirm: I18n.t('restoring'), :class => 'icon-undo', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                  <% else %>
-                      <% unless currency.is_defined? %>
-                          <%= link_to('', "currencies/#{currency.id}/validate_change", confirm: I18n.t('validation'), :class => 'icon-ok', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                      <% end %>
-                  <% end %>
-              <% end %>
             </td>
           </tr>
       <% end %>

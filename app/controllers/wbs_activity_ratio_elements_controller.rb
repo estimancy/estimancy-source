@@ -20,9 +20,9 @@
 #############################################################################
 
 class WbsActivityRatioElementsController < ApplicationController
-  #include DataValidationHelper #Module for master data changes validation
+  # #Module for master data changes validation
 
-  #before_filter :get_record_statuses
+  #
 
   def edit
     authorize! :manage_modules_instances, ModuleProject

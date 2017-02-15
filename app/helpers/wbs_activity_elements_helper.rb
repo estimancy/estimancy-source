@@ -171,7 +171,7 @@ module WbsActivityElementsHelper
   def show_element_name(element)
     if element.attributes.has_key? 'record_status_id'
       if element.is_root?
-        "<span class='#{h element.record_status.to_s } root_bolder'>#{h element.name} </span>"
+        "<span class='root_bolder'>#{h element.name} </span>"
       else
         element_wbs_root = element.root
         if params[:wbs_activity_ratio_id]
@@ -184,9 +184,9 @@ module WbsActivityElementsHelper
               strong_class = "strong"
             end
           end
-          "<span class='#{h element.record_status.to_s } #{strong_class}'> #{h element.name} </span> <span class='darkseagreen'>#{corresponding_ratio_element.nil? ? '' : '(' + element_ratio_value.to_s + '%)'}</span> "
+          "<span class='#{strong_class}'> #{h element.name} </span> <span class='darkseagreen'>#{corresponding_ratio_element.nil? ? '' : '(' + element_ratio_value.to_s + '%)'}</span> "
         else
-          "<span class='#{h element.record_status.to_s }' title='#{I18n.t(:position)} = #{show_element_position(element)}'> #{h element.name} </span>"
+          "<span class='' title='#{I18n.t(:position)} = #{show_element_position(element)}'> #{h element.name} </span>"
         end
 
       end

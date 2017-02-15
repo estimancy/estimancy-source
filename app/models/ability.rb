@@ -159,15 +159,17 @@ class Ability
         prj_scrts.each do |prj_scrt|
           unless prj_scrt.project_security_level.nil?
             project = prj_scrt.project
-            if user.id == project.creator_id
-              unless project.nil?
-                organization.estimation_statuses.each do |es|
-                  prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
-                    if permission.alias == "manage" and permission.category == "Project"
-                      can :manage, project, estimation_status_id: es.id
-                      # @array_owners = []
-                    else
-                      @array_owners << [permission.id, project.id, es.id]
+            unless project.nil?
+              if user.id == project.creator_id
+                unless project.nil?
+                  organization.estimation_statuses.each do |es|
+                    prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+                      if permission.alias == "manage" and permission.category == "Project"
+                        can :manage, project, estimation_status_id: es.id
+                        # @array_owners = []
+                      else
+                        @array_owners << [permission.id, project.id, es.id]
+                      end
                     end
                   end
                 end

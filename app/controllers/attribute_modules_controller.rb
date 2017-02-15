@@ -20,9 +20,9 @@
 ##############################################################################
 
 class AttributeModulesController < ApplicationController
-  include DataValidationHelper #Module for master data changes validation
+   #Module for master data changes validation
 
-  before_filter :get_record_statuses
+
 
   def create
     authorize! :manage, PeAttribute

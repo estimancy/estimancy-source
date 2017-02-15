@@ -413,7 +413,7 @@ public
   protected
   def is_an_automatic_account_activation?
     #No authorize required since this method is protected and won't be call from any route
-    AdminSetting.where(:record_status_id => RecordStatus.find_by_name('Defined').id, :key => 'self-registration').first.value == 'automatic account activation'
+    AdminSetting.where(key: 'self-registration').first.value == 'automatic account activation'
   end
 
 end

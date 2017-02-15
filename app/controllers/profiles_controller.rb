@@ -21,10 +21,10 @@
 
 class ProfilesController < ApplicationController
 
-  include DataValidationHelper #Module for master data changes validation
+   #Module for master data changes validation
   load_resource
 
-  before_filter :get_record_statuses
+
 
   # GET /profiles
   # GET /profiles.json
@@ -73,7 +73,6 @@ class ProfilesController < ApplicationController
     @profile = Profile.new(params[:profile])
     @profile.owner_id = current_user.id
 
-    @profile.record_status = @proposed_status
     if @profile.save
       flash[:notice] = I18n.t (:notice_profile_successful_created)
       redirect_to redirect_apply(nil, new_profile_path(), profiles_path)

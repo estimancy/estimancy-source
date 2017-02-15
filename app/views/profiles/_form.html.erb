@@ -12,16 +12,6 @@
         <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
         <%= f.input :cost_per_hour, :label => I18n.t(:cost_per_hour) %>
       </div>
-
-      <div>
-        <%= f.association :record_status, :label => I18n.t('record_status'),
-            :collection => @profile.record_status_collection,
-            :input_html => {:class => 'record_status'},
-            :selected => (@profile.is_defined_or_nil? ? @proposed_status.id : @profile.record_status_id),
-            :disabled => (true if @profile.is_retired?) %>
-
-        <%= f.input :custom_value, :label => I18n.t('custom_value'), :input_html => {:class => 'custom_value'}, :disabled => (true unless @profile.is_custom?) %>
-        <%= f.input :change_comment, :label => I18n.t('change_comment'), :input_html => {:class => 'input-xxlarge', :rows => 2} %>
     </div>
 
     <div class="actions-tabs">

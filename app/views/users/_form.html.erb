@@ -274,7 +274,7 @@
         </div>
       <% end %>
 
-      <div class="actions-tabss">
+      <div class="actions-tabs">
         <% if (can? :manage, User) || current_user == @user %>
           <% if action_name.in?(%w(new create)) %>
             <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
