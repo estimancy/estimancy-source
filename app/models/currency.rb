@@ -22,18 +22,9 @@
 #Master Data
 #Currency - not yet begin
 class Currency < ActiveRecord::Base
-  attr_accessible :name, :alias, :description, :record_status_id, :custom_value, :change_comment, :iso_code, :iso_code_number, :sign, :conversion_rate
-
-  include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
+  attr_accessible :name, :alias, :description, :iso_code, :iso_code_number, :sign, :conversion_rate
 
   has_many :organizations
-
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
-
-  validates :record_status, :presence => true
-  validates :name, :alias, :uuid, :presence => true, :uniqueness => {:scope => :record_status_id, case_sensitive: false}
-  validates :custom_value, :presence => true, :if => :is_custom?
 
   def to_s
     self.nil? ? '' : self.sign

@@ -21,10 +21,10 @@
 
 class ProfilesController < ApplicationController
 
-  include DataValidationHelper #Module for master data changes validation
+   #Module for master data changes validation
   load_resource
 
-  before_filter :get_record_statuses
+
 
   # GET /profiles
   # GET /profiles.json
@@ -52,14 +52,6 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id])
     set_page_title I18n.t(:edit_profile, value: @profile.name)
     set_breadcrumbs I18n.t(:profiles) => profiles_path, I18n.t('profile_edition') => ""
-
-    unless @profile.child_reference.nil?
-      if @profile.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_profile_cant_be_edit)
-        redirect_to profiles_path
-      end
-    end
-
   end
 
   # POST /profiles
@@ -73,7 +65,6 @@ class ProfilesController < ApplicationController
     @profile = Profile.new(params[:profile])
     @profile.owner_id = current_user.id
 
-    @profile.record_status = @proposed_status
     if @profile.save
       flash[:notice] = I18n.t (:notice_profile_successful_created)
       redirect_to redirect_apply(nil, new_profile_path(), profiles_path)
@@ -118,7 +109,7 @@ class ProfilesController < ApplicationController
 
     if @profile.is_custom?
       #logical deletion  delete don't have to suppress records anymore on Defined record
-      @profile.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+      @profile.update_attributes(:owner_id => current_user.id)
       flash[:notice] = I18n.t (:notice_profile_successful_deleted)
     elsif @profile.is_defined?
       flash[:warning] = I18n.t(:defined_profile_not_deletable)

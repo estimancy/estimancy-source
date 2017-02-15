@@ -20,13 +20,10 @@
 #############################################################################
 
 class WbsActivityElement < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment,:is_root,:wbs_activity,:record_status,:wbs_activity_id, :dotted_id, :position, :parent_id,
+  attr_accessible :name, :description, :custom_value, :change_comment,:is_root,:wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id,
                   :phase_short_name
 
   has_ancestry :cache_depth => true
-
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   belongs_to :wbs_activity
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
@@ -51,11 +48,6 @@ class WbsActivityElement < ActiveRecord::Base
 
       new_wbs_activity_elt.copy_id = original_wbs_activity_elt.id
       new_wbs_activity_elt.uuid = UUIDTools::UUID.random_create.to_s
-      if defined?(MASTER_DATA) and MASTER_DATA and File.exists?("#{Rails.root}/config/initializers/master_data.rb")
-        new_wbs_activity_elt.record_status_id = RecordStatus.find_by_name('Proposed').id
-      else
-        new_wbs_activity_elt.record_status_id = RecordStatus.find_by_name('Local').id
-      end
     })
 
     propagate
@@ -66,13 +58,10 @@ class WbsActivityElement < ActiveRecord::Base
   end
 
   def self.import(file, sep)
-    #find localstatus
-    @localstatus = RecordStatus.find_by_name('Local')
 
     #create wbs_activity
     @wbs_activity = WbsActivity.new(:name => "#{file.original_filename} - #{Time.now.to_s}",
-                                    :state => 'draft',
-                                    :record_status => @localstatus.id)
+                                    :state => 'draft')
     @wbs_activity.save
 
     #create root element

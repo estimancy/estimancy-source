@@ -48,16 +48,12 @@
               </div>
             </div>
 
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <% if action_name == 'new' || action_name == 'create' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-              <% elsif action_name == 'edit' || action_name == 'update' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn' %>
-              <% end %>
-            <% end %>
-
-            <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <% if action_name == 'new' || action_name == 'create' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% elsif action_name == 'edit' || action_name == 'update' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
           <% end %>
         </div>
 

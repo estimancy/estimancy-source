@@ -20,10 +20,9 @@
 #############################################################################
 
 class WbsActivityRatio < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :wbs_activity_id,
-                  :do_not_show_cost, :do_not_show_phases_with_zero_value, :allow_modify_retained_effort, :allow_modify_ratio_value, :allow_modify_ratio_reference, :allow_add_new_phase
+  attr_accessible :name, :description, :wbs_activity_id,
+                  :use_real_base_percentage, :allow_modify_retained_effort, :allow_modify_ratio_value, :allow_modify_ratio_reference, :allow_add_new_phase
 
-  ###has_many :wbs_project_elements
   has_many :pbs_project_elements
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
   has_many :wbs_activity_ratio_profiles, :through => :wbs_activity_ratio_elements
@@ -33,9 +32,6 @@ class WbsActivityRatio < ActiveRecord::Base
   has_many :module_project_ratio_variables, dependent: :destroy
 
   belongs_to :wbs_activity
-
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   validates :name, :presence => true, :uniqueness => {:scope => :wbs_activity_id, :case_sensitive => false}
 

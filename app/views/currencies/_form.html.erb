@@ -15,27 +15,9 @@
           <%= f.input :sign, :label => I18n.t('currency_sign'), :input_html => {:class => 'input-xxlarge'} %>
           <%= f.input :conversion_rate, :label => I18n.t('conversion_rate'), :input_html => {:class => 'input-xxlarge'} %>
 
-          <% if is_master_instance? %>
-              <table>
-                <tr>
-                  <td>
-                    <%= f.input :record_status_id, :as => :select, :label => I18n.t('record_status'), :required => (is_master_instance? ? true : false),
-                                :collection => @currency.record_status_collection,
-                                :input_html => {:class => 'record_status'},
-                                :selected => (@currency.is_defined_or_nil? ? @proposed_status.id : @currency.record_status_id),
-                                :disabled => (true if @currency.is_retired?) %>
-                  </td>
-                  <td>
-                    <%= f.input :custom_value, :label => I18n.t('custom_value'), :input_html => {:class => 'custom_value'}, :disabled => (true unless @currency.is_custom?) %>
-                  </td>
-                </tr>
-              </table>
-              <%= f.input :change_comment, :label => I18n.t('change_comment'), :input_html => {:class => 'input-xxlarge', :rows => 2} %>
-          <% end %>
-
-          <div class="actions">
-            <%= f.submit I18n.t('save'), :class => 'btn' %>
-            <%= f.submit I18n.t('apply'), :class => 'btn' %>
+          <div class="actions-tabs">
+            <%= f.submit I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= f.submit I18n.t('apply'), :class => 'btn btn-primary' %>
           </div>
       <% end %>
     </div>

@@ -20,11 +20,11 @@
 #############################################################################
 
 class ProjectAreasController < ApplicationController
-  #include DataValidationHelper #Module for master data changes validation
+  # #Module for master data changes validation
 
   load_resource
 
-  before_filter :get_record_statuses
+
   before_filter :get_associations_records, :only => [:new, :edit, :create, :update]
 
   def get_associations_records

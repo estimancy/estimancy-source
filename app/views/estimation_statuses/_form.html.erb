@@ -5,9 +5,9 @@
 
   <div id="tabs-1">
 
-        <%= simple_form_for(@estimation_status) do |f| %>
-        <%= f.error_notification %>
-        <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+    <%= simple_form_for(@estimation_status) do |f| %>
+      <%= f.error_notification %>
+      <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
 
       <div class="form-inputs">
         <div class="row-fluid">
@@ -20,13 +20,12 @@
 
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
-          <br>
         </div>
       </div>
 
-      <div class="actions">
+      <div class="actions-tabs">
         <% if can? :manage, EstimationStatus %>
-          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% end %>
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
       </div>

@@ -22,19 +22,11 @@
 #Master Data
 #ProjectArea management
 class ProjectArea < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :acquisition_category_ids, :platform_category_ids, :project_category_ids, :labor_category_ids, :organization_id
-
-  #include MasterDataHelper  #Module master data management (UUID generation, deep clone, ...)
-  # has_and_belongs_to_many :platform_categories
-  # has_and_belongs_to_many :acquisition_categories
-  # has_and_belongs_to_many :project_categories
-
-  #belongs_to :record_status
-  #belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
+  attr_accessible :name, :description, :acquisition_category_ids, :platform_category_ids, :project_category_ids, :labor_category_ids, :organization_id
 
   has_many :projects
 
-  validates :name, :presence => true#, :uniqueness => { :scope => :organization_id, :case_sensitive => false }
+  validates :name, :presence => true
 
   #Search fields
   scoped_search :on => [:name, :description, :created_at, :updated_at]
@@ -44,9 +36,6 @@ class ProjectArea < ActiveRecord::Base
   amoeba do
     enable
     exclude_association [:projects]
-    customize(lambda { |original_project_area, new_project_area|
-                new_project_area.copy_id = original_project_area.id
-              })
   end
 
   #Override

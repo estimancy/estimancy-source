@@ -31,33 +31,9 @@ class ProjectsController < ApplicationController
   load_resource
 
   helper_method :sort_direction, :is_collapsible?, :set_attribute_unit
-  helper_method :enable_update_in_local?  #For the wbs-activity-element
   helper_method :show_status_change_comments
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
-  before_filter :get_record_statuses
-
-
-  # This function is only use to show the WBS-Activity tree view
-  # in the link_activity_element function in wbs_activity_elements_helper
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    if is_master_instance?
-      true
-    else
-      if params[:action] == 'new'
-        true
-      elsif params[:action] == 'edit'
-        @wbs_activity_element = WbsActivityElement.find(params[:id])
-        if @wbs_activity_element.is_defined? || @wbs_activity_element.defined?
-          false
-        else
-          true
-        end
-      end
-    end
-  end
-
 
   #protected
   private
@@ -363,11 +339,10 @@ class ProjectsController < ApplicationController
                                                                                                                                         organization_id: @organization.id,
                                                                                                                                         description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
 
-    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage",
-                                                                                                                                                          object_associated: "Project",
-                                                                                                                                                          record_status_id: @defined_record_status,
-                                                                                                                                                          name: "Manage Projet",
-                                                                                                                                                          uuid: UUIDTools::UUID.random_create.to_s)
+    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project").first_or_create(alias: "manage",
+                                                                                                                object_associated: "Project",
+                                                                                                                name: "Manage Projet",
+                                                                                                                uuid: UUIDTools::UUID.random_create.to_s)
     # Add the "manage project" authorization to the "FullControl" security level
     if manage_project_permission
       if !manage_project_permission.in?(full_control_security_level.permission_ids)
@@ -1476,84 +1451,6 @@ class ProjectsController < ApplicationController
     # Save output values: only for current pbs_project_element and for current module-project
     # Component parent estimation results is computed again in a asynchronous jobs processing in the "save_estimation_results" method
     save_estimation_results(start_module_project, set_attributes, @my_results)
-
-    # Need to execute other module_projects if all required input attributes are present
-    # Get all required attributes for each module (where)
-    # Get all module_projects from the current_module_project : crawl_module_project(start_module_project)
-    #until rest_of_module_projects.empty?
-    #  module_project = rest_of_module_projects.shift
-    #
-    #  @module_project_results = Hash.new
-    #  required_input_attributes = Array.new
-    #  input_attribute_modules = module_project.estimation_values.where('in_out IN (?) AND is_mandatory = ?', %w(input both), true)
-    #  input_attribute_modules.each do |attr_module|
-    #    required_input_attributes << attr_module.pe_attribute.alias
-    #  end
-    #
-    #  # Verification will be done only if there are some required attribute for the module
-    #  #unless required_input_attributes.empty?
-    #  # Re-initialize the current module_project
-    #  # @my_results is like that {:low => {:complexity_467 => 'organic', :sloc_467 => 10}, :most_likely => {:complexity_467 => 'organic', :sloc_467 => 10}, :hight => {:complexity_467 => 'organic', :sloc_467 => 10}}
-    #  get_all_required_attributes = []
-    #
-    #  ['low', 'most_likely', 'high'].each do |level|
-    #    level_result = @my_results[level.to_sym]
-    #
-    #    level_result.each do |key, value|
-    #      attribute_alias = key.to_s.split("_#{start_module_project.id}").first
-    #
-    #      # For modules with activities
-    #      if start_module_project.pemodule.yes_for_output_with_ratio? || start_module_project.pemodule.yes_for_output_without_ratio? || start_module_project.pemodule.yes_for_input_output_with_ratio? || start_module_project.pemodule.yes_for_input_output_without_ratio?
-    #        value = value.inject({}) { |wbs_value, (k, v)| wbs_value[k.to_s] = v; wbs_value }
-    #      end
-    #
-    #      set_attributes[level][attribute_alias] = value
-    #    end
-    #
-    #    # Update the set_attributes_name_list with the last one,
-    #    # Attribute is only added to the set_attributes_name_list if it's present
-    #    set_attributes[level].keys.each { |key| set_attributes_name_list[level] << key }
-    #
-    #    # Need to verify that all required attributes for this module are present
-    #    # If all required attributes are present
-    #    get_all_required_attributes << ((required_input_attributes & set_attributes_name_list[level]) == required_input_attributes)
-    #  end
-    #
-    #  at_least_one_all_required_attr = nil
-    #  get_all_required_attributes.each do |elt|
-    #    at_least_one_all_required_attr = elt
-    #    break if at_least_one_all_required_attr == true
-    #  end
-    #
-    #  #Run the estimation until there is one module_project that doesn't has all required attributes
-    #  catch (:done) do
-    #    throw :done if !at_least_one_all_required_attr
-    #    # Run estimation plan for the current module_project
-    #    run_estimation(module_project, pbs_project_element_id, rest_of_module_projects, set_attributes)
-    #  end
-    #end
-
-    # Get the estimation results by profile for the EffortBreakdown module and save data
-    #if start_module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-    #  ###results_with_activities_by_profile
-    #  @current_component = pbs_project_element
-    #  @project_organization = @project.organization
-    #  @project_organization_profiles = @project_organization.organization_profiles
-    #  @module_project = start_module_project
-    #
-    #  # If Another default ratio was defined in PBS, it will override the one defined in module-project
-    #  if !@current_component.wbs_activity_ratio.nil?
-    #    @ratio_reference = @current_component.wbs_activity_ratio
-    #  else
-    #    # By default, use the project default Ratio as Reference, unless PSB got its own Ratio,
-    #    @ratio_reference = wbs_project_elt_with_ratio.wbs_activity_ratio
-    #  end
-    #
-    #  @attribute = PeAttribute.find_by_alias_and_record_status_id("effort", @defined_record_status)
-    #  @estimation_values = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', @attribute.id, "output").first
-    #  @estimation_probable_results = @estimation_values.send('string_data_probable')
-    #  @estimation_pbs_probable_results = @estimation_probable_results[@current_component.id]
-    #end
 
     redirect_to dashboard_path(@project)
   end
@@ -2822,7 +2719,7 @@ public
       @ratio_reference = @current_component.wbs_activity_ratio
     end
 
-    @attribute = PeAttribute.find_by_alias_and_record_status_id("effort", @defined_record_status)
+    @attribute = PeAttribute.find_by_alias("effort")
     @estimation_values = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', @attribute.id, "output").first
     @estimation_probable_results = @estimation_values.send('string_data_probable')
     @estimation_pbs_probable_results = @estimation_probable_results[@current_component.id]

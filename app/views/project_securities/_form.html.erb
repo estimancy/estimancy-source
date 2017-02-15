@@ -24,13 +24,13 @@
       <br/><%= f.radio_button 'project_security_level', '1', :name => 'project_security_level' %> <%= I18n.t(:comment)%>
       <br/><%= f.radio_button 'project_security_level', '0', :name => 'project_security_level' %> <%= I18n.t(:read_only)%>
     </div>
-    <div class="actions">
+    <div class="actions-tabs">
       <% if action_name.in?(%w(new create)) %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
       <% elsif action_name == 'edit' || action_name=='update' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
       <% end %>
     </div>
   <% end %>

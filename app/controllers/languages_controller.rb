@@ -45,12 +45,6 @@ class LanguagesController < ApplicationController
     set_breadcrumbs I18n.t(:languages) => languages_path, I18n.t('language_edition') => ""
     @language = Language.find(params[:id])
 
-    unless @language.child_reference.nil?
-      if @language.child_reference.is_proposed_or_custom?
-        flash[:warning] = I18n.t (:warning_language_cant_be_edit)
-        redirect_to languages_path
-      end
-    end
   end
 
   def create

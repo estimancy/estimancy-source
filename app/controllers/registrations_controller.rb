@@ -39,8 +39,7 @@ class RegistrationsController < Devise::RegistrationsController
     super do |resource|
       resource.initials = "your_initials"
       auth_type = AuthMethod.find_by_name('Application')
-      @defined_record_status = RecordStatus.find_by_name('Defined')
-      everyone_group = Group.find_by_name_and_record_status_id("Everyone", @defined_record_status)
+      everyone_group = Group.find_by_name("Everyone")
       resource.auth_type = auth_type.nil? ? nil : auth_type.id
       resource.groups << everyone_group
       resource.save
@@ -98,7 +97,7 @@ class RegistrationsController < Devise::RegistrationsController
   def is_an_automatic_account_activation?
     #No authorize required since this method is protected and won't be call from any route
     begin
-      AdminSetting.where(:record_status_id => RecordStatus.find_by_name('Defined').id, :key => 'self-registration').first.value == 'automatic account activation'
+      AdminSetting.where(key: 'self-registration').first.value == 'automatic account activation'
     rescue
       false
     end

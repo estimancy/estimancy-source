@@ -21,11 +21,11 @@
         <div class="actions-tabs">
           <% if can? :manage, WorkElementType %>
               <% if action_name.in?(%w(new create)) %>
-                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn' %>
-                  <%= submit_tag I18n.t('save'), :class => 'btn' %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
               <% elsif action_name == 'edit' || action_name=='update' %>
-                  <%= submit_tag I18n.t('save'), :class => 'btn' %>
-                  <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <% end %>
           <% end %>
           <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-wet'), :class => 'btn' %>

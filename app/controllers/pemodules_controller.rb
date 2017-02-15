@@ -20,11 +20,11 @@
 #############################################################################
 
 class PemodulesController < ApplicationController
-  # include DataValidationHelper #Module for master data changes validation
+  #  #Module for master data changes validation
   #load_resource :only => [:index, :edit, :update, :create, :destroy]
   load_resource
 
-  before_filter :get_record_statuses
+
 
   def index
     authorize! :manage_master_data, :all
@@ -123,14 +123,13 @@ class PemodulesController < ApplicationController
       attributes_ids.delete(m.pe_attribute_id.to_s)
     end
 
-    #Attribute module record_status is according to the Pemodule record_status
     attributes_ids.reject(&:empty?).each do |g|
       #For Initialization module : all attributes are input/output (both)
       if @pemodule.alias == Projestimate::Application::INITIALIZATION
-        @pemodule.attribute_modules.create(:pe_attribute_id => g, :in_out => 'both', :record_status_id => @pemodule.record_status_id) unless g.blank?
+        @pemodule.attribute_modules.create(:pe_attribute_id => g, :in_out => 'both') unless g.blank?
       else
         pe_attribute = PeAttribute.find(g)
-        @pemodule.attribute_modules.create(:pe_attribute_id => g, :record_status_id => @pemodule.record_status_id, :description => pe_attribute.description) unless g.blank?
+        @pemodule.attribute_modules.create(:pe_attribute_id => g, :description => pe_attribute.description) unless g.blank?
       end
     end
     @pemodule.pe_attributes(force_reload = true)

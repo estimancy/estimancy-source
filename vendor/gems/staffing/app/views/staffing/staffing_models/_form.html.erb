@@ -58,15 +58,13 @@
         <%= f.input :enabled_input, label: I18n.t(:Changing_of_the_effort_enter) %>
         <%= f.input :effort_week_unit, label: I18n.t(:effort_week_unit) %>
 
-        <fieldset>
-          <legend><%= I18n.t(:effort) %></legend>
-          <%= f.input :effort_unit, label: I18n.t(:effort_unit) %>
-          <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
-        </fieldset>
+        <h5><%= I18n.t(:effort) %></h5>
+        <%= f.input :effort_unit, label: I18n.t(:effort_unit) %>
+        <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
       </div>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save') %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
       <% end %>
       <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "team"), class: "btn" %>
 

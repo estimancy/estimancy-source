@@ -20,10 +20,10 @@
 #############################################################################
 
 class AuthMethodsController < ApplicationController
-  include DataValidationHelper #Module for master data changes validation
+   #Module for master data changes validation
   load_resource
 
-  before_filter :get_record_statuses
+
 
   def index
     authorize! :manage_master_data, :all
@@ -40,22 +40,6 @@ class AuthMethodsController < ApplicationController
     @auth_method = AuthMethod.find(params[:id])
     set_page_title I18n.t(:edit_auth_method, parameter: @auth_method.name)
     set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('auth_method_edition') => ""
-
-    if is_master_instance?
-      unless @auth_method.child_reference.nil?
-        if @auth_method.child_reference.is_proposed_or_custom?
-          flash[:warning] = I18n.t (:warning_auth_method_cant_be_edit)
-          redirect_to auth_methods_path and return
-        end
-      end
-    else
-      if @auth_method.is_local_record?
-        @auth_method.record_status = @local_status
-      else
-        flash[:warning] = I18n.t (:warning_master_record_cant_be_edit)
-        redirect_to auth_methods_path
-      end
-    end
   end
 
   def new
@@ -73,21 +57,7 @@ class AuthMethodsController < ApplicationController
     set_page_title I18n.t(:auth_methods)
     set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('auth_method_edition') => ""
 
-    @auth_method = nil
-    current_auth_method = AuthMethod.find(params[:id])
-
-    if current_auth_method.is_defined?
-      @auth_method = current_auth_method.amoeba_dup
-      @auth_method.owner_id = current_user.id
-    else
-      @auth_method = current_auth_method
-    end
-
-    unless is_master_instance?
-      if @auth_method.is_local_record?
-        @auth_method.custom_value = 'Locally edited'
-      end
-    end
+    @auth_method = AuthMethod.find(params[:id])
 
     if @auth_method.update_attributes(params[:auth_method])
       flash[:notice] = I18n.t (:notice_auth_method_successful_updated)
@@ -104,12 +74,6 @@ class AuthMethodsController < ApplicationController
     set_breadcrumbs I18n.t(:auth_methods) => auth_methods_path, I18n.t('new_auth_method') => ""
 
     @auth_method = AuthMethod.new(params[:auth_method])
-    #If we are on local instance, Status is set to "Local"
-    if is_master_instance?
-      @auth_method.record_status = @proposed_status
-    else
-      @auth_method.record_status = @local_status
-    end
 
     if @auth_method.save
       flash[:notice] = I18n.t (:notice_auth_method_successful_created)
@@ -123,21 +87,6 @@ class AuthMethodsController < ApplicationController
     authorize! :manage_master_data, :all
 
     @auth_method = AuthMethod.find(params[:id])
-    if is_master_instance?
-      if @auth_method.is_defined? || @auth_method.is_custom?
-        #logical deletion  delete don't have to suppress records anymore on Defined record
-        @auth_method.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
-      else
-        @auth_method.destroy
-      end
-    else
-      if @auth_method.is_local_record? || @auth_method.is_retired?
-        @auth_method.destroy
-      else
-        flash[:warning] = I18n.t (:warning_master_record_cant_be_delete)
-        redirect_to redirect(auth_methods_path)  and return
-      end
-    end
 
     respond_to do |format|
       format.html { redirect_to auth_methods_url, notice: "#{I18n.t (:notice_auth_method_successful_deleted)}"}

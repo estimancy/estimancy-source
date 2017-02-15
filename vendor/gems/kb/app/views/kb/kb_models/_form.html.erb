@@ -24,7 +24,7 @@
             <%= hidden_field_tag :organization_id, @organization.id %>
             <%= file_field_tag :file %>
             <%= hidden_field_tag :ge_model_id, nil %>
-            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-mini btn-info' %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
           </div>
           <hr>
         <% end %>
@@ -77,7 +77,7 @@
       <% end %>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-         <%= f.button :submit, I18n.t('save') %>
+         <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
       <% end %>
       <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
     <% end %>
@@ -98,11 +98,11 @@
               <%= hidden_field_tag :kb_model_id, @kb_model.id %>
               <%= hidden_field_tag :organization_id, @organization.id %>
             </div>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-mini btn-primary' %>
+            <%= submit_tag I18n.t(:import), :class => 'btn' %>
           <% end %>
         </div>
         <div class="span1">
-          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-mini' %>
+          <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn' %>
         </div>
         <div class="span8">
           <%= form_tag kb.kb_model_save_filters_path(@kb_model) do %>

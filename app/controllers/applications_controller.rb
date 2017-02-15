@@ -6,6 +6,8 @@ class ApplicationsController < ApplicationController
   def new
     authorize! :manage, Application
     set_page_title I18n.t(:new_application)
+    set_breadcrumbs I18n.t(:applications) => organization_setting_path(@current_organization, anchor: "tabs-applications"), I18n.t('new_application') => ""
+
     @application = Application.new
     @organization = Organization.find(params[:organization_id])
     respond_with(@application)
@@ -13,12 +15,18 @@ class ApplicationsController < ApplicationController
 
   def edit
     authorize! :show_project_areas, Application
-    set_page_title I18n.t(:edit_application)
     @organization = Organization.find(params[:organization_id])
+
+    set_page_title I18n.t(:edit_application)
+    set_breadcrumbs I18n.t(:applications) => organization_setting_path(@organization, anchor: "tabs-applications"), I18n.t(:edit_application) => ""
+
   end
 
   def create
     authorize! :manage, Application
+
+    set_page_title I18n.t(:new_application)
+    set_breadcrumbs I18n.t(:applications) => organization_setting_path(@current_organization, anchor: "tabs-applications"), I18n.t('new_application') => ""
 
     @application = Application.new(params[:application])
     @organization = Organization.find(params[:organization_id])
@@ -35,6 +43,10 @@ class ApplicationsController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
     @application = Application.find(params[:id])
+
+    set_page_title I18n.t(:edit_application)
+    set_breadcrumbs I18n.t(:applications) => organization_setting_path(@organization, anchor: "tabs-applications"), I18n.t(:edit_application) => ""
+
     if @application.update_attributes(params[:application])
       redirect_to redirect_apply(edit_organization_application_path(@organization, @application), nil, organization_setting_path(@organization, :anchor => 'tabs-applications') )
     else

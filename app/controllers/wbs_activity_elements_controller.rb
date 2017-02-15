@@ -33,7 +33,6 @@ class WbsActivityElementsController < ApplicationController
     end
 
     @selected_parent ||= WbsActivityElement.find(params[:selected_parent_id])
-    @selected_record_status = RecordStatus.where('id = ? ', @selected_parent.record_status_id).first
   end
 
   def edit
@@ -58,7 +57,6 @@ class WbsActivityElementsController < ApplicationController
     @wbs_activity_element = WbsActivityElement.new(params[:wbs_activity_element])
 
     @selected_parent ||= WbsActivityElement.find(params[:wbs_activity_element][:parent_id])
-    @selected_record_status = RecordStatus.where('id = ? ', @selected_parent.record_status_id).first
     @wbs_activity = @wbs_activity_element.wbs_activity
     @potential_parents = @wbs_activity.wbs_activity_elements
 
@@ -83,7 +81,6 @@ class WbsActivityElementsController < ApplicationController
       redirect_to edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), notice: "#{I18n.t (:notice_wbs_activity_element_successful_created)}"
     else
       selected = WbsActivityElement.find(params[:wbs_activity_element][:parent_id]) #@selected = @wbs_activity_element.parent
-      #@selected_record_status = RecordStatus.where('id = ? ', selected.record_status_id).first
       render action: 'new'
     end
   end
@@ -137,41 +134,4 @@ class WbsActivityElementsController < ApplicationController
       format.js
     end
   end
-
-  def update_status_collection
-    authorize! :manage_modules_instances, ModuleProject
-
-    @wbs_record_status_collection = []
-    unless params[:selected_parent_id].blank?
-      element_parent = WbsActivityElement.find(params[:selected_parent_id])
-      parent_record_status = RecordStatus.find(element_parent.record_status_id)
-      if parent_record_status == @defined_status
-        @wbs_record_status_collection = RecordStatus.where('id =? ', element_parent.record_status_id)
-      else
-        @wbs_record_status_collection = RecordStatus.where('name <> ? ', 'Defined')
-      end
-    end
-  end
-
-
-protected
-
-  def wbs_record_statuses_collection
-    #No authorize required since this method is protected and won't be call from route
-    @wbs_record_status_collection = []
-    if @wbs_activity_element.new_record?
-      unless params[:selected_parent_id].blank?
-        element_parent = WbsActivityElement.find(params[:selected_parent_id])
-        @wbs_record_status_collection = RecordStatus.where('id =? ', element_parent.record_status_id)
-      end
-    else
-      if @wbs_activity_element.is_defined?
-        @wbs_record_status_collection = RecordStatus.where('name = ?', 'Defined')
-      else
-        @wbs_record_status_collection = RecordStatus.where('name <> ?', 'Defined')
-      end
-    end
-    @wbs_record_status_collection
-  end
-
 end

@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <%= f.button :submit, I18n.t('save') %>
+      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
       <%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
   <% end %>
   </div>
