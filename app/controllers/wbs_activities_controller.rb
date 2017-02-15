@@ -1350,24 +1350,6 @@ class WbsActivitiesController < ApplicationController
 
 protected
 
-  def wbs_record_statuses_collection
-    #No authorize required since this method is protected and won't be call from route
-    # if @wbs_activity.new_record?
-    #   if is_master_instance?
-    #     @wbs_record_status_collection = RecordStatus.where('name = ?', 'Proposed').defined
-    #   else
-    #     @wbs_record_status_collection = RecordStatus.where('name = ?', 'Local').defined
-    #   end
-    # else
-    #   @wbs_record_status_collection = []
-    #   if @wbs_activity.is_defined?
-    #     @wbs_record_status_collection = RecordStatus.where('name = ?', 'Defined').defined
-    #   else
-    #     @wbs_record_status_collection = RecordStatus.where('name <> ?', 'Defined').defined
-    #   end
-    # end
-  end
-
   #Function that enable/disable to update
   def enable_update_in_local?
     #No authorize required since this method is protected and won't be call from route

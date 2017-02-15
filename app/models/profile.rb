@@ -22,7 +22,7 @@
 class Profile < ActiveRecord::Base
   attr_accessible :cost_per_hour, :description, :name
 
-  validates :name, :presence => true, :uniqueness => {:scope => :record_status_id, :case_sensitive => false}
+  validates :name, :presence => true
   validates :cost_per_hour, :numericality => { :allow_blank => true }
   validates :custom_value, :presence => true, :if => :is_custom?
 

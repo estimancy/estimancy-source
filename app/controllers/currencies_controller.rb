@@ -103,7 +103,7 @@ class CurrenciesController < ApplicationController
     @currency = Currency.find(params[:id])
     if @currency.is_defined? || @currency.is_custom?
       #logical deletion: delete don't have to suppress records anymore on defined record
-      @currency.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+      @currency.update_attributes(:owner_id => current_user.id)
     else
       @currency.destroy
     end

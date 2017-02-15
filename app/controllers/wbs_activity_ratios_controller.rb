@@ -124,7 +124,7 @@ class WbsActivityRatiosController < ApplicationController
     #if is_master_instance?
     #  if @wbs_activity_ratio.is_defined? || @wbs_activity_ratio.is_custom?
     #    #logical deletion: delete don't have to suppress records anymore on defined record
-    #    @wbs_activity_ratio.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+    #    @wbs_activity_ratio.update_attributes(:owner_id => current_user.id)
     #  else
     #    @wbs_activity_ratio.destroy
     #  end
@@ -147,7 +147,6 @@ class WbsActivityRatiosController < ApplicationController
     @ratio = WbsActivityRatio.find(params[:ratio_id])
     @ratio.transaction do
       if @ratio.save
-        @ratio.wbs_activity_ratio_elements.update_all(:record_status_id => @defined_status.id)
         flash[:notice] = I18n.t (:notice_wbs_activity_ratio_successful_validated)
       else
         flash[:error] = @ratio.errors.full_messages.to_sentence

@@ -24,15 +24,12 @@
 class WorkElementType < ActiveRecord::Base
   attr_accessible :alias, :name, :description, :organization_id
 
-
-  has_many :pbs_project_elements#, :dependent => :destroy
+  has_many :pbs_project_elements
 
   belongs_to :project_area
   belongs_to :organization
 
-  #validates :record_status, :presence => true
-  validates :name, :alias, :presence => true#, :uniqueness => {:case_sensitive => false, :scope => :record_status_id}
-  #validates :custom_value, :presence => true, :if => :is_custom?
+  validates :name, :alias, :presence => true
 
   #Search fields
   scoped_search :on => [:name, :alias, :description, :created_at, :updated_at]

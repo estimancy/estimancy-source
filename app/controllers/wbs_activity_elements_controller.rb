@@ -134,40 +134,4 @@ class WbsActivityElementsController < ApplicationController
       format.js
     end
   end
-
-  # def update_status_collection
-  #   authorize! :manage_modules_instances, ModuleProject
-  #
-  #   @wbs_record_status_collection = []
-  #   unless params[:selected_parent_id].blank?
-  #     element_parent = WbsActivityElement.find(params[:selected_parent_id])
-  #     parent_record_status = RecordStatus.find(element_parent.record_status_id)
-  #     if parent_record_status == @defined_status
-  #       @wbs_record_status_collection = RecordStatus.where('id =? ', element_parent.record_status_id)
-  #     else
-  #       @wbs_record_status_collection = RecordStatus.where('name <> ? ', 'Defined')
-  #     end
-  #   end
-  # end
-  #
-  # protected
-  #
-  # def wbs_record_statuses_collection
-  #   #No authorize required since this method is protected and won't be call from route
-  #   @wbs_record_status_collection = []
-  #   if @wbs_activity_element.new_record?
-  #     unless params[:selected_parent_id].blank?
-  #       element_parent = WbsActivityElement.find(params[:selected_parent_id])
-  #       @wbs_record_status_collection = RecordStatus.where('id =? ', element_parent.record_status_id)
-  #     end
-  #   else
-  #     if @wbs_activity_element.is_defined?
-  #       @wbs_record_status_collection = RecordStatus.where('name = ?', 'Defined')
-  #     else
-  #       @wbs_record_status_collection = RecordStatus.where('name <> ?', 'Defined')
-  #     end
-  #   end
-  #   @wbs_record_status_collection
-  # end
-
 end

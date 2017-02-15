@@ -21,7 +21,7 @@
 
 #Master Data
 class ProjectCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :organization_id
+  attr_accessible :name, :description, :organization_id
 
 
   has_many :projects

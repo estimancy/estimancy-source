@@ -361,11 +361,10 @@ class ProjectsController < ApplicationController
                                                                                                                                         organization_id: @organization.id,
                                                                                                                                         description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
 
-    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project", record_status_id: @defined_record_status).first_or_create(alias: "manage",
-                                                                                                                                                          object_associated: "Project",
-                                                                                                                                                          record_status_id: @defined_record_status,
-                                                                                                                                                          name: "Manage Projet",
-                                                                                                                                                          uuid: UUIDTools::UUID.random_create.to_s)
+    manage_project_permission = Permission.where(alias: "manage", object_associated: "Project").first_or_create(alias: "manage",
+                                                                                                                object_associated: "Project",
+                                                                                                                name: "Manage Projet",
+                                                                                                                uuid: UUIDTools::UUID.random_create.to_s)
     # Add the "manage project" authorization to the "FullControl" security level
     if manage_project_permission
       if !manage_project_permission.in?(full_control_security_level.permission_ids)
@@ -2741,7 +2740,7 @@ public
       @ratio_reference = @current_component.wbs_activity_ratio
     end
 
-    @attribute = PeAttribute.find_by_alias_and_record_status_id("effort", @defined_record_status)
+    @attribute = PeAttribute.find_by_alias("effort")
     @estimation_values = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', @attribute.id, "output").first
     @estimation_probable_results = @estimation_values.send('string_data_probable')
     @estimation_pbs_probable_results = @estimation_probable_results[@current_component.id]

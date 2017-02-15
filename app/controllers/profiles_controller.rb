@@ -117,7 +117,7 @@ class ProfilesController < ApplicationController
 
     if @profile.is_custom?
       #logical deletion  delete don't have to suppress records anymore on Defined record
-      @profile.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+      @profile.update_attributes(:owner_id => current_user.id)
       flash[:notice] = I18n.t (:notice_profile_successful_deleted)
     elsif @profile.is_defined?
       flash[:warning] = I18n.t(:defined_profile_not_deletable)

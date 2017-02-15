@@ -115,7 +115,7 @@
 #     @record_status = RecordStatus.find(params[:id])
 #     if @record_status.is_defined? || @record_status.is_custom?
 #       #logical deletion: delete don't have to suppress records anymore
-#       @record_status.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+#       @record_status.update_attributes(:owner_id => current_user.id)
 #     else
 #       if @record_status.name=='Defined'
 #         record_status_defined=true

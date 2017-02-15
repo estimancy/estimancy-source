@@ -40,7 +40,7 @@ class AttributeModulesController < ApplicationController
     @attribute_module = AttributeModule.find(params[:id])
     if @attribute_module.is_defined? || @attribute_module.is_custom?
       #logical deletion: delete don't have to suppress records anymore
-      @attribute_module.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+      @attribute_module.update_attributes(:owner_id => current_user.id)
     else
       @attribute_module.destroy
     end

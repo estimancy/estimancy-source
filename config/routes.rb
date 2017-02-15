@@ -149,8 +149,6 @@ Projestimate::Application.routes.draw do
 
   match 'homes/update_install' => 'homes#update_install', :as => 'update_install'
 
-  resources :record_statuses
-
   resources :auth_methods
 
   resources :admin_settings

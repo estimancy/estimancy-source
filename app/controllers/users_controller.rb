@@ -225,7 +225,7 @@ public
     end
 
     # Get the Application authType
-    application_auth_type = AuthMethod.where('name = ? AND record_status_id =?', 'Application', @defined_record_status.id).first
+    application_auth_type = AuthMethod.where(name: 'Application').first
 
     if application_auth_type && params[:user][:auth_type].to_i != application_auth_type.id
       params[:user].delete :password
@@ -311,8 +311,8 @@ public
 
         UserMailer.account_created(user).deliver
         if !user.active?
-          UserMailer.account_request(@defined_record_status).deliver
-          redirect_to :back, :notice => "#{I18n.t (:ask_new_account_help)}"
+          # UserMailer.account_request(@defined_record_status).deliver
+          # redirect_to :back, :notice => "#{I18n.t (:ask_new_account_help)}"
         else
           UserMailer.account_validate(user).deliver
           redirect_to :back, :notice => "#{I18n.t (:notice_account_successful_created)}, #{I18n.t(:ask_new_account_help2)}"
@@ -400,7 +400,7 @@ public
                                   @ruby_version,
                                   @rails_version,
                                   @environment,
-                                  @database_adapter, @browser, @version_browser, @platform, @os, @server_name, @root_url, @defined_record_status)
+                                  @database_adapter, @browser, @version_browser, @platform, @os, @server_name, @root_url)
     if um.deliver
       flash[:notice] = I18n.t (:notice_send_feedback_success)
       redirect_to root_url

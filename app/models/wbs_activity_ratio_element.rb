@@ -20,16 +20,13 @@
 #############################################################################
 
 class WbsActivityRatioElement < ActiveRecord::Base
-  attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :record_status_id, :custom_value, :change_comment, :wbs_activity_element_id,
+  attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :wbs_activity_element_id,
                   :formula, :is_modifiable, :is_optional
 
   has_ancestry
 
   belongs_to :wbs_activity_ratio
   belongs_to :wbs_activity_element
-
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
 
   has_many :wbs_activity_ratio_profiles, dependent: :delete_all
   has_many :organization_profiles, through: :wbs_activity_ratio_profiles

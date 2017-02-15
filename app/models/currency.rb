@@ -26,8 +26,6 @@ class Currency < ActiveRecord::Base
 
   has_many :organizations
 
-  validates :name, :alias, :uuid, :presence => true, :uniqueness => {:scope => :record_status_id, case_sensitive: false}
-
   def to_s
     self.nil? ? '' : self.sign
   end

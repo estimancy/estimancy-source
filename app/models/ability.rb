@@ -36,8 +36,6 @@ class Ability
       can :manage_master_data, :all
     end
 
-    #cannot :update, [Language, PeAttribute, Currency, AdminSetting, AuthMethod, Permission], :record_status => {:name => 'Retired'}
-
     # Add Action Aliases, for example:  alias_action :edit, :to => :update
 
     #For organization and estimations permissions

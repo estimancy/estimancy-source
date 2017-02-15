@@ -25,13 +25,11 @@ class AuthMethod < ActiveRecord::Base
                   :owner_id, :on_the_fly_user_creation, :ldap_bind_dn, :password,
                   :ldap_bind_encrypted_password, :ldap_bind_salt, :priority_order,
                   :first_name_attribute, :last_name_attribute, :email_attribute,
-                  :initials_attribute, :encryption, :record_status_id, :custom_value, :change_comment
+                  :initials_attribute, :encryption, :custom_value, :change_comment
 
   attr_accessor :password
 
   has_many :users, :foreign_key => 'auth_type'
-
-  belongs_to :record_status
 
   def to_s
     self.nil? ? '' : self.name
