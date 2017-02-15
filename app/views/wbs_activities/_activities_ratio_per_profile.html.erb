@@ -59,7 +59,7 @@
 </table>
 
 <% if can? :manage_modules_instances, ModuleProject %>
-    <%= submit_tag I18n.t('save'), :class => 'btn ' %>
-    <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
 <% end %>
 <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
