@@ -17,12 +17,14 @@
 
       <div id="tabs-1">
         <div id="accordion1" class="accordion">
-          <div class="accordion-group accordion-caret">
+          <div class="accordion-group accordion-caret well-rounded">
             <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t 'identity' %></b>
-              </a>
+              <h5>
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                  <i class="fa fa-caret-down"></i>
+                  <b><%= I18n.t 'identity' %></b>
+                </a>
+              </h5>
             </div>
             <div id="collapseOne" class="accordion-body in collapse">
               <div class="accordion-inner">
@@ -108,12 +110,14 @@
         </div>
 
         <div id="accordion2" class="accordion">
-          <div class="accordion-group accordion-caret">
+          <div class="accordion-group accordion-caret well-rounded">
             <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:authentication) %></b>
-              </a>
+              <h5>
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                  <i class="fa fa-caret-down"></i>
+                  <b><%= I18n.t(:authentication) %></b>
+                </a>
+              </h5>
             </div>
             <div id="collapseTwo" class="accordion-body in collapse">
               <div class="accordion-inner">
@@ -147,12 +151,14 @@
         </div>
 
         <div id="accordion3" class="accordion">
-          <div class="accordion-group accordion-caret">
+          <div class="accordion-group accordion-caret well-rounded">
             <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:informations) %></b>
-              </a>
+              <h5>
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
+                  <i class="fa fa-caret-down"></i>
+                  <b><%= I18n.t(:informations) %></b>
+                </a>
+              </h5>
             </div>
             <div id="collapseThree" class="accordion-body collapse in">
               <div class="accordion-inner">
@@ -188,6 +194,21 @@
             </div>
           </div>
         </div>
+
+        <div class="actions-tabs">
+          <% if (can? :manage, User) || current_user == @user %>
+            <% if action_name.in?(%w(new create)) %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+          <% if @organization.nil? %>
+            <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
+          <% else %>
+            <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
+          <% end %>
+        </div>
       </div>
 
       <div id="tabs-5">
@@ -211,6 +232,21 @@
           <p><%= I18n.t(:export_preferences) %></p>
           -->
         </table>
+
+        <div class="actions-tabs">
+          <% if (can? :manage, User) || current_user == @user %>
+            <% if action_name.in?(%w(new create)) %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+          <% if @organization.nil? %>
+            <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
+          <% else %>
+            <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
+          <% end %>
+        </div>
       </div>
 
       <% if params[:organization_id].present? %>
@@ -245,6 +281,21 @@
             <%= render :partial => 'layouts/footer_table' %>
             </tbody>
           </table>
+
+          <div class="actions-tabs">
+            <% if (can? :manage, User) || current_user == @user %>
+              <% if action_name.in?(%w(new create)) %>
+                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <% end %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <% if @organization.nil? %>
+              <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
+            <% else %>
+              <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
+            <% end %>
+          </div>
         </div>
       <% end %>
 
@@ -271,22 +322,22 @@
               <%= render :partial => 'layouts/footer_table' %>
             </tbody>
           </table>
+
+          <div class="actions-tabs">
+            <% if (can? :manage, User) || current_user == @user %>
+              <% if action_name.in?(%w(new create)) %>
+                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <% end %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <% if @organization.nil? %>
+              <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
+            <% else %>
+              <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
+            <% end %>
+          </div>
         </div>
       <% end %>
-
-      <div class="actions-tabs">
-        <% if (can? :manage, User) || current_user == @user %>
-          <% if action_name.in?(%w(new create)) %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <% end %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <% if @organization.nil? %>
-          <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
-        <% else %>
-          <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn' %>
-        <% end %>
-      </div>
     </div>
   <% end %>
