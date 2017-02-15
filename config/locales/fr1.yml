@@ -1626,7 +1626,7 @@ fr1:
   create_new_estimation_model: "Créer un nouveau modèle d'estimation"
   edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
 
-  create_button: "Create"
+  create_button: "Créer"
   created_date: "Date de création"
   knowledge_base_module: "Module Base de connaissance"
   operation_module: "Module d'opération"
