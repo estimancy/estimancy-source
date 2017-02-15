@@ -348,15 +348,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  #Get record statuses
-  # def get_record_statuses
-  #   @retired_status = RecordStatus.find_by_name('Retired')
-  #   @proposed_status = RecordStatus.find_by_name('Proposed')
-  #   @defined_status = RecordStatus.find_by_name('Defined')
-  #   @custom_status = RecordStatus.find_by_name('Custom')
-  #   @local_status = RecordStatus.find_by_name('Local')
-  # end
-
   def set_locale_from_browser
     if  request.env['HTTP_ACCEPT_LANGUAGE'].nil?
       I18n.locale= 'frsncf'

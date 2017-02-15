@@ -123,7 +123,6 @@ class PemodulesController < ApplicationController
       attributes_ids.delete(m.pe_attribute_id.to_s)
     end
 
-    #Attribute module record_status is according to the Pemodule record_status
     attributes_ids.reject(&:empty?).each do |g|
       #For Initialization module : all attributes are input/output (both)
       if @pemodule.alias == Projestimate::Application::INITIALIZATION
