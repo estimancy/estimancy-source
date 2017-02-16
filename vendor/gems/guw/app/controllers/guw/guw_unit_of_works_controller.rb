@@ -1348,10 +1348,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         pct = percents.compact.inject(&:*)
         coef = coeffs.compact.inject(&:*)
 
-        if @oc.nil?
-          tmp_hash_res["#{guw_output.id}"] = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f) + @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
-        else
-        end
+        tmp_hash_res["#{guw_output.id}"] = (@oci.nil? ? 0 : @oci.init_value.to_f) + @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
 
         guw_unit_of_work.ajusted_size = tmp_hash_res
         guw_unit_of_work.size = tmp_hash_res
