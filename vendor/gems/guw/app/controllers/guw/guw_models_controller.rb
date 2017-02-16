@@ -1150,15 +1150,22 @@ class Guw::GuwModelsController < ApplicationController
 
               @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
                 if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+
                   guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
                                                               guw_model_id: @guw_model.id).first
 
-                  ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_uow,
-                                                                     guw_coefficient_id: guw_coefficient.id)
-
                   (17..30).to_a.each do |k|
                     if guw_coefficient.name == tab[0][k]
-                      #???
+
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
+                                                                        guw_coefficient_id: guw_coefficient.id).first_or_create
+
+                      ce = Guw::GuwCoefficientElement.where(name: row[k],
+                                                            guw_model_id: @guw_model.id).first
+                      unless ce.nil?
+                        ceuw.guw_coefficient_element_id = ce.id
+                        ceuw.save
+                      end
                     end
                   end
                 elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput

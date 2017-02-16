@@ -26,7 +26,7 @@
         <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
         <%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
         <% unless controller.action_name == "new" %>
-          <%= link_to I18n.t(:delete), guw.guw_unit_of_work_group_path(@guw_unit_of_work_group), method: "delete", confirm: I18n.t('are_you_sure'), :class => 'btn btn-error pull-right' %>
+          <%= link_to I18n.t(:delete), guw.guw_unit_of_work_group_path(@guw_unit_of_work_group), method: "delete", confirm: I18n.t('are_you_sure'), :class => 'btn btn-danger pull-right' %>
         <% end %>
       <% end %>
   <% end %>
