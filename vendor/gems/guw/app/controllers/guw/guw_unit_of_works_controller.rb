@@ -974,7 +974,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @final_value = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f) + (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            if @oc.nil?
+              @final_value = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f)
+            else
+              @final_value = (@oci.init_value.nil? ? 1 : @oci.init_value.to_f) + (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            end
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
             # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
@@ -1063,12 +1067,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
         end
-
-        # if @oc.nil?
-        #   @final_value = nil
-        # else
-        #   @final_value = @weight
-        # end
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
@@ -1239,6 +1237,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     tmp_hash_ares = Hash.new
 
     @guw_model.guw_outputs.each_with_index do |guw_output, index|
+
+      # @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+      #                                       guw_output_id: guw_output.id,
+      #                                       value: 1).first
 
       @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                                           guw_output_id: guw_output.id).first
