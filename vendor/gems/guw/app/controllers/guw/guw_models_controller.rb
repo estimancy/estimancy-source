@@ -1023,8 +1023,8 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
     end
 
-    send_data(workbook.stream.string, filename: "heyho.xlsx", type: "application/vnd.ms-excel")
-    # send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    # send_data(workbook.stream.string, filename: "export.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def my_verrif_tab_error(tab_error, indexing_field_error)
@@ -1094,7 +1094,7 @@ class Guw::GuwModelsController < ApplicationController
       tab.each_with_index  do |row, index|
         if index > 0
 
-            guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2],
+            guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
                                                           module_project_id: current_module_project.id,
                                                           pbs_project_element_id: @component.id,).first_or_create
 
@@ -1119,8 +1119,9 @@ class Guw::GuwModelsController < ApplicationController
 
               @guw_model.guw_attributes.all.each_with_index do |gac, ii|
                 guw_type = Guw::GuwType.where(name: row[6], guw_model_id: @guw_model.id).first
+                val = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
                 if gac.name == tab[0][16 + @guw_model.orders.size + ii]
-                  unless guw_type.nil?
+                  unless guw_type.nil? || val < 0
                     guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
                                                               guw_unit_of_work_id: guw_uow.id,
                                                               guw_attribute_id: gac.id).first_or_create
