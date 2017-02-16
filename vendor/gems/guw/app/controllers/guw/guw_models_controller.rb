@@ -1095,6 +1095,7 @@ class Guw::GuwModelsController < ApplicationController
         unless row.nil?
           unless row[4].nil?
             if index > 0
+
               guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
                                                             module_project_id: current_module_project.id,
                                                             pbs_project_element_id: @component.id).first_or_create
