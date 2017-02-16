@@ -1120,7 +1120,7 @@ class Guw::GuwModelsController < ApplicationController
             @guw_model.guw_attributes.all.each_with_index do |gac, ii|
 
               guw_type = Guw::GuwType.where(name: row[6], guw_model_id: @guw_model.id).first
-              val = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+              val = (row[16 + @guw_model.orders.size + ii] == "N/A" || row[16 + @guw_model.orders.size + ii] < 0  ) ? nil : row[16 + @guw_model.orders.size + ii]
 
               if gac.name == tab[0][16 + @guw_model.orders.size + ii]
                 unless guw_type.nil?
