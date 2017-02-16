@@ -106,7 +106,7 @@
             </tr>
 
             <tr>
-              <th></th>
+              <th><%= link_to "Valeur initiale (Σ)", "#", class: "pull-left" %></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <th>
@@ -116,7 +116,7 @@
               <% end %>
             </tr>
             <tr>
-              <td>Valeur initiale</td>
+              <td>Un (1)</td>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <td class="align-center">
@@ -166,7 +166,7 @@
               <tr>
                 <th>
                   <b class="pull-left">
-                    <%= link_to guw_coefficient.name, "#" %>
+                    x <%= link_to guw_coefficient.name, "#" %>
                   </b>
                 </th>
                 <% guw_type.guw_complexities.each do |gc| %>
