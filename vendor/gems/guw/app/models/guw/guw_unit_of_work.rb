@@ -32,7 +32,7 @@ module Guw
     belongs_to :guw_factor
 
     has_many :guw_unit_of_work_attributes, dependent: :destroy
-    has_many :guw_guw_coefficient_element_unit_of_works, dependent: :destroy
+    # has_many :guw_guw_coefficient_element_unit_of_works, dependent: :destroy
 
     validates_presence_of :name
 

@@ -1118,8 +1118,6 @@ class Guw::GuwModelsController < ApplicationController
 
               guw_uow.save(validate: false)
 
-
-
               @guw_model.guw_attributes.each_with_index do |gac, ii|
 
                 guw_type = Guw::GuwType.where(name: row[6],
@@ -1149,10 +1147,11 @@ class Guw::GuwModelsController < ApplicationController
               end
 
               @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
-                if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
 
-                  guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
-                                                              guw_model_id: @guw_model.id).first
+                guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
+                                                            guw_model_id: @guw_model.id).first
+
+                if guw_coefficient.class == Guw::GuwCoefficient
 
                   (17..30).to_a.each do |k|
                     if guw_coefficient.name == tab[0][k]
@@ -1162,10 +1161,14 @@ class Guw::GuwModelsController < ApplicationController
 
                       ce = Guw::GuwCoefficientElement.where(name: row[k],
                                                             guw_model_id: @guw_model.id).first
+
                       unless ce.nil?
                         ceuw.guw_coefficient_element_id = ce.id
-                        ceuw.save
+                      else
+                        ceuw.percent = row[k].to_f
                       end
+
+                      ceuw.save
                     end
                   end
                 elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
