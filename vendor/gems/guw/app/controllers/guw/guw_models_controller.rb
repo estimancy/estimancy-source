@@ -1092,11 +1092,11 @@ class Guw::GuwModelsController < ApplicationController
       tab = worksheet.extract_data
 
       tab.each_with_index  do |row, index|
-        unless row[4].nil?
+        unless row[4].nil? || row.nil?
           if index > 0
             guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
                                                           module_project_id: current_module_project.id,
-                                                          pbs_project_element_id: @component.id,).first_or_create
+                                                          pbs_project_element_id: @component.id).first_or_create
 
             tmp_hash_res = Hash.new
             tmp_hash_ares  = Hash.new
@@ -1118,16 +1118,18 @@ class Guw::GuwModelsController < ApplicationController
             guw_uow.save(validate: false)
 
             @guw_model.guw_attributes.all.each_with_index do |gac, ii|
+
               guw_type = Guw::GuwType.where(name: row[6], guw_model_id: @guw_model.id).first
               val = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+
               if gac.name == tab[0][16 + @guw_model.orders.size + ii]
-                unless guw_type.nil? || val < 0
+                unless guw_type.nil?
                   guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
                                                             guw_unit_of_work_id: guw_uow.id,
                                                             guw_attribute_id: gac.id).first_or_create
-                  guowa.low = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                  guowa.most_likely = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                  guowa.high = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+                  guowa.low = val.to_i
+                  guowa.most_likely = val.to_i
+                  guowa.high = val.to_i
                   guowa.save
                 end
               end
