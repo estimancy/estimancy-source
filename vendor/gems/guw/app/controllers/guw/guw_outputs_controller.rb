@@ -108,7 +108,7 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_model.save
 
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
   end
 
   def destroy

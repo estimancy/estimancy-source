@@ -1092,8 +1092,8 @@ class Guw::GuwModelsController < ApplicationController
       tab = worksheet.extract_data
 
       tab.each_with_index  do |row, index|
-        if index > 0
-
+        unless row[4].nil?
+          if index > 0
             guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
                                                           module_project_id: current_module_project.id,
                                                           pbs_project_element_id: @component.id,).first_or_create
@@ -1101,210 +1101,124 @@ class Guw::GuwModelsController < ApplicationController
             tmp_hash_res = Hash.new
             tmp_hash_ares  = Hash.new
 
-              guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
-                                                  name: row[4],
-                                                  comments: row[5],
-                                                  guw_unit_of_work_group_id: guw_uow_group.id,
-                                                  module_project_id: current_module_project.id,
-                                                  pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  tracking: row[12],
-                                                  quantity: row[11].nil? ? 1 : row[11],
-                                                  size: row[14].nil? ? nil : row[14],
-                                                  ajusted_size: row[15].nil? ? nil : row[15],
-                                                  intermediate_percent: row[16].nil? ? nil : row[16],
-                                                  intermediate_weight: row[16].nil? ? nil : row[16])
+            guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
+                                                name: row[4],
+                                                comments: row[5],
+                                                guw_unit_of_work_group_id: guw_uow_group.id,
+                                                module_project_id: current_module_project.id,
+                                                pbs_project_element_id: @component.id,
+                                                guw_model_id: @guw_model.id,
+                                                tracking: row[12],
+                                                quantity: row[11].nil? ? 1 : row[11],
+                                                size: row[14].nil? ? nil : row[14],
+                                                ajusted_size: row[15].nil? ? nil : row[15],
+                                                intermediate_percent: row[16].nil? ? nil : row[16],
+                                                intermediate_weight: row[16].nil? ? nil : row[16])
 
-              guw_uow.save(validate: false)
+            guw_uow.save(validate: false)
 
-              @guw_model.guw_attributes.all.each_with_index do |gac, ii|
-                guw_type = Guw::GuwType.where(name: row[6], guw_model_id: @guw_model.id).first
-                val = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                if gac.name == tab[0][16 + @guw_model.orders.size + ii]
-                  unless guw_type.nil? || val < 0
-                    guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
-                                                              guw_unit_of_work_id: guw_uow.id,
-                                                              guw_attribute_id: gac.id).first_or_create
-                    guowa.low = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                    guowa.most_likely = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                    guowa.high = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
-                    guowa.save
+            @guw_model.guw_attributes.all.each_with_index do |gac, ii|
+              guw_type = Guw::GuwType.where(name: row[6], guw_model_id: @guw_model.id).first
+              val = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+              if gac.name == tab[0][16 + @guw_model.orders.size + ii]
+                unless guw_type.nil? || val < 0
+                  guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
+                                                            guw_unit_of_work_id: guw_uow.id,
+                                                            guw_attribute_id: gac.id).first_or_create
+                  guowa.low = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+                  guowa.most_likely = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+                  guowa.high = (row[16 + @guw_model.orders.size + ii] == "N/A") ? nil : row[16 + @guw_model.orders.size + ii]
+                  guowa.save
+                end
+              end
+            end
+
+            @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+              if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+                guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
+                                                            guw_model_id: @guw_model.id).first
+
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_uow,
+                                                                   guw_coefficient_id: guw_coefficient.id)
+
+                (17..30).to_a.each do |k|
+                  if guw_coefficient.name == tab[0][k]
+                    #???
+                  end
+                end
+              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+
+                guw_output = Guw::GuwOutput.where(name: i[0],
+                                                  guw_model_id: @guw_model.id).first
+
+                (17..30).to_a.each do |k|
+                  if guw_output.name == tab[0][k]
+                    # tmp_hash_res["#{guw_output.id}"] = row[k]
+                    tmp_hash_ares["#{guw_output.id}"] = row[k]
                   end
                 end
               end
+            end
 
-              @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
-                if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                  guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
-                                                              guw_model_id: @guw_model.id).first
+            guw_uow.size = tmp_hash_res
+            guw_uow.ajusted_size = tmp_hash_ares
 
-                  ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_uow,
-                                                                     guw_coefficient_id: guw_coefficient.id)
+            @guw_model.guw_types.each do |type|
 
-                  (17..30).to_a.each do |k|
-                    if guw_coefficient.name == tab[0][k]
-                      #???
-                    end
-                  end
-                elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-
-                  guw_output = Guw::GuwOutput.where(name: i[0],
-                                                    guw_model_id: @guw_model.id).first
-
-                  (17..30).to_a.each do |k|
-                    if guw_output.name == tab[0][k]
-                      # tmp_hash_res["#{guw_output.id}"] = row[k]
-                      tmp_hash_ares["#{guw_output.id}"] = row[k]
+              if row[6] == type.name
+                guw_uow.guw_type_id = type.id
+                if !row[13].nil?
+                  type.guw_complexities.each do |complexity|
+                    if row[13] == complexity.name
+                      guw_uow.guw_complexity_id = complexity.id
                     end
                   end
                 end
-              end
 
-              guw_uow.size = tmp_hash_res
-              guw_uow.ajusted_size = tmp_hash_ares
-
-                # if !row[7].nil?
-                #   @guw_model.guw_work_units.each do |wu|
-                #     if wu.name == row[7]
-                #       guw_uow.guw_work_unit_id = wu.id
-                #       ind += 1
-                #       indexing_field_error[1][0] = true
-                #       break
-                #     end
-                #     indexing_field_error[1][0] = false
-                #   end
-                # else
-                #   first_work_unit = @guw_model.guw_work_units.order("display_order ASC").first
-                #   unless first_work_unit.nil?
-                #     guw_uow.guw_work_unit_id = @guw_model.guw_work_units.order("display_order ASC").first.id
-                #   else
-                #     guw_uow.guw_work_unit_id = nil
-                #   end
-                # end
-
-                # if !row[8].nil?
-                #   @guw_model.guw_weightings.each do |wu|
-                #     if wu.name == row[8]
-                #       guw_uow.guw_weighting_id = wu.id
-                #       ind += 1
-                #       break
-                #     end
-                #   end
-                # else
-                #   first_weighting = @guw_model.guw_weightings.order("display_order ASC").first
-                #   unless first_weighting.nil?
-                #     guw_uow.guw_weighting_id = @guw_model.guw_weightings.order("display_order ASC").first.id
-                #   else
-                #     guw_uow.guw_weighting_id = nil
-                #   end
-                #   ind += 1
-                # end
-
-                # if !row[9].nil?
-                #   @guw_model.guw_factors.each do |wu|
-                #     if wu.name == row[9]
-                #       guw_uow.guw_factor_id = wu.id
-                #       ind += 1
-                #       break
-                #     end
-                #   end
-                # else
-                #   first_factor = @guw_model.guw_factors.order("display_order ASC").first
-                #   unless first_factor.nil?
-                #     guw_uow.guw_factor_id = @guw_model.guw_factors.order("display_order ASC").first.id
-                #   else
-                #     guw_uow.guw_factor_id = nil
-                #   end
-                #   ind += 1
-                # end
-
-              @guw_model.guw_types.each do |type|
-
-                if row[6] == type.name
-                  guw_uow.guw_type_id = type.id
-                  if !row[13].nil?
-                    type.guw_complexities.each do |complexity|
-                      if row[13] == complexity.name
-                        guw_uow.guw_complexity_id = complexity.id
-                      end
-                    end
-                  end
-
-                  if @guw_model.allow_technology == true
-                    if !row[10].nil?
-                      type.guw_complexity_technologies.each do |techno|
-                        unless techno.organization_technology.nil?
-                          if row[10] == techno.organization_technology.name
-                            guw_uow.organization_technology_id = techno.organization_technology.id
-                            ind += 1
-                            indexing_field_error[2][0] = true
-                            break
-                          end
+                if @guw_model.allow_technology == true
+                  if !row[10].nil?
+                    type.guw_complexity_technologies.each do |techno|
+                      unless techno.organization_technology.nil?
+                        if row[10] == techno.organization_technology.name
+                          guw_uow.organization_technology_id = techno.organization_technology.id
+                          ind += 1
+                          indexing_field_error[2][0] = true
+                          break
                         end
-                        indexing_field_error[2][0] = false
                       end
+                      indexing_field_error[2][0] = false
+                    end
+                  else
+                    guw_ct = type.guw_complexity_technologies.select{ |i| i.coefficient != nil }.first
+                    unless guw_ct.nil?
+                      guw_uow.organization_technology_id = guw_ct.organization_technology.id
                     else
-                      guw_ct = type.guw_complexity_technologies.select{ |i| i.coefficient != nil }.first
-                      unless guw_ct.nil?
-                        guw_uow.organization_technology_id = guw_ct.organization_technology.id
-                      else
-                        guw_uow.organization_technology_id = nil
-                      end
-
-                      ind += 1
-                      indexing_field_error[2][0] = true
+                      guw_uow.organization_technology_id = nil
                     end
 
-                    unless indexing_field_error[2][0]
-                      indexing_field_error[2] << index
-                    end
+                    ind += 1
+                    indexing_field_error[2][0] = true
                   end
 
-                  @guw_model.guw_attributes.all.each do |gac|
-                    guw_uow.save(validate: false)
-                    finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
-                                                               guw_unit_of_work_id: guw_uow.id,
-                                                               guw_attribute_id: gac.id).first_or_create
-
-                    finder.save
+                  unless indexing_field_error[2][0]
+                    indexing_field_error[2] << index
                   end
                 end
 
-                #   ind += 1
-                #   break
-                # end
-                # indexing_field_error[0][0] = false
-              # end
-              # unless indexing_field_error[0][0]
-              #   indexing_field_error[0] << index
-              # end
+                @guw_model.guw_attributes.all.each do |gac|
+                  guw_uow.save(validate: false)
+                  finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
+                                                             guw_unit_of_work_id: guw_uow.id,
+                                                             guw_attribute_id: gac.id).first_or_create
+
+                  finder.save
+                end
+              end
               guw_uow.save
             end
-          # else
-          #
-          #   if row[4].nil? || row[4].empty?
-          #     tab_error[0][0] = true
-          #     tab_error[0] << index
-          #   end
-          #   if row[2].nil? || row[2].empty?
-          #     tab_error[1][0] = true
-          #     tab_error[1] << index
-          #   end
-          #   if row[6].nil? || row[6].empty?
-          #     tab_error[2][0] = true
-          #     tab_error[2] << index
-          #   end
-          #   if row[7].nil? || row[7].empty?
-          #     tab_error[3][0] = true
-          #     tab_error[3] << index
-          #   end
-          #   if row[8].nil? || row[8].empty?
-          #     tab_error[4][0] = true
-          #     tab_error[4] << index
-          #   end
-          # end
+          end
+          ok = true
         end
-        ok = true
       end
     end
 
