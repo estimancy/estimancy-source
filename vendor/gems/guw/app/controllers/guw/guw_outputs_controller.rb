@@ -118,7 +118,6 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_model = @guw_output.guw_model
     @guw_output.delete
 
-
     #Pas encore bon !
     attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_")).first
     attr_name = attr.name

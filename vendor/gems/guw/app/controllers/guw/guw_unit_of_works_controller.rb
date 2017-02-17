@@ -1489,7 +1489,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
               ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
-              tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+              if guw_output.output_type == "Effort"
+                tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+              else
+                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+              end
             end
 
             if am.pe_attribute.alias == "number_of_unit_of_work"
