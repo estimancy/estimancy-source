@@ -61,8 +61,8 @@
           <tr>
             <td><%= app.name %></td>
             <td class="center">
-              <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>
               <% if can? :manage, Application %>
+                <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>
                 <%= link_to '', organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>

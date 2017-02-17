@@ -201,7 +201,7 @@
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
             <% end %>
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: 'tabs-1', :class => 'btn btn-primary' %>
           <% end %>
           <% if @organization.nil? %>
             <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -239,7 +239,7 @@
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
             <% end %>
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary' %>
           <% end %>
           <% if @organization.nil? %>
             <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -288,7 +288,7 @@
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
               <% end %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary' %>
             <% end %>
             <% if @organization.nil? %>
               <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -329,7 +329,7 @@
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
               <% end %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary' %>
             <% end %>
             <% if @organization.nil? %>
               <%= link_to I18n.t('back'), users_path, :class => 'btn' %>

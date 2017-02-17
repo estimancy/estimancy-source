@@ -9,10 +9,10 @@
       <% if can? :manage, User, :organization_id => @organization.id %>
         <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
-          <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
           <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
+          <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
         </div>
 
       <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

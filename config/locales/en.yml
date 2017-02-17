@@ -1977,3 +1977,5 @@ en:
   team_module: "Team module"
   Judgment_Expert_module: "Expert judgment module"
   wbs_activities_module: "WBS Activities module"
+  calculate_button: "Calculate"
+  results_button: "Results"

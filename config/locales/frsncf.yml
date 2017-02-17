@@ -1971,4 +1971,7 @@ frsncf:
   operation_module: "Module d'opération"
   Judgment_Expert_module: "Module de Jugement d'expert"
   wbs_activities_module: "Module WBS Activités"
+  calculate_button: "Calculer"
+  results_button: "Résultats"
+
 

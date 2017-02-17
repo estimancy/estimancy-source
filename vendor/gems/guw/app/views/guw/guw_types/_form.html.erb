@@ -17,18 +17,21 @@
       <div class="form-inputs">
         <%= f.input :name, label: I18n.t(:work_unit_type) %>
         <%= tinymce %>
-        <%= f.input :description, input_html: { class: 'tinymce', rows: 15, cols: 20 } %>
+        <%= f.input :description, input_html: { class: 'tinymce', rows: 10, cols: 20 } %>
         <%= f.input :allow_retained, label: I18n.t(:Changing_of_the_size_enter) %>
         <%= f.input :allow_quantity, label: I18n.t(:Changing_the_quantity_enter) %>
         <%= f.input :allow_complexity, label: I18n.t(:Changing_the_complexity_enter) %>
         <%= f.input :allow_criteria, label: I18n.t(:Changing_the_count_enter) %>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= f.button :submit, I18n.t('save') %>
-        <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger pull-right" %>
-      <% end %>
-      <%= link_to I18n.t(:back), :back, class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
+          <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger pull-right" %>
+        <% end %>
+        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      </div>
+
     <% end %>
   </div>
 </div>

@@ -41,21 +41,21 @@
 
       <div id="tabs-<%= guw_type.name.gsub(" ", "-") %>">
 
+        <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn" %>
         <%= simple_format(guw_type.description) %>
-
-        <div class="group_button" style="margin-bottom: 25px;">
-          <%= link_to "#{I18n.t(:edit)} #{guw_type}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn pull-right" %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn pull-right button_margin_right" %>
-          <% end %>
-        </div>
 
         <h4>
           <b>
-             <%= I18n.t(:UO_type_complexity_of, parameter: guw_type) %>
+            <%= I18n.t(:UO_type_complexity_of, parameter: guw_type) %>
           </b>
-
         </h4>
+
+        <div class="group_button">
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%#= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+            <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+          <% end %>
+        </div>
 
         <%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
           <%= hidden_field_tag :guw_type_id, guw_type.id %>

@@ -1,6 +1,3 @@
-<br>
-<br>
-
 
 <h4 style="color: #0073ea;">Table des Ratios et formule de calcul de chaque phase de la WBS</h4>
 <table id="table_list_4" class="table table-bordered table-condensed">
@@ -41,10 +38,10 @@
   <% end %>
 </table>
 
-
-<% if can? :manage_modules_instances, ModuleProject %>
-  <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn' %>
-  <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn' %>
-<% end %>
-<%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
-
+<div class="actions-tabs">
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn btn-primary' %>
+      <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn btn-primary' %>
+    <% end %>
+    <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+</div>
