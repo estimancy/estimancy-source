@@ -1306,7 +1306,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.save
 
         else
-          ce = Guw::GuwCoefficientElement.where(id: params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+          ce = Guw::GuwCoefficientElement.find(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
           cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                            guw_coefficient_element_id: ce.id,
                                                            guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create!
@@ -1489,7 +1489,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
               ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
-              tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+              tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
             end
 
             if am.pe_attribute.alias == "number_of_unit_of_work"

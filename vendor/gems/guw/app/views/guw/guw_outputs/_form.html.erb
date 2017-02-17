@@ -19,6 +19,7 @@
         <%= f.input :output_type, as: :select, label: "Type de Sortie", collection: ["Effort", "Taille", "Cout"] %>
         <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>
         <%= f.input :allow_subtotal, label: "Calculer les sous-totaux" %>
+        <%= f.input :standard_coefficient, label: "Coefficient Standard de Conversion" %>
       </div>
 
       <% if can? :manage_modules_instances, ModuleProject %>
