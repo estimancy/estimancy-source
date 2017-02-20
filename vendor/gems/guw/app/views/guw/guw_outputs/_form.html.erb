@@ -20,10 +20,12 @@
         <%= f.input :allow_intermediate_value, label: "Afficher valeur intermédiaire" %>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= f.button :submit, I18n.t('save') %>
-      <% end %>
-      <%= link_to I18n.t(:back), :back, class: "btn btn-primary" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      </div>
     <% end %>
   </div>
 </div>

@@ -13,10 +13,10 @@
       <% if can? :manage, Group  %>
         <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_group_path(@organization), :class => 'btn' %>
-          <%= link_to I18n.t('export'), organization_export_groups_path(@organization), :class => 'btn' %>
-          <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import groups from excel" data-toggle="modal">
+          <a href="#myWBSModal" role="button" class="btn" title="Import groups from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
+          <%= link_to I18n.t('export'), organization_export_groups_path(@organization), :class => 'btn' %>
         </div>
 
         <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

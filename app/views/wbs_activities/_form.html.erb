@@ -46,16 +46,17 @@
           </div>
         </div>
 
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <% if action_name == 'new' || action_name == 'create' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <% elsif action_name == 'edit' || action_name == 'update' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <% end %>
-        <% end %>
-
-        <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+        <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <% if action_name == 'new' || action_name == 'create' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name == 'update' %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+            <% end %>
+            <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+        </div>
       <% end %>
     </div>
 
@@ -68,13 +69,9 @@
         </div>
 
         <div id="tabs-3">
-          <table border="0" width="100%">
-            <tr>
-              <td style="text-align:right;">
-                <%= link_to I18n.t(:new_wbs_activity_ratio), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn' %>
-              </td>
-            </tr>
-          </table>
+          <div class="group_button">
+            <%= link_to I18n.t(:create_button), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn' %>
+          </div>
 
           <table id="table_list_3" class="table tablesorterPager table-striped table-bordered table-condensed">
             <thead>
@@ -116,8 +113,8 @@
 
 
                       <%= hidden_field_tag :wbs_activity_ratio_id, wbs_activity_ratio.id %>
-
                     </div>
+
                     <div class="modal-footer">
                       <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
                       <%= submit_tag 'Import', :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
@@ -134,37 +131,39 @@
         </div>
 
         <div id="tabs-4">
-          <div class="pull-left">
+          <div style="margin-bottom: 20px;">
             <%= I18n.t(:select_ratio_table) %>
             <%= select_tag 'Ratio', options_for_select(@wbs_activity_ratios.map { |i| [i.name, i.id] }, :selected => (params[:project_default_ratio] || @wbs_activity_ratio)), :class => 'select_ratio' %>
           </div>
 
-
-
-          <br /><br />
           <!--<%#= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>-->
             <!--<div id="ratio_section">-->
               <!--<%#= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>-->
             <!--</div>-->
           <!--<%# end %>-->
 
-          <!--  Test formula with percentage calculations -->
-          <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
-              <div id="percentage_of_input_ratio_section">
-                <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
-              </div>
-          <% end %>
+          <div class="well well-rounded">
+              <!--  Test formula with percentage calculations -->
+              <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                  <div id="percentage_of_input_ratio_section">
+                    <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+                  </div>
+              <% end %>
+          </div>
+          <br />
 
-          <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
-              <div id="formula_ratio_section">
-                <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
-              </div>
-          <% end %>
+          <div class="well well-rounded">
+              <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                  <div id="formula_ratio_section">
+                    <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+                  </div>
+              <% end %>
+          </div>
 
 
-          <br /><br />
+          <br />
           <!-- Table of of Ratio values per profile -->
-          <div>
+          <div class="well well-rounded">
             <div class="pull-left">
               <h4 style="color: #0073ea;"><%= I18n.t(:wbs_ratio_per_profile) %></h4>
             </div><br>

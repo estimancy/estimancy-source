@@ -63,12 +63,13 @@
         <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "team"), class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "team"), class: "btn" %>
+      </div>
 
     <% end %>
-
   </div>
 </div>

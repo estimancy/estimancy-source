@@ -72,9 +72,9 @@
   </div>
 
   <% unless @guw_model.new_record? %>
-    <%= form_tag guw.guw_model_save_scale_module_attributes_path(@guw_model), method: "post" do %>
 
-      <div id="tabs-matrix">
+    <div id="tabs-matrix">
+      <%= form_tag guw.guw_model_save_scale_module_attributes_path(@guw_model), method: "post" do %>
         <table class="table table-bordered">
           <tr>
             <th></th>
@@ -107,10 +107,13 @@
             </tr>
           <% end %>
         </table>
-        <%= submit_tag I18n.t(:save), class: "btn btn-primary pull-right" %>
-        <%= link_to I18n.t(:back), :back, :class => 'btn btn-primary pull-right button_margin_right' %>
-      </div>
+
+        <div class="actions-tabs">
+          <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
+          <%= link_to I18n.t(:back), :back, :class => 'btn' %>
+        </div>
     <% end %>
+    </div>
 
     <div id="tabs-attributs">
       <table class="table table-bordered">
@@ -134,12 +137,12 @@
         <% end %>
       </table>
 
-      <br>
-
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:new_pe_attribute), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+      </div>
     </div>
 
     <div id="tabs-factors">
@@ -172,10 +175,12 @@
             <% end %>
           </table>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.coefficient_label}", guw.new_guw_model_guw_work_unit_path(@guw_model), class: "btn btn-primary" %>
-          <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+          <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to "#{I18n.t(:create_button)} #{@guw_model.coefficient_label}", guw.new_guw_model_guw_work_unit_path(@guw_model), class: "btn btn-primary" %>
+            <% end %>
+            <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+          </div>
         </div>
         <div class="span4">
           <b>
@@ -205,11 +210,14 @@
             <% end %>
           </table>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.weightings_label}", guw.new_guw_model_guw_weighting_path(@guw_model), class: "btn btn-primary" %>
-          <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+          <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to "#{I18n.t(:create_button)} #{@guw_model.weightings_label}", guw.new_guw_model_guw_weighting_path(@guw_model), class: "btn btn-primary" %>
+            <% end %>
+            <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+          </div>
         </div>
+
         <div class="span4">
           <b>
             <%= @guw_model.factors_label %>
@@ -237,13 +245,14 @@
               </tr>
             <% end %>
           </table>
+          <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to "#{I18n.t(:create_button)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn btn-primary" %>
+            <% end %>
+            <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+          </div>
+        </div>
 
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn btn-primary" %>
-          <% end %>
-          <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
-        </div>
-        </div>
       </div>
     </div>
   <% end %>

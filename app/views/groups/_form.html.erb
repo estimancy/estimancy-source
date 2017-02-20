@@ -29,15 +29,16 @@
           </table>
         </div>
 
-      <% if can? :manage, Group %>
-        <% if action_name == 'new' || action_name=='create' %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-      <% end %>
-      <%= link_to I18n.t('back'), organization_authorization_path(@organization, anchor: "tabs-group"), :class => 'btn' %>
-
+        <div class="actions-tabs">
+          <% if can? :manage, Group %>
+            <% if action_name == 'new' || action_name=='create' %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_authorization_path(@organization, anchor: "tabs-group"), :class => 'btn' %>
+        </div>
     <% end -%>
   </div>
 

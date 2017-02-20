@@ -175,6 +175,13 @@
                         <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
                       <% end %>
                     </td>
+
+                    <td>
+                      <%= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
+                          <%= f.text_field :subscription_end_date, :value => (I18n.l(@user.subscription_end_date) unless @user.subscription_end_date.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                      <% end %>
+                    </td>
+
                   </tr>
                   <tr>
                     <td>
@@ -201,7 +208,7 @@
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
             <% end %>
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: 'tabs-1', :class => 'btn btn-primary' %>
           <% end %>
           <% if @organization.nil? %>
             <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -239,7 +246,7 @@
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
             <% end %>
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary' %>
           <% end %>
           <% if @organization.nil? %>
             <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -288,7 +295,7 @@
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
               <% end %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary' %>
             <% end %>
             <% if @organization.nil? %>
               <%= link_to I18n.t('back'), users_path, :class => 'btn' %>
@@ -329,7 +336,7 @@
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
               <% end %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary' %>
             <% end %>
             <% if @organization.nil? %>
               <%= link_to I18n.t('back'), users_path, :class => 'btn' %>

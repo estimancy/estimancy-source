@@ -237,8 +237,8 @@
 
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn" %></span>
-    <span><%= submit_tag I18n.t(:calculate_save), name: "update_calculation", class: "pull-right btn" %></span>
+    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", class: "pull-right btn btn-primary" %></span>
+    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
   <% end %>
 
 <% end %>

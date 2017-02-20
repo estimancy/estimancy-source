@@ -93,13 +93,16 @@
         </div>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-         <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-         <% if action_name.in?(%w(edit update)) %>
-            <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
-         <% end %>
-      <% end %>
-      <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+           <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+           <% if action_name.in?(%w(edit update)) %>
+              <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
+           <% end %>
+        <% end %>
+        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
+      </div>
+
     <% end %>
   </div>
 
@@ -115,7 +118,7 @@
                 <%= hidden_field_tag :organization_id,  @organization.id %>
                 <%= file_field_tag :file %>
                 <%= hidden_field_tag :ge_model_id, @ge_model.id %>
-                <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn' %>
               </div>
             <% end %>
           </div>

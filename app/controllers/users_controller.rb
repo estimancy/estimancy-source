@@ -123,10 +123,21 @@ public
 
     if @user.save
       flash[:notice] = I18n.t(:notice_account_successful_created)
+
+      tab_name = "tabs-1"
+      if params['tabs-5']
+        tab_name = "tabs-5"
+      elsif params['tabs-groups']
+        tab_name = "tabs-groups"
+      elsif params['tabs-organizations']
+        tab_name = "tabs-organizations"
+      end
+      params[:commit] = params["#{tab_name}"]
+
       if @organization.nil?
-        redirect_to(redirect_apply(edit_user_path(@user), users_path, users_path)) and return
+        redirect_to(redirect_apply(edit_user_path(@user, :anchor => tab_name), users_path, users_path)) and return
       else
-        redirect_to redirect_apply(edit_organization_user_path(@organization, @user), organization_users_path(@organization), organization_users_path(@organization)) and return
+        redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name)) and return
       end
 
     else
@@ -262,10 +273,20 @@ public
 
       @user_current_password = nil;  @user_password = nil; @user_password_confirmation = nil
 
+      tab_name = "tabs-1"
+      if params['tabs-5']
+        tab_name = "tabs-5"
+      elsif params['tabs-groups']
+        tab_name = "tabs-groups"
+      elsif params['tabs-organizations']
+        tab_name = "tabs-organizations"
+      end
+      params[:commit] = params["#{tab_name}"]
+
       if @organization.nil?
-        redirect_to redirect_apply(edit_user_path(@user), new_user_path(:anchor => 'tabs-1'), users_path) and return
+        redirect_to redirect_apply(edit_user_path(@user, :anchor => tab_name), new_user_path(:anchor => tab_name), users_path) and return
       else
-        redirect_to redirect_apply(edit_organization_user_path(@organization, @user), new_user_path(:anchor => 'tabs-1'), organization_users_path(@organization))
+        redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), new_user_path(:anchor => tab_name), organization_users_path(@organization, :anchor => tab_name))
       end
 
     else
