@@ -10,6 +10,7 @@
     <th class="filter-select"><%= I18n.t(:authentication) %></th>
     <th><%= I18n;t(:Confirmed_at)%></th>
     <th><%= I18n.t(:locked_at)%></th>
+    <th><%= I18n.t(:subscription_end_date)%></th>
     <th class="action" style="width: 110px"><%= I18n.t(:actions) %></th>
   </tr>
   </thead>
@@ -28,6 +29,8 @@
           <td><%= user.auth_method %></td>
           <td><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : user.confirmed_at.strftime("%d/%m/%Y") %></td>
           <td><%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td>
+          <td><%= user.subscription_end_date.nil? ? "-" : user.subscription_end_date.strftime("%d/%m/%Y") %></td>
+
           <td style="min-width: 105px;" class="align-center">
             <% if current_user.super_admin == true %>
               <% if user.locked_at.nil? %>

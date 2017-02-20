@@ -1503,4 +1503,6 @@ it:
   wbs_activities_module: "Module WBS Activités"
   calculate_button: "Calculer"
   results_button: "Résultats"
+  subscription_end_date: "Date de fin d'abonnement"
+
 
