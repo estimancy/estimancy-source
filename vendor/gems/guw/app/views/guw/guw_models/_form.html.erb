@@ -123,12 +123,12 @@
         <% end %>
       </table>
 
-      <br>
-
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:new_pe_attribute), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+      </div>
     </div>
 
     <div id="tabs-output">
@@ -158,7 +158,7 @@
       <br>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to "Nouvelle sortie", guw.new_guw_model_guw_output_path(@guw_model), class: "btn" %>
+        <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_output_path(@guw_model), class: "btn btn-primary" %>
       <% end %>
       <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
     </div>
@@ -201,7 +201,7 @@
             </table>
 
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "Nouvel élement", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn" %>
+              <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn btn-primary" %>
             <% end %>
           </div>
         </div>

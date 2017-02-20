@@ -270,7 +270,7 @@
 
       <% if can? :execute_estimation_plan, @project %>
         <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
-          Calculer
+          <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
 

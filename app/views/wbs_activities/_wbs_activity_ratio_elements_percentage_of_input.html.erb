@@ -43,9 +43,6 @@
     <!--</span>-->
 </div>
 
-<br>
-<br>
-
 <h4 style="color: #0073ea;">Définition des variables et de leur pourcentage par rapport à la valeur en entrée</h4>
 <table class="table table-bordered table-condensed">
   <tr>
@@ -80,8 +77,10 @@
   <% end %>
 </table>
 
-<% if can? :manage_modules_instances, ModuleProject %>
-    <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn btn-primary' %>
-    <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn btn-primary' %>
-<% end %>
-<%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+<div class="actions-tabs">
+    <% if can? :manage_modules_instances, ModuleProject %>
+        <%= submit_tag I18n.t(:save ), :id => 'reference_value_submit_save', :class => 'btn btn-primary' %>
+        <%= submit_tag I18n.t('apply'), :id => 'reference_value_submit_apply', :class => 'btn btn-primary' %>
+    <% end %>
+    <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+</div>

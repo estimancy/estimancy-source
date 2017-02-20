@@ -25,8 +25,8 @@
         </td>
         <td><%= I18n.l( view.created_at) %></td>
         <td class="align-center">
-          <%= link_to "", edit_organization_view_path(view, organization_id: view.organization_id), :class => 'icon-pencil', :title => I18n.t('edit') %>
           <% if can? :manage, View %>
+             <%= link_to "", edit_organization_view_path(view, organization_id: view.organization_id), :class => 'icon-pencil', :title => I18n.t('edit') %>
              <%= link_to "", organization_view_path(@organization, view), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "icon-trash" %>
           <% end %>
         </td>

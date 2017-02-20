@@ -123,11 +123,11 @@
 
   <% if can? :execute_estimation_plan, @project %>
     <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
-      <%= I18n.t(:save) %>
+      <%= I18n.t(:calculate_button) %>
     </button>
 
-    <button name="actuals_based_on[mcdonell]" type="submit" class="btn pull-right button_margin_right">
-      <%= I18n.t(:reinitialize_delay_staffing) %>
+    <button name="actuals_based_on[mcdonell]" type="submit" class="btn btn-inverse pull-right button_margin_right">
+      <%= I18n.t(:initialize_calculation) %> <%#= I18n.t(:reinitialize_delay_staffing) %>
     </button>
   <% end %>
 

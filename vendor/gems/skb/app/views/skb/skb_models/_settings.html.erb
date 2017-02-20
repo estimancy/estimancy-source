@@ -160,12 +160,12 @@
     <div class="span12">
       <div id="yolo"></div>
       <hr>
-      <%= link_to "RAZ", skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-mini", method: "post" %>
       <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-default btn-mini pull-right button_margin_right">
-          <%= I18n.t(:update)%>
+        <button type="submit" class="btn btn-default btn-primary pull-right">
+          <%= I18n.t(:calculate_button)%>
         </button>
       <% end %>
+      <%= link_to "RAZ", skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
 
       <script>
         $('#yolo').highcharts({

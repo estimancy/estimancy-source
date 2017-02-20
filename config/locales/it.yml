@@ -1524,4 +1524,8 @@ it:
   ge_effort: "Effort"
   ge_size: "Taille"
   associate_inputs_with_outputs: "Associer les attributs d'entrée de \"%{current_mp}\" au attributs de sortie des modules le précédent"
-  change_module_project_instance: "Changer l'instance du module"
+  change_module_project_instance: "Changer l'instance du module"  calculate_button: "Calculer"
+  results_button: "Résultats"
+  subscription_end_date: "Date de fin d'abonnement"
+
+

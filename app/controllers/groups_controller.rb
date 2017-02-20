@@ -70,7 +70,7 @@ class GroupsController < ApplicationController
 
   #Update the selected users in the group's securities
   def update_selected_users
-    authorize! :manage, User
+    authorize! :manage, Group
 
     @group = Group.find(params[:group_id])
     user_ids = params[:group][:user_ids]
