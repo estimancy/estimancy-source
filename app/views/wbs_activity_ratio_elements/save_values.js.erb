@@ -3,7 +3,6 @@ $("#ratio_section").html("<%= j(render(:partial => 'wbs_activities/wbs_activity_
 
 //Redirect to the correct URL (Apply or SAVE)
 //window.location.replace("<%#= @redirect_url_apply_or_save_path %>");
-//location.reload();
 
 $(location).attr('href','<%= @redirect_url_apply_or_save_path %>');
 location.reload();
