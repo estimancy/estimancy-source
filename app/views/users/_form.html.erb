@@ -175,6 +175,13 @@
                         <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
                       <% end %>
                     </td>
+
+                    <td>
+                      <%= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
+                          <%= f.text_field :subscription_end_date, :value => (I18n.l(@user.subscription_end_date) unless @user.subscription_end_date.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                      <% end %>
+                    </td>
+
                   </tr>
                   <tr>
                     <td>
