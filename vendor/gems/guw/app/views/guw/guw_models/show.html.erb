@@ -290,7 +290,7 @@
                   <td class="align-center">
 
                     <% gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
-                                                         guw_attribute_id: guw_attribute.id).first_or_create! %>
+                                                         guw_attribute_id: guw_attribute.id).first_or_create %>
 
                     <% if gat.nil? %>
                       <%= link_to guw_attribute, "#" %>
