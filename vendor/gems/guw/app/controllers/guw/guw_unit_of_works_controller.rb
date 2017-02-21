@@ -1390,25 +1390,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             complete_str = row[0].to_s
             reduce_str = row[0].to_s.truncate(60)
 
-            p "#{row[0]} ===> #{@http.body_str}"
+            JSON.parse(@http.body_str).each do |output|
+              unless output.blank? || output == "NULL"
+                @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+              else
+                @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+              end
 
-            unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
-              @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_model.id).first
-            else
-              @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+              Guw::GuwUnitOfWork.create(name: reduce_str,
+                                        comments: complete_str,
+                                        guw_unit_of_work_group_id: @guw_group.id,
+                                        module_project_id: current_module_project.id,
+                                        pbs_project_element_id: current_component.id,
+                                        guw_model_id: @guw_model.id,
+                                        display_order: index.to_i,
+                                        tracking: complete_str,
+                                        quantity: 1,
+                                        selected: true,
+                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
             end
-
-            Guw::GuwUnitOfWork.create(name: reduce_str,
-                                      comments: complete_str,
-                                      guw_unit_of_work_group_id: @guw_group.id,
-                                      module_project_id: current_module_project.id,
-                                      pbs_project_element_id: current_component.id,
-                                      guw_model_id: @guw_model.id,
-                                      display_order: index.to_i,
-                                      tracking: complete_str,
-                                      quantity: 1,
-                                      selected: true,
-                                      guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
           end
         end
       end
