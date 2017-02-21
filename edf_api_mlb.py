@@ -35,7 +35,7 @@ app = Flask(__name__)
 
 @app.route("/estimate", methods=['GET', 'POST'])
 def estimate():    
-    estimate = mlb_estimate(request.form['us'], '/Users/nicolasrenard/Estimancy/estimancy/mlb_model_1.obj')     
+    estimate = mlb_estimate(request.form['us'], './mlb_model_1.obj')     
     return json.dumps(estimate)
 
 @app.route("/", methods=['GET', 'POST'])
