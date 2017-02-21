@@ -7,13 +7,13 @@
     <% if can? :show_organization_users, User %>
 
       <% if can? :manage, User, :organization_id => @organization.id %>
-        <%= link_to I18n.t('new_user'), new_organization_user_path(@organization), :class => 'btn pull-right' %>
-
-        <%= link_to I18n.t(:Export_Users), organization_export_user_path(@organization), :class => 'btn pull-right button_margin_right', method: "post" %>
-        <%#= link_to I18n.t(:Import_Users), organization_import_user_path(@organization), :class => 'btn pull-right button_margin_right', method: "post" %>
-        <a href="#myWBSModal" role="button" class="btn pull-right button_margin_right" title="Import users from excel" data-toggle="modal">
-          <%= I18n.t(:Import_Users) %>
-        </a>
+        <div class="group_button">
+          <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
+          <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
+            <%= I18n.t(:import) %>
+          </a>
+          <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
+        </div>
 
       <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -47,6 +47,8 @@
               <th><%= I18n.t(:is_super_admin) %></th>
               <th><%= I18n.t(:locked_at)%></th>
             <% end %>
+
+            <th><%= I18n.t(:subscription_end_date)%></th>
             <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
           </tr>
         </thead>
@@ -65,6 +67,8 @@
             <td>
               <%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td>
             </td>
+
+            <td><%= user.subscription_end_date.nil? ? "-" : user.subscription_end_date.strftime("%d/%m/%Y") %></td></td>
 
             <td class="align-center">
               <% if can? :manage, User, :organization_id => @organization.id %>

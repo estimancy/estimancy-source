@@ -21,7 +21,6 @@
 
 class GroupsController < ApplicationController
   load_resource
-  helper_method :enable_update_in_local?
 
   def new
     authorize! :manage, Group
@@ -71,7 +70,7 @@ class GroupsController < ApplicationController
 
   #Update the selected users in the group's securities
   def update_selected_users
-    authorize! :manage, User
+    authorize! :manage, Group
 
     @group = Group.find(params[:group_id])
     user_ids = params[:group][:user_ids]
@@ -159,26 +158,4 @@ class GroupsController < ApplicationController
     redirect_to organization_authorization_path(@organization, anchor: "tabs-group")
   end
 
-protected
-
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    #if is_master_instance?
-    #  true
-    #else
-    #  if params[:action] == 'new'
-    #    true
-    #  elsif params[:action] == 'edit'
-    #    @group = Group.find(params[:id])
-    #    if @group.is_local_record?
-    #      true
-    #    else
-    #      if params[:anchor] == 'tabs-1'
-    #        false
-    #      end
-    #    end
-    #  end
-    #end
-    true
-  end
 end

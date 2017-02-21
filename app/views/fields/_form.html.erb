@@ -14,9 +14,9 @@
         <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
       </div>
 
-        <div class="actions">
+        <div class="actions-tabs">
           <% if can? :manage, Field %>
-              <%= submit_tag I18n.t('save'), :class => 'btn' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
           <% end %>
           <%= link_to I18n.t('back'), organization_setting_path(@current_organization, anchor: 'tabs-fields'), :class => 'btn' %>
         </div>

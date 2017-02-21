@@ -122,16 +122,16 @@
   </div>
 
   <% if can? :execute_estimation_plan, @project %>
-    <button name="actuals_based_on[custom]" type="submit" class="btn btn-mini pull-right button_margin_right">
-      <%= I18n.t(:launch_calculation) %>
+    <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
+      <%= I18n.t(:calculate_button) %>
     </button>
 
-    <button name="actuals_based_on[mcdonell]" type="submit" class="btn btn-mini pull-right button_margin_right">
-      <%= I18n.t(:reinitialize_delay_staffing) %>
+    <button name="actuals_based_on[mcdonell]" type="submit" class="btn btn-inverse pull-right button_margin_right">
+      <%= I18n.t(:initialize_calculation) %> <%#= I18n.t(:reinitialize_delay_staffing) %>
     </button>
   <% end %>
 
-  <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-mini pull-right button_margin_right"%>
+  <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn pull-right button_margin_right"%>
 
   <h4>
     <b>
@@ -210,11 +210,11 @@
           <% end %>
 
           <% if can? :execute_estimation_plan, @project %>
-            <button name="actuals_based_on[custom]" type="submit" class="btn btn-info btn-mini pull-right button_margin_right">
+            <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
               <%= I18n.t(:update_restraint_effort) %>
             </button>
 
-            <button name="actuals_based_on[trapeze]" type="submit" class="btn btn-info btn-mini pull-right button_margin_right">
+            <button name="actuals_based_on[trapeze]" type="submit" class="btn btn-primary pull-right button_margin_right">
               <%= I18n.t(:initialize_restraint) %>
             </button>
           <% end %>

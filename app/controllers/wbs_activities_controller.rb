@@ -24,7 +24,7 @@ require 'dentaku'
 require 'rubyXL'
 
 class WbsActivitiesController < ApplicationController
-  #include DataValidationHelper #Module for master data changes validation
+  # #Module for master data changes validation
   include ModuleProjectsHelper
   load_resource
 
@@ -293,10 +293,8 @@ class WbsActivitiesController < ApplicationController
           wbs_activity_ratios = wbs_activity.wbs_activity_ratios
           wbs_activity_ratios.each do |ratio|
             ratio.transaction do
-              #ratio.record_status = @defined_status
               if ratio.save
                 wbs_activity_ratio_elements = ratio.wbs_activity_ratio_elements
-                #wbs_activity_ratio_elements.update_all(:record_status_id => @defined_status.id)
               end
             end
           end
@@ -1638,48 +1636,6 @@ class WbsActivitiesController < ApplicationController
 
     probable_estimation_value[@pbs_project_element.id]
 
-  end
-
-
-
-protected
-
-  def wbs_record_statuses_collection
-    #No authorize required since this method is protected and won't be call from route
-    if @wbs_activity.new_record?
-      if is_master_instance?
-        @wbs_record_status_collection = RecordStatus.where('name = ?', 'Proposed').defined
-      else
-        @wbs_record_status_collection = RecordStatus.where('name = ?', 'Local').defined
-      end
-    else
-      @wbs_record_status_collection = []
-      if @wbs_activity.is_defined?
-        @wbs_record_status_collection = RecordStatus.where('name = ?', 'Defined').defined
-      else
-        @wbs_record_status_collection = RecordStatus.where('name <> ?', 'Defined').defined
-      end
-    end
-  end
-
-  #Function that enable/disable to update
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    if is_master_instance?
-      true
-    else
-      if params[:action] == 'new'
-        true
-      elsif params[:action] == 'edit'
-        @wbs_activity = WbsActivity.find(params[:id])
-        #if @wbs_activity.is_local_record? && @wbs_activity.defined?
-        if @wbs_activity.is_defined? || @wbs_activity.defined?
-          false
-        else
-          true
-        end
-      end
-    end
   end
 
 end

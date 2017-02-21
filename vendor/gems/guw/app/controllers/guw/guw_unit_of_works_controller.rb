@@ -566,6 +566,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
+    @guw_model.guw_attributes.all.each do |gac|
+      finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                 guw_unit_of_work_id: @guw_unit_of_work.id,
+                                                 guw_attribute_id: gac.id).first_or_create
+      finder.save
+    end
+
+
     technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
     @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
 
@@ -854,9 +862,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
     guw_unit_of_work.intermediate_percent = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
-    if guw_unit_of_work.intermediate_weight.nil?
+    # if guw_unit_of_work.intermediate_weight.nil?
       guw_unit_of_work.intermediate_weight = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
-    end
+    # end
 
     guw_unit_of_work.save
 
@@ -940,7 +948,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         else
           # weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
           if guw_unit_of_work.guw_complexity.enable_value == false
-            @final_value = weight
+            if @oc.nil?
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
+            else
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
+            end
           else
             result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
             result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
@@ -966,7 +978,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-            @final_value = @oci.init_value.to_f * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            if @oc.nil?
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
+            else
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+            end
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
             # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
@@ -1055,12 +1071,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
         end
-
-        # if @oc.nil?
-        #   @final_value = nil
-        # else
-        #   @final_value = @weight
-        # end
 
           scv = selected_coefficient_values["#{guw_output.id}"].compact.inject(&:*)
           pct = percents.compact.inject(&:*)
@@ -1232,6 +1242,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model.guw_outputs.each_with_index do |guw_output, index|
 
+      @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                            guw_output_id: guw_output.id,
+                                            value: 1).first
+
       @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                                           guw_output_id: guw_output.id).first
 
@@ -1292,7 +1306,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.save
 
         else
-          ce = Guw::GuwCoefficientElement.where(id: params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+          ce = Guw::GuwCoefficientElement.find(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
           cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                            guw_coefficient_element_id: ce.id,
                                                            guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create!
@@ -1334,7 +1348,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         pct = percents.compact.inject(&:*)
         coef = coeffs.compact.inject(&:*)
 
-        tmp_hash_res["#{guw_output.id}"] = @oci.to_f * @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+        tmp_hash_res["#{guw_output.id}"] = (@oci.nil? ? 0 : @oci.init_value.to_f) + @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
 
         guw_unit_of_work.ajusted_size = tmp_hash_res
         guw_unit_of_work.size = tmp_hash_res
@@ -1474,8 +1488,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ["low", "most_likely", "high"].each do |level|
 
             if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
-              ev.send("string_data_#{level}")[current_component.id] = value.round(user_number_precision)
-              tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+              ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
+              if guw_output.output_type == "Effort"
+                tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+              else
+                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+              end
             end
 
             if am.pe_attribute.alias == "number_of_unit_of_work"

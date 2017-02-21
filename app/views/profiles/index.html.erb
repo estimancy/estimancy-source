@@ -2,21 +2,19 @@
   <ul>
     <li><a href="#tabs-1"><%= I18n.t(:profiles) %></a></li>
   </ul>
+
   <div id="tabs-1">
-    <table border="0" width="100%">
-      <tr>
-        <td style="text-align:right;">
-          <%= link_to I18n.t('new_profile'), new_profile_path, :class => 'btn' %>
-        </td>
-      </tr>
-    </table>
+
+    <div class="group_button">
+      <%= link_to I18n.t('create_button'), new_profile_path, :class => 'btn' %>
+    </div>
+
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
       <thead>
       <tr>
         <th><%= I18n.t(:name) %></th>
         <th><%= I18n.t(:description) %></th>
         <th><%= I18n.t(:cost_per_hour) %></th>
-        <th class="filter-select"><%= I18n.t(:record_status) %></th>
         <th  class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -29,19 +27,9 @@
             <td><%= profile.description %></td>
             <td><%= profile.cost_per_hour %></td>
 
-            <td><%= profile.record_status.name unless profile.record_status.nil? %> <%= profile.show_custom_value %></td>
             <td class="center">
               <%= link_to '', edit_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-              <% if is_master_instance? && !profile.is_local_record? %>
-                  <% if profile.is_retired? %>
-                      <%= link_to('', "profiles/#{profile.id}/restore_change", confirm: I18n.t('restoring'), :class => 'icon-undo', :style => 'color:orange', :title => I18n.t('restore_title')) %>
-                  <% else %>
-                      <% unless profile.is_defined? %>
-                          <%= link_to('', "profiles/#{profile.id}/validate_change", confirm: I18n.t('validation'), :class => 'icon-ok', :style => 'color:green', :title => I18n.t('validate_title')) %>
-                      <% end %>
-                  <% end %>
-              <% end %>
             </td>
           </tr>
       <% end %>

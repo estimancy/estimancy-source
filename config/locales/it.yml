@@ -1494,6 +1494,14 @@ it:
   new_estimation_model: "New estimation model"
   create_new_estimation_model: "Create new estimation model"
   edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
+
+  create_button: "Créer"
+  created_date: "Date de création"
+  knowledge_base_module: "Module Base de connaissance"
+  operation_module: "Module d'opération"
+  Judgment_Expert_module: "Module de Jugement d'expert"
+  wbs_activities_module: "Module WBS Activités"
+  edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
   do_not_show_phases_with_zero_value: "Ne pas afficher les phases dont l'effort retenu est à zéro"
   is_used_in_ratio_calculation: "Entre dans la calcul du Ratio"
   do_not_show_cost: "Ne pas afficher le coût"
@@ -1516,4 +1524,8 @@ it:
   ge_effort: "Effort"
   ge_size: "Taille"
   associate_inputs_with_outputs: "Associer les attributs d'entrée de \"%{current_mp}\" au attributs de sortie des modules le précédent"
-  change_module_project_instance: "Changer l'instance du module"
+  change_module_project_instance: "Changer l'instance du module"  calculate_button: "Calculer"
+  results_button: "Résultats"
+  subscription_end_date: "Date de fin d'abonnement"
+
+

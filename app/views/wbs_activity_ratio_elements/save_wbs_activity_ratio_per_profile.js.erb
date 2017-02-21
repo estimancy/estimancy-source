@@ -5,4 +5,8 @@ $("#activities_ratio_per_profile").html("<%= j(render(:partial => 'wbs_activitie
 update_wbs_activity_ratio_profiles();
 
 //Redirect to the correct URL (Apply or SAVE)
-window.location.replace("<%= @redirect_url_apply_or_save_path %>");
+//window.location.replace("<%#= @redirect_url_apply_or_save_path %>");
+//window.location.href = "<%#= @redirect_url_apply_or_save_path %>";
+
+$(location).attr('href','<%= @redirect_url_apply_or_save_path %>');
+location.reload();

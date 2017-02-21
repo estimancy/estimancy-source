@@ -26,7 +26,9 @@
           <td class="center"><%= text_field_tag "default_high[#{ma.id}]", ma.default_high, :class => "input-mini high #{ma.id}" %></td>
           <td class="center"><%= ma.guw_model_id %></td>
           <td class="center"><%= select_tag "in_out[#{ma.id}]", options_for_select([['input'], ['output'], ['both']], :selected => ma.in_out), :prompt => I18n.t('helpers.select.prompt'), :class => 'input-small', :disabled => (@pemodule == @initialization_module) %> </td>
-          <td><%= link_to '', ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete') %></td>
+          <td>
+            <%= link_to '', ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete') %>
+          </td>
         </tr>
     <% end %>
     <%= render :partial => 'layouts/footer_table' %>

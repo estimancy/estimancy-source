@@ -23,7 +23,7 @@
 #Global attributes of project. Ex : size, cost, result, date etc...
 #Those attributes are used into AttributeModule
 class PeAttribute < ActiveRecord::Base
-  attr_accessible :name, :alias, :aggregation, :attr_type, :options, :precision, :description, :record_status_id, :custom_value, :change_comment, :single_entry_attribute, :guw_model_id
+  attr_accessible :name, :alias, :aggregation, :attr_type, :options, :precision, :description, :single_entry_attribute, :guw_model_id
 
   serialize :options, Array
 
@@ -35,9 +35,6 @@ class PeAttribute < ActiveRecord::Base
   has_many :estimation_values, :dependent => :destroy
   has_many :views_widgets, dependent: :destroy
 
-  belongs_to :record_status
-  belongs_to :owner_of_change, :class_name => 'User', :foreign_key => 'owner_id'
-
   validates_presence_of :description
   validates :name, :alias, :presence => true
 
@@ -45,12 +42,6 @@ class PeAttribute < ActiveRecord::Base
   amoeba do
     enable
     exclude_association [:attribute_modules, :attribute_organizations]
-
-    customize(lambda { |original_record, new_record|
-      new_record.reference_uuid = original_record.uuid
-      new_record.reference_id = original_record.id
-      new_record.record_status = RecordStatus.find_by_name('Proposed') #RecordStatus.first
-    })
   end
 
   #Search fields

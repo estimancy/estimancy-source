@@ -5,8 +5,8 @@
 
   <div id="tabs-1">
     <% if can? :create_organizations, Organization %>
-      <div style="float: right">
-        <%= link_to I18n.t('new_organization'), new_organization_path, :class => 'btn' %>
+      <div class="group_button">
+        <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn' %>
         <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn' %>
       </div>
     <% end %>
@@ -44,7 +44,7 @@
                 <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
 
                 <% if can? :manage, Organization %>
-                  <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),  { remote: true, class: "icon icon-copy", 'data-toggle' =>  "modal", 'data-target' => '#modal-window'}  %>
+                  <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy"  %>
                   <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'))  %>
                 <% end %>
               <% end %>

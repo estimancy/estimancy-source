@@ -2,14 +2,10 @@
 <%= hidden_field_tag "organization_id", params[:id] %>
 
 <% if can? :manage, OrganizationProfile %>
-    <table border="0" width="100%">
-      <tr>
-        <td style="text-align:right;">
-          <%= link_to I18n.t('new_profile'), new_organization_organization_profile_path(@organization), :class => 'btn pull-right button_margin_right' %>
-          <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn pull-right button_margin_right'%>
-        </td>
-      </tr>
-    </table>
+  <div class="group_button">
+      <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn' %>
+      <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn'%>
+  </div>
 <% end %>
 
 <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
@@ -33,7 +29,7 @@
       <td class="align-center">
         <%= link_to '', edit_organization_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
         <% if can? :manage, OrganizationProfile %>
-          <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+          <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
         <% end %>
       </td>
     </tr>

@@ -19,12 +19,15 @@
         <%= f.input :output_type, as: :select, label: "Type de Sortie", collection: ["Effort", "Taille", "Cout"] %>
         <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>
         <%= f.input :allow_subtotal, label: "Calculer les sous-totaux" %>
+        <%= f.input :standard_coefficient, label: "Coefficient Standard de Conversion (Effort uniquement)" %>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= f.button :submit, I18n.t('save') %>
-      <% end %>
-      <%= link_to I18n.t(:back), :back, class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      </div>
     <% end %>
   </div>
 </div>

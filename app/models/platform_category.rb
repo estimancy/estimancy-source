@@ -21,15 +21,10 @@
 
 #Master Data
 class PlatformCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :organization_id
-  #include MasterDataHelper #Module master data management (UUID generation, deep clone, ...)
+  attr_accessible :name, :description, :organization_id
 
   has_many :projects
-  # has_and_belongs_to_many :project_areas
 
-  # belongs_to :record_status
-
-  # validates_presence_of :description
   validates :name, :presence => true
 
   amoeba do

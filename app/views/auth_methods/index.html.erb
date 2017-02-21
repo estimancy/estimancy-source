@@ -4,18 +4,15 @@
   </ul>
 
   <div id="tabs-1">
-    <table border="0" width="100%">
-      <tr>
-        <td style="text-align:right;">
-          <%= link_to I18n.t('new_auth_method'), new_auth_method_path, :class => 'btn' %>
-        </td>
-      </tr>
-    </table>
+
+    <div class="group_button">
+          <%= link_to I18n.t('create_button'), new_auth_method_path, :class => 'btn' %>
+    </div>
+
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
       <thead>
       <tr>
         <th><%= I18n.t(:name) %></th>
-        <th class="filter-select"><%= I18n.t(:record_status) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -24,7 +21,6 @@
       <% @auth_methods.each do |auth_method| %>
           <tr>
             <td><%= auth_method.name %></td>
-            <td><%= auth_method.record_status.name unless auth_method.record_status.nil? %> <%= auth_method.show_custom_value %></td>
             <td class="center">
               <%= link_to '', edit_auth_method_path(auth_method), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <%= link_to '', auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>

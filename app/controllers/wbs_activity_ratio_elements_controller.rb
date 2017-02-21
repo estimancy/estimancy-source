@@ -20,9 +20,9 @@
 #############################################################################
 
 class WbsActivityRatioElementsController < ApplicationController
-  #include DataValidationHelper #Module for master data changes validation
+  # #Module for master data changes validation
 
-  #before_filter :get_record_statuses
+  #
 
   def edit
     authorize! :manage_modules_instances, ModuleProject
@@ -88,7 +88,8 @@ class WbsActivityRatioElementsController < ApplicationController
 
 
     respond_to do |format|
-      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      #@redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-1"))
 
       format.js { }
     end
@@ -145,7 +146,8 @@ class WbsActivityRatioElementsController < ApplicationController
 
 
     respond_to do |format|
-      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      #@redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-1"))
 
       format.js { }
     end
@@ -256,7 +258,8 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #redirect_to edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-4')
     respond_to do |format|
-      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      #@redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.organization_module_estimation_path(@wbs_activity.organization_id, anchor: "activite"))
+      @redirect_url_apply_or_save_path = redirect_apply(main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-4"), nil, main_app.edit_organization_wbs_activity_path(@wbs_activity.organization_id, @wbs_activity.id, anchor: "tabs-1"))
 
       format.js { }
     end

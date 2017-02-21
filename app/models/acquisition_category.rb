@@ -21,11 +21,8 @@
 
 #Master Table
 class AcquisitionCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :record_status_id, :custom_value, :change_comment, :organization_id
+  attr_accessible :name, :description, :custom_value, :change_comment, :organization_id
 
-  # has_and_belongs_to_many :project_areas
-
-  # validates_presence_of :description
   validates :name, :presence => true
 
   has_many :projects

@@ -20,11 +20,11 @@
 #############################################################################
 
 class ProjectCategoriesController < ApplicationController
-  #include DataValidationHelper #Module for master data changes validation
+  # #Module for master data changes validation
 
   load_resource
 
-  #before_filter :get_record_statuses
+  #
 
   def new
     authorize! :manage, ProjectCategory

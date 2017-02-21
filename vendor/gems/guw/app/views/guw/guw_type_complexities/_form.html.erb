@@ -22,8 +22,9 @@
         <%= f.input :display_order, label: I18n.t(:display_order) %>
       </div>
 
-      <%= f.button :submit, I18n.t('save') %>
-
+      <div class="actions-tabs">
+        <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+      </div>
     <% end %>
   </div>
 </div>

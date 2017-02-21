@@ -1,6 +1,5 @@
 <div>
-  <h5 class="blue"><%= I18n.t(:estimations_statuses) %></h5>
-
+  <!--<h5 class="blue"><%#= I18n.t(:estimations_statuses) %></h5>-->
   <table class="table tablesorterPager table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -31,7 +30,7 @@
             <td class="center">
               <%= link_to '', edit_estimation_status_path(estimation_status), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
               <% if can? :manage, EstimationStatus %>
-                <%= link_to '', estimation_status, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                <%= link_to '', estimation_status, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -41,8 +40,9 @@
   </table>
 </div><br>
 
+
 <% if  @organization.estimation_statuses.length > 0 %>
-    <div>
+    <div class="well well-rounded">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_workflow) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_workflow) %></h5>
 
@@ -75,13 +75,13 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
     </div><br>
 
-    <div>
+    <div class="well well-rounded">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_roles) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_group_roles) %></h5>
 
@@ -140,7 +140,7 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>

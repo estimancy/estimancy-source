@@ -1430,7 +1430,7 @@ fr_bnp:
   warning_no_modify_permission_on_project_status: "Vous n'avez pas les autorisations nécessaires pour modifier le projet dans son statut actuel"
 
   is_image_organization: "Organisation image"
-  new_organization_from_image: "Créer une organisation à partir d'une image"
+  new_organization_from_image: "Créer à partir d'une image"
   coefficient: "Coefficient"
   label_organization_name: "Nom de l'organisation"
   label_organization_image: "Organisation image"
@@ -1863,7 +1863,7 @@ fr_bnp:
   enabled_theorical_effort_modification: "Autoriser la modification de l'effort théorique calculé"
   factors_setting: "Paramétrage des facteurs"
   import_factors_setting: "Importer les facteurs pour la configuration"
-  import_instance_model: "Importer une instance du modèle"
+  import_instance_model: "Importer"
   warning_update_wbs_organization_profile: "Attention!!! Si vous avez modifié la liste des profils, vérifier la contribution des profils par phase (onglet \"Elements des Ratios\")."
   total_per_phase: "Total par phase"
   error_message_not_found_2: "Il se peut que le lien utilisé soit rompu ou que vous ayez tapé une adresse (URL) incorrecte."
@@ -1987,6 +1987,19 @@ fr_bnp:
   new_estimation_model: "Nouveau modèle d'estimation"
   create_new_estimation_model: "Créer un nouveau modèle d'estimation"
   edit_estimation_model: "Editer le modèle d'estimation \"%{value}\""
+
+  create_button: "Créer"
+  created_date: "Date de création"
+  knowledge_base_module: "Module Base de connaissance"
+  operation_module: "Module d'opération"
+  Judgment_Expert_module: "Module de Jugement d'expert"
+  wbs_activities_module: "Module WBS Activités"
+  calculate_button: "Calculer"
+  results_button: "Résultats"
+  subscription_end_date: "Date de fin d'abonnement"
+
+
+
   do_not_show_phases_with_zero_value: "Ne pas afficher les phases dont l'effort retenu est à zéro"
   is_used_in_ratio_calculation: "Entre dans la calcul du Ratio"
   do_not_show_cost: "Ne pas afficher le coût"

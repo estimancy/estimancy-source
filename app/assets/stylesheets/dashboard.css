@@ -32,7 +32,7 @@ div.actions {
     margin:20px;
 }
 div.actions-tabs {
-    margin:0px;
+    margin-top: 30px;
 }
 
 .overflow{
@@ -1239,4 +1239,20 @@ tr.conversion_factor, td.conversion_factor {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.group_button{
+    margin-bottom: 10px;
+}
+
+form{
+    margin: 0px;
+}
+
+.well-rounded{
+    background-color: #ffffff;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    border-width: 4px;
 }

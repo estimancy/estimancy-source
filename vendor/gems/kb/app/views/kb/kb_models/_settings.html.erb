@@ -230,11 +230,11 @@
   <div class="row-fluid">
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-default btn-mini pull-right">
-          <%= I18n.t(:update)%>
+        <button type="submit" class="btn btn-primary">
+          <%= I18n.t(:save) %>
         </button>
       <% end %>
-      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn btn-default btn-mini button_margin_right pull-right", :method => "post" %>
+      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right", :method => "post" %>
     </div>
   </div>
 <% end %>

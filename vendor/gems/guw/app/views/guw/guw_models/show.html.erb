@@ -1,12 +1,15 @@
-<h4>
+<h5>
   <strong>
     <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
   </strong>
+</h5>
+
+<div class="group_button" style="margin-bottom: 45px; margin-top: -35px;">
   <% if can? :manage_modules_instances, ModuleProject %>
-    <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right'%>
+    <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn pull-right button_margin_right'%>
   <% end %>
-  <%= link_to "Afficher sous forme d'un tableau", guw.guw_model_all_guw_types_path(@guw_model), class: "btn btn-mini pull-right button_margin_right" %>
-</h4>
+  <%= link_to "Afficher sous forme d'un tableau", guw.guw_model_all_guw_types_path(@guw_model), class: "btn pull-right button_margin_right" %>
+</div>
 
 <div class="tabs">
   <ul>
@@ -38,19 +41,21 @@
 
       <div id="tabs-<%= guw_type.name.gsub(" ", "-") %>">
 
-        <%= link_to "#{I18n.t(:edit)} #{guw_type}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn btn-mini pull-right" %>
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-mini pull-right button_margin_right" %>
-        <% end %>
-
+        <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn" %>
         <%= simple_format(guw_type.description) %>
 
         <h4>
           <b>
-             <%= I18n.t(:UO_type_complexity_of, parameter: guw_type) %>
+            <%= I18n.t(:UO_type_complexity_of, parameter: guw_type) %>
           </b>
-
         </h4>
+
+        <div class="group_button">
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%#= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+            <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+          <% end %>
+        </div>
 
         <%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
           <%= hidden_field_tag :guw_type_id, guw_type.id %>
@@ -101,7 +106,7 @@
             </tr>
 
             <tr>
-              <th></th>
+              <th><%= link_to "Valeur initiale (Σ)", "#", class: "pull-left" %></th>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <th>
@@ -111,7 +116,7 @@
               <% end %>
             </tr>
             <tr>
-              <td>Valeur initiale</td>
+              <td>Un (1)</td>
               <% guw_type.guw_complexities.order("display_order asc").each do |guw_complexity| %>
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <td class="align-center">
@@ -119,7 +124,7 @@
                     <% oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id,
                                                                           guw_output_id: guw_output.id).first %>
 
-                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? 1 : oci.init_value, class: "input-mini" %>
+                    <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "input-mini" %>
                   </td>
                 <% end %>
               <% end %>
@@ -161,7 +166,7 @@
               <tr>
                 <th>
                   <b class="pull-left">
-                    <%= link_to guw_coefficient.name, "#" %>
+                    x <%= link_to guw_coefficient.name, "#" %>
                   </b>
                 </th>
                 <% guw_type.guw_complexities.each do |gc| %>
@@ -228,7 +233,9 @@
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>
-            <%= submit_tag I18n.t(:label_save), class: "btn btn-mini pull-right" %>
+            <div class="group_button">
+              <%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %>
+            </div>
           <% end %>
         <% end %>
 
@@ -237,12 +244,13 @@
 
         <% if guw_type.allow_criteria == true %>
 
-          <h4>
-            <b><%= I18n.t :label_complexity_attributes %> <%= guw_type %> </b>
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn btn-mini pull-right" %>
-            <% end %>
-          </h4>
+          <h5><%= I18n.t :label_complexity_attributes %> <%= guw_type %> </h5>
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <div class="group_button">
+              <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn" %>
+            </div>
+          <% end %>
+
 
           <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, guw_type.id), method: "POST" do %>
             <table class="table table-bordered">
@@ -315,9 +323,9 @@
 
             <% unless @guw_model.guw_attributes.empty? %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= submit_tag I18n.t(:save), class: "btn btn-mini pull-right" %>
+                <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
               <% end %>
-              <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn btn-mini pull-right button_margin_right' %>
+              <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn' %>
             <% end %>
 
             <br>

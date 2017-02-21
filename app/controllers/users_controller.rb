@@ -47,6 +47,8 @@ public
     authorize! :manage_master_data, :all
 
     set_page_title I18n.t(:users)
+    set_breadcrumbs I18n.t(:users) => ""
+
     owner_key = AdminSetting.find_by_key("Estimation Owner")
     if owner_key.nil?
       @users = User.all
@@ -121,10 +123,21 @@ public
 
     if @user.save
       flash[:notice] = I18n.t(:notice_account_successful_created)
+
+      tab_name = "tabs-1"
+      if params['tabs-5']
+        tab_name = "tabs-5"
+      elsif params['tabs-groups']
+        tab_name = "tabs-groups"
+      elsif params['tabs-organizations']
+        tab_name = "tabs-organizations"
+      end
+      params[:commit] = params["#{tab_name}"]
+
       if @organization.nil?
-        redirect_to(redirect_apply(edit_user_path(@user), users_path, users_path)) and return
+        redirect_to(redirect_apply(edit_user_path(@user, :anchor => tab_name), users_path, users_path)) and return
       else
-        redirect_to redirect_apply(edit_organization_user_path(@organization, @user), organization_users_path(@organization), organization_users_path(@organization)) and return
+        redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name)) and return
       end
 
     else
@@ -223,14 +236,14 @@ public
     end
 
     # Get the Application authType
-    application_auth_type = AuthMethod.where('name = ? AND record_status_id =?', 'Application', @defined_record_status.id).first
+    application_auth_type = AuthMethod.where(name: 'Application').first
 
     if application_auth_type && params[:user][:auth_type].to_i != application_auth_type.id
       params[:user].delete :password
       params[:user].delete :password_confirmation
     end
 
-    @user.auth_type = params[:user][:auth_type]
+    @user.auth_type = params[:user][:auth_type].nil? ? AuthMethod.find_by_name('Application').id : params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
 
@@ -260,10 +273,20 @@ public
 
       @user_current_password = nil;  @user_password = nil; @user_password_confirmation = nil
 
+      tab_name = "tabs-1"
+      if params['tabs-5']
+        tab_name = "tabs-5"
+      elsif params['tabs-groups']
+        tab_name = "tabs-groups"
+      elsif params['tabs-organizations']
+        tab_name = "tabs-organizations"
+      end
+      params[:commit] = params["#{tab_name}"]
+
       if @organization.nil?
-        redirect_to redirect_apply(edit_user_path(@user), new_user_path(:anchor => 'tabs-1'), users_path) and return
+        redirect_to redirect_apply(edit_user_path(@user, :anchor => tab_name), new_user_path(:anchor => tab_name), users_path) and return
       else
-        redirect_to redirect_apply(edit_organization_user_path(@organization, @user), new_user_path(:anchor => 'tabs-1'), organization_users_path(@organization))
+        redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), new_user_path(:anchor => tab_name), organization_users_path(@organization, :anchor => tab_name))
       end
 
     else
@@ -309,8 +332,8 @@ public
 
         UserMailer.account_created(user).deliver
         if !user.active?
-          UserMailer.account_request(@defined_record_status).deliver
-          redirect_to :back, :notice => "#{I18n.t (:ask_new_account_help)}"
+          # UserMailer.account_request(@defined_record_status).deliver
+          # redirect_to :back, :notice => "#{I18n.t (:ask_new_account_help)}"
         else
           UserMailer.account_validate(user).deliver
           redirect_to :back, :notice => "#{I18n.t (:notice_account_successful_created)}, #{I18n.t(:ask_new_account_help2)}"
@@ -398,7 +421,7 @@ public
                                   @ruby_version,
                                   @rails_version,
                                   @environment,
-                                  @database_adapter, @browser, @version_browser, @platform, @os, @server_name, @root_url, @defined_record_status)
+                                  @database_adapter, @browser, @version_browser, @platform, @os, @server_name, @root_url)
     if um.deliver
       flash[:notice] = I18n.t (:notice_send_feedback_success)
       redirect_to root_url
@@ -411,7 +434,7 @@ public
   protected
   def is_an_automatic_account_activation?
     #No authorize required since this method is protected and won't be call from any route
-    AdminSetting.where(:record_status_id => RecordStatus.find_by_name('Defined').id, :key => 'self-registration').first.value == 'automatic account activation'
+    AdminSetting.where(key: 'self-registration').first.value == 'automatic account activation'
   end
 
 end

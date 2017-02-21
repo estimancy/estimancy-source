@@ -89,7 +89,7 @@
       @staffing_model.trapeze_default_values = { :x0 => x0, :y0 => y0, :x1 => x1, :x2 => x2, :x3 => x3, :y3 => y3 }
 
       if @staffing_model.save
-        redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, anchor: "team", notice: 'Staffing model was successfully created.' )
+        redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, anchor: "team", notice: 'Staffing model was successfully created.')
       else
         render action: "new"
       end
@@ -117,7 +117,9 @@
 
       respond_to do |format|
         if @staffing_model.update_attributes(params[:staffing_model])
-          format.html { redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, anchor: 'team', notice: 'Staffing model was successfully updated.') }
+          #format.html { redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, anchor: 'team', notice: 'Staffing model was successfully updated.') }
+          format.html { redirect_to staffing.edit_staffing_model_path(@staffing_model) }
+
           format.json { head :no_content }
         else
           format.html { render action: "edit" }

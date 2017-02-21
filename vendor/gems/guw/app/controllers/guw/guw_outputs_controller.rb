@@ -62,7 +62,7 @@ class Guw::GuwOutputsController < ApplicationController
                                in_out: "both",
                                guw_model_id: @guw_output.guw_model_id).first_or_create!
 
-    redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-factors")
   end
 
   def update
@@ -97,9 +97,9 @@ class Guw::GuwOutputsController < ApplicationController
 
       am = AttributeModule.where(pe_attribute_id: attr.id,
                                  pemodule_id: pm.id,
-                                 guw_model_id: nil).first
+                                 guw_model_id: nil).first_or_create
 
-      am.guw_model_id = @guw_model.id
+      am.guw_model_id = @guw_output.guw_model_id
 
       am.save
       attr.save
@@ -108,14 +108,15 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_model.save
 
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_output.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_model.id,
+                                        organization_id: @current_organization.id,
+                                        anchor: "tabs-factors")
   end
 
   def destroy
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_model = @guw_output.guw_model
     @guw_output.delete
-
 
     #Pas encore bon !
     attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_")).first

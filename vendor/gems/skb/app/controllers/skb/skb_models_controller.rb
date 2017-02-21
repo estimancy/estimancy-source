@@ -150,8 +150,11 @@ class Skb::SkbModelsController < ApplicationController
         @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
                                        organization_id: @organization.id)
 
-        unless @skb_model.save
+        if @skb_model.save
+          # OK
+        else
           flash[:error] = "Une erreur est survenue durant l'import du modèle."
+          redirect_to main_app.organization_module_estimation_path(@organization.id, anchor: "taille") and return
         end
 
       else
@@ -159,9 +162,9 @@ class Skb::SkbModelsController < ApplicationController
                                          organization_id: @organization.id).first
       end
 
-      unless @skb_model.nil?
-        Skb::SkbData.delete_all("skb_model_id = #{@skb_model.id}")
-      end
+
+      @skb_model.skb_datas.delete_all
+      # Skb::SkbData.delete_all("skb_model_id = #{@skb_model.id}")
 
       file.default_sheet = file.sheets[1]
 
@@ -191,8 +194,7 @@ class Skb::SkbModelsController < ApplicationController
                             skb_model_id: @skb_model.id)
       end
     end
-
-    redirect_to skb.edit_skb_model_path(@skb_model, organization_id: @organization.id)
+    redirect_to skb.edit_skb_model_path(@skb_model.id, organization_id: @organization.id)
   end
 
   def save_filters

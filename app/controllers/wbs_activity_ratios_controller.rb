@@ -97,18 +97,11 @@ class WbsActivityRatiosController < ApplicationController
     @wbs_activity_ratio = WbsActivityRatio.new(params[:wbs_activity_ratio])
     @wbs_activity_ratio.owner_id = current_user.id
 
-    #If we are on local instance, Status is set to "Local"
-    unless is_master_instance?   #so not on master
-      @wbs_activity_ratio.record_status = @local_status
-    end
-
     if @wbs_activity_ratio.save
       @wbs_activity_ratio.wbs_activity.wbs_activity_elements.each do |wbs_activity_element|
         ware = WbsActivityRatioElement.new(:ratio_value => nil,
                                            :wbs_activity_ratio_id => @wbs_activity_ratio.id,
-                                           :wbs_activity_element_id => wbs_activity_element.id,
-                                           :record_status_id => @wbs_activity_ratio.record_status_id)
-                                           ###:dotted_id => wbs_activity_element.dotted_id)
+                                           :wbs_activity_element_id => wbs_activity_element.id)
 
         ware.uuid = UUIDTools::UUID.random_create.to_s
         ware.save(:validate => false)
@@ -131,7 +124,7 @@ class WbsActivityRatiosController < ApplicationController
     #if is_master_instance?
     #  if @wbs_activity_ratio.is_defined? || @wbs_activity_ratio.is_custom?
     #    #logical deletion: delete don't have to suppress records anymore on defined record
-    #    @wbs_activity_ratio.update_attributes(:record_status_id => @retired_status.id, :owner_id => current_user.id)
+    #    @wbs_activity_ratio.update_attributes(:owner_id => current_user.id)
     #  else
     #    @wbs_activity_ratio.destroy
     #  end
@@ -174,35 +167,13 @@ class WbsActivityRatiosController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @ratio = WbsActivityRatio.find(params[:ratio_id])
-    @ratio.record_status =  @defined_status
     @ratio.transaction do
       if @ratio.save
-        @ratio.wbs_activity_ratio_elements.update_all(:record_status_id => @defined_status.id)
         flash[:notice] = I18n.t (:notice_wbs_activity_ratio_successful_validated)
       else
         flash[:error] = @ratio.errors.full_messages.to_sentence
       end
     end
     redirect_to edit_wbs_activity_path(@ratio.wbs_activity, :anchor => 'tabs-3')
-  end
-
-  protected
-  #Function that enable/disable to update
-  def enable_update_in_local?
-    #No authorize required since this method is protected and won't be call from route
-    if is_master_instance?
-      true
-    else
-      if params[:action] == 'new'
-        true
-      elsif params[:action] == 'edit'
-        @wbs_activity_ratio = WbsActivityRatio.find(params[:id])
-        if @wbs_activity_ratio.is_defined? || @wbs_activity.defined?
-          false
-        else
-          true
-        end
-      end
-    end
   end
 end
