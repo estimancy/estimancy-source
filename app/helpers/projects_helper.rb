@@ -1139,7 +1139,11 @@ module ProjectsHelper
             guw_model = module_project.guw_model
             "#{value.to_f.round(user_number_precision)} #{guw_model.effort_unit}"
           rescue
-            value
+            if module_project.pemodule.alias == "guw"
+              "#{value.to_f / 8} #{guw_model.effort_unit}"
+            else
+
+            end
           end
       end
     end

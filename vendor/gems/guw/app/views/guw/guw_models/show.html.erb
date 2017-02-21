@@ -288,9 +288,10 @@
               <% @guw_model.guw_attributes.order("name ASC").each do |guw_attribute| %>
                 <tr>
                   <td class="align-center">
-                    <%# link_to guw_attribute, guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute) %>
+
                     <% gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
-                                                         guw_attribute_id: guw_attribute.id).first %>
+                                                         guw_attribute_id: guw_attribute.id).first_or_create! %>
+
                     <% if gat.nil? %>
                       <%= link_to guw_attribute, "#" %>
                     <% else %>
