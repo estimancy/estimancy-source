@@ -1135,14 +1135,16 @@ module ProjectsHelper
         when 'integer'
           "#{convert(value, @project.organization).round(precision)} #{convert_label(value, @project.organization)}"
         else
+          guw_model = module_project.guw_model
+          conv = guw_model.hour_coefficient_conversion
+
           begin
-            guw_model = module_project.guw_model
-            "#{value.to_f.round(user_number_precision)} #{guw_model.effort_unit}"
+            "#{value.to_f.round(user_number_precision) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.effort_unit}"
           rescue
             if module_project.pemodule.alias == "guw"
-              "#{value.to_f / 8} #{guw_model.effort_unit}"
+              "#{value.to_f / conv} #{guw_model.effort_unit}"
             else
-
+              value.to_f
             end
           end
       end
