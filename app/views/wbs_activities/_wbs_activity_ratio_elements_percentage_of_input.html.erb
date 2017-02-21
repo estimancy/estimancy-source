@@ -41,9 +41,10 @@
         <!--<%#= I18n.t(:allow_add_new_phase ) %>-->
       <!--</label>-->
     <!--</span>-->
-</div>
+</div><br>
 
 <h4 style="color: #0073ea;">Définition des variables et de leur pourcentage par rapport à la valeur en entrée</h4>
+
 <table class="table table-bordered table-condensed">
   <tr>
     <th><%= I18n.t(:variable_name) %></th>
@@ -61,9 +62,9 @@
         Les entrées de la WBS-Activité <br>
         <%# wbs_inputs = PeAttribute.where(alias: ["effort_1", "effort_2", "effort_3", "effort_4"]) %>
         <% PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).each_with_index do |effort, index | %>
-         <span><%= "Entrée #{index+1} = #{effort.alias}" %></span> <br>
+         <span style="margin-right: 30px;"><%= "Entrée #{index+1} = #{effort.alias}" %></span>
         <% end %>
-      </div>
+      </div><br>
 
       <% @selected_ratio.get_wbs_activity_ratio_variables.each do |wbs_arv| %>
           <tr>
