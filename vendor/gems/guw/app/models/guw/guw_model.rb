@@ -48,7 +48,7 @@ module Guw
 
     amoeba do
       enable
-      include_association [:guw_types, :guw_attributes, :guw_work_units, :guw_weightings, :guw_factors, :guw_scale_module_attributes]
+      include_association [:guw_types, :guw_attributes, :guw_work_units, :guw_weightings, :guw_factors, :guw_scale_module_attributes, :guw_outputs, :guw_coefficients]
 
       customize(lambda { |original_guw_model, new_guw_model|
         new_guw_model.copy_id = original_guw_model.id
@@ -151,7 +151,12 @@ module Guw
           end
         end
       end
-      #end
+      # guw_model.guw_coefficients.each do |guw_coefficient|
+      #   guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
+      #     guw_coefficient_element.guw_coefficient_id = guw_coefficient.id
+      #     guw_coefficient_element.save
+      #   end
+      # end
 
     end
 
