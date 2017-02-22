@@ -17,6 +17,7 @@
       <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#ml">
         Comptage automatique
       </button>
+      <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
   </div>
 
@@ -250,7 +251,6 @@
                   <span class="cotation_label_<%= guow.id %>">
                     <% unless @guw_type.nil? %>
                       <% if @guw_type.display_threshold == true %>
-                        <%# begin %>
                           <% if guow.off_line == true %>
                             <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
                             <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
@@ -273,7 +273,6 @@
                                            include_blank: true,
                                            disabled: !@guw_type.allow_complexity,
                                            style: "width: 70px;" %>
-                            <%# hidden_field_tag "hidden_guw_complexity_#{guow.id}", @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id %>
                           <% else %>
                             <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                            class: "guw_complexity",
@@ -281,9 +280,6 @@
                                            disabled: !@guw_type.allow_complexity,
                                            style: "width: 70px;" %>
                           <% end %>
-                        <%# rescue Exception => e %>
-                          <%# e %>
-                        <%# end %>
                       <% else %>
                         <% if guow.off_line == true %>
                           HSAT
@@ -300,7 +296,7 @@
                             <% if @guw_type.allow_complexity %>
                               <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
                                                    style: "width: 43px;",
-                                                   class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id}",
+                                                   class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
                                                    step: 0.001 %>
                             <% end %>
                           <% end %>
@@ -332,7 +328,7 @@
                               <% if guw_coefficient.allow_intermediate_value == true %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                      style: "width: 43px;",
-                                                     class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id}",
+                                                     class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                      step: 0.001 %>
                               <% end %>
 
@@ -375,7 +371,7 @@
                             <span class="ajusted_size_<%= guow.id %>">
                               <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                    step: 0.001,
-                                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag",
+                                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
                                                    style: "width: 43px;" %>
                             </span>
                           <% end %>
@@ -463,6 +459,12 @@
 
   function raz_line(uo){
     $('.retained-guw-' + uo).val('');
+    return false; // prevent default click action from happening!
+    e.preventDefault();
+  }
+
+  function multiraz(uo){
+    $('.retained').val('');
     return false; // prevent default click action from happening!
     e.preventDefault();
   }
