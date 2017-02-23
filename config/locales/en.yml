@@ -2004,3 +2004,5 @@ en:
   calculate_button: "Calculate"
   results_button: "Results"
   subscription_end_date: "Subscription end date"
+  formula: "Formula"
+  wbs_phase_formula: "Calculation formula"

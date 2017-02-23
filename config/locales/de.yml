@@ -1575,3 +1575,5 @@ de:
   ge_size: "Size"
   associate_inputs_with_outputs: "Associating the input attributes of \"%{current_mp}\" with the output attributes of preceding modules"
   change_module_project_instance: "Change the module instance"
+  formula: "Formula"
+  wbs_phase_formula: "Calculation formula"

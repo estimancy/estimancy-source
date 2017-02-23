@@ -132,15 +132,15 @@ $("#views_widget_color").spectrum({
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
 
     var widget_type = $("#views_widget_widget_type").val();
-    if (widget_type !== ""){
-        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-            $('#views_widget_show_min_max').attr('disabled','disabled');
-            $("#views_widget_widget_type").value = 0;
-        }
-        else{
-            $('#views_widget_show_min_max').removeAttr('disabled');
-        }
+    if (widget_type == "text"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
     }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+
 
     // Update the view_widget attribute according to the selected module
     $("#views_widget_module_project_id").change(function() {
@@ -166,13 +166,13 @@ $("#views_widget_color").spectrum({
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();
-        if (widget_type !== ""){
-            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-                $('#views_widget_show_min_max').attr('disabled','disabled');
-                $("#views_widget_widget_type").value = 0;
-            } else{
-                $('#views_widget_show_min_max').removeAttr('disabled');
-            }
+        if (widget_type == "text"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
         }
     });
 

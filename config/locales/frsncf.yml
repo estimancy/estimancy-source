@@ -2000,3 +2000,5 @@ frsncf:
   ge_size: "Taille"
   associate_inputs_with_outputs: "Associer les attributs d'entrée de \"%{current_mp}\" au attributs de sortie des modules le précédent"
   change_module_project_instance: "Changer l'instance du module"
+  formula: "Formule de calcul"
+  wbs_phase_formula: "Formule de calcul"
