@@ -50,14 +50,14 @@
 
       <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
           <% gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
-                                                guw_attribute_id: uowa.guw_attribute.id).first %>
+                                                guw_attribute_id: uowa.guw_attribute.id).first_or_create %>
           <tr>
             <% unless guw_type.nil? %>
               <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td>
-                <%= link_to uowa.guw_attribute.name, "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left" %>
+                <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left" %>
               </td>
 
               <% if @guw_model.three_points_estimation == true %>
