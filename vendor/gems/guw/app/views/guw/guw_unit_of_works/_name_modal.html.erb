@@ -1,5 +1,6 @@
 <%= form_tag guw.save_name_path, method: "post" do %>
   <div class="modal-header modal-drag">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h4 class="modal-title" id="comments_label<%= @guw_unit_of_work.id %>">
       <b>
         <%= @guw_unit_of_work.guw_type %>
