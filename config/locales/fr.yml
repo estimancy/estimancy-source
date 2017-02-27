@@ -2020,4 +2020,17 @@ fr:
   subscription_end_date: "Date de fin d'abonnement"
   formula: "Formule de calcul"
 
+  coefficient_type: "Type de coefficient"
+  allow_intermediate_value: "Autoriser la modification"
+  weighting_coefficients: "Les coefficients de pondération"
+  coefficient_name: "Nom du coefficient"
+  allow_subtotal: "Calculer les sous-totaux"
+  standard_coefficient: "Coefficient Standard de Conversion (Effort uniquement)"
+  config_type: "Type de configuration"
+  output_type: "Type de sortie"
+  attribute_type: "Type de calcul pour les attributs"
+  display_threshold: "Afficher le seuil"
+  weight_b: "Ordonnée à l'origine"
+  initial_value_sum: "Valeur initiale (Σ)"
+
 

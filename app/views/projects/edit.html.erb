@@ -6,8 +6,10 @@
   <% end %>
 
   <% unless controller.action_name == 'new' %>
-    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary btn-mini" %>
-  <% end %>
+    <div style="margin-bottom: 35px; margin-top: -24px;">
+        <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary" %>
+    </div>
+<% end %>
 </h4>
 <div>
   <%= render 'form' %>
