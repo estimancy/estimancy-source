@@ -617,7 +617,12 @@ module ViewsWidgetsHelper
             bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely.nil? ? 0 : wbs_data_most_likely[wbs_activity_elt_root_id]]
             bar_chart_level_values << [I18n.t(:value_high), wbs_data_high.nil? ? 0 : wbs_data_high[wbs_activity_elt_root_id]]
             chart_probable = wbs_data_probable.nil? ? 0 : wbs_data_probable[wbs_activity_elt_root_id]
-            bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
+            begin
+              bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
+            rescue
+              bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
+            end
+
 
             # Now with google-chart
             value_to_show = raw(render :partial => 'views_widgets/g_column_chart',
