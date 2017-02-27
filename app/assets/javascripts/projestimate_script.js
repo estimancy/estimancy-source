@@ -816,36 +816,36 @@ function toggle_folder(elem){
         $(elem).parent().parent().next().toggle();
 }
 
-function refresh_me(data){
-    var show_exclude = false;
-    //if($('input:checkbox').is(":checked")) {
-    if($('#show_excluded_elt:checkbox').is(":checked")) { show_exclude = true; }
-    else{ show_exclude = false; }
-
-    $.ajax({
-        url:"/refresh_wbs_project_elements",
-        method: 'GET',
-        data: {
-            project_id: $("#project_id").val(),
-            show_hidden: show_exclude,
-            is_project_show_view: $('#is_project_show_view').val(),
-            dataType: "html"
-        }
-        ,
-        success: function(data) {
-            $('#wbs_project_elements_section').html(data.html);
-            $('ul li').hover(
-                function () {
-                    $(this.children).css('display', 'block');
-                },
-                function () {
-                    $('.block_link').hide();
-                }
-            );
-        },
-        error: function(XMLHttpRequest, testStatus, errorThrown) { alert('Error!'); }
-    });
-}
+//function refresh_me(data){
+//    var show_exclude = false;
+//    //if($('input:checkbox').is(":checked")) {
+//    if($('#show_excluded_elt:checkbox').is(":checked")) { show_exclude = true; }
+//    else{ show_exclude = false; }
+//
+//    $.ajax({
+//        url:"/refresh_wbs_project_elements",
+//        method: 'GET',
+//        data: {
+//            project_id: $("#project_id").val(),
+//            show_hidden: show_exclude,
+//            is_project_show_view: $('#is_project_show_view').val(),
+//            dataType: "html"
+//        }
+//        ,
+//        success: function(data) {
+//            $('#wbs_project_elements_section').html(data.html);
+//            $('ul li').hover(
+//                function () {
+//                    $(this.children).css('display', 'block');
+//                },
+//                function () {
+//                    $('.block_link').hide();
+//                }
+//            );
+//        },
+//        error: function(XMLHttpRequest, testStatus, errorThrown) { alert('Error!'); }
+//    });
+//}
 
 function select_or_unselect_all(clicked_elt){
     var mp_id = $(clicked_elt).data("mp_id");
