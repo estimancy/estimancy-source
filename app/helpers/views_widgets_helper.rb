@@ -613,15 +613,23 @@ module ViewsWidgetsHelper
 
             # new data
             bar_chart_level_values = Array.new
-            bar_chart_level_values << [I18n.t(:value_low), wbs_data_low.nil? ? 0 : wbs_data_low[wbs_activity_elt_root_id]]
-            bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely.nil? ? 0 : wbs_data_most_likely[wbs_activity_elt_root_id]]
-            bar_chart_level_values << [I18n.t(:value_high), wbs_data_high.nil? ? 0 : wbs_data_high[wbs_activity_elt_root_id]]
-            chart_probable = wbs_data_probable.nil? ? 0 : wbs_data_probable[wbs_activity_elt_root_id]
-            begin
-              bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
-            rescue
-              bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
-            end
+            # bar_chart_level_values << [I18n.t(:value_low), wbs_data_low.nil? ? 0 : wbs_data_low[wbs_activity_elt_root_id]]
+            # bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely.nil? ? 0 : wbs_data_most_likely[wbs_activity_elt_root_id]]
+            # bar_chart_level_values << [I18n.t(:value_high), wbs_data_high.nil? ? 0 : wbs_data_high[wbs_activity_elt_root_id]]
+            #bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
+
+            bar_chart_level_values << [I18n.t(:value_low), 0]
+            bar_chart_level_values << [I18n.t(:value_most_likely), 0]
+            bar_chart_level_values << [I18n.t(:value_high), 0]
+            bar_chart_level_values << [I18n.t(:value_probable), 0]
+
+            #chart_probable = wbs_data_probable.nil? ? 0 : wbs_data_probable[wbs_activity_elt_root_id]
+
+            # begin
+            #   bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
+            # rescue
+            #   bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
+            # end
 
 
             # Now with google-chart
