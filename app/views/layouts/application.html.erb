@@ -10,7 +10,8 @@
   <!--Load the Google charts API  -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>
+  <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>
+  <%= javascript_include_tag 'application', 'projestimate_script', '', '' %>
 
   <% if @online_support == "1" %>
     <script type="text/javascript" src="http://www.spark-angels.com/panserver3/multiwidget/spk_multiwidget.js"></script>
