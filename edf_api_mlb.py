@@ -128,15 +128,6 @@ def balance_dataset(intRedVect, UO_list):
 
 
 
-
-### Evaluate DT model multi label classification on unbalanced Dataset
-def eval_DT_mlb_unbal(intRedVect, Binarized, mlb):
-    modelFitted=OneVsRestClassifier(tree.DecisionTreeClassifier(random_state=519)).fit(intRedVect, Binarized)
-    accuracy= modelFitted.score(intRedVect, Binarized)
-    inv_pred=mlb.inverse_transform(modelFitted.predict(intRedVect))
-    return accuracy
-
-
 ### Evaluate DT model multi label classification on balanced Dataset using over sampling
 
 def DT_mlb_unbal(intRedVect_bal, OutMlbBin_bal):
@@ -155,13 +146,8 @@ class Mlb_Model_class:
         self.vectorizer=vectorizer
         self.model_feature=model_feature
 
-def clean_text(line):
-    line= re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '')).lower()
-    line_cl=""
-    for w in line.split():
-        if len(w)>3:
-            line_cl+=" "+ stemmer.stem(w.decode('utf-8'))
-    return line_cl
+
+
 
 def tranform_userStory (userStory, model_feature, vectorizer):
     words= clean_text(userStory).split()
@@ -173,6 +159,21 @@ def tranform_userStory (userStory, model_feature, vectorizer):
     vector=vectorizer.transform([meaningful_words])
     vector_features=model_feature.transform(vector).toarray()
     return vector_features
+
+
+
+def clean_text(line):
+    line= re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '').replace('|','').replace('\r', '').replace('\n', '')).lower()
+    line_cl=""
+    stemmed_us= tt.tag(line) ### Tagging (lematization) using tree tagger
+    for w in stemmed_us:
+        if len(w[0])>2:
+            if not str(w[2])=='<unknown>':
+                line_cl+=" "+ str(w[2])
+            else:
+                line_cl+=" "+ str(w[0])
+    return line_cl
+
 
 if __name__ == "__main__":
     app.run(port=5001)
