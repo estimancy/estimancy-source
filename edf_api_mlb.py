@@ -29,6 +29,10 @@ stop_words = stopwords.words('french')
 wst = WhitespaceTokenizer()
 stemmer = FrenchStemmer()
 
+from treetagger import TreeTagger
+tt = TreeTagger(language='french')
+seed(942)
+
 from flask import Flask
 from flask import request
 app = Flask(__name__)
