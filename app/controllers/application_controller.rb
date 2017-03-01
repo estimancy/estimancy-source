@@ -96,18 +96,37 @@ class ApplicationController < ActionController::Base
       @functional_version_number = "-"
     end
 
+    # if user_signed_in?
+    #   unless current_user.super_admin == true || current_user.subscription_end_date.nil?
+    #     if current_user.subscription_end_date < Time.now
+    #       flash[:error] = "La licence de votre compte est expirée."
+    #       reset_session
+    #       redirect_to(root_path)
+    #     elsif @disable_access == "1"
+    #       reset_session
+    #       redirect_to(root_path)
+    #     end
+    #   end
+    # end
+
     if user_signed_in?
       unless current_user.super_admin == true || current_user.subscription_end_date.nil?
         if current_user.subscription_end_date < Time.now
           flash[:error] = "La licence de votre compte est expirée."
+          sign_out current_user
           reset_session
-          redirect_to(root_path)
+          subscription_end_date_message = %Q[La licence de votre compte a expiré. Veuillez contacter l'administrateur de votre compte <a href="mailto:contact@estimancy.com">par mail</a>]
+
+          redirect_to(sign_in_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
+          #redirect_to(root_path, :flash => { :error => "La licence de votre compte est expirée." }) and return false
         elsif @disable_access == "1"
+          sign_out current_user
           reset_session
-          redirect_to(root_path)
+          redirect_to(sign_in_path, :flash => { :error => @offline_message}) and return false
         end
       end
     end
+
   end
 
   def current_ability
