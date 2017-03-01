@@ -58,17 +58,15 @@
             <td><%= user.first_name %></td>
             <td><%= user.last_name %></td>
             <td><%= user.login_name %></td>
-            <td><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : user.confirmed_at.strftime("%d/%m/%Y") %></td>
+            <td class="center"><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : user.confirmed_at.strftime("%d/%m/%Y") %></td>
             <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
+
             <% if current_user.super_admin? %>
               <td class="center"><%= check_box_tag "is_super_admin", user.super_admin, user.super_admin, disabled: true %></td>
+              <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td></td>
             <% end %>
 
-            <td>
-              <%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td>
-            </td>
-
-            <td><%= user.subscription_end_date.nil? ? "-" : user.subscription_end_date.strftime("%d/%m/%Y") %></td></td>
+            <td class="center"><%= user.subscription_end_date.nil? ? "-" : user.subscription_end_date.strftime("%d/%m/%Y") %></td></td>
 
             <td class="align-center">
               <% if can? :manage, User, :organization_id => @organization.id %>
