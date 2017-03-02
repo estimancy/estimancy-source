@@ -95,7 +95,7 @@
 
           <% cev_attribute = cev.pe_attribute %>
           <%# cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
-          <% cev_attr_possible_module_projects = @module_project.preceding %>
+          <% cev_attr_possible_module_projects = @module_project.preceding.reject { |i| i.pemodule.alias == "initialization" } %>
 
           <% if cev_attr_possible_module_projects.nil? || cev_attr_possible_module_projects.empty? %>
                 <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : [guw_preceding_module_project] %>
