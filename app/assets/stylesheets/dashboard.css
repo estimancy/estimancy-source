@@ -935,6 +935,28 @@ span.error{
     margin-right: 5px;
 }
 
+.icon_margin_right{
+    margin-right: 20px;
+    padding-top: 5px;
+}
+
+.custom-border {
+    width: inherit;
+    height: inherit;
+    display: inline-block;
+    border: 2px solid black;
+    /*border-radius: 60px;*/
+    border-width: thin;
+}
+
+
+.icon_div{
+    border-style: solid;
+    border-width: medium;
+    border-color: black;
+    padding: 2px;
+}
+
 .td_min_width{
     min-width: 220px;
 }
