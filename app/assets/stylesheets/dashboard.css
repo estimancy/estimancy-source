@@ -937,8 +937,16 @@ span.error{
 
 .icon_margin_right{
     margin-right: 20px;
-    padding-top: 5px;
 }
+
+a.icon_margin_right{
+    padding-top: 0px;
+}
+
+a.icon_padding_right{
+    padding-top: 0px;
+}
+
 
 .custom-border {
     width: inherit;
