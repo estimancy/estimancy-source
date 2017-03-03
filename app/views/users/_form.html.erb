@@ -275,7 +275,14 @@
                 <td><%= group.name %></td>
                 <td><%= group.description %></td>
                 <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
-                <td class="center"><%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %></td>
+                <td class="center">
+                  <% if can?(:manage, Group) %>
+                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?%>
+                  <% else %>
+                    <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true %>
+                  <% end %>
+                </td>
+
                 <td class="center">
                   <% if can?(:manage, Group) %>
                     <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
@@ -290,7 +297,7 @@
           </table>
 
           <div class="actions-tabs">
-            <% if (can? :manage, User) || current_user == @user %>
+            <% if (can? :manage, Group) %>
               <% if action_name.in?(%w(new create)) %>
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
               <% end %>
