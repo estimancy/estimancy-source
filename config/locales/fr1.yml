@@ -1636,4 +1636,7 @@ fr1:
   results_button: "Résultats"
   subscription_end_date: "Date de fin d'abonnement"
 
+  rollback: "Annuler"
+  cancel_copy: "Annuler la copie"
+
 

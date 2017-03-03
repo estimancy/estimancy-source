@@ -1598,3 +1598,6 @@ en-gb:
   calculate_button: "Calculate"
   results_button: "Results"
   subscription_end_date: "Subscription end date"
+  rollback: "Rollback"
+  cancel_copy: "Cancel copy"
+  wait_message_for_organization_copy: "Please wait a copy of the organization is underway..."

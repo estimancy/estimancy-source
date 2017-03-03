@@ -1528,7 +1528,7 @@ fr:
   New_Team_module_instance: "Nouvelle instance de module d'équipe"
   New_model_of_Judgment_Expert: "Nouveau modèle de Jugement d'Expert"
   Edit_model_of_Judgment_Expert: "Editer modèle de Jugement d'Expert"
-  wait_message_for_organization_copy: "Veuillez patienter, la copie de l'organisation est en cours."
+  wait_message_for_organization_copy: "Veuillez patienter, la copie de l'organisation est en cours..."
   organization_copy: "Copie de l'organisation"
   Technologies_List: "Liste des Technologies"
   List_of_Works_Units: "Liste des Unités d'Oeuvres"
@@ -1996,4 +1996,7 @@ fr:
   calculate_button: "Calculer"
   results_button: "Résultats"
   subscription_end_date: "Date de fin d'abonnement"
+
+  rollback: "Annuler"
+  cancel_copy: "Annuler la copie"
 
