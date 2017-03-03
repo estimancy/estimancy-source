@@ -1095,8 +1095,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         if params["ajusted_size"].present?
-          #if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-          if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil? || params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          #if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil? || params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
             tmp_hash_res["#{guw_output.id}"] = tmp
             tmp_hash_ares["#{guw_output.id}"] = tmp
           else
