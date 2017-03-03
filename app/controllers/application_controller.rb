@@ -104,12 +104,12 @@ class ApplicationController < ActionController::Base
           sign_out current_user
           reset_session
           subscription_end_date_message = %Q[Votre abonnement a Estimancy a pris fin depuis le "#{subscription_end_date.strftime("%-d %b %Y")}". \n Pour renouveller votre abonnement, veuillez contacter l'administrateur de votre compte <a href="mailto:contact@estimancy.com">par mail</a>]
-          # redirect_to root_path
+          #redirect_to root_path
           redirect_to(sign_in_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
         elsif @disable_access == "1"
           sign_out current_user
           reset_session
-          # redirect_to root_path
+          #redirect_to root_path
           redirect_to(sign_in_path, :flash => { :error => @offline_message} ) and return
         end
       end
