@@ -452,7 +452,7 @@ class Ge::GeModelsController < ApplicationController
               ###tab_error << "Erreur lors de la sauvegarde du modèle"
               existing_ge_model_name = Ge::GeModel.where(name: @ge_model.name).first
               if existing_ge_model_name
-                tab_error << "Erreur : une instance avec le nom '#{@ge_model.name}' existe déjà"
+                tab_error << "Une instance du module de transformation avec le même nom '#{@ge_model.name}' existe déjà"
               else
                 tab_error << "Erreur lors de la sauvegarde du modèle"
               end

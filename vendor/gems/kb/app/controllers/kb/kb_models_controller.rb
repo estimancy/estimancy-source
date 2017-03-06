@@ -148,7 +148,21 @@ class Kb::KbModelsController < ApplicationController
                                        standard_unit_coefficient: file.cell(2,2),
                                        effort_unit: file.cell(3,2),
                                        organization_id: @organization.id)
-        @kb_model.save(validate: false)
+        #@kb_model.save(validate: false)
+        if @kb_model.save
+          flash[:notice] = "Modèle créé avec succès"
+        else
+          existing_kb_model_name = Kb::KbModel.where(name: @kb_model.name).first
+          if existing_kb_model_name
+            flash[:error] = "Une instance du module base de connaissance du même nom '#{@kb_model.name}' existe déjà"
+          else
+            flash[:error] = "Erreur lors de l'import du modèle  \n"
+            if @kb_model.errors
+              flash[:error] << @kb_model.errors.full_messages.to_sentence
+            end
+          end
+          redirect_to main_app.organization_module_estimation_path(@organization.id, anchor: "effort") and return
+        end
       else
         @kb_model = Kb::KbModel.where(id: params[:kb_model_id],
                                       organization_id: @organization.id).first_or_create(name: file.cell(1,2),
@@ -202,10 +216,11 @@ class Kb::KbModelsController < ApplicationController
   def create
     authorize! :manage_modules_instances, ModuleProject
 
-    @organization = Organization.find(params[:kb_model][:organization_id])
+    @organization = Organization.find(params[:organization_id]) #Organization.find(params[:kb_model][:organization_id])
 
     @kb_model = Kb::KbModel.new(params[:kb_model])
-    @kb_model.organization_id = params[:kb_model][:organization_id].to_i
+    @kb_model.organization_id = params[:organization_id].to_i
+
     if @kb_model.save
       redirect_to main_app.organization_module_estimation_path(@kb_model.organization_id, anchor: "effort")
     else
@@ -218,6 +233,7 @@ class Kb::KbModelsController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @kb_model = Kb::KbModel.find(params[:id])
+    @organization = @kb_model.organization
 
     if params[:selected_attributes].nil?
       @kb_model.selected_attributes = []
