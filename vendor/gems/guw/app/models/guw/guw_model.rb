@@ -34,7 +34,9 @@ module Guw
     belongs_to :organization
 
     #validates_presence_of :name####, :organization_id
-    validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    #validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false, message: "Une instance du module de taille avec le même nom existe déjà" }
+
     # validates :coefficient_label, :presence => true
 
     #Search fields

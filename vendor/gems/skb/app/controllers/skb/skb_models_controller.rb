@@ -152,8 +152,14 @@ class Skb::SkbModelsController < ApplicationController
 
         if @skb_model.save
           # OK
+          flash[:notice] = "Modèle importé avec succès"
         else
-          flash[:error] = "Une erreur est survenue durant l'import du modèle."
+          existing_skb_model_name = Skb::SkbModel.where(name: @skb_model.name).first
+          if existing_skb_model_name
+            flash[:error] = "Une instance du module base de connaissance de taille avec le même nom '#{@skb_model.name}' existe déjà"
+          else
+            flash[:error] = "Une erreur est survenue durant l'import du modèle."
+          end
           redirect_to main_app.organization_module_estimation_path(@organization.id, anchor: "taille") and return
         end
 
@@ -235,6 +241,7 @@ class Skb::SkbModelsController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @skb_model = Skb::SkbModel.find(params[:id])
+    @organization  = @skb_model.organization
 
     if params[:selected_attributes].nil?
       @skb_model.selected_attributes = []
