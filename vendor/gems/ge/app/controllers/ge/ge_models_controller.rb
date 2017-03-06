@@ -454,7 +454,10 @@ class Ge::GeModelsController < ApplicationController
               if existing_ge_model_name
                 tab_error << "Une instance du module de transformation avec le même nom '#{@ge_model.name}' existe déjà"
               else
-                tab_error << "Erreur lors de la sauvegarde du modèle"
+                tab_error << "Erreur lors de l'import du modèle. \n"
+                # if @ge_model.errors
+                #   tab_error << @ge_model.errors.full_messages.to_sentence
+                # end
               end
             end
           else
