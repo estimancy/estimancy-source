@@ -53,7 +53,14 @@
           </tr>
         </thead>
         <tbody>
-        <% @organization.users.each do |user| %>
+
+        <% if current_user.super_admin == true %>
+            <% @organization_users = @organization.users %>
+        <% else %>
+            <% @organization_users = @organization.users.where('login_name <> ?', 'owner') %>
+        <% end %>
+
+        <% @organization_users.each do |user| %>
           <tr>
             <td><%= user.first_name %></td>
             <td><%= user.last_name %></td>
