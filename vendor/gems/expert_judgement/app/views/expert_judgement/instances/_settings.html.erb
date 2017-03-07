@@ -40,6 +40,17 @@
                                                        expert_judgement_instance_id: @expert_judgement_instance.id,
                                                        module_project_id: current_module_project.id,
                                                        pbs_project_element_id: current_component.id).first %>
+      <%
+        attr_unit_coefficient = 1
+        pe_attribute = PeAttribute.find(eja.id)
+        if pe_attribute
+          if pe_attribute.alias == "effort"
+            attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient.to_f
+          elsif eja.alias == "cost"
+            attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient.to_f
+          end
+        end
+      %>
 
       <% current_ev =  EstimationValue.where(:pe_attribute_id => eja.id,
                                              :module_project_id => current_module_project.id,
@@ -90,15 +101,15 @@
           <span class="pull-left">
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort("low", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
-            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort("most_likely", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
             <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort("high", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
@@ -108,15 +119,15 @@
           <span class="pull-left">
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][low][output]", ie.low_output, class: "input-small" %>
+              <%= text_field_tag "values[#{eja.id}][low][output]", ie.low_output.to_f / attr_unit_coefficient, class: "input-small" %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
-            <%= text_field_tag "values[#{eja.id}][most_likely][output]", ie.most_likely_output, class: "input-small" %>
+            <%= text_field_tag "values[#{eja.id}][most_likely][output]", ie.most_likely_output.to_f / attr_unit_coefficient, class: "input-small" %>
             <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][high][output]", ie.high_output, class: "input-small" %>
+              <%= text_field_tag "values[#{eja.id}][high][output]", ie.high_output.to_f / attr_unit_coefficient, class: "input-small" %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
@@ -184,6 +195,6 @@
   </table>
 
   <% if can? :execute_estimation_plan, @project %>
-    <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
+    <%= submit_tag I18n.t(:calculate_button), class: "btn btn-primary pull-right" %>
   <% end %>
 <% end %>
