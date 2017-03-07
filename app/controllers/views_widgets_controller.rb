@@ -499,7 +499,13 @@ class ViewsWidgetsController < ApplicationController
 
   # Get the module_project attributes grouped by Input and Ouput
   def get_module_project_attributes_input_output(module_project)
-    estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
+    #estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
+    if module_project.pemodule.alias == "guw"
+      estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
+    else
+      estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
+    end
+    estimation_values
   end
 
 end

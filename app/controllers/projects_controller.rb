@@ -126,7 +126,13 @@ class ProjectsController < ApplicationController
         array_attributes << "cost"
       end
 
-      @expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
+      #@expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
+      expert_judgment_module = Pemodule.where(alias: "expert_judgement").first
+      if expert_judgment_module
+        @expert_judgement_attributes = expert_judgment_module.pe_attributes.where(alias: array_attributes)
+      else
+        @expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
+      end
 
       array_attributes.each do |a|
         ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
