@@ -11,7 +11,9 @@
     <li><a href="#tabs-profile"><%= I18n.t(:profiles) %></a></li>
     <li><a href="#tabs-fields"><%= I18n.t(:fields) %></a></li>
     <li><a href="#tabs-estimation-models"><%= I18n.t(:estimation_models) %></a></li>
-    <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
+    <% if current_user.super_admin == true %>
+        <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
+    <% end %>
     <li><a href="#tabs-select-columns-list"><%= I18n.t(:select_columns_list) %></a></li>
   </ul>
 
@@ -474,15 +476,12 @@
     <%= render partial: "projects/estimation_models", object: @estimation_models %>
   </div>
 
-  <div id="tabs-views">
-    <% if current_user.super_admin == true %>
-      <%= render partial: "views/views_and_widgets" %>
-    <% else %>
-      <div class="red_color">
-        <%= I18n.t(:notice_cannot_view_views_and_widgets) %>
+  <% if current_user.super_admin == true %>
+      <div id="tabs-views">
+        <%= render partial: "views/views_and_widgets" %>
+        <!--<%#= I18n.t(:notice_cannot_view_views_and_widgets) %>-->
       </div>
-    <% end %>
-  </div>
+  <% end %>
 
   <div id="tabs-select-columns-list" style="min-height: 50px;">
     <% if can? :show_projects_selected_columns, Organization %>
