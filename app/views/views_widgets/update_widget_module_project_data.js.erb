@@ -15,3 +15,12 @@
   //$('#views_widget_widget_type').html("<%#= escape_javascript(options_for_select(@views_widget_types)) %>");
   $('#views_widget_widget_type').html("<%= escape_javascript(grouped_options_for_select(@views_widget_types)) %>");
 <% end %>
+
+<% if @show_ratio_name == true %>
+    $("#views_widget_show_wbs_activity_ratio").prop('disabled', false);
+    //$('#views_widget_show_wbs_activity_ratio').removeAttr('disabled');
+<% else %>
+    $("#views_widget_show_wbs_activity_ratio").attr('checked', false);
+    $("#views_widget_show_wbs_activity_ratio").prop('disabled', 'disabled');
+<% end %>
+

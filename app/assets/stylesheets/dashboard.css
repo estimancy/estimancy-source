@@ -980,7 +980,8 @@ a.icon_padding_right{
 
 
 .modal .modal-body {
-    height: 500px;
+    /*height: 500px;*/
+    height: auto;
     /*max-height: 600px;*/
     overflow-y: auto;
 }
@@ -1285,4 +1286,18 @@ form{
     -moz-border-radius: 15px;
     border-radius: 15px;
     border-width: 4px;
+}
+
+.formula_margin_top {
+    margin-top: -24px;
+    margin-right: 10px;
+}
+
+
+.kpi_margin_top {
+    margin-top: -8px;
+}
+
+.field_margin_top {
+    margin-top: -26px;
 }

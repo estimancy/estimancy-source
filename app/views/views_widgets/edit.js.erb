@@ -10,6 +10,8 @@ $("#notifications").html("");
 $("#myModalLabel").css('font-size', 'larger');
 $("#myModalLabel").html('<%= "#{@views_widget.view.name} : #{I18n.t(:edit_widget, value: @views_widget.name)}" %>');
 
+$(".modal .modal-body").css("height", "auto");
+
 $("#edit_component").modal({
     keyboard: false,
     backdrop: "static",

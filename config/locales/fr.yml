@@ -2022,6 +2022,8 @@ fr:
   label_add_new_kpi_widget: "Ajouter une vignette de calcul"
   label_parameters: "Paramètres"
 
+  new_widget_kpi: "Nouvelle vignette de calcul"
+
   coefficient_type: "Type de coefficient"
   allow_intermediate_value: "Autoriser la modification"
   weighting_coefficients: "Les coefficients de pondération"

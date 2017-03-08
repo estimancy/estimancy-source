@@ -340,8 +340,14 @@ class ViewsWidgetsController < ApplicationController
   #Update the module_project corresponding data of view
   def update_widget_module_project_data
     module_project_id = params['module_project_id']
+    @show_ratio_name = false
+
     if !module_project_id.nil? && module_project_id != 'undefined'
       @module_project = ModuleProject.find(module_project_id)
+      if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+        @show_ratio_name = true
+      end
+
       @letter = params[:letter]
       if !@letter.nil?
         @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
@@ -369,7 +375,7 @@ class ViewsWidgetsController < ApplicationController
       estimation_value_id = params['estimation_value_id']
     end
 
-    #begin
+    begin
       if module_project_id.nil?
         @module_project = ModuleProject.find(params['module_project_id'])
       else
@@ -394,9 +400,9 @@ class ViewsWidgetsController < ApplicationController
           @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
         end
       end
-    # rescue
-    #   @views_widget_types = []
-    # end
+    rescue
+      @views_widget_types = []
+    end
 
     @views_widget_types
   end
@@ -499,7 +505,8 @@ class ViewsWidgetsController < ApplicationController
 
   # Get the module_project attributes grouped by Input and Ouput
   def get_module_project_attributes_input_output(module_project)
-    #estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
+    ###estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
+
     if module_project.pemodule.alias == "guw"
       estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
     else

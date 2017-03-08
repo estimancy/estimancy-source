@@ -1626,3 +1626,5 @@ en-gb:
   wbs_phase_formula: "Calculation formula"
   label_add_new_kpi_widget: "Add new KPI widget"
   label_parameters: "Settings"
+
+  new_widget_kpi: "New KPI widget"

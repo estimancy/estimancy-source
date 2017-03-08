@@ -15,27 +15,35 @@
           <%= f.input :is_label_widget, as: :hidden, :input_html => { value: true } %>
           <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-          <div class="row-fluid">
-            <div class="span6"><%= f.input :name, label: I18n.t(:name) %></div>
-            <div class="span6">
-              <label class="checkbox"></label>
-              <%= f.input :show_name, label: I18n.t(:show_name) %></div>
-          </div>
+          <div class="well well-rounded" style="border-width: 1px;">
+            <table>
+              <tr>
+                <td><%= f.input :name, label: I18n.t(:name) %></td>
+                <td>
+                  <label class="checkbox"></label>
+                  <%= f.input :show_name, label: I18n.t(:show_name) %>
+                </td>
+              </tr>
 
-          <div class="row-fluid">
-            <div class="span5">
-              <!-- Color is using the JS Spectrum library -->
-              <% if @views_widget.new_record? %>
-                  <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
-                  <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-              <% else %>
-                  <%= f.input :color, label: I18n.t(:status_color) %>
-              <% end %>
-            </div>
-            <div class="span5">
-              <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-            </div>
-            <div id="view_icon_class_image" class="span1"></div>
+              <tr>
+                <td>
+                  <!-- Color is using the JS Spectrum library -->
+                  <% if @views_widget.new_record? %>
+                      <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
+                      <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+                  <% else %>
+                      <%= f.input :color, label: I18n.t(:status_color) %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+                </td>
+                <td>
+                    <div id="view_icon_class_image" class="span1"></div>
+                </td>
+              </tr>
+
+            </table>
           </div>
 
           <%= tinymce %>
@@ -45,7 +53,7 @@
 
         <div class="actions-tabs">
           <% if can?(:alter_estimation_plan, @project)%>
-              <%= submit_tag I18n.t('save'), :class => 'btn' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
           <% end %>
           <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
         </div>

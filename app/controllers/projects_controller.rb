@@ -1213,6 +1213,9 @@ class ProjectsController < ApplicationController
       @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
       if @pemodule.alias == "guw"
+        #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
+        #guw_outputs = guw_model.guw_outputs
+
         #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
         my_module_project.pemodule.attribute_modules.where(guw_model_id: my_module_project.guw_model_id).each do |am|
           if am.in_out == 'both'
@@ -1229,7 +1232,7 @@ class ProjectsController < ApplicationController
                                            :custom_attribute => am.custom_attribute,
                                            :project_value => am.project_value)
             end
-          else
+          elsif am.in_out != nil
             mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
                                          :module_project_id => my_module_project.id,
                                          :in_out => am.in_out,
