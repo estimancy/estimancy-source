@@ -6,13 +6,14 @@
   <div id="tabs-1">
     <% if can? :show_organization_users, User %>
 
-      <%# if can? :manage, User, :organization_id => @organization.id %>
-      <% if can?(:manage, User, :organization_id => @organization.id) && can?(:manage, Group, :organization_id => @organization.id) %>
+      <% if can? :manage, User, :organization_id => @organization.id %>
         <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
-          <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
-            <%= I18n.t(:import) %>
-          </a>
+          <% if can?(:manage, Group, :organization_id => @organization.id) %>
+              <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
+                <%= I18n.t(:import) %>
+              </a>
+          <% end %>
           <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
         </div>
 
