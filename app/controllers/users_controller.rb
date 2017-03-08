@@ -219,18 +219,20 @@ public
         #il ne se passe rien, un user non super admin ne peux pas décoché un autre utilisateur d'une organisation
       end
     else
-      if params[:groups].nil?
-        @organization.groups.each do |group|
-          GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-        end
-      else
+      if can?(:manage, Group)
+        if params[:groups].nil?
+          @organization.groups.each do |group|
+            GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+          end
+        else
 
-        @organization.groups.each do |group|
-          GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-        end
+          @organization.groups.each do |group|
+            GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+          end
 
-        params[:groups].keys.each do |group_id|
-          GroupsUsers.create(user_id: @user.id, group_id: group_id)
+          params[:groups].keys.each do |group_id|
+            GroupsUsers.create(user_id: @user.id, group_id: group_id)
+          end
         end
       end
     end
