@@ -1240,6 +1240,8 @@ class Ge::GeModelsController < ApplicationController
               effort = taille * @ge_model.input_effort_standard_unit_coefficient.to_f
             end
 
+            # coeff de l'effort de sortie
+            effort = effort * @ge_model.output_effort_standard_unit_coefficient
 
             output_calculated_value = effort
             case output_ev.pe_attribute.alias
