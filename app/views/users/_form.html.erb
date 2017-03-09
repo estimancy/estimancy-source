@@ -62,26 +62,32 @@
                   <% if current_user.super_admin? %>
                     <tr>
                       <td colspan="2">
-                        <%= f.input :subscription_end_date,
+                        <%#= f.input :subscription_end_date,
                                     as: :string,
                                     value: @user.subscription_end_date.nil? ? I18n.l(Time.now + 1.year, format: "%d/%m/%Y") : I18n.l(@user.subscription_end_date, format: "%d/%m/%Y"),
                                     input_html: {
                                             class: 'input-xxlarge'
                                     } %>
-                      </td>
-                    </tr>
-                  <% else %>
-                    <tr>
-                      <td colspan="2">
-                        Date de fin d'abonnement : <%= @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date) %>
+
+                        <%= f.input :subscription_end_date,
+                                    :as => :string,
+                                    :label => I18n.t(:subscription_end_date),
+                                    :input_html => { :class => 'date-picker',
+                                                     :value => @user.subscription_end_date.nil? ? I18n.l(Time.parse((Time.now + 1.year).strftime("%d/%m/%Y"))) : I18n.l(@user.subscription_end_date) } %>
                       </td>
                     </tr>
                   <% end %>
 
-                  <script>
+                  <% user_local =  set_user_language
+                     if !user_local.in?("en", "en-gb")
+                       user_local = "fr"
+                     end
+
+                  %>
+                  <script type="text/javascript">
                     $(document).ready(function () {
                       $(".date-picker").datepicker({
-                        language: '<%= set_user_language %>',
+                        language: '<%= user_local %>',
                         autoclose: true,
                         todayHighlight: true,
                         todayBtn: true
@@ -177,9 +183,11 @@
                     </td>
 
                     <td>
-                      <%= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
-                          <%= f.text_field :subscription_end_date, :value => (I18n.l(@user.subscription_end_date) unless @user.subscription_end_date.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
-                      <% end %>
+                      <%#= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
+                          <%#= f.text_field :subscription_end_date, :value => (@user.subscription_end_date.nil? ? "-" : I18n.l(@user.subscription_end_date)), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                      <%# end %>
+
+                      <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
                     </td>
 
                   </tr>
@@ -274,10 +282,14 @@
               <tr>
                 <td><%= group.name %></td>
                 <td><%= group.description %></td>
-                <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
+                <% if @user.new_record? %>
+                    <% gu = nil %>
+                <% else %>
+                    <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
+                <% end %>
                 <td class="center">
                   <% if can?(:manage, User) && can?(:manage, Group) %>
-                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?%>
+                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
                   <% else %>
                     <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true %>
                   <% end %>
