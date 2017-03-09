@@ -6,18 +6,22 @@
   <div id="tabs-1">
     <% if can? :show_organization_users, User %>
 
-      <% if can? :manage, User, :organization_id => @organization.id %>
-        <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
-          <% if can?(:manage, Group, :organization_id => @organization.id) %>
+      <div class="group_button">
+
+        <% if can? :manage, User, :organization_id => @organization.id %>
+            <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
+
+            <% if can?(:manage, Group, :organization_id => @organization.id) %>
               <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
                 <%= I18n.t(:import) %>
               </a>
-          <% end %>
-          <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
-        </div>
+            <% end %>
+        <% end %>
+        <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
+      </div>
 
-      <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <% if can?(:manage, User, :organization_id => @organization.id) &&  can?(:manage, Group, :organization_id => @organization.id) %>
+        <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
             <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
