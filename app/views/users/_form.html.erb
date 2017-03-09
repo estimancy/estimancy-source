@@ -73,7 +73,7 @@
                                     :as => :string,
                                     :label => I18n.t(:subscription_end_date),
                                     :input_html => { :class => 'date-picker',
-                                                     :value => @user.subscription_end_date.nil? ? I18n.l(Time.parse((Time.now + 1.year).strftime("%d/%m/%Y"))) : I18n.l(@user.subscription_end_date) } %>
+                                                     :value => @user.subscription_end_date.nil? ? I18n.l(Time.parse((Time.now + 1.year).strftime("%d/%m/%Y"))) : I18n.l(@user.subscription_end_date.to_date) } %>
                       </td>
                     </tr>
                   <% end %>
@@ -186,8 +186,8 @@
                       <%#= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
                           <%#= f.text_field :subscription_end_date, :value => (@user.subscription_end_date.nil? ? "-" : I18n.l(@user.subscription_end_date)), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
                       <%# end %>
-
-                      <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                      <label style="margin-top: -13px; margin-left: 0px;"><%= I18n.t('subscription_end_date') %></label>
+                      <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
                     </td>
 
                   </tr>
