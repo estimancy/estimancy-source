@@ -1401,10 +1401,20 @@ class OrganizationsController < ApplicationController
       worksheet.add_cell(0, index, name)
     end
 
-    @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
-      line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
-      line.each_with_index do |my_case, index|
-        worksheet.add_cell(index_line + 1, index, my_case)
+    if can?(:manage, Group, :organization_id => @organization.id)
+      @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
+        line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
+        line.each_with_index do |my_case, index|
+          worksheet.add_cell(index_line + 1, index, my_case)
+        end
+      end
+    else
+      user_groups = @organization.groups.where(name: "*USER")
+      @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
+        line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user_groups.map(&:name)
+        line.each_with_index do |my_case, index|
+          worksheet.add_cell(index_line + 1, index, my_case)
+        end
       end
     end
 
@@ -1422,6 +1432,8 @@ class OrganizationsController < ApplicationController
   end
 
   def import_user
+
+    authorize! :manage, User
 
     users_existing = []
     user_with_no_name = []
