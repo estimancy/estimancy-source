@@ -1497,6 +1497,9 @@ class OrganizationsController < ApplicationController
                       end
                      group_index += 1
                    end
+                else
+                  @user_group = @current_organization.groups.where(name: '*USER').first_or_create(organization_id: @current_organization.id, name: "*USER")
+                  GroupsUsers.create(group_id: @user_group.id, user_id: user.id)
                 end
               else
                 user_with_no_name << index_line
@@ -1508,6 +1511,7 @@ class OrganizationsController < ApplicationController
         end
       end
       final_error = []
+      flash_err = false
       unless users_existing.empty?
         final_error <<  I18n.t(:user_exist, parameter: users_existing.join(", "))
       end
@@ -1516,11 +1520,15 @@ class OrganizationsController < ApplicationController
       end
       unless final_error.empty?
         flash[:error] = final_error.join("<br/>").html_safe
+        flash_err = true
       end
-      flash[:notice] = I18n.t(:user_importation_success)
+      if final_error.empty? && flash_err==false
+        flash[:notice] = I18n.t(:user_importation_success)
+      end
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
+
     redirect_to organization_users_path(@current_organization)
 
 =begin
