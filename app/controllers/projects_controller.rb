@@ -34,6 +34,7 @@ class ProjectsController < ApplicationController
   helper_method :show_status_change_comments
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
+  #before_filter :check_estimations_counter, :only => [:new, :create, :duplicate, :checkout ]
 
   #protected
   private
