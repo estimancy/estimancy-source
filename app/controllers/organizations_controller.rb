@@ -1377,10 +1377,20 @@ class OrganizationsController < ApplicationController
       worksheet.add_cell(0, index, name)
     end
 
-    @organization.users.each_with_index do |user, index_line|
-      line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
-      line.each_with_index do |my_case, index|
-        worksheet.add_cell(index_line + 1, index, my_case)
+    if can?(:manage, Group, :organization_id => @organization.id)
+      @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
+        line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
+        line.each_with_index do |my_case, index|
+          worksheet.add_cell(index_line + 1, index, my_case)
+        end
+      end
+    else
+      user_groups = @organization.groups.where(name: "*USER")
+      @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
+        line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user_groups.map(&:name)
+        line.each_with_index do |my_case, index|
+          worksheet.add_cell(index_line + 1, index, my_case)
+        end
       end
     end
 
@@ -1398,6 +1408,9 @@ class OrganizationsController < ApplicationController
   end
 
   def import_user
+
+    authorize! :manage, User
+
     users_existing = []
     user_with_no_name = []
 
@@ -1442,22 +1455,29 @@ class OrganizationsController < ApplicationController
                                 locked_at: line[8] ==  0 ? nil : Time.now,
                                 number_precision: 2,
                                 subcription_end_date: Time.now + 1.year)
+
                 if line[5].upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
                 end
+                user.subscription_end_date = Time.now + 1.year
                 user.save
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
-                 while line[group_index]
-                    group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
-                    begin
-                      GroupsUsers.create(group_id: group.id, user_id: user.id)
-                    rescue
-                      #rien
-                    end
-                   group_index += 1
-                 end
+                if can?(:manage, Group, :organization_id => @current_organization.id)
+                   while line[group_index]
+                      group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
+                      begin
+                        GroupsUsers.create(group_id: group.id, user_id: user.id)
+                      rescue
+                        #rien
+                      end
+                     group_index += 1
+                   end
+                else
+                  @user_group = @current_organization.groups.where(name: '*USER').first_or_create(organization_id: @current_organization.id, name: "*USER")
+                  GroupsUsers.create(group_id: @user_group.id, user_id: user.id)
+                end
               else
                 user_with_no_name << index_line
               end
@@ -1468,6 +1488,7 @@ class OrganizationsController < ApplicationController
         end
       end
       final_error = []
+      flash_err = false
       unless users_existing.empty?
         final_error <<  I18n.t(:user_exist, parameter: users_existing.join(", "))
       end
@@ -1476,11 +1497,15 @@ class OrganizationsController < ApplicationController
       end
       unless final_error.empty?
         flash[:error] = final_error.join("<br/>").html_safe
+        flash_err = true
       end
-      flash[:notice] = I18n.t(:user_importation_success)
+      if final_error.empty? && flash_err==false
+        flash[:notice] = I18n.t(:user_importation_success)
+      end
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
+
     redirect_to organization_users_path(@current_organization)
 
 =begin

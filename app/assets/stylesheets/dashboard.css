@@ -935,6 +935,36 @@ span.error{
     margin-right: 5px;
 }
 
+.icon_margin_right{
+    margin-right: 15px;
+}
+
+a.icon_margin_right{
+    padding-top: 0px;
+}
+
+a.icon_padding_right{
+    padding-top: 0px;
+}
+
+
+.custom-border {
+    width: inherit;
+    height: inherit;
+    display: inline-block;
+    border: 2px solid black;
+    /*border-radius: 60px;*/
+    border-width: thin;
+}
+
+
+.icon_div{
+    border-style: solid;
+    border-width: medium;
+    border-color: black;
+    padding: 2px;
+}
+
 .td_min_width{
     min-width: 220px;
 }
@@ -950,7 +980,8 @@ span.error{
 
 
 .modal .modal-body {
-    height: 450px;
+    /*height: 500px;*/
+    height: auto;
     /*max-height: 600px;*/
     overflow-y: auto;
 }
@@ -1260,4 +1291,18 @@ form{
 .vertical_align_center {
     margin-top: 50vh; /* poussé de la moitié de hauteur de viewport */
     transform: translateY(-50%); /* tiré de la moitié de sa propre hauteur */
+}
+
+.formula_margin_top {
+    margin-top: -24px;
+    margin-right: 10px;
+}
+
+
+.kpi_margin_top {
+    margin-top: -8px;
+}
+
+.field_margin_top {
+    margin-top: -26px;
 }
