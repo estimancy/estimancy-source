@@ -2021,6 +2021,7 @@ fr:
   formula: "Formule de calcul"
   label_add_new_kpi_widget: "Ajouter une vignette de calcul"
   label_parameters: "Paramètres"
+  estimations_counter: "Compteur d'estimations"
 
   new_widget_kpi: "Nouvelle vignette de calcul"
 

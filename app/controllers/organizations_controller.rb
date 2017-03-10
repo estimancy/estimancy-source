@@ -1422,6 +1422,7 @@ class OrganizationsController < ApplicationController
   end
 
   def import_user
+
     users_existing = []
     user_with_no_name = []
 
@@ -1466,6 +1467,7 @@ class OrganizationsController < ApplicationController
                                 locked_at: line[8] ==  0 ? nil : Time.now,
                                 number_precision: 2,
                                 subcription_end_date: Time.now + 1.year)
+
                 if line[5].upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
@@ -1473,15 +1475,17 @@ class OrganizationsController < ApplicationController
                 user.save
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
-                 while line[group_index]
-                    group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
-                    begin
-                      GroupsUsers.create(group_id: group.id, user_id: user.id)
-                    rescue
-                      #rien
-                    end
-                   group_index += 1
-                 end
+                if can?(:manage, Group, :organization_id => @current_organization.id)
+                   while line[group_index]
+                      group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
+                      begin
+                        GroupsUsers.create(group_id: group.id, user_id: user.id)
+                      rescue
+                        #rien
+                      end
+                     group_index += 1
+                   end
+                end
               else
                 user_with_no_name << index_line
               end

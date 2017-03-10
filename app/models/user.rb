@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
                   :password, :password_confirmation, :remember_me, :provider, :uid, :description,
                   :avatar, :language_id, :first_name, :last_name, :initials, :time_zone, :locked_at,
                   :object_per_page, :password_salt, :password_hash, :password_reset_token, :auth_token, :created_at,
-                  :updated_at, :auth_type, :number_precision
+                  :updated_at, :auth_type, :number_precision, :subscription_end_date
 
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
   attr_accessor :id_connexion, :updating_password, :current_password
@@ -92,8 +92,8 @@ class User < ActiveRecord::Base
   serialize :ten_latest_projects, Array
 
   validates_presence_of :last_name, :first_name
-  validates :login_name, :presence => true, :uniqueness => {case_sensitive: false}
-  #validates :email, :presence => true, :format => {:with => /\b[A-Z0-9._%a-z\-]+@(?:[A-Z0-9a-z\-]+\.)+[A-Za-z]{2,4}\z/i}, :uniqueness => {case_sensitive: false}
+  validates :login_name, :presence => true, :uniqueness => { case_sensitive: false }
+  validates :email, :presence => true ###, :format => {:with => /\b[A-Z0-9._%a-z\-]+@(?:[A-Z0-9a-z\-]+\.)+[A-Za-z]{2,4}\z/i}, :uniqueness => {case_sensitive: false}
   #validates :email, :presence => true, :format => {:with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i}#, :uniqueness => {case_sensitive: false}
   validates :number_precision, numericality: { only_integer: true, :allow_blank => true }
 
