@@ -1484,6 +1484,7 @@ class OrganizationsController < ApplicationController
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
                 end
+                user.subscription_end_date = Time.now + 1.year
                 user.save
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
