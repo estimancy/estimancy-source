@@ -121,7 +121,7 @@
                 <% @guw_model.guw_outputs.each do |guw_output| %>
                   <td class="align-center">
 
-                    <% oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id,
+                    <% oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
                                                                           guw_output_id: guw_output.id).first %>
 
                     <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "input-mini" %>
