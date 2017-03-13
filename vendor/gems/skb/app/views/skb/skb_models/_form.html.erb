@@ -63,6 +63,23 @@
           <% end %>
         <% end %>
 
+        <% user_local =  set_user_language
+           if !user_local.in?("en", "en-gb")
+             user_local = "fr"
+           end
+
+        %>
+        <script type="text/javascript">
+          $(document).ready(function () {
+            $(".date-picker").datepicker({
+              language: '<%= user_local %>',
+              autoclose: true,
+              todayHighlight: true,
+              todayBtn: true
+            });
+          });
+        </script>
+
         <%= f.input :n_max, label: "N derniers projets" %>
 
         <%= f.input :size_unit, label: I18n.t(:size_unit) %>

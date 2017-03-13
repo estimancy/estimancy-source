@@ -92,8 +92,37 @@ class Skb::SkbModelsController < ApplicationController
     worksheet.add_cell(1, 0, "Description")
     worksheet.add_cell(1, 1, @skb_model.description)
 
-    worksheet.add_cell(2, 0, "Unité de taille")
-    worksheet.add_cell(2, 1, @skb_model.size_unit)
+    worksheet.add_cell(2, 0, "Libellé de l'axe des abscisses")
+    worksheet.add_cell(2, 1, @skb_model.label_x)
+
+    worksheet.add_cell(3, 0, "Libellé de l'axe des ordonnées")
+    worksheet.add_cell(3, 1, @skb_model.label_y)
+
+    worksheet.add_cell(4, 0, I18n.t(:three_points_estimation))
+    worksheet.add_cell(4, 1, @skb_model.three_points_estimation ? 1 : 0)
+
+    worksheet.add_cell(5, 0, I18n.t(:modification_of_the_input_value_allow))
+    worksheet.add_cell(5, 1, @skb_model.enabled_input ? 1 : 0)
+
+    worksheet.add_cell(6, 0, I18n.t(:start_date))
+    worksheet.add_cell(6, 1, @skb_model.date_min)
+
+    worksheet.add_cell(7, 0, I18n.t(:end_date))
+    worksheet.add_cell(7, 1, @skb_model.date_max)
+
+    worksheet.add_cell(8, 0, "N derniers projets")
+    worksheet.add_cell(8, 1, @skb_model.n_max)
+
+    worksheet.add_cell(9, 0, I18n.t(:size_unit))
+    worksheet.add_cell(9, 1, @skb_model.size_unit)
+
+    worksheet.add_cell(10, 0, I18n.t(:filters))
+    unless @skb_model.selected_attributes.empty?
+      worksheet.add_cell(10, 1,@skb_model.selected_attributes.join(','))
+    end
+
+    worksheet.change_column_width(0, I18n.t(:modification_of_the_input_value_allow).size)
+    worksheet.change_column_bold(0,true)
 
     worksheet = workbook.add_worksheet("Données")
     skb_model_datas = @skb_model.skb_datas
@@ -147,8 +176,18 @@ class Skb::SkbModelsController < ApplicationController
       file.default_sheet = file.sheets[0]
 
       if params[:skb_model_id].blank?
-        @skb_model = Skb::SkbModel.new(name: file.cell(1,2),
+        @skb_model = Skb::SkbModel.new(name: file.cell(1,2), description: file.cell(2,2),
+                                       label_x: file.cell(3,2), label_y: file.cell(4,2),
+                                       three_points_estimation: (file.cell(5,2) == 1 ? true : false),
+                                       enabled_input: (file.cell(6,2) == 1 ? true : false),
+                                       date_min: file.cell(7,2), date_max: file.cell(8,2),
+                                       n_max: file.cell(9,2),  size_unit: file.cell(10,2),
                                        organization_id: @organization.id)
+
+
+        unless file.cell(11,2).empty?
+          @skb_model.selected_attributes = file.cell(11,2).split(',')
+        end
 
         if @skb_model.save
           # OK
