@@ -135,8 +135,15 @@ class Skb::SkbModelsController < ApplicationController
       worksheet.add_cell(0, 2, "Date").change_horizontal_alignment('center')
       worksheet.add_cell(0, 3, "X").change_horizontal_alignment('center')
       worksheet.add_cell(0, 4, "Y").change_horizontal_alignment('center')
-      worksheet.add_cell(0, 5, "F1").change_horizontal_alignment('center')
-      worksheet.add_cell(0, 6, "F2").change_horizontal_alignment('center')
+
+      if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
+        worksheet.add_cell(0, 5, "F1").change_horizontal_alignment('center')
+        worksheet.add_cell(0, 6, "F2").change_horizontal_alignment('center')
+      else
+        @skb_model.selected_attributes.each_with_index do |filter, index|
+          worksheet.add_cell(0, 5+index, "#{filter}").change_horizontal_alignment('center')
+        end
+      end
 
       skb_model_datas.each_with_index do |skb_data, index|
         worksheet.add_cell(index + 1, 0, skb_data.name).change_horizontal_alignment('center')
