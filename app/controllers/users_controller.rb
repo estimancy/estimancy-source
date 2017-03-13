@@ -230,7 +230,6 @@ public
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
         else
-
           @organization.groups.each do |group|
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
