@@ -21,12 +21,6 @@
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-          <table cellpadding="5">
-            <tr>
-              <td><%= f.input :for_global_permission, :label => I18n.t('global_permissions'), :as => :boolean, :input_html => {:class => 'input-xxlarge'} %></td>
-              <td><%= f.input :for_project_security, :label => I18n.t('project_permissions'), :as => :boolean, :input_html => {:class => 'input-xxlarge'} %></td>
-            </tr>
-          </table>
         </div>
 
         <div class="actions-tabs">

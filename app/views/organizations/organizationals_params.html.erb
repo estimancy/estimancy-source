@@ -9,6 +9,12 @@
         <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn' %>
         <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn' %>
       </div>
+
+      <div id="display_copy_message" style="display: none; text-align: center">
+          <p id="syncStarted" style="display:none">
+            <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
+          </p>
+      </div>
     <% end %>
 
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
@@ -44,7 +50,9 @@
                 <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
 
                 <% if can? :manage, Organization %>
-                  <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy"  %>
+                  <%#= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true  %>
+                  <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),
+                              class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window"}  %>
                   <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'))  %>
                 <% end %>
               <% end %>
@@ -59,6 +67,20 @@
   <div id="modal-window" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <%= render partial: "display_animation_ajax_loader" %>
   </div>
+
+  <!--<div id="display_animation_ajax_loader" style="display: none">-->
+    <!--<p> <%#= I18n.t(:wait_for_new_organization_creation) %></p>-->
+  <!--</div>-->
+
+  <script>
+      $('.copy_an_organization').bind('ajax:beforeSend', function() {
+          $('#display_copy_message').show();
+      });
+
+      $('.copy_an_organization').bind('ajax:complete', function() {
+          $('#display_copy_message').hide();
+      });
+  </script>
 </div>
 
 

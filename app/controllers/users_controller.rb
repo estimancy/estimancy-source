@@ -72,6 +72,7 @@ public
 
     @user = User.new
     @user.auth_type = AuthMethod.where(name: "Application").first.id
+    @user.subscription_end_date = Time.now + 1.year
     @generated_password = SecureRandom.hex(4)
     @organizations = current_user.organizations
   end
@@ -100,50 +101,53 @@ public
       @organization = @current_organization
     end
 
-    @user.save(validate: false)
+    @user.transaction do
+      @user.save(validate: false)
 
-    if @organization
-      @organization_id = @organization.id
-      OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+      if @organization
+        @organization_id = @organization.id
+        OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
 
-      @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
-      @user.groups << @user_group
-    else
-      if params[:organizations]
-        params[:organizations].keys.each do |organization_id|
-          OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
+        @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
+        @user.groups << @user_group
+      else
+        if params[:organizations]
+          params[:organizations].keys.each do |organization_id|
+            OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
+          end
         end
       end
-    end
 
-    unless params[:groups].nil?
-      @user.group_ids = params[:groups].keys
-      @user.save
-    end
-
-    if @user.save
-      flash[:notice] = I18n.t(:notice_account_successful_created)
-
-      tab_name = "tabs-1"
-      if params['tabs-5']
-        tab_name = "tabs-5"
-      elsif params['tabs-groups']
-        tab_name = "tabs-groups"
-      elsif params['tabs-organizations']
-        tab_name = "tabs-organizations"
+      if can?(:manage, Group, :organization_id => @organization.id)
+        unless params[:groups].nil?
+          @user.group_ids = params[:groups].keys
+          @user.save
+        end
       end
-      params[:commit] = params["#{tab_name}"]
 
-      if @organization.nil?
-        redirect_to(redirect_apply(edit_user_path(@user, :anchor => tab_name), users_path, users_path)) and return
+      if @user.save
+        flash[:notice] = I18n.t(:notice_account_successful_created)
+
+        tab_name = "tabs-1"
+        if params['tabs-5']
+          tab_name = "tabs-5"
+        elsif params['tabs-groups']
+          tab_name = "tabs-groups"
+        elsif params['tabs-organizations']
+          tab_name = "tabs-organizations"
+        end
+        params[:commit] = params["#{tab_name}"]
+
+        if @organization.nil?
+          redirect_to(redirect_apply(edit_user_path(@user, :anchor => tab_name), users_path, users_path)) and return
+        else
+          redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name)) and return
+        end
+
       else
-        redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name)) and return
+        render(:new, organization_id: @organization_id)
       end
-
-    else
-      render(:new, organization_id: @organization_id)
     end
-
   end
 
   def edit
@@ -219,18 +223,20 @@ public
         #il ne se passe rien, un user non super admin ne peux pas décoché un autre utilisateur d'une organisation
       end
     else
-      if params[:groups].nil?
-        @organization.groups.each do |group|
-          GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-        end
-      else
+      if can?(:manage, Group)
+        if params[:groups].nil?
+          @organization.groups.each do |group|
+            GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+          end
+        else
 
-        @organization.groups.each do |group|
-          GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-        end
+          @organization.groups.each do |group|
+            GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+          end
 
-        params[:groups].keys.each do |group_id|
-          GroupsUsers.create(user_id: @user.id, group_id: group_id)
+          params[:groups].keys.each do |group_id|
+            GroupsUsers.create(user_id: @user.id, group_id: group_id)
+          end
         end
       end
     end

@@ -6,65 +6,70 @@
     <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
     <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
-    <table>
-      <tr>
-        <td><%= f.input :name, label: I18n.t(:name) %></td>
-        <td>
-          <label class="checkbox"></label>
-          <%= f.input :show_name, label: I18n.t(:show_name) %>
-        </td>
-      </tr>
-      <tr>
-        <td><%= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @views_widget.pbs_project_element.nil? ? '' : @views_widget.pbs_project_element.id, include_blank: false, input_html:{class: "inline_attr"}  %></td>
-        <td>
-          <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-            <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr"} %>
-          <% else %>
-            <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
-          <% end %>
-        </td>
-      </tr>
-      <tr>
-        <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr input-xxl"}, include_blank: false %></td>
-        <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
-      </tr>
-      <tr>
-        <td>
-          <% if @views_widget.new_record? %>
-            <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
-          <% else %>
-            <%= f.input :color, label: I18n.t(:status_color) %>
-          <% end %>
-        </td>
-        <td><%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %></td>
-        <td><div id="view_icon_class_image"></div></td>
-      </tr>
-      <tr>
-        <td>
-          <label class="checkbox"></label>
-          <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-          <% if @module_project.wbs_activity %>
-            <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio) %>
-          <% end %>
-        </td>
-        <td>
-          <label><%= I18n.t :fields %></label>
-          <% selected = @views_widget.project_fields.first %>
-          <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
-        </td>
-      </tr>
+    <div class="well well-rounded" style="border-width: 1px;">
+        <table>
+          <tr>
+            <td><%= f.input :name, label: I18n.t(:name) %></td>
+            <td>
+              <label class="checkbox"></label>
+              <%= f.input :show_name, label: I18n.t(:show_name) %>
+            </td>
+          </tr>
+          <tr>
+            <!--<td><%#= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @views_widget.pbs_project_element.nil? ? '' : @views_widget.pbs_project_element.id, include_blank: false, input_html:{class: "inline_attr"}  %></td>-->
+            <td>
+              <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr"} %>
+              <% else %>
+                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
+              <% end %>
+            </td>
+            <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr input-xxl"}, include_blank: false %></td>
+          </tr>
+        </table>
+    </div>
+    <div class="well well-rounded" style="border-width: 1px;">
+        <table>
+          <tr>
+            <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
+            <td>
+              <% if @views_widget.new_record? %>
+                <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
+              <% else %>
+                <%= f.input :color, label: I18n.t(:status_color) %>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label><%= I18n.t :fields %></label>
+              <% selected = @views_widget.project_fields.first %>
+              <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
+            </td>
 
-      <tr>
-        <td>
-          <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
-        </td>
-      </tr>
-    </table>
+            <td>
+              <label class="checkbox" style="margin-top: -9px;"></label>
+              <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+            </td>
+            <td><div id="view_icon_class_image"></div></td>
+          </tr>
+          <tr>
+            <td>
+              <label class="checkbox"></label>
+              <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
+              <%# if @module_project.wbs_activity %>
+              <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
+              <%# end %>
+            </td>
+          </tr>
+        </table>
+        <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
+    </div>
   </div>
   
   <div class="actions-tabs">
     <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
-        <%= submit_tag I18n.t('save'), :class => 'btn' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
     <% end %>
     <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
   </div>
@@ -98,15 +103,25 @@
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
 
     var widget_type = $("#views_widget_widget_type").val();
-    if (widget_type !== ""){
-        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-            $('#views_widget_show_min_max').attr('disabled','disabled');
-            $("#views_widget_widget_type").value = 0;
-        }
-        else{
-            $('#views_widget_show_min_max').removeAttr('disabled');
-        }
+    if (widget_type == "text"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
     }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+//    if (widget_type !== ""){
+//        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+//            $('#views_widget_show_min_max').attr('disabled','disabled');
+//            $("#views_widget_widget_type").value = 0;
+//        }
+//        else{
+//            $('#views_widget_show_min_max').removeAttr('disabled');
+//        }
+//    }
+
+
 
     // Update the view_widget attribute according to the selected module
     $("#views_widget_module_project_id").change(function() {
@@ -138,14 +153,22 @@
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();
-        if (widget_type !== ""){
-            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-                $('#views_widget_show_min_max').attr('disabled','disabled');
-                $("#views_widget_widget_type").value = 0;
-            } else{
-                $('#views_widget_show_min_max').removeAttr('disabled');
-            }
+        if (widget_type == "text"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
         }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
+        }
+//        if (widget_type !== ""){
+//            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+//                $('#views_widget_show_min_max').attr('disabled','disabled');
+//                $("#views_widget_widget_type").value = 0;
+//            } else{
+//                $('#views_widget_show_min_max').removeAttr('disabled');
+//            }
+//        }
     });
 
 

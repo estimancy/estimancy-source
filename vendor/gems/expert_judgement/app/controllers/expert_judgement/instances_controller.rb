@@ -91,6 +91,41 @@ class ExpertJudgement::InstancesController < ApplicationController
     @expert_judgement_instance = ExpertJudgement::Instance.find(params[:instance_id])
     params[:values].each do |value|
       attr_id = value.first
+
+      # ["input", "output"].each do |in_out|
+      #   ["low", "high", "most_likely"].each do |level|
+      #   end
+      # end
+
+      attr_unit_coefficient = 1
+      pe_attribute = PeAttribute.find(attr_id)
+      if pe_attribute
+        if pe_attribute.alias == "effort"
+          attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient.to_f
+        elsif eja.alias == "cost"
+          attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient.to_f
+        end
+      end
+
+
+      most_likely_input = params[:values][attr_id]["most_likely"]["input"].to_f * attr_unit_coefficient
+      most_likely_output = params[:values][attr_id]["most_likely"]["output"].to_f * attr_unit_coefficient
+
+      if @expert_judgement_instance.three_points_estimation?
+        low_input = params[:values][attr_id]["low"]["input"].to_f * attr_unit_coefficient
+        high_input = params[:values][attr_id]["high"]["input"].to_f * attr_unit_coefficient
+
+        low_output = params[:values][attr_id]["low"]["output"].to_f * attr_unit_coefficient
+        high_output = params[:values][attr_id]["high"]["output"].to_f * attr_unit_coefficient
+
+      else
+        low_input = most_likely_input
+        high_input = most_likely_input
+
+        low_output = most_likely_output
+        high_output = most_likely_output
+      end
+
       ejie = ExpertJudgement::InstanceEstimate.where(pbs_project_element_id: current_component.id,
                                                      module_project_id: current_module_project.id,
                                                      expert_judgement_instance_id: @expert_judgement_instance.id,
@@ -101,28 +136,28 @@ class ExpertJudgement::InstancesController < ApplicationController
                                                        module_project_id: current_module_project.id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id,
                                                        pe_attribute_id: attr_id.to_i,
-                                                       low_input: params[:values][attr_id]["low"]["input"].to_f,
-                                                       most_likely_input: params[:values][attr_id]["most_likely"]["input"].to_f,
-                                                       high_input: params[:values][attr_id]["high"]["input"].to_f,
-                                                       low_output: params[:values][attr_id]["low"]["output"].to_f,
-                                                       most_likely_output: params[:values][attr_id]["most_likely"]["output"].to_f,
-                                                       high_output: params[:values][attr_id]["high"]["output"].to_f)
+                                                       low_input: low_input, #params[:values][attr_id]["low"]["input"].to_f,
+                                                       most_likely_input: most_likely_input, #params[:values][attr_id]["most_likely"]["input"].to_f,
+                                                       high_input: high_input, #params[:values][attr_id]["high"]["input"].to_f,
+                                                       low_output: low_output, #params[:values][attr_id]["low"]["output"].to_f,
+                                                       most_likely_output: most_likely_output, #params[:values][attr_id]["most_likely"]["output"].to_f,
+                                                       high_output: high_output) #params[:values][attr_id]["high"]["output"].to_f)
       else
         ejie.tracking = params[:tracking][attr_id]
         ejie.comments = params[:comments][attr_id]
         ejie.description = params[:description][attr_id]
 
         if @expert_judgement_instance.three_points_estimation?
-          ejie.low_input = params[:values][attr_id]["low"]["input"].to_f
-          ejie.most_likely_input = params[:values][attr_id]["most_likely"]["input"].to_f
-          ejie.high_input = params[:values][attr_id]["high"]["input"].to_f
+          ejie.low_input = low_input #params[:values][attr_id]["low"]["input"].to_f
+          ejie.most_likely_input = most_likely_input  #params[:values][attr_id]["most_likely"]["input"].to_f
+          ejie.high_input = high_input  #params[:values][attr_id]["high"]["input"].to_f
 
-          ejie.low_output = params[:values][attr_id]["low"]["output"].to_f
-          ejie.most_likely_output = params[:values][attr_id]["most_likely"]["output"].to_f
-          ejie.high_output = params[:values][attr_id]["high"]["output"].to_f
+          ejie.low_output = low_output  #params[:values][attr_id]["low"]["output"].to_f
+          ejie.most_likely_output = most_likely_output  #params[:values][attr_id]["most_likely"]["output"].to_f
+          ejie.high_output = high_output  #params[:values][attr_id]["high"]["output"].to_f
         else
-          in_value = params[:values][attr_id]["most_likely"]["input"].to_f
-          out_value = params[:values][attr_id]["most_likely"]["output"].to_f
+          in_value = most_likely_input  #params[:values][attr_id]["most_likely"]["input"].to_f
+          out_value = most_likely_output  #params[:values][attr_id]["most_likely"]["output"].to_f
 
           ejie.low_input = ejie.most_likely_input = ejie.high_input = in_value
           ejie.low_output = ejie.most_likely_output = ejie.high_output = out_value
@@ -141,9 +176,9 @@ class ExpertJudgement::InstancesController < ApplicationController
                                      in_out: io).first
 
           if @expert_judgement_instance.three_points_estimation?
-            ev.send("string_data_#{level}")[current_component.id] = params[:values][attr_id][level][io].to_f
+            ev.send("string_data_#{level}")[current_component.id] = params[:values][attr_id][level][io].to_f * attr_unit_coefficient
           else
-            ev.send("string_data_#{level}")[current_component.id] = params[:values][attr_id]["most_likely"][io].to_f
+            ev.send("string_data_#{level}")[current_component.id] = params[:values][attr_id]["most_likely"][io].to_f * attr_unit_coefficient
           end
 
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]

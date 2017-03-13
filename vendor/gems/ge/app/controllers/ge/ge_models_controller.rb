@@ -911,19 +911,23 @@ class Ge::GeModelsController < ApplicationController
           # Gestion des sorties
           output_evs.each do |output_ev|
 
-            if output_ev.pe_attribute_id == output_pe_attribute.id
-              # Attribut sélectionné comme étant en sortie du module
-              if @ge_model.three_points_estimation?
-                size = input_data_for_outputs[level]["#{input_pe_attribute.id}"]
+            begin
+              if output_ev.pe_attribute_id == output_pe_attribute.id
+                # Attribut sélectionné comme étant en sortie du module
+                if @ge_model.three_points_estimation?
+                  size = input_data_for_outputs[level]["#{input_pe_attribute.id}"]
+                else
+                  size = input_data_for_outputs["most_likely"]["#{input_pe_attribute.id}"]
+                end
               else
-                size = input_data_for_outputs["most_likely"]["#{input_pe_attribute.id}"]
+                if @ge_model.three_points_estimation?
+                  size = input_data_for_outputs[level]["#{output_ev.pe_attribute.id}"]
+                else
+                  size = input_data_for_outputs["most_likely"]["#{output_ev.pe_attribute.id}"]
+                end
               end
-            else
-              if @ge_model.three_points_estimation?
-                size = input_data_for_outputs[level]["#{output_ev.pe_attribute.id}"]
-              else
-                size = input_data_for_outputs["most_likely"]["#{output_ev.pe_attribute.id}"]
-              end
+            rescue
+              size = 0
             end
 
             #if am.pe_attribute.alias == output_pe_attribute.alias
@@ -1193,22 +1197,25 @@ class Ge::GeModelsController < ApplicationController
         output_evs.each do |output_ev|
           ["low", "most_likely", "high"].each do |level|
 
-            # Gestions des attributs
-            if output_ev.pe_attribute_id == output_pe_attribute.id
-              # Attribut sélectionné comme étant en sortie du module
-              if @ge_model.three_points_estimation?
-                size = input_data_for_outputs["#{input_pe_attribute.id}"][level] #input_size_data[level] #params["retained_size_#{level}"].to_f
-              else
-                size = input_data_for_outputs["#{input_pe_attribute.id}"]["most_likely"] #input_size_data[level] #params["retained_size_most_likely"].to_f
-              end
+            begin
+              # Gestions des attributs
+              if output_ev.pe_attribute_id == output_pe_attribute.id
+                # Attribut sélectionné comme étant en sortie du module
+                if @ge_model.three_points_estimation?
+                  size = input_data_for_outputs["#{input_pe_attribute.id}"][level] #input_size_data[level] #params["retained_size_#{level}"].to_f
+                else
+                  size = input_data_for_outputs["#{input_pe_attribute.id}"]["most_likely"] #input_size_data[level] #params["retained_size_most_likely"].to_f
+                end
 
-            else
-
-              if @ge_model.three_points_estimation?
-                size = input_data_for_outputs["#{output_ev.pe_attribute.id}"][level] #params["retained_size_#{level}"].to_f
               else
-                size = input_data_for_outputs["#{output_ev.pe_attribute.id}"]["most_likely"] #params["retained_size_most_likely"].to_f
+                if @ge_model.three_points_estimation?
+                  size = input_data_for_outputs["#{output_ev.pe_attribute.id}"][level] #params["retained_size_#{level}"].to_f
+                else
+                  size = input_data_for_outputs["#{output_ev.pe_attribute.id}"]["most_likely"] #params["retained_size_most_likely"].to_f
+                end
               end
+            rescue
+              size = 0
             end
 
 
@@ -1233,6 +1240,8 @@ class Ge::GeModelsController < ApplicationController
               effort = taille * @ge_model.input_effort_standard_unit_coefficient.to_f
             end
 
+            # coeff de l'effort de sortie
+            effort = effort * @ge_model.output_effort_standard_unit_coefficient
 
             output_calculated_value = effort
             case output_ev.pe_attribute.alias

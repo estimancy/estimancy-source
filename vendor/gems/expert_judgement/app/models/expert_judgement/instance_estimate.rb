@@ -38,6 +38,29 @@ module ExpertJudgement
       end
     end
 
+
+    def convert_effort_to_show(level, eja, ev, component)
+      gross = (self.send("#{level}_input").blank? ? ev.nil? ? '' : ev.send("string_data_#{level}")[component.id] : self.send("#{level}_input")).to_f
+      if eja.alias == "effort"
+        begin
+          gross / self.instance.effort_unit_coefficient.to_f
+        rescue
+          gross
+        end
+
+      elsif eja.alias == "cost"
+        begin
+          gross / self.instance.cost_unit_coefficient.to_f
+        rescue
+          gross
+        end
+      else
+        gross
+      end
+    end
+
+
+
     def to_s(mp)
       if mp.nil?
         self.name

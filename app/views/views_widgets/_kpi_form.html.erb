@@ -8,96 +8,91 @@
     <%= f.input :is_kpi_widget, as: :hidden, :input_html => { value: true } %>
     <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-    <div class="row-fluid">
-      <div class="span5">
-        <%= f.input :name, label: I18n.t(:name) %>
-      </div>
-      <div class="span5">
-        <label class="checkbox"></label>
-        <%= f.input :show_name, label: I18n.t(:show_name) %>
-      </div>
-    </div>
+    <div class="well well-rounded" style="border-width: 1px; width: auto">
+      <table>
+        <tr>
+          <td><%= f.input :name, label: I18n.t(:name) %></td>
+          <td>
+            <label class="checkbox"></label>
+            <%= f.input :show_name, label: I18n.t(:show_name) %>
+          </td>
+        </tr>
 
-    <div class="row-fluid">
-      <div class="span5">
-        <!-- Color is using the JS Spectrum library -->
-        <% if @views_widget.new_record? %>
-          <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-        <% else %>
-          <%= f.input :color, label: I18n.t(:status_color) %>
+        <% ["A", "B", "C", "D", "E"].each do |letter| %>
+            <tr>
+              <td><h5 style="margin: 3px;">
+                Variable <%= letter.upcase %>
+              </h5></td>
+            </tr>
+
+            <tr>
+              <td>
+                <%
+                   unless @views_widget.equation[letter].nil?
+                     mp_id = @views_widget.equation[letter].last
+                     unless mp_id.nil?
+                       mpl = ModuleProject.find(mp_id)
+                     end
+                   end
+                %>
+                <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]}, selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
+                               view_widget_id: @views_widget.id, letter: letter, class: "inline_attr module_project_variables" %>
+              </td>
+              <td>
+                <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
+                                                               selected: @views_widget.equation[letter].nil? ? '' : @views_widget.equation[letter].first), class: "inline_attr" %>
+              </td>
+            </tr>
         <% end %>
-      </div>
-      <div class="span5">
-        <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-      </div>
-      <div id="view_icon_class_image" class="span1"></div>
+      </table>
     </div>
 
-    <% ["A", "B", "C", "D", "E"].each do |letter| %>
-      <div class="row-fluid">
-        <div class="span12">
-          <h5>
-            Variable <%= letter.upcase %>
-          </h5>
-        </div>
-      </div>
-      <div class="row-fluid">
-        <div class="span5">
-          <%
-             unless @views_widget.equation[letter].nil?
-               mp_id = @views_widget.equation[letter].last
-               unless mp_id.nil?
-                 mpl = ModuleProject.find(mp_id)
-               end
-             end
-          %>
-          <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]},
-                                                                         selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
-                         view_widget_id: @views_widget.id,
-                         letter: letter,
-                         class: "inline_attr module_project_variables" %>
-        </div>
-        <div class="span5">
-          <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
-                                                         selected: @views_widget.equation[letter].nil? ? '' : @views_widget.equation[letter].first),
-                         class: "inline_attr" %>
-        </div>
-      </div>
-    <% end %>
+    <div class="well well-rounded" style="border-width: 1px;">
+      <table>
 
-    <div class="row-fluid">
-      <div class="span5">
-        <h5>
-          Formule
-        </h5>
-        <%= text_field_tag "formula", @views_widget.nil? ? '' : @views_widget.equation["formula"] %>
-      </div>
+        <tr>
+          <td> <h5>Formule</h5></td>
+          <td> <h5><%= I18n.t(:kpi_unit) %></h5></td>
+          <td> <h5><%= I18n.t :fields %></h5></td>
+        </tr>
 
-      <div class="span5">
-        <h5>
-          <%= I18n.t :fields %>
-        </h5>
-        <% selected = @views_widget.project_fields.first %>
-        <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] },
-                                                   selected: selected.nil? ? '' : selected.field.id),
-                       prompt: "None",
-                       disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
-      </div>
+        <tr>
+          <td><%= text_field_tag "formula", @views_widget.nil? ? '' : @views_widget.equation["formula"], class: "formula_margin_top" %></td>
+          <td><%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %> <%#= text_field_tag "kpi_unit", "" %></td>
+          <td>
+            <% selected = @views_widget.project_fields.first %>
+            <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
+                                        disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?),
+                           class: "field_margin_top"%>
+          </td>
+        </tr>
+
+      </table>
     </div>
 
-    <div class="row-fluid">
-      <div class="span5">
-        <h5>
-          <%= I18n.t(:kpi_unit) %>
-        </h5>
-        <%= f.input :kpi_unit, label: false %> <%#= text_field_tag "kpi_unit", "" %>
-      </div>
+    <div class="well well-rounded" style="border-width: 1px;">
+      <table>
+        <tr>
+          <td>
+            <% if @views_widget.new_record? %>
+                <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
+            <% else %>
+                <%= f.input :color, label: I18n.t(:status_color) %>
+            <% end %>
+          </td>
+          <td>
+            <!-- Color is using the JS Spectrum library -->
+            <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+          </td>
+          <td> <div id="view_icon_class_image" class="span1"></div></td>
+        </tr>
+      </table>
     </div>
 
     <div class="row-fluid">
       <div class="span5">
         <% if can?(:alter_estimation_plan, @project)%>
-          <%= submit_tag I18n.t('save'), :class => 'btn' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% end %>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
       </div>
@@ -106,6 +101,11 @@
 <% end %>
 
 <script>
+
+$(".modal").css("width", "auto");
+$(".modal .modal-body").css("height", "auto");
+$(".modal .modal-body").css("width", "auto");
+$(".modal .modal-body").css("max-height", "900px");
 
 $("#views_widget_color").spectrum({
     showPaletteOnly: true,
@@ -132,15 +132,15 @@ $("#views_widget_color").spectrum({
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
 
     var widget_type = $("#views_widget_widget_type").val();
-    if (widget_type !== ""){
-        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-            $('#views_widget_show_min_max').attr('disabled','disabled');
-            $("#views_widget_widget_type").value = 0;
-        }
-        else{
-            $('#views_widget_show_min_max').removeAttr('disabled');
-        }
+    if (widget_type == "text"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
     }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+
 
     // Update the view_widget attribute according to the selected module
     $("#views_widget_module_project_id").change(function() {
@@ -166,13 +166,13 @@ $("#views_widget_color").spectrum({
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();
-        if (widget_type !== ""){
-            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
-                $('#views_widget_show_min_max').attr('disabled','disabled');
-                $("#views_widget_widget_type").value = 0;
-            } else{
-                $('#views_widget_show_min_max').removeAttr('disabled');
-            }
+        if (widget_type == "text"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
         }
     });
 

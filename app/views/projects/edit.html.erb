@@ -4,11 +4,12 @@
   <% else %>
     <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
   <% end %>
-
-  <% unless controller.action_name == 'new' %>
-    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary btn-mini" %>
-  <% end %>
 </h4>
+<% unless controller.action_name == 'new' %>
+    <div style="margin-bottom: 35px; margin-top: -24px;">
+      <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary" %>
+    </div>
+<% end %>
 <div>
   <%= render 'form' %>
   <%#= render 'form_test' %>
