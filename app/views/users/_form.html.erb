@@ -68,7 +68,6 @@
                                     input_html: {
                                             class: 'input-xxlarge'
                                     } %>
-
                         <%= f.input :subscription_end_date,
                                     :as => :string,
                                     :label => I18n.t(:subscription_end_date),
@@ -291,6 +290,7 @@
                   <% if can?(:manage, User) && can?(:manage, Group) %>
                     <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
                   <% else %>
+                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
                     <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true %>
                   <% end %>
                 </td>
