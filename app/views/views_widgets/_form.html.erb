@@ -59,7 +59,7 @@
 
   <div class="actions-tabs">
     <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
-        <%= submit_tag I18n.t('save'), :class => 'btn' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
     <% end %>
     <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
   </div>
