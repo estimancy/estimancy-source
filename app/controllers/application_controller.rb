@@ -60,7 +60,6 @@ class ApplicationController < ActionController::Base
   helper_method :rails_version
   helper_method :environment
   helper_method :database_adapter
-  helper_method :is_master_instance? #Identify if we are on Master or Local instance
   helper_method :send_feedback
   helper_method :allow_feedback?
   helper_method :current_component
@@ -156,12 +155,6 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-
-  #For some specific tables, we need to know if record is created on MasterData instance or on the local instance
-  #This method test if we are on Master or Local instance
-  # def is_master_instance?
-  #   defined?(MASTER_DATA) and MASTER_DATA and File.exists?("#{Rails.root}/config/initializers/master_data.rb")
-  # end
 
   def redirect_apply(edit=nil, new=nil, index=nil)
     begin
