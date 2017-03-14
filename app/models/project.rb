@@ -86,7 +86,6 @@ class Project < ActiveRecord::Base
       new_project.copy_id = original_project.id
       new_project.title = "#{original_project.title}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.title}"
       new_project.alias = "#{original_project.alias}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.alias}"
-      #new_project.version_number = '1.0'
       new_project.description = " #{original_project.description} \n \n This project is a duplication of project \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
       new_project.copy_number = 0
       original_project.copy_number = new_copy_number

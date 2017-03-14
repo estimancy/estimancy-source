@@ -33,7 +33,7 @@
               </td>
 
               <% selected_inline_columns.each do |column| %>
-                <%= column_content(@pfs, column, project, @fields_coefficients)%>
+                <%= column_content(@pfs, column, project, @fields_coefficients) %>
               <% end %>
 
               <td style="min-width: 130px;">
@@ -50,7 +50,6 @@
 
                 <% if can?(:commit_project, project) %>
                   <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout))) %>
-                  <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
                 <% end %>
 
                 <%= link_to('', edit_project_path(project, :anchor => 'tabs-history'), :class => 'fa fa-film pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('label_project_history')) %>
