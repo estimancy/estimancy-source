@@ -90,6 +90,7 @@ public
     @user.language_id = params[:user][:language_id]
     @user.project_ids = params[:user][:project_ids]
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
+    @generated_password = SecureRandom.hex(4)
 
     if auth_type.name == "SAML"
       @user.skip_confirmation!
@@ -102,7 +103,7 @@ public
     end
 
     @user.transaction do
-      @user.save(validate: false)
+      @user.save #@user.save(validate: false)
 
       if @organization
         @organization_id = @organization.id
@@ -229,7 +230,6 @@ public
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
         else
-
           @organization.groups.each do |group|
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
