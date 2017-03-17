@@ -5,5 +5,10 @@ module Guw
 
     has_many :guw_complexity_coefficient_elements
 
+    amoeba do
+      include_association [:guw_complexity_coefficient_elements]
+
+      enable
+    end
   end
 end

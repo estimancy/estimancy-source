@@ -39,8 +39,8 @@ module Guw
     serialize :orders, Hash
 
     #validates_presence_of :name####, :organization_id
-    validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    validates :config_type, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    # validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    # validates :config_type, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
     # validates :coefficient_label, :presence => true
 
     #Search fields
@@ -151,12 +151,13 @@ module Guw
           end
         end
       end
-      # guw_model.guw_coefficients.each do |guw_coefficient|
-      #   guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
-      #     guw_coefficient_element.guw_coefficient_id = guw_coefficient.id
-      #     guw_coefficient_element.save
-      #   end
-      # end
+
+      guw_model.guw_coefficients.each do |guw_coefficient|
+        guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
+          guw_coefficient_element.guw_coefficient_id = guw_coefficient.id
+          guw_coefficient_element.save
+        end
+      end
 
     end
 
