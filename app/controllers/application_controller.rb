@@ -70,6 +70,7 @@ class ApplicationController < ActionController::Base
   helper_method :set_user_language
   helper_method :initialization_module
   helper_method :user_number_precision
+  helper_method :is_master_instance?
 
   before_filter :check_access
   before_filter :set_user_time_zone
@@ -421,6 +422,10 @@ class ApplicationController < ActionController::Base
 
   def root_url
     @root_url=request.env['HTTP_HOST']
+  end
+
+  def is_master_instance?
+    true
   end
 
   protected

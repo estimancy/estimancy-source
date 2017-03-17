@@ -2,9 +2,7 @@
 
   <ul>
     <li><a href="#tabs-global"><%= I18n.t(:global_permissions) %></a></li>
-    <% if is_master_instance? %>
-      <li><a href="#tabs-master"><%= I18n.t(:master_permissions) %></a></li>
-    <% end %>
+    <li><a href="#tabs-master"><%= I18n.t(:master_permissions) %></a></li>
     <li><a href="#tabs-projects"><%= I18n.t(:project_permissions) %></a></li>
   </ul>
 
@@ -19,11 +17,11 @@
         <tr>
           <th style="text-align:left;"><%= I18n.t(:groups_and_roles) %></th>
           <% @groups.each do |group| %>
-              <th style="text-align:center;">
-                <span class="attribute_tooltip" title='<%= group.description %>'><%= group.name %></span>
-                &nbsp;
-                <%= link_to '', '#', :id => "cols_select_all_master_#{group.id}", 'data-group_master_id' => group.id, 'data-rows_or_cols_master' => 'cols', :remote => true, :class => 'icon-check icon check_color', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_master_id', 'permission_master_id', 'master');" %>
-              </th>
+            <th style="text-align:center;">
+              <span class="attribute_tooltip" title='<%= group.description %>'><%= group.name %></span>
+              &nbsp;
+              <%= link_to '', '#', :id => "cols_select_all_master_#{group.id}", 'data-group_master_id' => group.id, 'data-rows_or_cols_master' => 'cols', :remote => true, :class => 'icon-check icon check_color', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_master_id', 'permission_master_id', 'master');" %>
+            </th>
           <% end %>
         </tr>
 
