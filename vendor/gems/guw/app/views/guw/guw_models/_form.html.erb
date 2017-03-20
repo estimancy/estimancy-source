@@ -136,6 +136,9 @@
         <tr>
           <th><%= I18n.t(:name) %></th>
           <th>Type de sortie</th>
+          <th>Valeurs intermédiaires</th>
+          <th>Sous-total</th>
+          <th>Coefficient Standard</th>
           <th></th>
         </tr>
 
@@ -144,6 +147,9 @@
             <tr>
               <td><%= guw_output.name %></td>
               <td><%= guw_output.output_type %></td>
+              <td><%= guw_output.allow_intermediate_value %></td>
+              <td><%= guw_output.allow_subtotal %></td>
+              <td><%= guw_output.standard_coefficient %></td>
               <td class="center">
                 <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
                 <% if can? :manage_modules_instances, ModuleProject %>
@@ -179,6 +185,8 @@
             <table class="table table-bordered">
               <tr>
                 <th>Nom</th>
+                <th>Min</th>
+                <th>Max</th>
                 <th>Valeur</th>
                 <th></th>
               </tr>
@@ -186,6 +194,12 @@
                 <tr>
                   <td class="align-center">
                     <%= guw_coefficient_element.name %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.min_value %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.max_value %>
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.value %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170309173209) do
+ActiveRecord::Schema.define(:version => 20170320093628) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -421,13 +421,15 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer "ge_model_id"
-    t.integer "ge_factor_id"
-    t.string  "factor_alias"
-    t.text    "description"
-    t.integer "organization_id"
-    t.integer "project_id"
-    t.integer "module_project_id"
+    t.integer  "ge_model_id"
+    t.integer  "ge_factor_id"
+    t.string   "factor_alias"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "project_id"
+    t.integer  "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -542,6 +544,9 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
     t.integer  "guw_model_id"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+    t.float    "min_value"
+    t.float    "max_value"
+    t.float    "default_value"
   end
 
   create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|
@@ -654,7 +659,7 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
     t.string   "work_unit_type"
     t.string   "weighting_type"
     t.string   "factor_type"
@@ -729,14 +734,14 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
     t.string   "attribute_type"
   end
@@ -913,12 +918,6 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-  end
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
@@ -1672,7 +1671,7 @@ ActiveRecord::Schema.define(:version => 20170309173209) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-01-12 10:03:08'
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
