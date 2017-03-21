@@ -1582,3 +1582,18 @@ de:
 
   new_widget_kpi: "New KPI widget"
   estimations_counter: "Estimations counter"
+
+  entree1: "Input 1"
+  entree2: "Input 2"
+  entree3: "Input 3"
+  entree4: "Input 4"
+
+  sortie1: "Output 1"
+  sortie2: "Output 2"
+  sortie3: "Output 3"
+  sortie4: "Output 4"
+
+  ge_model_input_size_in: "Taille en entrée"
+  ge_model_output_size_in: "Taille calculée"
+  ge_model_input_effort_in: "Effort en entrée"
+  ge_model_output_effort_in: "Effort calculé"

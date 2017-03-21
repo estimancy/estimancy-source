@@ -236,6 +236,101 @@ module ProjectsHelper
     end
   end
 
+
+
+  def get_ge_model_value_unit(ge_model, ev)
+    in_out = ev.in_out
+
+    begin
+      if ev.pe_attribute.alias == "effort"
+        in_out_unit = ge_model.send("#{in_out}_effort_unit")
+      elsif ev.pe_attribute.alias == "retained_size"
+        in_out_unit = ge_model.send("#{in_out}_size_unit")
+      else
+        case in_out
+          when "input"
+            ge_model_in_out_attr = ge_model.input_pe_attribute
+          when "output"
+            ge_model_in_out_attr = ge_model.output_pe_attribute
+        end
+
+        if ge_model_in_out_attr.alias == "effort"
+          unit_attribute_name = "effort"
+        elsif ge_model_in_out_attr.alias == "retained_size"
+          unit_attribute_name = "size"
+        end
+
+        in_out_ev_attr_alias = ev.pe_attribute.alias
+        in_out_unit = ge_model.send("#{in_out_ev_attr_alias}_#{unit_attribute_name}_unit")
+      end
+    rescue
+      in_out_unit = nil
+    end
+
+    in_out_unit
+  end
+
+  #Afficher les coefficient de conversion de l'unité de l'effort du module de transformation
+  def get_ge_model_effort_standard_coefficient(ge_model, ev)
+    in_out_effort_standard_unit_coefficient = 1
+    in_out = ev.in_out
+
+    begin
+      if in_out.in?("input", "output")
+        in_out_attribute = ge_model.send("#{in_out}_pe_attribute")
+
+        if ev.pe_attribute.alias == "effort"
+          in_out_effort_standard_unit_coefficient = ge_model.send("#{in_out}_effort_standard_unit_coefficient")
+        elsif ev.pe_attribute.alias.in?("retained_size", "introduced_defects")
+          in_out_effort_standard_unit_coefficient = 1
+        else
+          if in_out_attribute.alias == "effort"
+            in_out_ev_attr_alias = ev.pe_attribute.alias
+            in_out_effort_standard_unit_coefficient = ge_model.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+          end
+        end
+      else
+        in_out_effort_standard_unit_coefficient = 1
+      end
+    rescue
+      in_out_effort_standard_unit_coefficient = 1
+    end
+
+    in_out_effort_standard_unit_coefficient.to_f
+  end
+
+  #Afficher les valeurs du module de transformation
+  def convert_ge_model_value_with_precision(ge_model, ev, value, precision =2)
+    in_out_effort_standard_unit_coefficient = 1
+    in_out = ev.in_out
+
+    if in_out.in?("input", "output")
+      in_out_attribute = ge_model.send("#{in_out}_pe_attribute")
+
+      if ev.pe_attribute.alias == "effort"
+        in_out_effort_standard_unit_coefficient = ge_model.send("#{in_out}_effort_standard_unit_coefficient")
+      elsif ev.pe_attribute.alias.in?("retained_size", "introduced_defects")
+        in_out_effort_standard_unit_coefficient = 1
+      else
+        if in_out_attribute.alias == "effort"
+          in_out_ev_attr_alias = ev.pe_attribute.alias
+          in_out_effort_standard_unit_coefficient = ge_model.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+        end
+      end
+
+      if value.nil?
+        result_value = nil
+      else
+        result_value = (value.to_f /  in_out_effort_standard_unit_coefficient.to_f).round(precision)
+      end
+    else
+      result_value = nil
+    end
+
+    result_value
+  end
+
+
   # Convert effort value according to the effort unit in the Effort instance module
   def convert_with_standard_unit_coefficient(estimation_value=nil, v, standard_unit_coefficient, precision)
     unless v.class == Hash

@@ -2027,3 +2027,19 @@ fr_bnp:
 
   new_widget_kpi: "Nouvelle vignette de calcul"
   estimations_counter: "Compteur d'estimations"
+
+  entree1: "Entrée 1"
+  entree2: "Entrée 2"
+  entree3: "Entrée 3"
+  entree4: "Entrée 4"
+
+  sortie1: "Sortie 1"
+  sortie2: "Sortie 2"
+  sortie3: "Sortie 3"
+  sortie4: "Sortie 4"
+
+
+  ge_model_input_size_in: "Taille en entrée"
+  ge_model_output_size_out: "Taille calculée"
+  ge_model_input_effort_in: "Effort en entrée"
+  ge_model_output_effort_out: "Effort calculé"
