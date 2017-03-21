@@ -228,9 +228,6 @@
         <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn" %>
       <% end %>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to "#{I18n.t(:new)} #{@guw_model.factors_label}", guw.new_guw_model_guw_factor_path(@guw_model), class: "btn btn-primary" %>
-      <% end %>
       <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
     </div>
   <% end %>

@@ -1397,7 +1397,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
         tab = worksheet.extract_data
-        tab.each_with_index  do |row, index|
+        tab.each_with_index do |row, index|
 
           unless row[0].blank?
 
@@ -1629,8 +1629,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @module_project.nexts.each do |n|
       ModuleProject::common_attributes(@module_project, n).each do |ca|
         ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { @component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { @component.id => nil } )
+          EstimationValue.where(module_project_id: n.id,
+                                pe_attribute_id: ca.id).first.update_attribute(:"string_data_#{level}", { @component.id => nil } )
+          EstimationValue.where(module_project_id: n.id, pe_attribute_id: ca.id).first.update_attribute(:"string_data_probable", { @component.id => nil } )
         end
       end
     end

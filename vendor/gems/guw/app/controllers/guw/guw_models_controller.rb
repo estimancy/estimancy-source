@@ -882,7 +882,7 @@ class Guw::GuwModelsController < ApplicationController
     new_guw_model.transaction do
       if new_guw_model.save
         @guw_model.save
-        new_guw_model.terminate_guw_model_duplication
+        new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
     end
 

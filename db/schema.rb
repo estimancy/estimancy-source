@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170320093628) do
+ActiveRecord::Schema.define(:version => 20170321111308) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -707,6 +707,7 @@ ActiveRecord::Schema.define(:version => 20170320093628) do
     t.boolean  "allow_intermediate_value"
     t.boolean  "allow_subtotal"
     t.float    "standard_coefficient"
+    t.integer  "copy_id"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
