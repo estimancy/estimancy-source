@@ -22,9 +22,9 @@
 module Ge
   class GeModel < ActiveRecord::Base
 
-    # INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]  #["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
-    # OUTPUT_ATTRIBUTES_ALIAS = ["introduced_defects", "sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
-    # TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+    INPUT_FOR_RAKE = ["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
+    OUTPUT_FOR_RAKE = ["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
+    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE = ["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
 
     INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]  #["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
     OUTPUT_ATTRIBUTES_ALIAS = ["introduced_defects", "sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]

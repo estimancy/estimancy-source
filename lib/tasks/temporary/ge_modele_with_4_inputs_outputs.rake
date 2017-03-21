@@ -1,12 +1,12 @@
 # Pour lancer la tache : rake ge_models:update_ge_modele_with_4_inputs_outputs
-
+# rake ge_models:update_ge_modele_with_4_inputs_outputs
 namespace :ge_models do
 
   desc "Prise en compte des modifications du module de Transformation avec l'ajout des 4 entrée et 4 sorties"
   task update_ge_modele_with_4_inputs_outputs: :environment do
 
-    input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
-    output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+    input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_FOR_RAKE).map(&:id).flatten
+    output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE).map(&:id).flatten
 
     #update all ge_models
     Ge::GeModel.all.each do |ge_model|
@@ -53,6 +53,9 @@ namespace :ge_models do
           # Get estimation_value of the input attribute to use
           all_estimation_values = module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
         end
+
+        #effort_input_ev = EstimationValue.includes(:pe_attribute).where(module_project_id: module_project.id, :pe_attributes => { alias: "effort"}, in_out: "input").first
+        #effort_output_ev = EstimationValue.includes(:pe_attribute).where(module_project_id: module_project.id, :pe_attributes => { alias: "effort"}, in_out: "output").first
 
         effort_input_ev = all_estimation_values.includes(:pe_attribute).where(:pe_attributes => { alias: "effort"}, in_out: "input").first
         effort_output_ev = all_estimation_values.includes(:pe_attribute).where(:pe_attributes => { alias: "effort"}, in_out: "output").first
