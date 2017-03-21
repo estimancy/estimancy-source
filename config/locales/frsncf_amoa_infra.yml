@@ -2019,3 +2019,5 @@ frsncf_amoa_infra:
   ge_model_output_size_out: "Taille calculée"
   ge_model_input_effort_in: "Effort en entrée"
   ge_model_output_effort_out: "Effort calculé"
+
+  ge_standard_coefficient: "Coeff Conversion (Effort uniquement)"
