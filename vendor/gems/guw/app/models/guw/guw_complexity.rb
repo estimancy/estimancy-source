@@ -28,6 +28,9 @@ module Guw
     has_many :guw_complexity_work_units, dependent: :destroy
     has_many :guw_complexity_weightings, dependent: :destroy
     has_many :guw_complexity_factors, dependent: :destroy
+    has_many :guw_output_associations, dependent: :destroy
+    has_many :guw_output_complexities, dependent: :destroy
+    has_many :guw_output_complexity_initializations, dependent: :destroy
 
     validates_presence_of :name#, :guw_type_id#, :bottom_range, :top_range,
 

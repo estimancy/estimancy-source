@@ -39,8 +39,8 @@ module Guw
     serialize :orders, Hash
 
     #validates_presence_of :name####, :organization_id
-    validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    validates :config_type, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    # validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    # validates :config_type, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
     # validates :coefficient_label, :presence => true
 
     #Search fields
@@ -65,7 +65,7 @@ module Guw
 
 
     #Terminate the duplication
-    def terminate_guw_model_duplication
+    def terminate_guw_model_duplication(old_model)
       #new_organization.guw_models.each do |guw_model|
       guw_model = self
       guw_model_organization = guw_model.organization
@@ -105,6 +105,40 @@ module Guw
             unless new_guw_factor.nil?
               guw_complexity_factor.update_attribute(:guw_factor_id, new_guw_factor.id)
             end
+          end
+
+          guw_complexity.guw_output_associations.each do |new_goa|
+
+            go = GuwOutput.where(guw_model_id: guw_model.id,
+                                 copy_id: new_goa.guw_output_id).first
+
+            goa = GuwOutput.where(guw_model_id: guw_model.id,
+                                  copy_id: new_goa.guw_output_associated_id).first
+
+            new_goa.guw_output_id = go.id
+            new_goa.guw_output_associated_id = goa.id
+
+            new_goa.save(validate: false)
+          end
+
+          guw_complexity.guw_output_complexities.each do |new_goc|
+
+            go = GuwOutput.where(guw_model_id: guw_model.id,
+                                 copy_id: new_goc.guw_output_id).first
+
+            new_goc.guw_output_id = go.id
+
+            new_goc.save(validate: false)
+          end
+
+          guw_complexity.guw_output_complexity_initializations.each do |new_goci|
+
+            go = GuwOutput.where(guw_model_id: guw_model.id,
+                                 copy_id: new_goci.guw_output_id).first
+
+            new_goci.guw_output_id = go.id
+
+            new_goci.save(validate: false)
           end
         end
 
@@ -151,14 +185,28 @@ module Guw
           end
         end
       end
+
       # guw_model.guw_coefficients.each do |guw_coefficient|
-      #   guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
+      #   guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
       #     guw_coefficient_element.guw_coefficient_id = guw_coefficient.id
       #     guw_coefficient_element.save
+      #
+      #     guw_model.guw_types.each do |guw_type|
+      #       guw_type.guw_complexities.each do |guw_complexity|
+      #         guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
+      #           guw_model.guw_outputs.each do |guw_output|
+      #             gcce.guw_output_id = guw_output.copy_id
+      #             gcce.guw_type_id = guw_type.copy_id
+      #             gcce.guw_coefficient_element_id = guw_coefficient_element.id
+      #             gcce.save(validate: false)
+      #           end
+      #         end
+      #       end
+      #     end
+      #
       #   end
       # end
 
     end
-
   end
 end

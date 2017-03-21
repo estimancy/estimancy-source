@@ -566,7 +566,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
           # new_staffing_trapeze = params[:new_staffing_trapeze]
 
           if am.pe_attribute.alias == "effort"
-            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
             ev.save
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
           elsif am.pe_attribute.alias == "duration"

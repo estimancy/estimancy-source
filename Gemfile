@@ -39,7 +39,6 @@ end
 #For PostgreSQL database
 # gem 'pg'
 gem 'pg'
-gem 'thin'
 
 gem 'curb'
 
@@ -178,6 +177,7 @@ group :development do
   # To use debugger
   #gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'meta_request'
+  # gem 'localtower'
 end
 
 group :test do
