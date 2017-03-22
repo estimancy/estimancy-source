@@ -23,6 +23,8 @@ module Guw
   class GuwComplexityCoefficientElement < ActiveRecord::Base
     belongs_to :guw_coefficient_element
     belongs_to :guw_complexity
+    belongs_to :guw_type
+    belongs_to :guw_output
 
     amoeba do
       enable

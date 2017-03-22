@@ -156,19 +156,6 @@ module Guw
           end
         end
 
-        # Copy the GUW-attribute-complexity
-        #guw_type.guw_type_complexities.each do |guw_type_complexity|
-        #  guw_type_complexity.guw_attribute_complexities.each do |guw_attr_complexity|
-        #
-        #    new_guw_attribute = guw_model.guw_attributes.where(copy_id: guw_attr_complexity.guw_attribute_id).first
-        #    new_guw_attribute_id = new_guw_attribute.nil? ? nil : new_guw_attribute.id
-        #
-        #    new_guw_type = guw_model.guw_types.where(copy_id: guw_type_complexity.guw_type_id).first
-        #    new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
-        #
-        #    guw_attr_complexity.update_attributes(guw_type_id: new_guw_type_id, guw_attribute_id: new_guw_attribute_id)
-        #  end
-        #end
       end
 
       guw_model.guw_attributes.each do |guw_attribute|
@@ -186,26 +173,24 @@ module Guw
         end
       end
 
-      # guw_model.guw_coefficients.each do |guw_coefficient|
-      #   guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-      #     guw_coefficient_element.guw_coefficient_id = guw_coefficient.id
-      #     guw_coefficient_element.save
-      #
-      #     guw_model.guw_types.each do |guw_type|
-      #       guw_type.guw_complexities.each do |guw_complexity|
-      #         guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
-      #           guw_model.guw_outputs.each do |guw_output|
-      #             gcce.guw_output_id = guw_output.copy_id
-      #             gcce.guw_type_id = guw_type.copy_id
-      #             gcce.guw_coefficient_element_id = guw_coefficient_element.id
-      #             gcce.save(validate: false)
-      #           end
-      #         end
-      #       end
-      #     end
-      #
-      #   end
-      # end
+      guw_model.guw_coefficients.each do |guw_coefficient|
+        guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+          guw_model.guw_types.each do |guw_type|
+            guw_type.guw_complexities.each do |guw_complexity|
+              guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
+                guw_model.guw_outputs.each do |guw_output|
+                  gcce.guw_output_id = guw_output.id
+                  gcce.guw_type_id = guw_type.id
+                  gcce.guw_complexity_id = guw_complexity.id
+                  gcce.guw_coefficient_element_id = guw_coefficient_element.id
+                  gcce.save(validate: false)
+                end
+              end
+            end
+          end
+        end
+      end
+
 
     end
   end
