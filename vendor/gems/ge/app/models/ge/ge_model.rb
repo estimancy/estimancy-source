@@ -22,15 +22,36 @@
 module Ge
   class GeModel < ActiveRecord::Base
 
-    INPUT_EFFORTS_ALIAS = ["retained_size", "effort"]
-    OUTPUT_ATTRIBUTES_ALIAS = ["retained_size", "effort", "introduced_defects"]
+    INPUT_FOR_RAKE = ["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
+    OUTPUT_FOR_RAKE = ["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
+    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE = ["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+
+    INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]  #["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
+    OUTPUT_ATTRIBUTES_ALIAS = ["introduced_defects", "sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
+    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+
+    INPUT_ATTRIBUTES_ALIAS_FOR_SELECT = ["retained_size", "effort"]
+    OUTPUT_ATTRIBUTES_ALIAS_FOR_SELECT = ["retained_size", "effort", "introduced_defects"]
+
+    CORRESPONDING_INPUTS_WITH_OUTPUTS = {"sort1" => "ent1", "sort2" => "ent2", "sort3" => "ent3", "sort4" => "ent4"}
 
     #validates_presence_of :name####, :organization_id
     validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
-    validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
-    validates :input_effort_unit, :output_effort_unit, :presence => true
-    validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
+    #validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
+    #validates :input_effort_unit, :output_effort_unit, :presence => true
+    #validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
     validates :coeff_a, :coeff_b, :numericality => {:allow_nil => true}
+
+    # Unite de Taille
+    validates :ent1_size_unit, :ent2_size_unit, :ent3_size_unit, :ent4_size_unit, :sort1_size_unit, :sort2_size_unit, :sort3_size_unit, :sort4_size_unit, :presence => true
+
+    # Unité de l'effort
+    validates :ent1_effort_unit, :ent2_effort_unit, :ent3_effort_unit, :ent4_effort_unit, :sort1_effort_unit, :sort2_effort_unit, :sort3_effort_unit, :sort4_effort_unit, :presence => true
+
+    # coeff de conversion de l'effort (standard)
+    validates :ent1_effort_unit_coefficient, :ent2_effort_unit_coefficient, :ent3_effort_unit_coefficient, :ent4_effort_unit_coefficient, :presence => true
+    validates :sort1_effort_unit_coefficient, :sort2_effort_unit_coefficient, :sort3_effort_unit_coefficient, :sort4_effort_unit_coefficient, :presence => true
+
 
     belongs_to :organization
     belongs_to :input_pe_attribute, class_name: PeAttribute, foreign_key: :input_pe_attribute_id
@@ -69,8 +90,19 @@ module Ge
             case p.pe_attribute.alias
               when "effort"
                 p.send("string_data_#{level}")[component_id].to_f / ge_model.input_effort_standard_unit_coefficient.to_f
-              when "retained_size"
+              when "retained_size", "introduced_defects"
                 p.send("string_data_#{level}")[component_id]
+              else
+
+                in_out = p.in_out
+                in_out_attribute = self.send("#{in_out}_pe_attribute")
+                if in_out_attribute.alias == "effort"
+                  in_out_ev_attr_alias = ev.pe_attribute.alias
+                  in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+                else
+                  in_out_effort_standard_unit_coefficient = 1
+                end
+                p.send("string_data_#{level}")[component_id].to_f / in_out_effort_standard_unit_coefficient.to_f
             end
           rescue
             nil
@@ -80,8 +112,19 @@ module Ge
           case c.pe_attribute.alias
             when "effort"
               c.send("string_data_#{level}")[component_id].to_f / ge_model.input_effort_standard_unit_coefficient.to_f
-            when "retained_size"
+            when "retained_size", "introduced_defects"
               c.send("string_data_#{level}")[component_id]
+
+            else
+              in_out = c.in_out
+              in_out_attribute = self.send("#{in_out}_pe_attribute")
+              if in_out_attribute.alias == "effort"
+                in_out_ev_attr_alias = ev.pe_attribute.alias
+                in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+              else
+                in_out_effort_standard_unit_coefficient = 1
+              end
+              c.send("string_data_#{level}")[component_id].to_f / in_out_effort_standard_unit_coefficient.to_f
           end
         end
       rescue

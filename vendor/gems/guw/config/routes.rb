@@ -73,6 +73,7 @@ Guw::Engine.routes.draw do
     post "duplicate"
     post "export"
     post "exportxl"
+    post "new_exportxl"
     get "all_guw_types"
 
     get "scale_module_attributes"

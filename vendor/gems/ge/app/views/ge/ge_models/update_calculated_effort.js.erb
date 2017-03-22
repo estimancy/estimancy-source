@@ -2,13 +2,16 @@
 <% @output_attribute_evs.each do |ev| %>
 
     <% if @ge_model.three_points_estimation? %>
-        $('#<%="number_effort_most_low_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["low"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+        //$('#<%#="number_effort_most_low_#{ev.id}"%>').val(<%#= convert_with_standard_unit_coefficient(@calculated["low"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+        $('#<%="number_effort_most_low_#{ev.id}"%>').val(<%= convert_ge_model_value_with_precision(@ge_model, ev, @calculated["low"]["#{ev.id}"], user_number_precision) %>);
     <% end %>
 
-    $('#<%="number_effort_most_likely_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["most_likely"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    //$('#<%#="number_effort_most_likely_#{ev.id}"%>').val(<%#= convert_with_standard_unit_coefficient(@calculated["most_likely"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+    $('#<%="number_effort_most_likely_#{ev.id}"%>').val(<%= convert_ge_model_value_with_precision(@ge_model, ev, @calculated["most_likely"]["#{ev.id}"], user_number_precision) %>);
 
     <% if @ge_model.three_points_estimation? %>
-        $('#<%="number_effort_most_high_#{ev.id}"%>').val(<%= convert_with_standard_unit_coefficient(@calculated["high"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+        //$('#<%#="number_effort_most_high_#{ev.id}"%>').val(<%#= convert_with_standard_unit_coefficient(@calculated["high"]["#{ev.id}"], @ge_model.output_effort_standard_unit_coefficient, user_number_precision) %>);
+        $('#<%="number_effort_most_high_#{ev.id}"%>').val(<%= convert_ge_model_value_with_precision(@ge_model, ev, @calculated["high"]["#{ev.id}"], user_number_precision) %>);
     <% end %>
 
     <!-- le ratio -->
