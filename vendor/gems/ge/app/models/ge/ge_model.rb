@@ -26,6 +26,8 @@ module Ge
     OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
     TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
 
+    GE_ATTRIBUTES_ALIAS = ["ent1", "ent2", "ent3", "ent4", "sort1", "sort2", "sort3", "sort4"]
+
     DEFECTS_INPUT_EFFORTS_ALIAS = ["ent1"]
     DEFECTS_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2"]
     DEFECTS_TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2"]
