@@ -422,7 +422,7 @@ class Ge::GeModelsController < ApplicationController
 
         else
           #there is no model, we will create new model from the model attributes data of the file to import
-          model_sheet_order_attributes = ["name", "description", "three_points_estimation", "ge_model_instance_mode",
+          model_sheet_order_attributes = ["name", "description", "ge_model_instance_mode", "three_points_estimation",
                                           "coeff_a", "coeff_b", "p_calculation_method", "c_calculation_method", "s_calculation_method",
                                           "ent1", "ent2", "ent3", "ent4", "sort1", "sort2", "sort3", "sort4"]
 
