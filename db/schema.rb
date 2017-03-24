@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170314114222) do
+ActiveRecord::Schema.define(:version => 20170322102200) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -456,32 +456,31 @@ ActiveRecord::Schema.define(:version => 20170314114222) do
     t.datetime "updated_at"
     t.integer  "input_pe_attribute_id"
     t.integer  "output_pe_attribute_id"
-    t.boolean  "transform_size_and_effort"
-    t.boolean  "display_size_and_effort_attributes"
-    t.string   "ent1_size_unit"
-    t.string   "ent1_effort_unit"
-    t.float    "ent1_effort_unit_coefficient",            :default => 1.0
-    t.string   "ent2_size_unit"
-    t.string   "ent2_effort_unit"
-    t.float    "ent2_effort_unit_coefficient",            :default => 1.0
-    t.string   "ent3_size_unit"
-    t.string   "ent3_effort_unit"
-    t.float    "ent3_effort_unit_coefficient",            :default => 1.0
-    t.string   "ent4_size_unit"
-    t.string   "ent4_effort_unit"
-    t.float    "ent4_effort_unit_coefficient",            :default => 1.0
-    t.string   "sort1_size_unit"
-    t.string   "sort1_effort_unit"
-    t.float    "sort1_effort_unit_coefficient",           :default => 1.0
-    t.string   "sort2_size_unit"
-    t.string   "sort2_effort_unit"
-    t.float    "sort2_effort_unit_coefficient",           :default => 1.0
-    t.string   "sort3_size_unit"
-    t.string   "sort3_effort_unit"
-    t.float    "sort3_effort_unit_coefficient",           :default => 1.0
-    t.string   "sort4_size_unit"
-    t.string   "sort4_effort_unit"
-    t.float    "sort4_effort_unit_coefficient",           :default => 1.0
+    t.string   "ent1_unit"
+    t.float    "ent1_unit_coefficient",                   :default => 1.0
+    t.string   "ent2_unit"
+    t.float    "ent2_unit_coefficient",                   :default => 1.0
+    t.string   "ent3_unit"
+    t.float    "ent3_unit_coefficient",                   :default => 1.0
+    t.string   "ent4_unit"
+    t.float    "ent4_unit_coefficient",                   :default => 1.0
+    t.string   "sort1_unit"
+    t.float    "sort1_unit_coefficient",                  :default => 1.0
+    t.string   "sort2_unit"
+    t.float    "sort2_unit_coefficient",                  :default => 1.0
+    t.string   "sort3_unit"
+    t.float    "sort3_unit_coefficient",                  :default => 1.0
+    t.string   "sort4_unit"
+    t.float    "sort4_unit_coefficient",                  :default => 1.0
+    t.string   "ge_model_instance_mode",                  :default => "standard"
+    t.boolean  "ent1_is_modifiable"
+    t.boolean  "ent2_is_modifiable"
+    t.boolean  "ent3_is_modifiable"
+    t.boolean  "ent4_is_modifiable"
+    t.boolean  "sort1_is_modifiable"
+    t.boolean  "sort2_is_modifiable"
+    t.boolean  "sort3_is_modifiable"
+    t.boolean  "sort4_is_modifiable"
   end
 
   create_table "groups", :force => true do |t|
@@ -568,6 +567,9 @@ ActiveRecord::Schema.define(:version => 20170314114222) do
     t.integer  "guw_model_id"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+    t.float    "min_value"
+    t.float    "max_value"
+    t.float    "default_value"
   end
 
   create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|
@@ -728,6 +730,7 @@ ActiveRecord::Schema.define(:version => 20170314114222) do
     t.boolean  "allow_intermediate_value"
     t.boolean  "allow_subtotal"
     t.float    "standard_coefficient"
+    t.integer  "copy_id"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|

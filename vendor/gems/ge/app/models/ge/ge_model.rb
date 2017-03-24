@@ -22,13 +22,13 @@
 module Ge
   class GeModel < ActiveRecord::Base
 
-    INPUT_FOR_RAKE = ["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
-    OUTPUT_FOR_RAKE = ["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
-    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE = ["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+    INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]
+    OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
+    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
 
-    INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]  #["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
-    OUTPUT_ATTRIBUTES_ALIAS = ["introduced_defects", "sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
-    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"] #["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+    DEFECTS_INPUT_EFFORTS_ALIAS = ["ent1"]
+    DEFECTS_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2"]
+    DEFECTS_TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2"]
 
     INPUT_ATTRIBUTES_ALIAS_FOR_SELECT = ["retained_size", "effort"]
     OUTPUT_ATTRIBUTES_ALIAS_FOR_SELECT = ["retained_size", "effort", "introduced_defects"]
@@ -37,20 +37,15 @@ module Ge
 
     #validates_presence_of :name####, :organization_id
     validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
-    #validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
-    #validates :input_effort_unit, :output_effort_unit, :presence => true
-    #validates :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :presence => true
+    validates :ge_model_instance_mode, :presence => true
     validates :coeff_a, :coeff_b, :numericality => {:allow_nil => true}
 
-    # Unite de Taille
-    validates :ent1_size_unit, :ent2_size_unit, :ent3_size_unit, :ent4_size_unit, :sort1_size_unit, :sort2_size_unit, :sort3_size_unit, :sort4_size_unit, :presence => true
-
-    # Unité de l'effort
-    validates :ent1_effort_unit, :ent2_effort_unit, :ent3_effort_unit, :ent4_effort_unit, :sort1_effort_unit, :sort2_effort_unit, :sort3_effort_unit, :sort4_effort_unit, :presence => true
+    # Unite des entrée /sorties
+    validates :ent1_unit, :ent2_unit, :ent3_unit, :ent4_unit, :sort1_unit, :sort2_unit, :sort3_unit, :sort4_unit, :presence => true
 
     # coeff de conversion de l'effort (standard)
-    validates :ent1_effort_unit_coefficient, :ent2_effort_unit_coefficient, :ent3_effort_unit_coefficient, :ent4_effort_unit_coefficient, :presence => true
-    validates :sort1_effort_unit_coefficient, :sort2_effort_unit_coefficient, :sort3_effort_unit_coefficient, :sort4_effort_unit_coefficient, :presence => true
+    validates :ent1_unit_coefficient, :ent2_unit_coefficient, :ent3_unit_coefficient, :ent4_unit_coefficient, :presence => true
+    validates :sort1_unit_coefficient, :sort2_unit_coefficient, :sort3_unit_coefficient, :sort4_unit_coefficient, :presence => true
 
 
     belongs_to :organization
@@ -98,7 +93,7 @@ module Ge
                 in_out_attribute = self.send("#{in_out}_pe_attribute")
                 if in_out_attribute.alias == "effort"
                   in_out_ev_attr_alias = ev.pe_attribute.alias
-                  in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+                  in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_unit_coefficient")
                 else
                   in_out_effort_standard_unit_coefficient = 1
                 end
@@ -120,7 +115,7 @@ module Ge
               in_out_attribute = self.send("#{in_out}_pe_attribute")
               if in_out_attribute.alias == "effort"
                 in_out_ev_attr_alias = ev.pe_attribute.alias
-                in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_effort_unit_coefficient")
+                in_out_effort_standard_unit_coefficient = self.send("#{in_out_ev_attr_alias}_unit_coefficient")
               else
                 in_out_effort_standard_unit_coefficient = 1
               end

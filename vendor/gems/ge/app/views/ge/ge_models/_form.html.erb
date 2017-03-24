@@ -17,255 +17,207 @@
     <div class="row-fluid">
       <div class="span3 pull-right">
         <% if controller.action_name == "new" %>
-          <div class="pull-right" style="margin-top: 100px;">
-            <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
-              <div>
-                <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
-                <%= hidden_field_tag :organization_id, @organization.id %>
-                <%= file_field_tag :file %>
-                <%= hidden_field_tag :ge_model_id, nil %>
-                <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
-              </div>
-              <hr>
-            <% end %>
-          </div>
+            <div class="pull-right" style="margin-top: 100px;">
+              <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+                  <div>
+                    <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+                    <%= hidden_field_tag :organization_id, @organization.id %>
+                    <%= file_field_tag :file %>
+                    <%= hidden_field_tag :ge_model_id, nil %>
+                    <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
+                  </div>
+                  <hr>
+              <% end %>
+            </div>
         <% end %>
       </div>
 
       <div class="span9">
         <%= simple_form_for(@ge_model) do |f| %>
 
-          <div class="alert alert-info">
-            <%= I18n.t(:simple_text_mess_1).html_safe %>
-          </div>
-          <%= f.error_notification %>
+            <div class="alert alert-info">
+              <%= I18n.t(:simple_text_mess_1).html_safe %>
+            </div>
+            <%= f.error_notification %>
 
-          <div class="form-inputs">
-            <%#= f.input :organization_id, as: :hidden, input_html: { value: params[:organization_id] } %>
-            <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
-            <div class="well well-rounded">
-              <%= f.input :name, label: I18n.t(:name), input_html: { class: "input-xxlarge"} %>
-              <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5"} %>
-              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-              <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
-              <%= f.input :modify_theorical_effort, label: I18n.t(:enabled_theorical_effort_modification) %>
+            <div class="form-inputs">
+              <%#= f.input :organization_id, as: :hidden, input_html: { value: params[:organization_id] } %>
+              <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+              <div class="well well-rounded">
+                <%= f.input :name, label: I18n.t(:name), input_html: { class: "input-xxlarge"} %>
+                <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5"} %>
+                <%= f.input :ge_model_instance_mode, label: I18n.t(:ge_model_instance_mode), collection: [["Standard", "standard"], ["Calcul des défauts", "defects_calculation"]], include_blank: false %>
+                <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+              </div>
 
-              <%#= f.association :input_pe_attribute, collection: PeAttribute.where(alias: ["retained_size", "effort"]).order("name desc"), label: "Sélectionner l'attribut en entrée du module", include_blank: false %>
-              <%#= f.association :output_pe_attribute, collection: PeAttribute.where(alias: ["retained_size", "effort", "introduced_defects"]), label: "Sélectionner l'attribut de sortie du module", include_blank: false %>
+              <div class="well well-rounded" id="entrees">
+                <legend><%= I18n.t(:inputs) %></legend>
 
-              <% ge_generic_module = Pemodule.where(alias: "ge").first %>
-              <% if ge_generic_module %>
-                <% input_attribute_ids = ge_generic_module.pe_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-                <% output_attribute_ids = ge_generic_module.pe_attributes.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
-              <% else %>
-                  <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-                  <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <label class="checkbox"></label>
+                    <%= label_tag I18n.t(:entree1) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent1_unit, label: I18n.t(:unit_value), input_html: { class: "input-medium"} %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent1_unit_coefficient, label: I18n.t(:ge_standard_coefficient), input_html: { class: "input-medium"}%>
+                  </div>
+                  <div class="span2">
+                    <label><%=  I18n.t(:is_modifiable) %></label>
+                    <%= f.input :ent1_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="inputs_only_for_standard_mode">
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:entree2) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent2_unit, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent2_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent2_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:entree3) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent3_unit, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent3_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent3_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:entree4) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent4_unit, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent4_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :ent4_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="well well-rounded">
+                <legend><%= I18n.t(:label_Factor) %></legend>
+
+                <div class="row-fluid">
+                  <label class="hint">Renseigner directement les valeurs des coefficients <b>a</b> et <b>b</b> dans la formule </label>
+                  <div class="span2"><%= f.input :coeff_a, label: "#{I18n.t(:label_Factor)} a", hint: I18n.t(:leave_blank_if_use_factor_data) %></div>
+                  <div class="span2"><%= f.input :coeff_b, label: "#{I18n.t(:scale_factor)} : b", hint: I18n.t(:leave_blank_if_use_factor_data) %></div>
+                </div>
+
+                <div class="row-fluid">
+                  <label class="hint">Sinon, Sélectionner le mode de calcul des paramètres <b>P</b>, <b>C</b> et <b>S</b> dans la formule Effort E = P * (C * Taille)**S pour déterminer <b>a</b> et <b>b</b></label>
+                  <div class="span1"><%= f.input :p_calculation_method, label: "P", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], include_blank: false, input_html: { class: "input-small"} %></div>
+                  <div class="span1"><%= f.input :c_calculation_method, label: "C", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], include_blank: false, input_html: { class: "input-small"} %></div>
+                  <div class="span1"><%= f.input :s_calculation_method, label: "S", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], selected: (@ge_model.s_calculation_method.nil? ? "sum" : @ge_model.s_calculation_method), include_blank: false, input_html: { class: "input-small"} %></div>
+                </div>
+              </div> <br>
+
+
+              <div class="well well-rounded" id="sorties">
+                <legend><%= I18n.t(:outputs) %></legend>
+
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <label class="checkbox"></label>
+                    <%= label_tag I18n.t(:sortie1) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort1_unit, label: I18n.t(:unit_value), input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort1_unit_coefficient, label: I18n.t(:ge_standard_coefficient), input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <label><%=  I18n.t(:is_modifiable) %></label>
+                    <%= f.input :sort1_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:sortie2) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort2_unit, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort2_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort2_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="outputs_only_for_standard_mode">
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:sortie3) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort3_unit, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort3_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort3_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="span1 blue">
+                    <%= label_tag I18n.t(:sortie4) %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort4_unit, label: false , input_html: { class: "input-medium"} %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort4_unit_coefficient, label: false, input_html: { class: "input-medium"}  %>
+                  </div>
+                  <div class="span2">
+                    <%= f.input :sort4_is_modifiable, label: false, input_html: { style: 'margin-top: 11px;'} %>
+                  </div>
+                </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="actions-tabs">
+              <% if can? :manage_modules_instances, ModuleProject %>
+                  <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                  <% if action_name.in?(%w(edit update)) %>
+                      <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
+                  <% end %>
               <% end %>
-
-              <div id="input_output_attributes">
-                <%= f.association :input_pe_attribute, collection: PeAttribute.where(id: input_attribute_ids, alias: ["retained_size", "effort"]).order("name desc"), label: "Sélectionner l'attribut en entrée du module", include_blank: false %>
-                <%= f.association :output_pe_attribute, collection: PeAttribute.where(id: output_attribute_ids, alias: ["retained_size", "effort", "introduced_defects"]).order("name asc"), label: "Sélectionner l'attribut de sortie du module", include_blank: false %>
-              </div>
-              <%= f.input :transform_size_and_effort, label: I18n.t(:transform_size_and_effort) %>
-              <%#= f.input :display_size_and_effort_attributes, label: I18n.t(:display_size_and_effort_attributes) %>
+              <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
             </div>
-
-            <div class="well well-rounded">
-              <legend><%= I18n.t(:inputs) %></legend>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <label class="checkbox"></label>
-                  <%= label_tag I18n.t(:entree1) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent1_size_unit, label: I18n.t(:size_unit) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent1_effort_unit, label: I18n.t(:effort_unit) %>
-                </div>
-                <div class="span4">
-                  <%= f.input :ent1_effort_unit_coefficient, label: I18n.t(:ge_standard_coefficient) %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:entree2) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent2_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent2_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :ent2_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:entree3) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent3_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent3_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :ent3_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:entree4) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent4_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :ent4_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :ent4_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="well well-rounded">
-              <legend><%= I18n.t(:label_Factor) %></legend>
-
-              <div class="row-fluid">
-                <label class="hint">Renseigner directement les valeurs des coefficients <b>a</b> et <b>b</b> dans la formule </label>
-                <div class="span2"><%= f.input :coeff_a, label: "#{I18n.t(:label_Factor)} a", hint: I18n.t(:leave_blank_if_use_factor_data) %></div>
-                <div class="span2"><%= f.input :coeff_b, label: "#{I18n.t(:scale_factor)} : b", hint: I18n.t(:leave_blank_if_use_factor_data) %></div>
-              </div>
-
-              <div class="row-fluid">
-                <label class="hint">Sinon, Sélectionner le mode de calcul des paramètres <b>P</b>, <b>C</b> et <b>S</b> dans la formule Effort E = P * (C * Taille)**S pour déterminer <b>a</b> et <b>b</b></label>
-                <div class="span1"><%= f.input :p_calculation_method, label: "P", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], include_blank: false, input_html: { class: "input-small"} %></div>
-                <div class="span1"><%= f.input :c_calculation_method, label: "C", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], include_blank: false, input_html: { class: "input-small"} %></div>
-                <div class="span1"><%= f.input :s_calculation_method, label: "S", as: :select, collection: [[I18n.t(:product), "product"], [I18n.t(:sum), "sum"]], selected: (@ge_model.s_calculation_method.nil? ? "sum" : @ge_model.s_calculation_method), include_blank: false, input_html: { class: "input-small"} %></div>
-              </div>
-            </div> <br>
-
-
-            <div class="well well-rounded">
-              <legend><%= I18n.t(:outputs) %></legend>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <label class="checkbox"></label>
-                  <%= label_tag I18n.t(:sortie1) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort1_size_unit, label: I18n.t(:size_unit) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort1_effort_unit, label: I18n.t(:effort_unit) %>
-                </div>
-                <div class="span4">
-                  <%= f.input :sort1_effort_unit_coefficient, label: I18n.t(:ge_standard_coefficient) %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:sortie2) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort2_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort2_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :sort2_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:sortie3) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort3_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort3_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :sort3_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-
-              <div class="row-fluid">
-                <div class="span1 blue">
-                  <%= label_tag I18n.t(:sortie4) %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort4_size_unit, label: false %>
-                </div>
-                <div class="span2">
-                  <%= f.input :sort4_effort_unit, label: false %>
-                </div>
-                <div class="span4">
-                  <%= f.input :sort4_effort_unit_coefficient, label: false %>
-                </div>
-              </div>
-            </div>
-
-
-            <!--<div class="well well-rounded">-->
-              <!--<legend><%#= I18n.t(:in_out) %></legend>-->
-
-              <!--<div class="row-fluid">-->
-                <!--<div class="span2 blue">-->
-                  <!--<label class="checkbox"></label>-->
-                  <!--<%#=  label_tag I18n.t(:input_output_size) %>-->
-                <!--</div>-->
-                <!--<div class="span2">-->
-                  <!--<%#= f.input :input_size_unit, label: I18n.t(:input_size_unit) %>-->
-                <!--</div>-->
-                <!--<div class="span2">-->
-                  <!--<%#= f.input :output_size_unit, label: I18n.t(:output_size_unit) %>-->
-                <!--</div>-->
-              <!--</div>-->
-
-              <!--<div class="row-fluid">-->
-                <!--<div class="span2 blue">-->
-                  <!--<label class="checkbox"></label>-->
-                  <!--<%#=  label_tag I18n.t(:input_effort) %>-->
-                <!--</div>-->
-                <!--<div class="span2"> <%#= f.input :input_effort_unit, label: I18n.t(:input_effort_unit) %></div>-->
-                <!--<div class="span3"> <%#= f.input :input_effort_standard_unit_coefficient, label: I18n.t(:input_effort_standard_coef_conv) %></div>-->
-              <!--</div>-->
-
-              <!--<div class="row-fluid">-->
-                <!--<div class="span2 blue">-->
-                  <!--<label class="checkbox"></label>-->
-                  <!--<%#=  label_tag I18n.t(:output_effort) %>-->
-                <!--</div>-->
-                <!--<div class="span2"> <%#= f.input :output_effort_unit, label: I18n.t(:output_effort_unit) %></div>-->
-                <!--<div class="span3"> <%#= f.input :output_effort_standard_unit_coefficient, label: I18n.t(:output_effort_standard_coef_conv) %></div>-->
-              <!--</div>-->
-            <!--</div><br>-->
-          </div>
-
-          <div class="actions-tabs">
-            <% if can? :manage_modules_instances, ModuleProject %>
-               <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-               <% if action_name.in?(%w(edit update)) %>
-                  <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
-               <% end %>
-            <% end %>
-            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
-          </div>
         <% end %>
       </div>
     </div>
@@ -275,116 +227,116 @@
     <div>
       <% if action_name.in?(%w(edit update)) %>
 
-        <div class="row-fluid">
-          <div class="span8">
-            <%= form_tag ge.ge_model_import_path(@ge_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
-              <div class="form-inputs">
-                <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
-                <%= hidden_field_tag :organization_id,  @organization.id %>
-                <%= file_field_tag :file %>
-                <%= hidden_field_tag :ge_model_id, @ge_model.id %>
-                <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn' %>
-              </div>
-            <% end %>
-          </div>
-          <div class="span4">
-            <label style="color: #808080">
-              <% if !@ge_model.ge_factors.empty? %>
-                <%= I18n.t(:data_filename, filename: @ge_model.ge_factors.first.data_filename) %>
-                <br>
-                <%= link_to I18n.t(:export), ge.ge_model_data_export_path(@ge_model), :class => 'btn', title: I18n.t(:export_generic_effort_model) %>
-                <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn pull-right', confirm: I18n.t(:confirm) %>
-            <% else %>
-                <%= I18n.t(:any_factor) %>
+          <div class="row-fluid">
+            <div class="span8">
+              <%= form_tag ge.ge_model_import_path(@ge_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
+                  <div class="form-inputs">
+                    <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+                    <%= hidden_field_tag :organization_id,  @organization.id %>
+                    <%= file_field_tag :file %>
+                    <%= hidden_field_tag :ge_model_id, @ge_model.id %>
+                    <%= submit_tag I18n.t(:import_factors_setting), :class => 'btn' %>
+                  </div>
               <% end %>
-            </label>
+            </div>
+            <div class="span4">
+              <label style="color: #808080">
+                <% if !@ge_model.ge_factors.empty? %>
+                    <%= I18n.t(:data_filename, filename: @ge_model.ge_factors.first.data_filename) %>
+                    <br>
+                    <%= link_to I18n.t(:export), ge.ge_model_data_export_path(@ge_model), :class => 'btn', title: I18n.t(:export_generic_effort_model) %>
+                    <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn pull-right', confirm: I18n.t(:confirm) %>
+                <% else %>
+                    <%= I18n.t(:any_factor) %>
+                <% end %>
+              </label>
+            </div>
           </div>
-        </div>
-        <hr>
+          <hr>
       <% end %>
     </div>
 
     <% unless @ge_model.ge_factors.empty? %>
-      <div class="row-fluid">
-        <div class="span8">
-          <h3 style="color: #808080"><%= I18n.t(:factor_list) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
-          <table class="table table-bordered table-condensed tablesorterPager">
-            <thead>
-            <tr>
-              <th>Scale Prod</th>
-              <th>Type</th>
-              <th>Short Name Factor</th>
-              <th>Long name Factor</th>
-              <th>Description</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <% @ge_model.ge_factors.order('scale_prod asc').each do |ge_factor| %>
-              <% case ge_factor.scale_prod.downcase %>
-                <% when "p" %>
-                  <% td_class = "product_factor" %>
-                <% when "s" %>
-                  <% td_class = "scale_factor" %>
-                <% when "c" %>
-                  <% td_class = "conversion_factor" %>
-              <% end %>
-                <tr>
-                  <td class="<%= td_class %>"><%= ge_factor.scale_prod %></td>
-                  <td><%= ge_factor.factor_type %></td>
-                  <td><%= ge_factor.short_name %></td>
-                  <td><%= ge_factor.long_name %></td>
-                  <td><%= ge_factor.description %></td>
-                </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="span4">
-          <h3 style="color: #808080"><%= I18n.t(:factor_values) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
-          <% if @ge_model.ge_factor_values.nil? %>
-            <h4><%= I18n.t(:there_is_no_factor_values) %></h4>
-
-          <% else %>
+        <div class="row-fluid">
+          <div class="span8">
+            <h3 style="color: #808080"><%= I18n.t(:factor_list) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
             <table class="table table-bordered table-condensed tablesorterPager">
               <thead>
               <tr>
                 <th>Scale Prod</th>
-                <th><%= I18n.t(:factors) %></th>
-                <th><%= I18n.t(:value_text) %></th>
-                <th><%= I18n.t(:value_number) %></th>
-                <th><%= I18n.t(:default_value) %></th>
+                <th>Type</th>
+                <th>Short Name Factor</th>
+                <th>Long name Factor</th>
+                <th>Description</th>
               </tr>
               </thead>
 
               <tbody>
-              <% @ge_model.ge_factor_values.each do |ge_factor_value| %>
-                <% case ge_factor_value.factor_scale_prod.downcase %>
-                  <% when "p" %>
-                    <% tr_class = "product_factor" %>
+              <% @ge_model.ge_factors.order('scale_prod asc').each do |ge_factor| %>
+                  <% case ge_factor.scale_prod.downcase %>
+              <% when "p" %>
+                      <% td_class = "product_factor" %>
                   <% when "s" %>
-                    <% tr_class = "scale_factor" %>
+                      <% td_class = "scale_factor" %>
                   <% when "c" %>
-                    <% tr_class = "conversion_factor" %>
-                <% end %>
-                <tr>
-                  <td class='<%= tr_class %>'><%= ge_factor_value.factor_scale_prod %></td>
-                  <td class='<%= tr_class %>'><%= ge_factor_value.factor_name %></td>
-                  <td><%= ge_factor_value.value_text %></td>
-                  <td><%= ge_factor_value.value_number %></td>
-                  <td class="align-center">
-                    <%= check_box_tag("default_value[#{ge_factor_value.id}]", ge_factor_value.id, ge_factor_value.default?, :disabled => true) %>
-                  </td>
-                </tr>
+                      <% td_class = "conversion_factor" %>
+                  <% end %>
+                  <tr>
+                    <td class="<%= td_class %>"><%= ge_factor.scale_prod %></td>
+                    <td><%= ge_factor.factor_type %></td>
+                    <td><%= ge_factor.short_name %></td>
+                    <td><%= ge_factor.long_name %></td>
+                    <td><%= ge_factor.description %></td>
+                  </tr>
               <% end %>
               </tbody>
-
-              <%= render :partial => 'layouts/footer_table' %>
             </table>
-          <% end %>
+          </div>
+
+          <div class="span4">
+            <h3 style="color: #808080"><%= I18n.t(:factor_values) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
+            <% if @ge_model.ge_factor_values.nil? %>
+                <h4><%= I18n.t(:there_is_no_factor_values) %></h4>
+
+            <% else %>
+                <table class="table table-bordered table-condensed tablesorterPager">
+                  <thead>
+                  <tr>
+                    <th>Scale Prod</th>
+                    <th><%= I18n.t(:factors) %></th>
+                    <th><%= I18n.t(:value_text) %></th>
+                    <th><%= I18n.t(:value_number) %></th>
+                    <th><%= I18n.t(:default_value) %></th>
+                  </tr>
+                  </thead>
+
+                  <tbody>
+                  <% @ge_model.ge_factor_values.each do |ge_factor_value| %>
+                      <% case ge_factor_value.factor_scale_prod.downcase %>
+                  <% when "p" %>
+                          <% tr_class = "product_factor" %>
+                      <% when "s" %>
+                          <% tr_class = "scale_factor" %>
+                      <% when "c" %>
+                          <% tr_class = "conversion_factor" %>
+                      <% end %>
+                      <tr>
+                        <td class='<%= tr_class %>'><%= ge_factor_value.factor_scale_prod %></td>
+                        <td class='<%= tr_class %>'><%= ge_factor_value.factor_name %></td>
+                        <td><%= ge_factor_value.value_text %></td>
+                        <td><%= ge_factor_value.value_number %></td>
+                        <td class="align-center">
+                          <%= check_box_tag("default_value[#{ge_factor_value.id}]", ge_factor_value.id, ge_factor_value.default?, :disabled => true) %>
+                        </td>
+                      </tr>
+                  <% end %>
+                  </tbody>
+
+                  <%= render :partial => 'layouts/footer_table' %>
+                </table>
+            <% end %>
+          </div>
         </div>
-      </div>
     <% end %>
   </div>
 
@@ -400,6 +352,27 @@
     } else{
       $("#input_output_attributes:hidden").show();
     }
+  });
+
+
+  var ge_model_instance_mode = $("#ge_model_ge_model_instance_mode").val();
+  if(ge_model_instance_mode == "defects_calculation"){
+    $('.inputs_only_for_standard_mode').hide();
+    $('.outputs_only_for_standard_mode').hide();
+  } else{
+    $('.inputs_only_for_standard_mode').show();
+    $('.outputs_only_for_standard_mode').show();
+  }
+
+  $("#ge_model_ge_model_instance_mode").change(function() {
+    return $.ajax({
+      url: "<%= ge.change_ge_model_instance_mode_path %>",
+      method: "GET",
+      data: {
+        ge_model_id: <%= params[:id] %>,
+        ge_model_instance_mode: $(this).val()
+      }
+    });
   });
 
 </script>

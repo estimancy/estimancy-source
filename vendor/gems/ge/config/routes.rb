@@ -34,4 +34,5 @@ Ge::Engine.routes.draw do
   resources :ge_model_factor_descriptions
 
   match 'ge_models/import_ge_model_instance' => 'ge_models#import', as: "import_ge_model_instance"
+  get 'change_ge_model_instance_mode' => 'ge_models#change_ge_model_instance_mode', :as => 'change_ge_model_instance_mode'
 end

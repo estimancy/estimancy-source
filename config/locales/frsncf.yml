@@ -2023,4 +2023,5 @@ frsncf:
   ge_model_input_effort_in: "Effort en entrée"
   ge_model_output_effort_out: "Effort calculé"
 
-  ge_standard_coefficient: "Coeff Conversion (Effort uniquement)"
+  ge_standard_coefficient: "Coefficient"
+  ge_model_instance_mode: "Mode d'instance"
