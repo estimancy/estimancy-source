@@ -376,15 +376,15 @@
     }
   });
 
-  $("#ge_model_ge_model_instance_mode_save").change(function() {
-    return $.ajax({
-      url: "<%= ge.change_ge_model_instance_mode_path %>",
-      method: "GET",
-      data: {
-        ge_model_id: <%= params[:id] %>,
-        ge_model_instance_mode: $(this).val()
-      }
-    });
-  });
+//  $("#ge_model_ge_model_instance_mode_save").change(function() {
+//    return $.ajax({
+//      url: "<%#= ge.change_ge_model_instance_mode_path %>",
+//      method: "GET",
+//      data: {
+//        ge_model_id: <%#= params[:id] %>,
+//        ge_model_instance_mode: $(this).val()
+//      }
+//    });
+//  });
 
 </script>
