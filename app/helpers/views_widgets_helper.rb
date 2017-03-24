@@ -454,6 +454,8 @@ module ViewsWidgetsHelper
           end
 
 
+          text_data_probable = data_probable
+
           if estimation_value.in_out == "output"
             unless estimation_value.pe_attribute.alias == "ratio" || estimation_value.pe_attribute.alias == "ratio_name"
 
@@ -498,7 +500,7 @@ module ViewsWidgetsHelper
             min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
           else
             begin
-              if data_high.is_a(Hash) || data_low.is_a(Hash)
+              if data_high.is_a?(Hash) || data_low.is_a(Hash)
                 max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                 min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
               else
