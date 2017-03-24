@@ -110,18 +110,33 @@
             <% end %>
 
             <div class="pull-right">
-              <span class="label label-success">
-                Total UT retenu  :
-                <span class="<%= uowg.id %>_ajusted">
-                  <%# uowg.guw_unit_of_works.where(selected: true).map{|i| i.ajusted_size.nil? ? '' : i.ajusted_size["#{guw_output.id}"].to_f }.flatten.sum.to_f.round(3) %>
+
+              <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+                <span class="label label-success">
+                  Total <%= guw_output.name %> R. :
+                  <span class="label label-success">
+                    <%= [
+                          uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                            i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
+                          end
+                        ].flatten.compact.sum.to_f.round(3) %>
+                  </span>
                 </span>
-              </span>
-              <span class="label label-success">
-                Total UT calculé  :
-                <span class="<%= uowg.id %>_theorical">
-                  <%# uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.nil? ? '' : i.size["#{guw_output.id}"].to_f}.sum.to_f.round(3) %>
+              <% end %>
+
+              <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+                <span class="label label-success">
+                  Total <%= guw_output.name %> T. :
+                  <span class="label label-success">
+                    <%= [
+                          uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                            i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
+                          end
+                        ].flatten.compact.sum.to_f.round(3) %>
+                  </span>
                 </span>
-              </span>
+              <% end %>
+
               <span class="label label-info">
                  <%= I18n.t(:number_of_uw) %> :
                 <span class="<%= uowg.id %>_number">
@@ -349,34 +364,40 @@
                         <% end %>
                       <% else %>
                         <td>
-                          ??
+                          -
                         </td>
                       <% end %>
                     <% end %>
                   <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
                     <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
-                      <td class="span2">
-                        <% unless @guw_type.nil? %>
-                          <span class=" size_label_<%= guow.id %>">
-                            <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
-                                                 class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
-                                                 readonly: true,
-                                                 style: "width: 43px;",
-                                                 step: 0.001 %>
-                          </span>
-                        <% end %>
-
-                        <% if guw_output.allow_intermediate_value == true %>
+                      <% unless guw_output.nil? %>
+                        <td class="span2">
                           <% unless @guw_type.nil? %>
-                            <span class="ajusted_size_<%= guow.id %>">
-                              <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
-                                                   step: 0.001,
-                                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                   style: "width: 43px;" %>
+                            <span class=" size_label_<%= guow.id %>">
+                              <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
+                                                   class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
+                                                   readonly: true,
+                                                   style: "width: 43px;",
+                                                   step: 0.001 %>
                             </span>
                           <% end %>
-                        <% end %>
-                      </td>
+
+                          <% if guw_output.allow_intermediate_value == true %>
+                            <% unless @guw_type.nil? %>
+                              <span class="ajusted_size_<%= guow.id %>">
+                                <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                                                     step: 0.001,
+                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
+                                                     style: "width: 43px;" %>
+                              </span>
+                            <% end %>
+                          <% end %>
+                        </td>
+                      <% else %>
+                        <td>
+                          -
+                        </td>
+                      <% end %>
                     <% end %>
                   <% end %>
                 <% end %>
