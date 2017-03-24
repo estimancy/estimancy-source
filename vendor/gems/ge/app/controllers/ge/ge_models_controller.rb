@@ -151,15 +151,15 @@ class Ge::GeModelsController < ApplicationController
                   [I18n.t(:c_factors_calculation_method), @ge_model.c_calculation_method],
                   [I18n.t(:s_factors_calculation_method), @ge_model.s_calculation_method],
 
-                  [I18n.t(:entree1), "unit : #{@ge_model.ent1_unit}  coeff : #{@ge_model.ent1_unit_coefficient}  modifiable : #{@ge_model.ent1_is_modifiable}"],
-                  [I18n.t(:entree2), "unit : #{@ge_model.ent2_unit}  coeff : #{@ge_model.ent2_unit_coefficient}  modifiable : #{@ge_model.ent2_is_modifiable}"],
-                  [I18n.t(:entree3), "unit : #{@ge_model.ent3_unit}  coeff : #{@ge_model.ent3_unit_coefficient}  modifiable : #{@ge_model.ent3_is_modifiable}"],
-                  [I18n.t(:entree4), "unit : #{@ge_model.ent4_unit}  coeff : #{@ge_model.ent4_unit_coefficient}  modifiable : #{@ge_model.ent4_is_modifiable}"],
+                  [I18n.t(:entree1), "#{{ unit: @ge_model.ent1_unit, coeff: @ge_model.ent1_unit_coefficient, modifiable: @ge_model.ent1_is_modifiable }}"],
+                  [I18n.t(:entree2), "#{{ unit: @ge_model.ent2_unit, coeff: @ge_model.ent2_unit_coefficient, modifiable: @ge_model.ent2_is_modifiable }}"],
+                  [I18n.t(:entree3), "#{{ unit: @ge_model.ent3_unit, coeff: @ge_model.ent3_unit_coefficient, modifiable: @ge_model.ent3_is_modifiable }}"],
+                  [I18n.t(:entree4), "#{{ unit: @ge_model.ent4_unit, coeff: @ge_model.ent4_unit_coefficient, modifiable: @ge_model.ent4_is_modifiable }}"],
 
-                  [I18n.t(:sortie1), "unit : #{@ge_model.sort1_unit}  coeff : #{@ge_model.sort1_unit_coefficient}  modifiable : #{@ge_model.sort1_is_modifiable}"],
-                  [I18n.t(:sortie2), "unit : #{@ge_model.sort2_unit}  coeff : #{@ge_model.sort2_unit_coefficient}  modifiable : #{@ge_model.sort2_is_modifiable}"],
-                  [I18n.t(:sortie3), "unit : #{@ge_model.sort3_unit}  coeff : #{@ge_model.sort3_unit_coefficient}  modifiable : #{@ge_model.sort3_is_modifiable}"],
-                  [I18n.t(:sortie4), "unit : #{@ge_model.sort4_unit}  coeff : #{@ge_model.sort4_unit_coefficient}  modifiable : #{@ge_model.sort4_is_modifiable}"],
+                  [I18n.t(:sortie1), "#{{ unit: @ge_model.sort1_unit, coeff: @ge_model.sort1_unit_coefficient, modifiable: @ge_model.sort1_is_modifiable }}"],
+                  [I18n.t(:sortie2), "#{{ unit: @ge_model.sort2_unit, coeff: @ge_model.sort2_unit_coefficient, modifiable: @ge_model.sort2_is_modifiable }}"],
+                  [I18n.t(:sortie3), "#{{ unit: @ge_model.sort3_unit, coeff: @ge_model.sort3_unit_coefficient, modifiable: @ge_model.sort3_is_modifiable }}"],
+                  [I18n.t(:sortie4), "#{{ unit: @ge_model.sort4_unit, coeff: @ge_model.sort4_unit_coefficient, modifiable: @ge_model.sort4_is_modifiable }}"],
 
                   [I18n.t(:advice_ge), ""]]
 
