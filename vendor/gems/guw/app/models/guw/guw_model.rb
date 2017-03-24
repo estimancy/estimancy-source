@@ -115,8 +115,8 @@ module Guw
             goa = GuwOutput.where(guw_model_id: guw_model.id,
                                   copy_id: new_goa.guw_output_associated_id).first
 
-            new_goa.guw_output_id = go.id
-            new_goa.guw_output_associated_id = goa.id
+            new_goa.guw_output_id = go.nil? ? nil : go.id
+            new_goa.guw_output_associated_id =  goa.nil? ? nil : goa.id
 
             new_goa.save(validate: false)
           end
@@ -126,7 +126,7 @@ module Guw
             go = GuwOutput.where(guw_model_id: guw_model.id,
                                  copy_id: new_goc.guw_output_id).first
 
-            new_goc.guw_output_id = go.id
+            new_goc.guw_output_id = go.nil? ? nil : go.id
 
             new_goc.save(validate: false)
           end
@@ -136,7 +136,7 @@ module Guw
             go = GuwOutput.where(guw_model_id: guw_model.id,
                                  copy_id: new_goci.guw_output_id).first
 
-            new_goci.guw_output_id = go.id
+            new_goci.guw_output_id = go.nil? ? nil : go.id
 
             new_goci.save(validate: false)
           end
