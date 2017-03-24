@@ -1598,4 +1598,5 @@ de:
   ge_model_input_effort_in: "Effort en entrée"
   ge_model_output_effort_in: "Effort calculé"
 
-  ge_standard_coefficient: "Coeff Standard de Conversion (Effort uniquement)"
+  ge_standard_coefficient: "Coefficient"
+  ge_model_instance_mode: "Instance mode"

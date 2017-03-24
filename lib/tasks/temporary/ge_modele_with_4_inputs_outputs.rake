@@ -5,8 +5,12 @@ namespace :ge_models do
   desc "Prise en compte des modifications du module de Transformation avec l'ajout des 4 entrée et 4 sorties"
   task update_ge_modele_with_4_inputs_outputs: :environment do
 
-    input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_FOR_RAKE).map(&:id).flatten
-    output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE).map(&:id).flatten
+    INPUT_FOR_RAKE = ["retained_size", "effort", "ent1", "ent2", "ent3", "ent4"]
+    OUTPUT_FOR_RAKE = ["retained_size", "effort", "introduced_defects", "sort1", "sort2", "sort3", "sort4"]
+    TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE = ["retained_size", "effort", "sort1", "sort2", "sort3", "sort4"]
+
+    input_attribute_ids = PeAttribute.where(alias: INPUT_FOR_RAKE).map(&:id).flatten
+    output_attribute_ids = PeAttribute.where(alias: TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS_FOR_RAKE).map(&:id).flatten
 
     #update all ge_models
     Ge::GeModel.all.each do |ge_model|
