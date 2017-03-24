@@ -32,7 +32,6 @@ module Guw
 
     validates_presence_of :name
 
-
     amoeba do
       enable
 
