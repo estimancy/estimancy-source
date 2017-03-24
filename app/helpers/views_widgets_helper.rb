@@ -493,8 +493,23 @@ module ViewsWidgetsHelper
             end
           end
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+          if is_number?(data_high) && is_number?(data_low)
+            max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high, estimation_value, module_project_id)}" #max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
+            min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low, estimation_value, module_project_id)}"   #min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+          else
+            begin
+              if data_high.is_a(Hash) || data_low.is_a(Hash)
+                max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
+                min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
+              else
+                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
+                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+              end
+            rescue
+              max_value_text = "Max: #{data_high.nil? ? '-' : data_high}"
+              min_value_text = "Min: #{data_low.nil? ? '-' : data_low}"
+            end
+          end
         else
           if data_probable.nil?
             probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)
