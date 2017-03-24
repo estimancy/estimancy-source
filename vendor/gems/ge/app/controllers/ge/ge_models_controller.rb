@@ -139,12 +139,9 @@ class Ge::GeModelsController < ApplicationController
 
     first_page = [[I18n.t(:model_name),  @ge_model.name],
                   [I18n.t(:model_description), @ge_model.description ],
-                  [I18n.t(:three_points_estimation), @ge_model.three_points_estimation ? 1 : 0],
-                  [I18n.t(:modification_entry_valur), @ge_model.enabled_input ],
                   [I18n.t(:ge_model_instance_mode), @ge_model.ge_model_instance_mode],
-                  [I18n.t(:enabled_theorical_effort_modification), @ge_model.modify_theorical_effort],
-                  #[I18n.t(:module_input_attribute), @ge_model.input_pe_attribute.nil? ? nil : @ge_model.input_pe_attribute.alias],
-                  #[I18n.t(:module_output_attribute), @ge_model.output_pe_attribute.nil? ? nil : @ge_model.output_pe_attribute.alias],
+                  [I18n.t(:three_points_estimation), @ge_model.three_points_estimation ? 1 : 0],
+
                   ["#{I18n.t(:label_Factor)} a", @ge_model.coeff_a ],
                   ["#{I18n.t(:scale_factor)} : b", @ge_model.coeff_b ],
                   [I18n.t(:p_factors_calculation_method), @ge_model.p_calculation_method],
@@ -425,11 +422,9 @@ class Ge::GeModelsController < ApplicationController
 
         else
           #there is no model, we will create new model from the model attributes data of the file to import
-          model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "modify_theorical_effort",
-                                          "transform_size_and_effort", "display_size_and_effort_attributes", "input_pe_attribute_id",
-                                          "output_pe_attribute_id", "coeff_a", "coeff_b", "p_calculation_method", "c_calculation_method",
-                                          "s_calculation_method", "input_size_unit", "output_size_unit", "input_effort_unit", "output_effort_unit",
-                                          "input_effort_standard_unit_coefficient", "output_effort_standard_unit_coefficient"]
+          model_sheet_order_attributes = ["name", "description", "three_points_estimation", "ge_model_instance_mode",
+                                          "coeff_a", "coeff_b", "p_calculation_method", "c_calculation_method", "s_calculation_method",
+                                          "ent1", "ent2", "ent3", "ent4", "sort1", "sort2", "sort3", "sort4"]
 
           # model_sheet_order = { :"0" => "name", :"1" => "description", :"2" => "three_points_estimation", :"3" => "enabled_input",
           #                       :"4" => "modify_theorical_effort", :"5" => "transform_size_and_effort", :"6" => "display_size_and_effort_attributes",
@@ -449,20 +444,30 @@ class Ge::GeModelsController < ApplicationController
             @ge_model = Ge::GeModel.new
             @ge_model.organization = @organization
 
+            #[I18n.t(:entree1), "#{{ unit: @ge_model.ent1_unit, coeff: @ge_model.ent1_unit_coefficient, modifiable: @ge_model.ent1_is_modifiable }}"],
+
             model_worksheet.each_with_index do | row, index |
               row && row.cells.each do |cell|
                 if cell.column == 1 && !cell.nil?
                   val = cell && cell.value
                   attr_name = model_sheet_order["#{index}".to_sym]
-                  if attr_name.in?(["input_pe_attribute_id", "output_pe_attribute_id"])
-                    val_attr = PeAttribute.find_by_alias(val)
-                    if val_attr.nil?
-                      val = nil
+                  begin
+                    if attr_name.in?(["ent1", "ent2", "ent3", "ent4", "sort1", "sort2", "sort3", "sort4"])
+                      val_attr_value = eval(val)
+                      if val_attr_value.nil?
+                        @ge_model["#{attr_name}_unit"] = nil
+                        @ge_model["#{attr_name}_unit_coefficient"] = nil
+                        @ge_model["#{attr_name}_is_modifiable"] = nil
+                      else
+                        @ge_model["#{attr_name}_unit"] = val_attr_value[:unit]
+                        @ge_model["#{attr_name}_unit_coefficient"] = val_attr_value[:coeff]
+                        @ge_model["#{attr_name}_is_modifiable"] = val_attr_value[:modifiable]
+                      end
                     else
-                      val = val_attr.id
+                      @ge_model["#{attr_name}"] = val unless attr_name.nil?
                     end
+                  rescue
                   end
-                  @ge_model["#{attr_name}"] = val unless attr_name.nil?
                 end
               end
             end
@@ -575,179 +580,6 @@ class Ge::GeModelsController < ApplicationController
       redirect_to ge.edit_ge_model_path(@ge_model, anchor: "tabs-2")
     else
       redirect_to request.referer + "#tabs-1" #redirect_to :back
-    end
-  end
-
-  # Save last function : delete that function after tests
-  def update_calculated_effort_SAVE_TO_DELETE_AFTER_TESTS
-    authorize! :execute_estimation_plan, @project
-
-    @ge_model = Ge::GeModel.find(params[:ge_model_id])
-    @ge_input = @ge_model.ge_inputs.where(module_project_id: current_module_project.id).first_or_create
-    @calculated = {}
-
-    if @ge_model.coeff_a.blank? || @ge_model.coeff_b.blank?
-      # Get factors values and save them in the GeInput table
-      # GeInput "values" attribute is serialize as an Array of Hash  ==> [ { :ge_factor_value_id => id, :scale_prod => val, :factor_name =>, :value => val }, {...}, ... ]
-      #scale_factor_sum = 0.0
-      #prod_factor_product = 1.0
-      #conversion_factor_product = 1.0
-
-      #= Calculate coefficients according to the select operation method
-      #default calculations methods operators for each type of factor
-      p_calculation_operator = "*"
-      c_calculation_operator = "*"
-      s_calculation_operator = "+"
-
-      # For P_calculation_method
-      case @ge_model.p_calculation_method
-        when "sum"
-          prod_factor_product = 0.0
-          p_calculation_operator = "+"
-        when "product"
-          prod_factor_product = 1.0
-          p_calculation_operator = "*"
-        else
-          prod_factor_product = 1.0
-      end
-
-      # For C_calculation_method for conversion
-      case @ge_model.c_calculation_method
-        when "sum"
-          conversion_factor_product = 0.0
-          c_calculation_operator = "+"
-        when "product"
-          conversion_factor_product = 1.0
-          c_calculation_operator = "*"
-        else
-          conversion_factor_product = 1.0
-      end
-
-      # For S_calculation_method
-      case @ge_model.s_calculation_method
-        when "sum"
-          scale_factor_sum = 0.0
-          s_calculation_operator = "+"
-        when "product"
-          scale_factor_sum = 1.0
-          s_calculation_operator = "*"
-        else
-          scale_factor_sum = 0.0
-      end
-
-      scale_factors = params["S_factor"] || []
-      prod_factors = params["P_factor"]  || []
-      conversion_factors = params["C_factor"] || []
-
-      @ge_input_values = Hash.new
-      #Save Scale Factors data in GeInput table
-      scale_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
-        unless factor_value.nil?
-          factor_value_number = factor_value.value_number
-          ###scale_factor_sum += factor_value_number
-          scale_factor_sum = scale_factor_sum.send(s_calculation_operator, factor_value_number)
-          value_per_factor = { :ge_factor_value_id => factor_value.id, :scale_prod => factor_value.factor_scale_prod, :factor_name => factor_value.factor_name, :value => factor_value_number }
-          @ge_input_values["#{factor_value.factor_alias}"] = value_per_factor
-        end
-      end
-
-      #Save Prod Factors multiplier data in GeInput table
-      prod_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
-        unless factor_value.nil?
-          factor_value_number = factor_value.value_number
-          ###prod_factor_product *= factor_value_number
-          prod_factor_product = prod_factor_product.send(p_calculation_operator, factor_value_number)
-          value_per_factor = { :ge_factor_value_id => factor_value.id, :scale_prod => factor_value.factor_scale_prod, :factor_name => factor_value.factor_name, :value => factor_value_number }
-          @ge_input_values["#{factor_value.factor_alias}"] = value_per_factor
-        end
-      end
-
-      #Save Conversion Factors data in GeInput table
-      conversion_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
-        unless factor_value.nil?
-          factor_value_number = factor_value.value_number
-          ###conversion_factor_product *= factor_value_number
-          conversion_factor_product = conversion_factor_product.send(c_calculation_operator, factor_value_number)
-          value_per_factor = { :ge_factor_value_id => factor_value.id, :scale_prod => factor_value.factor_scale_prod, :factor_name => factor_value.factor_name, :value => factor_value_number }
-          @ge_input_values["#{factor_value.factor_alias}"] = value_per_factor
-        end
-      end
-    end
-
-    #attribut d'entrée
-    input_pe_attribute = @ge_model.input_pe_attribute
-    if input_pe_attribute.nil?
-      input_pe_attribute = PeAttribute.where(alias: "retained_size").first
-    end
-    #attribut de sortie
-    output_pe_attribute = @ge_model.output_pe_attribute
-    if output_pe_attribute.nil?
-      output_pe_attribute = PeAttribute.where(alias: "effort").first
-    end
-
-    ### TEST
-    input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
-    output_attribute_ids = input_attribute_ids
-
-    defined_input_ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => input_pe_attribute.id, in_out: "input").first
-    current_mp_estimation_values = current_module_project.estimation_values
-    input_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
-    output_evs = current_mp_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
-
-    # Gestion des entrées
-    input_am = current_module_project.pemodule.attribute_modules
-    output_am = current_module_project.pemodule.attribute_modules
-
-    input_size_data = Hash.new
-    input_data_for_outputs = Hash.new
-    output_evs.each do |output_ev|
-      input_data_for_outputs["#{output_ev.pe_attribute.id}"] = Hash.new
-    end
-
-    ### FIN TEST
-
-    current_module_project.pemodule.attribute_modules.each do |am|
-      tmp_prbl = Array.new
-      ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
-
-      ["low", "most_likely", "high"].each do |level|
-
-        # Gestion des entrées
-        if @ge_model.three_points_estimation?
-          size = params["retained_size_#{level}"].to_f
-        else
-          size = params["retained_size_most_likely"].to_f
-        end
-
-        # Gestion des sorties
-        if am.pe_attribute.alias == output_pe_attribute.alias
-          if output_pe_attribute.alias == "introduced_defects"
-            defect = (size * scale_factor_sum * conversion_factor_product)
-            @calculated["#{level}"] = defect
-            tmp_prbl << defect
-          else
-            #The effort value will be calculated as : Effort = p * (Taille * c)^s  # with: s = sum of scale factors ; p = multiply of prod factors and c = product of conversion factors
-            effort = (prod_factor_product * ((size * conversion_factor_product) ** scale_factor_sum))
-            @calculated["#{level}"] = effort
-            tmp_prbl << effort
-          end
-        end
-      end
-
-      unless @ge_model.three_points_estimation?
-        tmp_prbl[0] = tmp_prbl[1]
-        tmp_prbl[2] = tmp_prbl[1]
-        #effort probable
-        @calculated["probable"] = (tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6
-      end
-    end
-
-    respond_to do |format|
-      format.html
-      format.js { render layout: false, content_type: 'text/javascript' }
     end
   end
 
