@@ -109,6 +109,32 @@
               <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
             <% end %>
 
+            <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+              <span class="label label-success">
+                Total <%= guw_output.name %> R. :
+                <span class="label label-success ajusted_size">
+                  <%= [
+                        uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                          i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
+                        end
+                      ].flatten.compact.sum.to_f.round(3) %>
+                </span>
+              </span>
+            <% end %>
+
+            <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
+              <span class="label label-success">
+                Total <%= guw_output.name %> T. :
+                <span class="label label-success ajusted_size">
+                  <%= [
+                        uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                          i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
+                        end
+                      ].flatten.compact.sum.to_f.round(3) %>
+                </span>
+              </span>
+            <% end %>
+
             <div class="pull-right">
               <span class="label label-success">
                 Total UT retenu  :
@@ -117,7 +143,7 @@
                 </span>
               </span>
               <span class="label label-success">
-                Total UT calculé  :
+                Total UT théorique  :
                 <span class="<%= uowg.id %>_theorical">
                   <%# uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.nil? ? '' : i.size["#{guw_output.id}"].to_f}.sum.to_f.round(3) %>
                 </span>
