@@ -1134,6 +1134,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
+    expire_fragment "guw"
+
     if @guw_unit_of_works.last.nil?
       redirect_to main_app.dashboard_path(@project)
     else
@@ -1645,6 +1647,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @module_project.views_widgets.each do |vw|
       ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
     end
+
+    expire_fragment "guw"
   end
 
 end
