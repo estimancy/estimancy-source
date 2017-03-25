@@ -1637,6 +1637,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
+    expire_fragment "guw"
+
   end
 
   def update_view_widgets_and_project_fields
