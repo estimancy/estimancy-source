@@ -879,7 +879,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id)
+                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs
@@ -902,10 +902,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #reorder to keep good order
       #reorder guw_unit_of_work.guw_unit_of_work_group
 
-      begin
-        guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
-      rescue
+      if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
         guw_type = guw_unit_of_work.guw_type
+      else
+        guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
       end
 
       if params[:guw_technology].present?
@@ -933,9 +933,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_outputs.each_with_index do |guw_output, index|
 
-        @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                              guw_output_id: guw_output.id,
-                                              value: 1).first
+        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                             guw_output_id: guw_output.id,
+                                             value: 1).first
 
         @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                                             guw_output_id: guw_output.id).first
@@ -1382,6 +1382,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
+    expire_fragment "guw"
+
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -1594,7 +1596,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
                 ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
                 if guw_output.output_type == "Effort"
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+                  # tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+                  tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion.to_f)
                 else
                   tmp_prbl << ev.send("string_data_#{level}")[@component.id]
                 end

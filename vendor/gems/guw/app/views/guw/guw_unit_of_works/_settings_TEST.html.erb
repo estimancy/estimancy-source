@@ -213,7 +213,7 @@
               <tr>
 
                 <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>" class="span1">
-                  <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id,disabled: !can?(:execute_estimation_plan, @project) %>
+                  <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
                   <%= hidden_field_tag "", uowg.id, class: "#{guow.id}_group" %>
                   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
                 </td>
