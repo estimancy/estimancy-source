@@ -1325,15 +1325,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.save
 
         else
-          ce = Guw::GuwCoefficientElement.find(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-          cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-                                                           guw_coefficient_element_id: ce.id,
-                                                           guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create!
+          ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
-          ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
-                                                            guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
-                                                                                                                   guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                   guw_coefficient_id: params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+          unless ce.nil?
+            cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+                                                             guw_coefficient_element_id: ce.id,
+                                                             guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create!
+
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
+                                                              guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
+                                                                                                                     guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                                     guw_coefficient_id: params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+          end
 
           unless ceuw.nil?
             ceuw.guw_coefficient_element_id = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
