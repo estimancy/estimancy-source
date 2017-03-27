@@ -282,6 +282,8 @@ class ModuleProjectsController < ApplicationController
 
     @results = nil
 
+    expire_fragment "guw"
+
     redirect_to main_app.dashboard_path(@project)
   end
 
