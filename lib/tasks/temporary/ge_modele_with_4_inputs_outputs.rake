@@ -26,15 +26,15 @@ namespace :ge_models do
         output_effort_standard_unit_coeff = ge_model.output_effort_standard_unit_coefficient
 
         ["ent1", "ent2", "ent3", "ent4"].each do |input|
-          ge_model.send("#{input}_size_unit=", input_size_unit)
-          ge_model.send("#{input}_effort_unit=", input_effort_unit)
-          ge_model.send("#{input}_effort_unit_coefficient=", input_effort_standard_unit_coeff)
+          ge_model.send("#{input}_unit=", input_size_unit)
+          #ge_model.send("#{input}_effort_unit=", input_effort_unit)
+          ge_model.send("#{input}_unit_coefficient=", input_effort_standard_unit_coeff)
         end
 
         ["sort1", "sort2", "sort3", "sort4"].each do |output|
-          ge_model.send("#{output}_size_unit=", output_size_unit)
-          ge_model.send("#{output}_effort_unit=", output_effort_unit)
-          ge_model.send("#{output}_effort_unit_coefficient=", output_effort_standard_unit_coeff)
+          ge_model.send("#{output}_unit=", output_size_unit)
+          #ge_model.send("#{output}_effort_unit=", output_effort_unit)
+          ge_model.send("#{output}_unit_coefficient=", output_effort_standard_unit_coeff)
         end
 
         ge_model.save
