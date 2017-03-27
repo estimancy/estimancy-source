@@ -38,11 +38,6 @@ module Guw
 
     serialize :orders, Hash
 
-    #validates_presence_of :name####, :organization_id
-    # validates :name, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    # validates :config_type, :presence => true #, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    # validates :coefficient_label, :presence => true
-
     #Search fields
     scoped_search :on => [:name]
 
@@ -62,7 +57,6 @@ module Guw
         "#{self.name} (#{mp.creation_order})"
       end
     end
-
 
     #Terminate the duplication
     def terminate_guw_model_duplication(old_model)
@@ -191,6 +185,26 @@ module Guw
         end
       end
 
+
+    end
+
+    def self.display_value(data_probable, estimation_value)
+
+      module_project = estimation_value.module_project
+      guw_model = module_project.guw_model
+      pe_attribute = estimation_value.pe_attribute
+
+      guw_output = guw_model.guw_outputs.where(name: pe_attribute.name).first
+
+      unless guw_output.nil?
+        conv = guw_output.standard_coefficient
+      else
+        conv = 1
+      end
+
+      value = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.effort_unit}"
+
+      return value
 
     end
   end

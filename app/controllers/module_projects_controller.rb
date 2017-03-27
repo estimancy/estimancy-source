@@ -237,6 +237,8 @@ class ModuleProjectsController < ApplicationController
       mp.update_attribute('associated_module_project_ids', @initialization_module_project.id) unless mp.nil?
     end
 
+    expire_fragment "guw"
+
     session[:module_project_id] = nil
     redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
   end

@@ -16,6 +16,7 @@
         <th>Alias</th>
         <th><%= I18n.t(:description) %></th>
         <th class="filter-select"><%= I18n.t(:attributes_type) %></th>
+        <th></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -31,6 +32,7 @@
                 <td><%= attribute.alias %></td>
                 <td><%= attribute.description %></td>
                 <td><%= attribute.attr_type.nil? ? nil : attribute.attr_type.humanize %></td>
+                <td><%= attribute.guw_model_id %></td>
                 <td class="center" style="min-width: 105px;">
                   <%= link_to '', edit_pe_attribute_path(attribute), :class => 'icon-pencil', :title => I18n.t('edit') %>
                   <%= link_to('', {:controller => 'pe_attributes',

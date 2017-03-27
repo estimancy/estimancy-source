@@ -1456,8 +1456,8 @@ class Guw::GuwModelsController < ApplicationController
           at = PeAttribute.where(name: attr[0], alias: attr[1], description: attr[0]).first
           pm = Pemodule.where(alias: "guw").first
 
-          AttributeModule.where(pe_attribute_id: at.id,
-                                pemodule_id: pm.id,
+          AttributeModule.where(pe_attribute_id: at.nil? ? nil : at.id,
+                                pemodule_id:  pm.nil? ? nil : pm.id,
                                 in_out: "both",
                                 guw_model_id: @guw_model.id).first_or_create
         end
@@ -1908,6 +1908,8 @@ class Guw::GuwModelsController < ApplicationController
     else ok
       flash[:error] = I18n.t(:route_flag_error_4)
     end
+
+    expire_fragment "guw"
 
     redirect_to :back
   end
