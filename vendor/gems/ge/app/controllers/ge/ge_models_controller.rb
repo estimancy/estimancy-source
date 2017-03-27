@@ -1065,11 +1065,11 @@ class Ge::GeModelsController < ApplicationController
 
                   output_value.nil? ? (output_value = nil) : (output_value = output_value.to_f)
                   if output_value != effort
-                    effort = output_value * current_output_effort_unit_coefficient
+                    effort = output_value
                   end
                 end
 
-                output_calculated_value = effort
+                output_calculated_value = effort * current_output_effort_unit_coefficient
 
                 output_ev.send("string_data_#{level}")[current_component.id] = output_calculated_value
                 output_ev.save
