@@ -1,5 +1,5 @@
 # Pour lancer la tache : rake ge_models:update_ge_modele_with_4_inputs_outputs
-# rake ge_models:update_ge_modele_with_4_inputs_outputs
+# rake ge_models:update_ge_modele_with_4_inputs_outputs RAILS_ENV=production
 namespace :ge_models do
 
   desc "Prise en compte des modifications du module de Transformation avec l'ajout des 4 entrée et 4 sorties"

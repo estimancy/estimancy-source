@@ -381,7 +381,6 @@ class ProjectsController < ApplicationController
     defaut_group_ps.save
 
     if @is_model == "true"
-
       new_current_user_ps = @project.project_securities.build
       # if params[:project][:creator_id].blank?
         new_current_user_ps.user_id = estimation_owner.id
@@ -399,7 +398,6 @@ class ProjectsController < ApplicationController
       new_defaut_group_ps.is_model_permission = true
       new_defaut_group_ps.is_estimation_permission = false
       new_defaut_group_ps.save
-
     end
 
     @project.is_locked = false
@@ -460,6 +458,13 @@ class ProjectsController < ApplicationController
               end
             end
           end
+
+          # Update project's organization estimations counter
+          if @is_model != "true"
+            @organization.estimations_counter -= 1
+            @organization.save
+          end
+
           redirect_to redirect_apply(edit_project_path(@project)), notice: "#{I18n.t(:notice_project_successful_created)}"
         else
           flash[:error] = "#{I18n.t(:error_project_creation_failed)}"
