@@ -108,6 +108,14 @@ class Guw::GuwOutputsController < ApplicationController
       attr.description = @guw_output.name
       attr.guw_model_id = @guw_model.id
 
+      attr.estimation_values.each do |ev|
+        ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.pe_attribute_id = attr.id
+        ev.save(validate: false)
+      end
+
       am = AttributeModule.where(pe_attribute_id: attr.id,
                                  pemodule_id: pm.id,
                                  guw_model_id: nil).first_or_create
