@@ -72,6 +72,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_attribute_id: gac.id)
     end
 
+    expire_fragment "guw"
+
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -82,6 +84,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     else
       render :edit
     end
+
+    expire_fragment "guw"
   end
 
   def destroy
@@ -101,7 +105,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_unit_of_work.display_order = @guw_unit_of_work.display_order - 2
     @guw_unit_of_work.save
-    # reorder @guw_unit_of_work.guw_unit_of_work_group
 
     redirect_to :back
   end
@@ -110,7 +113,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_unit_of_work.display_order = @guw_unit_of_work.display_order + 1
     @guw_unit_of_work.save
-    # reorder @guw_unit_of_work.guw_unit_of_work_group
 
     redirect_to :back
   end
@@ -128,6 +130,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:name].keys.first)
     @guw_unit_of_work.name = params[:name].values.first
     @guw_unit_of_work.save
+
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -145,6 +148,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.comments = params[:comments].values.first
     @guw_unit_of_work.tracking = params[:trackings].values.first
     @guw_unit_of_work.save
+
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -1318,7 +1322,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
 
-          ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+          ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
@@ -1596,8 +1600,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if am.pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
                 ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
                 if guw_output.output_type == "Effort"
-                  # tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion.to_f)
+                  tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+                  # tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion.to_f)
                 else
                   tmp_prbl << ev.send("string_data_#{level}")[@component.id]
                 end

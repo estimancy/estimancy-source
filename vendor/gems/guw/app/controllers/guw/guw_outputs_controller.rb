@@ -67,6 +67,7 @@ class Guw::GuwOutputsController < ApplicationController
 
   def update
     @guw_output = Guw::GuwOutput.find(params[:id])
+    old_attr_name = @guw_output.name
     @guw_output.update_attributes(params[:guw_output])
     @guw_model = @guw_output.guw_model
 
@@ -79,15 +80,27 @@ class Guw::GuwOutputsController < ApplicationController
 
     if attr.nil?
 
+      old_attr = PeAttribute.where(name: old_attr_name,
+                                   guw_model_id: @guw_model.id).first
+
       at = PeAttribute.create(name: @guw_output.name,
                               alias: @guw_output.name.underscore.gsub(" ", "_"),
                               description: @guw_output.name,
                               guw_model_id: @guw_model.id)
 
-      AttributeModule.create(pe_attribute_id: at.id,
-                             pemodule_id: pm.id,
-                             in_out: "both",
-                             guw_model_id: @guw_model.id)
+      am = AttributeModule.create(pe_attribute_id: at.id,
+                                  pemodule_id: pm.id,
+                                  in_out: "both",
+                                  guw_model_id: @guw_model.id)
+
+      old_attr.estimation_values.each do |ev|
+        ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
+        ev.pe_attribute_id = at.id
+        ev.save(validate: false)
+      end
+
     else
 
       attr.name = @guw_output.name

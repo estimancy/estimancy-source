@@ -512,6 +512,8 @@ module ViewsWidgetsHelper
               min_value_text = "Min: #{data_low.nil? ? '-' : data_low}"
             end
           end
+        elsif estimation_value.module_project.pemodule.alias == "guw"
+          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value)
         else
           if data_probable.nil?
             probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)
