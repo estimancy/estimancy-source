@@ -486,7 +486,7 @@ module ViewsWidgetsHelper
           end
 
           if data_probable.nil?
-            probable_value_text = "-"#display_value(data_probable.to_f, estimation_value, module_project_id)
+            probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)
           else
             if is_number?(text_data_probable)
               probable_value_text = display_value(text_data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
