@@ -162,6 +162,7 @@
       </tr>
     <% end %>
 
+    <% current_mp_wbs_activity_root_id = current_module_project.wbs_activity.root_element.id %>
 
     <tr>
 
@@ -173,23 +174,29 @@
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <th>Effort (L)</th>
-      <% end %>
-      <th>Effort (M)</th>
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
+        <th>Effort (M)</th>
         <th>Effort (H)</th>
+      <% else %>
+        <th>Effort</th>
       <% end %>
 
       <th><%= I18n.t(:change_ratio) %></th>
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
-        <th>Effort total (L)</th>
-      <% end %>
-
-      <th>Effort total calculé (M)</th>
-      <th>Effort total Retenu (M)</th>
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
-        <th>Effort total (H)</th>
+        <th>Effort total calculé (L)</th>
+        <th>Effort total retenu (L)</th>
+
+        <th>Effort total calculé (M)</th>
+        <th>Effort total retenu (M)</th>
+
+        <th>Effort total calculé (H)</th>
+        <th>Effort total retenu (H)</th>
+
+      <% else %>
+          <th>Effort total Calculé</th>
+          <th>Effort total Retenu</th>
       <% end %>
+
       <th>Ratio global</th>
       <th><%= I18n.t(:comment) %></th>
     </tr>
@@ -317,16 +324,27 @@
 
 
       <td>
-        <%= select_tag "ratio",
-                       options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                                          selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
+        <%= select_tag "ratio", options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                       selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
                        readonly: cannot?(:execute_estimation_plan, @project) %>
       </td>
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
+        <!-- Effort Theorique calculé -->
+        <td>
+            <strong>
+              <% begin %>
+                  <%= convert_with_precision(theorical_cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+              <% rescue %>
+                  -
+              <% end %>
+            </strong>
+        </td>
+
+        <!-- Effort Retenu -->
         <td>
           <% begin %>
-            <%= convert_with_precision(cev_output.string_data_low[component_id][current_module_project.wbs_activity.root_element.id].to_f / coeff, user_number_precision, true) %>
+            <%= convert_with_precision(cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
           <% rescue %>
             -
           <% end %>
@@ -338,7 +356,7 @@
       <td>
         <strong>
           <% begin %>
-              <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_module_project.wbs_activity.root_element.id].to_f / coeff, user_number_precision, true) %>
+              <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
           <% rescue %>
               -
           <% end %>
@@ -349,7 +367,7 @@
       <td>
         <strong>
           <% begin %>
-            <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_module_project.wbs_activity.root_element.id].to_f / coeff, user_number_precision, true) %></span>
+            <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %></span>
           <% rescue %>
             -
           <% end %>
@@ -358,16 +376,30 @@
 
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
+
+        <!-- Effort Theorique calculé -->
+        <td>
+            <strong>
+              <% begin %>
+                  <%= convert_with_precision(theorical_cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+              <% rescue %>
+                  -
+              <% end %>
+            </strong>
+        </td>
+
+        <!-- Effort Retenu -->
         <td>
           <strong>
             <% begin %>
-              <%= convert_with_precision(cev_output.string_data_high[component_id][current_module_project.wbs_activity.root_element.id].to_f / coeff, user_number_precision, true) %>
+              <%= convert_with_precision(cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
             <% rescue %>
               -
             <% end %>
           </strong>
         </td>
       <% end %>
+
 
       <td>
         <strong>
