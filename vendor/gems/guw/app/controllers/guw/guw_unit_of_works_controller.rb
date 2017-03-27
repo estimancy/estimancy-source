@@ -1591,8 +1591,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              selected: true).map{ |i|
               i.ajusted_size.nil? ? nil :
                   (i.ajusted_size.is_a?(Numeric) ?
-                      i.ajusted_size :
-                      i.ajusted_size["#{guw_output.id}"])}.compact.sum
+                      i.ajusted_size.to_f :
+                      i.ajusted_size["#{guw_output.id}"].to_f)}.compact.sum
 
             tmp_prbl = Array.new
             ["low", "most_likely", "high"].each do |level|
