@@ -101,7 +101,7 @@
                 <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : [guw_preceding_module_project] %>
           <% end %>
 
-          <% if !cev.estimation_value_id.nil?
+          <% if !cev.associated_estimation_value.nil?
                preceding_mp = ModuleProject.find(cev.associated_estimation_value.module_project_id)
                preceding_outputs_estimation_values = preceding_mp.estimation_values.where(in_out: "output")
              end
