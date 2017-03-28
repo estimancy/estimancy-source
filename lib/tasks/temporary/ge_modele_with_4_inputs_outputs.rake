@@ -150,7 +150,6 @@ namespace :ge_models do
           end
         end
 
-
         # all_estimation_values.each do |ev|
         #
         #   case ev.pe_attribute.alias
