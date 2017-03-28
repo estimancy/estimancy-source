@@ -42,10 +42,18 @@ class ProjectsController < ApplicationController
   def check_estimations_counter
     @organization = @current_organization
     estimations_counter = @organization.estimations_counter
-    if estimations_counter == 0
-      redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_zero_estimations_counter)}) and return
-    elsif estimations_counter < 10
-      flash.now[:warning] = I18n.t(:warning_minimum_estimations_counter, counter: estimations_counter)
+    unless estimations_counter.nil?
+      if estimations_counter == 0
+        #redirect_to(organization_estimations_path(@organization), flash:{ warning: I18n.t(:warning_zero_estimations_counter) } ) and return
+        flash[:warning] = I18n.t(:warning_zero_estimations_counter)
+        #redirect_to(:back) and return
+        respond_to do |format|
+          format.html { redirect_to(:back) and return }
+          format.js { render :js => "window.location = '#{request.env['HTTP_REFERER']}'" }
+        end
+      elsif estimations_counter < 10
+        flash.now[:warning] = I18n.t(:warning_minimum_estimations_counter, counter: estimations_counter)
+      end
     end
   end
 
