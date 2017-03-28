@@ -53,6 +53,8 @@ namespace :ge_models do
         current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
         current_outputs_evs = module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
+        all_estimation_values = module_project.estimation_values
+
         if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length)
           # Get estimation_value of the input attribute to use
           all_estimation_values = module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
@@ -103,11 +105,11 @@ namespace :ge_models do
 
           when "effort"
             if ev1_input && ev2_input
-              ev1_in_out.update_attributes(string_data_low: effort_input_ev.string_data_low, string_data_most_likely: effort_input_ev.string_data_most_likely,
+              ev1_input.update_attributes(string_data_low: effort_input_ev.string_data_low, string_data_most_likely: effort_input_ev.string_data_most_likely,
                                            string_data_high: effort_input_ev.string_data_high, string_data_probable: effort_input_ev.string_data_probable,
                                            estimation_value_id: effort_input_ev.estimation_value_id)
 
-              ev2_in_out.update_attributes(string_data_low: size_input_ev.string_data_low, string_data_most_likely: size_input_ev.string_data_most_likely,
+              ev2_input.update_attributes(string_data_low: size_input_ev.string_data_low, string_data_most_likely: size_input_ev.string_data_most_likely,
                                            string_data_high: size_input_ev.string_data_high, string_data_probable: size_input_ev.string_data_probable,
                                            estimation_value_id: size_input_ev.estimation_value_id)
             end
