@@ -1591,8 +1591,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              selected: true).map{ |i|
               i.ajusted_size.nil? ? nil :
                   (i.ajusted_size.is_a?(Numeric) ?
-                      i.ajusted_size :
-                      i.ajusted_size["#{guw_output.id}"])}.compact.sum
+                      i.ajusted_size.to_f :
+                      i.ajusted_size["#{guw_output.id}"].to_f)}.compact.sum
 
             tmp_prbl = Array.new
             ["low", "most_likely", "high"].each do |level|
@@ -1601,7 +1601,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
                 if guw_output.output_type == "Effort"
                   tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
-                  # tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion.to_f)
                 else
                   tmp_prbl << ev.send("string_data_#{level}")[@component.id]
                 end

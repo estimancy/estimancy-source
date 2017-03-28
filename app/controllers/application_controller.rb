@@ -170,9 +170,9 @@ class ApplicationController < ActionController::Base
 
   #For some specific tables, we need to know if record is created on MasterData instance or on the local instance
   #This method test if we are on Master or Local instance
-  # def is_master_instance?
-  #   defined?(MASTER_DATA) and MASTER_DATA and File.exists?("#{Rails.root}/config/initializers/master_data.rb")
-  # end
+  def is_master_instance?
+    true
+  end
 
   def redirect_apply(edit=nil, new=nil, index=nil)
     begin
