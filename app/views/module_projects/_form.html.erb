@@ -65,12 +65,15 @@
       <%= hidden_field_tag 'mp', @module_project.id %>
 
       <% effort_ids = [] %>
-      <% module_project_attributes = @module_project.pemodule.pe_attributes %>
-      <% case @module_project.pemodule.alias  %>
+        <% output_attribute_ids = [] %>
+        <% module_project_attributes = @module_project.pemodule.pe_attributes %>
+
+        <% case @module_project.pemodule.alias  %>
         <% when "effort_breakdown" %>
             <% effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "ge" %>
             <% effort_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+            <% output_attribute_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "staffing" %>
             <% effort_ids = module_project_attributes.where(alias: Staffing::StaffingModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "kb" %>
@@ -81,9 +84,15 @@
             <% effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% else %>
             <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
-      <% end %>
+        <% end %>
 
-      <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+        <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+
+        <% if current_evs.all.empty? || effort_ids.length != current_evs.length
+             all_current_evs = @module_project.get_mp_inputs_outputs_estimation_values(effort_ids, output_attribute_ids)
+             current_evs = all_current_evs.where(pe_attribute_id: effort_ids, in_out: "input")
+           end
+        %>
 
       <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> <br></h5>
 

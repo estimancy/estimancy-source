@@ -412,7 +412,7 @@ class ModuleProject < ActiveRecord::Base
 
 
   # Get Estimation_values or Create them if not exist
-  def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
+  def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids = [])
 
 
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
