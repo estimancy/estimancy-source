@@ -8,6 +8,8 @@
         <div style="color: red"><%= I18n.t(:confirm_new_branch_project_checkout) %></div> <br>
     <% end %>
 
+    <div id="notifications"></div>
+
     <div>
       <div class="row">
         <div class="span4"><%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-xlarge'}, disabled: true %></div>
