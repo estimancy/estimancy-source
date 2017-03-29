@@ -1063,7 +1063,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw.save
           else
-            ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+            ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
             unless ce.nil?
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
