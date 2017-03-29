@@ -72,15 +72,16 @@ Guw::Engine.routes.draw do
     end
     post "duplicate"
     post "export"
-    post "exportxl"
-    post "new_exportxl"
+    post "export_old_config"
+    post "export_new_config"
     get "all_guw_types"
 
     get "scale_module_attributes"
     post "save_scale_module_attributes"
   end
 
-  post "importxl" => "guw_models#importxl"
+  post "import_old_config" => "guw_models#import_old_config"
+  post "import_new_config" => "guw_models#import_new_config"
   post "import_guw" => "guw_models#import_guw"
 
   post "guw_unit_of_works/save_guw_unit_of_works"

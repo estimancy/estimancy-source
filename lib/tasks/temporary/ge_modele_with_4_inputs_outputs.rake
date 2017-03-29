@@ -26,15 +26,15 @@ namespace :ge_models do
         output_effort_standard_unit_coeff = ge_model.output_effort_standard_unit_coefficient
 
         ["ent1", "ent2", "ent3", "ent4"].each do |input|
-          ge_model.send("#{input}_size_unit=", input_size_unit)
-          ge_model.send("#{input}_effort_unit=", input_effort_unit)
-          ge_model.send("#{input}_effort_unit_coefficient=", input_effort_standard_unit_coeff)
+          ge_model.send("#{input}_unit=", input_size_unit)
+          #ge_model.send("#{input}_effort_unit=", input_effort_unit)
+          ge_model.send("#{input}_unit_coefficient=", input_effort_standard_unit_coeff)
         end
 
         ["sort1", "sort2", "sort3", "sort4"].each do |output|
-          ge_model.send("#{output}_size_unit=", output_size_unit)
-          ge_model.send("#{output}_effort_unit=", output_effort_unit)
-          ge_model.send("#{output}_effort_unit_coefficient=", output_effort_standard_unit_coeff)
+          ge_model.send("#{output}_unit=", output_size_unit)
+          #ge_model.send("#{output}_effort_unit=", output_effort_unit)
+          ge_model.send("#{output}_unit_coefficient=", output_effort_standard_unit_coeff)
         end
 
         ge_model.save
@@ -52,6 +52,8 @@ namespace :ge_models do
 
         current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
         current_outputs_evs = module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
+
+        all_estimation_values = module_project.estimation_values
 
         if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length)
           # Get estimation_value of the input attribute to use
@@ -103,11 +105,11 @@ namespace :ge_models do
 
           when "effort"
             if ev1_input && ev2_input
-              ev1_in_out.update_attributes(string_data_low: effort_input_ev.string_data_low, string_data_most_likely: effort_input_ev.string_data_most_likely,
+              ev1_input.update_attributes(string_data_low: effort_input_ev.string_data_low, string_data_most_likely: effort_input_ev.string_data_most_likely,
                                            string_data_high: effort_input_ev.string_data_high, string_data_probable: effort_input_ev.string_data_probable,
                                            estimation_value_id: effort_input_ev.estimation_value_id)
 
-              ev2_in_out.update_attributes(string_data_low: size_input_ev.string_data_low, string_data_most_likely: size_input_ev.string_data_most_likely,
+              ev2_input.update_attributes(string_data_low: size_input_ev.string_data_low, string_data_most_likely: size_input_ev.string_data_most_likely,
                                            string_data_high: size_input_ev.string_data_high, string_data_probable: size_input_ev.string_data_probable,
                                            estimation_value_id: size_input_ev.estimation_value_id)
             end

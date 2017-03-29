@@ -70,9 +70,9 @@
       <% unless @guw_model.new_record? %>
         <div class="span3">
           <%  if @guw_model.config_type == "new" %>
-            <%= link_to I18n.t(:export), guw.guw_model_new_exportxl_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
           <% else %>
-              <%= link_to I18n.t(:export), guw.guw_model_exportxl_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+              <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
           <% end %>
           <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
         </div>
@@ -80,9 +80,8 @@
         <a href="#import" role="button" class="btn pull-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
           <%= I18n.t(:import) %>
         </a>
-
         <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <%= form_tag guw.importxl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+          <%= form_tag guw.import_new_config_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
             <div class="modal-header modal-drag">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
@@ -91,14 +90,14 @@
               <%= file_field_tag :file %>
             </div>
             <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+              <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
               <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
             </div>
             <div class="loading span11 hide">
               <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
             </div>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>
