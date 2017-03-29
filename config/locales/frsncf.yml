@@ -2025,3 +2025,4 @@ frsncf:
 
   ge_standard_coefficient: "Coefficient"
   ge_model_instance_mode: "Mode d'instance"
+  is_modifiable: "Est modifiable"
