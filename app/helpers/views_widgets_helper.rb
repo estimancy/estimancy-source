@@ -435,8 +435,10 @@ module ViewsWidgetsHelper
 
         # Get the project wbs_project_element root if module with activities
         if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+          wbs_activity = module_project.wbs_activity
+
           # root element
-          wbs_activity_elt_root = module_project.wbs_activity.wbs_activity_elements.first.root
+          wbs_activity_elt_root = wbs_activity.wbs_activity_elements.first.root
           return if wbs_activity_elt_root.nil?
 
           wbs_activity_elt_root_id = wbs_activity_elt_root.id
@@ -444,7 +446,6 @@ module ViewsWidgetsHelper
           # get the wbs_activity_selected ratio
           ratio_reference = @wbs_activity_ratio
           if ratio_reference.nil?
-            wbs_activity = module_project.wbs_activity
             wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
             begin
               ratio_reference = wai.wbs_activity_ratio
@@ -547,29 +548,18 @@ module ViewsWidgetsHelper
         if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
 
           ### TEST
+          if wbs_activity
+            effort_unit_coefficient = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient
+            module_project_ratio_elements = estimation_value.module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id)
 
-          # if wbs_activity
-          #   effort_unit_coefficient = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient
-          #
-          #   if view_widget.use_organization_effort_unit == true
-          #      min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
-          #      organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
-          #
-          #      effort_unit_coefficient = organization_effort_limit_coeff
-          #      attribute_unit_label = organization_effort_unit
-          #   end
-          # end
-          #
-          # # récuperer l'unité de l'effort de l'organisation
-          # if view_widget.use_organization_effort_unit == true
-          #   # Use orgnization effort unit
-          #   organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
-          #   "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
-          # else
-          #   # Use orgnization effort unit
-          #   "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
-          # end
+            if view_widget.use_organization_effort_unit == true
+               min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+               organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
 
+               effort_unit_coefficient = organization_effort_limit_coeff
+               attribute_unit_label = organization_effort_unit
+            end
+          end
           ### FIN TEST
 
 
@@ -632,24 +622,53 @@ module ViewsWidgetsHelper
 
             # new data
             bar_chart_level_values = Array.new
-            # bar_chart_level_values << [I18n.t(:value_low), wbs_data_low.nil? ? 0 : wbs_data_low[wbs_activity_elt_root_id]]
-            # bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely.nil? ? 0 : wbs_data_most_likely[wbs_activity_elt_root_id]]
-            # bar_chart_level_values << [I18n.t(:value_high), wbs_data_high.nil? ? 0 : wbs_data_high[wbs_activity_elt_root_id]]
-            #bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
 
-            bar_chart_level_values << [I18n.t(:value_low), 0]
-            bar_chart_level_values << [I18n.t(:value_most_likely), 0]
-            bar_chart_level_values << [I18n.t(:value_high), 0]
-            bar_chart_level_values << [I18n.t(:value_probable), 0]
+            if view_widget.show_min_max == true
+              bar_chart_level_values << [I18n.t(:value_low), wbs_data_low.nil? ? 0 : wbs_data_low[wbs_activity_elt_root_id]]
+              bar_chart_level_values << [I18n.t(:value_most_likely), wbs_data_most_likely.nil? ? 0 : wbs_data_most_likely[wbs_activity_elt_root_id]]
+              bar_chart_level_values << [I18n.t(:value_high), wbs_data_high.nil? ? 0 : wbs_data_high[wbs_activity_elt_root_id]]
+            else
+              chart_probable = wbs_data_probable.nil? ? 0 : wbs_data_probable[wbs_activity_elt_root_id]
 
-            #chart_probable = wbs_data_probable.nil? ? 0 : wbs_data_probable[wbs_activity_elt_root_id]
+              begin
+                bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
+              rescue
+                bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
+              end
 
-            # begin
-            #   bar_chart_level_values << [I18n.t(:value_probable), chart_probable.nil? ? 0 : chart_probable[:value]]
-            # rescue
-            #   bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
-            # end
+            end
 
+            # bar_chart_level_values << [I18n.t(:value_low), 0]
+            # bar_chart_level_values << [I18n.t(:value_most_likely), 0]
+            # bar_chart_level_values << [I18n.t(:value_high), 0]
+            # bar_chart_level_values << [I18n.t(:value_probable), 0]
+
+
+            # Divise par le coeff
+            bar_chart_level_values
+            # TEST
+
+            # # récuperer l'unité de l'effort de l'organisation
+            if view_widget.use_organization_effort_unit == true
+              # Use orgnization effort unit
+              organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(data_most_likely, @project.organization)
+              #"#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), user_precision, true)} #{organization_effort_unit}"
+              bar_chart_level_values.each_with_index do |array, index|
+                bar_chart_level_values[index][1] = (array[1] / organization_effort_limit_coeff).round(user_precision)
+              end
+            else
+              # Use orgnization effort unit
+              #"#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), user_precision, true)} #{wbs_activity.effort_unit}"
+              bar_chart_level_values.each_with_index do |array, index|
+                bar_chart_level_values[index][1] = (array[1] / effort_unit_coefficient).round(user_precision)
+              end
+
+            end
+
+            # TEST
+
+            widget_data[:max_value_text] = ""
+            widget_data[:min_value_text] = ""
 
             # Now with google-chart
             value_to_show = raw(render :partial => 'views_widgets/g_column_chart',

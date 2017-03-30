@@ -103,7 +103,7 @@
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
 
     var widget_type = $("#views_widget_widget_type").val();
-    if (widget_type == "text"){
+    if (widget_type == "text" || widget_type == "bar_chart"){
         $('#views_widget_show_min_max').removeAttr('disabled');
     }
     else {
@@ -153,7 +153,7 @@
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();
-        if (widget_type == "text"){
+        if (widget_type == "text" || widget_type == "bar_chart"){
             $('#views_widget_show_min_max').removeAttr('disabled');
         }
         else {
