@@ -1,4 +1,7 @@
-$("#notifications").html("");
+//$("#notifications").html("");
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+
 $(".modal-header h3").css({ color: 'white', 'font-size': '14px', 'text-shadow': 'none' });
 
 $(".modal-body-inner").html("<%= j render(:partial => "projects/set_checkout_version") %>");

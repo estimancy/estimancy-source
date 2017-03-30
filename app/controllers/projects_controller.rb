@@ -34,10 +34,30 @@ class ProjectsController < ApplicationController
   helper_method :show_status_change_comments
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
-  #before_filter :check_estimations_counter, :only => [:new, :create, :duplicate, :checkout ]
+  before_filter :check_estimations_counter, :only => [:new, :change_new_estimation_data, :set_checkout_version]   # create, duplicate, checkout
 
   #protected
   private
+
+  def check_estimations_counter
+    @organization = @current_organization
+    estimations_counter = @organization.estimations_counter
+    unless estimations_counter.nil?
+      if estimations_counter == 0
+        #redirect_to(organization_estimations_path(@organization), flash:{ warning: I18n.t(:warning_zero_estimations_counter) } ) and return
+        flash[:warning] = I18n.t(:warning_zero_estimations_counter)
+        #redirect_to(:back) and return
+        respond_to do |format|
+          format.html { redirect_to(:back) and return }
+          format.js { render :js => "window.location = '#{request.env['HTTP_REFERER']}'" }
+        end
+      elsif estimations_counter < 10
+        flash.now[:warning] = I18n.t(:warning_minimum_estimations_counter, counter: estimations_counter)
+      end
+    end
+  end
+
+
   def load_data
     #No authorize required since this method protected and is used to load data and shared by the other one.
     if params[:id]
@@ -381,7 +401,6 @@ class ProjectsController < ApplicationController
     defaut_group_ps.save
 
     if @is_model == "true"
-
       new_current_user_ps = @project.project_securities.build
       # if params[:project][:creator_id].blank?
         new_current_user_ps.user_id = estimation_owner.id
@@ -399,7 +418,6 @@ class ProjectsController < ApplicationController
       new_defaut_group_ps.is_model_permission = true
       new_defaut_group_ps.is_estimation_permission = false
       new_defaut_group_ps.save
-
     end
 
     @project.is_locked = false
@@ -460,6 +478,13 @@ class ProjectsController < ApplicationController
               end
             end
           end
+
+          # Update project's organization estimations counter
+          if @is_model != "true"
+            @organization.estimations_counter -= 1
+            @organization.save
+          end
+
           redirect_to redirect_apply(edit_project_path(@project)), notice: "#{I18n.t(:notice_project_successful_created)}"
         else
           flash[:error] = "#{I18n.t(:error_project_creation_failed)}"
@@ -1816,232 +1841,241 @@ public
 
     @organization = Organization.find(params[:organization_id])
 
-    old_prj = Project.find(params[:project_id])
+    # Debut transaction
+    ActiveRecord::Base.transaction do
 
-    new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
-    new_prj.ancestry = nil
-    new_prj.creator_id = current_user.id
-    if params[:action_name] == "duplication_model"
-      new_prj.is_model = true
-    else
-      new_prj.is_model = false
-    end
+      old_prj = Project.find(params[:project_id])
 
-    # new_prj.is_private = old_prj.is_private
-
-    #if creation from template
-    if !params[:create_project_from_template].nil?
-
-      unless params['project'].nil?
-        if @organization.projects.map(&:title).include?(params['project']['title'])
-          flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-          redirect_to projects_from_path(organization_id: @organization.id) and return
-        end
-      end
-
-      new_prj.original_model_id = old_prj.id
-
-      #Update some params with the form input data
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
-
-      if params['project']['application_id'].present?
-        new_prj.application_id = params['project']['application_id']
+      new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+      new_prj.ancestry = nil
+      new_prj.creator_id = current_user.id
+      if params[:action_name] == "duplication_model"
+        new_prj.is_model = true
       else
-        new_prj.application_name = params['project']['application_name']
+        new_prj.is_model = false
       end
 
-      new_prj.title = params['project']['title']
-      new_prj.version_number = params['project']['version_number']
-      new_prj.description = params['project']['description']
-      # start_date = (params['project']['start_date'].nil? || params['project']['start_date'].blank?) ? Time.now.to_date : params['project']['start_date']
-      new_prj.start_date = Time.now
+      # new_prj.is_private = old_prj.is_private
 
-      #Only the securities for the generated project will be taken in account
-      # new_prj.project_securities = new_prj.project_securities.reject{|i| i.is_model_permission == true }
-    end
-
-    if new_prj.save
-      old_prj.save #Original project copy number will be incremented to 1
-
-      #Update the project securities for the current user who create the estimation from model
-      #if params[:action_name] == "create_project_from_template"
-      owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+      #if creation from template
       if !params[:create_project_from_template].nil?
-        creator_securities = new_prj.project_securities
-        creator_securities.each do |ps|
-          if ps.is_model_permission == true
-            ps.update_attribute(:is_model_permission, false)
-            ps.update_attribute(:is_estimation_permission, true)
-            if ps.user_id == owner.id
-              ps.update_attribute(:user_id, owner.id)
-            end
-          else
-            ps.destroy
-          end
-        end
-      end
 
-      #Managing the component tree : PBS
-      pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
-
-      # For PBS
-      new_prj_components = pe_wbs_product.pbs_project_elements
-      new_prj_components.each do |new_c|
-        if new_c.is_root == true
-          if !params[:create_project_from_template].nil?
-            if new_prj.application.nil?
-              new_c.name = new_prj.application_name
-            else
-              new_c.name = new_prj.application.name
-            end
-            new_c.save
+        unless params['project'].nil?
+          if @organization.projects.map(&:title).include?(params['project']['title'])
+            flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
+            redirect_to projects_from_path(organization_id: @organization.id) and return
           end
         end
 
-        new_ancestor_ids_list = []
-        new_c.ancestor_ids.each do |ancestor_id|
-          ancestor_id = PbsProjectElement.find_by_pe_wbs_project_id_and_copy_id(new_c.pe_wbs_project_id, ancestor_id).id
-          new_ancestor_ids_list.push(ancestor_id)
+        new_prj.original_model_id = old_prj.id
+
+        #Update some params with the form input data
+        new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
+
+        if params['project']['application_id'].present?
+          new_prj.application_id = params['project']['application_id']
+        else
+          new_prj.application_name = params['project']['application_name']
         end
-        new_c.ancestry = new_ancestor_ids_list.join('/')
-        new_c.save
+
+        new_prj.title = params['project']['title']
+        new_prj.version_number = params['project']['version_number']
+        new_prj.description = params['project']['description']
+        # start_date = (params['project']['start_date'].nil? || params['project']['start_date'].blank?) ? Time.now.to_date : params['project']['start_date']
+        new_prj.start_date = Time.now
+
+        #Only the securities for the generated project will be taken in account
+        # new_prj.project_securities = new_prj.project_securities.reject{|i| i.is_model_permission == true }
       end
 
-      #For applications
-      old_prj.applications.each do |application|
-        app = Application.where(name: application.name, organization_id: @organization.id).first
-        ap = ApplicationsProjects.create(application_id: app.id,
-                                         project_id: new_prj.id)
-        ap.save
-      end
+      if new_prj.save
+        old_prj.save #Original project copy number will be incremented to 1
 
-      # For ModuleProject associations
-      old_prj.module_projects.group(:id).each do |old_mp|
-        new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
-
-        # ModuleProject Associations for the new project
-        old_mp.associated_module_projects.each do |associated_mp|
-          new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
-          new_mp.associated_module_projects << new_associated_mp
-        end
-
-        ### Wbs activity
-        #create module_project ratio elements
-        old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
-          # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
-          #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
-          #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
-          #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
-          #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
-
-          mp_ratio_element = old_mp_ratio_elt.dup
-          mp_ratio_element.module_project_id = new_mp.id
-          mp_ratio_element.copy_id = old_mp_ratio_elt.id
-
-          pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
-          mp_ratio_element.pbs_project_element_id = pbs_id
-          mp_ratio_element.save
-        end
-
-        new_mp_ratio_elements = new_mp.module_project_ratio_elements
-        new_mp_ratio_elements.each do |mp_ratio_element|
-          #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
-
-          #unless mp_ratio_element.is_root?
-            new_ancestor_ids_list = []
-            mp_ratio_element.ancestor_ids.each do |ancestor_id|
-              ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
-              if ancestor
-                ancestor_id = ancestor.id
-                new_ancestor_ids_list.push(ancestor_id)
+        #Update the project securities for the current user who create the estimation from model
+        #if params[:action_name] == "create_project_from_template"
+        owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+        if !params[:create_project_from_template].nil?
+          creator_securities = new_prj.project_securities
+          creator_securities.each do |ps|
+            if ps.is_model_permission == true
+              ps.update_attribute(:is_model_permission, false)
+              ps.update_attribute(:is_estimation_permission, true)
+              if ps.user_id == owner.id
+                ps.update_attribute(:user_id, owner.id)
               end
+            else
+              ps.destroy
             end
-            mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
-          #end
-          mp_ratio_element.save
-        end
-
-        ### End wbs_activity
-
-        # For SKB-Input
-        old_mp.skb_inputs.each do |skbi|
-          Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
-                               organization_id: @organization.id, module_project_id: new_mp.id)
-        end
-
-        #For ge_model_factor_descriptions
-        old_mp.ge_model_factor_descriptions.each do |factor_description|
-          Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
-                                                                    factor_alias: factor_description.factor_alias, description: factor_description.description,
-                                                                    module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
-        end
-
-        # if the module_project is nil
-        unless old_mp.view.nil?
-          #Update the new project/estimation views and widgets
-          update_views_and_widgets(new_prj, old_mp, new_mp)
-        end
-
-        #Update the Unit of works's groups
-        new_mp.guw_unit_of_work_groups.each do |guw_group|
-          new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
-          new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-          guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-
-          # Update the group unit of works and attributes
-          guw_group.guw_unit_of_works.each do |guw_uow|
-            new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
-            new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
-
-            new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
-            new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-            guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
           end
         end
 
-        ["input", "output"].each do |io|
-          new_mp.pemodule.pe_attributes.each do |attr|
-            old_prj.pbs_project_elements.each do |old_component|
-              new_prj_components.each do |new_component|
-                ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-                unless ev.nil?
-                  ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                  ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                  ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                  ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+        #Managing the component tree : PBS
+        pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
 
-                  # update ev attribute links
-                  unless ev.estimation_value_id.nil?
-                    project_id = new_prj.id
-                    new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
-                    new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
-                    if new_ev
-                      ev.estimation_value_id = new_ev.id
+        # For PBS
+        new_prj_components = pe_wbs_product.pbs_project_elements
+        new_prj_components.each do |new_c|
+          if new_c.is_root == true
+            if !params[:create_project_from_template].nil?
+              if new_prj.application.nil?
+                new_c.name = new_prj.application_name
+              else
+                new_c.name = new_prj.application.name
+              end
+              new_c.save
+            end
+          end
+
+          new_ancestor_ids_list = []
+          new_c.ancestor_ids.each do |ancestor_id|
+            ancestor_id = PbsProjectElement.find_by_pe_wbs_project_id_and_copy_id(new_c.pe_wbs_project_id, ancestor_id).id
+            new_ancestor_ids_list.push(ancestor_id)
+          end
+          new_c.ancestry = new_ancestor_ids_list.join('/')
+          new_c.save
+        end
+
+        #For applications
+        old_prj.applications.each do |application|
+          app = Application.where(name: application.name, organization_id: @organization.id).first
+          ap = ApplicationsProjects.create(application_id: app.id,
+                                           project_id: new_prj.id)
+          ap.save
+        end
+
+        # For ModuleProject associations
+        old_prj.module_projects.group(:id).each do |old_mp|
+          new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+
+          # ModuleProject Associations for the new project
+          old_mp.associated_module_projects.each do |associated_mp|
+            new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+            new_mp.associated_module_projects << new_associated_mp
+          end
+
+          ### Wbs activity
+          #create module_project ratio elements
+          old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+            # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
+            #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
+            #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
+            #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
+            #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
+
+            mp_ratio_element = old_mp_ratio_elt.dup
+            mp_ratio_element.module_project_id = new_mp.id
+            mp_ratio_element.copy_id = old_mp_ratio_elt.id
+
+            pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
+            mp_ratio_element.pbs_project_element_id = pbs_id
+            mp_ratio_element.save
+          end
+
+          new_mp_ratio_elements = new_mp.module_project_ratio_elements
+          new_mp_ratio_elements.each do |mp_ratio_element|
+            #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+
+            #unless mp_ratio_element.is_root?
+              new_ancestor_ids_list = []
+              mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                if ancestor
+                  ancestor_id = ancestor.id
+                  new_ancestor_ids_list.push(ancestor_id)
+                end
+              end
+              mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+            #end
+            mp_ratio_element.save
+          end
+
+          ### End wbs_activity
+
+          # For SKB-Input
+          old_mp.skb_inputs.each do |skbi|
+            Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
+                                 organization_id: @organization.id, module_project_id: new_mp.id)
+          end
+
+          #For ge_model_factor_descriptions
+          old_mp.ge_model_factor_descriptions.each do |factor_description|
+            Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
+                                                                      factor_alias: factor_description.factor_alias, description: factor_description.description,
+                                                                      module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
+          end
+
+          # if the module_project is nil
+          unless old_mp.view.nil?
+            #Update the new project/estimation views and widgets
+            update_views_and_widgets(new_prj, old_mp, new_mp)
+          end
+
+          #Update the Unit of works's groups
+          new_mp.guw_unit_of_work_groups.each do |guw_group|
+            new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
+            new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
+            guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
+
+            # Update the group unit of works and attributes
+            guw_group.guw_unit_of_works.each do |guw_uow|
+              new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+              new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
+
+              new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
+              new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
+              guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
+            end
+          end
+
+          ["input", "output"].each do |io|
+            new_mp.pemodule.pe_attributes.each do |attr|
+              old_prj.pbs_project_elements.each do |old_component|
+                new_prj_components.each do |new_component|
+                  ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+                  unless ev.nil?
+                    ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                    ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                    ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                    ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                    # update ev attribute links
+                    unless ev.estimation_value_id.nil?
+                      project_id = new_prj.id
+                      new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                      new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                      if new_ev
+                        ev.estimation_value_id = new_ev.id
+                      end
                     end
-                  end
 
-                  ev.save
+                    ev.save
+                  end
                 end
               end
             end
           end
         end
 
-      end
+        # Update project's organization estimations counter
+        if new_prj.is_model != true
+          @organization.estimations_counter -= 1
+          @organization.save
+        end
 
-      flash[:success] = I18n.t(:notice_project_successful_duplicated)
-      redirect_to edit_project_path(new_prj) and return
-    else
-      #if params[:action_name] == "create_project_from_template"
-      if !params[:create_project_from_template].nil?
-        flash[:error] = I18n.t(:project_already_exist, value: old_prj.title)
-        redirect_to projects_from_path(organization_id: @organization.id) and return
+        flash[:success] = I18n.t(:notice_project_successful_duplicated)
+        redirect_to edit_project_path(new_prj) and return
       else
-        flash[:error] = I18n.t(:error_project_failed_duplicate)
-        redirect_to organization_estimations_path(@current_organization)
+        #if params[:action_name] == "create_project_from_template"
+        if !params[:create_project_from_template].nil?
+          flash[:error] = I18n.t(:project_already_exist, value: old_prj.title)
+          redirect_to projects_from_path(organization_id: @organization.id) and return
+        else
+          flash[:error] = I18n.t(:error_project_failed_duplicate)
+          redirect_to organization_estimations_path(@current_organization)
+        end
       end
-    end
+    end   # Fin transaction
   end
 
 
@@ -2333,6 +2367,7 @@ public
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
 
       new_prj.transaction do
+
         if new_prj.save
           old_prj.save #Original project copy number will be incremented to 1
 
@@ -2458,6 +2493,12 @@ public
               new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
+          end
+
+          # Update project's organization estimations counter
+          if new_prj.is_model != true
+            @current_organization.estimations_counter -= 1
+            @current_organization.save
           end
 
           flash[:success] = I18n.t(:notice_project_successful_checkout)

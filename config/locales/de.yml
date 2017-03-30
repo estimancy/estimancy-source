@@ -1600,4 +1600,8 @@ de:
 
   ge_standard_coefficient: "Coefficient"
   ge_model_instance_mode: "Instance mode"
+
+  warning_zero_estimations_counter: "Be careful, the estimates counter on your organization's subscription account is zero.\n Please contact the administrator of your account to renew your subscription."
+  warning_minimum_estimations_counter: "Be careful, you only have %{counter} estimates on the subscription account of your organization"
+  ge_model_instance_mode: "Instance mode"
   is_modifiable: "Is modifiable"

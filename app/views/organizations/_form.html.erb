@@ -31,7 +31,7 @@
                 </div>
               </div>
               <% if current_user.super_admin == true %>
-                <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+                <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge', :rows => 5} %>
               <% end %>
 
               <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>

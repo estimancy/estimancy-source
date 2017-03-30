@@ -2046,3 +2046,7 @@ fr_bnp:
 
   ge_standard_coefficient: "Coefficient"
   ge_model_instance_mode: "Mode d'instance"
+
+  warning_zero_estimations_counter: "Attention, le compteur d'estimations sur le compte de l'abonnement de votre organisation est à zéro.\n Veuillez contacter l'administrateur de votre compte, pour le renouvellement de votre abonnement."
+  warning_minimum_estimations_counter: "Attention, il ne vous reste plus que %{counter} estimations sur le compte de l'abonnement de votre organisation"
+

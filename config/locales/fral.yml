@@ -2003,6 +2003,12 @@ fral:
 
   is_modifiable: "Est modifiable"
 
+  warning_zero_estimations_counter: "Attention, le compteur d'estimations sur le compte de l'abonnement de votre organisation est à zéro.\n Veuillez contacter l'administrateur de votre compte, pour le renouvellement de votre abonnement."
+  warning_minimum_estimations_counter: "Attention, il ne vous reste plus que %{counter} estimations sur le compte de l'abonnement de votre organisation"
+
+  effort_display_unit: "Unité d'affichage de l'effort"
+  organization_effort_unit: "Utiliser l'unité d'effort de l'organisation : %{value}"
+
 
 
 

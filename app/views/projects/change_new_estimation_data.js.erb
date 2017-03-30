@@ -1,4 +1,6 @@
-$("#notifications").html("");
+//$("#notifications").html("");
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");
 
 $(".modal-body-inner").html("<%=raw j render :partial => 'projects/edit_estimation_from_model', :object => @project_template, :locals => {organization_id: params[:organization_id]} %>");
 
