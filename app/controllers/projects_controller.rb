@@ -481,8 +481,10 @@ class ProjectsController < ApplicationController
 
           # Update project's organization estimations counter
           if @is_model != "true"
-            @organization.estimations_counter -= 1
-            @organization.save
+            unless @organization.estimations_counter.nil?
+              @organization.estimations_counter -= 1
+              @organization.save
+            end
           end
 
           redirect_to redirect_apply(edit_project_path(@project)), notice: "#{I18n.t(:notice_project_successful_created)}"
@@ -2059,8 +2061,10 @@ public
 
         # Update project's organization estimations counter
         if new_prj.is_model != true
-          @organization.estimations_counter -= 1
-          @organization.save
+          unless @organization.estimations_counter.nil?
+            @organization.estimations_counter -= 1
+            @organization.save
+          end
         end
 
         flash[:success] = I18n.t(:notice_project_successful_duplicated)
@@ -2497,8 +2501,10 @@ public
 
           # Update project's organization estimations counter
           if new_prj.is_model != true
-            @current_organization.estimations_counter -= 1
-            @current_organization.save
+            unless @organization.estimations_counter.nil?
+              @current_organization.estimations_counter -= 1
+              @current_organization.save
+            end
           end
 
           flash[:success] = I18n.t(:notice_project_successful_checkout)
