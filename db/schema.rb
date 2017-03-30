@@ -944,12 +944,6 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.string   "reference_uuid"
   end
 
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "module_project_ratio_elements", :force => true do |t|
     t.integer  "pbs_project_element_id"
     t.integer  "module_project_id"

@@ -964,14 +964,13 @@ class Guw::GuwModelsController < ApplicationController
     @guw_organisation = @guw_model.organization
     @guw_types = @guw_model.guw_types
     first_page = [[I18n.t(:model_name),  @guw_model.name],
-                  [I18n.t(:model_description), @guw_model.description ],
+                  [I18n.t(:model_description), @guw_model.description],
                   [I18n.t(:work_unit_label),  @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label],
                   [I18n.t(:weightings_label),  @guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label],
                   [I18n.t(:factors_label),  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label],
                   [I18n.t(:three_points_estimation), @guw_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
                   [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion]
-                    #, [I18n.t(:advice), ""]
                   ]
 
     # Add Action & Coeff & coefficientElements
@@ -1041,99 +1040,6 @@ class Guw::GuwModelsController < ApplicationController
     ind2 = 6
 
 
-    # Pour l'ancienne configuration du module de Taille
-    if @guw_model.config_type == "old"
-
-      workbook.add_worksheet(@guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label)
-      workbook.add_worksheet(@guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label)
-      workbook.add_worksheet(@guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label)
-
-      worksheet = workbook[2]
-      counter_line = 1
-      page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-      worksheet.change_row_bold(0,true)
-      page.each_with_index do |cell_name, index|
-        worksheet.add_cell(0, index, cell_name)
-        worksheet.change_column_horizontal_alignment(index, 'center')
-      end
-
-      worksheet.change_column_width(2, I18n.t(:display_order).size)
-      @guw_model.guw_work_units.each_with_index do |aquisitions_type,indx|
-        worksheet.add_cell(indx + 1, 0, aquisitions_type.name)
-        worksheet.add_cell(indx + 1, 1, aquisitions_type.value)
-        worksheet.add_cell(indx + 1, 2, aquisitions_type.display_order)
-        if ind < aquisitions_type.name.size
-          worksheet.change_column_width(0, aquisitions_type.name.size)
-          ind = aquisitions_type.name.size
-        end
-        counter_line += 1
-      end
-      counter_line.times do |indx|
-        ["bottom", "right"].each do |symbole|
-          worksheet[indx][0].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][1].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][2].change_border(symbole.to_sym, 'thin')
-        end
-      end
-
-      worksheet = workbook[3]
-      counter_line = 1
-      page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-      worksheet.change_row_bold(0,true)
-      page.each_with_index do |cell_name, index|
-        worksheet.add_cell(0, index, cell_name)
-        worksheet.change_column_horizontal_alignment(index, 'center')
-      end
-
-      worksheet.change_column_width(2, I18n.t(:display_order).size)
-      @guw_model.guw_weightings.each_with_index do |aquisitions_type,indx|
-        worksheet.add_cell(indx + 1, 0, aquisitions_type.name)
-        worksheet.add_cell(indx + 1, 1, aquisitions_type.value)
-        worksheet.add_cell(indx + 1, 2, aquisitions_type.display_order == 0 ? indx : aquisitions_type.display_order)
-        if ind < aquisitions_type.name.size
-          worksheet.change_column_width(0, aquisitions_type.name.size)
-          ind = aquisitions_type.name.size
-        end
-        counter_line += 1
-      end
-      counter_line.times do |indx|
-        ["bottom", "right"].each do |symbole|
-          worksheet[indx][0].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][1].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][2].change_border(symbole.to_sym, 'thin')
-        end
-      end
-
-      worksheet = workbook[4]
-      counter_line = 1
-      page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-      worksheet.change_row_bold(0,true)
-      page.each_with_index do |cell_name, index|
-        worksheet.add_cell(0, index, cell_name)
-        worksheet.change_column_horizontal_alignment(index, 'center')
-      end
-
-      worksheet.change_column_width(2, I18n.t(:display_order).size)
-      @guw_model.guw_factors.each_with_index do |aquisitions_type,indx|
-        worksheet.add_cell(indx + 1, 0, aquisitions_type.name)
-        worksheet.add_cell(indx + 1, 1, aquisitions_type.value)
-        worksheet.add_cell(indx + 1, 2, aquisitions_type.display_order == 0 ? indx : aquisitions_type.display_order)
-        if ind < aquisitions_type.name.size
-          worksheet.change_column_width(0, aquisitions_type.name.size)
-          ind = aquisitions_type.name.size
-        end
-        counter_line += 1
-      end
-      counter_line.times do |indx|
-        ["bottom", "right"].each do |symbole|
-          worksheet[indx][0].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][1].change_border(symbole.to_sym, 'thin')
-          worksheet[indx][2].change_border(symbole.to_sym, 'thin')
-        end
-      end
-    end
-
-
     #==================  GUW-COEFFICIENTS  ==================
 
     coefficients_worksheet = workbook.add_worksheet(I18n.t(:weighting_coefficients))
@@ -1182,7 +1088,6 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
     end
-
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
@@ -1282,7 +1187,6 @@ class Guw::GuwModelsController < ApplicationController
 
     #===================  Pour chaque type d'UO    ==================
 
-
     @guw_types.each do |guw_type|
       worksheet = workbook.add_worksheet(guw_type.name)
 
@@ -1311,7 +1215,6 @@ class Guw::GuwModelsController < ApplicationController
         end
         counter_line += 1
       end
-
 
       #worksheet.add_cell(0, ind, description)
       ["bottom", "right"].each do |symbole|
@@ -1348,17 +1251,17 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(ind2 + 3, 0, I18n.t(:initial_value_sum))
       worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
 
-     #  Un (1)
+      # Un (1)
       worksheet.add_cell(ind2 + 4, 0, "Un (1)")
       worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
       un_line_number = ind2 + 4
 
-     # UO CPLX
+      # UO CPLX
       worksheet.add_cell(ind2 + 5, 0, "UO CPLX")
       worksheet[ind2 + 5][0].change_border(:bottom, 'thin')
       uo_cplx_line_number = ind2 + 5
 
-    # OUTPUTS
+      # OUTPUTS
       output_line_number = ind2 + 6
       output_line = ind2 + 6
       @guw_model.guw_outputs.each_with_index do |guw_output, index|
@@ -1368,6 +1271,29 @@ class Guw::GuwModelsController < ApplicationController
         end
         output_line += 1
       end
+
+      output_line_number = ind2 + 6
+      # output_line = 21
+      # @guw_model.guw_coefficients.each do |guw_coefficient|
+      #   worksheet.add_cell(output_line, 0, guw_coefficient.name).change_font_bold(true)
+      #   @guw_model.guw_outputs.each_with_index do |guw_output, index|
+      #     worksheet.add_cell(output_line, index + 1, guw_output.name).change_font_bold(true)
+      #   end
+      #
+      #   output_line += 1
+      #
+      #   guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+      #
+      #
+      #     cf = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: guw_cplx.id,
+      #                                                     guw_coefficient_element_id: guw_coefficient_element.id,
+      #                                                     guw_output_id: guw_output.id).first
+      #
+      #     worksheet.add_cell(output_line, 0,guw_coefficient_element.name)
+      #
+      #     output_line += 1
+      #   end
+      # end
 
       line_number = ind2
       column_number = ind + 1
@@ -1410,6 +1336,34 @@ class Guw::GuwModelsController < ApplicationController
           column_width = worksheet.get_column_width(column_number + index)
           if guw_output.name.to_s.size > column_width
             worksheet.change_column_width(column_number+index, guw_output.name.to_s.size)
+          end
+        end
+
+        output_line = 21
+        @guw_model.guw_coefficients.each do |guw_coefficient|
+
+          worksheet.add_cell(output_line, 0, guw_coefficient.name).change_font_bold(true)
+
+          @guw_model.guw_outputs.each_with_index do |guw_output, index|
+            worksheet.add_cell(output_line, index + 1, guw_output.name).change_font_bold(true)
+          end
+
+          output_line += 1
+
+          guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+            @guw_model.guw_outputs.each_with_index do |guw_output, index|
+
+              cf = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: guw_complexity.id,
+                                                              guw_coefficient_element_id: guw_coefficient_element.id,
+                                                              guw_output_id: guw_output.id).first
+
+              worksheet.add_cell(output_line + 1, index + 1, cf.nil? ? nil : cf.value)
+
+            end
+
+            worksheet.add_cell(output_line, 0,guw_coefficient_element.name)
+
+            output_line += 1
           end
         end
 
@@ -1469,8 +1423,6 @@ class Guw::GuwModelsController < ApplicationController
 
         output_line_number += 1
       end
-
-
 
         # guw_complexity.guw_complexity_work_units.each do |guw_complexity_work_unit|
         #   @guw_work_unit = guw_complexity_work_unit.guw_work_unit
@@ -1585,21 +1537,6 @@ class Guw::GuwModelsController < ApplicationController
 
       # ind = 0
       # ind3 = 5
-    end
-
-    # Pour l'ancienne configuration du module de Taille
-    if @guw_model.config_type == "old"
-      worksheet = workbook.add_worksheet("Matrice")
-      [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each_with_index do |ts, i|
-        worksheet.add_cell(0, i+1, ts[0])
-        ["size", "effort", "cost"].each_with_index do |ta, j|
-          worksheet.add_cell(j+1, 0, ta.to_s.humanize)
-          gsma = Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model.id,
-                                                    type_attribute: ta,
-                                                    type_scale: ts[1]).first
-          worksheet.add_cell(j+1, i+1, gsma.nil? ? 0 : 1)
-        end
-      end
     end
 
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
