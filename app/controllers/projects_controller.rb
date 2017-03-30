@@ -2501,7 +2501,7 @@ public
 
           # Update project's organization estimations counter
           if new_prj.is_model != true
-            unless @organization.estimations_counter.nil?
+            unless @current_organization.estimations_counter.nil?
               @current_organization.estimations_counter -= 1
               @current_organization.save
             end
