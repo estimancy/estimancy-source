@@ -714,9 +714,14 @@ class Ge::GeModelsController < ApplicationController
     input_data_for_outputs = Hash.new
     out_tmp_probable = Hash.new
 
+    outputs_evs_coeff = Hash.new
+
     output_evs.each do |output_ev|
       input_data_for_outputs["#{output_ev.pe_attribute.id}"] = Hash.new
       out_tmp_probable["#{output_ev.id}"] = Array.new
+
+      current_output_effort_unit_coefficient = get_ge_input_output_standard_unit_coefficient(@ge_model, output_ev)
+      outputs_evs_coeff["#{output_ev.id}"] = current_output_effort_unit_coefficient
     end
 
     ### FIN TEST
@@ -766,6 +771,8 @@ class Ge::GeModelsController < ApplicationController
                   effort = (prod_factor_product * ((size * conversion_factor_product) ** scale_factor_sum))
                 end
 
+                effort = effort * outputs_evs_coeff["#{output_ev.id}"]
+
                 @calculated["#{level}"]["#{output_ev.id}"] = effort
                 out_tmp_probable["#{output_ev.id}"] << effort
 
@@ -774,6 +781,9 @@ class Ge::GeModelsController < ApplicationController
                 size = input_data_for_outputs[level]["#{ent1_attr.id}"] #input_data_for_outputs[level]["#{input_pe_attribute.id}"]
                 defect = (size * scale_factor_sum * conversion_factor_product)
                 total_remaining_defects = defect * prod_factor_product
+
+                defect = defect * outputs_evs_coeff["#{output_ev.id}"]
+                total_remaining_defects = total_remaining_defects * outputs_evs_coeff["#{output_ev.id}"]
 
                 case output_ev.pe_attribute.alias
                   when "sort1"
@@ -795,7 +805,7 @@ class Ge::GeModelsController < ApplicationController
         output_evs.each do |output_ev|
 
           #effort probable
-          probable_value = (out_tmp_probable["#{output_ev.id}"][0].to_f + 4 * out_tmp_probable["#{output_ev.id}"][1].to_f + out_tmp_probable["#{output_ev.id}"][2].to_f)/6
+          probable_value = (out_tmp_probable["#{output_ev.id}"][0].to_f + (4 * out_tmp_probable["#{output_ev.id}"][1].to_f) + out_tmp_probable["#{output_ev.id}"][2].to_f)/6
           @calculated["probable"]["#{output_ev.id}"] = probable_value
 
           # calculate ratio

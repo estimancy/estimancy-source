@@ -28,11 +28,9 @@
       // Set chart options
       var chart_colors = <%= ViewsWidget::WIDGETS_COLORS.to_json.html_safe %>;
       var pie_chart_options = { 'title':'<%= chart_title %>',
-//                                'min-width':500,
-//                                'min-height':300,
-//                                'max-width':1000,
-//                                'max-height':800,
-                                chartArea: {left:20},
+                                //'min-width':500, 'min-height':300, 'max-width':1000, 'max-height':800,
+                                chartArea: { left:-100, right: 30, width: '90%' },
+                                legend: { alignment: 'start'},
                                 colors: chart_colors, //['D59931', 'teal', '#e5e4e2', '#C5A5CF', 'silver', '#b87333', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679', '#00B3FF', '#3399FF'] <%#= Projestimate::Application::CHART_COLORS.to_json.html_safe %>,
                                 is3D: true
       };
