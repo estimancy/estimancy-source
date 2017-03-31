@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170322102200) do
+ActiveRecord::Schema.define(:version => 20170331085915) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -944,6 +944,12 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.string   "reference_uuid"
   end
 
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "module_project_ratio_elements", :force => true do |t|
     t.integer  "pbs_project_element_id"
     t.integer  "module_project_id"
@@ -1134,7 +1140,7 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.integer  "limit1"
     t.integer  "limit2"
     t.integer  "limit3"
-    t.integer  "copy_number",              :default => 0
+    t.integer  "copy_number",                 :default => 0
     t.integer  "limit4"
     t.float    "limit1_coef"
     t.float    "limit2_coef"
@@ -1147,6 +1153,7 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.boolean  "is_image_organization"
     t.text     "project_selected_columns"
     t.integer  "estimations_counter"
+    t.text     "estimations_counter_history"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|
@@ -1203,6 +1210,27 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "peicons", :force => true do |t|
+    t.string   "name"
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "peicons", ["record_status_id"], :name => "index_peicons_on_record_status_id"
+  add_index "peicons", ["reference_id"], :name => "index_peicons_on_parent_id"
+  add_index "peicons", ["uuid"], :name => "index_peicons_on_uuid", :unique => true
 
   create_table "pemodules", :force => true do |t|
     t.string   "title"
@@ -1428,6 +1456,25 @@ ActiveRecord::Schema.define(:version => 20170322102200) do
     t.float    "value_most_likely"
     t.float    "value_high"
   end
+
+  create_table "record_statuses", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.integer  "status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
+  add_index "record_statuses", ["record_status_id"], :name => "index_record_statuses_on_record_status_id"
+  add_index "record_statuses", ["reference_id"], :name => "index_record_statuses_on_parent_id"
+  add_index "record_statuses", ["uuid"], :name => "index_record_statuses_on_uuid", :unique => true
 
   create_table "size_unit_type_complexities", :force => true do |t|
     t.integer  "size_unit_type_id"
