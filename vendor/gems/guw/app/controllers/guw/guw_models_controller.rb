@@ -160,7 +160,7 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
 
-          elsif index == (3 + @guw_model.coefficients.size)
+          elsif index == (3 + @guw_model.guw_coefficients.size)
 
             tab.each_with_index do |row, i|
               if i > 3 && !row.nil?
@@ -176,142 +176,28 @@ class Guw::GuwModelsController < ApplicationController
 
           else
 
-            if worksheet.sheet_name != I18n.t(:is_model) && worksheet.sheet_name != I18n.t(:attribute_description)
+            @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
+                                            description: tab[0][0],
+                                            allow_quantity: tab[2][1] == 1,
+                                            allow_retained: tab[1][1] == 1,
+                                            allow_complexity: tab[3][1] == 1,
+                                            allow_criteria: tab[4][1] == 1,
+                                            guw_model_id: @guw_model.id)
 
-              if !tab[0].nil? && !tab[2].nil? && !tab[3].nil? && !tab[1].nil? && !tab[4].nil?
+            @guw_complexity = Guw::GuwComplexity.create(guw_type_id: @guw_type.id,
+                                                        name: tab[6][ind],
+                                                        enable_value: tab[8][ind] == 1,
+                                                        bottom_range: tab[8][ind + 1],
+                                                        top_range: tab[8][ind + 2],
+                                                        weight:  tab[8][ind + 3] ? tab[8][ind + 3] : 1)
 
-                @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                                description: tab[0][0],
-                                                allow_quantity: tab[2][1] == 1,
-                                                allow_retained: tab[1][1] == 1,
-                                                allow_complexity: tab[3][1] == 1,
-                                                allow_criteria: tab[4][1] == 1,
-                                                guw_model_id: @guw_model.id)
-
-                if !tab[8].nil? && !tab[9].nil? && tab[8][0] == I18n.t(:threshold) && !tab[6].empty?# && tab[9][0] == I18n.t(:Coefficient_of_acquisiton)
-                  while !tab[6][ind].nil?
-                    @guw_complexity = Guw::GuwComplexity.create(guw_type_id: @guw_type.id,
-                                                                name: tab[6][ind],
-                                                                enable_value: tab[8][ind] == 1,
-                                                                bottom_range: tab[8][ind + 1],
-                                                                top_range: tab[8][ind + 2],
-                                                                weight:  tab[8][ind + 3] ? tab[8][ind + 3] : 1)
-
-                    @guw_model.guw_work_units.each do |wu|
-
-                      while !tab[ind2].nil? && tab[ind2][0] != wu.name #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-
-                      if !tab[ind2].nil?# && tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityWorkUnit.create(guw_complexity_id: @guw_complexity.id,
-                                                          guw_work_unit_id: wu.id,
-                                                          value: tab[ind2][ind + 3],
-                                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-
-                    end
-
-                    @guw_model.guw_weightings.each do |we|
-                      while !tab[ind2].nil? && tab[ind2][0] != we.name# && tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-                      if !tab[ind2].nil? #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityWeighting.create(guw_complexity_id: @guw_complexity.id,
-                                                           guw_weighting_id: we.id,
-                                                           value: tab[ind2][ind + 3],
-                                                           guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-                      # elsif tab[ind2].nil?
-                      #   route_flag = 3
-                      #   break
-                      # end
-                      ind2 = 10
-                      action_type_aquisition_flag = true
-                    end
-
-                    @guw_model.guw_factors.each do |fa|
-                      while !tab[ind2].nil? && tab[ind2][0] != fa.name# && tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-
-                      if !tab[ind2].nil? #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityFactor.create(guw_complexity_id: @guw_complexity.id,
-                                                        guw_factor_id: fa.id,
-                                                        value: tab[ind2][ind + 3],
-                                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-
-                    end
-
-                    while !tab[ind2].nil? && tab[ind2][0] != I18n.t(:organization_technology)
-                      ind2 += 1
-                    end
-                    ind3 = ind2
-                    if !tab[ind2].nil? && tab[ind2][0] == I18n.t(:organization_technology)
-                      @current_organization.organization_technologies.each do |techno|
-                        while !tab[ind2].nil? && tab[ind2][0] != techno.name
-                          ind2 += 1
-                        end
-                        if !tab[ind2].nil?
-                          Guw::GuwComplexityTechnology.create(guw_complexity_id: @guw_complexity.id,
-                                                              organization_technology_id: techno.id,
-                                                              coefficient: tab[ind2][ind + 3],
-                                                              guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                        end
-                        ind2 = ind3
-                      end
-                      if save_position == 0
-                        while !tab[ind2].nil?
-                          ind2 += 1
-                        end
-                        save_position = ind2 + 1
-                      end
-                    end
-
-                  end
-                end
-                if !tab[save_position].nil?# && tab[save_position][0] == I18n.t(:complexity_threshold) && tab[save_position + 1][0] == I18n.t(:pe_attributes)
-                  ind3 = save_position + 2
-                  ind = 1
-                  while !tab[save_position][ind].nil?
-                    if tab[save_position].nil?
-                      value = nil
-                    else
-                      value = tab[save_position][ind + 1]
-                    end
-                    @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
-                                                                         name: tab[save_position][ind],
-                                                                         value: value)
-                    @guw_model.guw_attributes.each do |att|
-                      while !tab[ind3].nil? && tab[ind3][0] != att.name
-                        ind3 += 1
-                      end
-                      if !tab[ind3].nil?
-                        toto = Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                                  guw_attribute_id: att.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  enable_value: tab[ind3][ind] == 1,
-                                                                  bottom_range: tab[ind3][ind + 1],
-                                                                  top_range: tab[ind3][ind + 2],
-                                                                  value: tab[ind3][ind + 3] ? tab[ind3][ind + 3] : (tab[ind3][ind + 2] && tab[ind3][ind + 1] ? 1 : nil))
-                      end
-                      ind3 = save_position + 2
-                    end
-                    ind += 4
-                  end
-                  ind3 = 0
-                  ind = 1
-                  action_attribute_flag = true
-                end
-
-              else
-
+            @guw_model.guw_outputs.each_with_index do |guw_output, index|
+              if tab[14][index] == 1
+                Guw::GuwOutputComplexity.create(guw_complexity_id: guw_complexity.id,
+                                                guw_output_id: guw_output.id).first
               end
-            else
-              route_flag = 7
-              break
             end
+
           end
           save_position = 0
         end
@@ -1345,7 +1231,7 @@ class Guw::GuwModelsController < ApplicationController
           worksheet.add_cell(output_line, 0, guw_coefficient.name).change_font_bold(true)
 
           @guw_model.guw_outputs.each_with_index do |guw_output, index|
-            worksheet.add_cell(output_line, index + 1, guw_output.name).change_font_bold(true)
+            worksheet.add_cell(output_line, column_number + index, guw_output.name).change_font_bold(true)
           end
 
           output_line += 1
@@ -1367,7 +1253,7 @@ class Guw::GuwModelsController < ApplicationController
           end
         end
 
-        column_number += guw_complexity_attributes_values.size + 2
+        column_number += guw_complexity_attributes_values.size + 1
       end
 
 

@@ -313,11 +313,13 @@ class OrganizationsController < ApplicationController
 
   def generate_report_excel
     conditions = Hash.new
+
     params[:report].each do |i|
       unless i.last.blank? or i.last.nil?
         conditions[i.first] = i.last
       end
     end
+
     if I18n.locale == :en
       start_date_hash = Date._parse(params[:report_date][:start_date])
       end_date_hash = Date._parse(params[:report_date][:end_date])
@@ -344,163 +346,205 @@ class OrganizationsController < ApplicationController
 
     @projects = (tmp1 + tmp2).uniq
 
-    workbook = RubyXL::Workbook.new
-    worksheet = workbook.worksheets[0]
-    worksheet.sheet_name = 'Data'
+    if params[:detail] == "checked"
 
-    tmp = Array.new
+      workbook = RubyXL::Workbook.new
+      worksheet = workbook.worksheets[0]
 
-    if params[:with_header] == "checked"
-      if params[:with_guw] == "checked"
+      worksheet.sheet_name = 'Liste des Estimations + Dénombrement'
 
-        @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+      @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
-        tmp << [
-            I18n.t(:project),
-            I18n.t(:label_project_version),
-            I18n.t(:label_product_name),
-            I18n.t(:description),
-            I18n.t(:start_date),
-            I18n.t(:applied_model),
-            I18n.t(:project_area),
-            I18n.t(:state),
-            I18n.t(:creator),
-        ] + @organization.fields.map(&:name) + [  I18n.t(:selected),
-                                                  I18n.t(:name),
-                                                  'Type',
-                                                  I18n.t(:description),
-                                                  @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label.to_s,
-                                                  @guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label,
-                                                  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label,
-                                                  I18n.t(:organization_technology),
-                                                  I18n.t(:quantity),
-                                                  I18n.t(:tracability),
-                                                  I18n.t(:cotation),
-                                                  I18n.t(:results),
-                                                  I18n.t(:retained_result)] + @guw_model.guw_attributes.map(&:name)
+      workbook = RubyXL::Workbook.new
+      worksheet = workbook.worksheets[0]
 
-      else
-        tmp << [
-            I18n.t(:project),
-            I18n.t(:label_project_version),
-            I18n.t(:label_product_name),
-            I18n.t(:description),
-            I18n.t(:start_date),
-            I18n.t(:applied_model),
-            I18n.t(:project_area),
-            I18n.t(:state),
-            I18n.t(:creator),
-        ] + @organization.fields.map(&:name)
-      end
-    end
-
-    @projects.each do |project|
-      array_project = Array.new
-      array_value = Array.new
-
-      if can_show_estimation?(project) || can_see_estimation?(project)
-          array_project << [
-            project.title,
-            project.version_number,
-            (project.application.nil? ? project.application_name : project.application.name),
-            "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text}",
-            I18n.l(project.start_date),
-            project.original_model,
-            project.project_area,
-            project.estimation_status,
-            project.creator
-        ]
-
-        @organization.fields.each do |field|
-          pf = ProjectField.where(field_id: field.id, project_id: project.id).last
-          if pf.nil?
-            array_value << ''
-          else
-            array_value << (pf.value.to_f / field.coefficient.to_f)
-          end
-        end
-
+      ([I18n.t(:estimation),
+        I18n.t(:version_number),
+        I18n.t(:group),
+        I18n.t(:selected),
+        I18n.t(:name),
+        I18n.t(:description),
+        "Type",
+        I18n.t(:organization_technology),
+        I18n.t(:quantity),
+        I18n.t(:tracability),
+        I18n.t(:cotation),
+        I18n.t(:results),
+        I18n.t(:retained_result),
+        "COEF"] +
+          @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
+        worksheet.add_cell(0, index, val)
       end
 
-      if params[:with_guw] == "checked"
-        mps = ModuleProject.where(project_id: project).all
-        mps.each do |mp|
-          Guw::GuwUnitOfWork.where(module_project_id: mp, guw_model_id: @guw_model.id).each do |guw|
-            array_guw = []
-            unless guw.nil?
+      @projects.each do |project|
 
-              if guw.off_line
-                cplx = "HSAT"
-              elsif guw.off_line_uo
-                cplx = "HSUO"
-              elsif guw.guw_complexity.nil?
-                cplx = ""
-              else
-                cplx = guw.guw_complexity.name
-              end
+        project.module_projects.each do |mp|
 
-              array_guw = [
-                guw.selected ? "1" : "0",
-                guw.name,
-                guw.guw_type.name,
-                guw.comments,
-                guw.guw_work_unit,
-                guw.guw_weighting,
-                guw.guw_factor,
-                guw.organization_technology,
-                guw.quantity.to_s,
-                guw.tracking,
-                cplx,
-                guw.ajusted_size.to_s
-            ]
+          @guw_unit_of_works = mp.guw_unit_of_works.where(guw_model_id: @guw_model.id).all
 
-              guw.guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guw.id, guw_attribute_id: guw_attribute.id, guw_type_id: guw.guw_type.id).first
-                unless guowa.nil?
-                  array_guw = array_guw + [(guowa.most_likely.nil? ? "N/A" : guowa.most_likely.to_s)]
+          @guw_unit_of_works.each_with_index do |guow, i|
+
+            ind = i + 1
+
+            if guow.off_line
+              cplx = "HSAT"
+            elsif guow.off_line_uo
+              cplx = "HSUO"
+            elsif guow.guw_complexity.nil?
+              cplx = ""
+            else
+              cplx = guow.guw_complexity.name
+            end
+
+            worksheet.add_cell(ind, 0, mp.project.title)
+
+            worksheet.add_cell(ind, 1, mp.project.version_number)
+            worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
+
+
+            worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
+            worksheet.add_cell(ind, 4, guow.name)
+
+            worksheet.add_cell(ind, 6, guow.guw_type.name)
+
+            worksheet.add_cell(ind, 5, guow.comments)
+            worksheet.add_cell(ind, 7, guow.guw_work_unit)
+            worksheet.add_cell(ind, 8, guow.guw_weighting)
+            worksheet.add_cell(ind, 9, guow.guw_factor)
+            worksheet.add_cell(ind, 10, guow.organization_technology)
+
+            worksheet.add_cell(ind, 11, guow.quantity)
+            worksheet.add_cell(ind, 12, guow.tracking)
+            worksheet.add_cell(ind, 13, cplx)
+
+            worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
+            worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
+
+            worksheet.add_cell(ind, 16, guow.intermediate_weight)
+
+            @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+              if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                unless guw_coefficient.guw_coefficient_elements.empty?
+                  ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                    guw_coefficient_id: guw_coefficient.id).first
+
+                  if guw_coefficient.coefficient_type == "Pourcentage"
+                    worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                  elsif guw_coefficient.coefficient_type == "Coefficient"
+                    worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                  else
+                    worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                  end
+                end
+
+              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
+                unless guow.guw_type.nil?
+                  worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
                 end
               end
+            end
 
-              tmp << (array_project + array_value + array_guw).flatten(1)
+            @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
+              unless guowa.nil?
+                worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+              end
+            end
+          end
+
+          @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+            worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
+          end
+        end
+      end
+
+    else
+
+      workbook = RubyXL::Workbook.new
+      worksheet = workbook.worksheets[0]
+      worksheet.sheet_name = 'Data'
+
+      tmp = Array.new
+      tmp << [
+          I18n.t(:project),
+          I18n.t(:label_project_version),
+          I18n.t(:label_product_name),
+          I18n.t(:description),
+          I18n.t(:start_date),
+          I18n.t(:applied_model),
+          I18n.t(:project_area),
+          I18n.t(:state),
+          I18n.t(:creator),
+      ] + @organization.fields.map(&:name) + [  I18n.t(:selected),
+                                                I18n.t(:name),
+                                                'Type',
+                                                I18n.t(:description),
+                                                I18n.t(:organization_technology),
+                                                I18n.t(:quantity),
+                                                I18n.t(:tracability),
+                                                I18n.t(:cotation),
+                                                I18n.t(:results),
+                                                I18n.t(:retained_result)]
+
+      @projects.each do |project|
+        array_project = Array.new
+        array_value = Array.new
+
+        if can_show_estimation?(project) || can_see_estimation?(project)
+          array_project << [
+              project.title,
+              project.version_number,
+              (project.application.nil? ? project.application_name : project.application.name),
+              "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text}",
+              I18n.l(project.start_date),
+              project.original_model,
+              project.project_area,
+              project.estimation_status,
+              project.creator
+          ]
+
+          @organization.fields.each do |field|
+            pf = ProjectField.where(field_id: field.id, project_id: project.id).last
+            if pf.nil?
+              array_value << ''
             else
-              tmp << (array_project + array_value).flatten(1)
+              array_value << (pf.value.to_f / field.coefficient.to_f)
             end
           end
         end
-      else
+
+
         tmp << (array_project + array_value).flatten(1)
       end
 
-
-    end
-
-    tmp2 = []
-    tmp.map do |i|
-      if !i.empty?
-        tmp2 << i
+      tmp2 = []
+      tmp.map do |i|
+        if !i.empty?
+          tmp2 << i
+        end
       end
-    end
 
-    tmp2.each_with_index do |r, i|
-      tmp2[i].each_with_index do |r, j|
-        if is_number?(tmp2[i][j])
-          unless tmp2[i][j] == 0 || j == 1
-            worksheet.add_cell(i, j, tmp2[i][j].to_f)#.set_number_format('.##')
+      tmp2.each_with_index do |r, i|
+        tmp2[i].each_with_index do |r, j|
+          if is_number?(tmp2[i][j])
+            unless tmp2[i][j] == 0 || j == 1
+              worksheet.add_cell(i, j, tmp2[i][j].to_f)#.set_number_format('.##')
+            else
+              worksheet.add_cell(i, j, tmp2[i][j])
+            end
           else
             worksheet.add_cell(i, j, tmp2[i][j])
           end
-        else
-          worksheet.add_cell(i, j, tmp2[i][j])
         end
       end
+
+      worksheet.change_row_bold(0 , true)
     end
 
-    worksheet.change_row_bold(0 , true)
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}_DONNEES_#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
 
-    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Data-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
-
-    # workbook.write("#{Rails.root}/public/#{filename}.xlsx")
-    # redirect_to "#{SETTINGS['HOST_URL']}/#{filename}.xlsx"
   end
 
   def report
