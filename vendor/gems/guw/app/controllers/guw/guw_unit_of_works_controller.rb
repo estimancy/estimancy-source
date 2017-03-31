@@ -894,7 +894,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.size = nil
       guw_unit_of_work.effort = nil
       guw_unit_of_work.cost = nil
-      guw_unit_of_work.save
+
+      #guw_unit_of_work.save
 
       array_pert = Array.new
       if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
@@ -1031,7 +1032,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
+
           elsif  guw_coefficient.coefficient_type == "Coefficient"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1061,7 +1065,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
           else
             ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
@@ -1133,7 +1139,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.ajusted_size = tmp_hash_ares
       end
 
-      guw_unit_of_work.save
+      if guw_unit_of_work.changed?
+        guw_unit_of_work.save
+      end
     end
 
     update_estimation_values
