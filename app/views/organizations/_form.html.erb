@@ -30,11 +30,14 @@
                   <%= f.input :is_image_organization, as: :boolean, :label => I18n.t('is_image_organization'), disabled: !current_user.super_admin? %>
                 </div>
               </div>
-              <% if current_user.super_admin == true %>
-                <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge', :rows => 5} %>
-              <% end %>
 
               <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+
+              <fieldset style="width: 40%">
+                <legend><h5 class="blue"><%= I18n.t('estimations_counter') %></h5></legend>
+                <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge'}, disabled: !current_user.super_admin %>
+                <%= f.input :estimations_counter_history, :label => I18n.t('actions_history'), :input_html => {:class => 'input-xxlarge', :rows => 7} %>
+              </fieldset>
             </div>
           </div>
         </div>
