@@ -95,7 +95,6 @@ class WbsActivityRatiosController < ApplicationController
   def create
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_ratio = WbsActivityRatio.new(params[:wbs_activity_ratio])
-    @wbs_activity_ratio.owner_id = current_user.id
 
     if @wbs_activity_ratio.save
       @wbs_activity_ratio.wbs_activity.wbs_activity_elements.each do |wbs_activity_element|

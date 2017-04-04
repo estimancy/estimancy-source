@@ -20,8 +20,7 @@
 #############################################################################
 
 class WbsActivityElement < ActiveRecord::Base
-  attr_accessible :name, :description, :custom_value, :change_comment,:is_root,:wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id,
-                  :phase_short_name
+  attr_accessible :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name
 
   has_ancestry :cache_depth => true
 

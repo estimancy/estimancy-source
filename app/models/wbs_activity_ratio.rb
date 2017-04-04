@@ -20,8 +20,7 @@
 #############################################################################
 
 class WbsActivityRatio < ActiveRecord::Base
-  attr_accessible :name, :description, :wbs_activity_id,
-                  :use_real_base_percentage, :allow_modify_retained_effort, :allow_modify_ratio_value, :allow_modify_ratio_reference, :allow_add_new_phase
+  attr_accessible :name, :description, :wbs_activity_id, :allow_modify_retained_effort, :do_not_show_cost, :do_not_show_phases_with_zero_value
 
   has_many :pbs_project_elements
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
