@@ -37,7 +37,7 @@ class EstimationValue < ActiveRecord::Base
 
   amoeba do
     enable
-    exclude_association [:views_widgets]
+    exclude_association [:views_widgets, :associated_estimation_values]
     customize(lambda { |original_ev, new_ev|
                 new_ev.copy_id = original_ev.id
               })

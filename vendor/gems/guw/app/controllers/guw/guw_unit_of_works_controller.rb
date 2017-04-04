@@ -894,7 +894,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.size = nil
       guw_unit_of_work.effort = nil
       guw_unit_of_work.cost = nil
-      guw_unit_of_work.save
+
+      #guw_unit_of_work.save
 
       array_pert = Array.new
       if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
@@ -1031,7 +1032,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
+
           elsif  guw_coefficient.coefficient_type == "Coefficient"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1061,7 +1065,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
           else
             ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
@@ -1079,8 +1085,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-                # ceuw.intermediate_value = @final_value
-                ceuw.save
+
+                if ceuw.changed?
+                  ceuw.save
+                end
               end
 
               unless cce.nil?
@@ -1133,7 +1141,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.ajusted_size = tmp_hash_ares
       end
 
-      guw_unit_of_work.save
+      if guw_unit_of_work.changed?
+        guw_unit_of_work.save
+      end
     end
 
     update_estimation_values
@@ -1159,7 +1169,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_unit_of_work.effort = {}
     guw_unit_of_work.cost = {}
 
-    guw_unit_of_work.save
+    # guw_unit_of_work.save
 
     begin
       guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -1227,7 +1237,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       else
         array_pert << (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
       end
-      guw_unit_of_work.save
+      if guw_unit_of_work.changed?
+        guw_unit_of_work.save
+      end
     else
       if guw_unit_of_work.result_low.nil? or guw_unit_of_work.result_most_likely.nil? or guw_unit_of_work.result_high.nil?
         guw_unit_of_work.off_line_uo = nil
@@ -1259,7 +1271,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
 
     guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
-    guw_unit_of_work.save
+
+    if guw_unit_of_work.changed?
+      guw_unit_of_work.save
+    end
 
     tmp_hash_res = Hash.new
     tmp_hash_ares = Hash.new
@@ -1302,7 +1317,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-          ceuw.save
+          if ceuw.changed?
+            ceuw.save
+          end
         elsif guw_coefficient.coefficient_type == "Coefficient"
 
         ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1327,7 +1344,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
 
-          ceuw.save
+          if ceuw.changed?
+            ceuw.save
+          end
 
         else
           ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
@@ -1347,7 +1366,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_element_id = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-            ceuw.save
+
+            if ceuw.changed?
+              ceuw.save
+            end
           end
 
           unless cce.nil?
@@ -1382,7 +1404,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    guw_unit_of_work.save
+    if guw_unit_of_work.changed?
+      guw_unit_of_work.save
+    end
 
     update_estimation_values
     update_view_widgets_and_project_fields
@@ -1632,7 +1656,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
                   :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
               }
-              ev.update_attributes(h)
+              if ev.changed?
+                ev.update_attributes(h)
+              end
             end
           end
         end
