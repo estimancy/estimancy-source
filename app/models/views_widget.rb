@@ -73,27 +73,22 @@ class ViewsWidget < ActiveRecord::Base
         begin
           @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
         rescue
-          #begin
-            @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
-          #rescue
-          #  @value = 0
-          #end
+          @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
         end
       else
         @value = view_widget.estimation_value.string_data_probable[component.id]
       end
 
       unless pf.nil?
-      #  ProjectField.create(project_id: project.id,
-      #                      field_id: field.id,
-      #                      views_widget_id: view_widget.id,
-      #                      value: @value)
-      #else
         pf.value = @value
         pf.views_widget_id = view_widget.id
         pf.field_id = field.id
         pf.project_id = project.id
-        pf.save
+
+        if pf.changed?
+          pf.save
+        end
+
       end
     end
   end
