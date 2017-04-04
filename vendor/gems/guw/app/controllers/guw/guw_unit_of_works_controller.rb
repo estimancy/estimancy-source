@@ -1085,8 +1085,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-                # ceuw.intermediate_value = @final_value
-                ceuw.save
+
+                if ceuw.changed?
+                  ceuw.save
+                end
               end
 
               unless cce.nil?
