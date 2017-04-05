@@ -1457,12 +1457,15 @@ class WbsActivitiesController < ApplicationController
                 existing_ge_model_name = WbsActivity.where(name: @wbs_activity.name).first
                 if existing_ge_model_name
                   tab_error << "Erreur : une instance avec le nom '#{@wbs_activity.name}' existe déjà"
+                  flash[:error] = "Erreur : une instance avec le nom '#{@wbs_activity.name}' existe déjà"
                 else
-                  tab_error << "Erreur lors de la sauvegarde du modèle"
+                  tab_error << "Une erreur est survenue lors de la création du modèle"
+                  flash[:error] = "Une erreur est survenue lors de la création du modèle"
                 end
               end
             else
               tab_error << "Les attributs du modèle ne sont pas définis dans le fichier importé"
+              flash[:error] = "Les attributs du modèle ne sont pas définis dans le fichier importé"
             end
           end
         else
