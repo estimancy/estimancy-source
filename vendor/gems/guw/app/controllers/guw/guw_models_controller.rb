@@ -163,15 +163,14 @@ class Guw::GuwModelsController < ApplicationController
           elsif index == (3 + @guw_model.guw_coefficients.size)
 
             tab.each_with_index do |row, i|
-              # if i > 3 && !row.nil?
-                Guw::GuwOutput.create(name: row[1],
-                                      output_type: row[2],
-                                      coefficient_id: coefficient.id,
+              if i > 1 && !row.nil?
+                Guw::GuwOutput.create(name: row[0],
+                                      output_type: row[1],
                                       guw_model_id: @guw_model.id,
                                       allow_intermediate_value: false,
                                       allow_subtotal: true,
                                       standard_coefficient: row[4])
-              # end
+              end
             end
 
           else
@@ -193,21 +192,38 @@ class Guw::GuwModelsController < ApplicationController
             @guw_complexity.save(validate: false)
 
             @guw_model.guw_outputs.each_with_index do |guw_output, i|
+
+              Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
+                                                            guw_output_id: guw_output.id,
+                                                            init_value: tab[13][i+1].nil? ? nil : tab[13][i+1].to_i)
+
+              Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
+                                              guw_output_id: guw_output.id,
+                                              value: tab[14][i + 1].nil? ? nil : tab[14][i + 1].to_i)
+
               @guw_model.guw_outputs.each_with_index do |aguw_output, j|
                 oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
                                                       guw_output_associated_id: aguw_output.id,
                                                       guw_output_id: guw_output.id,
-                                                      value: tab[14 + i][j].nil? ? nil : 12).first
+                                                      value: tab[15 + i][j + 1].nil? ? nil : tab[15 + i][j + 1].to_i)
               end
 
-              Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
-                                                            guw_output_id: guw_output.id,
-                                                            value: tab[14 + i][13].nil? ? nil : 42).first
-
-              Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
-                                              guw_output_id: guw_output.id,
-                                              value: tab[14 + i][14].nil? ? nil : 80).first
-
+              nb_output = @guw_model.guw_outputs.size
+              next_item = 15 + nb_output
+              @guw_model.guw_coefficients.each do |guw_coefficient|
+                next_item = next_item + 1
+                guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+                  begin
+                    Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                                                                guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                guw_output_id: guw_output.id,
+                                                                guw_type_id: @guw_type.id,
+                                                                value: tab[next_item + 1][i + 1].blank? ? nil : tab[next_item + 1][i + 1].to_i) # +1 pour l'entete
+                  rescue
+                  end
+                  next_item = next_item + k
+                end
+              end
             end
           end
         end
