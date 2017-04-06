@@ -1222,7 +1222,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
       guw_unit_of_work.guw_complexity_id = guw_complexity_id
       guw_unit_of_work.guw_original_complexity_id = guw_complexity_id
-      guw_unit_of_work.save
+      if guw_unit_of_work.changed?
+        guw_unit_of_work.save
+      end
     else
       guw_complexity_id = guw_unit_of_work.guw_complexity_id
     end
