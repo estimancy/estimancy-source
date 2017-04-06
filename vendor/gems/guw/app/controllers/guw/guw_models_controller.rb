@@ -143,7 +143,7 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
 
-          elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size)
+          elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
             coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
                                                     guw_model_id: @guw_model.id).first
@@ -163,7 +163,7 @@ class Guw::GuwModelsController < ApplicationController
           elsif index == (3 + @guw_model.guw_coefficients.size)
 
             tab.each_with_index do |row, i|
-              if i > 3 && !row.nil?
+              # if i > 3 && !row.nil?
                 Guw::GuwOutput.create(name: row[1],
                                       output_type: row[2],
                                       coefficient_id: coefficient.id,
@@ -171,7 +171,7 @@ class Guw::GuwModelsController < ApplicationController
                                       allow_intermediate_value: false,
                                       allow_subtotal: true,
                                       standard_coefficient: row[4])
-              end
+              # end
             end
 
           else
@@ -1389,7 +1389,10 @@ class Guw::GuwModelsController < ApplicationController
 
     if @guw_model.update_attributes(params[:guw_model])
 
-      @guw_model.orders = params[:items].to_hash
+      if params[:items].present?
+        @guw_model.orders = params[:items].to_hash
+      end
+
       @guw_model.save
 
       if @guw_model.config_type == "new"
