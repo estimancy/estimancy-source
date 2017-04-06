@@ -12,7 +12,11 @@
   </tr>
 
   <% gap = 1 %>
-  <% @wbs_activity_ratio_elements.each_with_index do |wbs_activity_ratio_element, i| %>
+  <%  wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position)) %>
+
+  <%# @wbs_activity_ratio_elements.each_with_index do |wbs_activity_ratio_element, i| %>
+  <% wbs_activity_elements.each_with_index do |activity_element, i| %>
+      <% wbs_activity_ratio_element = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
       <tr>
         <td>
           <% elt_position =  wbs_activity_ratio_element.wbs_activity_element.position %>

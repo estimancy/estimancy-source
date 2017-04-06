@@ -67,9 +67,10 @@
             <% unless @wbs_activity.new_record? %>
                 <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn pull-right button_margin_right' %>
             <% else %>
-              <a href="#import" role="button" class="btn btn-mini pull-right button_margin_right" title="<%= I18n.t(:import_from_excel)%>" data-toggle="modal">
-                <%= I18n.t(:import) %>
-              </a>
+              <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
+                <!--<%#= I18n.t(:import) %>-->
+              <!--</a>-->
+              <%= link_to I18n.t(:import), "#import", class: "btn pull-right button_margin_right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
 
               <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
@@ -78,6 +79,7 @@
                       <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
                     </div>
                     <div class="modal-body">
+                      <%= hidden_field_tag "organization_id", @current_organization.id %>
                       <%= file_field_tag :file %>
                     </div>
                     <div class="modal-footer">

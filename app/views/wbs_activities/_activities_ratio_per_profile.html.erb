@@ -19,7 +19,12 @@
   </tr>
 
   <% gap = 1 %>
-  <% @wbs_activity_ratio_elements.each do |activity| %>
+  <% wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position)) %>
+
+  <%# @wbs_activity_ratio_elements.each do |activity| %>
+  <% wbs_activity_elements.each_with_index do |activity_element, i| %>
+    <% activity = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
+
     <%= hidden_field_tag 'wbs_activity_ratio_id', activity.wbs_activity_ratio_id %>
     <%= hidden_field_tag 'wbs_activity_id', activity.wbs_activity_ratio.wbs_activity_id %>
 

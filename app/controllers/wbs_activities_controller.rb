@@ -990,10 +990,11 @@ class WbsActivitiesController < ApplicationController
       first_page = [[I18n.t(:model_name),  @wbs_activity.name],
                     [I18n.t(:model_description), @wbs_activity.description ],
                     [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
-                    [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ],
+                    [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                     [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                     [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
-                    [I18n.t(:select_wbs_activity_profiles), wbs_organization_profiles.map(&:name).join(",")],
+                    [I18n.t(:select_wbs_activity_profiles), "#{wbs_organization_profiles.map(&:name)}"],
+                    ["Compteur nom court des phases", @wbs_activity.phases_short_name_number],
                     [I18n.t(:advice_ge), ""]]
 
       first_page.each_with_index do |row, index|
@@ -1013,26 +1014,38 @@ class WbsActivitiesController < ApplicationController
       # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
       # activity_elements_worksheet
       counter_line = 1
-      elements_worksheet.add_cell(0, 0, I18n.t(:name))
-      elements_worksheet.add_cell(0, 1, I18n.t(:description))
-      elements_worksheet.add_cell(0, 2, I18n.t('parent'))
-      elements_worksheet.add_cell(0, 3, I18n.t('position'))
+      elements_worksheet.add_cell(0, 0, I18n.t('position'))
+      elements_worksheet.add_cell(0, 1, I18n.t(:phase_short_name))
+      elements_worksheet.add_cell(0, 2, I18n.t(:name))
+      elements_worksheet.add_cell(0, 3, I18n.t(:description))
+      elements_worksheet.add_cell(0, 4, "Root")
+      elements_worksheet.add_cell(0, 5, I18n.t('parent'))
+
       elements_worksheet.change_row_bold(0,true)
 
       elements_worksheet.change_row_horizontal_alignment(0, 'center')
       @wbs_activity_elements.each_with_index do |activity_element, index|
-        elements_worksheet.add_cell(index + 1, 0, activity_element.name)
-        elements_worksheet.add_cell(index + 1, 1, activity_element.description)
-        elements_worksheet.add_cell(index + 1, 2, (activity_element.parent.nil? ? nil : activity_element.parent.name))
-        elements_worksheet.add_cell(index + 1, 3, activity_element.position)
+
+        elements_worksheet.add_cell(index + 1, 0, activity_element.position)
+        elements_worksheet.add_cell(index + 1, 1, activity_element.phase_short_name)
+        elements_worksheet.add_cell(index + 1, 2, activity_element.name)
+        elements_worksheet.add_cell(index + 1, 3, activity_element.description)
+        elements_worksheet.add_cell(index + 1, 4, activity_element.is_root ? 1 : 0)
+        elements_worksheet.add_cell(index + 1, 5, (activity_element.parent.nil? ? nil : activity_element.parent.name))
+
 
         if ind < activity_element.name.size
-          elements_worksheet.change_column_width(0, activity_element.name.size)
+          elements_worksheet.change_column_width(0, I18n.t('position').size)
+          elements_worksheet.change_column_width(1, I18n.t(:phase_short_name).size)
           elements_worksheet.change_column_width(2, activity_element.name.size)
+          elements_worksheet.change_column_width(3, I18n.t(:description).size)
+          elements_worksheet.change_column_width(4, 10)
           ind = activity_element.name.size
+
+          ind2 = elements_worksheet.get_column_width(3)
         end
         if ind2 < the_most_largest(activity_element.description)
-          elements_worksheet.change_column_width(1, the_most_largest(activity_element.description))
+          elements_worksheet.change_column_width(3, the_most_largest(activity_element.description))
           ind2 = the_most_largest(activity_element.description)
         end
         counter_line += 1
@@ -1044,6 +1057,7 @@ class WbsActivitiesController < ApplicationController
           elements_worksheet[line][1].change_border(symbole.to_sym, 'thin')
           elements_worksheet[line][2].change_border(symbole.to_sym, 'thin')
           elements_worksheet[line][3].change_border(symbole.to_sym, 'thin')
+          elements_worksheet[line][4].change_border(symbole.to_sym, 'thin')
         end
       end
 
@@ -1054,12 +1068,16 @@ class WbsActivitiesController < ApplicationController
       counter_line = 1
       ratios_worksheet.add_cell(0, 0, I18n.t(:name))
       ratios_worksheet.add_cell(0, 1, I18n.t(:description))
+      ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
+      ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
       ratios_worksheet.change_row_bold(0,true)
 
       ratios_worksheet.change_row_horizontal_alignment(0, 'center')
       @wbs_activity_ratios.each_with_index do |ratio, index|
         ratios_worksheet.add_cell(index + 1, 0, ratio.name)
         ratios_worksheet.add_cell(index + 1, 1, ratio.description)
+        ratios_worksheet.add_cell(index + 1, 2, ratio.do_not_show_cost ? 1 : 0)
+        ratios_worksheet.add_cell(index + 1, 3, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
 
         if ind < ratio.name.size
           ratios_worksheet.change_column_width(0, ratio.name.size)
@@ -1069,6 +1087,10 @@ class WbsActivitiesController < ApplicationController
           ratios_worksheet.change_column_width(1, the_most_largest(ratio.description))
           ind2 = the_most_largest(ratio.description)
         end
+
+        ratios_worksheet.change_column_width(2, I18n.t(:do_not_show_cost).size)
+        ratios_worksheet.change_column_width(3, I18n.t(:do_not_show_phases_with_zero_value).size)
+
         counter_line += 1
 
       end
@@ -1082,7 +1104,7 @@ class WbsActivitiesController < ApplicationController
 
       # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
       # Les attributs de ratio-element
-      ratio_attributes = ["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
+      ratio_attributes = ["name"] #["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
       counter_line = 1
       # On cree une feuille par element de ratio
       @wbs_activity_ratios.each_with_index do |ratio, index|
@@ -1092,16 +1114,16 @@ class WbsActivitiesController < ApplicationController
         new_workbook_number += 1
 
         ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
-        ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
-        ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
+        #ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
+        #ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
 
         ratio_elements_worksheet.add_cell(0, 1, ratio.name)
-        ratio_elements_worksheet.add_cell(0, 2, ratio.do_not_show_cost)
-        ratio_elements_worksheet.add_cell(0, 3, ratio.do_not_show_phases_with_zero_value)
+        #ratio_elements_worksheet.add_cell(1, 1, ratio.do_not_show_cost ? 1 : 0)
+        #ratio_elements_worksheet.add_cell(2, 1, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
 
         ratio_elements_worksheet.change_column_bold(0,true)
         ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
-        counter_line = 4
+        counter_line = 2 #4
 
 
         # WBS-ACTIVITY-RATIO-VARIABLES
@@ -1124,7 +1146,18 @@ class WbsActivitiesController < ApplicationController
 
           line_number = counter_line + 1
           ratio.wbs_activity_ratio_variables.each do |ratio_variable|
-            ratio_elements_worksheet.add_cell(line_number, column_number, ratio_variable.send(variable_attr))
+            value = ratio_variable.send(variable_attr)
+
+            if variable_attr.in?("is_modifiable", "is_used_in_ratio_calculation")
+              val = ratio_variable.send(variable_attr)
+              if val == true
+                value = 1
+              else
+                value = 0
+              end
+            end
+
+            ratio_elements_worksheet.add_cell(line_number, column_number, value)
             line_number += 1
           end
         end
@@ -1154,6 +1187,14 @@ class WbsActivitiesController < ApplicationController
                 value = activity_element.send(attr)
               else
                 value = nil
+              end
+
+            elsif attr.in?("is_optional", "is_modifiable")
+              val = ratio_element.send(attr)
+              if val == true
+                value = 1
+              else
+                value = 0
               end
 
             else
@@ -1233,9 +1274,7 @@ class WbsActivitiesController < ApplicationController
             end
           end
         end
-
       end
-
 
       # Send the file
       send_data(workbook.stream.string, filename: "#{@wbs_activity.organization.name[0..4]}-#{@wbs_activity.name.gsub(" ", "_")}_wbs_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
@@ -1250,31 +1289,198 @@ class WbsActivitiesController < ApplicationController
   #Import a new WBS-Activities from a CVS file
   def import_wbs_from_xl
 
-    begin
-      WbsActivityElement.import(params[:file], params[:separator])
-      flash[:notice] = I18n.t (:notice_wbs_activity_element_import_successful)
+    authorize! :manage_modules_instances, ModuleProject
 
-      if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-        @workbook = RubyXL::Parser.parse(params[:file].path)
-        @workbook.each_with_index do |worksheet, index|
-          worksheet.each { |row|
-            row && row.cells.each { |cell|
-              val = cell && cell.value
-              do_whatever_you_want(val)
-            }
-          }
+
+    @organization = Organization.find(params[:organization_id])
+
+    tab_error = []
+    # Debut transaction
+    ActiveRecord::Base.transaction do
+      if params[:file]
+        if !params[:file].nil? && (File.extname(params[:file].original_filename).to_s.downcase == ".xlsx")
+
+          #get the file data
+          workbook = RubyXL::Parser.parse(params[:file].path)
+
+          #if a model exists, only factors data will be imported
+          if !params[:wbs_activity_id].nil? && !params[:wbs_activity_id].empty?
+
+            @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
+
+          else
+            #there is no model, we will create new model from the model attributes data of the file to import
+            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "effort_unit", "effort_unit_coefficient",
+                                            "wbs_organization_profiles", "phases_short_name_number"]
+
+            model_sheet_order = Hash.new
+            model_sheet_order_attributes.each_with_index do |attr_name, index|
+              model_sheet_order["#{index}".to_sym] = attr_name
+            end
+
+            model_worksheet = workbook['Model']
+
+            if !model_worksheet.nil?
+              @wbs_activity = WbsActivity.new
+              @wbs_activity.organization = @organization
+
+              model_worksheet.each_with_index do | row, index |
+                row && row.cells.each do |cell|
+                  if cell.column == 1 && !cell.nil?
+                    val = cell && cell.value
+                    attr_name = model_sheet_order["#{index}".to_sym]
+                    #begin
+                      if attr_name.in?(["wbs_organization_profiles"])
+                        val_attr_value = eval(val)
+                        if !val_attr_value.nil? && !val_attr_value.empty?
+                          val_attr_value.each do |profile|
+                            organization_profile = OrganizationProfile.where(name: profile).first
+                            if organization_profile
+                              @wbs_activity.organization_profiles << organization_profile
+                            end
+                          end
+                        end
+                      else
+                        @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
+                      end
+                    # rescue
+                    # end
+                  end
+                end
+              end
+
+              if @wbs_activity && @wbs_activity.save
+                ######## WBS-Activity_elements worksheet  ######
+                activity_elements_sheet_order_attributes = [ "position", "phase_short_name", "name", "description", "is_root", "parent"]
+                elements_parents = Hash.new
+                # activity_elements_sheet_order = Hash.new
+                # activity_elements_sheet_order_attributes.each_with_index do |attr_name, index|
+                #   activity_elements_sheet_order["#{index}".to_sym] = attr_name
+                # end
+
+                elements_worksheet = workbook[I18n.t(:wbs_elements)]
+                elements_worksheet_tab = elements_worksheet.extract_data
+                elements_worksheet_tab.each_with_index do | row, index |
+                  if index != 0 && !row.nil?
+                    activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, position: row[0].to_f, phase_short_name: row[1],
+                                                                 name: row[2], description: row[3], is_root: row[4])
+                    elements_parents["#{activity_element.id}"] = row[5]
+                  end
+                end
+
+                # Update wbs-activity-element parent (ancestry)
+                elements_parents.each do |key, parent_name|
+                  #begin
+                    activity_element = WbsActivityElement.find(key)
+                    parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
+                    if !parent.nil?
+                      activity_element.parent = parent
+                    end
+                    activity_element.save
+                  # rescue
+                  # end
+                end
+
+                ######## Ratios worksheet  ######
+                ratios_worksheet = workbook["Ratios"]
+                ratios_worksheet_tab = ratios_worksheet.extract_data
+                ratios_worksheet_tab.each_with_index do | row, index |
+                  if index > 0 && !row.nil?
+                    #begin
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2], do_not_show_phases_with_zero_value: row[3])
+                    # rescue
+                    # end
+                  end
+                end
+
+                ######## Ratios Elements worksheet  ######
+                @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
+                @wbs_activity_elements = @wbs_activity.wbs_activity_elements
+                @wbs_activity_profiles = @wbs_activity.organization_profiles
+                ratio_name_line = 0
+                ratio_variables_line = ratio_name_line + 2
+                formulas_line = ratio_variables_line + 6
+                ratio_profiles_line = formulas_line + @wbs_activity_elements.size + 2
+                profile_col_number = Hash.new
+
+                @wbs_activity_ratios.each do |ratio|
+
+                  ratio_elements_worksheet = workbook["Ratio #{ratio.name}"]
+                  ratio_elements_worksheet_tab = ratio_elements_worksheet.extract_data
+
+                  ratio_elements_worksheet_tab.each_with_index do | row, index |
+                    unless row.nil?
+                      if index > 0
+                        case index
+                          # Wbs-activity_ratio-variables
+                          when ratio_variables_line+1..ratio_variables_line+4
+
+                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id, name: row[1], percentage_of_input: row[2],
+                                               is_modifiable: row[3], is_used_in_ratio_calculation: row[4], description: row[5])
+
+                          # Elements formulas
+                          when formulas_line+1..formulas_line+@wbs_activity_elements.size
+
+                            wbs_activity_element = @wbs_activity_elements.where(name: row[3]).first
+                            WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id, wbs_activity_element_id: wbs_activity_element.id,
+                                                            is_optional: row[5], is_modifiable: row[6], formula: row[7])
+
+                          # Ratio-elements par profile
+                          when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size
+
+                            if index == ratio_profiles_line
+                              (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
+                                val = row[j]
+                                if !val.nil?
+                                  profile = @wbs_activity_profiles.where(name: val).first
+                                  profile_col_number["#{profile.name}"] = j
+                                end
+                              end
+
+                            else
+                              wbs_activity_element = @wbs_activity_elements.where(name: row[2]).first
+                              ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
+
+                              @wbs_activity_profiles.each do |profile|
+                                k = profile_col_number["#{profile.name}"]
+                                WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: row[k].to_f)
+                              end
+                            end
+                        end
+                      end
+                    end
+                  end
+                end
+
+                flash[:notice] = "Modèle créé avec succès"
+              else
+                existing_ge_model_name = WbsActivity.where(name: @wbs_activity.name).first
+                if existing_ge_model_name
+                  tab_error << "Erreur : une instance avec le nom '#{@wbs_activity.name}' existe déjà"
+                  flash[:error] = "Erreur : une instance avec le nom '#{@wbs_activity.name}' existe déjà"
+                else
+                  tab_error << "Une erreur est survenue lors de la création du modèle"
+                  flash[:error] = "Une erreur est survenue lors de la création du modèle"
+                end
+              end
+            else
+              tab_error << "Les attributs du modèle ne sont pas définis dans le fichier importé"
+              flash[:error] = "Les attributs du modèle ne sont pas définis dans le fichier importé"
+            end
+          end
+        else
+          flash[:error] =  I18n.t(:route_flag_error_4)
         end
       else
-        route_flag = 4
+        flash[:error] =  I18n.t(:route_flag_error_17)
       end
 
-
-    rescue => e
-      flash[:error] = I18n.t (:error_wbs_activity_failed_file_integrity)
-      flash[:warning] = "#{e}"
+      if @wbs_activity && @wbs_activity.save
+        redirect_to edit_wbs_activity_path(@wbs_activity, anchor: "tabs-1")
+      else
+        redirect_to request.referer + "#tabs-1" #redirect_to :back
+      end
     end
-
-    redirect_to :back
   end
 
 
