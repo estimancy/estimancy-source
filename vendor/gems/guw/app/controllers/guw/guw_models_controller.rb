@@ -195,17 +195,17 @@ class Guw::GuwModelsController < ApplicationController
 
               Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
                                                             guw_output_id: guw_output.id,
-                                                            init_value: tab[13][i+1].nil? ? nil : tab[13][i+1].to_i)
+                                                            init_value: tab[13][i+1].nil? ? nil : tab[13][i+1])
 
               Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
                                               guw_output_id: guw_output.id,
-                                              value: tab[14][i + 1].nil? ? nil : tab[14][i + 1].to_i)
+                                              value: tab[14][i + 1].nil? ? nil : tab[14][i + 1])
 
               @guw_model.guw_outputs.each_with_index do |aguw_output, j|
                 oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
                                                       guw_output_associated_id: aguw_output.id,
                                                       guw_output_id: guw_output.id,
-                                                      value: tab[15 + i][j + 1].nil? ? nil : tab[15 + i][j + 1].to_i)
+                                                      value: tab[15 + i][j + 1].nil? ? nil : tab[15 + i][j + 1])
               end
 
               nb_output = @guw_model.guw_outputs.size
@@ -218,7 +218,7 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_coefficient_element_id: guw_coefficient_element.id,
                                                                 guw_output_id: guw_output.id,
                                                                 guw_type_id: @guw_type.id,
-                                                                value: tab[next_item + 1][i + 1].blank? ? nil : tab[next_item + 1][i + 1].to_i) # +1 pour l'entete
+                                                                value: tab[next_item + 1][i + 1].blank? ? nil : tab[next_item + 1][i + 1])
                   rescue
                   end
                   next_item = next_item + k
