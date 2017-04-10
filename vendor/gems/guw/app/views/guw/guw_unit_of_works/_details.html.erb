@@ -59,9 +59,9 @@
           <td>
             <%= Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
                                                            guw_coefficient_id: coefficient.id,
-                                                           module_project_id: current_module_project.id).allmap do |i|
+                                                           module_project_id: current_module_project.id).all.map do |i|
               i.guw_unit_of_work.nil? ? nil : i.guw_unit_of_work.ajusted_size["#{guw_output.id}"].to_f
-            end.compact.sum.to_f %>
+            end.compact.sum.to_f.round(2) %>
           </td>
         <% end %>
       </tr>
