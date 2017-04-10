@@ -199,12 +199,6 @@
                 <% end %>
               <% end %>
 
-              <% if @guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
-                <th class="">
-                  <%= I18n.t :quantity %>
-                </th>
-              <% end %>
-
               <th class=""><%= I18n.t :actions %></th>
             </tr>
 
@@ -402,16 +396,6 @@
                       <% end %>
                     <% end %>
                   <% end %>
-                <% end %>
-
-                <% if @guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
-                  <td>
-                    <% unless @guw_type.nil? %>
-                      <% if @guw_type.allow_quantity == true %>
-                        <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, style: "width: 43px;" %>
-                      <% end %>
-                    <% end %>
-                  </td>
                 <% end %>
 
                 <td class="span3">
