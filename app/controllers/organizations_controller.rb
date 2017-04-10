@@ -427,7 +427,8 @@ class OrganizationsController < ApplicationController
                 guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
                 unless guw_coefficient.guw_coefficient_elements.empty?
                   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                    guw_coefficient_id: guw_coefficient.id).first
+                                                                    guw_coefficient_id: guw_coefficient.id,
+                                                                    module_project_id: current_module_project.id).first
 
                   if guw_coefficient.coefficient_type == "Pourcentage"
                     worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)

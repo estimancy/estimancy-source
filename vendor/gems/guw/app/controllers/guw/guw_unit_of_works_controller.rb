@@ -1040,6 +1040,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+            ceuw.module_project_id = current_module_project.id
 
             if ceuw.changed?
               ceuw.save
@@ -1073,6 +1074,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+            ceuw.module_project_id = current_module_project.id
 
             if ceuw.changed?
               ceuw.save
@@ -1094,6 +1096,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+                ceuw.module_project_id = current_module_project.id
 
                 if ceuw.changed?
                   ceuw.save
@@ -1119,7 +1122,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                         guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |goa|
 
           unless goa.value.to_f == 0
-            oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
+            unless goa.aguw_output.nil?
+              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
+            end
           end
 
         end
@@ -1327,6 +1332,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+          ceuw.module_project_id = current_module_project.id
 
           if ceuw.changed?
             ceuw.save
@@ -1354,6 +1360,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+          ceuw.module_project_id = current_module_project.id
 
           if ceuw.changed?
             ceuw.save
@@ -1377,6 +1384,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_coefficient_element_id = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+            ceuw.module_project_id = current_module_project.id
 
             if ceuw.changed?
               ceuw.save
