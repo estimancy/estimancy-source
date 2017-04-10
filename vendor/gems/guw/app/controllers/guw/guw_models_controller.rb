@@ -1430,6 +1430,7 @@ class Guw::GuwModelsController < ApplicationController
 
   def update
     authorize! :manage_modules_instances, ModuleProject
+    expire_fragment "guw"
 
     @guw_model = Guw::GuwModel.find(params[:id])
     @organization = @guw_model.organization

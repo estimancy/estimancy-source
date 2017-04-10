@@ -63,16 +63,16 @@ class EstimationValue < ActiveRecord::Base
   def to_s
     # self.nil? ? '' : self.pe_attribute.name
 
-    if self.pe_attribute.alias.in?("effort", "cost", "theoretical_effort", "theoretical_cost")
-      case self.pe_attribute.alias
-        when "effort", "cost"
-          self.nil? ? '' : I18n.t("retained_#{self.pe_attribute.alias}")
-        else
-          self.nil? ? '' : I18n.t("#{self.pe_attribute.alias}")
-      end
-    else
-      self.nil? ? '' : self.pe_attribute.name
-    end
+    # if self.pe_attribute.alias.in?("effort", "cost", "theoretical_effort", "theoretical_cost")
+    #   case self.pe_attribute.alias
+    #     when "effort", "cost"
+    #       self.nil? ? '' : I18n.t("retained_#{self.pe_attribute.alias}")
+    #     else
+    #       self.nil? ? '' : I18n.t("#{self.pe_attribute.alias}")
+    #   end
+    # else
+      self.nil? ? '' : (self.pe_attribute.nil? ? '-' : self.pe_attribute.name)
+    # end
 
   end
 

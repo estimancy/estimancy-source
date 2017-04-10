@@ -1674,9 +1674,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
                     :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
                 }
-                if ev.changed?
-                  ev.update_attributes(h)
-                end
+                ev.update_attributes(h)
               end
             end
           end

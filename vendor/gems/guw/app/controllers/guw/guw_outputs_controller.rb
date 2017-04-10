@@ -48,6 +48,7 @@ class Guw::GuwOutputsController < ApplicationController
 
   def create
     @guw_output = Guw::GuwOutput.new(params[:guw_output])
+    @guw_model = @guw_output.guw_model
     @guw_output.save
 
     attr = PeAttribute.where(name: @guw_output.name,
@@ -61,6 +62,19 @@ class Guw::GuwOutputsController < ApplicationController
                                pemodule_id: pm.id,
                                in_out: "both",
                                guw_model_id: @guw_output.guw_model_id).first_or_create!
+
+    @guw_model.module_projects.each do |module_project|
+      ['input', 'output'].each do |in_out|
+        mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                     module_project_id: module_project.id,
+                                     in_out: in_out,
+                                     string_data_low: { :pe_attribute_name => @guw_output.name },
+                                     string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                     string_data_high: { :pe_attribute_name => @guw_output.name })
+      end
+    end
+
+    expire_fragment "guw"
 
     redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-factors")
   end
@@ -108,12 +122,25 @@ class Guw::GuwOutputsController < ApplicationController
       attr.description = @guw_output.name
       attr.guw_model_id = @guw_model.id
 
-      attr.estimation_values.each do |ev|
-        ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.pe_attribute_id = attr.id
-        ev.save(validate: false)
+      if attr.estimation_values.empty?
+        @guw_model.module_projects.each do |module_project|
+          ['input', 'output'].each do |in_out|
+            mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                         module_project_id: module_project.id,
+                                         in_out: in_out,
+                                         string_data_low: { :pe_attribute_name => @guw_output.name },
+                                         string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                         string_data_high: { :pe_attribute_name => @guw_output.name })
+          end
+        end
+      else
+        attr.estimation_values.each do |ev|
+          ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.pe_attribute_id = attr.id
+          ev.save(validate: false)
+        end
       end
 
       am = AttributeModule.where(pe_attribute_id: attr.id,
@@ -132,6 +159,9 @@ class Guw::GuwOutputsController < ApplicationController
     redirect_to guw.edit_guw_model_path(@guw_model.id,
                                         organization_id: @current_organization.id,
                                         anchor: "tabs-factors")
+
+    expire_fragment "guw"
+
   end
 
   def destroy
@@ -141,17 +171,22 @@ class Guw::GuwOutputsController < ApplicationController
 
     #Pas encore bon !
     attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_")).first
-    attr_name = attr.name
     pm = Pemodule.where(alias: "guw").first
-    AttributeModule.where(pe_attribute_id: attr.id, pemodule_id: pm.id, guw_model_id: @guw_output.guw_model.id).all.each do |am|
+    AttributeModule.where(pe_attribute_id: attr.id,
+                          pemodule_id: pm.id,
+                          guw_model_id: @guw_output.guw_model.id).all.each do |am|
       am.delete
     end
+
     attr.delete
 
     orders = @guw_model.orders
-    orders.delete(attr_name)
-    @guw_model.orders = orders
 
+    unless attr.nil?
+      attr_name = attr.name
+      orders.delete(attr_name)
+      @guw_model.orders = orders
+    end
 
     if @guw_model.default_display == "list"
       redirect_to guw.guw_model_all_guw_types_path(@guw_model)
