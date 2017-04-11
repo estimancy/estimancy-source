@@ -81,21 +81,17 @@ class Guw::GuwOutputsController < ApplicationController
 
   def update
     @guw_output = Guw::GuwOutput.find(params[:id])
+    @guw_model = @guw_output.guw_model
+
     old_attr_name = @guw_output.name
     @guw_output.update_attributes(params[:guw_output])
-    @guw_model = @guw_output.guw_model
 
     pm = Pemodule.where(alias: "guw").first
 
-    attr = PeAttribute.where(name: @guw_output.name,
-                             alias: @guw_output.name.underscore.gsub(" ", "_"),
-                             description: @guw_output.name,
+    attr = PeAttribute.where(name: old_attr_name,
                              guw_model_id: @guw_model.id).first
 
     if attr.nil?
-
-      old_attr = PeAttribute.where(name: old_attr_name,
-                                   guw_model_id: @guw_model.id).first
 
       at = PeAttribute.create(name: @guw_output.name,
                               alias: @guw_output.name.underscore.gsub(" ", "_"),
