@@ -1250,7 +1250,7 @@ class OrganizationsController < ApplicationController
 
             ###### Replace the code below
 
-            guw_model.terminate_guw_model_duplication
+            guw_model.terminate_guw_model_duplication(guw_model) #A modifier
           end
 
           flash[:notice] = I18n.t(:notice_organization_successful_created)
