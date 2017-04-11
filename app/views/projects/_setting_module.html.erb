@@ -14,7 +14,8 @@
   <% elsif current_module_project.pemodule.alias == "ge" %>
     <%= render partial: "ge/ge_models/settings" %>
   <% elsif current_module_project.pemodule.alias == "operation" %>
-    <%= render partial: "operation/operation_models/settings" %>
+    <%#= render partial: "operation/operation_models/settings" %>
+    <%= render partial: "operation/operation_models/settings_new" %>
   <% elsif current_module_project.pemodule.alias == "expert_judgement" %>
     <%= render partial: "expert_judgement/instances/settings" %>
   <% elsif current_module_project.pemodule.alias == "cocomo_advanced" %>

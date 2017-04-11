@@ -2009,6 +2009,5 @@ fral:
   effort_display_unit: "Unité d'affichage de l'effort"
   organization_effort_unit: "Utiliser l'unité d'effort de l'organisation : %{value}"
 
-
-
+  new_input_attribute: "Nouvel attribut d'entrée"
 
