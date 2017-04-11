@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170331085915) do
+ActiveRecord::Schema.define(:version => 20170405125905) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -178,6 +178,7 @@ ActiveRecord::Schema.define(:version => 20170331085915) do
     t.string   "reference_uuid"
     t.integer  "display_order"
     t.integer  "guw_model_id"
+    t.integer  "operation_model_id"
   end
 
   create_table "attribute_organizations", :force => true do |t|
@@ -292,6 +293,7 @@ ActiveRecord::Schema.define(:version => 20170331085915) do
     t.text     "notes"
     t.integer  "estimation_value_id"
     t.integer  "copy_id"
+    t.integer  "operation_input_id"
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
@@ -1038,18 +1040,31 @@ ActiveRecord::Schema.define(:version => 20170331085915) do
     t.integer "copy_id"
   end
 
+  create_table "operation_operation_inputs", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.string   "in_out"
+    t.integer  "operation_model_id"
+    t.boolean  "is_modifiable"
+    t.float    "standard_unit_coefficient"
+    t.string   "standard_unit"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
   create_table "operation_operation_models", :force => true do |t|
     t.string   "name"
     t.boolean  "three_points_estimation"
     t.boolean  "enabled_input"
     t.integer  "organization_id"
-    t.string   "effort_unit"
+    t.string   "output_unit"
     t.integer  "standard_unit_coefficient"
     t.string   "operation_type"
     t.integer  "copy_id"
     t.integer  "copy_number"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "modify_output"
   end
 
   create_table "organization_labor_categories", :force => true do |t|
@@ -1201,6 +1216,7 @@ ActiveRecord::Schema.define(:version => 20170331085915) do
     t.integer  "attribute_category_id"
     t.boolean  "single_entry_attribute"
     t.integer  "guw_model_id"
+    t.integer  "operation_model_id"
   end
 
   create_table "pe_wbs_projects", :force => true do |t|
