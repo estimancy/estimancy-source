@@ -82,6 +82,9 @@
             <% effort_ids = module_project_attributes.where(alias: Skb::SkbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "expert_judgement" %>
             <% effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% when "operation" %>
+            <% effort_ids = module_project_attributes.map(&:id).flatten %>
+
         <% else %>
             <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% end %>
