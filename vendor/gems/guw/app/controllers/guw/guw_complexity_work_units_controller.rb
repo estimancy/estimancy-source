@@ -26,6 +26,8 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_model = @guw_type.guw_model
 
+    expire_fragment "guw"
+
     unless params[:config].nil?
       params[:config].each do |i|
         i.last.each do |j|
