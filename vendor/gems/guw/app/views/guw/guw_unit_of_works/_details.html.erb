@@ -1,118 +1,91 @@
-<% @guw_model.guw_outputs.each do |guw_output| %>
-  <% unless @guw_model.guw_types.empty? %>
-    <h5>
-      Nombre d'unité d'oeuvre par type
-    </h5>
-    <table class="table">
-      <tr>
-        <th>Type</th>
-        <th>Nombre d'UO</th>
-        <th>Poids Total</th>
-      </tr>
-      <% @guw_model.guw_types.uniq.each do |guw_type| %>
-        <tr>
-          <td>
-            <%= guw_type.name %>
-          </td>
-          <td>
-            <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
-          </td>
-          <td>
-            <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
-  <% end %>
 
-  <% unless @guw_model.guw_work_units.empty? %>
-    <h5>
-      Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
-    </h5>
-    <table class="table">
-      <tr>
-        <th><%= @guw_model.coefficient_label %></th>
-        <th>Nombre d'UO</th>
-        <th>Poids Total</th>
-      </tr>
-      <% @guw_model.guw_work_units.uniq.each do |guw_work_unit| %>
-        <tr>
-          <td>
-            <%= guw_work_unit.name %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).count.to_i %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_work_unit_id: guw_work_unit.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
-  <% end %>
+<% unless @guw_model.guw_types.empty? %>
+  <% @unit_of_work_groups.each_with_index do |uowg, j| %>
+    <div class="accordion" id="accordion2">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+          <h4>
+            Nombre d'unité d'oeuvre par type
+          </h4>
+        </a>
+      </div>
 
-  <% unless @guw_model.guw_weightings.empty? %>
-    <h5>
-      Nombre d'unité d'oeuvre par <%= @guw_model.coefficient_label %> (<%= @guw_model.retained_size_unit %>)
-    </h5>
-    <table class="table">
-      <tr>
-        <th><%= @guw_model.coefficient_label %></th>
-        <th>Nombre d'UO</th>
-        <th>Poids Total</th>
-      </tr>
-      <% @guw_model.guw_weightings.uniq.each do |guw_weighting| %>
-        <tr>
-          <td>
-            <%= guw_weighting.name %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).count.to_i %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_weighting_id: guw_weighting.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
+      <div id="collapseOne" class="accordion-body collapse in">
+        <table class="table">
+          <tr>
+            <th>Type</th>
+            <th>Nombre d'UO</th>
+            <% @guw_model.guw_outputs.each do |guw_output| %>
+              <th>
+                <%= guw_output.name %>
+              </th>
+            <% end %>
+          </tr>
+          <% @guw_model.guw_types.uniq.each do |guw_type| %>
+            <tr>
+              <td>
+                <%= guw_type.name %>
+              </td>
+              <td>
+                <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
+              </td>
+              <% @guw_model.guw_outputs.each do |guw_output| %>
+                <td>
+                  <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
   <% end %>
+<% end %>
 
-  <% unless @guw_model.guw_factors.empty? %>
-    <h5>
-      Nombre d'unité d'oeuvre par <%= @guw_model.factors_label %> (<%= @guw_model.retained_size_unit %>)
-    </h5>
-    <table class="table">
-      <tr>
-        <th><%= @guw_model.coefficient_label %></th>
-        <th>Nombre d'UO</th>
-        <th>Poids Total</th>
-      </tr>
-      <% @guw_model.guw_factors.uniq.each do |guw_factor| %>
-        <tr>
-          <td>
-            <%= guw_factor.name %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).count.to_i %>
-          </td>
-          <td>
-            <%= Guw::GuwUnitOfWork.where(guw_factor_id: guw_factor.id, module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
-  <% end %>
+<% @guw_model.guw_coefficients.each do |coefficient| %>
+  <div class="accordion" id="<%= coefficient.id %>">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#<%= coefficient.id %>" href="#<%= coefficient.id %>">
+        <h4>
+          Nombre d'unité d'oeuvre par <%= coefficient.name %>
+        </h4>
+      </a>
+    </div>
 
-  <% @guw_model.guw_coefficients.each do |coefficient| %>
-    <h5>
-      Nombre d'unité d'oeuvre par <%= coefficient.name %>
-    </h5>
-    <table class="table">
-      <tr>
-        <th><%= coefficient.name %></th>
-        <th>Nombre d'UO</th>
-        <th>Poids Total</th>
-      </tr>
-    </table>
-  <% end %>
+    <div id="<%= coefficient.id %>" class="accordion-body collapse in">
+      <table class="table">
+        <tr>
+          <th><%= coefficient.name %></th>
+          <th>Nombre d'UO</th>
+          <% @guw_model.guw_outputs.each do |guw_output| %>
+            <th>
+              <%= guw_output.name %>
+            </th>
+          <% end %>
+        </tr>
+
+        <% coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
+          <tr>
+            <td>
+              <%= guw_coefficient_element.name %>
+            </td>
+            <td>
+              <%= Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
+                                                             guw_coefficient_id: coefficient.id,
+                                                             module_project_id: current_module_project.id).size %>
+            </td>
+            <% @guw_model.guw_outputs.each do |guw_output| %>
+              <td>
+                <%= Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
+                                                               guw_coefficient_id: coefficient.id,
+                                                               module_project_id: current_module_project.id).all.map do |i|
+                  i.guw_unit_of_work.nil? ? nil : i.guw_unit_of_work.ajusted_size["#{guw_output.id}"].to_f
+                end.compact.sum.to_f.round(2) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
 <% end %>

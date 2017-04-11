@@ -3,10 +3,6 @@
   <thead>
     <tr>
       <th class="span4"><%= I18n.t(:name) %></th>
-      <th><%= I18n.t(:low) %></th>
-      <th><%= I18n.t(:likely) %></th>
-      <th><%= I18n.t(:high) %></th>
-      <th>Instance de module</th>
       <th><%= I18n.t(:in_out) %></th>
       <th class="action"><%= I18n.t(:actions) %></th>
     </tr>
@@ -15,17 +11,13 @@
   <tbody>
     <% @attribute_settings.each_with_index do |ma, i| %>
         <%= hidden_field_tag 'attributes[]', ma.pe_attribute_id %>
-        <tr class="">
-          <td>
+        <tr>
+          <td class="span3">
             <span class="attribute_tooltip", title="<%= display_attribute_rule(ma.pe_attribute, ma) %>">
-              <%=  ma.pe_attribute.nil? ? '-' : ma.pe_attribute.name %>
+              <%=  ma.pe_attribute.nil? ? '-' : ma.pe_attribute.name %> (<%= ma.guw_model_id %>)
             </span>
           </td>
-          <td class="center"><%= text_field_tag "default_low[#{ma.id}]", ma.default_low, :class => "input-mini low #{ma.id} #{(ma.pe_attribute.attr_type == 'date') ? 'date-picker' : '' }" %></td>
-          <td class="center"><%= text_field_tag "default_most_likely[#{ma.id}]", ma.default_most_likely, :class => "input-mini ml #{ma.id}" %></td>
-          <td class="center"><%= text_field_tag "default_high[#{ma.id}]", ma.default_high, :class => "input-mini high #{ma.id}" %></td>
-          <td class="center"><%= ma.guw_model_id %></td>
-          <td class="center"><%= select_tag "in_out[#{ma.id}]", options_for_select([['input'], ['output'], ['both']], :selected => ma.in_out), :prompt => I18n.t('helpers.select.prompt'), :class => 'input-small', :disabled => (@pemodule == @initialization_module) %> </td>
+          <td class="center span3"><%= select_tag "in_out[#{ma.id}]", options_for_select([['input'], ['output'], ['both']], :selected => ma.in_out), :prompt => I18n.t('helpers.select.prompt'), :class => 'input-small', :disabled => (@pemodule == @initialization_module) %> </td>
           <td>
             <%= link_to '', ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete') %>
           </td>
