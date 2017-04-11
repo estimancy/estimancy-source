@@ -480,8 +480,8 @@ class ProjectsController < ApplicationController
           end
 
           # Update project's organization estimations counter
-          if @is_model != "true"
-            unless @organization.estimations_counter.nil?
+          unless @is_model == "true" || @current_user.super_admin == true
+            unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
               @organization.estimations_counter -= 1
               @organization.save
             end
@@ -1162,8 +1162,10 @@ class ProjectsController < ApplicationController
                               skb_model_id: skb_model_id)
       elsif @pemodule.alias == "ge"
         my_module_project.ge_model_id = params[:module_selected].split(',').first
+
       elsif @pemodule.alias == "operation"
         my_module_project.operation_model_id = params[:module_selected].split(',').first
+
       elsif @pemodule.alias == "staffing"
         staffing_model_id = params[:module_selected].split(',').first.to_i
         my_module_project.staffing_model_id = staffing_model_id
@@ -1228,7 +1230,6 @@ class ProjectsController < ApplicationController
           end
         end
 
-
       elsif @pemodule.alias == "expert_judgement"
         eji_id = params[:module_selected].split(',').first
         my_module_project.expert_judgement_instance_id = eji_id.to_i
@@ -1240,12 +1241,21 @@ class ProjectsController < ApplicationController
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
       @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
-      if @pemodule.alias == "guw"
+      if @pemodule.alias.in?("guw", "operation")
         #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
         #guw_outputs = guw_model.guw_outputs
 
+        all_attribute_modules = my_module_project.pemodule.attribute_modules
+
+        case @pemodule.alias
+          when "guw"
+            attribute_modules = all_attribute_modules.where(guw_model_id: my_module_project.guw_model_id)
+          when "operation"
+            attribute_modules = all_attribute_modules.where(operation_model_id: my_module_project.operation_model_id)
+        end
+
         #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
-        my_module_project.pemodule.attribute_modules.where(guw_model_id: my_module_project.guw_model_id).each do |am|
+        attribute_modules.each do |am|
           if am.in_out == 'both'
             ['input', 'output'].each do |in_out|
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
@@ -2060,12 +2070,20 @@ public
         end
 
         # Update project's organization estimations counter
-        if new_prj.is_model != true
-          unless @organization.estimations_counter.nil?
+        # if new_prj.is_model != true
+        #   unless @organization.estimations_counter.nil?
+        #     @organization.estimations_counter -= 1
+        #     @organization.save
+        #   end
+        # end
+
+        unless new_prj.is_model == true || @current_user.super_admin == true
+          unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
             @organization.estimations_counter -= 1
             @organization.save
           end
         end
+
 
         flash[:success] = I18n.t(:notice_project_successful_duplicated)
         redirect_to edit_project_path(new_prj) and return
@@ -2500,12 +2518,20 @@ public
           end
 
           # Update project's organization estimations counter
-          if new_prj.is_model != true
-            unless @current_organization.estimations_counter.nil?
-              @current_organization.estimations_counter -= 1
-              @current_organization.save
+          # if new_prj.is_model != true
+          #   unless @current_organization.estimations_counter.nil?
+          #     @current_organization.estimations_counter -= 1
+          #     @current_organization.save
+          #   end
+          # end
+
+          unless new_prj.is_model == true || @current_user.super_admin == true
+            unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
+              @organization.estimations_counter -= 1
+              @organization.save
             end
           end
+
 
           flash[:success] = I18n.t(:notice_project_successful_checkout)
           redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
