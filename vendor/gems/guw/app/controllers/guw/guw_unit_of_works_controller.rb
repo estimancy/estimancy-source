@@ -1081,8 +1081,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
 
-            if params['guw_coefficient'].present?
-              ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+            unless params['guw_coefficient'].nil?
+              unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
+                ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              end
             end
 
             unless ce.nil?
@@ -1370,8 +1372,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
         else
-          if params['hidden_coefficient_element'].present?
-            ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+          unless params['hidden_coefficient_element'].nil?
+            unless params['hidden_coefficient_element']["#{guw_unit_of_work.id}"].nil?
+              ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+            end
           end
 
           unless ce.nil?
