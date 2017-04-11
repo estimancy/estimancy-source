@@ -1080,7 +1080,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               ceuw.save
             end
           else
-            ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+
+            if params['guw_coefficient'].present?
+              ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+            end
 
             unless ce.nil?
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
@@ -1367,7 +1370,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
         else
-          ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+          if params['hidden_coefficient_element'].present?
+            ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+          end
 
           unless ce.nil?
             cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
