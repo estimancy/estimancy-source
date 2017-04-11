@@ -42,8 +42,8 @@ class ProjectsController < ApplicationController
   def check_estimations_counter
     @organization = @current_organization
     estimations_counter = @organization.estimations_counter
-    unless estimations_counter.nil? || @current_user.super_admin == true
-      if estimations_counter == 0
+    unless estimations_counter.nil?
+      if estimations_counter == 0 && @current_user.super_admin != true
         #redirect_to(organization_estimations_path(@organization), flash:{ warning: I18n.t(:warning_zero_estimations_counter) } ) and return
         flash[:warning] = I18n.t(:warning_zero_estimations_counter)
         #redirect_to(:back) and return
