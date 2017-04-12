@@ -129,9 +129,10 @@ class Operation::OperationModelsController < ApplicationController
       @operation_model = current_module_project.operation_model
     end
 
-    input_attribute_ids = current_module_project.pemodule.pe_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
+    module_project_attributes = current_module_project.pemodule.pe_attributes
+    input_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
     #output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
-    output_attribute_ids = current_module_project.pemodule.pe_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
+    output_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
 
     # if input_attribute_ids.empty?
     #   input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten

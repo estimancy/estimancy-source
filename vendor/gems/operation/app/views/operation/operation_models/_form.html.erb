@@ -60,6 +60,7 @@
         <tr>
           <th><%= I18n.t(:name) %></th>
           <th><%= I18n.t(:description) %></th>
+          <th><%= I18n.t(:in_out) %></th>
           <th><%= I18n.t(:is_modifiable) %></th>
           <th>Coefficient Standard</th>
           <th><%= I18n.t(:unit_value) %></th>
@@ -71,6 +72,7 @@
                 <tr>
                   <td><%= operation_input.name %></td>
                   <td><%= operation_input.description %></td>
+                  <td><%= I18n.t(operation_input.in_out) %></td>
                   <td class="center"><%= check_box_tag "is_modifiable", operation_input.is_modifiable , operation_input.is_modifiable , disabled: true %></td>
                   <td><%= operation_input.standard_unit_coefficient %></td>
                   <td><%= operation_input.standard_unit %></td>
