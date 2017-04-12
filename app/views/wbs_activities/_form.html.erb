@@ -37,7 +37,7 @@
             <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
               <div class="accordion-inner">
                 <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
-                <% for profile in @organization.organization_profiles %>
+                <% for profile in @organization.organization_profiles.order('name') %>
                   <div>
                     <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
                     <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
@@ -207,6 +207,7 @@
             </div><br>
             <%= form_tag save_wbs_activity_ratio_per_profile_path, remote: true, class: 'simple_form' do %>
               <div id="activities_ratio_per_profile">
+                <% @wbs_organization_profiles = @wbs_organization_profiles.order('name') %>
                 <%= render :partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles] %>
               </div>
             <% end %>
