@@ -7,7 +7,7 @@
     </li>
     <li>
       <a href="#tabs-2">
-        <%= "Gérer les attributs d'entrée" %>
+        <%= "Gérer les attributs d'Entrée et Sortie" %>
       </a>
     </li>
   </ul>
@@ -32,12 +32,11 @@
         <%= f.input :operation_type, as: :select, collection: [["Addition", "addition"], ["Moyenne", "moyenne"], ["Multiplication", "multiplication"]],
                     label: I18n.t(:op_type), include_blank: false %>
 
-        <fieldset style="width: 40%">
-          <legend><h5 class="blue"><%= I18n.t('output') %></h5></legend>
-          <%= f.input :standard_unit_coefficient, label: I18n.t(:ge_standard_coefficient) %>
-          <%= f.input :output_unit, label: I18n.t(:unit_value) %>
-
-        </fieldset>
+        <!--<fieldset style="width: 40%">-->
+          <!--<legend><h5 class="blue"><%#= I18n.t('output') %></h5></legend>-->
+          <!--<%#= f.input :standard_unit_coefficient, label: I18n.t(:ge_standard_coefficient) %>-->
+          <!--<%#= f.input :output_unit, label: I18n.t(:unit_value) %>-->
+        <!--</fieldset>-->
       </div>
 
       <div class="actions-tabs">
