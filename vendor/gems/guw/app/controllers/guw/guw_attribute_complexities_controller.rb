@@ -24,6 +24,8 @@ class Guw::GuwAttributeComplexitiesController < ApplicationController
 
   def save_attributs_complexities
 
+    expire_fragment "guw"
+
     unless params["bottom"].nil?
       params["bottom"].each do |attribute|
         attribute.last.each do |type_complexity|
