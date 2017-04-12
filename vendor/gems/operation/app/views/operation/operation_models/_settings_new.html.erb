@@ -1,0 +1,360 @@
+<%= form_tag operation.operation_model_save_efforts_path(@operation_model), method: "POST" do %>
+
+  <br>
+  <div class="row-fluid">
+    <div class="span6">
+
+      <% module_project_attributes = current_module_project.pemodule.pe_attributes %>
+      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first  %>
+      <% if attr.nil? %>
+        <% attr =  module_project_attributes.where(operation_model_id: @operation_model.id).first %>
+      <% end %>
+
+      <%# out_attr = current_module_project.pemodule.pe_attributes.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).first %>
+      <% out_attr = module_project_attributes.where(operation_model_id: @operation_model.id).last %>
+
+      <% input_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
+      <%# output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+      <% output_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
+
+      <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
+      <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
+
+      <% if current_inputs_evs.all.empty?
+           current_inputs_evs = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
+      end %>
+
+      <h4>
+        <b>
+          <%= I18n.t :inputs %>
+        </b>
+      </h4>
+
+      <% component_id = current_component.id %>
+
+      <% if attr.nil? %>
+          <% previous_ev = nil %>
+          <% current_ev = nil %>
+          <% precision = 2 %>
+
+      <% else %>
+          <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(attr) %>
+          <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+                                                 :module_project_id => possible_module_projects.last,
+                                                 :in_out => "output").first %>
+
+          <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+                                                 :module_project_id => current_module_project.id,
+                                                 :in_out => "input").first %>
+
+          <% precision = attr.precision.nil? ? user_number_precision : attr.precision %>
+      <% end %>
+
+      <% initial_entry_values = {} %>
+      <% entry_values = {} %>
+
+      <% v_low = Operation::OperationModel::display_size(previous_ev, current_ev, "low", component_id, @operation_model) %>
+      <% v_most_likely = Operation::OperationModel::display_size(previous_ev, current_ev, "most_likely", component_id, @operation_model) %>
+      <% v_high = Operation::OperationModel::display_size(previous_ev, current_ev, "high", component_id, @operation_model) %>
+
+      <% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
+
+      <% ['low', 'most_likely', 'high'].each do |level| %>
+          <% entry_values["#{level}"] = Hash.new %>
+          <% initial_entry_values["#{level}"] = Hash.new %>
+
+          <% unless current_inputs_evs.empty? %>
+
+              <% current_inputs_evs.each do |ev| %>
+
+                  <% operation_input = ev.pe_attribute.operation_input %>
+                  <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                  <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
+                  <% if coeff.nil? || coeff==0
+                       coeff = 1
+                   end %>
+
+                  <% current_ev = ev.send("string_data_#{level}")[component_id] #ev.string_data_most_likely[component_id] %>
+                  <% begin %>
+                      <% if !ev.estimation_value_id.nil? %>
+                        <% previous_mp_ev = EstimationValue.find(ev.estimation_value_id) %>
+                      <% else %>
+                        <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(ev.pe_attribute) %>
+                        <% previous_mp_ev = EstimationValue.where(:pe_attribute_id => ev.pe_attribute.id, :in_out => "output",
+                                                                  :module_project_id => possible_module_projects.last).first %>
+                      <% end %>
+
+                      <% previous_mp = previous_mp_ev.module_project %>
+                      <% if previous_mp.pemodule.alias == "effort_breakdown" %>
+                          <% wbs_root_element_id ||= previous_mp.wbs_activity.root_element.id %>
+                      <% end %>
+
+                  <% rescue %>
+                      <% previous_mp_ev = nil %>
+                  <% end %>
+
+                  <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
+
+                  <% if !is_modifiable ||  current_ev.nil? || current_ev.blank?  %>
+                      <% if previous_mp_ev.nil? || previous_ev.nil? %>
+                        <% entry_values["#{level}"][ev.id] = nil %>
+                      <% else %>
+                          <% if previous_mp_ev.module_project.pemodule.alias == "effort_breakdown" %>
+                            <%# if previous_ev[wbs_root_element_id].nil? || previous_ev[wbs_root_element_id].empty? %>
+                            <% wbs_root_value = (previous_ev[wbs_root_element_id].nil? || previous_ev[wbs_root_element_id].empty?) ? nil : (previous_ev[wbs_root_element_id][:value].to_f / coeff) %>
+                            <% entry_values["#{level}"][ev.id] = wbs_root_value %>
+                          <% else %>
+                            <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                          <% end %>
+                      <% end %>
+                  <% else %>
+                      <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+                  <% end %>
+
+                  <!-- Les valeurs d'entree initiales -->
+                  <%# initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                  <% if previous_mp_ev.nil? || previous_ev.nil? %>
+                      <% initial_entry_values["#{level}"][ev.id] = nil %>
+                  <% else %>
+                      <% if previous_mp_ev.module_project.pemodule.alias == "effort_breakdown" %>
+                          <% initial_entry_values["#{level}"][ev.id] = wbs_root_value %>
+                      <% else %>
+                          <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                      <% end %>
+                  <% end %>
+              <% end %>
+
+          <% end %>
+      <% end %>
+
+
+      <table class="table table-condensed table-striped">
+        <tr>
+          <% if @operation_model.three_points_estimation == true %>
+            <th><%= I18n.t(:bottom)%></th>
+          <% end %>
+          <th><%= I18n.t(:probable)%></th>
+          <% if @operation_model.three_points_estimation == true %>
+            <th><%= I18n.t(:top)%></th>
+          <% end %>
+        </tr>
+
+        <tr>
+          <!--  TEST NOUVEAU PARAMS ENTREES  -->
+          <% if current_module_project.operation_model.three_points_estimation? %>
+              <td>
+                <% if current_inputs_evs.empty? %>
+                    <%= "Le module ne contient aucun attribut" %>
+                <% else %>
+                    <!-- nouvelles entrees -->
+                    <% current_inputs_evs.each do |ev| %>
+                        <% entry_low_value =  entry_values["low"][ev.id] %>
+
+                        <% operation_input = ev.pe_attribute.operation_input %>
+                        <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                        <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
+                        <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                        <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
+
+                        <div class="row-fluid">
+                          <div class="span9">
+                            <%= ev.pe_attribute.name %> :
+                            <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                                <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                            <% else %>
+                                <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
+                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                            <% end %>
+                            <%= unit %>
+                          </div>
+                        </div>
+                    <% end %>
+                <% end %>
+              </td>
+          <% end %>
+
+          <td>
+            <!-- Nouvelles entrees -->
+            <% if current_inputs_evs.empty? %>
+                <%= "Le module ne contient aucun attribut" %>
+            <% else %>
+                <% current_inputs_evs.each do |ev| %>
+                    <% entry_ml_value = entry_values["most_likely"][ev.id] %>
+
+                    <% operation_input = ev.pe_attribute.operation_input %>
+                    <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                    <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
+                    <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                    <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
+
+                    <div class="row-fluid">
+                      <div class="span9">
+                        <%= ev.pe_attribute.name %> :
+                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                            <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                        <% else %>
+                            <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
+                            <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                      <% end %>
+
+                        <%= unit %>
+                      </div>
+                    </div>
+                <% end %>
+            <% end %>
+          </td>
+
+          <% if current_module_project.operation_model.three_points_estimation? %>
+              <td>
+                <% if current_inputs_evs.empty? %>
+                    <%= "Le module ne contient aucun attribut" %>
+                <% else %>
+                    <!-- nouvelles entrees -->
+                    <% current_inputs_evs.each do |ev| %>
+                        <% entry_high_value = entry_values["high"][ev.id] %>
+
+                        <% operation_input = ev.pe_attribute.operation_input %>
+                        <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                        <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
+                        <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                        <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
+
+                        <div class="row-fluid">
+                          <div class="span9">
+                            <%= ev.pe_attribute.name %> :
+
+                            <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                                <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                            <% else %>
+                                <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
+                                <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                            <% end %>
+
+                            <%= unit %>
+                          </div>
+                        </div>
+                    <% end %>
+                <% end %>
+              </td>
+          <% end %>
+
+          <!--  FIN ENTREES   -->
+        </tr>
+      </table>
+    </div>
+
+    <div class="span6">
+      <% component_id = current_component.id %>
+
+      <h4>
+        <b>
+          <%= I18n.t(:outputs)%>
+        </b>
+      </h4>
+
+      <table class="table table-condensed table-striped">
+        <tr>
+          <% if @operation_model.three_points_estimation == true %>
+            <th><%= I18n.t(:bottom)%></th>
+          <% end %>
+          <th><%= I18n.t(:probable)%></th>
+          <% if @operation_model.three_points_estimation == true %>
+            <th><%= I18n.t(:top)%></th>
+          <% end %>
+        </tr>
+
+        <!--  NOUVEAU PARAMS SORTIE  -->
+        <tr>
+          <% if @operation_model.three_points_estimation == true %>
+              <td>
+                <% current_outputs_evs.each do |ev| %>
+
+                    <% is_modifiable = @operation_model.modify_output %>
+                    <% coeff = @operation_model.standard_unit_coefficient %>
+                    <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                    <% unit = @operation_model.output_unit %>
+
+                    <div class="row-fluid">
+                      <div class="span9">
+                        <%= ev.pe_attribute.name %> :
+
+                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                            <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "input-mini" %>
+                        <% else %>
+                            <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
+                            <%= number_field_tag "", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "input-mini", disabled: true %>
+                        <% end %>
+
+                        <%= unit %>
+                      </div>
+                    </div>
+                <% end %>
+              </td>
+          <% end %>
+
+          <td>
+            <% current_outputs_evs.each do |ev| %>
+
+                <% is_modifiable = @operation_model.modify_output %>
+                <% coeff = @operation_model.standard_unit_coefficient %>
+                <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                <% unit = @operation_model.output_unit %>
+
+                <div class="row-fluid">
+                  <div class="span9">
+                    <%= ev.pe_attribute.name %> :
+
+                    <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                        <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-mini" %>
+                    <% else %>
+                        <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
+                        <%= number_field_tag "", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}",  class: "input-mini", disabled: true %>
+                    <% end %>
+
+                    <%= unit %>
+                  </div>
+                </div>
+            <% end %>
+          </td>
+
+          <% if @operation_model.three_points_estimation == true %>
+              <td>
+                <% current_outputs_evs.each do |ev| %>
+
+                    <% is_modifiable = @operation_model.modify_output %>
+                    <% coeff = @operation_model.standard_unit_coefficient %>
+                    <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
+                    <% unit = @operation_model.output_unit %>
+
+                    <div class="row-fluid">
+                      <div class="span9">
+                        <%= ev.pe_attribute.name %> :
+                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                            <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_operation_model_value_with_precision(@operation_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
+                        <% else %>
+                            <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
+                            <%= number_field_tag "", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>
+                      <% end %>
+
+                        <%= unit %>
+                      </div>
+                    </div>
+                <% end %>
+              </td>
+          <% end %>
+        </tr>
+        <!--  FIN NOUVEAU PARAMS   -->
+
+      </table>
+    </div>
+
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" class="btn btn-primary pull-right">
+        <%= I18n.t(:calculate_button) %>
+      </button>
+    <% end %>
+
+    <br>
+    <hr>
+  </div>
+<% end %>

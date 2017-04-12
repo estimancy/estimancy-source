@@ -35,6 +35,9 @@ class PeAttribute < ActiveRecord::Base
   has_many :estimation_values, :dependent => :destroy
   has_many :views_widgets, dependent: :destroy
 
+  belongs_to :operation_model
+  belongs_to :operation_input, foreign_key: :operation_input_id, class_name: Operation::OperationInput
+
   validates_presence_of :description
   validates :name, :alias, :presence => true
 

@@ -5,6 +5,11 @@
         <%= I18n.t(:Generic_Model_Effort)%>
       </a>
     </li>
+    <li>
+      <a href="#tabs-2">
+        <%= "Gérer les attributs d'Entrée et Sortie" %>
+      </a>
+    </li>
   </ul>
 
   <div id="tabs-1">
@@ -21,20 +26,72 @@
       <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
 
       <div class="form-inputs">
-        <%= f.input :name %>
+        <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-        <%= f.input :enabled_input, label: I18n.t(:changing_enter_value) %>
-        <%= f.input :effort_unit, label: I18n.t(:Wording_of_the_module_unit_effort) %>
-        <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
-        <%= f.input :operation_type, as: :select, collection: [["Addition", "addition"],
-                                                               ["Moyenne", "moyenne"]], label: I18n.t(:op_type) %>
+        <%#= f.input :enabled_input, label: I18n.t(:changing_enter_value) %>
+        <%= f.input :operation_type, as: :select, collection: [["Addition", "addition"], ["Moyenne", "moyenne"], ["Multiplication", "multiplication"]],
+                    label: I18n.t(:op_type), include_blank: false %>
+
+        <!--<fieldset style="width: 40%">-->
+          <!--<legend><h5 class="blue"><%#= I18n.t('output') %></h5></legend>-->
+          <!--<%#= f.input :standard_unit_coefficient, label: I18n.t(:ge_standard_coefficient) %>-->
+          <!--<%#= f.input :output_unit, label: I18n.t(:unit_value) %>-->
+        <!--</fieldset>-->
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-         <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+           <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn" %>
+      </div>
     <% end %>
 
   </div>
+
+  <% unless @operation_model.new_record? %>
+
+    <div id="tabs-2">
+
+      <%#= render action: "operation/operation_inputs/index", template: "operation/operation_inputs/index" %>
+
+      <table class="table table-bordered">
+        <tr>
+          <th><%= I18n.t(:name) %></th>
+          <th><%= I18n.t(:description) %></th>
+          <th><%= I18n.t(:in_out) %></th>
+          <th><%= I18n.t(:is_modifiable) %></th>
+          <th>Coefficient Standard</th>
+          <th><%= I18n.t(:unit_value) %></th>
+          <th></th>
+        </tr>
+
+        <% unless @operation_inputs.empty? %>
+            <% @operation_inputs.each do |operation_input| %>
+                <tr>
+                  <td><%= operation_input.name %></td>
+                  <td><%= operation_input.description %></td>
+                  <td><%= I18n.t(operation_input.in_out) %></td>
+                  <td class="center"><%= check_box_tag "is_modifiable", operation_input.is_modifiable , operation_input.is_modifiable , disabled: true %></td>
+                  <td><%= operation_input.standard_unit_coefficient %></td>
+                  <td><%= operation_input.standard_unit %></td>
+                  <td class="center">
+                    <%= link_to '', operation.edit_operation_model_operation_input_path(@operation_model, operation_input), class: "fa fa-pencil" %>
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                        <%= link_to '', operation.operation_model_operation_input_path(@operation_model, operation_input), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                    <% end %>
+                  </td>
+                </tr>
+            <% end %>
+        <% end %>
+      </table>
+
+      <br>
+      <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to "#{I18n.t(:create_button)}", operation.new_operation_model_operation_input_path(@operation_model, organization_id: params[:organization_id]), class: "btn btn-primary" %>
+      <% end %>
+      <%= link_to I18n.t(:back) , operation.operation_model_path(@operation_model), class: "btn" %>
+
+    </div>
+  <% end %>
 </div>

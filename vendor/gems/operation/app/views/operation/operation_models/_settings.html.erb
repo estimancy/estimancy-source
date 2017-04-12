@@ -31,14 +31,10 @@
               <td><%= mp %></td>
               <% ["most_likely"].each do |level| %>
 
-                <% if !current_ev.estimation_value_id.nil?
+                <% if current_ev && !current_ev.estimation_value_id.nil?
                      ev = EstimationValue.find(current_ev.estimation_value_id) %>
-
                 <% else %>
-                  <% ev = EstimationValue.where(:pe_attribute_id => effort.id,
-                                              :module_project_id => mp.id,
-                                              :in_out => "output").first %>
-
+                  <% ev = EstimationValue.where(:pe_attribute_id => effort.id, :module_project_id => mp.id, :in_out => "output").first %>
                 <% end %>
 
                 <td>

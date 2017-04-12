@@ -153,9 +153,11 @@ class ModuleProject < ActiveRecord::Base
   #Return the previous module_project where their output attributes can be the input of the current module_project
   def possible_previous_mp_for_attribute(pe_attribute)
     possible_module_projects = []
-    self.previous.each do |previous_mp|
-      if previous_mp.pemodule.attribute_modules.where(:pe_attribute_id => pe_attribute.id, in_out: ["output", "both"]).length >= 1
-        possible_module_projects << previous_mp
+    unless pe_attribute.nil?
+      self.previous.each do |previous_mp|
+        if previous_mp.pemodule.attribute_modules.where(:pe_attribute_id => pe_attribute.id, in_out: ["output", "both"]).length >= 1
+          possible_module_projects << previous_mp
+        end
       end
     end
     possible_module_projects
@@ -414,14 +416,24 @@ class ModuleProject < ActiveRecord::Base
   # Get Estimation_values or Create them if not exist
   def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids = [])
 
-
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
     current_outputs_evs = self.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
     if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length)
 
+      all_attribute_modules = self.pemodule.attribute_modules
+      case self.pemodule.alias
+        when "guw"
+          attribute_modules = all_attribute_modules.where(guw_model_id: self.guw_model_id)
+        when "operation"
+          attribute_modules = all_attribute_modules.where(operation_model_id: self.operation_model_id)
+        else
+          attribute_modules = all_attribute_modules
+      end
+
       #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
-      self.pemodule.attribute_modules.each do |am|
+      #self.pemodule.attribute_modules.each do |am|
+      attribute_modules.each do |am|
 
         if am.in_out == 'both'
           ['input', 'output'].each do |in_out|

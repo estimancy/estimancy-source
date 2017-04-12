@@ -20,9 +20,16 @@
 #############################################################################
 
 Operation::Engine.routes.draw do
+
   root :to => 'operation#index'
-  resources :operation_models
+
+  #resources :operation_models
+  #resources :operation_inputs
+
   resources :operation_models do
+
+    resources :operation_inputs
+
     post "save_efforts"
     post "duplicate"
   end

@@ -1252,10 +1252,13 @@ class ProjectsController < ApplicationController
             attribute_modules = all_attribute_modules.where(guw_model_id: my_module_project.guw_model_id)
           when "operation"
             attribute_modules = all_attribute_modules.where(operation_model_id: my_module_project.operation_model_id)
+          else
+            attribute_modules = all_attribute_modules
         end
 
         #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
         attribute_modules.each do |am|
+
           if am.in_out == 'both'
             ['input', 'output'].each do |in_out|
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
@@ -1269,6 +1272,7 @@ class ProjectsController < ApplicationController
                                            :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
                                            :custom_attribute => am.custom_attribute,
                                            :project_value => am.project_value)
+
             end
           elsif am.in_out != nil
             mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
