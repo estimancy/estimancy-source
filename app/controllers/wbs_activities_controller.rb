@@ -38,7 +38,7 @@ class WbsActivitiesController < ApplicationController
     @selected_ratio = @wbs_activity_ratio
 
     #now only the selected profiles from the WBS'organization profiles list will be used
-    @wbs_organization_profiles = @wbs_activity_organization.nil? ? [] : @wbs_activity.organization_profiles  #@wbs_activity_organization.organization_profiles
+    @wbs_organization_profiles = @wbs_activity_organization.nil? ? [] : @wbs_activity.organization_profiles.order('name')  #@wbs_activity_organization.organization_profiles
 
     @wbs_activity_elements_list = WbsActivityElement.where(:wbs_activity_id => @wbs_activity_ratio.wbs_activity.id).all
     ###@wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity_elements_list)
@@ -52,8 +52,15 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity_ratio_variables =  @selected_ratio.wbs_activity_ratio_variables
     if @wbs_activity_ratio_variables.all.empty?
       @wbs_activity_ratio_variables = @selected_ratio.get_wbs_activity_ratio_variables
+    elsif @wbs_activity_ratio_variables.size > 4
+      diff = @wbs_activity_ratio_variables.size-4
+      diff.times.each do |i|
+        ratio_var = @wbs_activity_ratio_variables.where(name: "").last
+        if ratio_var
+          ratio_var.destroy
+        end
+      end
     end
-
 
     @total = @wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
   end
@@ -95,6 +102,15 @@ class WbsActivitiesController < ApplicationController
       @wbs_activity_ratio_variables =  @selected_ratio.wbs_activity_ratio_variables
       if @wbs_activity_ratio_variables.all.empty?
         @wbs_activity_ratio_variables = @selected_ratio.get_wbs_activity_ratio_variables
+
+      elsif @wbs_activity_ratio_variables.size > 4
+        diff = @wbs_activity_ratio_variables.size-4
+        diff.times.each do |i|
+          ratio_var = @wbs_activity_ratio_variables.where(name: "").last
+          if ratio_var
+            ratio_var.destroy
+          end
+        end
       end
     end
 
@@ -957,330 +973,339 @@ class WbsActivitiesController < ApplicationController
   def export_xlsx
     authorize! :show_modules_instances, ModuleProject
 
-    @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
+    ActiveRecord::Base.transaction do
 
-    if @wbs_activity
+      @wbs_activity = WbsActivity.find(params[:wbs_activity_id])
 
-      wbs_activity_elements_list = @wbs_activity.wbs_activity_elements.arrange(order: 'position')
-      @wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity_elements_list)
+      if @wbs_activity
 
-      @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
-      wbs_organization_profiles = @wbs_activity.organization_profiles
+        wbs_activity_elements_list = @wbs_activity.wbs_activity_elements.arrange(order: 'position')
+        @wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity_elements_list)
 
-      workbook = RubyXL::Workbook.new
-      workbook.add_worksheet(I18n.t(:wbs_elements))  #workbook.add_worksheet("WBS-Activity-Elements")
-      workbook.add_worksheet("Ratios")
-      #workbook.add_worksheet("Ratio Elements")
+        @wbs_activity_ratios = @wbs_activity.wbs_activity_ratios
+        wbs_organization_profiles = @wbs_activity.organization_profiles.order('name')
 
-      ind = 0
-      ind1 = 0
-      ind2 = 1
-      ind3 = 5
-      used_column = []
+        workbook = RubyXL::Workbook.new
+        workbook.add_worksheet(I18n.t(:wbs_elements))  #workbook.add_worksheet("WBS-Activity-Elements")
+        workbook.add_worksheet("Ratios")
+        #workbook.add_worksheet("Ratio Elements")
 
-      # add worksheet to workbook
-      model_worksheet = workbook[0]
-      elements_worksheet = workbook[1]
-      ratios_worksheet = workbook[2]
-      #ratio_elements_worksheet = workbook[3]
-      new_workbook_number = 3
+        ind = 0
+        ind1 = 0
+        ind2 = 1
+        ind3 = 5
+        used_column = []
 
-      model_worksheet.sheet_name = "Model"
+        # add worksheet to workbook
+        model_worksheet = workbook[0]
+        elements_worksheet = workbook[1]
+        ratios_worksheet = workbook[2]
+        #ratio_elements_worksheet = workbook[3]
+        new_workbook_number = 3
 
-      first_page = [[I18n.t(:model_name),  @wbs_activity.name],
-                    [I18n.t(:model_description), @wbs_activity.description ],
-                    [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
-                    [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
-                    [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
-                    [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
-                    [I18n.t(:select_wbs_activity_profiles), "#{wbs_organization_profiles.map(&:name)}"],
-                    ["Compteur nom court des phases", @wbs_activity.phases_short_name_number],
-                    [I18n.t(:advice_ge), ""]]
+        model_worksheet.sheet_name = "Model"
 
-      first_page.each_with_index do |row, index|
-        model_worksheet.add_cell(index, 0, row[0])
-        model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
-        ["bottom", "right"].each do |symbole|
-          model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
-          model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
+        first_page = [[I18n.t(:model_name),  @wbs_activity.name],
+                      [I18n.t(:model_description), @wbs_activity.description ],
+                      [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
+                      [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
+                      [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
+                      [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
+                      ["Compteur nom court des phases", @wbs_activity.phases_short_name_number],
+                      ["#{I18n.t(:profiles_list)} : ", ""]]
+                      #[I18n.t(:advice_ge), ""]]
+
+        wbs_organization_profiles.each_with_index do |profile, index|
+          first_page << ["Profil #{index+1}", profile.name]
         end
-      end
-      model_worksheet.change_column_bold(0,true)
-      model_worksheet.change_column_width(0, 60)
-      model_worksheet.change_column_width(1, 100)
-      model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
+        first_page << [I18n.t(:advice_ge), ""]
 
-
-      # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
-      # activity_elements_worksheet
-      counter_line = 1
-      elements_worksheet.add_cell(0, 0, I18n.t('position'))
-      elements_worksheet.add_cell(0, 1, I18n.t(:phase_short_name))
-      elements_worksheet.add_cell(0, 2, I18n.t(:name))
-      elements_worksheet.add_cell(0, 3, I18n.t(:description))
-      elements_worksheet.add_cell(0, 4, "Root")
-      elements_worksheet.add_cell(0, 5, I18n.t('parent'))
-
-      elements_worksheet.change_row_bold(0,true)
-
-      elements_worksheet.change_row_horizontal_alignment(0, 'center')
-      @wbs_activity_elements.each_with_index do |activity_element, index|
-
-        elements_worksheet.add_cell(index + 1, 0, activity_element.position)
-        elements_worksheet.add_cell(index + 1, 1, activity_element.phase_short_name)
-        elements_worksheet.add_cell(index + 1, 2, activity_element.name)
-        elements_worksheet.add_cell(index + 1, 3, activity_element.description)
-        elements_worksheet.add_cell(index + 1, 4, activity_element.is_root ? 1 : 0)
-        elements_worksheet.add_cell(index + 1, 5, (activity_element.parent.nil? ? nil : activity_element.parent.name))
-
-
-        if ind < activity_element.name.size
-          elements_worksheet.change_column_width(0, I18n.t('position').size)
-          elements_worksheet.change_column_width(1, I18n.t(:phase_short_name).size)
-          elements_worksheet.change_column_width(2, activity_element.name.size)
-          elements_worksheet.change_column_width(3, I18n.t(:description).size)
-          elements_worksheet.change_column_width(4, 10)
-          ind = activity_element.name.size
-
-          ind2 = elements_worksheet.get_column_width(3)
-        end
-        if ind2 < the_most_largest(activity_element.description)
-          elements_worksheet.change_column_width(3, the_most_largest(activity_element.description))
-          ind2 = the_most_largest(activity_element.description)
-        end
-        counter_line += 1
-      end
-
-      counter_line.times.each do |line|
-        ["bottom", "right"].each do |symbole|
-          elements_worksheet[line][0].change_border(symbole.to_sym, 'thin')
-          elements_worksheet[line][1].change_border(symbole.to_sym, 'thin')
-          elements_worksheet[line][2].change_border(symbole.to_sym, 'thin')
-          elements_worksheet[line][3].change_border(symbole.to_sym, 'thin')
-          elements_worksheet[line][4].change_border(symbole.to_sym, 'thin')
-        end
-      end
-
-
-      #WBS ACTIVITY RATIO - ratios_worksheet
-      ind = 0
-      ind2 = 1
-      counter_line = 1
-      ratios_worksheet.add_cell(0, 0, I18n.t(:name))
-      ratios_worksheet.add_cell(0, 1, I18n.t(:description))
-      ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
-      ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
-      ratios_worksheet.change_row_bold(0,true)
-
-      ratios_worksheet.change_row_horizontal_alignment(0, 'center')
-      @wbs_activity_ratios.each_with_index do |ratio, index|
-        ratios_worksheet.add_cell(index + 1, 0, ratio.name)
-        ratios_worksheet.add_cell(index + 1, 1, ratio.description)
-        ratios_worksheet.add_cell(index + 1, 2, ratio.do_not_show_cost ? 1 : 0)
-        ratios_worksheet.add_cell(index + 1, 3, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
-
-        if ind < ratio.name.size
-          ratios_worksheet.change_column_width(0, ratio.name.size)
-          ind = ratio.name.size
-        end
-        if ind2 < the_most_largest(ratio.description)
-          ratios_worksheet.change_column_width(1, the_most_largest(ratio.description))
-          ind2 = the_most_largest(ratio.description)
-        end
-
-        ratios_worksheet.change_column_width(2, I18n.t(:do_not_show_cost).size)
-        ratios_worksheet.change_column_width(3, I18n.t(:do_not_show_phases_with_zero_value).size)
-
-        counter_line += 1
-
-      end
-
-      counter_line.times.each do |line|
-        ["bottom", "right"].each do |symbole|
-          ratios_worksheet[line][0].change_border(symbole.to_sym, 'thin')
-          ratios_worksheet[line][1].change_border(symbole.to_sym, 'thin')
-        end
-      end
-
-      # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
-      # Les attributs de ratio-element
-      ratio_attributes = ["name"] #["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
-      counter_line = 1
-      # On cree une feuille par element de ratio
-      @wbs_activity_ratios.each_with_index do |ratio, index|
-        # on cree une feuille pour tous les elments de ce ratio
-        workbook.add_worksheet("Ratio #{ratio.name}")
-        ratio_elements_worksheet = workbook["Ratio #{ratio.name}"]
-        new_workbook_number += 1
-
-        ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
-        #ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
-        #ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
-
-        ratio_elements_worksheet.add_cell(0, 1, ratio.name)
-        #ratio_elements_worksheet.add_cell(1, 1, ratio.do_not_show_cost ? 1 : 0)
-        #ratio_elements_worksheet.add_cell(2, 1, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
-
-        ratio_elements_worksheet.change_column_bold(0,true)
-        ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
-        counter_line = 2 #4
-
-
-        # WBS-ACTIVITY-RATIO-VARIABLES
-        ratio_elements_worksheet.add_cell(counter_line, 0, "Ratio Variables")
-        #ratio_elements_worksheet.change_row_bold(counter_line,true)
-
-        ratio_variable_attributes = ["name", "percentage_of_input", "is_modifiable", "is_used_in_ratio_calculation", "description"]
-
-        ratio_variable_attributes.each_with_index do |variable_attr, index|
-          column_number = index + 1
-          ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}")).change_horizontal_alignment('center')
-          ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{variable_attr}").size)
-
+        first_page.each_with_index do |row, index|
+          model_worksheet.add_cell(index, 0, row[0])
+          model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
           ["bottom", "right"].each do |symbole|
-            begin
-              ratio_elements_worksheet[counter_line][column_number].change_border(symbole.to_sym, 'thin')
-            rescue
-            end
-          end
-
-          line_number = counter_line + 1
-          ratio.wbs_activity_ratio_variables.each do |ratio_variable|
-            value = ratio_variable.send(variable_attr)
-
-            if variable_attr.in?("is_modifiable", "is_used_in_ratio_calculation")
-              val = ratio_variable.send(variable_attr)
-              if val == true
-                value = 1
-              else
-                value = 0
-              end
-            end
-
-            ratio_elements_worksheet.add_cell(line_number, column_number, value)
-            line_number += 1
+            model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
+            model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
           end
         end
+        model_worksheet.change_column_bold(0,true)
+        model_worksheet.change_column_width(0, 60)
+        model_worksheet.change_column_width(1, 100)
+        model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
 
-        counter_line += 6
+
+        # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
+        # activity_elements_worksheet
+        counter_line = 1
+        elements_worksheet.add_cell(0, 0, I18n.t('position'))
+        elements_worksheet.add_cell(0, 1, I18n.t(:phase_short_name))
+        elements_worksheet.add_cell(0, 2, I18n.t(:name))
+        elements_worksheet.add_cell(0, 3, I18n.t(:description))
+        elements_worksheet.add_cell(0, 4, "Root")
+        elements_worksheet.add_cell(0, 5, I18n.t('parent'))
+
+        elements_worksheet.change_row_bold(0,true)
+
+        elements_worksheet.change_row_horizontal_alignment(0, 'center')
+        @wbs_activity_elements.each_with_index do |activity_element, index|
+
+          elements_worksheet.add_cell(index + 1, 0, activity_element.position)
+          elements_worksheet.add_cell(index + 1, 1, activity_element.phase_short_name)
+          elements_worksheet.add_cell(index + 1, 2, activity_element.name)
+          elements_worksheet.add_cell(index + 1, 3, activity_element.description)
+          elements_worksheet.add_cell(index + 1, 4, activity_element.is_root ? 1 : 0)
+          elements_worksheet.add_cell(index + 1, 5, (activity_element.parent.nil? ? nil : activity_element.parent.name))
 
 
-        # WBS-ACTIVITY-RATIO-ELEMENTS
-        ratio_elements = ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
-        wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+          if ind < activity_element.name.size
+            elements_worksheet.change_column_width(0, I18n.t('position').size)
+            elements_worksheet.change_column_width(1, I18n.t(:phase_short_name).size)
+            elements_worksheet.change_column_width(2, activity_element.name.size)
+            elements_worksheet.change_column_width(3, I18n.t(:description).size)
+            elements_worksheet.change_column_width(4, 10)
+            ind = activity_element.name.size
 
-        ratio_elements_worksheet.add_cell(counter_line, 0, "Formule de calcul de chaque phase de la WBS")
-        ratio_elements_attributes = ["position", "phase_short_name", "name", "description", "is_optional", "is_modifiable", "formula"]
-
-        ratio_elements_attributes.each_with_index do |attr, index|
-          column_number = index + 1
-
-          ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
-          ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
-
-          line_number = counter_line + 1
-
-          wbs_activity_ratio_elements.each do |ratio_element|
-            if attr.in?("position", "phase_short_name", "name", "description")
-              activity_element = ratio_element.wbs_activity_element
-              if activity_element
-                value = activity_element.send(attr)
-              else
-                value = nil
-              end
-
-            elsif attr.in?("is_optional", "is_modifiable")
-              val = ratio_element.send(attr)
-              if val == true
-                value = 1
-              else
-                value = 0
-              end
-
-            else
-              value = ratio_element.send(attr)
-            end
-
-            ratio_elements_worksheet.add_cell(line_number, column_number, value)
-            column_width = ratio_elements_worksheet.get_column_width(column_number)
-            if !value.nil? && value.to_s.size > column_width
-              ratio_elements_worksheet.change_column_width(column_number, value.to_s.size)
-            end
-
-            line_number += 1
+            ind2 = elements_worksheet.get_column_width(3)
           end
+          if ind2 < the_most_largest(activity_element.description)
+            elements_worksheet.change_column_width(3, the_most_largest(activity_element.description))
+            ind2 = the_most_largest(activity_element.description)
+          end
+          counter_line += 1
         end
 
-        counter_line += @wbs_activity_elements.length
-        counter_line += 2
-
-
-        # WBS-ACTIVITY-RATIO-PROFILES
-        wbs_activity_profiles = @wbs_activity.organization_profiles
-        ratio_elements_worksheet.add_cell(counter_line, 0, "Valeurs des ratios par profils")
-        ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position)).change_horizontal_alignment('center')
-        ratio_elements_worksheet.add_cell(counter_line, 2, "Phases").change_horizontal_alignment('center')
-
-        column_number = 2
-
-        ratio_profile_attributes = ["position", "name"]
-        wbs_activity_profiles.each do |profile|
-          ratio_profile_attributes << profile.name
-
-          column_number += 1
-          ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name).change_horizontal_alignment('center')
-
-          column_width = ratio_elements_worksheet.get_column_width(column_number)
-          if profile.name.to_s.size > column_width
-            ratio_elements_worksheet.change_column_width(column_number, profile.name.to_s.size)
-          end
-        end
-
-        line_number = counter_line + 1
-        wbs_activity_ratio_elements.each do |ratio_element|
-
-          ratio_elements_worksheet.add_cell(line_number, 1, ratio_element.wbs_activity_element.position)
-          ratio_elements_worksheet.add_cell(line_number, 2, ratio_element.wbs_activity_element.name)
-
-          column_width = ratio_elements_worksheet.get_column_width(2)
-          if ratio_element.wbs_activity_element.name.to_s.size > column_width
-            ratio_elements_worksheet.change_column_width(2, ratio_element.wbs_activity_element.name.to_s.size)
-          end
-
-          wbs_activity_profiles.each_with_index do |profile, index|
-            activity_profile = WbsActivityRatioProfile.where(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id).first
-            current_percentage =  activity_profile.nil? ? nil : activity_profile.ratio_value
-            ratio_elements_worksheet.add_cell(line_number, index + 3, current_percentage)
-          end
-
-          line_number += 1
-        end
-
-        counter_line += @wbs_activity_elements.length
-        counter_line += 2
-
-
-        all_columns_number = ratio_elements_attributes.length
-        if ratio_profile_attributes.length > all_columns_number
-          all_columns_number = ratio_profile_attributes.length
-        end
         counter_line.times.each do |line|
-          all_columns_number.times do |column|
+          ["bottom", "right"].each do |symbole|
+            elements_worksheet[line][0].change_border(symbole.to_sym, 'thin')
+            elements_worksheet[line][1].change_border(symbole.to_sym, 'thin')
+            elements_worksheet[line][2].change_border(symbole.to_sym, 'thin')
+            elements_worksheet[line][3].change_border(symbole.to_sym, 'thin')
+            elements_worksheet[line][4].change_border(symbole.to_sym, 'thin')
+          end
+        end
+
+
+        #WBS ACTIVITY RATIO - ratios_worksheet
+        ind = 0
+        ind2 = 1
+        counter_line = 1
+        ratios_worksheet.add_cell(0, 0, I18n.t(:name))
+        ratios_worksheet.add_cell(0, 1, I18n.t(:description))
+        ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
+        ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
+        ratios_worksheet.change_row_bold(0,true)
+
+        ratios_worksheet.change_row_horizontal_alignment(0, 'center')
+        @wbs_activity_ratios.each_with_index do |ratio, index|
+          ratios_worksheet.add_cell(index + 1, 0, ratio.name)
+          ratios_worksheet.add_cell(index + 1, 1, ratio.description)
+          ratios_worksheet.add_cell(index + 1, 2, ratio.do_not_show_cost ? 1 : 0)
+          ratios_worksheet.add_cell(index + 1, 3, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
+
+          if ind < ratio.name.size
+            ratios_worksheet.change_column_width(0, ratio.name.size)
+            ind = ratio.name.size
+          end
+          if ind2 < the_most_largest(ratio.description)
+            ratios_worksheet.change_column_width(1, the_most_largest(ratio.description))
+            ind2 = the_most_largest(ratio.description)
+          end
+
+          ratios_worksheet.change_column_width(2, I18n.t(:do_not_show_cost).size)
+          ratios_worksheet.change_column_width(3, I18n.t(:do_not_show_phases_with_zero_value).size)
+
+          counter_line += 1
+
+        end
+
+        counter_line.times.each do |line|
+          ["bottom", "right"].each do |symbole|
+            ratios_worksheet[line][0].change_border(symbole.to_sym, 'thin')
+            ratios_worksheet[line][1].change_border(symbole.to_sym, 'thin')
+          end
+        end
+
+        # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
+        # Les attributs de ratio-element
+        ratio_attributes = ["name"] #["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
+        counter_line = 1
+        # On cree une feuille par element de ratio
+        @wbs_activity_ratios.each_with_index do |ratio, index|
+          # on cree une feuille pour tous les elments de ce ratio
+          workbook.add_worksheet("Ratio #{ratio.name}")
+          ratio_elements_worksheet = workbook["Ratio #{ratio.name}"]
+          new_workbook_number += 1
+
+          ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
+          #ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
+          #ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
+
+          ratio_elements_worksheet.add_cell(0, 1, ratio.name)
+          #ratio_elements_worksheet.add_cell(1, 1, ratio.do_not_show_cost ? 1 : 0)
+          #ratio_elements_worksheet.add_cell(2, 1, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
+
+          ratio_elements_worksheet.change_column_bold(0,true)
+          ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
+          counter_line = 2 #4
+
+
+          # WBS-ACTIVITY-RATIO-VARIABLES
+          ratio_elements_worksheet.add_cell(counter_line, 0, "Ratio Variables")
+          #ratio_elements_worksheet.change_row_bold(counter_line,true)
+
+          ratio_variable_attributes = ["name", "percentage_of_input", "is_modifiable", "is_used_in_ratio_calculation", "description"]
+
+          ratio_variable_attributes.each_with_index do |variable_attr, index|
+            column_number = index + 1
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{variable_attr}").size)
+
             ["bottom", "right"].each do |symbole|
               begin
-                ratio_elements_worksheet[line][column].change_border(symbole.to_sym, 'thin')
+                ratio_elements_worksheet[counter_line][column_number].change_border(symbole.to_sym, 'thin')
               rescue
               end
             end
+
+            line_number = counter_line + 1
+            ratio.wbs_activity_ratio_variables.each do |ratio_variable|
+              value = ratio_variable.send(variable_attr)
+
+              if variable_attr.in?("is_modifiable", "is_used_in_ratio_calculation")
+                val = ratio_variable.send(variable_attr)
+                if val == true
+                  value = 1
+                else
+                  value = 0
+                end
+              end
+
+              ratio_elements_worksheet.add_cell(line_number, column_number, value)
+              line_number += 1
+            end
+          end
+
+          counter_line += 6
+
+
+          # WBS-ACTIVITY-RATIO-ELEMENTS
+          ratio_elements = ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+          wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+          ratio_elements_worksheet.add_cell(counter_line, 0, "Formule de calcul de chaque phase de la WBS")
+          ratio_elements_attributes = ["position", "phase_short_name", "name", "description", "is_optional", "is_modifiable", "formula"]
+
+          ratio_elements_attributes.each_with_index do |attr, index|
+            column_number = index + 1
+
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
+
+            line_number = counter_line + 1
+
+            wbs_activity_ratio_elements.each do |ratio_element|
+              if attr.in?("position", "phase_short_name", "name", "description")
+                activity_element = ratio_element.wbs_activity_element
+                if activity_element
+                  value = activity_element.send(attr)
+                else
+                  value = nil
+                end
+
+              elsif attr.in?("is_optional", "is_modifiable")
+                val = ratio_element.send(attr)
+                if val == true
+                  value = 1
+                else
+                  value = 0
+                end
+
+              else
+                value = ratio_element.send(attr)
+              end
+
+              ratio_elements_worksheet.add_cell(line_number, column_number, value)
+              column_width = ratio_elements_worksheet.get_column_width(column_number)
+              if !value.nil? && value.to_s.size > column_width
+                ratio_elements_worksheet.change_column_width(column_number, value.to_s.size)
+              end
+
+              line_number += 1
+            end
+          end
+
+          counter_line += @wbs_activity_elements.length
+          counter_line += 2
+
+
+          # WBS-ACTIVITY-RATIO-PROFILES
+          wbs_activity_profiles = wbs_organization_profiles
+
+          ratio_elements_worksheet.add_cell(counter_line, 0, "Valeurs des ratios par profils")
+          ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position)).change_horizontal_alignment('center')
+          ratio_elements_worksheet.add_cell(counter_line, 2, "Phases").change_horizontal_alignment('center')
+
+          column_number = 2
+
+          ratio_profile_attributes = ["position", "name"]
+          wbs_activity_profiles.each do |profile|
+            ratio_profile_attributes << profile.name
+
+            column_number += 1
+            ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name).change_horizontal_alignment('center')
+
+            column_width = ratio_elements_worksheet.get_column_width(column_number)
+            if profile.name.to_s.size > column_width
+              ratio_elements_worksheet.change_column_width(column_number, profile.name.to_s.size)
+            end
+          end
+
+          line_number = counter_line + 1
+          wbs_activity_ratio_elements.each do |ratio_element|
+
+            ratio_elements_worksheet.add_cell(line_number, 1, ratio_element.wbs_activity_element.position)
+            ratio_elements_worksheet.add_cell(line_number, 2, ratio_element.wbs_activity_element.name)
+
+            column_width = ratio_elements_worksheet.get_column_width(2)
+            if ratio_element.wbs_activity_element.name.to_s.size > column_width
+              ratio_elements_worksheet.change_column_width(2, ratio_element.wbs_activity_element.name.to_s.size)
+            end
+
+            wbs_activity_profiles.each_with_index do |profile, index|
+              activity_profile = WbsActivityRatioProfile.where(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id).first
+              current_percentage =  activity_profile.nil? ? nil : activity_profile.ratio_value
+              ratio_elements_worksheet.add_cell(line_number, index + 3, "#{current_percentage}")
+            end
+
+            line_number += 1
+          end
+
+          counter_line += @wbs_activity_elements.length
+          counter_line += 2
+
+
+          all_columns_number = ratio_elements_attributes.length
+          if ratio_profile_attributes.length > all_columns_number
+            all_columns_number = ratio_profile_attributes.length
+          end
+          counter_line.times.each do |line|
+            all_columns_number.times do |column|
+              ["bottom", "right"].each do |symbole|
+                begin
+                  ratio_elements_worksheet[line][column].change_border(symbole.to_sym, 'thin')
+                rescue
+                end
+              end
+            end
           end
         end
+
+        # Send the file
+        send_data(workbook.stream.string, filename: "#{@wbs_activity.organization.name[0..4]}-#{@wbs_activity.name.gsub(" ", "_")}_wbs_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+
+      else
+        flash[:error] = "WBS-Activity introuvable"
       end
-
-      # Send the file
-      send_data(workbook.stream.string, filename: "#{@wbs_activity.organization.name[0..4]}-#{@wbs_activity.name.gsub(" ", "_")}_wbs_data-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
-
-    else
-      flash[:error] = "WBS-Activity introuvable"
     end
 
   end
@@ -1293,6 +1318,7 @@ class WbsActivitiesController < ApplicationController
 
 
     @organization = Organization.find(params[:organization_id])
+    organization_profiles = @organization.organization_profiles
 
     tab_error = []
     # Debut transaction
@@ -1311,7 +1337,7 @@ class WbsActivitiesController < ApplicationController
           else
             #there is no model, we will create new model from the model attributes data of the file to import
             model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "effort_unit", "effort_unit_coefficient",
-                                            "wbs_organization_profiles", "phases_short_name_number"]
+                                            "phases_short_name_number", "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
             model_sheet_order_attributes.each_with_index do |attr_name, index|
@@ -1326,25 +1352,28 @@ class WbsActivitiesController < ApplicationController
 
               model_worksheet.each_with_index do | row, index |
                 row && row.cells.each do |cell|
-                  if cell.column == 1 && !cell.nil?
-                    val = cell && cell.value
-                    attr_name = model_sheet_order["#{index}".to_sym]
-                    #begin
-                      if attr_name.in?(["wbs_organization_profiles"])
-                        val_attr_value = eval(val)
-                        if !val_attr_value.nil? && !val_attr_value.empty?
-                          val_attr_value.each do |profile|
-                            organization_profile = OrganizationProfile.where(name: profile).first
-                            if organization_profile
-                              @wbs_activity.organization_profiles << organization_profile
-                            end
+                  if !cell.nil?
+                    if cell.column == 1
+                      val = cell && cell.value
+
+                      if index <= 7
+                        attr_name = model_sheet_order["#{index}".to_sym]
+                        #begin
+                          if attr_name != "wbs_organization_profiles"
+                            @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
+                          end
+                        # rescue
+                        # end
+                      else
+                        # Gestion dse profils
+                        if row.cells[0].value.include?("Profil")
+                          organization_profile = organization_profiles.where(name: val).first
+                          if organization_profile
+                            @wbs_activity.organization_profiles << organization_profile
                           end
                         end
-                      else
-                        @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
                       end
-                    # rescue
-                    # end
+                    end
                   end
                 end
               end
@@ -1443,7 +1472,13 @@ class WbsActivitiesController < ApplicationController
 
                               @wbs_activity_profiles.each do |profile|
                                 k = profile_col_number["#{profile.name}"]
-                                WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: row[k].to_f)
+                                if row[k].nil? || row[k].empty?
+                                  ratio_value = nil
+                                else
+                                  ratio_value = row[k].to_f
+                                end
+
+                                WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
                               end
                             end
                         end
