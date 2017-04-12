@@ -7,8 +7,6 @@ module Guw
 
     amoeba do
       include_association [:guw_complexity_coefficient_elements]
-
-      enable
     end
   end
 end

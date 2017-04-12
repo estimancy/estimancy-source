@@ -1493,12 +1493,12 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model.copy_number = new_copy_number
 
     #Terminate the model duplication
-    new_guw_model.transaction do
+    # new_guw_model.transaction do
       if new_guw_model.save
         @guw_model.save
         new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
-    end
+    # end
 
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
   end

@@ -6,14 +6,12 @@ module Guw
 
     amoeba do
       enable
-
       exclude_association [:guw_output_associations, :guw_output_complexities]
 
       customize(lambda { |original_guw_output, new_guw_output|
                   new_guw_output.copy_id = original_guw_output.id
                 })
 
-      propagate
     end
   end
 end
