@@ -34,6 +34,8 @@ module Guw
     has_many :guw_coefficient_elements, dependent: :destroy
     has_many :guw_scale_module_attributes, dependent: :destroy
 
+    has_many :attribute_modules, dependent: :destroy
+
     belongs_to :organization
 
     serialize :orders, Hash
@@ -43,7 +45,7 @@ module Guw
 
     amoeba do
       enable
-      include_association [:guw_types, :guw_attributes, :guw_work_units, :guw_weightings, :guw_factors, :guw_scale_module_attributes, :guw_outputs, :guw_coefficients]
+      include_association [:guw_types, :guw_attributes, :guw_work_units, :guw_weightings, :guw_factors, :guw_scale_module_attributes, :guw_outputs, :guw_coefficients, :attribute_modules]
 
       customize(lambda { |original_guw_model, new_guw_model|
         new_guw_model.copy_id = original_guw_model.id

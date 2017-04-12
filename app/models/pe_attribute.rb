@@ -19,9 +19,6 @@
 #
 #############################################################################
 
-#Master table
-#Global attributes of project. Ex : size, cost, result, date etc...
-#Those attributes are used into AttributeModule
 class PeAttribute < ActiveRecord::Base
   attr_accessible :name, :alias, :aggregation, :attr_type, :options, :precision, :description, :single_entry_attribute, :guw_model_id
 

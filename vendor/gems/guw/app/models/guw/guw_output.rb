@@ -1,6 +1,7 @@
 module Guw
   class GuwOutput < ActiveRecord::Base
     belongs_to :guw_model
+
     has_many :guw_output_associations, dependent: :destroy
     has_many :guw_output_complexities, dependent: :destroy
 
