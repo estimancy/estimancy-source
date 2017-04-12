@@ -130,11 +130,12 @@ class Operation::OperationModelsController < ApplicationController
     end
 
     input_attribute_ids = current_module_project.pemodule.pe_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
-    output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+    #output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+    output_attribute_ids = current_module_project.pemodule.pe_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten
 
-    if input_attribute_ids.empty?
-      input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
-    end
+    # if input_attribute_ids.empty?
+    #   input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+    # end
 
     current_mp_estimation_values = current_module_project.estimation_values
     input_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")

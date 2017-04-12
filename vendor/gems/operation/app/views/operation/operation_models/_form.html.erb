@@ -29,7 +29,8 @@
         <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
         <%#= f.input :enabled_input, label: I18n.t(:changing_enter_value) %>
-        <%= f.input :operation_type, as: :select, collection: [["Addition", "addition"], ["Moyenne", "moyenne"], ["Multiplication", "multiplication"]], label: I18n.t(:op_type) %>
+        <%= f.input :operation_type, as: :select, collection: [["Addition", "addition"], ["Moyenne", "moyenne"], ["Multiplication", "multiplication"]],
+                    label: I18n.t(:op_type), include_blank: false %>
 
         <fieldset style="width: 40%">
           <legend><h5 class="blue"><%= I18n.t('output') %></h5></legend>

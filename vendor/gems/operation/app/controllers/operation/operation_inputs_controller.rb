@@ -106,7 +106,7 @@ class Operation::OperationInputsController < ApplicationController
 
             at = PeAttribute.create(name: @operation_input.name,
                                     alias: @operation_input.name.underscore.gsub(" ", "_"),
-                                    description: @operation_input.name,
+                                    description: @operation_input.description,
                                     operation_input_id: @operation_input.id,
                                     operation_model_id: @operation_model.id)
 
@@ -118,7 +118,7 @@ class Operation::OperationInputsController < ApplicationController
 
             old_attr.name = @operation_input.name
             old_attr.alias = @operation_input.name.underscore.gsub(" ", "_")
-            old_attr.description = @operation_input.name
+            old_attr.description = @operation_input.description
             old_attr.operation_model_id = @operation_model.id
             old_attr.operation_input_id = @operation_input.id
 
