@@ -76,7 +76,8 @@ class Operation::OperationModelsController < ApplicationController
     @organization = @operation_model.organization
 
     if @operation_model.update_attributes(params[:operation_model])
-      redirect_to main_app.organization_module_estimation_path(@operation_model.organization_id, anchor: "effort")
+      #redirect_to main_app.organization_module_estimation_path(@operation_model.organization_id, anchor: "effort")
+      redirect_to operation.edit_operation_model_path(@operation_model, organization_id: @organization.id, anchor: "tabs-1")
     else
       render action: :edit
     end
