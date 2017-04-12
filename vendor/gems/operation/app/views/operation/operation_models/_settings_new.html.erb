@@ -15,9 +15,9 @@
       <% input_attribute_ids = current_module_project.pemodule.pe_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
       <% output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
 
-      <% if input_attribute_ids.empty? %>
-          <% input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
-      <% end %>
+      <%# if input_attribute_ids.empty? %>
+          <%# input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+      <%# end %>
 
       <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
       <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
