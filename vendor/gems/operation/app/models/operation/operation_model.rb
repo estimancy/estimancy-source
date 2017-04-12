@@ -22,14 +22,18 @@
 module Operation
   class OperationModel < ActiveRecord::Base
 
+    DEFAULT_INPUT_ATTRIBUTES_ALIAS = ["ent1_operation", "ent2_operation", "ent3_operation", "ent4_operation"]
+    OUTPUT_ATTRIBUTES_ALIAS = ["sortie_operation"]
+
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
     validates :standard_unit_coefficient, :presence => true
     validates :operation_type, :presence => true
-    validates :effort_unit, :presence => true
+    validates :output_unit, :presence => true
 
 
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy
+    has_many :operation_inputs, dependent: :destroy
 
     amoeba do
       enable
@@ -49,15 +53,21 @@ module Operation
       end
     end
 
-    def self.display_size(p, c, level, component_id)
-      if c.send("string_data_#{level}")[component_id].nil?
-        begin
-          p.send("string_data_#{level}")[component_id]
-        rescue
-          nil
+    def self.display_size(p, c, level, component_id, operation_model)
+      standard_coefficient = 1
+
+      begin
+        if c.send("string_data_#{level}")[component_id].nil?
+          begin
+            p.send("string_data_#{level}")[component_id]
+          rescue
+            nil
+          end
+        else
+          c.send("string_data_#{level}")[component_id]
         end
-      else
-        c.send("string_data_#{level}")[component_id]
+      rescue
+        nil
       end
     end
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170405125905) do
+ActiveRecord::Schema.define(:version => 20170410133857) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -293,7 +293,6 @@ ActiveRecord::Schema.define(:version => 20170405125905) do
     t.text     "notes"
     t.integer  "estimation_value_id"
     t.integer  "copy_id"
-    t.integer  "operation_input_id"
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
@@ -559,6 +558,7 @@ ActiveRecord::Schema.define(:version => 20170405125905) do
     t.float    "intermediate_value"
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
+    t.integer  "module_project_id"
   end
 
   create_table "guw_guw_coefficient_elements", :force => true do |t|
@@ -1217,6 +1217,7 @@ ActiveRecord::Schema.define(:version => 20170405125905) do
     t.boolean  "single_entry_attribute"
     t.integer  "guw_model_id"
     t.integer  "operation_model_id"
+    t.integer  "operation_input_id"
   end
 
   create_table "pe_wbs_projects", :force => true do |t|

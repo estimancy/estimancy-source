@@ -1,0 +1,27 @@
+<h1>Listing operation_inputs</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Operation model</th>
+    <th>Standard coefficient</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @operation_inputs.each do |operation_input| %>
+  <tr>
+    <td><%= operation_input.name %></td>
+    <td><%= operation_input.operation_model_id %></td>
+    <td><%= operation_input.standard_coefficient %></td>
+    <td><%= link_to 'Show', operation_input %></td>
+    <td><%= link_to 'Edit', edit_operation_input_path(operation_input) %></td>
+    <td><%= link_to 'Destroy', operation_input, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Operation input', new_operation_input_path %>

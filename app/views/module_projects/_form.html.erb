@@ -41,7 +41,10 @@
             <% elsif @module_project.wbs_activity_id != nil %>
                 <label>WBS Activity</label>
                 <%= select_tag "wbs_activity_id", options_for_select(@current_organization.wbs_activities.map{|i| [i.name, i.id]}, selected: @module_project.wbs_activity_id) %>
-            <% else %>
+            <% elsif @module_project.operation_model_id != nil %>
+                <label>Operation Model</label>
+                <%= select_tag "operation_model_id", options_for_select(@current_organization.operation_models.map{|i| [i.name, i.id]}, selected: @module_project.operation_model_id) %>
+            <% elsif @module_project.staffing_model_id != nil %>
                 <label>Staffing Model</label>
                 <%= select_tag "staffing_model_id", options_for_select(@current_organization.staffing_models.map{|i| [i.name, i.id]}, selected: @module_project.staffing_model_id) %>
             <% end %>
@@ -83,8 +86,7 @@
         <% when "expert_judgement" %>
             <% effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "operation" %>
-            <% effort_ids = module_project_attributes.map(&:id).flatten %>
-
+            <% effort_ids = module_project_attributes.where(operation_model_id: @module_project.operation_model_id).map(&:id).flatten %>
         <% else %>
             <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% end %>
