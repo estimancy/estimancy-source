@@ -169,18 +169,18 @@ module Guw
 
       guw_model.guw_coefficients.each do |guw_coefficient|
         guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-          guw_model.guw_types.each do |guw_type|
-            guw_type.guw_complexities.each do |guw_complexity|
-              guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
-                guw_model.guw_outputs.each do |guw_output|
-                  gcce.guw_output_id = guw_output.id
-                  gcce.guw_type_id = guw_type.id
-                  gcce.guw_complexity_id = guw_complexity.id
-                  gcce.guw_coefficient_element_id = guw_coefficient_element.id
-                  gcce.save(validate: false)
-                end
-              end
-            end
+          guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
+
+            new_guw_type_id = guw_model.guw_types.where(copy_id: gcce.guw_type_id).last.id
+            new_guw_output_id = guw_model.guw_outputs.where(copy_id: gcce.guw_output_id).last.id
+            new_guw_complexity_id = GuwComplexity.where(copy_id: gcce.guw_complexity_id).last.id
+
+            gcce.guw_type_id = new_guw_type_id
+            gcce.guw_output_id = new_guw_output_id
+            gcce.guw_complexity_id = new_guw_complexity_id
+
+            gcce.save(validate: false)
+
           end
         end
       end
