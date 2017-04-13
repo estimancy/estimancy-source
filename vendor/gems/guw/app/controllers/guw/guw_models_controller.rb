@@ -1493,12 +1493,12 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model.copy_number = new_copy_number
 
     #Terminate the model duplication
-    # new_guw_model.transaction do
+    new_guw_model.transaction do
       if new_guw_model.save
         @guw_model.save
         new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
-    # end
+    end
 
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
   end
@@ -1577,19 +1577,21 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.change_column_width(2, tab_size[2])
       worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
       worksheet.add_cell(ind, 4, guow.name)
-      
+
+      type_name = (guow.guw_type.nil? ? '' : guow.guw_type.name)
+
       tab_size[4] = tab_size[4] < guow.name.length ? guow.name.length : tab_size[4]
       worksheet.change_column_width(4, tab_size[4])
-      worksheet.add_cell(ind, 6, guow.guw_type.name)
-      
-      tab_size[6] = tab_size[6] < guow.guw_type.name.to_s.length ? guow.guw_type.name.to_s.length : tab_size[6]
+      worksheet.add_cell(ind, 6, type_name)
+
+      tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
       worksheet.change_column_width(6, tab_size[6])
       worksheet.add_cell(ind, 5, guow.comments)
       worksheet.add_cell(ind, 7, guow.guw_work_unit)
       worksheet.add_cell(ind, 8, guow.guw_weighting)
       worksheet.add_cell(ind, 9, guow.guw_factor)
       worksheet.add_cell(ind, 10, guow.organization_technology)
-      
+
       tab_size[10] = tab_size[10] < guow.organization_technology.to_s.length ? guow.organization_technology.to_s.length : tab_size[10]
       worksheet.change_column_width(8, tab_size[10])
       worksheet.add_cell(ind, 11, guow.quantity)
@@ -1614,7 +1616,7 @@ class Guw::GuwModelsController < ApplicationController
             elsif guw_coefficient.coefficient_type == "Coefficient"
               worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
             else
-              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.name)
+              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
             end
           end
 
@@ -1627,7 +1629,7 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
+        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
         unless guowa.nil?
           worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
         end
@@ -1769,7 +1771,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 if guw_coefficient.class == Guw::GuwCoefficient
 
-                  (17..30).to_a.each do |k|
+                  (16..30).to_a.each do |k|
                     if guw_coefficient.name == tab[0][k]
 
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
@@ -1792,7 +1794,7 @@ class Guw::GuwModelsController < ApplicationController
                   guw_output = Guw::GuwOutput.where(name: i[0],
                                                     guw_model_id: @guw_model.id).first
 
-                  (17..30).to_a.each do |k|
+                  (16..30).to_a.each do |k|
                     if guw_output.name == tab[0][k]
                       # tmp_hash_res["#{guw_output.id}"] = row[k]
                       tmp_hash_ares["#{guw_output.id}"] = row[k]
