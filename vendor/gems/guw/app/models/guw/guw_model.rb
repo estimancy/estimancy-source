@@ -173,9 +173,14 @@ module Guw
         guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
           guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
 
-            new_guw_type_id = guw_model.guw_types.where(copy_id: gcce.guw_type_id).last.id
-            new_guw_output_id = guw_model.guw_outputs.where(copy_id: gcce.guw_output_id).last.id
-            new_guw_complexity_id = GuwComplexity.where(copy_id: gcce.guw_complexity_id).last.id
+            new_guw_type = guw_model.guw_types.where(copy_id: gcce.guw_type_id).last
+            new_guw_type_id = new_guw_type.id ###new_guw_type.nil? ? nil : new_guw_type.id
+
+            new_guw_output = guw_model.guw_outputs.where(copy_id: gcce.guw_output_id).last
+            new_guw_output_id = new_guw_output.id ###new_guw_output.nil? ? nil : new_guw_output.id
+
+            new_guw_complexity = GuwComplexity.where(copy_id: gcce.guw_complexity_id).last
+            new_guw_complexity_id = new_guw_complexity.id ###new_guw_complexity.nil? ? nil : new_guw_complexity.id
 
             gcce.guw_type_id = new_guw_type_id
             gcce.guw_output_id = new_guw_output_id
@@ -186,8 +191,6 @@ module Guw
           end
         end
       end
-
-
     end
 
     def self.display_value(data_probable, estimation_value)

@@ -109,7 +109,8 @@ class Operation::OperationModelsController < ApplicationController
     @operation_model.copy_number = new_copy_number
 
     #Terminate the model duplication
-    new_operation_model.transaction do
+    #new_operation_model.transaction do
+    ActiveRecord::Base.transaction do
       if new_operation_model.save
         @operation_model.save
         flash[:notice] = "Modèle copié avec succès"

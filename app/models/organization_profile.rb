@@ -22,10 +22,10 @@
 class OrganizationProfile < ActiveRecord::Base
   attr_accessible :cost_per_hour, :description, :name, :organization_id, :profile_id, :wbs_activity_ids, :copy_id
 
+  ###default_scope { order(:name) }
+
   belongs_to :organization
-
   has_many :wbs_activity_ratio_profiles, :dependent => :delete_all
-
   has_and_belongs_to_many :wbs_activities   #has_many :organization_profiles_wbs_activities    #has_many :wbs_activities, through: :organization_profiles_wbs_activities
   #=== test
   ####has_and_belongs_to_many :wbs_activities_model, :class_name=>'WbsActivity', :join_table => "organization_profiles_wbs_activities"

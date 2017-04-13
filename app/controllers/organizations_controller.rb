@@ -906,365 +906,327 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    case params[:action_name]
-    #Duplicate organization
-    when "copy_organization"
-      organization_image = Organization.find(params[:organization_id])
+    begin
+      case params[:action_name]
+      #Duplicate organization
+      when "copy_organization"
+        organization_image = Organization.find(params[:organization_id])
 
-    #Create the organization from image organization
-    when "new_organization_from_image"
-      organization_image_id = params[:organization_image]
-      if organization_image_id.nil?
-        flash[:warning] = "Veuillez sélectionner une organisation image pour continuer"
-      elsif params[:organization_name].empty?
-        flash[:error] = "Le nom de l'organisation ne peut pas être vide"
-        redirect_to :back and return
-      else
-        organization_image = Organization.find(organization_image_id)
-        @organization_name = params[:organization_name]
-        @firstname = params[:firstname]
-        @lastname = params[:lastname]
-        @email = params[:email]
-        @login_name = params[:identifiant]
-        @password = params[:password]
-        if @password.empty?
-          @password = SecureRandom.hex(8)
-        end
-        change_password_required = params[:change_password_required]
-      end
-    else
-      flash[:error] = "Aucune organization sélectionnée"
-      redirect_to :back and return
-    end
-
-    if organization_image.nil?
-      flash[:warning] = "Veuillez sélectionner une organisation pour continuer"
-    else
-      new_organization = organization_image.amoeba_dup
-
-      if params[:action_name] == "new_organization_from_image"
-        new_organization.name = @organization_name
-      elsif params[:action_name] == "copy_organization"
-        new_organization.description << "\n \n Cette organisation est une copie de l'organisation #{organization_image.name}."
-        new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
-      end
-      new_organization.is_image_organization = false
-
-      new_organization.transaction do
-
-        if new_organization.save(validate: false)
-
-          organization_image.save #Original organization copy number will be incremented to 1
-
-          #Copy the organization estimation_statuses workflow and groups/roles
-          new_estimation_statuses = new_organization.estimation_statuses
-          new_estimation_statuses.each do |estimation_status|
-            copied_status = EstimationStatus.find(estimation_status.copy_id)
-
-            #Get the to_transitions for the Statuses Workflow
-            copied_status.to_transition_statuses.each do |to_transition|
-              new_to_transition = new_estimation_statuses.where(copy_id: to_transition.id).first
-              unless new_to_transition.nil?
-                StatusTransition.create(from_transition_status_id: estimation_status.id, to_transition_status_id: new_to_transition.id)
-              end
-            end
-          end
-
-          #Get the estimation_statuses role / by group
-          new_organization.project_security_levels.each do |project_security_level|
-            project_security_level.estimation_status_group_roles.each do |group_role|
-              new_group = new_organization.groups.where(copy_id: group_role.group_id).first
-              estimation_status = new_organization.estimation_statuses.where(copy_id: group_role.estimation_status_id).first
-              unless estimation_status.nil?
-                begin
-                  group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
-                rescue
-                end
-              end
-            end
-          end
-
-          #Then copy the image organization estimation models
-          if params[:action_name] == "new_organization_from_image"
-            # Create a user in the Admin group of the new organization
-            admin_user = User.new(first_name: @firstname, last_name: @lastname, login_name: @login_name, email: @email, password: @password, password_confirmation: @password, super_admin: false)
-            # Add the user to the created organization
-            admin_group = new_organization.groups.where(name: '*USER').first #first_or_create(name: "*USER", organization_id: new_organization.id, description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs")
-            unless admin_group.nil?
-              admin_user.groups << admin_group
-              admin_user.save
-            end
-
-          elsif params[:action_name] == "copy_organization"
-            # add users to groups
-            organization_image.groups.each do |group|
-              new_group = new_organization.groups.where(copy_id: group.id).first
-              unless new_group.nil?
-                new_group.users = group.users
-                new_group.save
-              end
-            end
-          end
-
-          OrganizationsUsers.where(user_id: current_user.id, organization_id: new_organization.id).first_or_create!
-
-          #Copy the organization referenced views and widgets
-          #organization_image.views.referenced_views.each do |view|
-          #  #=====
-          #  new_copied_view = View.new(name: view.name, description: view.description, pemodule_id: view.pemodule_id, organization_id: new_organization.id, initial_view_id: view.id)
-          #  if new_copied_view.save
-          #    #Then copy the widgets
-          #    view.views_widgets.each do |view_widget|
-          #      widget_est_val = view_widget.estimation_value
-          #      in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
-          #      estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
-          #      estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
-          #      widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: @module_project.id, estimation_value_id: estimation_value_id, name: view_widget.name,
-          #                                    show_name: view_widget.show_name, icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
-          #                                    width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
-          #                                    position_x: view_widget.position_x, position_y: view_widget.position_y)
-          #      #Save and copy project_fields
-          #      if widget_copy.save
-          #        unless view_widget.project_fields.empty?
-          #          project_field = view_widget.project_fields.last
-          #
-          #          #Get project_field value
-          #          @value = 0
-          #          if widget_copy.estimation_value.module_project.pemodule.alias == "effort_breakdown"
-          #            begin
-          #              @value = widget_copy.estimation_value.string_data_probable[current_component.id][widget_copy.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-          #            rescue
-          #              begin
-          #                @value = widget_copy.estimation_value.string_data_probable[current_component.id]
-          #              rescue
-          #                @value = 0
-          #              end
-          #            end
-          #          else
-          #            @value = widget_copy.estimation_value.string_data_probable[current_component.id]
-          #          end
-          #
-          #          #create the new project_field
-          #          ProjectField.create(project_id: @project.id, field_id: project_field.field_id, views_widget_id: widget_copy.id, value: @value)
-          #        end
-          #      end
-          #    end
-          #  end
-          #
-          #  #=====
-          #end
-
-          # Copy the WBS-Activities modules's Models instances
-          organization_image.wbs_activities.each do |old_wbs_activity|
-            new_wbs_activity = old_wbs_activity.amoeba_dup   #amoeba gem is configured in WbsActivity class model
-            new_wbs_activity.organization_id = new_organization.id
-
-            new_wbs_activity.transaction do
-              if new_wbs_activity.save
-                old_wbs_activity.save  #Original WbsActivity copy number will be incremented to 1
-
-                #we also have to save to wbs_activity_ratio
-                old_wbs_activity.wbs_activity_ratios.each do |ratio|
-                  ratio.save
-                end
-
-                # Update the new WBS organization_profiles association
-                # The WBS module's organization_profiles are copied from Amoeba in include_association
-                new_wbs_profiles = []
-                OrganizationProfilesWbsActivity.where(wbs_activity_id: new_wbs_activity.id).all.each do |wbs_profile|
-                  new_organization_profile = new_organization.organization_profiles.where(copy_id: wbs_profile.organization_profile_id).last
-                  new_wbs_profiles << new_organization_profile.id
-                end
-                new_wbs_activity.organization_profile_ids = new_wbs_profiles
-                new_wbs_activity.save
-
-                #get new WBS Ratio elements
-                new_wbs_activity_ratio_elts = []
-                new_wbs_activity.wbs_activity_ratios.each do |ratio|
-                  ratio.wbs_activity_ratio_elements.each do |ratio_elt|
-                    new_wbs_activity_ratio_elts << ratio_elt
-
-                    #Update ratio elements profiles
-                    ratio_elt.wbs_activity_ratio_profiles.each do |activity_ratio_profile|
-                      new_organization_profile = new_organization.organization_profiles.where(copy_id: activity_ratio_profile.organization_profile_id).first
-                      unless new_organization_profile.nil?
-                        activity_ratio_profile.update_attribute(:organization_profile_id, new_organization_profile.id)
-                      end
-                    end
-                  end
-
-                  #Update Wbs-activity-ratio-varibales
-                  old_ratio = old_wbs_activity.wbs_activity_ratios.where(id: ratio.copy_id).first
-                  if old_ratio
-                    old_ratio.wbs_activity_ratio_variables.each do |old_ratio_variable|
-                      new_ratio_variable = old_ratio_variable.dup
-                      new_ratio_variable.wbs_activity_ratio_id = ratio.id
-                      new_ratio_variable.save
-                    end
-                  end
-
-                end
-
-                #Managing the component tree
-                old_wbs_activity_elements = old_wbs_activity.wbs_activity_elements.order('ancestry_depth asc')
-                old_wbs_activity_elements.each do |old_elt|
-                  new_elt = old_elt.amoeba_dup
-                  new_elt.wbs_activity_id = new_wbs_activity.id
-                  new_elt.save#(:validate => false)
-
-                  unless new_elt.is_root?
-                    new_ancestor_ids_list = []
-                    new_elt.ancestor_ids.each do |ancestor_id|
-                      ancestor = WbsActivityElement.find_by_wbs_activity_id_and_copy_id(new_elt.wbs_activity_id, ancestor_id)
-                      unless ancestor.nil?
-                        ancestor_id = ancestor.id
-                        new_ancestor_ids_list.push(ancestor_id)
-                      end
-                    end
-                    new_elt.ancestry = new_ancestor_ids_list.join('/')
-                  end
-                  corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
-                    ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
-                  end
-                  new_elt.save(:validate => false)
-                end
-              else
-                flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"
-              end
-            end
-
-            # Update all the new organization module_project's guw_model with the current guw_model
-            wbs_activity_copy_id = old_wbs_activity.id
-            new_organization.module_projects.where(wbs_activity_id: wbs_activity_copy_id).update_all(wbs_activity_id: new_wbs_activity.id)
-          end
-
-          # copy the organization's projects
-          organization_image.projects.all.each do |project|
-            #OrganizationDuplicateProjectWorker.perform_async(project.id, new_organization.id, current_user.id)
-            new_template = execute_duplication(project.id, new_organization.id)
-            unless new_template.nil?
-              new_template.is_model = project.is_model
-              new_template.save
-            end
-          end
-
-          #update the project's ancestry
-          new_organization.projects.all.each do |project|
-
-            new_project_area = new_organization.project_areas.where(copy_id: project.project_area_id).first
-            unless new_project_area.nil?
-              project.project_area_id = new_project_area.id
-            end
-
-            new_project_category = new_organization.project_categories.where(copy_id: project.project_category_id).first
-            unless new_project_category.nil?
-              project.project_category_id = new_project_category.id
-            end
-
-            new_platform_category = new_organization.platform_categories.where(copy_id: project.platform_category_id).first
-            unless new_platform_category.nil?
-              project.platform_category_id = new_platform_category.id
-            end
-
-            new_acquisition_category = new_organization.acquisition_categories.where(copy_id: project.acquisition_category_id).first
-            unless new_acquisition_category.nil?
-              project.acquisition_category_id = new_acquisition_category.id
-            end
-
-            project.save
-
-            unless project.original_model_id.nil?
-              new_original_model = new_organization.projects.where(copy_id: project.original_model_id).first
-              new_original_model_id = new_original_model.nil? ? nil : new_original_model.id
-              project.original_model_id = new_original_model_id
-              project.save
-            end
-
-            unless project.ancestry.nil?
-              new_ancestor_ids_list = []
-              project.ancestor_ids.each do |ancestor_id|
-                ancestor = new_organization.projects.where(copy_id: ancestor_id).first
-                unless ancestor.nil?
-                  #ancestor_id = ancestor.id
-                  new_ancestor_ids_list.push(ancestor.id)
-                end
-              end
-              project.ancestry = new_ancestor_ids_list.join('/')
-              project.save
-            end
-          end
-
-          # Update the Expert Judgement modules's Models instances
-          new_organization.expert_judgement_instances.each do |expert_judgment|
-            # Update all the new organization module_project's guw_model with the current guw_model
-            expert_judgment_copy_id = expert_judgment.copy_id
-            new_organization.module_projects.where(expert_judgement_instance_id: expert_judgment_copy_id).update_all(expert_judgement_instance_id: expert_judgment.id)
-          end
-
-          # Update the modules's GE Models instances
-          new_organization.ge_models.each do |ge_model|
-            #Terminate the model duplication with the copie of the factors values
-            ge_model.transaction do
-              #Then copy the factor values
-              ge_model.ge_factors.each do |factor|
-                #get the factor values for each factor of new model
-
-                # get the original factor from copy_id
-                parent_factor = Ge::GeFactor.find(factor.copy_id)
-                if parent_factor
-                  parent_factor.ge_factor_values.each do |parent_factor_value|
-                    new_factor_value =  parent_factor_value.dup
-                    new_factor_value.ge_model_id = ge_model.id
-                    new_factor_value.ge_factor_id = factor.id
-                    new_factor_value.save
-                  end
-                end
-              end
-            end
-
-            # Update all the new organization module_project's ge_model with the current ge_model
-            ge_copy_id = ge_model.copy_id
-            new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
-          end
-
-          # Update the modules's Staffing Models instances
-          new_organization.staffing_models.each do |staffing_model|
-            # Update all the new organization module_project's guw_model with the current guw_model
-            staffing_model_copy_id = staffing_model.copy_id
-            new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
-          end
-
-          # Update the modules's KB Models instances
-          new_organization.kb_models.each do |kb_model|
-            # Update all the new organization module_project's guw_model with the current guw_model
-            kb_copy_id = kb_model.copy_id
-            new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
-          end
-
-          # Copy the modules's GUW Models instances
-          new_organization.guw_models.each do |guw_model|
-
-            # Update all the new organization module_project's guw_model with the current guw_model
-            guw_model_copy_id = guw_model.copy_id
-            new_organization.module_projects.where(guw_model_id: guw_model_copy_id).update_all(guw_model_id: guw_model.id)
-
-            ###### Replace the code below
-
-            guw_model.terminate_guw_model_duplication(guw_model) #A modifier
-          end
-
-          flash[:notice] = I18n.t(:notice_organization_successful_created)
+      #Create the organization from image organization
+      when "new_organization_from_image"
+        organization_image_id = params[:organization_image]
+        if organization_image_id.nil?
+          flash[:warning] = "Veuillez sélectionner une organisation image pour continuer"
+        elsif params[:organization_name].empty?
+          flash[:error] = "Le nom de l'organisation ne peut pas être vide"
+          redirect_to :back and return
         else
-          flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
+          organization_image = Organization.find(organization_image_id)
+          @organization_name = params[:organization_name]
+          @firstname = params[:firstname]
+          @lastname = params[:lastname]
+          @email = params[:email]
+          @login_name = params[:identifiant]
+          @password = params[:password]
+          if @password.empty?
+            @password = SecureRandom.hex(8)
+          end
+          change_password_required = params[:change_password_required]
+        end
+      else
+        flash[:error] = "Aucune organization sélectionnée"
+        redirect_to :back and return
+      end
+
+      if organization_image.nil?
+        flash[:warning] = "Veuillez sélectionner une organisation pour continuer"
+      else
+        new_organization = organization_image.amoeba_dup
+
+        if params[:action_name] == "new_organization_from_image"
+          new_organization.name = @organization_name
+        elsif params[:action_name] == "copy_organization"
+          new_organization.description << "\n \n Cette organisation est une copie de l'organisation #{organization_image.name}."
+          new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
+        end
+        new_organization.is_image_organization = false
+
+        new_organization.transaction do
+
+          if new_organization.save(validate: false)
+
+            organization_image.save #Original organization copy number will be incremented to 1
+
+            #Copy the organization estimation_statuses workflow and groups/roles
+            new_estimation_statuses = new_organization.estimation_statuses
+            new_estimation_statuses.each do |estimation_status|
+              copied_status = EstimationStatus.find(estimation_status.copy_id)
+
+              #Get the to_transitions for the Statuses Workflow
+              copied_status.to_transition_statuses.each do |to_transition|
+                new_to_transition = new_estimation_statuses.where(copy_id: to_transition.id).first
+                unless new_to_transition.nil?
+                  StatusTransition.create(from_transition_status_id: estimation_status.id, to_transition_status_id: new_to_transition.id)
+                end
+              end
+            end
+
+            #Get the estimation_statuses role / by group
+            new_organization.project_security_levels.each do |project_security_level|
+              project_security_level.estimation_status_group_roles.each do |group_role|
+                new_group = new_organization.groups.where(copy_id: group_role.group_id).first
+                estimation_status = new_organization.estimation_statuses.where(copy_id: group_role.estimation_status_id).first
+                unless estimation_status.nil?
+                  begin
+                    group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
+                  rescue
+                  end
+                end
+              end
+            end
+
+            #Then copy the image organization estimation models
+            if params[:action_name] == "new_organization_from_image"
+              # Create a user in the Admin group of the new organization
+              admin_user = User.new(first_name: @firstname, last_name: @lastname, login_name: @login_name, email: @email, password: @password, password_confirmation: @password, super_admin: false)
+              # Add the user to the created organization
+              admin_group = new_organization.groups.where(name: '*USER').first #first_or_create(name: "*USER", organization_id: new_organization.id, description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs")
+              unless admin_group.nil?
+                admin_user.groups << admin_group
+                admin_user.save
+              end
+
+            elsif params[:action_name] == "copy_organization"
+              # add users to groups
+              organization_image.groups.each do |group|
+                new_group = new_organization.groups.where(copy_id: group.id).first
+                unless new_group.nil?
+                  new_group.users = group.users
+                  new_group.save
+                end
+              end
+            end
+
+            OrganizationsUsers.where(user_id: current_user.id, organization_id: new_organization.id).first_or_create!
+
+            # Copy the WBS-Activities modules's Models instances
+            organization_image.wbs_activities.each do |old_wbs_activity|
+              new_wbs_activity = old_wbs_activity.amoeba_dup   #amoeba gem is configured in WbsActivity class model
+              new_wbs_activity.organization_id = new_organization.id
+
+              new_wbs_activity.transaction do
+                if new_wbs_activity.save
+                  old_wbs_activity.save  #Original WbsActivity copy number will be incremented to 1
+
+                  #we also have to save to wbs_activity_ratio
+                  old_wbs_activity.wbs_activity_ratios.each do |ratio|
+                    ratio.save
+                  end
+
+                  # Update the new WBS organization_profiles association
+                  # The WBS module's organization_profiles are copied from Amoeba in include_association
+                  new_wbs_profiles = []
+                  OrganizationProfilesWbsActivity.where(wbs_activity_id: new_wbs_activity.id).all.each do |wbs_profile|
+                    new_organization_profile = new_organization.organization_profiles.where(copy_id: wbs_profile.organization_profile_id).last
+                    new_wbs_profiles << new_organization_profile.id
+                  end
+                  new_wbs_activity.organization_profile_ids = new_wbs_profiles
+                  new_wbs_activity.save
+
+                  #get new WBS Ratio elements
+                  new_wbs_activity_ratio_elts = []
+                  new_wbs_activity.wbs_activity_ratios.each do |ratio|
+                    ratio.wbs_activity_ratio_elements.each do |ratio_elt|
+                      new_wbs_activity_ratio_elts << ratio_elt
+
+                      #Update ratio elements profiles
+                      ratio_elt.wbs_activity_ratio_profiles.each do |activity_ratio_profile|
+                        new_organization_profile = new_organization.organization_profiles.where(copy_id: activity_ratio_profile.organization_profile_id).first
+                        unless new_organization_profile.nil?
+                          activity_ratio_profile.update_attribute(:organization_profile_id, new_organization_profile.id)
+                        end
+                      end
+                    end
+
+                    #Update Wbs-activity-ratio-varibales
+                    old_ratio = old_wbs_activity.wbs_activity_ratios.where(id: ratio.copy_id).first
+                    if old_ratio
+                      old_ratio.wbs_activity_ratio_variables.each do |old_ratio_variable|
+                        new_ratio_variable = old_ratio_variable.dup
+                        new_ratio_variable.wbs_activity_ratio_id = ratio.id
+                        new_ratio_variable.save
+                      end
+                    end
+
+                  end
+
+                  #Managing the component tree
+                  old_wbs_activity_elements = old_wbs_activity.wbs_activity_elements.order('ancestry_depth asc')
+                  old_wbs_activity_elements.each do |old_elt|
+                    new_elt = old_elt.amoeba_dup
+                    new_elt.wbs_activity_id = new_wbs_activity.id
+                    new_elt.save#(:validate => false)
+
+                    unless new_elt.is_root?
+                      new_ancestor_ids_list = []
+                      new_elt.ancestor_ids.each do |ancestor_id|
+                        ancestor = WbsActivityElement.find_by_wbs_activity_id_and_copy_id(new_elt.wbs_activity_id, ancestor_id)
+                        unless ancestor.nil?
+                          ancestor_id = ancestor.id
+                          new_ancestor_ids_list.push(ancestor_id)
+                        end
+                      end
+                      new_elt.ancestry = new_ancestor_ids_list.join('/')
+                    end
+                    corresponding_ratio_elts = new_wbs_activity_ratio_elts.select { |ratio_elt| ratio_elt.wbs_activity_element_id == new_elt.copy_id}.each do |ratio_elt|
+                      ratio_elt.update_attribute('wbs_activity_element_id', new_elt.id)
+                    end
+                    new_elt.save(:validate => false)
+                  end
+                else
+                  flash[:error] = "#{new_wbs_activity.errors.full_messages.to_sentence}"
+                end
+              end
+
+              # Update all the new organization module_project's guw_model with the current guw_model
+              wbs_activity_copy_id = old_wbs_activity.id
+              new_organization.module_projects.where(wbs_activity_id: wbs_activity_copy_id).update_all(wbs_activity_id: new_wbs_activity.id)
+            end
+
+            # copy the organization's projects
+            organization_image.projects.all.each do |project|
+              #OrganizationDuplicateProjectWorker.perform_async(project.id, new_organization.id, current_user.id)
+              new_template = execute_duplication(project.id, new_organization.id)
+              unless new_template.nil?
+                new_template.is_model = project.is_model
+                new_template.save
+              end
+            end
+
+            #update the project's ancestry
+            new_organization.projects.all.each do |project|
+
+              new_project_area = new_organization.project_areas.where(copy_id: project.project_area_id).first
+              unless new_project_area.nil?
+                project.project_area_id = new_project_area.id
+              end
+
+              new_project_category = new_organization.project_categories.where(copy_id: project.project_category_id).first
+              unless new_project_category.nil?
+                project.project_category_id = new_project_category.id
+              end
+
+              new_platform_category = new_organization.platform_categories.where(copy_id: project.platform_category_id).first
+              unless new_platform_category.nil?
+                project.platform_category_id = new_platform_category.id
+              end
+
+              new_acquisition_category = new_organization.acquisition_categories.where(copy_id: project.acquisition_category_id).first
+              unless new_acquisition_category.nil?
+                project.acquisition_category_id = new_acquisition_category.id
+              end
+
+              project.save
+
+              unless project.original_model_id.nil?
+                new_original_model = new_organization.projects.where(copy_id: project.original_model_id).first
+                new_original_model_id = new_original_model.nil? ? nil : new_original_model.id
+                project.original_model_id = new_original_model_id
+                project.save
+              end
+
+              unless project.ancestry.nil?
+                new_ancestor_ids_list = []
+                project.ancestor_ids.each do |ancestor_id|
+                  ancestor = new_organization.projects.where(copy_id: ancestor_id).first
+                  unless ancestor.nil?
+                    #ancestor_id = ancestor.id
+                    new_ancestor_ids_list.push(ancestor.id)
+                  end
+                end
+                project.ancestry = new_ancestor_ids_list.join('/')
+                project.save
+              end
+            end
+
+            # Update the Expert Judgement modules's Models instances
+            new_organization.expert_judgement_instances.each do |expert_judgment|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              expert_judgment_copy_id = expert_judgment.copy_id
+              new_organization.module_projects.where(expert_judgement_instance_id: expert_judgment_copy_id).update_all(expert_judgement_instance_id: expert_judgment.id)
+            end
+
+            # Update the modules's GE Models instances
+            new_organization.ge_models.each do |ge_model|
+              #Terminate the model duplication with the copie of the factors values
+              ge_model.transaction do
+                #Then copy the factor values
+                ge_model.ge_factors.each do |factor|
+                  #get the factor values for each factor of new model
+
+                  # get the original factor from copy_id
+                  parent_factor = Ge::GeFactor.find(factor.copy_id)
+                  if parent_factor
+                    parent_factor.ge_factor_values.each do |parent_factor_value|
+                      new_factor_value =  parent_factor_value.dup
+                      new_factor_value.ge_model_id = ge_model.id
+                      new_factor_value.ge_factor_id = factor.id
+                      new_factor_value.save
+                    end
+                  end
+                end
+              end
+
+              # Update all the new organization module_project's ge_model with the current ge_model
+              ge_copy_id = ge_model.copy_id
+              new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
+            end
+
+            # Update the modules's Staffing Models instances
+            new_organization.staffing_models.each do |staffing_model|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              staffing_model_copy_id = staffing_model.copy_id
+              new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
+            end
+
+            # Update the modules's KB Models instances
+            new_organization.kb_models.each do |kb_model|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              kb_copy_id = kb_model.copy_id
+              new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
+            end
+
+            # Copy the modules's GUW Models instances
+            new_organization.guw_models.each do |guw_model|
+
+              # Update all the new organization module_project's guw_model with the current guw_model
+              guw_model_copy_id = guw_model.copy_id
+              new_organization.module_projects.where(guw_model_id: guw_model_copy_id).update_all(guw_model_id: guw_model.id)
+
+              ###### Replace the code below
+
+              guw_model.terminate_guw_model_duplication(guw_model) #A modifier
+            end
+
+            flash[:notice] = I18n.t(:notice_organization_successful_created)
+          else
+            flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
+          end
         end
       end
-    end
 
-    #redirect_to :back
+      #redirect_to :back
 
-    respond_to do |format|
-      format.html { redirect_to organizationals_params_path and return }
-      format.js { render :js => "window.location.replace('/organizationals_params');"}
+      respond_to do |format|
+        format.html { redirect_to organizationals_params_path and return }
+        format.js { render :js => "window.location.replace('/organizationals_params');"}
+      end
+    rescue
+      flash[:error] = "Une erreur est survenue lors de la copie"
+      respond_to do |format|
+        format.html { redirect_to organizationals_params_path and return }
+        format.js { render :js => "window.location.replace('/organizationals_params');"}
+      end
     end
   end
 
