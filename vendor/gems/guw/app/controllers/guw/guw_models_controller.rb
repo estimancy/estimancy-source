@@ -1771,7 +1771,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 if guw_coefficient.class == Guw::GuwCoefficient
 
-                  (17..30).to_a.each do |k|
+                  (16..30).to_a.each do |k|
                     if guw_coefficient.name == tab[0][k]
 
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
@@ -1794,7 +1794,7 @@ class Guw::GuwModelsController < ApplicationController
                   guw_output = Guw::GuwOutput.where(name: i[0],
                                                     guw_model_id: @guw_model.id).first
 
-                  (17..30).to_a.each do |k|
+                  (16..30).to_a.each do |k|
                     if guw_output.name == tab[0][k]
                       # tmp_hash_res["#{guw_output.id}"] = row[k]
                       tmp_hash_ares["#{guw_output.id}"] = row[k]
