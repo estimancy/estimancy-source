@@ -9,6 +9,10 @@
     <%= image_tag 'animate-ajax-loader.gif' %>
   </div>
 
+  <%#= button_tag 'Reset', type: 'reset', class: "btn" %>
+  <%= button_tag :class => "btn btn-danger pull-right", :type => "reset", :data => { :disable_with => "Annulation en cours" } do %>
+      <%= I18n.t("cancel") %>
+  <% end %>
 </div>
 
 <!--<div class="modal-footer">-->

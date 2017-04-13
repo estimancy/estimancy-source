@@ -83,6 +83,12 @@ class ApplicationController < ActionController::Base
   before_filter :update_activity_time
   before_filter :initialization_module
 
+  def reset_button_action
+    flash[:warning] = "L'action a été annulée avec succès"
+    return render(:nothing => true, :status => 204)
+  end
+
+
   def check_access
     begin
       @online_support = AdminSetting.where(key: "online_support").first.value
