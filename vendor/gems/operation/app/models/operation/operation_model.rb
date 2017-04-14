@@ -45,6 +45,26 @@ module Operation
     end
 
 
+    def terminate_operation_model_duplication
+      new_operation_model = self
+      pm = Pemodule.where(alias: "operation").first
+
+      new_operation_model.operation_inputs.each do |operation_input|
+        attr = PeAttribute.where(name: operation_input.name,
+                                 alias: operation_input.name.underscore.gsub(" ", "_"),
+                                 description: operation_input.description,
+                                 operation_input_id: operation_input.id,
+                                 operation_model_id: operation_input.operation_model_id).first_or_create!
+
+        am = AttributeModule.where(pe_attribute_id: attr.id,
+                                   pemodule_id: pm.id,
+                                   in_out: operation_input.in_out,
+                                   operation_model_id: operation_input.operation_model_id).first_or_create!
+
+      end
+    end
+
+
     def to_s(mp=nil)
       if mp.nil?
         self.name

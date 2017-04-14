@@ -113,6 +113,8 @@ class Operation::OperationModelsController < ApplicationController
     ActiveRecord::Base.transaction do
       if new_operation_model.save
         @operation_model.save
+        new_operation_model.terminate_operation_model_duplication
+
         flash[:notice] = "Modèle copié avec succès"
       else
         flash[:error] = "Erreur lors de la copie du modèle"

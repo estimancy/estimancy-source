@@ -58,7 +58,7 @@ class Operation::OperationInputsController < ApplicationController
 
           attr = PeAttribute.where(name: @operation_input.name,
                                    alias: @operation_input.name.underscore.gsub(" ", "_"),
-                                   description: @operation_input.name,
+                                   description: @operation_input.description,
                                    operation_input_id: @operation_input.id,
                                    operation_model_id: @operation_input.operation_model_id).first_or_create!
 
