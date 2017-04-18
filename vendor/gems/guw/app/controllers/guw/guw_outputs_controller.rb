@@ -163,10 +163,12 @@ class Guw::GuwOutputsController < ApplicationController
   def destroy
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_model = @guw_output.guw_model
+    attr_name = @guw_output.name
     @guw_output.delete
 
     #Pas encore bon !
-    attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_")).first
+    attr = PeAttribute.where(alias: attr_name.underscore.gsub(" ", "_")).first
+
     pm = Pemodule.where(alias: "guw").first
     AttributeModule.where(pe_attribute_id: attr.id,
                           pemodule_id: pm.id,
