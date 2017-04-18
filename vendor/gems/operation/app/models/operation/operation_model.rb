@@ -26,9 +26,8 @@ module Operation
     OUTPUT_ATTRIBUTES_ALIAS = ["sortie_operation"]
 
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    validates :standard_unit_coefficient, :presence => true
+    #validates :standard_unit_coefficient, :output_unit, :presence => true
     validates :operation_type, :presence => true
-    validates :output_unit, :presence => true
 
 
     belongs_to :organization
