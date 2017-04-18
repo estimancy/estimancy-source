@@ -103,12 +103,14 @@ class Guw::GuwOutputsController < ApplicationController
                                   in_out: "both",
                                   guw_model_id: @guw_model.id)
 
-      attr.estimation_values.each do |ev|
-        ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
-        ev.pe_attribute_id = at.id
-        ev.save(validate: false)
+      unless attr.nil?
+        attr.estimation_values.each do |ev|
+          ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
+          ev.pe_attribute_id = at.id
+          ev.save(validate: false)
+        end
       end
 
     else
@@ -130,18 +132,20 @@ class Guw::GuwOutputsController < ApplicationController
           end
         end
       else
-        attr.estimation_values.each do |ev|
-          ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
-          ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
-          ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
-          ev.pe_attribute_id = attr.id
-          ev.save(validate: false)
+        unless attr.nil?
+          attr.estimation_values.each do |ev|
+            ev.string_data_low = { pe_attribute_name: @guw_output.name, default_low: nil }
+            ev.string_data_most_likely = { pe_attribute_name: @guw_output.name, default_low: nil }
+            ev.string_data_high = { pe_attribute_name: @guw_output.name, default_low: nil }
+            ev.pe_attribute_id = attr.id
+            ev.save(validate: false)
+          end
         end
       end
 
       am = AttributeModule.where(pe_attribute_id: attr.id,
                                  pemodule_id: pm.id,
-                                 guw_model_id: nil).first_or_create
+                                 guw_model_id: @guw_model.id).first_or_create!
 
       am.guw_model_id = @guw_output.guw_model_id
 
