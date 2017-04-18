@@ -70,7 +70,6 @@ class Operation::OperationInputsController < ApplicationController
                                      operation_model_id: @operation_input.operation_model_id).first_or_create!
 
           redirect_to operation.edit_operation_model_path(@operation_input.operation_model_id, organization_id: @organization.id, anchor: "tabs-2")
-
         else
           render action: "new"
         end
