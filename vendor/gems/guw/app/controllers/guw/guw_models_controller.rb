@@ -204,31 +204,33 @@ class Guw::GuwModelsController < ApplicationController
                                                 value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
 
                 @guw_model.guw_outputs.each_with_index do |aguw_output, j|
+                  value = tab[15 + j][column_index + i]
                   oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
                                                         guw_output_associated_id: aguw_output.id,
                                                         guw_output_id: guw_output.id,
-                                                        value: tab[16 + i][j + 1].nil? ? nil : tab[16 + i][j + 1])
+                                                        value: value)
                 end
 
                 nb_output = @guw_model.guw_outputs.size
                 next_item = 15 + nb_output
                 @guw_model.guw_coefficients.each do |guw_coefficient|
-                  next_item = next_item + 1
                   guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+
+                    next_item = next_item + 1
+
                     begin
-                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
-                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
-                                                                  guw_output_id: guw_output.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  value: tab[next_item + 1][i + 1].blank? ? nil : tab[next_item + 1][i + 1])
+                      value = tab[next_item][column_index + i - 1]
                     rescue
+                      value = ""
+                    end
+
+                    if value.is_a?(Numeric)
                       Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
                                                                   guw_coefficient_element_id: guw_coefficient_element.id,
                                                                   guw_output_id: guw_output.id,
                                                                   guw_type_id: @guw_type.id,
-                                                                  value: tab[next_item][i + 1].blank? ? nil : tab[next_item][i + 1])
+                                                                  value: value)
                     end
-                    next_item = next_item + k
                   end
                 end
               end
