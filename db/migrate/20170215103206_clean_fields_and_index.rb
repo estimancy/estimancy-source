@@ -1,5 +1,4 @@
 class CleanFieldsAndIndex < ActiveRecord::Migration
-
   def change
     remove_column :admin_settings, :record_status_id
     remove_column :admin_settings, :reference_id
@@ -70,14 +69,9 @@ class CleanFieldsAndIndex < ActiveRecord::Migration
     remove_column :wbs_activity_ratio_elements, :owner_id
     remove_column :project_security_levels, :owner_id
 
-    drop_table :master_settings
-    drop_table :peicons
-    drop_table :record_statuses
-
-    begin
-      drop_table :event_types
-    rescue
-    end
-
+    drop_table :master_settings if ActiveRecord::Base.connection.table_exists? 'master_settings'
+    drop_table :peicons if ActiveRecord::Base.connection.table_exists? 'peicons'
+    drop_table :record_statuses if ActiveRecord::Base.connection.table_exists? 'record_statuses'
+    drop_table :event_types if ActiveRecord::Base.connection.table_exists? 'event_types'
   end
 end

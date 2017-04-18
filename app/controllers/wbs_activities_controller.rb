@@ -1011,7 +1011,6 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
-                      ["Compteur nom court des phases", @wbs_activity.phases_short_name_number],
                       ["#{I18n.t(:profiles_list)} : ", ""]]
                       #[I18n.t(:advice_ge), ""]]
 
@@ -1132,8 +1131,8 @@ class WbsActivitiesController < ApplicationController
         # On cree une feuille par element de ratio
         @wbs_activity_ratios.each_with_index do |ratio, index|
           # on cree une feuille pour tous les elments de ce ratio
-          workbook.add_worksheet("Ratio #{ratio.name}")
-          ratio_elements_worksheet = workbook["Ratio #{ratio.name}"]
+          workbook.add_worksheet("#{ratio.name}")
+          ratio_elements_worksheet = workbook["#{ratio.name}"]
           new_workbook_number += 1
 
           ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
@@ -1337,7 +1336,7 @@ class WbsActivitiesController < ApplicationController
           else
             #there is no model, we will create new model from the model attributes data of the file to import
             model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "effort_unit", "effort_unit_coefficient",
-                                            "phases_short_name_number", "wbs_organization_profiles"]
+                                            "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
             model_sheet_order_attributes.each_with_index do |attr_name, index|
@@ -1356,7 +1355,7 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 7
+                      if index <= 6
                         attr_name = model_sheet_order["#{index}".to_sym]
                         #begin
                           if attr_name != "wbs_organization_profiles"
@@ -1378,6 +1377,7 @@ class WbsActivitiesController < ApplicationController
                 end
               end
 
+
               if @wbs_activity && @wbs_activity.save
                 ######## WBS-Activity_elements worksheet  ######
                 activity_elements_sheet_order_attributes = [ "position", "phase_short_name", "name", "description", "is_root", "parent"]
@@ -1388,7 +1388,14 @@ class WbsActivitiesController < ApplicationController
                 # end
 
                 elements_worksheet = workbook[I18n.t(:wbs_elements)]
-                elements_worksheet_tab = elements_worksheet.extract_data
+
+                begin
+                  elements_worksheet_tab = elements_worksheet.extract_data
+                rescue
+                  flash[:error] = "La feuille des éléments de la WBS n'existe pas"
+                  redirect_to request.referer + "#tabs-1" and return
+                end
+
                 elements_worksheet_tab.each_with_index do | row, index |
                   if index != 0 && !row.nil?
                     activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, position: row[0].to_f, phase_short_name: row[1],
@@ -1410,9 +1417,29 @@ class WbsActivitiesController < ApplicationController
                   # end
                 end
 
+                # Update WBS Phase phases_short_name_number
+                wbs_elements_short_names = @wbs_activity.wbs_activity_elements.map(&:phase_short_name)
+                phases_short_name_number = Array.new
+                wbs_elements_short_names.each_with_index do |shortname, index|
+                  begin
+                    phases_short_name_number[index] = shortname.scan(/\d+/).first.to_i
+                  rescue
+                    phases_short_name_number[index] = index+1
+                  end
+                end
+
+                @wbs_activity.phases_short_name_number = phases_short_name_number.max
+                @wbs_activity.save
+
                 ######## Ratios worksheet  ######
                 ratios_worksheet = workbook["Ratios"]
-                ratios_worksheet_tab = ratios_worksheet.extract_data
+                begin
+                  ratios_worksheet_tab = ratios_worksheet.extract_data
+                rescue
+                  flash[:error] = "La feuille contenant la liste des Ratios n'existe pas"
+                  redirect_to request.referer + "#tabs-1" and return
+                end
+
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
                     #begin
@@ -1434,8 +1461,13 @@ class WbsActivitiesController < ApplicationController
 
                 @wbs_activity_ratios.each do |ratio|
 
-                  ratio_elements_worksheet = workbook["Ratio #{ratio.name}"]
-                  ratio_elements_worksheet_tab = ratio_elements_worksheet.extract_data
+                  ratio_elements_worksheet = workbook["#{ratio.name}"]
+                  begin
+                    ratio_elements_worksheet_tab = ratio_elements_worksheet.extract_data
+                  rescue
+                    flash[:error] = "La feuille des éléments du ratio '#{ratio.name}' n'existe pas"
+                    redirect_to request.referer + "#tabs-1" and return
+                  end
 
                   ratio_elements_worksheet_tab.each_with_index do | row, index |
                     unless row.nil?
@@ -1472,7 +1504,7 @@ class WbsActivitiesController < ApplicationController
 
                               @wbs_activity_profiles.each do |profile|
                                 k = profile_col_number["#{profile.name}"]
-                                if row[k].nil? || row[k].empty?
+                                if row[k].blank?
                                   ratio_value = nil
                                 else
                                   ratio_value = row[k].to_f

@@ -1,6 +1,9 @@
 class AddTopLeftPositionToModuleProjects < ActiveRecord::Migration
 
   def up
+
+    rename_column :projects, :version, :version_number
+
     add_column :module_projects, :top_position, :float, after: :position_y
     add_column :module_projects, :left_position, :float, after: :top_position
     add_column :module_projects, :creation_order, :integer, after: :left_position

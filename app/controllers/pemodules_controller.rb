@@ -332,7 +332,10 @@ class PemodulesController < ApplicationController
             @instance_model = ExpertJudgement::Instance.find(params[:instance_model_id])
         end
 
-        @pemodule_title = @instance_model.name
+        unless @instance_model
+          @pemodule_title = @instance_model.name
+        end
+
         @organization = @instance_model.organization
         @related_projects = ModuleProject.where("#{params[:instance_model_name]}" => params[:instance_model_id]).uniq
       end

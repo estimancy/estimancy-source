@@ -22,7 +22,7 @@
 class OrganizationProfile < ActiveRecord::Base
   attr_accessible :cost_per_hour, :description, :name, :organization_id, :profile_id, :wbs_activity_ids, :copy_id
 
-  ###default_scope { order(:name) }
+  default_scope { order(:name) }
 
   belongs_to :organization
   has_many :wbs_activity_ratio_profiles, :dependent => :delete_all

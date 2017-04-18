@@ -26,9 +26,8 @@ module Operation
     OUTPUT_ATTRIBUTES_ALIAS = ["sortie_operation"]
 
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
-    validates :standard_unit_coefficient, :presence => true
+    #validates :standard_unit_coefficient, :output_unit, :presence => true
     validates :operation_type, :presence => true
-    validates :output_unit, :presence => true
 
 
     belongs_to :organization
@@ -42,6 +41,26 @@ module Operation
       customize(lambda { |original_ge_model, new_ge_model|
         new_ge_model.copy_id = original_ge_model.id
       })
+    end
+
+
+    def terminate_operation_model_duplication
+      new_operation_model = self
+      pm = Pemodule.where(alias: "operation").first
+
+      new_operation_model.operation_inputs.each do |operation_input|
+        attr = PeAttribute.where(name: operation_input.name,
+                                 alias: operation_input.name.underscore.gsub(" ", "_"),
+                                 description: operation_input.description,
+                                 operation_input_id: operation_input.id,
+                                 operation_model_id: operation_input.operation_model_id).first_or_create!
+
+        am = AttributeModule.where(pe_attribute_id: attr.id,
+                                   pemodule_id: pm.id,
+                                   in_out: operation_input.in_out,
+                                   operation_model_id: operation_input.operation_model_id).first_or_create!
+
+      end
     end
 
 

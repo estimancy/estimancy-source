@@ -550,14 +550,17 @@ module ViewsWidgetsHelper
           ### TEST
           if wbs_activity
             effort_unit_coefficient = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient
-            module_project_ratio_elements = estimation_value.module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id)
 
-            if view_widget.use_organization_effort_unit == true
-               min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
-               organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+            unless ratio_reference.nil?
+              module_project_ratio_elements = estimation_value.module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id)
 
-               effort_unit_coefficient = organization_effort_limit_coeff
-               attribute_unit_label = organization_effort_unit
+              if view_widget.use_organization_effort_unit == true
+                 min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+                 organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+
+                 effort_unit_coefficient = organization_effort_limit_coeff
+                 attribute_unit_label = organization_effort_unit
+              end
             end
           end
           ### FIN TEST

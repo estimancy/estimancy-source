@@ -2060,3 +2060,5 @@ fr:
   warning_minimum_estimations_counter: "Attention, il ne vous reste plus que %{counter} estimations sur le compte de l'abonnement de votre organisation"
 
   new_input_attribute: "Nouvel attribut d'entrée"
+
+  liste_des_estimations: "Liste des estimations"
