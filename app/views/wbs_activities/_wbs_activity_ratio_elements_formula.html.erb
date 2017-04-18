@@ -19,7 +19,7 @@
       <% wbs_activity_ratio_element = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
       <tr>
         <td>
-          <% elt_position =  wbs_activity_ratio_element.wbs_activity_element.position %>
+          <% elt_position = wbs_activity_ratio_element.wbs_activity_element.nil? ? nil : wbs_activity_ratio_element.wbs_activity_element.position %>
           <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
         </td>
         <td><%= wbs_activity_ratio_element.wbs_activity_element.is_root? ? "-" : wbs_activity_ratio_element.wbs_activity_element.phase_short_name %></td>
