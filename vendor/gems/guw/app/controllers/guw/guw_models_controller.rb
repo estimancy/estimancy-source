@@ -1224,6 +1224,7 @@ class Guw::GuwModelsController < ApplicationController
         @guw_model.guw_coefficients.each do |guw_coefficient|
 
           worksheet.add_cell(output_line, 0, guw_coefficient.name)
+          worksheet.change_row_bold(output_line, true)
 
           @guw_model.guw_outputs.each_with_index do |guw_output, index|
             worksheet.add_cell(output_line, column_number + index, guw_output.name)
