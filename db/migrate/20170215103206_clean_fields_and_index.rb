@@ -1,4 +1,5 @@
 class CleanFieldsAndIndex < ActiveRecord::Migration
+
   def change
     remove_column :admin_settings, :record_status_id
     remove_column :admin_settings, :reference_id
@@ -72,6 +73,11 @@ class CleanFieldsAndIndex < ActiveRecord::Migration
     drop_table :master_settings
     drop_table :peicons
     drop_table :record_statuses
-    drop_table :event_types
+
+    begin
+      drop_table :event_types
+    rescue
+    end
+
   end
 end

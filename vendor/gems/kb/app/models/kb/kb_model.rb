@@ -21,7 +21,8 @@
 
 module Kb
   class KbModel < ActiveRecord::Base
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false, message: "Une instance du module base de connaissance du même nom existe déjà" }
+
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
 

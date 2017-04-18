@@ -1691,4 +1691,7 @@ fr1:
   new_input_attribute: "Nouvel attribut d'entrée"
 
 
+  rollback: "Annuler"
+  cancel_copy: "Annuler la copie"
+
 
