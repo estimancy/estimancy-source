@@ -2031,3 +2031,5 @@ frsncf:
 
   is_modifiable: "Est modifiable"
   new_input_attribute: "Nouvel attribut d'entrée"
+
+  liste_des_estimations: "Liste des estimations"
