@@ -35,7 +35,7 @@ class PeAttribute < ActiveRecord::Base
   belongs_to :operation_model
   belongs_to :operation_input, foreign_key: :operation_input_id, class_name: Operation::OperationInput
 
-  validates_presence_of :description
+  ###validates_presence_of :description
   validates :name, :alias, :presence => true
 
   ##Enable the amoeba gem for deep copy/clone (dup with associations)

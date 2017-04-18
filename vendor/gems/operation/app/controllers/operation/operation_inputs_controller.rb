@@ -56,7 +56,7 @@ class Operation::OperationInputsController < ApplicationController
       ActiveRecord::Base.transaction do
         if @operation_input.save
 
-          description = @operation_input.description.nil? ? @operation_input.name : @operation_input.description
+          description = (@operation_input.description.nil? || @operation_input.description.empty?) ? @operation_input.name : @operation_input.description
 
           attr = PeAttribute.where(name: @operation_input.name,
                                    alias: @operation_input.name.underscore.gsub(" ", "_"),
@@ -100,7 +100,8 @@ class Operation::OperationInputsController < ApplicationController
 
         if @operation_input.update_attributes(params[:operation_input])
 
-          description = @operation_input.description.nil? ? @operation_input.name : @operation_input.description
+          description = (@operation_input.description.nil? || @operation_input.description.empty?) ? @operation_input.name : @operation_input.description
+
           pm = Pemodule.where(alias: "operation").first
           old_attr = PeAttribute.where(name: old_attr_name, operation_model_id: @operation_model.id).first
 

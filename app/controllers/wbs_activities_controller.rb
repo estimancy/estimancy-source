@@ -1504,7 +1504,7 @@ class WbsActivitiesController < ApplicationController
 
                               @wbs_activity_profiles.each do |profile|
                                 k = profile_col_number["#{profile.name}"]
-                                if row[k].nil? || row[k].empty?
+                                if row[k].blank?
                                   ratio_value = nil
                                 else
                                   ratio_value = row[k].to_f

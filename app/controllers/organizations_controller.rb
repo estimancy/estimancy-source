@@ -906,7 +906,7 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    begin
+    #begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -1208,6 +1208,17 @@ class OrganizationsController < ApplicationController
               guw_model.terminate_guw_model_duplication(guw_model) #A modifier
             end
 
+            # Copy the modules's GUW Models instances
+            new_organization.operation_models.each do |operation_model|
+              # Update all the new organization module_project's operation_model with the current operation_model
+              operation_model_copy_id = operation_model.copy_id
+              new_organization.module_projects.where(operation_model_id: operation_model_copy_id).update_all(operation_model_id: operation_model.id)
+
+              # Terminate duplication
+              operation_model.terminate_operation_model_duplication
+            end
+
+
             flash[:notice] = I18n.t(:notice_organization_successful_created)
           else
             flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
@@ -1221,13 +1232,13 @@ class OrganizationsController < ApplicationController
         format.html { redirect_to organizationals_params_path and return }
         format.js { render :js => "window.location.replace('/organizationals_params');"}
       end
-    rescue
-      flash[:error] = "Une erreur est survenue lors de la copie"
-      respond_to do |format|
-        format.html { redirect_to organizationals_params_path and return }
-        format.js { render :js => "window.location.replace('/organizationals_params');"}
-      end
-    end
+    # rescue
+    #   flash[:error] = "Une erreur est survenue lors de la copie"
+    #   respond_to do |format|
+    #     format.html { redirect_to organizationals_params_path and return }
+    #     format.js { render :js => "window.location.replace('/organizationals_params');"}
+    #   end
+    # end
   end
 
   def new
