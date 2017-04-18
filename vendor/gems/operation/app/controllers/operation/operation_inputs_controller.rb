@@ -56,9 +56,11 @@ class Operation::OperationInputsController < ApplicationController
       ActiveRecord::Base.transaction do
         if @operation_input.save
 
+          description = @operation_input.description.nil? ? @operation_input.name : @operation_input.description
+
           attr = PeAttribute.where(name: @operation_input.name,
                                    alias: @operation_input.name.underscore.gsub(" ", "_"),
-                                   description: @operation_input.description,
+                                   description: description,
                                    operation_input_id: @operation_input.id,
                                    operation_model_id: @operation_input.operation_model_id).first_or_create!
 
@@ -98,6 +100,7 @@ class Operation::OperationInputsController < ApplicationController
 
         if @operation_input.update_attributes(params[:operation_input])
 
+          description = @operation_input.description.nil? ? @operation_input.name : @operation_input.description
           pm = Pemodule.where(alias: "operation").first
           old_attr = PeAttribute.where(name: old_attr_name, operation_model_id: @operation_model.id).first
 
@@ -105,7 +108,7 @@ class Operation::OperationInputsController < ApplicationController
 
             at = PeAttribute.create(name: @operation_input.name,
                                     alias: @operation_input.name.underscore.gsub(" ", "_"),
-                                    description: @operation_input.description,
+                                    description: description,
                                     operation_input_id: @operation_input.id,
                                     operation_model_id: @operation_model.id)
 
@@ -117,7 +120,7 @@ class Operation::OperationInputsController < ApplicationController
 
             old_attr.name = @operation_input.name
             old_attr.alias = @operation_input.name.underscore.gsub(" ", "_")
-            old_attr.description = @operation_input.description
+            old_attr.description = description
             old_attr.operation_model_id = @operation_model.id
             old_attr.operation_input_id = @operation_input.id
 
