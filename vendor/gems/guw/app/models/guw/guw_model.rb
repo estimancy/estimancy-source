@@ -203,11 +203,13 @@ module Guw
 
       unless guw_output.nil?
         conv = guw_output.standard_coefficient
+        unit = ''
       else
+        unit = guw_output.unit
         conv = 1
       end
 
-      value = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.effort_unit}"
+      value = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{unit}"
 
       return value
 
