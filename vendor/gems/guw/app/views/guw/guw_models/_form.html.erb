@@ -139,6 +139,7 @@
         <tr>
           <th><%= I18n.t(:name) %></th>
           <th>Type de sortie</th>
+          <th>Unité de sortie</th>
           <th>Valeurs intermédiaires</th>
           <th>Sous-total</th>
           <th>Coefficient Standard</th>
@@ -150,6 +151,7 @@
             <tr>
               <td><%= guw_output.name %></td>
               <td><%= guw_output.output_type %></td>
+              <td><%= guw_output.unit %></td>
               <td><%= guw_output.allow_intermediate_value %></td>
               <td><%= guw_output.allow_subtotal %></td>
               <td><%= guw_output.standard_coefficient %></td>
