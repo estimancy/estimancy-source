@@ -72,12 +72,6 @@
         </span>
       </span>
 
-      <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; Nombre d'U.O. H.S. :
-        <span class="label label-info off_line_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity)}.flatten.compact.sum %>
-        </span>
-      </span>
     </div>
   </div>
 
@@ -184,7 +178,7 @@
 
               <th class="">
                 <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                  COEF
+                  Coefficient de complexité
                 <% else %>
                   Complexité
                 <% end %>
