@@ -14,15 +14,17 @@
       <% out_attr = module_project_attributes.where(operation_model_id: @operation_model.id).last %>
 
       <% input_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
-      <%# output_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
-      <% output_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
+      <% output_attribute_ids = input_attribute_ids %>
 
-      <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
-      <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
+      <% module_project_all_evs = current_module_project.estimation_values %>
 
-      <% if current_inputs_evs.all.empty?
+      <% if module_project_all_evs.size != input_attribute_ids.size
            current_inputs_evs = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
+           module_project_all_evs = current_inputs_evs
       end %>
+
+      <% current_inputs_evs = module_project_all_evs.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
+      <% current_outputs_evs = module_project_all_evs.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
 
       <h4>
         <b>
@@ -269,10 +271,11 @@
               <td>
                 <% current_outputs_evs.each do |ev| %>
 
-                    <% is_modifiable = @operation_model.modify_output %>
-                    <% coeff = @operation_model.standard_unit_coefficient %>
+                    <% operation_input = ev.pe_attribute.operation_input %>
+                    <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                    <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
                     <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
-                    <% unit = @operation_model.output_unit %>
+                    <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
 
                     <div class="row-fluid">
                       <div class="span9">
@@ -295,17 +298,18 @@
           <td>
             <% current_outputs_evs.each do |ev| %>
 
-                <% is_modifiable = @operation_model.modify_output %>
-                <% coeff = @operation_model.standard_unit_coefficient %>
+                <% operation_input = ev.pe_attribute.operation_input %>
+                <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
                 <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
-                <% unit = @operation_model.output_unit %>
+                <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
 
                 <div class="row-fluid">
                   <div class="span9">
                     <%= ev.pe_attribute.name %> :
 
                     <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                        <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-mini" %>
+                        <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-mini" %>
                     <% else %>
                         <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
                         <%= number_field_tag "", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}",  class: "input-mini", disabled: true %>
@@ -321,16 +325,17 @@
               <td>
                 <% current_outputs_evs.each do |ev| %>
 
-                    <% is_modifiable = @operation_model.modify_output %>
-                    <% coeff = @operation_model.standard_unit_coefficient %>
+                    <% operation_input = ev.pe_attribute.operation_input %>
+                    <% is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable") %>
+                    <% coeff = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient") %>
                     <% coeff = (coeff.nil? || coeff==0) ? 1 : coeff %>
-                    <% unit = @operation_model.output_unit %>
+                    <% unit = operation_input.nil? ? "" : operation_input.send("standard_unit")  %>
 
                     <div class="row-fluid">
                       <div class="span9">
                         <%= ev.pe_attribute.name %> :
                         <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                            <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_operation_model_value_with_precision(@operation_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
+                            <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
                         <% else %>
                             <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
                             <%= number_field_tag "", ev.nil? ? '' : convert_operation_model_value_with_precision(@operation_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>

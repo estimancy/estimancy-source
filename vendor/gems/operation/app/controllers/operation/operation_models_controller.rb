@@ -185,12 +185,12 @@ class Operation::OperationModelsController < ApplicationController
             input_effort_unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
             input_effort_unit_coefficient.nil? ? (input_effort_unit_coefficient = 1) : (input_effort_unit_coefficient = input_effort_unit_coefficient.to_f)
 
-            size = size_brut.to_f * input_effort_unit_coefficient
+            size = size_brut.blank? ? nil : (size_brut.to_f * input_effort_unit_coefficient)
 
             input_size_data["#{input_ev.id}"][level] = size
             input_data_for_outputs["#{input_ev.pe_attribute.id}"][level] = size
 
-            unless size_brut.empty?
+            unless size_brut.blank?
               inputs_array_to_compute[level] << size
             end
 
@@ -204,14 +204,16 @@ class Operation::OperationModelsController < ApplicationController
         end
 
 
-        ############# Effectuer les calculs pour la sortie  #############
+        ############# Effectuer les calculs pour la ou les sortie(s)  #############
 
-        output_ev = output_evs.first
-        output_tmp_prbl = Array.new
+        #output_ev = output_evs.first
 
-        if output_ev
-          output_unit_coefficient = @operation_model.standard_unit_coefficient
-          output_unit_coefficient.nil? ? (output_unit_coefficient = 1) : (output_unit_coefficient = output_unit_coefficient.to_f)
+        output_evs.each do |output_ev|
+          output_tmp_prbl = Array.new
+
+          operation_input = output_ev.pe_attribute.operation_input
+          output_unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
+          output_unit_coefficient = output_unit_coefficient.nil? ? 1 : output_unit_coefficient.to_f
 
           operation_type = @operation_model.operation_type
 
@@ -220,49 +222,38 @@ class Operation::OperationModelsController < ApplicationController
             when "addition"
               ["low", "most_likely", "high"].each do |level|
                 level_sum = inputs_array_to_compute[level].sum
-                result_value = level_sum
+                result_value = level_sum.to_f * output_unit_coefficient
 
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
-                output_ev.save
-
                 output_tmp_prbl << result_value
               end
-
-              output_probable_value = ((output_tmp_prbl[0].to_f + (4 * output_tmp_prbl[1].to_f) + output_tmp_prbl[2].to_f)/6)
-              output_ev.update_attribute(:"string_data_probable", { current_component.id => output_probable_value } )
-
+              
             when "moyenne"
 
               ["low", "most_likely", "high"].each do |level|
                 level_sum = inputs_array_to_compute[level].sum
                 number_of_inputs = inputs_array_to_compute[level].empty? ? 1 : inputs_array_to_compute[level].size
-                result_value = level_sum / number_of_inputs
+                result_value = (level_sum / number_of_inputs).to_f * output_unit_coefficient
 
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
-                output_ev.save
-
                 output_tmp_prbl << result_value
               end
-
-              output_probable_value = ((output_tmp_prbl[0].to_f + (4 * output_tmp_prbl[1].to_f) + output_tmp_prbl[2].to_f)/6)
-              output_ev.update_attribute(:"string_data_probable", { current_component.id => output_probable_value } )
-
+              
             when "multiplication"
 
               ["low", "most_likely", "high"].each do |level|
                 level_sum = inputs_array_to_compute[level].compact.inject(:*)
-                result_value = level_sum
+                result_value = level_sum.to_f * output_unit_coefficient
 
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
-                output_ev.save
-
                 output_tmp_prbl << result_value
               end
-
-              output_probable_value = ((output_tmp_prbl[0].to_f + (4 * output_tmp_prbl[1].to_f) + output_tmp_prbl[2].to_f)/6)
-              output_ev.update_attribute(:"string_data_probable", { current_component.id => output_probable_value } )
           end
 
+          output_probable_value = ((output_tmp_prbl[0].to_f + (4 * output_tmp_prbl[1].to_f) + output_tmp_prbl[2].to_f)/6)
+          #output_ev.update_attribute(:"string_data_probable", { current_component.id => output_probable_value } )
+          output_ev.send("string_data_probable")[current_component.id] = output_probable_value
+          output_ev.save
         end
 
       end

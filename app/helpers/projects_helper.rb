@@ -264,19 +264,13 @@ module ProjectsHelper
   end
 
   #Afficher les valeurs du module d'Operation
-  def convert_operation_model_value_with_precision(operation_model, ev, value, precision =2)
+  def convert_operation_model_value_with_precision(operation_model, ev, value, precision=2)
     in_out_standard_unit_coefficient = 1
     in_out = ev.in_out
 
     begin
-      case in_out
-        when "input"
-          operation_input = ev.operation_input
-          in_out_standard_unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
-
-        when "output"
-          in_out_standard_unit_coefficient = operation_model.standard_unit_coefficient
-      end
+      operation_input = ev.pe_attribute.operation_input
+      in_out_standard_unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
 
       if value.nil?
         result_value = nil
