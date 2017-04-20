@@ -212,6 +212,7 @@ class Operation::OperationModelsController < ApplicationController
           output_tmp_prbl = Array.new
 
           operation_input = output_ev.pe_attribute.operation_input
+          is_modifiable = operation_input.nil? ? false : operation_input.send("is_modifiable")
           output_unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
           output_unit_coefficient = output_unit_coefficient.nil? ? 1 : output_unit_coefficient.to_f
 
@@ -224,6 +225,19 @@ class Operation::OperationModelsController < ApplicationController
                 level_sum = inputs_array_to_compute[level].sum
                 result_value = level_sum.to_f * output_unit_coefficient
 
+                if is_modifiable == true
+                  if @operation_model.three_points_estimation?
+                    output_value = params["effort_#{level}"]["#{output_ev.id}"]
+                  else
+                    output_value = params["effort_most_likely"]["#{output_ev.id}"]
+                  end
+
+                  output_value.blank? ? (output_value = nil) : (output_value = output_value.to_f)
+                  if output_value != result_value
+                    result_value = output_value
+                  end
+                end
+
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
                 output_tmp_prbl << result_value
               end
@@ -235,6 +249,19 @@ class Operation::OperationModelsController < ApplicationController
                 number_of_inputs = inputs_array_to_compute[level].empty? ? 1 : inputs_array_to_compute[level].size
                 result_value = (level_sum / number_of_inputs).to_f * output_unit_coefficient
 
+                if is_modifiable == true
+                  if @operation_model.three_points_estimation?
+                    output_value = params["effort_#{level}"]["#{output_ev.id}"]
+                  else
+                    output_value = params["effort_most_likely"]["#{output_ev.id}"]
+                  end
+
+                  output_value.blank? ? (output_value = nil) : (output_value = output_value.to_f)
+                  if output_value != result_value
+                    result_value = output_value
+                  end
+                end
+
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
                 output_tmp_prbl << result_value
               end
@@ -244,6 +271,19 @@ class Operation::OperationModelsController < ApplicationController
               ["low", "most_likely", "high"].each do |level|
                 level_sum = inputs_array_to_compute[level].compact.inject(:*)
                 result_value = level_sum.to_f * output_unit_coefficient
+
+                if is_modifiable == true
+                  if @operation_model.three_points_estimation?
+                    output_value = params["effort_#{level}"]["#{output_ev.id}"]
+                  else
+                    output_value = params["effort_most_likely"]["#{output_ev.id}"]
+                  end
+
+                  output_value.blank? ? (output_value = nil) : (output_value = output_value.to_f)
+                  if output_value != result_value
+                    result_value = output_value
+                  end
+                end
 
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
                 output_tmp_prbl << result_value
