@@ -149,12 +149,6 @@
                   <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
                 </span>
               </span>
-              <span class="label label-info">
-                Nombre d'U.O. H.S. :
-                <span class="<%= uowg.id %>_off_line">
-                  <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
-                </span>
-              </span>
             </div>
           </div>
         </div>
@@ -167,8 +161,8 @@
           <table class="table table-bordered table-condensed">
             <tr>
               <th class="span1">#</th>
-              <th class=""><%= I18n.t :name %></th>
-              <th class="">UO</th>
+              <th><%= I18n.t :name %></th>
+              <th>UO</th>
 
               <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                 <th>
@@ -247,7 +241,6 @@
                     <% end %>
                   </td>
                 <% end %>
-
 
                 <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
@@ -428,15 +421,18 @@
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
     </div>
     <div class="modal-body">
-      <!--<p>description de se que fait l'action peut etre ?</p>-->
       <%= file_field_tag :file %>
+
+      <div class="loading span11 hide">
+        <h4>
+          <%= I18n.t(:please_wait_import) %>
+          <%= image_tag 'ajax-loader.gif' %>
+        </h4>
+      </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
       <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-    </div>
-    <div class="loading span11 hide">
-      <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
     </div>
   <% end %>
 </div>
