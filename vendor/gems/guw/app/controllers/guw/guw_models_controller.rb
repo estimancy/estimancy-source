@@ -219,7 +219,7 @@ class Guw::GuwModelsController < ApplicationController
                     next_item = next_item + 1
 
                     begin
-                      value = tab[next_item][column_index + i - 1]
+                      value = tab[next_item][column_index + i]
                     rescue
                       value = ""
                     end
@@ -232,6 +232,7 @@ class Guw::GuwModelsController < ApplicationController
                                                                   value: value)
                     end
                   end
+                  next_item = next_item + 1
                 end
               end
             end

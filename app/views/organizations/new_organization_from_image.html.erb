@@ -1,29 +1,30 @@
 <br><br>
 
-<div class="tabs">
+<!--<div class="tabs">-->
+  <div class="well well-rounded">
     <h4><b><%= I18n.t(:label_request_create_organization) %></b></h4>
 
     <%= form_tag '/create_organization_from_image', :method => 'POST', :class => 'simple_form' do %>
       <%= hidden_field_tag "action_name", "new_organization_from_image" %>
       <div style="margin: 30px; width: 50%">
         <div class="row">
-            <div class="span3"><%= I18n.t(:label_organization_name) %> : </div>
+            <div class="span2"><%= I18n.t(:label_organization_name) %> : </div>
             <div class="span4"> <%= text_field_tag "organization_name", nil, class: 'simple_form' %> </div>
         </div>
 
        <div class="row">
-         <div class="span3"><%= I18n.t(:label_organization_image) %>  : </div>
+         <div class="span2"><%= I18n.t(:label_organization_image) %>  : </div>
          <div class="span4"><%= select_tag "organization_image", options_from_collection_for_select(Organization.where(is_image_organization: true), "id", "name") %> </div>
        </div>
 
        <br>
        <div class="row">
-         <div class="span3"><%= I18n.t(:label_login) %> : </div>
+         <div class="span2"><%= I18n.t(:label_login) %> : </div>
          <div class="span4"><%= text_field_tag "identifiant", nil, class: 'simple_form' %> </div>
        </div>
 
        <div class="row">
-         <div class="span3"><%= I18n.t(:password) %> : </div>
+         <div class="span2"><%= I18n.t(:password) %> : </div>
          <div class="span4"><%= password_field_tag "password", nil, class: 'simple_form' %> </div>
        </div>
 
@@ -51,13 +52,13 @@
 
        <br>
        <div class="row">
-         <div class="span2"><%= submit_tag I18n.t('apply'), :id => 'create_organization_from_image', :class => 'btn' %> </div>
-         <div class="span4"><%= link_to I18n.t('back'), organizationals_params_path, :class => 'btn' %> </div>
+         <%= submit_tag I18n.t('apply'), :id => 'create_organization_from_image', :class => 'btn btn-primary' %>
+         <%= link_to I18n.t('back'), organizationals_params_path, :class => 'btn' %>
        </div>
      </div>
-
     <% end %>
-</div>
+  </div>
+<!--</div>-->
 
 <div id="display_animation_ajax_loader" style="display: none">
     <p> <%= I18n.t(:wait_for_new_organization_creation) %></p>

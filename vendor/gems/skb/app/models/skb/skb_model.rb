@@ -21,7 +21,7 @@
 
 module Skb
   class SkbModel < ActiveRecord::Base
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: "Une instance du module avec le même nom existe déjà"}
 
     belongs_to :organization
 
