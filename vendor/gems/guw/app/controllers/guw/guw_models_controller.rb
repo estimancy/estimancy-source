@@ -116,7 +116,8 @@ class Guw::GuwModelsController < ApplicationController
                                                 three_points_estimation: tab[5][1].to_i == 1,
                                                 retained_size_unit: tab[6][1],
                                                 hour_coefficient_conversion: tab[7][1],
-                                                organization_id: @current_organization.id)
+                                                organization_id: @current_organization.id,
+                                                config_type: tab[12][1])
               critical_flag = false
             else
               # break
@@ -150,7 +151,7 @@ class Guw::GuwModelsController < ApplicationController
                                                       guw_model_id: @guw_model.id).first
 
               tab.each_with_index do |row, i|
-                if i > 3 && !row.nil?
+                if i >= 3 && !row.nil?
                   Guw::GuwCoefficientElement.create(name: row[1],
                                                     value: row[2],
                                                     guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
@@ -974,12 +975,9 @@ class Guw::GuwModelsController < ApplicationController
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
     coefficients_worksheet.add_cell(0, 1, I18n.t(:coefficient_type))
     coefficients_worksheet.add_cell(0, 2, I18n.t(:allow_intermediate_value))
+    coefficients_worksheet.add_cell(0, 3, "Coefficient déporté")
     coefficients_worksheet.change_row_bold(0,true)
     coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
-
-    coefficients_worksheet.change_column_width(0, I18n.t(:name).size)
-    coefficients_worksheet.change_column_width(1, I18n.t(:coefficient_type).size)
-    coefficients_worksheet.change_column_width(2, I18n.t(:allow_intermediate_value).size)
 
     column_0_width = coefficients_worksheet.get_column_width(0)
     column_1_width = coefficients_worksheet.get_column_width(1)
@@ -989,6 +987,7 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
       coefficients_worksheet.add_cell(index + 1, 1, coeff.coefficient_type)
       coefficients_worksheet.add_cell(index + 1, 2, (coeff.allow_intermediate_value == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 3, (coeff.deported == true ? 1 : 0))
 
       coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
 
