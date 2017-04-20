@@ -9,7 +9,6 @@ namespace :projects do
 
   task copy_multiple_estimations: :environment do
 
-
     @current_user = User.where(login_name: "admin").first
     #current_user = sign_in(@user)
     #can :manage, :all
@@ -17,9 +16,9 @@ namespace :projects do
     project_ctlr = ProjectsController.new
 
 
-
     begin
-      referenced_estimation = Project.where(name: "PG462").first
+      # Organization:  CDC AMOA INFRA
+      referenced_estimation = Project.where(title: "PG462").first
       @organization = referenced_estimation.organization
     rescue
       @organization = Organization.where(name: "TEST_EBE").first
