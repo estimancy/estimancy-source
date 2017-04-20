@@ -338,7 +338,8 @@
                   %>
 
                   <td>
-                    <%= link_to elmnts.flatten.compact.inject(&:*), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                    <% v = elmnts.flatten.compact.inject(&:*) %>
+                    <%= link_to v.nil? ? '...' : v, guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
                   </td>
                 <% end %>
 
