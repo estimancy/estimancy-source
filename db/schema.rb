@@ -422,13 +422,15 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer "ge_model_id"
-    t.integer "ge_factor_id"
-    t.string  "factor_alias"
-    t.text    "description"
-    t.integer "organization_id"
-    t.integer "project_id"
-    t.integer "module_project_id"
+    t.integer  "ge_model_id"
+    t.integer  "ge_factor_id"
+    t.string   "factor_alias"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "project_id"
+    t.integer  "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -682,7 +684,7 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
     t.string   "work_unit_type"
     t.string   "weighting_type"
     t.string   "factor_type"
@@ -759,14 +761,14 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_technology_id"
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
     t.integer  "guw_model_id"
     t.integer  "copy_id"
     t.boolean  "allow_quantity"
-    t.boolean  "allow_retained",             :default => true
+    t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
-    t.boolean  "allow_criteria",             :default => true
+    t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
     t.string   "attribute_type"
   end
@@ -943,6 +945,12 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
+  end
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
@@ -1221,6 +1229,27 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.datetime "updated_at"
   end
 
+  create_table "peicons", :force => true do |t|
+    t.string   "name"
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "peicons", ["record_status_id"], :name => "index_peicons_on_record_status_id"
+  add_index "peicons", ["reference_id"], :name => "index_peicons_on_parent_id"
+  add_index "peicons", ["uuid"], :name => "index_peicons_on_uuid", :unique => true
+
   create_table "pemodules", :force => true do |t|
     t.string   "title"
     t.string   "alias"
@@ -1446,6 +1475,25 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.float    "value_high"
   end
 
+  create_table "record_statuses", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.integer  "status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
+  add_index "record_statuses", ["record_status_id"], :name => "index_record_statuses_on_record_status_id"
+  add_index "record_statuses", ["reference_id"], :name => "index_record_statuses_on_parent_id"
+  add_index "record_statuses", ["uuid"], :name => "index_record_statuses_on_uuid", :unique => true
+
   create_table "size_unit_type_complexities", :force => true do |t|
     t.integer  "size_unit_type_id"
     t.integer  "organization_uow_complexity_id"
@@ -1670,7 +1718,7 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",    :null => false
+    t.string   "email",                  :default => "",                    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
     t.datetime "created_at"
@@ -1690,11 +1738,11 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.text     "ten_latest_projects"
     t.integer  "organization_id"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",     :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",                    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0,     :null => false
+    t.integer  "sign_in_count",          :default => 0,                     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -1702,7 +1750,7 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        :default => 0,     :null => false
+    t.integer  "failed_attempts",        :default => 0,                     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
@@ -1712,7 +1760,7 @@ ActiveRecord::Schema.define(:version => 20170419074406) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date"
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
