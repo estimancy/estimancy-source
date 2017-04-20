@@ -121,7 +121,6 @@ module ProjectsHelper
     end
   end
 
-
   def get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, pe_attribute_alias)
     case pe_attribute_alias
       when "effort", "cost"
@@ -138,31 +137,6 @@ module ProjectsHelper
     end
     min_effort_value
   end
-
-  # Get the organization effort limit and unit according to the smaller value
-  def get_organization_effort_limit_and_unit(v, organization)
-    if v.class == Array
-      v = v.compact.reject{ |i| i == 0}.min
-    end
-
-    unless v.class == Hash
-      value = v.to_f
-      if value < organization.limit1.to_i
-        [organization.limit1_coef.to_f, organization.limit1_unit]
-      elsif value < organization.limit2.to_i
-        [organization.limit2_coef.to_f, organization.limit2_unit]
-      elsif value < organization.limit3.to_i
-        [organization.limit3_coef.to_f, organization.limit3_unit]
-      elsif value < organization.limit4.to_i
-        [organization.limit4_coef.to_f, organization.limit4_unit]
-      else
-        [organization.limit4_coef.to_f, organization.limit4_unit]
-      end
-    else
-      []
-    end
-  end
-
 
   #Conversion en fonction des seuils et de la précision en params #> 12.123 (si precision = 5) ou 12.12 si (si precision = 2)
   def convert_with_specific_precision(v, organization, precision)

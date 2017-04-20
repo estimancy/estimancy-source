@@ -1618,6 +1618,8 @@ class Guw::GuwModelsController < ApplicationController
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
         unless guowa.nil?
           worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+        else
+          p "GUOWA is nil"
         end
       end
     end

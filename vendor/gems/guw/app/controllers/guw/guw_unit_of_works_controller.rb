@@ -1515,6 +1515,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   end
 
+  def deported
+    @guw_unit_of_work = Guw::GuwUnitOfWork.where(id: params[:guw_unit_of_work_id]).first
+    @guw_type = @guw_unit_of_work.guw_type
+    @guw_model = current_module_project.guw_model
+  end
+
   private
   def update_estimation_values
     #we save the effort now in estimation values

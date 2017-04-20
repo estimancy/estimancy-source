@@ -22,6 +22,8 @@
 module Guw
   class GuwModel < ActiveRecord::Base
 
+    # include ActionView::Helpers
+
     has_many :guw_types, dependent: :destroy
     has_many :guw_unit_of_works, dependent: :destroy
     has_many :guw_attributes, dependent: :destroy
@@ -193,7 +195,7 @@ module Guw
       end
     end
 
-    def self.display_value(data_probable, estimation_value)
+    def self.display_value(data_probable, estimation_value, vw)
 
       module_project = estimation_value.module_project
       guw_model = module_project.guw_model
@@ -202,17 +204,47 @@ module Guw
       guw_output = guw_model.guw_outputs.where(name: pe_attribute.name).first
 
       unless guw_output.nil?
-        unit = guw_output.unit
         conv = guw_output.standard_coefficient
       else
         conv = 1
-        unit = ''
       end
 
-      value = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{unit}"
+      value = data_probable.to_f.round(2)
 
-      return value
+      if vw.use_organization_effort_unit == true
+        tab = get_organization_unit(value, guw_model.organization)
+        unit = tab.last
+      else
+        unless guw_output.nil?
+          unit = guw_output.unit
+        else
+          unit = ''
+        end
+      end
+
+      return "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{unit}"
 
     end
+
+    private
+    def self.get_organization_unit(v, organization)
+      unless v.class == Hash
+        value = v.to_f
+        if value < organization.limit1.to_i
+          [organization.limit1_coef.to_f, organization.limit1_unit]
+        elsif value < organization.limit2.to_i
+          [organization.limit2_coef.to_f, organization.limit2_unit]
+        elsif value < organization.limit3.to_i
+          [organization.limit3_coef.to_f, organization.limit3_unit]
+        elsif value < organization.limit4.to_i
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        else
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        end
+      else
+        []
+      end
+    end
+
   end
 end

@@ -1,5 +1,12 @@
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path do %>
 
+  <div class="modal fade" id="modal_deported" tabindex="-1" role="dialog" aria-labelledby="modal_deported_label" aria-hidden="true" backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-deported" id="modal_deported_content">
+      </div>
+    </div>
+  </div>
+
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
 
   <div class="row-fluid">
@@ -149,12 +156,6 @@
                   <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
                 </span>
               </span>
-              <span class="label label-info">
-                Nombre d'U.O. H.S. :
-                <span class="<%= uowg.id %>_off_line">
-                  <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
-                </span>
-              </span>
             </div>
           </div>
         </div>
@@ -167,8 +168,8 @@
           <table class="table table-bordered table-condensed">
             <tr>
               <th class="span1">#</th>
-              <th class=""><%= I18n.t :name %></th>
-              <th class="">UO</th>
+              <th><%= I18n.t :name %></th>
+              <th>UO</th>
 
               <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                 <th>
@@ -178,17 +179,30 @@
 
               <th class="">
                 <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                  Coefficient de complexité
+                  Coeff. de complexité
                 <% else %>
                   Complexité
                 <% end %>
               </th>
 
+              <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                <th>Coefficients</th>
+              <% end %>
+
               <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                 <% unless i[1].blank? %>
-                  <th>
-                    <%= i[0] %>
-                  </th>
+                  <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
+                    <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                    <% unless guw_coefficient.nil? %>
+                      <th>
+                        <%= i[0] %>
+                      </th>
+                    <% end %>
+                  <% else %>
+                    <th>
+                      <%= i[0] %>
+                    </th>
+                  <% end %>
                 <% end %>
               <% end %>
 
@@ -247,7 +261,6 @@
                     <% end %>
                   </td>
                 <% end %>
-
 
                 <td class="span2">
                   <span class="cotation_label_<%= guow.id %>">
@@ -308,10 +321,28 @@
                   </span>
                 </td>
 
+                <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                  <%
+                     elmnts = []
+                     Guw::GuwCoefficient.where(guw_model_id: @guw_model.id).each do |guw_coefficient|
+                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+                                                                         guw_coefficient_id: guw_coefficient.id).first
+                       elm = ceuw.guw_coefficient_element
+                       unless elm.nil?
+                        elmnts << elm.value
+                       end
+                     end
+                  %>
+
+                  <td>
+                    <%= link_to elmnts.flatten.compact.inject(&:*), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                  </td>
+                <% end %>
+
                 <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
                       <% unless guw_coefficient.nil? %>
                         <% unless guw_coefficient.guw_coefficient_elements.empty? %>
                           <% results = guw_coefficient.guw_coefficient_elements %>
@@ -319,7 +350,7 @@
                                                                                guw_coefficient_id: guw_coefficient.id).first %>
 
                           <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
-                            <td class="span3 <%= guw_coefficient.id %>_<%= guow.id %>">
+                            <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
 
                               <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                    style: "width: 43px;",
@@ -428,15 +459,18 @@
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
     </div>
     <div class="modal-body">
-      <!--<p>description de se que fait l'action peut etre ?</p>-->
       <%= file_field_tag :file %>
+
+      <div class="loading span11 hide">
+        <h4>
+          <%= I18n.t(:please_wait_import) %>
+          <%= image_tag 'ajax-loader.gif' %>
+        </h4>
+      </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
       <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-    </div>
-    <div class="loading span11 hide">
-      <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
     </div>
   <% end %>
 </div>
@@ -490,6 +524,13 @@
   }
 
   $(document).ready(function () {
+
+    $('.deported').click(function(){
+      $.ajax({
+        url: "<%= guw.deported_path %>",
+        data: "guw_unit_of_work_id=" + $(this).attr("guw")
+      });
+    });
 
     $('.selected').change(function(){
       $.ajax({

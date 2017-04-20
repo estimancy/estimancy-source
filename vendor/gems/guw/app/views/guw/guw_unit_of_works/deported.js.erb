@@ -1,0 +1,5 @@
+$("#modal_deported_content").html("<%= j(render 'guw/guw_unit_of_works/deported_modal', { :guow => @guw_unit_of_work })%>")
+$("#modal_deported").modal({
+  keyboard: false,
+  backdrop: "static"
+});

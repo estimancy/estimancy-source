@@ -15,7 +15,9 @@
 
     <% if guw_coefficient.coefficient_type == "Liste" %>
       <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
-    <% elsif guw_coefficient.coefficient_type == "Pourcentage"  %>
+    <% elsif guw_coefficient.coefficient_type == "Pourcentage" %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
+    <% elsif guw_coefficient.coefficient_type == "Coefficient" %>
       <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
     <% end %>
 
