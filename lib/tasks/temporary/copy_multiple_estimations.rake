@@ -18,7 +18,7 @@ namespace :projects do
 
     begin
       # Organization:  CDC AMOA INFRA
-      referenced_estimation = Project.where(title: "PG462").first
+      referenced_estimation = Project.where(title: "PG-462").first
       @organization = referenced_estimation.organization
     rescue
       @organization = Organization.where(name: "TEST_EBE").first
