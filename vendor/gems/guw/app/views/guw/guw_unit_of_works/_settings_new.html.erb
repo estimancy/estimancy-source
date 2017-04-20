@@ -325,11 +325,14 @@
                   <%
                      elmnts = []
                      Guw::GuwCoefficient.where(guw_model_id: @guw_model.id).each do |guw_coefficient|
+
                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
                                                                          guw_coefficient_id: guw_coefficient.id).first
-                       elm = ceuw.guw_coefficient_element
-                       unless elm.nil?
-                        elmnts << elm.value
+                       unless ceuw.nil?
+                         elm = ceuw.guw_coefficient_element
+                         unless elm.nil?
+                          elmnts << elm.value
+                         end
                        end
                      end
                   %>
