@@ -26,7 +26,7 @@ namespace :projects do
     end
 
 
-    ESTIMATIONS_NUMBER = 5
+    ESTIMATIONS_NUMBER = 200
 
     # ActiveRecord::Base.transaction do
     #   ###referenced_estimation = Project.where(name: "PG462").first
