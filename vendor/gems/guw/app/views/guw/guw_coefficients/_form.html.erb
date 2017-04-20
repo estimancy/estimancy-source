@@ -18,6 +18,7 @@
         <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient"], label: "Type de Coefficient", include_blank: false %>
         <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>
+        <%= f.input :deported, label: "Coefficient déporté" %>
       </div>
 
       <% if can? :manage_modules_instances, ModuleProject %>

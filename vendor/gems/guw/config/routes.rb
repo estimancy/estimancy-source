@@ -104,4 +104,6 @@ Guw::Engine.routes.draw do
   post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"
 
   post "auto_sizing" => "guw_models#auto_sizing", as: "auto_sizing"
+
+  post "deported" => "guw_unit_of_works#deported", as: "deported"
 end
