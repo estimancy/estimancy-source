@@ -529,13 +529,6 @@
 
   $(document).ready(function () {
 
-    $('.deported').click(function(){
-      $.ajax({
-        url: "<%= guw.deported_path %>",
-        data: "guw_unit_of_work_id=" + $(this).attr("guw")
-      });
-    });
-
     $('.selected').change(function(){
       $.ajax({
         url: "<%= guw.change_selected_state_path %>",
