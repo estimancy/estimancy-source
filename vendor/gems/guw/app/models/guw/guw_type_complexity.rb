@@ -24,8 +24,6 @@ module Guw
     belongs_to :guw_type
     has_many :guw_attribute_complexities, dependent: :delete_all
 
-    validates_presence_of :name, :value###, :guw_type_id
-
     amoeba do
       enable
       exclude_association [:guw_attribute_complexities]

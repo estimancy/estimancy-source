@@ -119,9 +119,6 @@ class Guw::GuwModelsController < ApplicationController
                                                 organization_id: @current_organization.id,
                                                 allow_technology: false,
                                                 config_type: tab[12][1])
-              critical_flag = false
-            else
-              # break
             end
 
           elsif index == 1
@@ -179,6 +176,7 @@ class Guw::GuwModelsController < ApplicationController
             end
 
           else
+
             @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
                                             description: tab[1][0],
                                             allow_quantity: tab[5][1] == 1,
@@ -187,7 +185,6 @@ class Guw::GuwModelsController < ApplicationController
                                             allow_criteria: tab[2][1] == 1,
                                             attribute_type: "Coefficient",
                                             guw_model_id: @guw_model.id)
-
 
             [1,6,11].each do |column_index|
               @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
@@ -243,32 +240,37 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
 
+            row_number = 0
+
             [1,6,11].each do |column_index|
 
-              begin
-                row_number = @guw_model.guw_coefficients.size
-                row_number += @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
-                row_number += 16
-                row_number += 1
-
-                @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
-                                                                     name: tab[row_number][column_index],
-                                                                     value: tab[row_number][column_index + 1])
-
-                @guw_model.guw_attributes.each_with_index do |att, j|
-
-                  Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                     guw_attribute_id: att.id,
-                                                     guw_type_id: @guw_type.id,
-                                                     enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
-                                                     bottom_range: tab[row_number + j + 2][column_index + 1],
-                                                     top_range: tab[row_number + j + 2][column_index + 2],
-                                                     value: tab[row_number + j + 2][column_index + 3],
-                                                     value_b: tab[row_number + j + 2][column_index + 4])
-
+              (0..9999).each do |i|
+                unless tab[i].nil?
+                  if tab[i][0] == "Seuils de complexité"
+                    row_number = i
+                    break
+                  end
                 end
-              rescue
               end
+
+              @guw_att_complexity = Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
+                                                                  name: tab[row_number][column_index],
+                                                                  value: tab[row_number][column_index + 1])
+
+              @guw_model.guw_attributes.each_with_index do |att, j|
+
+                Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                   guw_attribute_id: att.id,
+                                                   guw_type_id: @guw_type.id,
+                                                   enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
+                                                   bottom_range: tab[row_number + j + 2][column_index + 1],
+                                                   top_range: tab[row_number + j + 2][column_index + 2],
+                                                   value: tab[row_number + j + 2][column_index + 3],
+                                                   value_b: tab[row_number + j + 2][column_index + 4])
+
+              end
+
+              row_number += 1
             end
           end
         end
