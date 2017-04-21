@@ -325,17 +325,21 @@
                   <%
                      elmnts = []
                      Guw::GuwCoefficient.where(guw_model_id: @guw_model.id).each do |guw_coefficient|
+
                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
                                                                          guw_coefficient_id: guw_coefficient.id).first
-                       elm = ceuw.guw_coefficient_element
-                       unless elm.nil?
-                        elmnts << elm.value
+                       unless ceuw.nil?
+                         elm = ceuw.guw_coefficient_element
+                         unless elm.nil?
+                          elmnts << elm.value
+                         end
                        end
                      end
                   %>
 
                   <td>
-                    <%= link_to elmnts.flatten.compact.inject(&:*), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                    <% v = elmnts.flatten.compact.inject(&:*) %>
+                    <%= link_to v.nil? ? '...' : v, guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
                   </td>
                 <% end %>
 
@@ -524,13 +528,6 @@
   }
 
   $(document).ready(function () {
-
-    $('.deported').click(function(){
-      $.ajax({
-        url: "<%= guw.deported_path %>",
-        data: "guw_unit_of_work_id=" + $(this).attr("guw")
-      });
-    });
 
     $('.selected').change(function(){
       $.ajax({

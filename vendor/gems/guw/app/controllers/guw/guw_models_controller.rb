@@ -116,7 +116,9 @@ class Guw::GuwModelsController < ApplicationController
                                                 three_points_estimation: tab[5][1].to_i == 1,
                                                 retained_size_unit: tab[6][1],
                                                 hour_coefficient_conversion: tab[7][1],
-                                                organization_id: @current_organization.id)
+                                                organization_id: @current_organization.id,
+                                                allow_technology: false,
+                                                config_type: tab[12][1])
               critical_flag = false
             else
               # break
@@ -145,19 +147,22 @@ class Guw::GuwModelsController < ApplicationController
 
           elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
-            coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
-                                                    guw_model_id: @guw_model.id).first
+            begin
+              coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
+                                                      guw_model_id: @guw_model.id).first
 
-            tab.each_with_index do |row, i|
-              if i > 3 && !row.nil?
-                Guw::GuwCoefficientElement.create(name: row[1],
-                                                  value: row[2],
-                                                  guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  min_value: 0,
-                                                  max_value: 300,
-                                                  default_value: nil)
+              tab.each_with_index do |row, i|
+                if i >= 3 && !row.nil?
+                  Guw::GuwCoefficientElement.create(name: row[1],
+                                                    value: row[2],
+                                                    guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    min_value: 0,
+                                                    max_value: 300,
+                                                    default_value: nil)
+                end
               end
+            rescue
             end
 
           elsif index == (3 + @guw_model.guw_coefficients.size)
@@ -175,11 +180,12 @@ class Guw::GuwModelsController < ApplicationController
 
           else
             @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                            description: tab[0][0],
-                                            allow_quantity: tab[2][1] == 1,
-                                            allow_retained: tab[1][1] == 1,
-                                            allow_complexity: tab[3][1] == 1,
+                                            description: tab[1][0],
+                                            allow_quantity: tab[5][1] == 1,
+                                            allow_retained: tab[4][1] == 1,
+                                            allow_complexity: tab[7][1] == 1,
                                             allow_criteria: tab[4][1] == 1,
+                                            attribute_type: "Coefficient",
                                             guw_model_id: @guw_model.id)
 
 
@@ -233,6 +239,34 @@ class Guw::GuwModelsController < ApplicationController
                     end
                   end
                   next_item = next_item + 1
+                end
+              end
+
+              [1,4,7].each do |column_index|
+
+                begin
+                  row_number = @guw_model.guw_coefficients.size
+                  row_number += @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+                  row_number += 16
+                  row_number += 1
+
+                  @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
+                                                                       name: tab[row_number][column_index],
+                                                                       value: tab[row_number][column_index + 1])
+
+                  @guw_model.guw_attributes.each_with_index do |att, j|
+
+                    Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                       guw_attribute_id: att.id,
+                                                       guw_type_id: @guw_type.id,
+                                                       enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
+                                                       bottom_range: tab[row_number + j + 2][column_index + 1],
+                                                       top_range: tab[row_number + j + 2][column_index + 2],
+                                                       value: tab[row_number + j + 2][column_index + 3],
+                                                       value_b: tab[row_number + j + 2][column_index + 4])
+
+                  end
+                rescue
                 end
               end
             end
@@ -971,12 +1005,9 @@ class Guw::GuwModelsController < ApplicationController
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
     coefficients_worksheet.add_cell(0, 1, I18n.t(:coefficient_type))
     coefficients_worksheet.add_cell(0, 2, I18n.t(:allow_intermediate_value))
+    coefficients_worksheet.add_cell(0, 3, "Coefficient déporté")
     coefficients_worksheet.change_row_bold(0,true)
     coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
-
-    coefficients_worksheet.change_column_width(0, I18n.t(:name).size)
-    coefficients_worksheet.change_column_width(1, I18n.t(:coefficient_type).size)
-    coefficients_worksheet.change_column_width(2, I18n.t(:allow_intermediate_value).size)
 
     column_0_width = coefficients_worksheet.get_column_width(0)
     column_1_width = coefficients_worksheet.get_column_width(1)
@@ -986,6 +1017,7 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
       coefficients_worksheet.add_cell(index + 1, 1, coeff.coefficient_type)
       coefficients_worksheet.add_cell(index + 1, 2, (coeff.allow_intermediate_value == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 3, (coeff.deported == true ? 1 : 0))
 
       coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
 
