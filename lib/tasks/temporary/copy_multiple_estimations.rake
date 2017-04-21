@@ -7,7 +7,9 @@ namespace :projects do
 
   desc "Prise en compte des modifications du module de Transformation avec l'ajout des 4 entrée et 4 sorties"
 
-  task copy_multiple_estimations: :environment do
+  #task copy_multiple_estimations: :environment do
+  task :copy_multiple_estimations, [:counters] => :environment do |t, args|
+
 
     @current_user = User.where(login_name: "admin").first
     #current_user = sign_in(@user)
@@ -25,8 +27,11 @@ namespace :projects do
       referenced_estimation = Project.where(organization_id: @organization.id).first
     end
 
+    number_of_copy = 5
 
-    ESTIMATIONS_NUMBER = 200
+    if args[:counters]
+      number_of_copy = args[:counters].to_i
+    end
 
     # ActiveRecord::Base.transaction do
     #   ###referenced_estimation = Project.where(name: "PG462").first
@@ -54,8 +59,7 @@ namespace :projects do
     #   end
     # end
 
-
-    ESTIMATIONS_NUMBER.times.each do |counter|
+    number_of_copy.times.each do |counter|
 
       ActiveRecord::Base.transaction do
 
