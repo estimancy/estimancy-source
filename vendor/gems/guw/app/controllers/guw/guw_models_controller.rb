@@ -144,22 +144,22 @@ class Guw::GuwModelsController < ApplicationController
 
           elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
-            begin
+            unless tab[0].nil?
               coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
                                                       guw_model_id: @guw_model.id).first
 
               tab.each_with_index do |row, i|
                 if i >= 3 && !row.nil?
-                  Guw::GuwCoefficientElement.create(name: row[1],
-                                                    value: row[2],
-                                                    guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
-                                                    guw_model_id: @guw_model.id,
-                                                    min_value: 0,
-                                                    max_value: 300,
-                                                    default_value: nil)
+                  gce = Guw::GuwCoefficientElement.new(name: row[1],
+                                                       value: row[2],
+                                                       guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
+                                                       guw_model_id: @guw_model.id,
+                                                       min_value: 0,
+                                                       max_value: 300,
+                                                       default_value: nil)
+                  gce.save(validate: false)
                 end
               end
-            rescue
             end
 
           elsif index == (3 + @guw_model.guw_coefficients.size)
