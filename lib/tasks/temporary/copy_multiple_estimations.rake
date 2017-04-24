@@ -17,7 +17,6 @@ namespace :projects do
 
     project_ctlr = ProjectsController.new
 
-
     begin
       # Organization:  CDC AMOA INFRA
       referenced_estimation = Project.where(title: "PG-462").first
