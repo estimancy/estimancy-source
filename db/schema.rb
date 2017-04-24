@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170424072909) do
+ActiveRecord::Schema.define(:version => 20170424090906) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -571,6 +571,7 @@ ActiveRecord::Schema.define(:version => 20170424072909) do
     t.float    "max_value"
     t.float    "default_value"
     t.text     "description"
+    t.boolean  "default"
   end
 
   create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|

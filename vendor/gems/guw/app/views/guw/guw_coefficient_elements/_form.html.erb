@@ -20,6 +20,7 @@
           <div class="form-inputs">
             <%= f.input :name, label: I18n.t(:name) %>
             <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5" } %>
+            <%= f.input :default, label: I18n.t(:default_value) %>
             <%= f.input :value, label: I18n.t(:value) %>
             <%= f.input :min_value, label: "Minimum" %>
             <%= f.input :max_value, label: "Maximum" %>

@@ -44,7 +44,7 @@ class Guw::GuwCoefficientElementsController < ApplicationController
     set_page_title "Edit"
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization),
-                    @guw_coefficient_element => guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id)
+                    @guw_coefficient_element => guw.edit_guw_model_path(@guw_model, organization_id: @current_organization.id)
   end
 
   def create

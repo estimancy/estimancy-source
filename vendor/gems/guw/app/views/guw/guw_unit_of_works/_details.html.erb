@@ -4,9 +4,9 @@
     <div class="accordion" id="accordion1">
       <div class="accordion-heading">
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-          <h4>
+          <b style="margin: -13px;">
             Nombre d'unité d'oeuvre par type
-          </h4>
+          </b>
         </a>
       </div>
 
@@ -42,13 +42,14 @@
   <% end %>
 <% end %>
 
-<% @guw_model.guw_coefficients.each do |coefficient| %>
+<% @guw_model.guw_coefficients.where(deported: false).each do |coefficient| %>
   <div class="accordion" id="accordion<%= coefficient.id %>">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion<%= coefficient.id %>" href="#coll_<%= coefficient.id %>">
-        <h4>
+        <b style="margin: -13px;">
           Nombre d'unité d'oeuvre par <%= coefficient.name %>
-        </h4>
+        </b>
+        <br>
       </a>
     </div>
 

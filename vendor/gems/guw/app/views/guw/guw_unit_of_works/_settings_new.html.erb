@@ -185,10 +185,6 @@
                 <% end %>
               </th>
 
-              <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
-                <th>Coefficients</th>
-              <% end %>
-
               <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                 <% unless i[1].blank? %>
                   <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
@@ -204,6 +200,12 @@
                     </th>
                   <% end %>
                 <% end %>
+              <% end %>
+
+              <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                <th>
+                  Coefficients
+                </th>
               <% end %>
 
               <th class=""><%= I18n.t :actions %></th>
