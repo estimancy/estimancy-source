@@ -259,6 +259,10 @@
                             <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
                           <% end %>
                         </span>
+                      <% else %>
+                        <span class="text-center">
+                          -
+                        </span>
                       <% end %>
                     <% end %>
                   </td>
