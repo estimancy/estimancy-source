@@ -291,13 +291,13 @@
                             <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
                                            guw: guow.id,
                                            class: "guw_complexity",
-                                           include_blank: true,
+                                           include_blank: false,
                                            disabled: !@guw_type.allow_complexity,
                                            style: "width: 70px;" %>
                           <% else %>
                             <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                            class: "guw_complexity",
-                                           include_blank: true,
+                                           include_blank: false,
                                            disabled: !@guw_type.allow_complexity,
                                            style: "width: 70px;" %>
                           <% end %>

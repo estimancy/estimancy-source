@@ -1123,7 +1123,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         coef = coeffs.compact.inject(&:*)
 
         oa_value = []
-        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id).all.each do |goa|
+        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id, guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
           unless goa.value.to_f == 0
             unless goa.aguw_output.nil?
               oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
