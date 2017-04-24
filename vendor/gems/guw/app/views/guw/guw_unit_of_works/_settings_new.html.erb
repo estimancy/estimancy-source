@@ -412,7 +412,7 @@
                 <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
                   <%
                      elmnts = []
-                     Guw::GuwCoefficient.where(guw_model_id: @guw_model.id).each do |guw_coefficient|
+                     Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
 
                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
                                                                          guw_coefficient_id: guw_coefficient.id).first
