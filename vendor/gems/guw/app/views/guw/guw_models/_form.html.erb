@@ -45,17 +45,35 @@
             <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
           </div>
 
-          <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name)).flatten.each do |item| %>
-            <% begin %>
-              <p>
-                <%= item %> : <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
-              </p>
-            <% rescue %>
-              <p>
-                <%= item %> : <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
-              </p>
+          <table>
+            <tr>
+              <th>
+                Colonne
+              </th>
+              <th>
+                Position
+              </th>
+            </tr>
+            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient"]).flatten.each do |item| %>
+              <tr>
+                <% begin %>
+                  <td>
+                    <%= item %>
+                  </td>
+                  <td>
+                    <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
+                  </td>
+                <% rescue %>
+                  <td>
+                    <%= item %>
+                  </td>
+                  <td>
+                    <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
+                  </td>
+                <% end %>
+              </tr>
             <% end %>
-          <% end %>
+          </table>
 
             <div class="actions-tabs">
               <% if can? :manage_modules_instances, ModuleProject %>

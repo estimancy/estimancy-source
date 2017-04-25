@@ -194,18 +194,18 @@
                         <%= i[0] %>
                       </th>
                     <% end %>
+                  <% elsif i[0] == "Coefficient" %>
+                    <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                      <th>
+                        <%= i[0] %>
+                      </th>
+                    <% end %>
                   <% else %>
                     <th>
                       <%= i[0] %>
                     </th>
                   <% end %>
                 <% end %>
-              <% end %>
-
-              <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
-                <th>
-                  Coefficients
-                </th>
               <% end %>
 
               <th class=""><%= I18n.t :actions %></th>
@@ -329,7 +329,29 @@
 
                 <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                   <% unless i[1].blank? %>
-                    <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
+                    <% if i[0] == "Coefficient" %>
+                      <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                        <%
+                           elmnts = []
+                           Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
+
+                             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+                                                                               guw_coefficient_id: guw_coefficient.id).first
+                             unless ceuw.nil?
+                               elm = ceuw.guw_coefficient_element
+                               unless elm.nil?
+                                 elmnts << elm.value
+                               end
+                             end
+                           end
+                        %>
+
+                        <td class="span2">
+                          <% v = elmnts.flatten.compact.inject(&:*) %>
+                          <%= link_to v.nil? ? '...' : v.to_f.round(user_number_precision), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                        </td>
+                      <% end %>
+                    <% elsif Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
                       <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
 
@@ -381,8 +403,8 @@
                         <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? results.first.id : default.id) : (ceuw.guw_coefficient_element_id.nil? ? default.value : ceuw.guw_coefficient_element_id)) %>
                       <% end %>
                     <% end %>
-                  <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
-                    <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
+                      <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                       <% unless guw_output.nil? %>
                         <td class="span2">
                           <% unless @guw_type.nil? %>
@@ -413,28 +435,6 @@
                       <% end %>
                     <% end %>
                   <% end %>
-                <% end %>
-
-                <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
-                  <%
-                     elmnts = []
-                     Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
-
-                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
-                                                                         guw_coefficient_id: guw_coefficient.id).first
-                       unless ceuw.nil?
-                         elm = ceuw.guw_coefficient_element
-                         unless elm.nil?
-                           elmnts << elm.value
-                         end
-                       end
-                     end
-                  %>
-
-                  <td class="span2">
-                    <% v = elmnts.flatten.compact.inject(&:*) %>
-                    <%= link_to v.nil? ? '...' : v.to_f.round(user_number_precision), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-                  </td>
                 <% end %>
 
                 <td class="span3">
