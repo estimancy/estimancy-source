@@ -23,7 +23,11 @@
         <%= f.input :attribute_type, as: :select, label: "Type de calcul pour les attributs", collection: ["Coefficient", "Pourcentage"] %>
 
         <%= f.input :allow_retained, label: I18n.t(:Changing_of_the_size_enter) %>
-        <%= f.input :allow_quantity, label: I18n.t(:Changing_the_quantity_enter) %>
+
+        <% if @guw_model.config_type == "old" %>
+          <%= f.input :allow_quantity, label: I18n.t(:Changing_the_quantity_enter) %>
+        <% end %>
+
         <%= f.input :display_threshold, label: "Afficher le seuil" %>
         <%= f.input :allow_complexity, label: I18n.t(:Changing_the_complexity_enter) %>
       </div>
