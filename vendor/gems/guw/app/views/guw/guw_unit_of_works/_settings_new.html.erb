@@ -330,49 +330,55 @@
                 <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
-                        <% unless guw_coefficient.guw_coefficient_elements.empty? %>
-                          <% results = guw_coefficient.guw_coefficient_elements %>
-                          <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
-                                                                               guw_coefficient_id: guw_coefficient.id).first %>
 
-                          <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
-                            <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
+                        <% results = guw_coefficient.guw_coefficient_elements %>
+                        <% default = results.where(default: true).first %>
+                        <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+                                                                             guw_coefficient_id: guw_coefficient.id).first %>
+                        <% if guw_coefficient.deported == false %>
+                          <% unless guw_coefficient.guw_coefficient_elements.empty? %>
 
-                              <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                   style: "width: 43px;",
-                                                   class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
-                                                   readonly: (guw_coefficient.allow_intermediate_value == true),
-                                                   step: 0.001 %>
+                            <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+                              <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
 
-                              <% if guw_coefficient.allow_intermediate_value == true %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                      style: "width: 43px;",
-                                                     class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
+                                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                                     readonly: (guw_coefficient.allow_intermediate_value == true),
                                                      step: 0.001 %>
-                              <% end %>
 
-                            </td>
-                          <% else %>
-                            <td class="span2">
-                              <% unless @guw_type.nil? %>
-                                <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
-                                <% unless results.empty? %>
-                                  <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                                                          selected: ceuw.nil? ? (results.first.nil? ? nil : results.first.value) : ceuw.guw_coefficient_element_id),
-                                                 class: "guw_coefficient guw-#{guow.id}",
-                                                 guw: guow.id,
-                                                 readonly: !can?(:execute_estimation_plan, @project),
-                                                 style: "width: 70px;" %>
+                                <% if guw_coefficient.allow_intermediate_value == true %>
+                                  <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
+                                                       style: "width: 43px;",
+                                                       class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
+                                                       step: 0.001 %>
                                 <% end %>
-                              <% end %>
-                            </td>
+
+                              </td>
+                            <% else %>
+                              <td class="span2">
+                                <% unless @guw_type.nil? %>
+                                  <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                                  <% unless results.empty? %>
+                                    <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                                                            selected: ceuw.nil? ? (results.first.nil? ? nil : results.first.value) : ceuw.guw_coefficient_element_id),
+                                                   class: "guw_coefficient guw-#{guow.id}",
+                                                   guw: guow.id,
+                                                   readonly: !can?(:execute_estimation_plan, @project),
+                                                   style: "width: 70px;" %>
+                                  <% end %>
+                                <% end %>
+                              </td>
+                          <% end %>
+                        <% else %>
+                          <td>
+                            -
+                          </td>
                         <% end %>
                       <% else %>
-                        <td>
-                          -
-                        </td>
+                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? results.first.id : default.id) : (ceuw.guw_coefficient_element_id.nil? ? default.value : ceuw.guw_coefficient_element_id)) %>
                       <% end %>
                     <% end %>
                   <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
