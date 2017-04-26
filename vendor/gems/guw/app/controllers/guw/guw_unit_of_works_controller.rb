@@ -368,9 +368,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       nguowa.save
     end
 
-    # reorder @new_guw_unit_of_work.guw_unit_of_work_group
-    expire_fragment "guw"
-
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -1103,9 +1100,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
 
-                if ceuw.changed?
-                  ceuw.save
-                end
+                # if ceuw.changed?
+                ceuw.save
+                # end
               end
 
               unless cce.nil?
@@ -1343,6 +1340,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if ceuw.changed?
             ceuw.save
           end
+
         elsif guw_coefficient.coefficient_type == "Coefficient"
 
         ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1439,8 +1437,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     update_estimation_values
     update_view_widgets_and_project_fields
-
-    expire_fragment "guw"
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
   end

@@ -21,7 +21,10 @@
 
 
 class ModuleProject < ActiveRecord::Base
-  attr_accessible  :project_id, :pemodule_id, :pemodule, :position_x, :position_y, :top_position, :left_position, :creation_order, :nb_input_attr, :nb_output_attr, :view_id, :color
+
+  attr_accessible :project_id, :pemodule_id, :pemodule, :position_x, :position_y,
+                  :top_position, :left_position, :creation_order, :nb_input_attr,
+                  :nb_output_attr, :view_id, :color
 
   belongs_to :pemodule
   belongs_to :project, :touch => true
