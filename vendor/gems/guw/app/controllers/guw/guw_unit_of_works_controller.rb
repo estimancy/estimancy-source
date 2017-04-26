@@ -633,13 +633,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              guw_unit_of_work_group_id: @group.id,
                                              pbs_project_element_id: current_component.id,
                                              module_project_id: current_module_project.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
+                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(user_number_precision)
 
     @group_size_theorical = Guw::GuwUnitOfWork.where(selected: true,
                                                      guw_unit_of_work_group_id: @group.id,
                                                      pbs_project_element_id: current_component.id,
                                                      module_project_id: current_module_project.id,
-                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
+                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(user_number_precision)
 
     @group_number_of_unit_of_works = Guw::GuwUnitOfWork.where(guw_unit_of_work_group_id: @group.id,
                                                               pbs_project_element_id: current_component.id,
