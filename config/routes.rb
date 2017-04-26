@@ -19,7 +19,7 @@
 #
 #############################################################################
 
-require 'sidekiq/web'
+###require 'sidekiq/web'
 
 Projestimate::Application.routes.draw do
 
