@@ -109,7 +109,7 @@ class Guw::GuwModelsController < ApplicationController
               @guw_model = Guw::GuwModel.where(name: tab[0][1],
                                                organization_id: @current_organization.id).first
               if @guw_model.nil?
-                @guw_model = Guw::GuwModel.create(name: tab[0][1],
+                @guw_model = Guw::GuwModel.new(name: tab[0][1],
                                                   description: tab[1][1],
                                                   coefficient_label: tab[2][1],
                                                   weightings_label: tab[3][1],
@@ -118,12 +118,29 @@ class Guw::GuwModelsController < ApplicationController
                                                   retained_size_unit: tab[6][1],
                                                   hour_coefficient_conversion: tab[7][1],
                                                   organization_id: @current_organization.id,
-                                                  allow_technology: false,
-                                                  config_type: tab[12][1])
+                                                  allow_technology: false)
+                                                  #config_type: tab[12][1])
+
+
+                # Create orders (coeff and outputs orders)
+                orders = Hash.new
+                i = 8
+                order_value_coeff = tab[i][0]
+                while order_value_coeff.to_s != I18n.t(:config_type).to_s do
+                  orders["#{tab[i][0]}"] = tab[i][1]
+                  i = i+1
+                  order_value_coeff = tab[i][0]
+                end
+
+                @guw_model.orders = orders
+                @guw_model.config_type = tab[i][1]
+                @guw_model.save
+
               else
                 flash[:error] = "Erreur : une instance avec le nom '#{@guw_model.name}' existe déjà"
                 redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
               end
+
             elsif index == 1
 
               tab.each_with_index do |row, i|
