@@ -119,6 +119,9 @@ class Guw::GuwModelsController < ApplicationController
                                                 organization_id: @current_organization.id,
                                                 allow_technology: false,
                                                 config_type: tab[12][1])
+            # else
+            #   flash[:error] = "Erreur : une instance avec le nom '#{@guw_model.name}' existe déjà"
+            #   redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
             end
 
           elsif index == 1
