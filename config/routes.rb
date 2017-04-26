@@ -56,7 +56,7 @@ Projestimate::Application.routes.draw do
   resources :profiles
 
   # Mount the Sidekiq web interface
-  mount Sidekiq::Web, at: "/sidekiq"
+  ###mount Sidekiq::Web, at: "/sidekiq"
 
   resources :technologies
 
