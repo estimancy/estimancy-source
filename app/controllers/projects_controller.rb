@@ -1613,8 +1613,7 @@ class ProjectsController < ApplicationController
 
       # Save estimation for the current component parent
       if est_val.save
-        EstimationsWorker.perform_async(@pbs_project_element.id, est_val.id)
-        ###perform_test(@pbs_project_element.id, est_val.id)
+        ###EstimationsWorker.perform_async(@pbs_project_element.id, est_val.id)
       end
     end
   end
