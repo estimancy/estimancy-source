@@ -90,196 +90,197 @@ class Guw::GuwModelsController < ApplicationController
 
   def import_new_config
 
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-      @workbook = RubyXL::Parser.parse(params[:file].path)
-      @workbook.each_with_index do |worksheet, index|
-        tab = worksheet.extract_data
-        if !tab.empty?
-          if index == 0
+    ActiveRecord::Base.transaction do
+      if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+        @workbook = RubyXL::Parser.parse(params[:file].path)
+        @workbook.each_with_index do |worksheet, index|
+          tab = worksheet.extract_data
+          if !tab.empty?
+            if index == 0
 
-            if worksheet.sheet_name != I18n.t(:is_model)
-              break
-            end
-
-            if tab[0][1].nil? || tab[0][1].empty?
-              break
-            end
-
-            @guw_model = Guw::GuwModel.where(name: tab[0][1],
-                                             organization_id: @current_organization.id).first
-            if @guw_model.nil?
-              @guw_model = Guw::GuwModel.create(name: tab[0][1],
-                                                description: tab[1][1],
-                                                coefficient_label: tab[2][1],
-                                                weightings_label: tab[3][1],
-                                                factors_label: tab[4][1],
-                                                three_points_estimation: tab[5][1].to_i == 1,
-                                                retained_size_unit: tab[6][1],
-                                                hour_coefficient_conversion: tab[7][1],
-                                                organization_id: @current_organization.id,
-                                                allow_technology: false,
-                                                config_type: tab[12][1])
-            # else
-            #   flash[:error] = "Erreur : une instance avec le nom '#{@guw_model.name}' existe déjà"
-            #   redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
-            end
-
-          elsif index == 1
-
-            tab.each_with_index do |row, i|
-              if i != 0 && !row.nil?
-                Guw::GuwAttribute.create(name: row[0],
-                                         description: row[1],
-                                         guw_model_id: @guw_model.id)
+              if worksheet.sheet_name != I18n.t(:is_model)
+                break
               end
-            end
 
-          elsif index == 2
-
-            tab.each_with_index do |row, i|
-              if i != 0 && !row.nil?
-                Guw::GuwCoefficient.create(name: row[0],
-                                           coefficient_type: row[1],
-                                           guw_model_id: @guw_model.id,
-                                           allow_intermediate_value: (row[2] == 0) ? false : true )
+              if tab[0][1].nil? || tab[0][1].empty?
+                break
               end
-            end
 
-          elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
-
-            unless tab[0].nil?
-              coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
-                                                      guw_model_id: @guw_model.id).first
+              @guw_model = Guw::GuwModel.where(name: tab[0][1],
+                                               organization_id: @current_organization.id).first
+              if @guw_model.nil?
+                @guw_model = Guw::GuwModel.create(name: tab[0][1],
+                                                  description: tab[1][1],
+                                                  coefficient_label: tab[2][1],
+                                                  weightings_label: tab[3][1],
+                                                  factors_label: tab[4][1],
+                                                  three_points_estimation: tab[5][1].to_i == 1,
+                                                  retained_size_unit: tab[6][1],
+                                                  hour_coefficient_conversion: tab[7][1],
+                                                  organization_id: @current_organization.id,
+                                                  allow_technology: false,
+                                                  config_type: tab[12][1])
+              else
+                flash[:error] = "Erreur : une instance avec le nom '#{@guw_model.name}' existe déjà"
+                redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
+              end
+            elsif index == 1
 
               tab.each_with_index do |row, i|
-                if i >= 3 && !row.nil?
-                  gce = Guw::GuwCoefficientElement.new(name: row[1],
-                                                       value: row[2],
-                                                       guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
-                                                       guw_model_id: @guw_model.id,
-                                                       min_value: 0,
-                                                       max_value: 300,
-                                                       default_value: nil)
-                  gce.save(validate: false)
+                if i != 0 && !row.nil?
+                  Guw::GuwAttribute.create(name: row[0],
+                                           description: row[1],
+                                           guw_model_id: @guw_model.id)
                 end
               end
-            end
 
-          elsif index == (3 + @guw_model.guw_coefficients.size)
+            elsif index == 2
 
-            tab.each_with_index do |row, i|
-              if i >= 1 && !row.nil?
-                Guw::GuwOutput.create(name: row[0],
-                                      output_type: row[1],
-                                      guw_model_id: @guw_model.id,
-                                      allow_intermediate_value: (row[2] == 0) ? false : true,
-                                      allow_subtotal: (row[3] == 0) ? false : true,
-                                      standard_coefficient: row[4])
-              end
-            end
-
-          else
-
-            @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                            description: tab[1][0],
-                                            allow_quantity: tab[5][1] == 1,
-                                            allow_retained: tab[4][1] == 1,
-                                            allow_complexity: tab[7][1] == 1,
-                                            allow_criteria: tab[2][1] == 1,
-                                            attribute_type: "Coefficient",
-                                            guw_model_id: @guw_model.id)
-
-            [1,6,11].each do |column_index|
-              @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
-                                                       name: tab[9][column_index].nil? ? nil : tab[9][column_index],
-                                                       bottom_range: tab[11][column_index + 1],
-                                                       top_range: tab[11][column_index + 2],
-                                                       weight: tab[11][column_index + 3],
-                                                       weight_b: tab[11][column_index + 4])
-
-              @guw_complexity.save(validate: false)
-
-              @guw_model.guw_outputs.each_with_index do |guw_output, i|
-
-                Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
-                                                              guw_output_id: guw_output.id,
-                                                              init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
-
-                Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
-                                                guw_output_id: guw_output.id,
-                                                value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
-
-                @guw_model.guw_outputs.each_with_index do |aguw_output, j|
-                  value = tab[15 + j][column_index + i]
-                  oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
-                                                        guw_output_associated_id: aguw_output.id,
-                                                        guw_output_id: guw_output.id,
-                                                        value: value)
+              tab.each_with_index do |row, i|
+                if i != 0 && !row.nil?
+                  Guw::GuwCoefficient.create(name: row[0],
+                                             coefficient_type: row[1],
+                                             guw_model_id: @guw_model.id,
+                                             allow_intermediate_value: (row[2] == 0) ? false : true )
                 end
+              end
 
-                nb_output = @guw_model.guw_outputs.size
-                next_item = 15 + nb_output
-                @guw_model.guw_coefficients.each do |guw_coefficient|
-                  guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+            elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
+              unless tab[0].nil?
+                coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
+                                                        guw_model_id: @guw_model.id).first
+
+                tab.each_with_index do |row, i|
+                  if i >= 3 && !row.nil?
+                    gce = Guw::GuwCoefficientElement.new(name: row[1],
+                                                         value: row[2],
+                                                         guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
+                                                         guw_model_id: @guw_model.id,
+                                                         min_value: 0,
+                                                         max_value: 300,
+                                                         default_value: nil)
+                    gce.save(validate: false)
+                  end
+                end
+              end
+
+            elsif index == (3 + @guw_model.guw_coefficients.size)
+
+              tab.each_with_index do |row, i|
+                if i >= 1 && !row.nil?
+                  Guw::GuwOutput.create(name: row[0],
+                                        output_type: row[1],
+                                        guw_model_id: @guw_model.id,
+                                        allow_intermediate_value: (row[2] == 0) ? false : true,
+                                        allow_subtotal: (row[3] == 0) ? false : true,
+                                        standard_coefficient: row[4])
+                end
+              end
+
+            else
+
+              @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
+                                              description: tab[1][0],
+                                              allow_quantity: tab[5][1] == 1,
+                                              allow_retained: tab[4][1] == 1,
+                                              allow_complexity: tab[7][1] == 1,
+                                              allow_criteria: tab[2][1] == 1,
+                                              attribute_type: "Coefficient",
+                                              guw_model_id: @guw_model.id)
+
+              [1,6,11].each do |column_index|
+                @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
+                                                         name: tab[9][column_index].nil? ? nil : tab[9][column_index],
+                                                         bottom_range: tab[11][column_index + 1],
+                                                         top_range: tab[11][column_index + 2],
+                                                         weight: tab[11][column_index + 3],
+                                                         weight_b: tab[11][column_index + 4])
+
+                @guw_complexity.save(validate: false)
+
+                @guw_model.guw_outputs.each_with_index do |guw_output, i|
+
+                  Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
+                                                                guw_output_id: guw_output.id,
+                                                                init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
+
+                  Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
+                                                  guw_output_id: guw_output.id,
+                                                  value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
+
+                  @guw_model.guw_outputs.each_with_index do |aguw_output, j|
+                    value = tab[15 + j][column_index + i]
+                    oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
+                                                          guw_output_associated_id: aguw_output.id,
+                                                          guw_output_id: guw_output.id,
+                                                          value: value)
+                  end
+
+                  nb_output = @guw_model.guw_outputs.size
+                  next_item = 15 + nb_output
+                  @guw_model.guw_coefficients.each do |guw_coefficient|
+                    guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+
+                      next_item = next_item + 1
+
+                      begin
+                        value = tab[next_item][column_index + i]
+                      rescue
+                        value = ""
+                      end
+
+                      if value.is_a?(Numeric)
+                        Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                                                                    guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                    guw_output_id: guw_output.id,
+                                                                    guw_type_id: @guw_type.id,
+                                                                    value: value)
+                      end
+                    end
                     next_item = next_item + 1
-
-                    begin
-                      value = tab[next_item][column_index + i]
-                    rescue
-                      value = ""
-                    end
-
-                    if value.is_a?(Numeric)
-                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
-                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
-                                                                  guw_output_id: guw_output.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  value: value)
-                    end
-                  end
-                  next_item = next_item + 1
-                end
-              end
-            end
-
-            row_number = 0
-
-            [1,6,11].each do |column_index|
-
-              (0..9999).each do |i|
-                unless tab[i].nil?
-                  if tab[i][0] == "Seuils de complexité"
-                    row_number = i
-                    break
                   end
                 end
               end
 
-              @guw_att_complexity = Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
-                                                                  name: tab[row_number][column_index],
-                                                                  value: tab[row_number][column_index + 1])
+              row_number = 0
 
-              @guw_model.guw_attributes.each_with_index do |att, j|
+              [1,6,11].each do |column_index|
 
-                Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                   guw_attribute_id: att.id,
-                                                   guw_type_id: @guw_type.id,
-                                                   enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
-                                                   bottom_range: tab[row_number + j + 2][column_index + 1],
-                                                   top_range: tab[row_number + j + 2][column_index + 2],
-                                                   value: tab[row_number + j + 2][column_index + 3],
-                                                   value_b: tab[row_number + j + 2][column_index + 4])
+                (0..9999).each do |i|
+                  unless tab[i].nil?
+                    if tab[i][0] == "Seuils de complexité"
+                      row_number = i
+                      break
+                    end
+                  end
+                end
 
+                @guw_att_complexity = Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
+                                                                    name: tab[row_number][column_index],
+                                                                    value: tab[row_number][column_index + 1])
+
+                @guw_model.guw_attributes.each_with_index do |att, j|
+
+                  Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                     guw_attribute_id: att.id,
+                                                     guw_type_id: @guw_type.id,
+                                                     enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
+                                                     bottom_range: tab[row_number + j + 2][column_index + 1],
+                                                     top_range: tab[row_number + j + 2][column_index + 2],
+                                                     value: tab[row_number + j + 2][column_index + 3],
+                                                     value_b: tab[row_number + j + 2][column_index + 4])
+
+                end
+
+                row_number += 1
               end
-
-              row_number += 1
             end
           end
         end
       end
-    end
 
+    end
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
 
   end
