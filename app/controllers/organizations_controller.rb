@@ -1232,14 +1232,14 @@ class OrganizationsController < ApplicationController
         end
 
 
-        sleep(5)
-
+        ###sleep(5)
         if params[:action_name] == "copy_organization"
           description = new_organization.description
           description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
-          new_organization.update_attributes(description: description, copy_in_progress: false)
-          #new_organization.copy_in_progress = false
-          #new_organization.save(validate: false)
+          #new_organization.update_attributes(description: description, copy_in_progress: false)
+          new_organization.description = description
+          new_organization.copy_in_progress = false
+          new_organization.save(validate: false)
         end
 
         organization_image.copy_in_progress = false
