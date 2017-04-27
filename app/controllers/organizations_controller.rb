@@ -1241,7 +1241,7 @@ class OrganizationsController < ApplicationController
       end
 
       #redirect_to :back
-      sleep(5)
+      sleep(15)
 
       respond_to do |format|
         format.html { redirect_to organizationals_params_path and return }
