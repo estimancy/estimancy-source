@@ -2033,3 +2033,5 @@ en:
   profiles_list: "List of profiles"
 
   liste_des_estimations: "Liste des estimations"
+  copy_in_progress: "Copy in progress..."
+  is_new_status: "Is the default status of new estimation version "

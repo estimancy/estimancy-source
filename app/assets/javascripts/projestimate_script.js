@@ -55,6 +55,11 @@ $(document).ready(function() {
         handle: ".modal-drag"
     });
 
+    $("#edit_component").draggable({
+        handle: ".modal-header, .modal-body"
+    });
+
+
     // Modal bug
     $('.modal-backdrop').remove();
     $(".modal").hide();
@@ -65,6 +70,8 @@ $(document).ready(function() {
 
     // Update the jscolor library Dir to resolve bug on colors detection
     jscolor.dir = '/assets/';
+
+
 
     // ============================ GRIDSTER widgets management ================================================
 

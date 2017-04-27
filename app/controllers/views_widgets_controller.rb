@@ -174,7 +174,8 @@ class ViewsWidgetsController < ApplicationController
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
 
-        format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
+        format.js { render(:js => "window.location.replace('#{dashboard_path(@project)}');")}
+        format.html { redirect_to dashboard_path(@project) and return }
       else
         flash[:error] = "Erreur d'ajout de Vignette"
         @position_x = 1; @position_y = 1
@@ -190,6 +191,8 @@ class ViewsWidgetsController < ApplicationController
         rescue
           @views_widget_types = []
         end
+
+        flash.keep(:error)
 
         format.html { render action: :new }
         format.js   { render action: :new }
@@ -269,6 +272,7 @@ class ViewsWidgetsController < ApplicationController
         #end
 
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
+        format.html { redirect_to dashboard_path(@project) and return }
       else
         flash[:error] = "Erreur lors de la mise à jour du Widget dans la vue"
         @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x

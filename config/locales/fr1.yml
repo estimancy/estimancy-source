@@ -1693,5 +1693,7 @@ fr1:
 
   rollback: "Annuler"
   cancel_copy: "Annuler la copie"
+  copy_in_progress: "Copie en cours..."
+  is_new_status: "Nouveau statut de la nouvelle version"
 
 

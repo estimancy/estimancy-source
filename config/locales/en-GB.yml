@@ -1649,3 +1649,5 @@ en-gb:
 
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
+  copy_in_progress: "Copy in progress..."
+  is_new_status: "Is the default status of new estimation version "
