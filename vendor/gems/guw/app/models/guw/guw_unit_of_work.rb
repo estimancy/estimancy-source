@@ -32,7 +32,7 @@ module Guw
     belongs_to :guw_factor
 
     has_many :guw_unit_of_work_attributes, dependent: :destroy
-    # has_many :guw_guw_coefficient_element_unit_of_works, dependent: :destroy
+    has_many :guw_coefficient_element_unit_of_works, dependent: :destroy
 
     validates_presence_of :name
 
@@ -43,7 +43,7 @@ module Guw
 
     amoeba do
       enable
-      include_association [:guw_unit_of_work_attributes]
+      include_association [:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works]
     end
 
     def to_s
