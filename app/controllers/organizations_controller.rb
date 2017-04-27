@@ -941,17 +941,22 @@ class OrganizationsController < ApplicationController
       if organization_image.nil?
         flash[:warning] = "Veuillez sélectionner une organisation pour continuer"
       else
+        organization_image.copy_in_progress = true
+        organization_image.save
+
         new_organization = organization_image.amoeba_dup
 
         if params[:action_name] == "new_organization_from_image"
           new_organization.name = @organization_name
         elsif params[:action_name] == "copy_organization"
           new_organization.description << "\n \n Cette organisation est une copie de l'organisation #{organization_image.name}."
-          new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
+          #new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
         end
+
         new_organization.is_image_organization = false
 
-        new_organization.transaction do
+        #new_organization.transaction do
+        ActiveRecord::Base.transaction do
 
           if new_organization.save(validate: false)
 
@@ -1224,9 +1229,19 @@ class OrganizationsController < ApplicationController
             flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
           end
         end
+
+        if params[:action_name] == "copy_organization"
+          new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
+          new_organization.copy_in_progress = false
+          new_organization.save
+        end
+
+        organization_image.copy_in_progress = false
+        organization_image.save
       end
 
       #redirect_to :back
+      sleep(5)
 
       respond_to do |format|
         format.html { redirect_to organizationals_params_path and return }

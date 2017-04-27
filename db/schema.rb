@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170424090906) do
+ActiveRecord::Schema.define(:version => 20170426154853) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1174,6 +1174,7 @@ ActiveRecord::Schema.define(:version => 20170424090906) do
     t.text     "project_selected_columns"
     t.integer  "estimations_counter"
     t.text     "estimations_counter_history"
+    t.boolean  "copy_in_progress"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|
