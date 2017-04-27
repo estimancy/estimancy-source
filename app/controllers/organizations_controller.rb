@@ -1230,18 +1230,20 @@ class OrganizationsController < ApplicationController
           end
         end
 
+        sleep(15)
+
         if params[:action_name] == "copy_organization"
           new_organization.description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
           new_organization.copy_in_progress = false
-          new_organization.save
+          new_organization.save(validate: false)
         end
 
         organization_image.copy_in_progress = false
-        organization_image.save
+        organization_image.save(validate: false)
       end
 
       #redirect_to :back
-      sleep(15)
+
 
       respond_to do |format|
         format.html { redirect_to organizationals_params_path and return }
