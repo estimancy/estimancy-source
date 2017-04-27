@@ -955,8 +955,8 @@ class OrganizationsController < ApplicationController
 
         new_organization.is_image_organization = false
 
-        new_organization.transaction do
-        #ActiveRecord::Base.transaction do
+        #new_organization.transaction do
+        ActiveRecord::Base.transaction do
 
           if new_organization.save(validate: false)
 
@@ -1229,23 +1229,21 @@ class OrganizationsController < ApplicationController
             flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
           end
 
-
-          sleep(5)
-
-          if params[:action_name] == "copy_organization"
-            description = new_organization.description
-            #description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
-            description << "\n toto"
-            new_organization.description = description
-            new_organization.copy_in_progress = false
-            new_organization.save(validate: false)
-          end
-
-          organization_image.copy_in_progress = false
-          organization_image.save(validate: false)
-
         end
 
+
+        sleep(5)
+
+        if params[:action_name] == "copy_organization"
+          description = new_organization.description
+          description << "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
+          new_organization.update_attributes(description: description, copy_in_progress: false)
+          #new_organization.copy_in_progress = false
+          #new_organization.save(validate: false)
+        end
+
+        organization_image.copy_in_progress = false
+        organization_image.save(validate: false)
       end
 
       #redirect_to :back
