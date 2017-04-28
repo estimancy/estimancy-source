@@ -53,7 +53,7 @@
                     <% if can? :manage, Organization %>
                       <%#= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true  %>
                       <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),
-                                  class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window"}  %>
+                                  class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window_copy_organization"}  %>
                       <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'))  %>
                     <% end %>
                 <% else %>
@@ -68,7 +68,7 @@
     </table>
   </div>
 
-  <div id="modal-window" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div id="modal-window_copy_organization" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <%= render partial: "display_animation_ajax_loader" %>
   </div>
 
@@ -79,11 +79,22 @@
   <script>
 
       $('#close_copy_modal').click(function() {
-          $('#modal-window').modal('hide');
+          $('#modal-window_copy_organization').modal('hide');
           window.location.replace('/organizationals_params');
       });
 
-//      $('.copy_an_organization').bind('ajax:beforeSend', function() {
+
+      $('#modal-window_copy_organization').on('shown', function(){
+
+          setTimeout(function () {
+              $("#modal-window_copy_organization").modal("hide");
+          }, 5000);
+
+          window.location.replace('/organizationals_params');
+      });
+
+
+      //      $('.copy_an_organization').bind('ajax:beforeSend', function() {
 //          //$('#display_copy_message').show();
 //      });
 //
