@@ -52,20 +52,22 @@ module ProjectsHelper
 
   # Display the units of attributes
   def get_attribute_unit(pe_attribute, view_widget=nil)
-    case pe_attribute.alias
-      when "effort", "theoretical_effort", "E1", "E2", "E3", "E4"
-        I18n.t(:unit_effort_person_hour)
-      when "staffing"
-        I18n.t(:unit_staffing)
-      when "end_date"
-        "jj/mm/aaaa"
-      when "delay"
-        I18n.t(:delay)
-      when "cost", "theoretical_cost"
-        #@project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.name.underscore.pluralize}"
-        @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
-      else
-        ""
+    unless pe_attribute.nil?
+      case pe_attribute.alias
+        when "effort", "theoretical_effort", "E1", "E2", "E3", "E4"
+          I18n.t(:unit_effort_person_hour)
+        when "staffing"
+          I18n.t(:unit_staffing)
+        when "end_date"
+          "jj/mm/aaaa"
+        when "delay"
+          I18n.t(:delay)
+        when "cost", "theoretical_cost"
+          #@project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.name.underscore.pluralize}"
+          @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
+        else
+          ""
+      end
     end
   end
 

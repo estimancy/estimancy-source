@@ -1790,7 +1790,7 @@ class Guw::GuwModelsController < ApplicationController
 
                   unless tmp_val.nil?
 
-                    val = (tmp_val == "N/A" || tmp_val < 0) ? nil : row[16 + @guw_model.orders.size + jj]
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[16 + @guw_model.orders.size + jj]
 
                     if gac.name == tab[0][16 + @guw_model.orders.size + jj]
                       unless guw_type.nil?

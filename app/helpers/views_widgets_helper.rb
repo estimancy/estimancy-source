@@ -415,11 +415,10 @@ module ViewsWidgetsHelper
       est_val_in_out = view_widget_est_val.in_out
       view_widget_attribute = view_widget_est_val.pe_attribute #view_widget.pe_attribute
       view_widget_attribute_name = view_widget_attribute.nil? ? "" : get_attribute_human_name(view_widget_attribute) #view_widget_attribute.name
-      # begin
+
+      unless view_widget_attribute.nil?
         estimation_value = module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', view_widget_attribute.id, view_widget_est_val.in_out).last
-      # rescue
-        #
-      # end
+      end
 
       attribute_unit_label = get_attribute_unit(view_widget_attribute)
 
