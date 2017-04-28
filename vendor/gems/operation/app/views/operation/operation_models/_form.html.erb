@@ -90,7 +90,7 @@
       <% if can? :manage_modules_instances, ModuleProject %>
           <%= link_to "#{I18n.t(:create_button)}", operation.new_operation_model_operation_input_path(@operation_model, organization_id: params[:organization_id]), class: "btn btn-primary" %>
       <% end %>
-      <%= link_to I18n.t(:back) , operation.operation_model_path(@operation_model), class: "btn" %>
+      <%= link_to I18n.t(:back) , operation.edit_operation_model_path(@operation_model), class: "btn" %>
 
     </div>
   <% end %>
