@@ -942,11 +942,11 @@ class OrganizationsController < ApplicationController
         flash[:warning] = "Veuillez sélectionner une organisation pour continuer"
       else
 
+        organization_image.copy_in_progress = true
+        organization_image.save
+
         #new_organization.transaction do
         ActiveRecord::Base.transaction do
-
-          organization_image.copy_in_progress = true
-          organization_image.save
 
           new_organization = organization_image.amoeba_dup
 
