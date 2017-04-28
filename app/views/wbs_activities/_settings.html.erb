@@ -293,7 +293,6 @@
         </td>
       <% end %>
 
-
       <% if current_module_project.wbs_activity.three_points_estimation? %>
         <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
           <td>
@@ -326,7 +325,6 @@
         <% end %>
       <% end %>
 
-
       <td>
         <%= select_tag "ratio", options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
                        selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
@@ -355,7 +353,6 @@
         </td>
       <% end %>
 
-
       <!-- Effort Theorique calculé -->
       <td>
         <strong>
@@ -377,7 +374,6 @@
           <% end %>
         </strong>
       </td>
-
 
       <% if current_module_project.wbs_activity.three_points_estimation? %>
 
@@ -403,7 +399,6 @@
           </strong>
         </td>
       <% end %>
-
 
       <td>
         <strong>
@@ -492,8 +487,8 @@
    wbs_activity = current_module_project.wbs_activity
    module_project = current_module_project
    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
-   probable_est_value = cev_output.send("string_data_probable")
-   pbs_probable_est_value = probable_est_value[pbs_project_element.id]
+   probable_est_value = cev_output.nil? ? nil : cev_output.send("string_data_probable")
+   pbs_probable_est_value = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
 
    begin
      ratio_reference = wai.wbs_activity_ratio
@@ -536,27 +531,3 @@
 </div>
 
 
-<!--<div class="row-fluid">-->
-  <!--<div class="span12">-->
-    <!--<%# raw(render :partial => 'views_widgets/effort_by_phases_profiles', :locals => {  project_wbs_activity_elements: wbs_activity.wbs_activity_elements,-->
-                                                                                        <!--pe_attribute: cev.pe_attribute,-->
-                                                                                        <!--module_project: module_project,-->
-                                                                                        <!--project_organization_profiles: project_organization_profiles,-->
-                                                                                        <!--estimation_pbs_probable_results: pbs_probable_est_value,-->
-                                                                                        <!--ratio_reference: ratio_reference } ) %>-->
-  <!--</div>-->
-<!--</div>-->
-
-<!--<div class="row-fluid">-->
-  <!--<div class="span12">-->
-    <!--<%# raw(cev.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_element, module_project, cev_output, nil)) %>-->
-  <!--</div>-->
-<!--</div>-->
-
-<!--<div class="row-fluid">-->
-  <!--<div class="span12">-->
-    <!--<%# raw(render :partial => 'views_widgets/effort_by_phases', :locals => { pbs_project_element: pbs_project_element,-->
-                                                                              <!--module_project: module_project,-->
-                                                                              <!--cev_output: cev_output } ) %>-->
-  <!--</div>-->
-<!--</div>-->
