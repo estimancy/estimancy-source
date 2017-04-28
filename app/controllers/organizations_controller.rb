@@ -1247,7 +1247,7 @@ class OrganizationsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to organizationals_params_path and return }
         #format.js { render :js => "window.location.replace('/organizationals_params');"}
-        format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
+        format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');" and return}
       end
 
     rescue
