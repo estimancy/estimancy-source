@@ -493,7 +493,7 @@
    module_project = current_module_project
    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
    probable_est_value = cev_output.nil? ? nil : cev_output.send("string_data_probable")
-   pbs_probable_est_value = probable_est_value[pbs_project_element.id]
+   pbs_probable_est_value = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
 
    begin
      ratio_reference = wai.wbs_activity_ratio
