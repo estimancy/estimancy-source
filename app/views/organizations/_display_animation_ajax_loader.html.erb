@@ -7,7 +7,7 @@
   <div id="display_animation_ajax_loader">
     <h4 style=" margin-bottom: 20px;">
       <%= I18n.t(:wait_message_for_organization_copy) %>
-      <%= "Vous pouvez fermer le popup, la copie va continuer... " %>
+      <%= "Le popup va se fermer dans quelques secondes, la copie de l'organisation va continuer... " %>
     </h4>
     <%= image_tag 'animate-ajax-loader.gif' %>
   </div>
@@ -22,3 +22,10 @@
   <!--<button class="btn" data-dismiss="modal" aria-hidden="true"><%#= I18n.t(:close) %></button>-->
   <!--<button class="btn btn-primary"><%#= I18n.t(:cancel_copy) %></button>-->
 <!--</div>-->
+
+<script>
+    setTimeout(function() {
+        $('#modal-window').modal('hide');
+    }, 5000);
+
+</script>
