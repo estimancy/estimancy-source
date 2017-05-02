@@ -1252,7 +1252,6 @@ class OrganizationsController < ApplicationController
 
         format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.');" and return }
 
-        #format.js { flash.now[:notice] = "Here is my flash notice" }
         ##format.js { render 'layouts/flashes' }
       end
 

@@ -72,6 +72,49 @@ module Operation
       end
     end
 
+    def self.display_value(data_probable, estimation_value, view_widget)
+
+      module_project = estimation_value.module_project
+      operation_model = module_project.operation_model
+      begin
+        operation_input = estimation_value.pe_attribute.operation_input
+      rescue
+        operation_input = nil
+      end
+
+      unit_coefficient = operation_input.nil? ? 1 : operation_input.send("standard_unit_coefficient")
+      unit_coefficient = unit_coefficient.nil? ? 1 : unit_coefficient.to_f
+
+      begin
+        if data_probable.nil?
+          result_value = nil
+        else
+          result_value = (data_probable.to_f / unit_coefficient.to_f).round(2)
+        end
+      rescue
+        result_value = nil
+      end
+
+
+      value = data_probable.to_f.round(2)
+
+      if view_widget.use_organization_effort_unit == true
+        tab = get_organization_unit(value, operation_model.organization)
+        unit = tab.last
+      else
+        unless operation_input.nil?
+          unit =  operation_input.nil? ? "" : operation_input.send("standard_unit")
+        else
+          unit = ''
+        end
+      end
+
+      return "#{result_value} #{unit}"
+
+    end
+
+
+
     def self.display_size(p, c, level, component_id, operation_model)
       standard_coefficient = 1
 
@@ -89,5 +132,6 @@ module Operation
         nil
       end
     end
+
   end
 end
