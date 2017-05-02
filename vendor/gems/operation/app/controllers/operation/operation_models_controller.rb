@@ -191,7 +191,7 @@ class Operation::OperationModelsController < ApplicationController
             input_data_for_outputs["#{input_ev.pe_attribute.id}"][level] = size
 
             unless size_brut.blank?
-              inputs_array_to_compute[level] << size
+              inputs_array_to_compute[level] << size_brut.to_f #size
             end
 
             input_ev.send("string_data_#{level}")[current_component.id] = size
