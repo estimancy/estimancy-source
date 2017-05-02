@@ -1231,11 +1231,11 @@ class OrganizationsController < ApplicationController
               description = "#{new_organization.description}" + "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
               new_organization.description = description
               new_organization.copy_in_progress = false
-              new_organization.save#(validate: false)
+              new_organization.save(validate: false)
             end
 
             organization_image.copy_in_progress = false
-            organization_image.save#(validate: false)
+            organization_image.save(validate: false)
 
             flash[:notice] = I18n.t(:notice_organization_successful_created)
           else
@@ -1250,7 +1250,7 @@ class OrganizationsController < ApplicationController
         ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
         #format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.'); window.location.replace('/organizationals_params');"}
 
-        ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.');" and return }
+        format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.');" and return }
 
         #format.js { flash.now[:notice] = "Here is my flash notice" }
         ##format.js { render 'layouts/flashes' }
