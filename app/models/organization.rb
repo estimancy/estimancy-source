@@ -122,6 +122,7 @@ class Organization < ActiveRecord::Base
       new_organization.name = "#{original_organization.name}(#{new_copy_number})" ###"Copy of '#{original_organization.name}' at #{Time.now}"
       original_organization.copy_number = new_copy_number
       new_organization.copy_number = 0
+      new_organization.copy_in_progress = false
     })
   end
 
