@@ -76,7 +76,7 @@ class Guw::GuwOutputsController < ApplicationController
 
     expire_fragment "guw"
 
-    redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-output")
   end
 
   def update
@@ -158,7 +158,7 @@ class Guw::GuwOutputsController < ApplicationController
     set_page_title I18n.t(:Edit_Units_Of_Work)
     redirect_to guw.edit_guw_model_path(@guw_model.id,
                                         organization_id: @current_organization.id,
-                                        anchor: "tabs-factors")
+                                        anchor: "tabs-output")
 
     expire_fragment "guw"
 
