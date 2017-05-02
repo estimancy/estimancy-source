@@ -1231,11 +1231,11 @@ class OrganizationsController < ApplicationController
               description = "#{new_organization.description}" + "\n #{I18n.l(Time.now)} : #{I18n.t(:organization_copied_by, username: current_user.name)}"
               new_organization.description = description
               new_organization.copy_in_progress = false
-              new_organization.save(validate: false)
+              new_organization.save#(validate: false)
             end
 
             organization_image.copy_in_progress = false
-            organization_image.save(validate: false)
+            organization_image.save#(validate: false)
 
             flash[:notice] = I18n.t(:notice_organization_successful_created)
           else
