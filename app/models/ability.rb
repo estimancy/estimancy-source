@@ -106,11 +106,13 @@ class Ability
       unless prj_scrts.empty?
         specific_permissions_array = []
         prj_scrts.each do |prj_scrt|
-          unless prj_scrt.project_security_level.nil?
+          prj_scrt_project_security_level = prj_scrt.project_security_level
+          unless prj_scrt_project_security_level.nil?
+            prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
             project = prj_scrt.project
             unless project.nil?
               organization_estimation_statuses.each do |es|
-                prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+                prj_scrt_project_security_level_permissions.each do |permission|
                   if permission.alias == "manage" and permission.category == "Project"
                     can :manage, project, estimation_status_id: es.id
                   else
@@ -151,18 +153,22 @@ class Ability
       end
 
       unless prj_scrts.empty?
-        specific_permissions_array = []
         prj_scrts.each do |prj_scrt|
-          unless prj_scrt.project_security_level.nil?
+
+          prj_scrt_project_security_level = prj_scrt.project_security_level
+
+          unless prj_scrt_project_security_level.nil?
+
+            prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+
             project = prj_scrt.project
             unless project.nil?
               if user.id == project.creator_id
                 unless project.nil?
                   organization_estimation_statuses.each do |es|
-                    prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+                    prj_scrt_project_security_level_permissions.each do |permission|
                       if permission.alias == "manage" and permission.category == "Project"
                         can :manage, project, estimation_status_id: es.id
-                        # @array_owners = []
                       else
                         @array_owners << [permission.id, project.id, es.id]
                       end
@@ -180,13 +186,18 @@ class Ability
         unless prj_scrts.empty?
           specific_permissions_array = []
           prj_scrts.each do |prj_scrt|
-            # Get the project/estimation permissions
+
+            prj_scrt_project_security_level = prj_scrt.project_security_level
             project = prj_scrt.project
+
             unless project.nil?
-              unless prj_scrt.project_security_level.nil?
+              unless prj_scrt_project_security_level.nil?
+
+                prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+
                 organization_estimation_statuses.each do |es|
-                  prj_scrt.project_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
-                    if prj_scrt.project.private == true && project.is_model != true
+                  prj_scrt_project_security_level_permissions.each do |permission|
+                    if project.private == true && project.is_model != true
                       @array_groups << []
                     else
                       if permission.alias == "manage" and permission.category == "Project"
@@ -205,7 +216,10 @@ class Ability
         grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).each do |esgr|
           esgr_security_level = esgr.project_security_level
           unless esgr_security_level.nil?
-            esgr_security_level.permissions.select{|i| i.is_permission_project }.map do |permission|
+
+            prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
+
+            prj_scrt_project_security_level_permissions.each do |permission|
               organization_projects.each do |project|
                 if permission.alias == "manage" and permission.category == "Project"
                   can :manage, project, estimation_status_id: esgr.estimation_status.id
@@ -216,6 +230,7 @@ class Ability
             end
           end
         end
+
       end
 
       global = @array_users + @array_groups + @array_owners
