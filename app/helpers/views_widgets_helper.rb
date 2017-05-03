@@ -514,6 +514,10 @@ module ViewsWidgetsHelper
           end
         elsif estimation_value.module_project.pemodule.alias == "guw"
           probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget)
+
+        elsif estimation_value.module_project.pemodule.alias == "operation"
+          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget)
+
         else
           if data_probable.nil?
             probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)

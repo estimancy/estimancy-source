@@ -72,6 +72,48 @@ module Operation
       end
     end
 
+    def self.display_value(data_probable, estimation_value, view_widget)
+
+      module_project = estimation_value.module_project
+      operation_model = module_project.operation_model
+      value = data_probable.to_f.round(2)
+
+      if view_widget.use_organization_effort_unit == true
+        tab = get_organization_unit(value, operation_model.organization)
+        unit_coefficient = tab.first
+        unit = tab.last
+      else
+        begin
+          operation_input = estimation_value.pe_attribute.operation_input
+        rescue
+          operation_input = nil
+        end
+
+        unless operation_input.nil?
+          unit_coefficient = operation_input.send("standard_unit_coefficient")
+          unit_coefficient = unit_coefficient.nil? ? 1 : unit_coefficient.to_f
+
+          unit = operation_input.send("standard_unit")
+        else
+          unit_coefficient = 1
+          unit = ''
+        end
+      end
+
+      begin
+        if data_probable.nil?
+          result_value = nil
+        else
+          result_value = (data_probable.to_f / unit_coefficient).round(2)
+        end
+      rescue
+        result_value = nil
+      end
+
+      return "#{result_value} #{unit}"
+    end
+
+
     def self.display_size(p, c, level, component_id, operation_model)
       standard_coefficient = 1
 
@@ -89,5 +131,27 @@ module Operation
         nil
       end
     end
+
+
+    private
+    def self.get_organization_unit(v, organization)
+      unless v.class == Hash
+        value = v.to_f
+        if value < organization.limit1.to_i
+          [organization.limit1_coef.to_f, organization.limit1_unit]
+        elsif value < organization.limit2.to_i
+          [organization.limit2_coef.to_f, organization.limit2_unit]
+        elsif value < organization.limit3.to_i
+          [organization.limit3_coef.to_f, organization.limit3_unit]
+        elsif value < organization.limit4.to_i
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        else
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        end
+      else
+        []
+      end
+    end
+
   end
 end

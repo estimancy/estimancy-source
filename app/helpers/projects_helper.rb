@@ -1180,7 +1180,6 @@ module ProjectsHelper
     elsif est_val_pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
       ge_model = module_project.ge_model
       "#{convert_ge_model_value_with_precision(ge_model, est_val, value, precision)}"
-
     else
       case est_val_pe_attribute
         when 'date'
