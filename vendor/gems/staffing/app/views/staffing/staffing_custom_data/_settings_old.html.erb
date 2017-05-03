@@ -6,7 +6,7 @@
    module_project = current_module_project
    attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
 
-   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
+   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
 
    if attribute.nil?
      effort = 0
@@ -49,7 +49,7 @@
        end
    end
 
-   @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
+   @md_duration = @staffing_model.mc_donell_coef * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
    # else
    #   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
    #                              :module_project_id => current_module_project.id,
