@@ -378,7 +378,7 @@
     </div>
 
     <div class="span6">
-      <% attr = PeAttribute.find_by_alias("effort") %>
+      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
       <% unless @ge_model.output_pe_attribute.nil? %>
         <% attr = @ge_model.output_pe_attribute %>
       <% end %>
