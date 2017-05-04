@@ -16,7 +16,7 @@
 
            if ev_effort_value.blank? || !@staffing_model.enabled_input  #effort == 0
 
-               if current_ev && !current_ev.estimation_value_id.nil?
+               if !current_ev.estimation_value_id.nil?
                  ev = EstimationValue.find(current_ev.estimation_value_id)
                else
                  ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => current_module_project.previous.last, :in_out => "output").first
