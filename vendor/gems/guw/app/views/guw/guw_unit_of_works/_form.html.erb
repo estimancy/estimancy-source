@@ -28,15 +28,18 @@
             <%= f.input :guw_type_id, as: :select, collection: @guw_model.guw_types.map{|i| [i.name, i.id]}, label: I18n.t(:work_unit_type), include_blank: false, input_html: { class: "input-xxlarge" } %>
 
             <% unless @guw_model.coefficient_label.blank? %>
-              <%= f.input :guw_work_unit_id, as: :select, collection: @guw_model.guw_work_units, label: @guw_model.coefficient_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% work_units = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.select{|ct| ct.value != nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+              <%= f.input :guw_work_unit_id, as: :select, collection: work_units, label: @guw_model.coefficient_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
             <% end %>
 
             <% unless @guw_model.weightings_label.blank? %>
-              <%= f.input :guw_weighting_id, as: :select, collection: @guw_model.guw_weightings, label: @guw_model.weightings_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% weightings = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.select{|ct| ct.value != nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+              <%= f.input :guw_weighting_id, as: :select, collection: weightings, label: @guw_model.weightings_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
             <% end %>
 
             <% unless @guw_model.factors_label.blank? %>
-              <%= f.input :guw_factor_id, as: :select, collection: @guw_model.guw_factors, label: @guw_model.factors_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
+              <% factors = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+              <%= f.input :guw_factor_id, as: :select, collection: factors, label: @guw_model.factors_label.to_s, include_blank: false, input_html: { class: "input-xxlarge" } %>
             <% end %>
 
             <% default_technology = Guw::GuwUnitOfWorkGroup.find(params[:g]).organization_technology %>

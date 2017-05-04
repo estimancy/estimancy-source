@@ -246,12 +246,21 @@
                 <% unless @guw_model.factors_label.blank? %>
                   <td class="span2">
                     <span class="factor_<%= guow.id %>" >
-                      <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
-                      <%# results = Guw::GuwComplexityFactor.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq %>
-                      <%# results = Guw::GuwComplexityFactor.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_factor }.uniq %>
+
+                      <% disabled_factors = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_factors.map(&:id).include?(guow.guw_factor_id) %>
+                        <% disabled_factors = disabled_factors %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_factors = [] %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+
                       <% unless results.empty? %>
                         <%= select_tag "guw_factor[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                       selected: guow.guw_factor_id),
+                                                                                    selected: guow.guw_factor_id,
+                                                                                    disabled: disabled_factors.map(&:id)),
                                        class: "guw_factor input-xsmall",
                                        guw: guow.id,
                                        required: true,
@@ -442,6 +451,10 @@
         url: "<%= guw.change_selected_state_path %>",
         data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
       });
+    });
+
+    $('select.guw_factor').on('click', function(){
+      $(this).find('option:disabled').remove();
     });
 
     $('.guw_type').change(function(){
