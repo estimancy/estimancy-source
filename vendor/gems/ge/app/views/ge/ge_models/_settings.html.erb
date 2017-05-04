@@ -383,7 +383,12 @@
         <% attr = @ge_model.output_pe_attribute %>
       <% end %>
 
-      <% ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first %>
+      <% begin
+            ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first
+         rescue
+           ev = nil
+         end
+      %>
       <% theorical_effort_attr = PeAttribute.find_by_alias("theoretical_effort") %>
       <% theorical_ev = EstimationValue.where(pe_attribute_id: theorical_effort_attr.id, module_project_id: current_module_project.id, in_out: "output").last %>
       <% component_id = current_component.id %>
