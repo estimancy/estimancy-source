@@ -3,35 +3,50 @@
 </h3>
 
 <%
-   attribute = PeAttribute.find_by_alias("effort")
-   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
+   attribute = @module_project.pemodule.pe_attributes.where(alias: "effort").first
+   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
 
-   current_ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                      :module_project_id => current_module_project.id,
-                                      :in_out => "input").first
+   if attribute.nil?
+     effort = 0
+   else
+       current_ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => current_module_project.id, :in_out => "input").first
 
-   # if current_ev && !current_ev.estimation_value_id.nil?
-   #   ev = EstimationValue.find(current_ev.estimation_value_id)
-   # else
-     ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                :module_project_id => current_module_project.previous.last,
-                                :in_out => "output").first
-   # end
+       unless current_ev.nil?
+           ev_effort_value = current_ev.string_data_probable[current_component.id]
 
-   begin
-     begin
-       previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
-       effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-     rescue
-       effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-     end
-   rescue
-     begin
-       effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-     rescue
-       effort = 0
-     end
-   end
+           if ev_effort_value.blank? || !@staffing_model.enabled_input  #effort == 0
+
+               if !current_ev.estimation_value_id.nil?
+                 ev = EstimationValue.find(current_ev.estimation_value_id)
+               else
+                 ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => current_module_project.previous.last, :in_out => "output").first
+               end
+
+               begin
+                 begin
+                   previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+                   effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+                 rescue
+                   effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+                 end
+               rescue
+                 begin
+                   effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+                 rescue
+                   effort = 0
+                 end
+               end
+            else
+              begin
+                ev = current_ev
+                effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+              rescue
+                effort = 0
+              end
+           end
+       end
+
+    end
 
    @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
 
@@ -42,11 +57,11 @@
    y0 =  @staffing_model.trapeze_default_values[:y0].to_f / 100
    y3 =  @staffing_model.trapeze_default_values[:y3].to_f / 100
 
-   staffing_trapeze = 2 * ((effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+   staffing_trapeze = 2 * ((effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
 
    form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
    t_max_staffing = Math.sqrt(1/(2*form_coef));
-   staffing_rayleigh = 2 * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / (t_max_staffing * Math.sqrt(Math.exp(1))) / 2
+   staffing_rayleigh = 2 * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / (t_max_staffing * Math.sqrt(Math.exp(1))) / 2
 
 %>
 

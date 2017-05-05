@@ -78,7 +78,11 @@
             <% effort_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
             <% output_attribute_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "staffing" %>
-            <% effort_ids = module_project_attributes.where(alias: Staffing::StaffingModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+            <% test1 = AttributeModule.includes(:pe_attribute).where(in_out: ['input','both'], pemodule_id: @module_project.pemodule.id).all %>
+            <% test2 = @module_project.pemodule.pe_attributes.includes(:attribute_modules).all %>
+
+            <% staffing_input_pe_attributes = module_project_attributes.includes(:attribute_modules).where(:attribute_modules => {in_out: ['input', 'output', 'both']}).all %>
+            <% effort_ids = staffing_input_pe_attributes.map(&:id).flatten %>
         <% when "kb" %>
             <% effort_ids = module_project_attributes.where(alias: Kb::KbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "skb" %>
