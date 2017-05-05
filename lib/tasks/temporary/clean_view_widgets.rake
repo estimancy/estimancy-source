@@ -27,6 +27,7 @@ namespace :estimancy do
 
     Project.all.each do |project|
       if project.is_model == true
+
         pf = ProjectField.where(project_id: project.id,
                                 value: nil).first
 
