@@ -102,7 +102,7 @@ class ExpertJudgement::InstancesController < ApplicationController
       if pe_attribute
         if pe_attribute.alias == "effort"
           attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient.to_f
-        elsif eja.alias == "cost"
+        elsif pe_attribute.alias == "cost"
           attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient.to_f
         end
       end

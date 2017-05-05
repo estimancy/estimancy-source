@@ -34,32 +34,37 @@
       <th></th>
       <th></th>
     </tr>
+
+    <% module_project = current_module_project %>
+
     <% @expert_judgement_attributes.each do |eja| %>
 
       <% ie = ExpertJudgement::InstanceEstimate.where( pe_attribute_id: eja.id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id,
-                                                       module_project_id: current_module_project.id,
+                                                       module_project_id: module_project.id,
                                                        pbs_project_element_id: current_component.id).first %>
       <%
         attr_unit_coefficient = 1
         pe_attribute = PeAttribute.find(eja.id)
         if pe_attribute
           if pe_attribute.alias == "effort"
-            attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient.to_f
+            attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient
           elsif eja.alias == "cost"
-            attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient.to_f
+            attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient
           end
         end
+
+        attr_unit_coefficient = attr_unit_coefficient.nil? ? 1 : attr_unit_coefficient.to_f
       %>
 
       <% current_ev =  EstimationValue.where(:pe_attribute_id => eja.id,
-                                             :module_project_id => current_module_project.id,
+                                             :module_project_id => module_project.id,
                                              :in_out => "input").first %>
 
       <% if current_ev && !current_ev.estimation_value_id.nil? %>
         <% ev = EstimationValue.find(current_ev.estimation_value_id) %>
       <% else %>
-        <% ev = EstimationValue.where(:pe_attribute_id => eja.id, :module_project_id => current_module_project.previous.first, :in_out => "output").first %>
+        <% ev = EstimationValue.where(:pe_attribute_id => eja.id, :module_project_id => module_project.previous.first, :in_out => "output").first %>
       <% end %>
 
       <tr>
@@ -101,15 +106,15 @@
           <span class="pull-left">
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
-            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
             <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_component), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 

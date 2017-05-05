@@ -39,11 +39,40 @@ module ExpertJudgement
     end
 
 
-    def convert_effort_to_show(level, eja, ev, component)
-      gross = (self.send("#{level}_input").blank? ? ev.nil? ? '' : ev.send("string_data_#{level}")[component.id] : self.send("#{level}_input")).to_f
+    def convert_effort_to_show(level, eja, ev, component, module_project = nil)
+      #gross = (self.send("#{level}_input").blank? ? ev.nil? ? '' : ev.send("string_data_#{level}")[component.id] : self.send("#{level}_input")).to_f
+      #gross = ev.nil? ? (self.send("#{level}_input").to_f) : ev.send("string_data_#{level}")[component.id]
+
+      begin
+        begin
+          previous_activity_root = module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+          ev_value = ev.string_data_probable[component.id][previous_activity_root.id][:value]
+        rescue
+          ev_value = ev.string_data_probable[component.id]
+        end
+      rescue
+        begin
+          ev_value = ev.string_data_probable[component.id]
+        rescue
+          ev_value = nil
+        end
+      end
+
+      # if ev_value.blank?
+      #   gross = self.send("#{level}_input").to_f.round(2)
+      # else
+      #   gross = ev_value.to_f.round(2)
+      # end
+
+      if self.send("#{level}_input").blank?
+        gross = ev_value.to_f.round(2)
+      else
+        gross = self.send("#{level}_input").to_f.round(2)
+      end
+
       if eja.alias == "effort"
         begin
-          gross / self.instance.effort_unit_coefficient.to_f
+          (gross / self.instance.effort_unit_coefficient.to_f)
         rescue
           gross
         end
@@ -57,8 +86,8 @@ module ExpertJudgement
       else
         gross
       end
-    end
 
+    end
 
 
     def to_s(mp)
