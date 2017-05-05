@@ -42,7 +42,7 @@
       <% ie = ExpertJudgement::InstanceEstimate.where( pe_attribute_id: eja.id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id,
                                                        module_project_id: module_project.id,
-                                                       pbs_project_element_id: current_component.id).first %>
+                                                       pbs_project_element_id: current_component.id).first_or_create %>
       <%
         attr_unit_coefficient = 1
         pe_attribute = PeAttribute.find(eja.id)
