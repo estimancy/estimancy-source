@@ -19,31 +19,31 @@
 #
 #############################################################################
 
-module Guw
-  class GuwType < ActiveRecord::Base
-    belongs_to :guw_model
+namespace :estimancy do
 
-    has_many :guw_unit_of_work_attributes, dependent: :destroy
-    has_many :guw_attribute_complexities, dependent: :destroy
-    has_many :guw_complexities, dependent: :destroy
-    has_many :guw_type_complexities, dependent: :destroy
-    has_many :guw_unit_of_works, dependent: :destroy
-    has_many :guw_complexity_technologies, dependent: :destroy
-    has_many :guw_complexity_coefficient_elements, dependent: :destroy
+  desc 'Clean View Widget'
 
-    validates_presence_of :name
+  task :clean_view_widget => :environment do
 
-    amoeba do
-      enable
-      include_association [:guw_complexities, :guw_type_complexities]
+    Project.all.each do |project|
+      if project.is_model == true
 
-      customize(lambda { |original_guw_type, new_guw_type|
-        new_guw_type.copy_id = original_guw_type.id
-      })
+        pf = ProjectField.where(project_id: project.id,
+                                value: nil).first
+
+        unless pf.nil?
+          if pf.view_widget.nil?
+            pf.delete
+          end
+        end
+
+      else
+
+        ProjectField.where(project_id: project.id,
+                           value: nil).all.each{ |i| i.delete }
+
+      end
     end
 
-    def to_s
-      name
-    end
   end
 end

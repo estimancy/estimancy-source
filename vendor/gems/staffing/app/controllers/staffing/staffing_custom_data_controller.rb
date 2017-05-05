@@ -208,7 +208,12 @@ class Staffing::StaffingCustomDataController < ApplicationController
       chart_actual_coordinates << ["#{t}", t_staffing]
     end
     @staffing_custom_data.chart_actual_coordinates = chart_actual_coordinates
-    @staffing_custom_data.save
+
+    begin
+      @staffing_custom_data.save
+    rescue
+      #
+    end
 
 
     ###########
@@ -265,8 +270,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
       trapeze_theorical_staffing_values << ["#{t}", t_staffing]
     end
     @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
-    @staffing_custom_data.save
-
+    begin
+      @staffing_custom_data.save
+    rescue
+    end
 
     ##### Rayleigh
 
@@ -281,9 +288,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
     end
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
 
-
-
-    @staffing_custom_data.save
+    begin
+      @staffing_custom_data.save
+    rescue
+    end
 
     update_staffing_estimation_values
 
