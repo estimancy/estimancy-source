@@ -1,41 +1,41 @@
-# encoding: UTF-8
-#############################################################################
+## encoding: UTF-8
+##############################################################################
+##
+## Estimancy, Open Source project estimation web application
+## Copyright (c) 2014 Estimancy (http://www.estimancy.com)
+##
+##    This program is free software: you can redistribute it and/or modify
+##    it under the terms of the GNU Affero General Public License as
+##    published by the Free Software Foundation, either version 3 of the
+##    License, or (at your option) any later version.
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU Affero General Public License for more details.
+##
+##    You should have received a copy of the GNU Affero General Public License
+##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+##############################################################################
 #
-# Estimancy, Open Source project estimation web application
-# Copyright (c) 2014 Estimancy (http://www.estimancy.com)
+## Configuration file for Sidekiq.
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
+#---
+#:verbose: false
+#:pidfile: ./tmp/pids/sidekiq.pid
+#:concurrency: 25
+## Set timeout to 8 on Heroku, longer if you manage your own systems.
+#:timeout: 30
+#:queues:
+#  - [often, 7]
+#  - [default, 5]
+#  - [seldom, 3]
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
-
-# Configuration file for Sidekiq.
-
----
-:verbose: false
-:pidfile: ./tmp/pids/sidekiq.pid
-:concurrency: 25
-# Set timeout to 8 on Heroku, longer if you manage your own systems.
-:timeout: 30
-:queues:
-  - [often, 7]
-  - [default, 5]
-  - [seldom, 3]
-
-
-#To run Sidekiq in production
-#bundle exec sidekiq -d -L log/sidekiq.log -C config/sidekiq.yml -e production
-#-d, Daemonize process
-#-L, path to writable logfile
-#-C, path to YAML config file
-#-e, Application environment
+##To run Sidekiq in production
+##bundle exec sidekiq -d -L log/sidekiq.log -C config/sidekiq.yml -e production
+##-d, Daemonize process
+##-L, path to writable logfile
+##-C, path to YAML config file
+##-e, Application environment

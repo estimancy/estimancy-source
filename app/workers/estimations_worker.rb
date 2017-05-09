@@ -20,7 +20,7 @@
 #
 # # After each update of estimation value, this worker will be call to recompute estimation value for its parent component
 # class EstimationsWorker
-#   include Sidekiq::Worker
+#   # include Sidekiq::Worker
 #   ###sidekiq_options :queue => :often, :retry => true, :backtrace => true
 #
 #   def perform(pbs_project_elt_id, estimation_value_id)
