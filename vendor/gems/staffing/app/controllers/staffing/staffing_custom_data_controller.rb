@@ -394,7 +394,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @staffing_custom_data.coef_b = coef_b
 
       # a' = M(1 - y3) / D(x2 - x3)
-      coef_a_prime = (@staffing_trapeze*(1-y3)) / (@duration*(x2-x3))
+      coef_a_prime = (@staffing_trapeze*(1-y3)) / (@duration * (x2-x3))
       @staffing_custom_data.coef_a_prime = coef_a_prime
 
       # b' = M(x2y3 - x3) / D(x2 - x3)
