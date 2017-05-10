@@ -155,6 +155,10 @@
               <tr>
                 <td>
                   <%= aguw_output.name %>
+                  <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                                    guw_output_id: aguw_output.id,
+                                                    guw_type_id: guw_type.id).first %>
+                  <%= select_tag "display_modif[#{aguw_output.id}]", options_for_select([["Choisissez un mode d'affichage", nil], ["Afficher sans modification", "display"], ["Afficher et modifier", "display_modif"], ["Afficher et pouvoir modifier", "modif"]], selected: got.nil? ? nil : got.display_type), class: "input-medium" %>
                 </td>
                 <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
                   <% guw_outputs.each do |guw_output| %>
@@ -199,12 +203,11 @@
                       <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>)
                     </td>
                     <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-
-                        <% guw_outputs.each do |guw_output| %>
-                          <td class="align-center">
-                            <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
-                          </td>
-                        <% end %>
+                      <% guw_outputs.each do |guw_output| %>
+                        <td class="align-center">
+                          <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
+                        </td>
+                      <% end %>
                     <% end %>
                   </tr>
 

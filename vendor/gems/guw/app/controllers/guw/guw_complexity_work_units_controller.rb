@@ -31,6 +31,21 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     unless params[:config].nil?
       params[:config].each do |i|
         i.last.each do |j|
+
+          got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                   guw_output_id: j.first.to_i,
+                                   guw_type_id: @guw_type.id).first
+
+          if got.nil?
+            Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
+                                      guw_output_id: j.first.to_i,
+                                      guw_type_id: @guw_type.id,
+                                      display_type: params[:display_modif]["#{j.first.to_i}"])
+          else
+            got.display_type = params[:display_modif]["#{j.first.to_i}"]
+            got.save
+          end
+
           j.last.each do |k|
 
             cplx = Guw::GuwComplexity.find(i.first.to_i)
