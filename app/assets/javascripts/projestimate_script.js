@@ -90,7 +90,6 @@ $(document).ready(function() {
                 widget_selector: "li",
                 extra_rows: 0,
                 extra_cols: 0,
-                shift_widgets_up: false,
                 serialize_params: function($w, wgd) {
                     return {
                         /* add element (ID, view_widget_id and container_id) to data*/
