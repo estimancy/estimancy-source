@@ -116,7 +116,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
     @staffing_custom_data.percent = params[:percents]
-    @staffing_custom_data.global_effort_value = params[:new_effort]
+    @staffing_custom_data.global_effort_value = params[:new_effort].to_f
     @staffing_custom_data.duration = params[:new_duration]
     @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
     @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
@@ -129,15 +129,26 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
     #### Rayleigh
 
-    attribute = PeAttribute.find_by_alias("effort")
-    ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                               :module_project_id => current_module_project.previous.last,
-                               :in_out => "output").first
-    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
+    attribute = @module_project.pemodule.pe_attributes.where(alias: "effort").first
+    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
+
+    begin
+      current_ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => @module_project.id, :in_out => "input").first
+
+      if !current_ev.estimation_value_id.nil?
+        ev = EstimationValue.find(current_ev.estimation_value_id)
+      else
+        ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+                                 :module_project_id => @module_project.previous.last, :in_out => "output").first
+      end
+    rescue
+      ev = nil
+    end
+
 
     begin
       begin
-        previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+        previous_activity_root = @module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
         effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
       rescue
         effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)

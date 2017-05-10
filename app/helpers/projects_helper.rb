@@ -92,16 +92,17 @@ module ProjectsHelper
   def convert(v, organization)
     unless v.class == Hash
       value = v.to_f
+
       if value < organization.limit1.to_i
-        convert_with_precision(value / organization.limit1_coef.to_f, user_number_precision, true)
+        convert_with_precision(value / (organization.limit1_coef.nil? ? 1 : organization.limit1_coef.to_f), user_number_precision, true)
       elsif value < organization.limit2.to_i
-        convert_with_precision(value / organization.limit2_coef.to_f, user_number_precision, true)
+        convert_with_precision(value / (organization.limit2_coef.nil? ? 1 : organization.limit2_coef.to_f), user_number_precision, true)
       elsif value < organization.limit3.to_i
-        convert_with_precision(value / organization.limit3_coef.to_f, user_number_precision, true)
+        convert_with_precision(value / (organization.limit3_coef.nil? ? 1 : organization.limit3_coef.to_f), user_number_precision, true)
       elsif value < organization.limit4.to_i
-        convert_with_precision(value / organization.limit4_coef.to_f, user_number_precision, true)
+        convert_with_precision(value / (organization.limit4_coef.nil? ? 1 : organization.limit4_coef.to_f), user_number_precision, true)
       else
-        convert_with_precision(value / organization.limit4_coef.to_f, user_number_precision, true)
+        convert_with_precision(value / (organization.limit4_coef.nil? ? 1 : organization.limit4_coef.to_f), user_number_precision, true)
       end
     else
       0
@@ -1160,6 +1161,18 @@ module ProjectsHelper
         else
           "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
         end
+
+      elsif module_project.pemodule.alias == "staffing"
+        staffing_model = module_project.staffing_model
+        effort_standard_unit_coefficient = staffing_model.standard_unit_coefficient.nil? ? 1 : staffing_model.standard_unit_coefficient.to_f
+        effort_unit = staffing_model.effort_unit
+        if use_organization_effort_unit == true
+          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+          "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+        else
+          "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
+        end
+
       else
         "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
       end
