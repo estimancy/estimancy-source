@@ -90,6 +90,16 @@ $(document).ready(function() {
                 widget_selector: "li",
                 extra_rows: 0,
                 extra_cols: 0,
+                shift_widgets_up: false,
+                shift_larger_widgets_down: false,
+                collision: {
+                    wait_for_mouseup: true
+                },
+
+                //autogenerate_stylesheet: true,
+                min_cols: 1,
+                max_cols: 100,
+
                 serialize_params: function($w, wgd) {
                     return {
                         /* add element (ID, view_widget_id and container_id) to data*/
@@ -118,10 +128,18 @@ $(document).ready(function() {
                     }
                 },
 
+
+                // Qui marchait avec l'ancienne version
                 resize: {
                     enabled: true,
                     axes: ['both'],
+
+                    //handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
+                    //max_size: [20, 20],
+                    //min_size: [1, 1],
+
                     stop: function(event, ui, $widget) {
+
                         // Get final width and height of widget
                         var newHeight = this.resize_coords.data.height;
                         var newWidth = this.resize_coords.data.width;
@@ -149,43 +167,9 @@ $(document).ready(function() {
                                 sizey: newDimensions.size_y
                             }
                         });
-
                     }
                 }
-                //resize: {
-                //    enabled: true,
-                //    axes: ['both'],
-                //    stop: function(event, ui, $widget) {
-                //        // Get final width and height of widget
-                //        var newHeight = this.resize_coords.data.height;
-                //        var newWidth = this.resize_coords.data.width;
-                //        var text_size = ((newHeight+newWidth)/2) * 0.015;
-                //
-                //        //Update the font-size according to the widget sizes
-                //        var widget_id = $widget.data('id');
-                //        $('li#'+widget_id+'.widget_text').css("fontSize", text_size+"em");
-                //
-                //        // Update font-size : $('.changeMe').css("font-size", $(this).val() + "px");
-                //        $('#widget_text_'+widget_id+'.widget_text.without_min_max').fitText(0.6);
-                //        $('#widget_text_'+widget_id+'.widget_text.with_min_max').fitText(0.7);
-                //        $("li.no_estimation_value").fitText(2);
-                //        $('#widget_name_'+widget_id+'.widget_name').fitText(0.8);
-                //        $('span#min_max_'+widget_id+'.min_max').fitText(1);
-                //
-                //        //Update the widget size (width, height) in database
-                //        var newDimensions = this.serialize($widget)[0]; //get final sizex and sizey
-                //        $.ajax({
-                //            method: 'GET',
-                //            url: "/update_view_widget_sizes",
-                //            data: {
-                //                view_widget_id: $widget.data('view_widget_id'),
-                //                sizex: newDimensions.size_x,
-                //                sizey: newDimensions.size_y
-                //            }
-                //        });
-                //
-                //    }
-                //}
+
             }).data('gridster');
         })
     });
