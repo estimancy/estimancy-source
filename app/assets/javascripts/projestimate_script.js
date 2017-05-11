@@ -117,8 +117,13 @@ $(document).ready(function() {
                         //var gridster = $(".gridster ul").gridster().data('gridster');
                         var gridster = $('#'+container_id+".gridster ul").gridster().data('gridster');
                         var gridster_elements = gridster.serialize();
+
+                        //alert(JSON.stringify(gridster_elements));
+                        //alert(gridster_elements);
+                        //alert(JSON.parse(gridster_elements);
+
                         $.ajax({
-                            method: 'GET',
+                            type: 'POST',
                             url: "/update_view_widget_positions",
                             data: {
                                 view_id: this.id,
