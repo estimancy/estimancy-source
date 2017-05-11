@@ -892,7 +892,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
 
     @guw_coefficients = @guw_model.guw_coefficients
-    @guw_outputs = @guw_model.guw_outputs
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
@@ -1632,7 +1632,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @module_project = current_module_project
       @module_project.guw_model_id = @guw_model.id
       @module_project.save
-      @guw_outputs = @guw_model.guw_outputs
+      @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
       number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id,
                                                              module_project_id: current_module_project.id).all.map{|i| i.guw_unit_of_works}.flatten.size
