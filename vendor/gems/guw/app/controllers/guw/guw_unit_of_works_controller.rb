@@ -1298,7 +1298,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     tmp_hash_res = Hash.new
     tmp_hash_ares = Hash.new
 
-    @guw_model.guw_outputs.each_with_index do |guw_output, index|
+    @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, index|
 
       @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                             guw_output_id: guw_output.id,

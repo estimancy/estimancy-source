@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170510110743) do
+ActiveRecord::Schema.define(:version => 20170511073327) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -725,6 +725,15 @@ ActiveRecord::Schema.define(:version => 20170510110743) do
     t.datetime "updated_at",        :null => false
   end
 
+  create_table "guw_guw_output_types", :force => true do |t|
+    t.integer  "guw_model_id"
+    t.integer  "guw_output_id"
+    t.integer  "guw_type_id"
+    t.string   "display_type",  :default => "display"
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
+  end
+
   create_table "guw_guw_outputs", :force => true do |t|
     t.string   "name"
     t.string   "output_type"
@@ -736,6 +745,7 @@ ActiveRecord::Schema.define(:version => 20170510110743) do
     t.float    "standard_coefficient"
     t.integer  "copy_id"
     t.string   "unit"
+    t.integer  "display_order"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -947,12 +957,6 @@ ActiveRecord::Schema.define(:version => 20170510110743) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-  end
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|

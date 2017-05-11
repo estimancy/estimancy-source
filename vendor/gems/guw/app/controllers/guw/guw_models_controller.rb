@@ -1426,7 +1426,7 @@ class Guw::GuwModelsController < ApplicationController
     @guw_work_units = @guw_model.guw_work_units
     @guw_weightings = @guw_model.guw_weightings
     @guw_factors = @guw_model.guw_factors
-    @guw_outputs = @guw_model.guw_outputs
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
     @guw_coefficients = @guw_model.guw_coefficients
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)

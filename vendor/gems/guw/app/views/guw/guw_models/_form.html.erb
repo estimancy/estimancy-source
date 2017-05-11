@@ -153,36 +153,40 @@
     </div>
 
     <div id="tabs-output">
-      <table class="table table-bordered">
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th>Type de sortie</th>
-          <th>Unité de sortie</th>
-          <th>Valeurs intermédiaires</th>
-          <th>Sous-total</th>
-          <th>Coefficient Standard</th>
-          <th></th>
-        </tr>
-
-        <% unless @guw_outputs.empty? %>
-          <% @guw_outputs.each do |guw_output| %>
+      <div class="row-fluid">
+        <div class="span6">
+          <table class="table table-bordered">
             <tr>
-              <td><%= guw_output.name %></td>
-              <td><%= guw_output.output_type %></td>
-              <td><%= guw_output.unit %></td>
-              <td><%= guw_output.allow_intermediate_value %></td>
-              <td><%= guw_output.allow_subtotal %></td>
-              <td><%= guw_output.standard_coefficient %></td>
-              <td class="center">
-                <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
-                <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
-                <% end %>
-              </td>
+              <th><%= I18n.t(:name) %></th>
+              <th class="span2">Type de sortie</th>
+              <th class="span2">Unité de sortie</th>
+              <th class="span2">Sous-total</th>
+              <th class="span2">Coefficient Standard</th>
+              <th class="span2">Ordre</th>
+              <th>Actions</th>
             </tr>
-          <% end %>
-        <% end %>
-      </table>
+
+            <% unless @guw_outputs.empty? %>
+              <% @guw_outputs.each do |guw_output| %>
+                <tr>
+                  <td class="align-center"><%= guw_output.name %></td>
+                  <td class="align-center"><%= guw_output.output_type %></td>
+                  <td class="align-center"><%= guw_output.unit %></td>
+                  <td class="align-center"><%= guw_output.allow_subtotal %></td>
+                  <td class="align-center"><%= guw_output.standard_coefficient %></td>
+                  <td class="align-center"><%= guw_output.display_order %></td>
+                  <td class="center">
+                    <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </table>
+        </div>
+      </div>
 
       <br>
 
@@ -195,7 +199,7 @@
     <div id="tabs-coefficients">
       <% @guw_coefficients.each do |guw_coefficient| %>
         <div class="row-fluid">
-          <div class="span12">
+          <div class="span6">
             <b>
               <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
             </b>
@@ -207,11 +211,12 @@
 
             <table class="table table-bordered">
               <tr>
-                <th>Nom</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Valeur</th>
-                <th></th>
+                <th class="span2">Nom</th>
+                <th class="span2">Min</th>
+                <th class="span2">Max</th>
+                <th class="span2">Valeur</th>
+                <th class="span2">Ordre d'affichage</th>
+                <th>Actions</th>
               </tr>
               <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
                 <tr>
@@ -226,6 +231,9 @@
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.value %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.display_order %>
                   </td>
                   <td class="align-center">
                     <%= link_to "", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
