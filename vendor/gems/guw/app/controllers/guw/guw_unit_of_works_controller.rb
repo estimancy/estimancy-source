@@ -1080,7 +1080,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             unless params['guw_coefficient'].nil?
               unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
-                ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                unless params['deported_guw_coefficient'].nil?
+                  ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                else
+                  ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                end
               end
             end
 
@@ -1095,7 +1099,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                        guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
               unless ceuw.nil?
-                ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                unless params['deported_guw_coefficient'].nil?
+                  ceuw.guw_coefficient_element_id = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                else
+                  ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                end
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
