@@ -33,7 +33,7 @@
     <% end %>
   </ul>
 
-  <% guw_outputs = Guw::GuwOutput.where(guw_model_id: @guw_model.id) %>
+  <% guw_outputs = Guw::GuwOutput.where(guw_model_id: @guw_model.id).order("display_order ASC") %>
 
   <% if guw_model_guw_types.empty? %>
     <div id="tabs-default">
@@ -71,7 +71,7 @@
             <tr>
               <th></th>
               <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size %>">
+                <th colspan="<%= guw_outputs.size %>">
                   <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
                   <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type, guw_cplx) %>
                   <% if can? :manage_modules_instances, ModuleProject %>
@@ -101,7 +101,7 @@
             <tr>
               <th>Seuils</th>
               <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" : "#{Guw::GuwOutput.where(guw_model_id: @guw_model.id).size}" %>">
+                <th class="align-center" colspan="<%= guw_type.allow_criteria == true ? "#{guw_outputs.size}" : "#{guw_outputs.size}" %>">
                   <% if guw_type.allow_criteria == true %>
                     <%= check_box_tag "enable_value[#{guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;&nbsp;&nbsp;
                   <% end %>
@@ -158,7 +158,14 @@
                   <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
                                                     guw_output_id: aguw_output.id,
                                                     guw_type_id: guw_type.id).first %>
-                  <%= select_tag "display_modif[#{aguw_output.id}]", options_for_select([["Choisissez un mode d'affichage", nil], ["Afficher sans modification", "display"], ["Afficher et modifier", "display_modif"], ["Afficher et pouvoir modifier", "modif"]], selected: got.nil? ? nil : got.display_type), class: "input-medium" %>
+                  &nbsp;
+                  &nbsp;
+                  <%= select_tag "display_modif[#{aguw_output.id}]",
+                                 options_for_select([["Ne pas afficher", nil],
+                                                     ["Afficher sans modification", "display"],
+                                                     ["Afficher avec modification", "display_modif"],
+                                                     ["Modifier seulement", "modif"]],
+                                                    selected: got.nil? ? nil : got.display_type), class: "input-large" %>
                 </td>
                 <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
                   <% guw_outputs.each do |guw_output| %>
@@ -236,7 +243,7 @@
                   <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
                     <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
                                                                   organization_technology_id: technology.id).first %>
-                    <td colspan="<%= Guw::GuwOutput.where(guw_model_id: @guw_model.id).size %>" class="align-center">
+                    <td colspan="<%= guw_outputs.size %>" class="align-center">
                       <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "input-mini" %>
                     </td>
                   <% end %>

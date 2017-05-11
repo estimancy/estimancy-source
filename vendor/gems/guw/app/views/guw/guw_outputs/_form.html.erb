@@ -18,9 +18,9 @@
         <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :output_type, as: :select, label: "Type de Sortie", collection: ["Effort", "Taille", "Cout"] %>
         <%= f.input :unit, label: "Unité de sortie" %>
-        <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>
         <%= f.input :allow_subtotal, label: "Calculer les sous-totaux" %>
         <%= f.input :standard_coefficient, label: "Coefficient Standard de Conversion (Effort uniquement)" %>
+        <%= f.input :display_order, label: "Ordre d'affichage" %>
       </div>
 
       <div class="actions-tabs">
