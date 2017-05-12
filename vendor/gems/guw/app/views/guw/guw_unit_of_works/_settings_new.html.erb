@@ -407,59 +407,61 @@
                     <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
                       <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
 
-                      <% unless guw_output.nil? || got.nil? || @guw_type.nil? %>
+                      <% unless guw_output.nil? || @guw_type.nil? %>
 
                         <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
                                                           guw_output_id: guw_output.id,
                                                           guw_type_id: @guw_type.id).first %>
 
-                        <td class="span2">
-                          <% if got.display_type == "display" %>
-                            <span class=" size_label_<%= guow.id %>">
-                              <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
-                                                   class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
-                                                   readonly: true,
-                                                   style: "width: 43px;",
-                                                   step: 0.001 %>
-                            </span>
-                          <% elsif got.display_type == "modif" %>
-                            <span class="ajusted_size_<%= guow.id %>">
-                              <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
-                                                   step: 0.001,
-                                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                   style: "width: 43px;" %>
-                            </span>
-                          <% elsif got.display_type == nil %>
-                            <span class="ajusted_size_<%= guow.id %>">
-                              -
-                            </span>
-                          <% end %>
+                        <% unless got.nil? %>
+                          <td class="span2">
+                            <% if got.display_type == "display" %>
+                              <span class=" size_label_<%= guow.id %>">
+                                <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
+                                                     class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
+                                                     readonly: true,
+                                                     style: "width: 43px;",
+                                                     step: 0.001 %>
+                              </span>
+                            <% elsif got.display_type == "modif" %>
+                              <span class="ajusted_size_<%= guow.id %>">
+                                <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                                                     step: 0.001,
+                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
+                                                     style: "width: 43px;" %>
+                              </span>
+                            <% elsif got.display_type == nil %>
+                              <span class="ajusted_size_<%= guow.id %>">
+                                -
+                              </span>
+                            <% end %>
 
-                          <% if got.display_type == "display_modif" %>
-                            <span class=" size_label_<%= guow.id %>">
-                              <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
-                                                   class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
-                                                   readonly: true,
-                                                   style: "width: 43px;",
-                                                   step: 0.001 %>
-                            </span>
+                            <% if got.display_type == "display_modif" %>
+                              <span class=" size_label_<%= guow.id %>">
+                                <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
+                                                     class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
+                                                     readonly: true,
+                                                     style: "width: 43px;",
+                                                     step: 0.001 %>
+                              </span>
+                              <span class="ajusted_size_<%= guow.id %>">
+                                <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                                                     step: 0.001,
+                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
+                                                     style: "width: 43px;" %>
+                              </span>
+                            <% end %>
+                          </td>
+                        <% else %>
+                          <td class="span2">
                             <span class="ajusted_size_<%= guow.id %>">
                               <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                    step: 0.001,
                                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
                                                    style: "width: 43px;" %>
                             </span>
-                          <% end %>
-                        </td>
-                      <% else %>
-                        <td class="span2">
-                          <span class="ajusted_size_<%= guow.id %>">
-                            <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
-                                                 step: 0.001,
-                                                 class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                 style: "width: 43px;" %>
-                          </span>
-                        </td>
+                          </td>
+                        <% end %>
                       <% end %>
                     <% end %>
                   <% end %>
