@@ -401,7 +401,7 @@
                           </td>
                         <% end %>
                       <% else %>
-                        <%# hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? results.first.id : default.id) : (ceuw.guw_coefficient_element_id.nil? ? default.value : ceuw.guw_coefficient_element_id)) %>
+                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id ) %>
                       <% end %>
                     <% end %>
                     <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>

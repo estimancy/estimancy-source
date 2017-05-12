@@ -892,7 +892,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
 
     @guw_coefficients = @guw_model.guw_coefficients
-    @guw_outputs = @guw_model.guw_outputs
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
@@ -1080,7 +1080,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             unless params['guw_coefficient'].nil?
               unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
-                ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                unless params['deported_guw_coefficient'].nil?
+                  ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                else
+                  ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                end
               end
             end
 
@@ -1095,7 +1099,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                        guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
               unless ceuw.nil?
-                ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                unless params['deported_guw_coefficient'].nil?
+                  ceuw.guw_coefficient_element_id = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                else
+                  ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                end
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
@@ -1624,7 +1632,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @module_project = current_module_project
       @module_project.guw_model_id = @guw_model.id
       @module_project.save
-      @guw_outputs = @guw_model.guw_outputs
+      @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
       number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id,
                                                              module_project_id: current_module_project.id).all.map{|i| i.guw_unit_of_works}.flatten.size

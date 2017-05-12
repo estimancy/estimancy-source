@@ -69,26 +69,28 @@ class ViewsWidget < ActiveRecord::Base
                               project_id: project.id,
                               views_widget_id: view_widget.id).first
 
-      if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
-        begin
-          @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-        rescue
-          @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
-        end
-      else
-        @value = view_widget.estimation_value.string_data_probable[component.id]
-      end
-
-      unless pf.nil?
-        pf.value = @value
-        pf.views_widget_id = view_widget.id
-        pf.field_id = field.id
-        pf.project_id = project.id
-
-        if pf.changed?
-          pf.save
+      unless view_widget.estimation_value.nil?
+        if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+          begin
+            @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+          rescue
+            @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
+          end
+          else
+          @value = view_widget.estimation_value.string_data_probable[component.id]
         end
 
+        unless pf.nil?
+          pf.value = @value
+          pf.views_widget_id = view_widget.id
+          pf.field_id = field.id
+          pf.project_id = project.id
+
+          if pf.changed?
+            pf.save
+          end
+
+        end
       end
     end
   end
