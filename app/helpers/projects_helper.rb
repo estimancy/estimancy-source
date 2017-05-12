@@ -1270,6 +1270,30 @@ module ProjectsHelper
     end
   end
 
+  # Get the organization effort limit and unit according to the smaller value
+  def get_organization_effort_limit_and_unit(v, organization)
+    if v.class == Array
+      v = v.compact.reject{ |i| i == 0}.min
+    end
+
+    unless v.class == Hash
+      value = v.to_f
+      if value < organization.limit1.to_i
+        [organization.limit1_coef.to_f, organization.limit1_unit]
+      elsif value < organization.limit2.to_i
+        [organization.limit2_coef.to_f, organization.limit2_unit]
+      elsif value < organization.limit3.to_i
+        [organization.limit3_coef.to_f, organization.limit3_unit]
+      elsif value < organization.limit4.to_i
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      else
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      end
+    else
+      []
+    end
+  end
+
   #Display rule and options of an attribute in a bootstrap tooltip
   def display_rule(est_val)
     "<br> #{I18n.t(:tooltip_attribute_rules)}: <strong>#{est_val.pe_attribute.options.join(' ')} </strong> <br> #{est_val.is_mandatory ? I18n.t(:mandatory) : I18n.t(:no_mandatory) }"
