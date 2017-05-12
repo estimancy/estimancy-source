@@ -116,6 +116,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
     @staffing_custom_data.percent = params[:percents]
+    @staffing_custom_data.standard_effort = params[:standard_effort].to_f
     @staffing_custom_data.global_effort_value = params[:new_effort].to_f
     @staffing_custom_data.duration = params[:new_duration]
     @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
@@ -558,7 +559,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last #first
 
     current_module_project.pemodule.attribute_modules.each do |am|
-      tmp_prbl = Array.new
       in_out = []
 
       if am.in_out == "both"
@@ -571,6 +571,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       evs.each do |ev|
         #ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+        tmp_prbl = Array.new
+
         ["low", "most_likely", "high"].each do |level|
 
           if @staffing_model.three_points_estimation?
@@ -584,10 +586,16 @@ class Staffing::StaffingCustomDataController < ApplicationController
           # new_staffing_rayleigh = params[:new_staffing_rayleigh]
           # new_staffing_trapeze = params[:new_staffing_trapeze]
 
-          if am.pe_attribute.alias == "effort"
-            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+          if am.pe_attribute.alias == "effort" && ev.in_out == "input"
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.standard_effort.to_f * @staffing_model.standard_unit_coefficient.to_f
             ev.save
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+
+          elsif am.pe_attribute.alias == "effort" && ev.in_out == "output"
+              ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+              ev.save
+              tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+
           elsif am.pe_attribute.alias == "duration"
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
             ev.save
