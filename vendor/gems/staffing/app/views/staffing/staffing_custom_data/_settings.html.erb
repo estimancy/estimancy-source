@@ -297,7 +297,8 @@
     </div>
 
     <% begin %>
-      <%= hidden_field_tag "new_effort", effort, class: "new_effort" %>
+      <%= hidden_field_tag "standard_effort", (@staffing_custom_data.standard_effort.blank? ? effort : @staffing_custom_data.standard_effort), class: "standard_effort" %>
+      <%= hidden_field_tag "new_effort", (@staffing_custom_data.global_effort_value.blank? ? effort : @staffing_custom_data.global_effort_value), class: "new_effort" %> <%#= hidden_field_tag "new_effort", effort, class: "new_effort" %>
       <%= hidden_field_tag "new_duration", (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f), class: "new_duration" %>
       <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
       <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_trapeze" %>
@@ -306,22 +307,51 @@
           Mettez à jour le module.
         </span>
     <% end %>
-
   </div>
+
 
   <% begin %>
     <script>
+
+      var staffing_trapeze = $("#new_staffing_trapeze").val();
+      var staffing_rayleigh = $("#new_staffing_rayleigh").val();
+
+      if (staffing_trapeze == "0.0" || staffing_rayleigh == "0.0"){
+          var data_staff_from = { from: 100 };
+          set_staffing_values(data_staff_from);
+      }
+
       $('#percent').ionRangeSlider({
         min: 70,
         max: 150,
         from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
         grid: true,
         postfix: "%",
+
         onChange: function (data) {
+            set_staffing_values(data);
+        }
+
+      });
+
+      function sign(value){
+        if (value > 0) {
+          return "+" + value;
+        } else {
+          return value;
+        }
+      }
+
+      // Get The Max-Staff value according to selected value from the Slider
+      function set_staffing_values(data) {
+
           var effort = $(".reference_effort").html();
           var duration = $(".reference_duration").html();
           var staffing_trapeze = $(".reference_staffing_trapeze").html();
           var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
+
+          $("#standard_effort").val(parseFloat(effort));
+
           var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
           $(".effort").html(new_effort.toFixed(2) + " <%= @staffing_model.effort_unit %>");
           $(".new_effort").val(new_effort.toFixed(2));
@@ -367,17 +397,12 @@
 
           var someFormattedDate = dd + '/' + mm + '/' + y;
           $(".end_date").html(someFormattedDate);
-        }
-      });
-
-      function sign(value){
-        if (value > 0) {
-          return "+" + value;
-        } else {
-          return value;
-        }
       }
+
+
     </script>
+
+
   <% rescue Exception => e %>
     <%= e %>
   <% end %>
