@@ -24,6 +24,7 @@ module Staffing
     attr_accessible :puissance_n, :mc_donell_coef, :copy_id, :copy_number, :enabled_input, :name,
                     :description, :organization_id, :trapeze_default_values, :three_points_estimation,
                     :effort_unit, :standard_unit_coefficient, :staffing_method, :effort_week_unit, :config_type
+
     attr_accessor :x0, :y0, :x1, :x2, :x3, :y3
 
     serialize :trapeze_default_values, Hash
@@ -32,6 +33,11 @@ module Staffing
     validates :mc_donell_coef, :puissance_n, :organization_id, presence: true
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
+
+    validates :x0, numericality: { less_than: :x1, message: "obligatoire et doit être inférieur à x1" }
+    validates :x1, numericality: { less_than: :x2, message: "obligatoire et doit être inférieur à x2" }
+    validates :x2, numericality: { less_than: :x3, message: "obligatoire et doit être inférieur à x3" }
+
 
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy
