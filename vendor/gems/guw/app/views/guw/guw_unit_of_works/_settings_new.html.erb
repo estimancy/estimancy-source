@@ -407,11 +407,12 @@
                     <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
                       <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
 
-                      <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
-                                                        guw_output_id: guw_output.id,
-                                                        guw_type_id: @guw_type.id).first %>
-
                       <% unless guw_output.nil? || got.nil? || @guw_type.nil? %>
+
+                        <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                                          guw_output_id: guw_output.id,
+                                                          guw_type_id: @guw_type.id).first %>
+
                         <td class="span2">
                           <% if got.display_type == "display" %>
                             <span class=" size_label_<%= guow.id %>">
