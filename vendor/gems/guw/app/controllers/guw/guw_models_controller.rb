@@ -1186,16 +1186,7 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(index, 0, line[0]).change_font_bold(true)
         worksheet.add_cell(index, 1, line[1]).change_horizontal_alignment('center')
 
-        ["bottom", "right", "top"].each do |symbole|
-          worksheet[index][0].change_border(symbole.to_sym, 'thin')
-          worksheet[index][1].change_border(symbole.to_sym, 'thin')
-        end
         counter_line += 1
-      end
-
-      #worksheet.add_cell(0, ind, description)
-      ["bottom", "right"].each do |symbole|
-        worksheet[0][0].change_border(symbole.to_sym, 'thin')
       end
 
       unless description.empty?
@@ -1225,7 +1216,7 @@ class Guw::GuwModelsController < ApplicationController
       #======   Colonne 0 =============
       # Valeur initiale (Σ)
       worksheet.change_row_bold(ind2 + 3,true)
-      worksheet.add_cell(ind2 + 3, 0, I18n.t(:initial_value_sum))
+      worksheet.add_cell(ind2 + 3, 0, "Valeur initiale")
       worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
 
       # Un (1)
@@ -1243,18 +1234,60 @@ class Guw::GuwModelsController < ApplicationController
       output_line = ind2 + 6
       @guw_model.guw_outputs.each_with_index do |guw_output, index|
         worksheet.add_cell(output_line, 0, guw_output.name)
-        ["bottom", "right"].each do |symbole|
-          worksheet[output_line][0].change_border(symbole.to_sym, 'thin')
-        end
         output_line += 1
       end
 
-      output_line_number = ind2 + @guw_model.guw_outputs.size
+      # UN (1) : un_line_number Values
+      # UO CPLX VALUES : uo_cplx_line_number
+      un_column_number = 1
+      uo_cplx_column_number = 1
+      guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
 
-      line_number = ind2
-      column_number = ind + 1
+        #====== UN (1) un_line_number Values
+        @guw_model.guw_outputs.each_with_index do |guw_output, index|
+          oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
+          oci_value = oci.nil? ? '' : oci.init_value
+          worksheet.add_cell(13, un_column_number, oci_value)
+          worksheet[un_line_number][un_column_number]
+
+          un_column_number += 1
+        end
+        un_column_number += 2
+
+        #===== UO CPLX VALUES : uo_cplx_line_number
+        @guw_model.guw_outputs.each do |guw_output|
+          oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_complexity.id,
+                                              guw_output_id: guw_output.id).first
+          oc_value = (oc.nil? ? '' : oc.value)
+          worksheet.add_cell(14, uo_cplx_column_number, oc_value)
+          uo_cplx_column_number += 1
+        end
+        uo_cplx_column_number += 2
+      end
+
 
       @guw_complexities.each do |guw_complexity|
+        output_line_number = 15
+        cn = 1
+        @guw_model.guw_outputs.each do |aguw_output|
+          @guw_model.guw_outputs.each_with_index do |guw_output, j|
+
+            oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+                                                  guw_output_associated_id: aguw_output.id,
+                                                  guw_output_id: guw_output.id).first
+            oa_value = (oa.nil? ? '' : oa.value)
+
+            worksheet.add_cell(output_line_number, cn+j, oa_value)
+          end
+          output_line_number += 1
+        end
+        cn += 2
+      end
+
+      column_number = ind + 1
+
+      cn = 1
+      @guw_complexities.each_with_index do |guw_complexity|
 
         guw_complexity_attributes_values = [
             ["Prod", guw_complexity.enable_value ? 1 : 0],
@@ -1267,18 +1300,16 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(ind2, column_number, guw_complexity.name)
 
         guw_complexity_attributes_values.each_with_index do |name_cell, index|
-          worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0]).change_horizontal_alignment('center')
-          worksheet.add_cell(ind2 + 2, column_number + index, name_cell[1]).change_horizontal_alignment('center')
+          worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0])
+          worksheet.add_cell(ind2 + 2, column_number + index, name_cell[1])
         end
 
         counter_line = ind2 + 3
-
         @guw_model.guw_outputs.each_with_index do |guw_output, index|
-          worksheet.add_cell(counter_line, column_number + index, guw_output.name).change_horizontal_alignment('center')
+          worksheet.add_cell(counter_line, column_number + index, guw_output.name)
         end
 
         output_line = 15 + @guw_model.guw_outputs.size
-
         @guw_model.guw_coefficients.each do |guw_coefficient|
 
           worksheet.add_cell(output_line, 0, guw_coefficient.name)
@@ -1291,98 +1322,47 @@ class Guw::GuwModelsController < ApplicationController
           output_line += 1
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-            @guw_model.guw_outputs.each_with_index do |guw_output, index|
+
+            worksheet.add_cell(output_line, 0, guw_coefficient_element.name)
+
+            @guw_model.guw_outputs.each_with_index do |guw_output, j|
 
               cf = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: guw_complexity.id,
                                                               guw_coefficient_element_id: guw_coefficient_element.id,
                                                               guw_output_id: guw_output.id).first
 
-              worksheet.add_cell(output_line, index + 1, cf.nil? ? nil : cf.value)
-
+              worksheet.add_cell(output_line, cn+j, (cf.nil? ? nil : cf.value))
             end
-
-            worksheet.add_cell(output_line, 0, guw_coefficient_element.name)
-
             output_line += 1
           end
         end
+        cn += 5
 
-        column_number += guw_complexity_attributes_values.size + 1
+        column_number += guw_complexity_attributes_values.size
       end
 
-      # UN (1) un_line_number Values    ET  # UO CPLX VALUES   : uo_cplx_line_number
-      un_column_number = 1
-      uo_cplx_column_number = 1
-      guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
-
-        #====== UN (1) un_line_number Values
-        @guw_model.guw_outputs.each_with_index do |guw_output, index|
-          oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
-          oci_value = oci.nil? ? '' : oci.init_value
-          worksheet.add_cell(un_line_number, un_column_number, oci_value).change_horizontal_alignment('center')
-
-          worksheet[un_line_number][un_column_number]
-
-          un_column_number += 1
+      guw_type.guw_type_complexities.each  do |type_attribute_complexity|
+        worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
+        worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
+        ["Prod","[","[",I18n.t(:my_display)].each_with_index do |val, index|
+          worksheet.add_cell(ind3 + 1, ind + index + 1, val ).change_horizontal_alignment('center')
         end
-        un_column_number += 1
 
-        #===== UO CPLX VALUES : uo_cplx_line_number
-        @guw_model.guw_outputs.each do |guw_output|
-          oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
-          oc_value = oc.nil? ? '' : oc.value
-          worksheet.add_cell(uo_cplx_line_number, uo_cplx_column_number, oc_value)
-          uo_cplx_column_number += @guw_model.guw_outputs.size - 1
-        end
-        uo_cplx_column_number += @guw_model.guw_outputs.size - 1
-      end
+        ind4 = ind3 + 2
+        @guw_model.guw_attributes.order("name ASC").each do |attribute|
+          worksheet.add_cell(ind4, 0, attribute.name)
 
-
-      #=====  GUW-OUTPUTS COEFF VALUES : output_line_number
-      @guw_model.guw_outputs.each do |aguw_output|
-        output_column_number = 1
-        @guw_complexities.each do |guw_complexity|
-          @guw_model.guw_outputs.each do |guw_output|   #colonne
-            oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id, guw_output_associated_id: aguw_output.id, guw_output_id: guw_output.id).first
-            oa_value = oa.nil? ? '' : oa.value
-            worksheet.add_cell(output_line_number, output_column_number, oa_value).change_horizontal_alignment('center')
-
-            output_column_number += @guw_model.guw_outputs.size - 1
+          att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
+          unless att_val.nil?
+            [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
+              worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
+            end
           end
-          output_column_number += @guw_model.guw_outputs.size - 1
+          ind4 += 1
         end
-      end
 
-      # guw_type.guw_type_complexities.each  do |type_attribute_complexity|
-        # worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
-        # worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
-        # worksheet[ind3][ind + 1].change_border(:top, 'thin')
-        # worksheet[ind3][ind + 1].change_border(:right, 'thin')
-        # worksheet[ind3][ind + 1].change_border(:left, 'thin')
-        # ["Prod","[","[",I18n.t(:my_display)].each_with_index do |val, index|
-        #   worksheet.add_cell(ind3 + 1, ind + index + 1, val ).change_horizontal_alignment('center')
-        #   ["top","bottom", "left", "right"].each do |sym_val|
-        #     worksheet[ind3 + 1][ind + index +1].change_border(sym_val.to_sym, 'thin')
-        #   end
-        # end
-        #
-        # ind4 = ind3 + 2
-        # @guw_model.guw_attributes.order("name ASC").each do |attribute|
-        #   worksheet.add_cell(ind4, 0, attribute.name)
-        #   worksheet[ind4][0].change_border(:right, 'thin')
-        #
-        #   att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
-        #   unless att_val.nil?
-        #     [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
-        #       worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
-        #       worksheet[ind4][ind + index +1].change_border(:right, 'thin')
-        #     end
-        #   end
-        #   ind4 += 1
-        # end
-      #
-      #   ind += @guw_model.guw_outputs.size
-      # end
+        ind += @guw_model.guw_outputs.size
+      end
     end
 
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
