@@ -34,10 +34,50 @@ module Staffing
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
 
-    validates :x0, numericality: { less_than: :x1, message: "obligatoire et doit être inférieur à x1" }
-    validates :x1, numericality: { less_than: :x2, message: "obligatoire et doit être inférieur à x2" }
-    validates :x2, numericality: { less_than: :x3, message: "obligatoire et doit être inférieur à x3" }
+    validate :trapeze_parameters
 
+    def trapeze_parameters
+      trapeze_default_values.each do |key, value|
+        case key.to_s
+          when "x0"
+            if value.present?
+              if value.to_f < 0
+                errors.add(:x0, "doit être supérieur ou égal à 0")
+              end
+            else
+              errors.add(:x0, "obligatoire et doit être inférieur à x1")
+            end
+
+          when "x1"
+            if value.present?
+              if value.to_f <= trapeze_default_values[:x0].to_f
+                errors.add(:x1, "doit être supérieur à x0")
+              end
+            else
+              errors.add(:x1, "obligatoire et doit être supérieur à x0")
+            end
+
+          when "x2"
+            if value.present?
+              if value.to_f <= trapeze_default_values[:x1].to_f
+                errors.add(:x2, "doit être supérieur à x1")
+              end
+            else
+              errors.add(:x2, "obligatoire et doit être supérieur à x1")
+            end
+
+          when "x3"
+            if value.present?
+              if value.to_f <= trapeze_default_values[:x2].to_f
+                errors.add(:x3, "doit être supérieur à x2")
+              end
+            else
+              errors.add(:x3, "obligatoire et doit être supérieur à x2")
+            end
+        end
+      end
+
+    end
 
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy

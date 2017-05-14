@@ -14,19 +14,19 @@
       </div>
 
       <% if @staffing_model.errors.any? %>
-        <div id="error_explanation" class="alert-error">
+        <!--<div id="error_explanation" class="alert-error">-->
 
-          <h2>
-            <%#= I18n.t(:prohibited_this, parameter: pluralize(@staffing_model.errors.count, "error")) %>
-            <%= pluralize(@staffing_model.errors.count, "error") %>
-          </h2>
+          <!--<h2>-->
+            <!--<%#= I18n.t(:prohibited_this, parameter: pluralize(@staffing_model.errors.count, "error")) %>-->
+            <!--<%#= pluralize(@staffing_model.errors.count, "error") %>-->
+          <!--</h2>-->
 
-          <ul>
-          <% @staffing_model.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-          </ul>
-        </div>
+          <!--<ul>-->
+          <!--<%# @staffing_model.errors.full_messages.each do |msg| %>-->
+            <!--<li><%#= msg %></li>-->
+          <!--<%# end %>-->
+          <!--</ul>-->
+        <!--</div>-->
       <% end %>
 
       <div class="form-inputs">
