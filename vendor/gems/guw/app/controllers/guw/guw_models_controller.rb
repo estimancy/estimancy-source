@@ -962,8 +962,6 @@ class Guw::GuwModelsController < ApplicationController
 
     ind = 0
     ind2 = 1
-    ind3 = 5
-    used_column = []
 
     worksheet = workbook[0]
     worksheet.sheet_name = I18n.t(:is_model)
@@ -1023,7 +1021,6 @@ class Guw::GuwModelsController < ApplicationController
 
     coefficients_worksheet = workbook.add_worksheet(I18n.t(:weighting_coefficients))
     ind = 0
-    ind2 = 1
     counter_line = 1
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
     coefficients_worksheet.add_cell(0, 1, I18n.t(:coefficient_type))
@@ -1034,7 +1031,6 @@ class Guw::GuwModelsController < ApplicationController
 
     column_0_width = coefficients_worksheet.get_column_width(0)
     column_1_width = coefficients_worksheet.get_column_width(1)
-    column_2_width = coefficients_worksheet.get_column_width(2)
 
     @guw_model.guw_coefficients.each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
@@ -1341,27 +1337,41 @@ class Guw::GuwModelsController < ApplicationController
         column_number += guw_complexity_attributes_values.size
       end
 
-      guw_type.guw_type_complexities.each  do |type_attribute_complexity|
-        worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
-        worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
-        ["Prod","[","[",I18n.t(:my_display)].each_with_index do |val, index|
-          worksheet.add_cell(ind3 + 1, ind + index + 1, val ).change_horizontal_alignment('center')
+
+
+      sln = 15 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      scn = 0
+
+      aln1 = 16 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      an = 1
+
+      aln2 = 17 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+
+
+      guw_type.guw_type_complexities.each do |type_attribute_complexity|
+
+        worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name)
+        worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
+        scn += 5
+
+        ["Prod","[","[","A","B"].each_with_index do |val, index|
+          worksheet.add_cell(aln1, an + index, val )
+        end
+        an += 5
+
+        @guw_model.guw_attributes.order("name ASC").each_with_index do |attribute, index|
+          worksheet.add_cell(aln2 + index, 0, attribute.name)
+
+          # att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
+          # unless att_val.nil?
+          #   [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
+          #     worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
+          #   end
+          # end
+          # ind4 += 1
         end
 
-        ind4 = ind3 + 2
-        @guw_model.guw_attributes.order("name ASC").each do |attribute|
-          worksheet.add_cell(ind4, 0, attribute.name)
-
-          att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
-          unless att_val.nil?
-            [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
-              worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
-            end
-          end
-          ind4 += 1
-        end
-
-        ind += @guw_model.guw_outputs.size
+        # ind += @guw_model.guw_outputs.size
       end
     end
 
