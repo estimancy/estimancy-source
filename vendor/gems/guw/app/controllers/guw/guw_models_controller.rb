@@ -1221,6 +1221,7 @@ class Guw::GuwModelsController < ApplicationController
       # UO CPLX VALUES : uo_cplx_line_number
       un_column_number = 1
       uo_cplx_column_number = 1
+      cn = 1
       guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
 
         #====== UN (1) un_line_number Values
@@ -1232,7 +1233,7 @@ class Guw::GuwModelsController < ApplicationController
 
           un_column_number += 1
         end
-        un_column_number += 2
+        un_column_number += 3
 
         #===== UO CPLX VALUES : uo_cplx_line_number
         @guw_model.guw_outputs.each do |guw_output|
@@ -1242,13 +1243,12 @@ class Guw::GuwModelsController < ApplicationController
           worksheet.add_cell(14, uo_cplx_column_number, oc_value)
           uo_cplx_column_number += 1
         end
-        uo_cplx_column_number += 2
-      end
+        uo_cplx_column_number += 3
+      # end
 
 
-      @guw_complexities.each do |guw_complexity|
-        output_line_number = 15
-        cn = 1
+      # @guw_complexities.each do |guw_complexity|
+        sn = 15
         @guw_model.guw_outputs.each do |aguw_output|
           @guw_model.guw_outputs.each_with_index do |guw_output, j|
 
@@ -1257,11 +1257,11 @@ class Guw::GuwModelsController < ApplicationController
                                                   guw_output_id: guw_output.id).first
             oa_value = (oa.nil? ? '' : oa.value)
 
-            worksheet.add_cell(output_line_number, cn+j, oa_value)
+            worksheet.add_cell(sn, cn+j, oa_value)
           end
-          output_line_number += 1
+          sn += 1
         end
-        cn += 2
+        cn += 5
       end
 
       column_number = ind + 1
