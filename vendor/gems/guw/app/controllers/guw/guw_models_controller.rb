@@ -118,8 +118,8 @@ class Guw::GuwModelsController < ApplicationController
                                                   retained_size_unit: tab[6][1],
                                                   hour_coefficient_conversion: tab[7][1],
                                                   organization_id: @current_organization.id,
-                                                  allow_technology: false)
-                                                  #config_type: tab[12][1])
+                                                  allow_technology: false,
+                                                  allow_ml: (tab[8][1] == "false") ? false : true)
 
 
                 # Create orders (coeff and outputs orders)
@@ -949,16 +949,16 @@ class Guw::GuwModelsController < ApplicationController
                   [I18n.t(:factors_label),  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label],
                   [I18n.t(:three_points_estimation), @guw_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
-                  [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion]
+                  [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion],
+                  ["Autoriser le comptage automatique", @guw_model.allow_ml]
                   ]
 
     # Add Action & Coeff & coefficientElements
     @guw_model.orders.each do |coefficient, value|
-      first_page << [coefficient, value]
+      first_page << [coefficient, value.to_i]
     end
 
     first_page << [I18n.t(:config_type), @guw_model.config_type]
-    first_page << [I18n.t(:advice), ""]
 
     ind = 0
     ind2 = 1
@@ -967,22 +967,15 @@ class Guw::GuwModelsController < ApplicationController
     worksheet.sheet_name = I18n.t(:is_model)
     workbook.add_worksheet(I18n.t(:attribute_description))
 
-    line_number = 0
     first_page.each_with_index do |row, index|
       worksheet.add_cell(index, 0, row[0])
-      worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
-      ["bottom", "right"].each do |symbole|
-        worksheet[index][0].change_border(symbole.to_sym, 'thin')
-        worksheet[index][1].change_border(symbole.to_sym, 'thin')
-      end
+      worksheet.add_cell(index, 1, row[1])
     end
 
     worksheet.change_column_bold(0,true)
     worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
-    worksheet.change_column_width(0, 38)
-    worksheet.change_column_width(1, 30)
-    # worksheet.merge_cells(6, 0, 6, 1)
-    # worksheet.change_row_height(6, 25)
+    worksheet.change_column_width(0, 45)
+    worksheet.change_column_width(1, 45)
 
     worksheet = workbook[1]
 
@@ -1180,7 +1173,7 @@ class Guw::GuwModelsController < ApplicationController
 
       guw_type_attributes.each_with_index do |line, index|
         worksheet.add_cell(index, 0, line[0]).change_font_bold(true)
-        worksheet.add_cell(index, 1, line[1]).change_horizontal_alignment('center')
+        worksheet.add_cell(index, 1, line[1])
 
         counter_line += 1
       end
@@ -1200,35 +1193,26 @@ class Guw::GuwModelsController < ApplicationController
 
       @guw_complexities = guw_type.guw_complexities.order("display_order asc")
 
-      worksheet.add_cell(ind2, 0,  I18n.t(:UO_type_complexity))
-      worksheet[ind2][0].change_border(:top, 'thin')
-      worksheet.sheet_data[ind2][0].change_font_bold(true)
-
-      worksheet.add_cell(ind2 + 2, 0, I18n.t(:threshold))
-      worksheet[ind2 + 2][0].change_border(:bottom, 'thin')
-
-      worksheet.sheet_data[ind2 + 2][0].change_font_bold(true)
+      worksheet.add_cell(ind2, 0,  I18n.t(:UO_type_complexity)).change_font_bold(true)
+      worksheet.add_cell(ind2 + 2, 0, I18n.t(:threshold)).change_font_bold(true)
 
       #======   Colonne 0 =============
       # Valeur initiale (Σ)
       worksheet.change_row_bold(ind2 + 3,true)
-      worksheet.add_cell(ind2 + 3, 0, "Valeur initiale")
-      worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 3, 0, "Valeur initiale").change_font_bold(true)
 
       # Un (1)
-      worksheet.add_cell(ind2 + 4, 0, "Un (1)")
-      worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 4, 0, "Un (1)").change_font_bold(true)
       un_line_number = ind2 + 4
 
       # UO CPLX
-      worksheet.add_cell(ind2 + 5, 0, "UO CPLX")
-      worksheet[ind2 + 5][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 5, 0, "UO CPLX").change_font_bold(true)
       uo_cplx_line_number = ind2 + 5
 
       # OUTPUTS
       output_line_number = ind2 + 6
       output_line = ind2 + 6
-      @guw_model.guw_outputs.each_with_index do |guw_output, index|
+      @guw_model.guw_outputs.each do |guw_output|
         worksheet.add_cell(output_line, 0, guw_output.name)
         output_line += 1
       end
@@ -1337,41 +1321,41 @@ class Guw::GuwModelsController < ApplicationController
         column_number += guw_complexity_attributes_values.size
       end
 
-
-
-      sln = 15 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      sln = 16 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
       scn = 0
 
-      aln1 = 16 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      aln1 = 17 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
       an = 1
 
-      aln2 = 17 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      aln2 = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      an2 = 1
 
+      worksheet.add_cell(sln, 0, "Seuils de complexité").change_font_bold(true)
+      worksheet.add_cell(aln1, 0, "Attributs").change_font_bold(true)
 
       guw_type.guw_type_complexities.each do |type_attribute_complexity|
 
-        worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name)
+        worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name).change_font_bold(true)
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
         scn += 5
 
         ["Prod","[","[","A","B"].each_with_index do |val, index|
-          worksheet.add_cell(aln1, an + index, val )
+          worksheet.add_cell(aln1, an + index, val).change_font_bold(true)
         end
         an += 5
 
         @guw_model.guw_attributes.order("name ASC").each_with_index do |attribute, index|
           worksheet.add_cell(aln2 + index, 0, attribute.name)
 
-          # att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
-          # unless att_val.nil?
-          #   [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
-          #     worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
-          #   end
-          # end
-          # ind4 += 1
+          att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
+          unless att_val.nil?
+            [att_val.enable_value ? 1 : nil, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b].each_with_index do |val, j|
+              worksheet.add_cell(aln2 + index, an2 + j, val)
+            end
+          end
         end
+        an2 += 5
 
-        # ind += @guw_model.guw_outputs.size
       end
     end
 
