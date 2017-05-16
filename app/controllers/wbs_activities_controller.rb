@@ -1369,9 +1369,14 @@ class WbsActivitiesController < ApplicationController
                         # Gestion dse profils
                         if row.cells[0].value.include?("Profil")
                           organization_profile = organization_profiles.where(name: val).first
-                          if organization_profile
-                            @wbs_activity.organization_profiles << organization_profile
+                          if organization_profile.nil?
+                            organization_profile = OrganizationProfile.create(organization_id: @organization.id, name: val, description: val, cost_per_hour: 0)
+                            @organization.organization_profiles << organization_profile
+                            @organization.save(validate: false)
+                            organization_profiles = @organization.organization_profiles
                           end
+
+                          @wbs_activity.organization_profiles << organization_profile
                         end
                       end
                     end
@@ -1494,9 +1499,11 @@ class WbsActivitiesController < ApplicationController
                             if index == ratio_profiles_line
                               (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
                                 val = row[j]
-                                if !val.nil?
+                                if !val.blank?
                                   profile = @wbs_activity_profiles.where(name: val).first
-                                  profile_col_number["#{profile.name}"] = j
+                                  unless profile.nil?
+                                    profile_col_number["#{profile.name}"] = j
+                                  end
                                 end
                               end
 
