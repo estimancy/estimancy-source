@@ -196,7 +196,8 @@ class Guw::GuwModelsController < ApplicationController
                                                      allow_intermediate_value: (row[2] == 0) ? false : true,
                                                      allow_subtotal: (row[3] == 0) ? false : true,
                                                      standard_coefficient: row[4],
-                                                     display_order: row[5])
+                                                     display_order: row[5],
+                                                     unit: row[6])
 
                   attr = PeAttribute.where(name: guw_output.name,
                                            alias: guw_output.name.underscore.gsub(" ", "_"),
@@ -1155,7 +1156,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
