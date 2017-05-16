@@ -422,7 +422,7 @@ class OrganizationsController < ApplicationController
 
             worksheet.add_cell(ind, 16, guow.intermediate_weight)
 
-            @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+            @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
                 guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
                 unless guw_coefficient.guw_coefficient_elements.empty?
