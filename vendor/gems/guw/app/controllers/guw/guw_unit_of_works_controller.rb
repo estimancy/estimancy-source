@@ -359,14 +359,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def duplicate
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
-    @new_guw_unit_of_work = @guw_unit_of_work.dup
+    # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
+    @new_guw_unit_of_work = @guw_unit_of_work.amoeba_dup
     @new_guw_unit_of_work.save
-
-    @guw_unit_of_work.guw_unit_of_work_attributes.each do |guowa|
-      nguowa = guowa.dup
-      nguowa.guw_unit_of_work_id = @new_guw_unit_of_work.id
-      nguowa.save
-    end
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
@@ -1081,7 +1076,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless params['guw_coefficient'].nil?
               unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
                 unless params['deported_guw_coefficient'].nil?
-                  ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                  begin
+                    ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                  rescue
+                    ce = nil
+                  end
                 else
                   ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
                 end
