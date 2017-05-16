@@ -1266,27 +1266,19 @@ class Guw::GuwModelsController < ApplicationController
       # UN (1) : un_line_number Values
       # UO CPLX VALUES : uo_cplx_line_number
       un_column_number = 2
-      uo_cplx_column_number = 2
       cn = 2
       guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
 
-        #====== UN (1) un_line_number Values
-        @guw_outputs.each_with_index do |guw_output, index|
-          oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
+        @guw_outputs.each_with_index do |guw_output, ii|
+          oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
+                                                             guw_output_id: guw_output.id).first
           oci_value = oci.nil? ? '' : oci.init_value
-          worksheet.add_cell(13, un_column_number, oci_value)
-          worksheet[un_line_number][un_column_number]
+          worksheet.add_cell(13, un_column_number + ii, oci_value)
 
-          un_column_number += 1
-        end
-
-        #===== UO CPLX VALUES : uo_cplx_line_number
-        @guw_outputs.each do |guw_output|
           oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_complexity.id,
                                               guw_output_id: guw_output.id).first
           oc_value = (oc.nil? ? '' : oc.value)
-          worksheet.add_cell(14, uo_cplx_column_number, oc_value)
-          uo_cplx_column_number += 1
+          worksheet.add_cell(14, un_column_number + ii, oc_value)
         end
 
         sn = 15
@@ -1305,8 +1297,12 @@ class Guw::GuwModelsController < ApplicationController
 
         cn += 5
 
-        un_column_number = (2 + @guw_outputs.size) <= 7 ? 7 : (2 + @guw_outputs.size)
-        uo_cplx_column_number = (2 + @guw_outputs.size) <= 7 ? 7 : (2 + @guw_outputs.size)
+        if @guw_outputs.size <= 5
+          un_column_number = un_column_number + 5
+        else
+          un_column_number = (2 + @guw_outputs.size)
+        end
+
       end
 
       column_number = ind + 2
