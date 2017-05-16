@@ -74,8 +74,6 @@ class Guw::GuwOutputsController < ApplicationController
       end
     end
 
-    expire_fragment "guw"
-
     redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-output")
   end
 

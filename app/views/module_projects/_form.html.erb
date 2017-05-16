@@ -27,30 +27,30 @@
       <div id="current_mp">
         <%= form_tag(module_projects_reassign_path) do |f| %>
 
-            <%= hidden_field_tag 'current_mp', @module_project.id %>
+          <%= hidden_field_tag 'current_mp', @module_project.id %>
 
-            <% if @module_project.guw_model_id != nil %>
-                <label>Guw Model</label>
-                <%= select_tag "guw_model_id", options_for_select(@current_organization.guw_models.map{|i| [i.name, i.id]}, selected: @module_project.guw_model_id) %>
-            <% elsif @module_project.ge_model_id != nil %>
-                <label>Ge Model</label>
-                <%= select_tag "ge_model_id", options_for_select(@current_organization.ge_models.map{|i| [i.name, i.id]}, selected: @module_project.ge_model_id) %>
-            <% elsif @module_project.kb_model_id != nil %>
-                <label>Kb Model</label>
-                <%= select_tag "kb_model_id", options_for_select(@current_organization.kb_models.map{|i| [i.name, i.id]}, selected: @module_project.kb_model_id) %>
-            <% elsif @module_project.wbs_activity_id != nil %>
-                <label>WBS Activity</label>
-                <%= select_tag "wbs_activity_id", options_for_select(@current_organization.wbs_activities.map{|i| [i.name, i.id]}, selected: @module_project.wbs_activity_id) %>
-            <% elsif @module_project.operation_model_id != nil %>
-                <label>Operation Model</label>
-                <%= select_tag "operation_model_id", options_for_select(@current_organization.operation_models.map{|i| [i.name, i.id]}, selected: @module_project.operation_model_id) %>
-            <% elsif @module_project.staffing_model_id != nil %>
-                <label>Staffing Model</label>
-                <%= select_tag "staffing_model_id", options_for_select(@current_organization.staffing_models.map{|i| [i.name, i.id]}, selected: @module_project.staffing_model_id) %>
-            <% end %>
+          <% if @module_project.guw_model_id != nil %>
+              <label>Guw Model</label>
+              <%= select_tag "guw_model_id", options_for_select(@current_organization.guw_models.map{|i| [i.name, i.id]}, selected: @module_project.guw_model_id) %>
+          <% elsif @module_project.ge_model_id != nil %>
+              <label>Ge Model</label>
+              <%= select_tag "ge_model_id", options_for_select(@current_organization.ge_models.map{|i| [i.name, i.id]}, selected: @module_project.ge_model_id) %>
+          <% elsif @module_project.kb_model_id != nil %>
+              <label>Kb Model</label>
+              <%= select_tag "kb_model_id", options_for_select(@current_organization.kb_models.map{|i| [i.name, i.id]}, selected: @module_project.kb_model_id) %>
+          <% elsif @module_project.wbs_activity_id != nil %>
+              <label>WBS Activity</label>
+              <%= select_tag "wbs_activity_id", options_for_select(@current_organization.wbs_activities.map{|i| [i.name, i.id]}, selected: @module_project.wbs_activity_id) %>
+          <% elsif @module_project.operation_model_id != nil %>
+              <label>Operation Model</label>
+              <%= select_tag "operation_model_id", options_for_select(@current_organization.operation_models.map{|i| [i.name, i.id]}, selected: @module_project.operation_model_id) %>
+          <% elsif @module_project.staffing_model_id != nil %>
+              <label>Staffing Model</label>
+              <%= select_tag "staffing_model_id", options_for_select(@current_organization.staffing_models.map{|i| [i.name, i.id]}, selected: @module_project.staffing_model_id) %>
+          <% end %>
 
-            <%= submit_tag I18n.t('save'), :class => 'btn ' %>
-            <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn ' %>
+          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
         <% end %>
       </div>
     </div>
