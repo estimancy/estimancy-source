@@ -359,14 +359,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def duplicate
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
-    @new_guw_unit_of_work = @guw_unit_of_work.dup
+    # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
+    @new_guw_unit_of_work = @guw_unit_of_work.amoeba_dup
     @new_guw_unit_of_work.save
-
-    @guw_unit_of_work.guw_unit_of_work_attributes.each do |guowa|
-      nguowa = guowa.dup
-      nguowa.guw_unit_of_work_id = @new_guw_unit_of_work.id
-      nguowa.save
-    end
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
