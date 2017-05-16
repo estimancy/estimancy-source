@@ -994,7 +994,7 @@ class Guw::GuwModelsController < ApplicationController
 
     # Add Action & Coeff & coefficientElements
     @guw_model.orders.each do |coefficient, value|
-      first_page << [coefficient, value.to_i]
+      first_page << [coefficient, value.blank? ? '' : value.to_i]
     end
 
     first_page << [I18n.t(:config_type), @guw_model.config_type]
@@ -1047,7 +1047,6 @@ class Guw::GuwModelsController < ApplicationController
 
     ind = 0
     ind2 = 6
-
 
     #==================  GUW-COEFFICIENTS  ==================
 
