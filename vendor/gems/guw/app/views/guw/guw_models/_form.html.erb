@@ -213,6 +213,7 @@
             <table class="table table-bordered">
               <tr>
                 <th class="span2">Nom</th>
+                <th class="span2">Description</th>
                 <th class="span2">Min</th>
                 <th class="span2">Max</th>
                 <th class="span2">Valeur</th>
@@ -223,6 +224,9 @@
                 <tr>
                   <td class="align-center">
                     <%= guw_coefficient_element.name %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.description %>
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.min_value %>
@@ -253,8 +257,6 @@
         </div>
         <hr>
       <% end %>
-
-      <hr>
 
       <% if can? :manage_modules_instances, ModuleProject %>
         <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn" %>

@@ -117,6 +117,7 @@ class Guw::GuwModelsController < ApplicationController
                                                   three_points_estimation: tab[5][1].to_i == 1,
                                                   retained_size_unit: tab[6][1],
                                                   hour_coefficient_conversion: tab[7][1],
+                                                  default_display: tab[9][1],
                                                   organization_id: @current_organization.id,
                                                   allow_technology: false,
                                                   allow_ml: (tab[8][1] == "false") ? false : true)
@@ -127,9 +128,12 @@ class Guw::GuwModelsController < ApplicationController
                 i = 8
                 order_value_coeff = tab[i][0]
                 while order_value_coeff.to_s != I18n.t(:config_type).to_s do
-                  orders["#{tab[i][0]}"] = tab[i][1]
-                  i = i+1
-                  order_value_coeff = tab[i][0]
+                  begin
+                    orders["#{tab[i][0]}"] = tab[i][1]
+                    i = i+1
+                    order_value_coeff = tab[i][0]
+                  rescue
+                  end
                 end
 
                 @guw_model.orders = orders
@@ -172,6 +176,7 @@ class Guw::GuwModelsController < ApplicationController
                   if i >= 3 && !row.nil?
                     gce = Guw::GuwCoefficientElement.new(name: row[1],
                                                          value: row[2],
+                                                         description: row[3],
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
                                                          min_value: 0,
@@ -191,7 +196,8 @@ class Guw::GuwModelsController < ApplicationController
                                         guw_model_id: @guw_model.id,
                                         allow_intermediate_value: (row[2] == 0) ? false : true,
                                         allow_subtotal: (row[3] == 0) ? false : true,
-                                        standard_coefficient: row[4])
+                                        standard_coefficient: row[4],
+                                        display_order: row[5])
                 end
               end
 
@@ -206,7 +212,7 @@ class Guw::GuwModelsController < ApplicationController
                                               attribute_type: "Coefficient",
                                               guw_model_id: @guw_model.id)
 
-              [1,6,11].each do |column_index|
+              [2,7,12].each do |column_index|
                 @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
                                                          name: tab[9][column_index].nil? ? nil : tab[9][column_index],
                                                          bottom_range: tab[11][column_index + 1],
@@ -228,10 +234,16 @@ class Guw::GuwModelsController < ApplicationController
 
                   @guw_model.guw_outputs.each_with_index do |aguw_output, j|
                     value = tab[15 + j][column_index + i]
+
                     oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
                                                           guw_output_associated_id: aguw_output.id,
                                                           guw_output_id: guw_output.id,
                                                           value: value)
+
+                    Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
+                                              guw_output_id: aguw_output.id,
+                                              guw_type_id: @guw_type.id,
+                                              display_type: tab[15 + j][1])
                   end
 
                   nb_output = @guw_model.guw_outputs.size
@@ -266,7 +278,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 (0..9999).each do |i|
                   unless tab[i].nil?
-                    if tab[i][0] == "Seuils de complexité"
+                    if tab[i][0] == "Seuils de Complexités Attributs"
                       row_number = i
                       break
                     end
@@ -950,7 +962,8 @@ class Guw::GuwModelsController < ApplicationController
                   [I18n.t(:three_points_estimation), @guw_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
                   [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion],
-                  ["Autoriser le comptage automatique", @guw_model.allow_ml]
+                  ["Autoriser le comptage automatique", @guw_model.allow_ml],
+                  ["Affichage par défaut", @guw_model.default_display]
                   ]
 
     # Add Action & Coeff & coefficientElements
@@ -1016,9 +1029,10 @@ class Guw::GuwModelsController < ApplicationController
     ind = 0
     counter_line = 1
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
-    coefficients_worksheet.add_cell(0, 1, I18n.t(:coefficient_type))
-    coefficients_worksheet.add_cell(0, 2, I18n.t(:allow_intermediate_value))
-    coefficients_worksheet.add_cell(0, 3, "Coefficient déporté")
+    coefficients_worksheet.add_cell(0, 1, I18n.t(:description))
+    coefficients_worksheet.add_cell(0, 2, I18n.t(:coefficient_type))
+    coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
+    coefficients_worksheet.add_cell(0, 4, "Coefficient déporté")
     coefficients_worksheet.change_row_bold(0,true)
     coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
 
@@ -1027,9 +1041,10 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model.guw_coefficients.each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
-      coefficients_worksheet.add_cell(index + 1, 1, coeff.coefficient_type)
-      coefficients_worksheet.add_cell(index + 1, 2, (coeff.allow_intermediate_value == true ? 1 : 0))
-      coefficients_worksheet.add_cell(index + 1, 3, (coeff.deported == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 1, coeff.description)
+      coefficients_worksheet.add_cell(index + 1, 2, coeff.coefficient_type)
+      coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
 
       coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
 
@@ -1057,7 +1072,7 @@ class Guw::GuwModelsController < ApplicationController
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "value", "display_order"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1115,7 +1130,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
@@ -1210,18 +1225,24 @@ class Guw::GuwModelsController < ApplicationController
       uo_cplx_line_number = ind2 + 5
 
       # OUTPUTS
-      output_line_number = ind2 + 6
       output_line = ind2 + 6
       @guw_model.guw_outputs.each do |guw_output|
         worksheet.add_cell(output_line, 0, guw_output.name)
+
+        got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                       guw_output_id: guw_output.id,
+                                       guw_type_id: guw_type.id).first
+
+        worksheet.add_cell(output_line, 1, got.nil? ? nil : got.display_type)
+
         output_line += 1
       end
 
       # UN (1) : un_line_number Values
       # UO CPLX VALUES : uo_cplx_line_number
-      un_column_number = 1
-      uo_cplx_column_number = 1
-      cn = 1
+      un_column_number = 2
+      uo_cplx_column_number = 2
+      cn = 2
       guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
 
         #====== UN (1) un_line_number Values
@@ -1264,9 +1285,9 @@ class Guw::GuwModelsController < ApplicationController
         cn += 5
       end
 
-      column_number = ind + 1
+      column_number = ind + 2
 
-      cn = 1
+      cn = 2
       @guw_complexities.each_with_index do |guw_complexity|
 
         guw_complexity_attributes_values = [
@@ -1330,7 +1351,7 @@ class Guw::GuwModelsController < ApplicationController
       aln2 = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
       an2 = 1
 
-      worksheet.add_cell(sln, 0, "Seuils de complexité").change_font_bold(true)
+      worksheet.add_cell(sln, 0, "Seuils de Complexités Attributs").change_font_bold(true)
       worksheet.add_cell(aln1, 0, "Attributs").change_font_bold(true)
 
       guw_type.guw_type_complexities.each do |type_attribute_complexity|
