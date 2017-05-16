@@ -109,18 +109,18 @@ class Guw::GuwModelsController < ApplicationController
               @guw_model = Guw::GuwModel.where(name: tab[0][1],
                                                organization_id: @current_organization.id).first
               if @guw_model.nil?
-                @guw_model = Guw::GuwModel.new(name: tab[0][1],
-                                                  description: tab[1][1],
-                                                  coefficient_label: tab[2][1],
-                                                  weightings_label: tab[3][1],
-                                                  factors_label: tab[4][1],
-                                                  three_points_estimation: tab[5][1].to_i == 1,
-                                                  retained_size_unit: tab[6][1],
-                                                  hour_coefficient_conversion: tab[7][1],
-                                                  default_display: tab[9][1],
-                                                  organization_id: @current_organization.id,
-                                                  allow_technology: false,
-                                                  allow_ml: (tab[8][1] == "false") ? false : true)
+                @guw_model = Guw::GuwModel.new( name: tab[0][1],
+                                                description: tab[1][1],
+                                                coefficient_label: tab[2][1],
+                                                weightings_label: tab[3][1],
+                                                factors_label: tab[4][1],
+                                                three_points_estimation: tab[5][1].to_i == 1,
+                                                retained_size_unit: tab[6][1],
+                                                hour_coefficient_conversion: tab[7][1],
+                                                default_display: tab[9][1],
+                                                organization_id: @current_organization.id,
+                                                allow_technology: false,
+                                                allow_ml: (tab[8][1] == "false") ? false : true)
 
 
                 # Create orders (coeff and outputs orders)
@@ -1608,7 +1608,7 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:results),
      I18n.t(:retained_result),
       "COEF"] +
-        @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
+        @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
@@ -1665,7 +1665,7 @@ class Guw::GuwModelsController < ApplicationController
 
       worksheet.add_cell(ind, 16, guow.intermediate_weight)
 
-      @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+      @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
           guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guw_coefficient.guw_coefficient_elements.empty?
@@ -1827,7 +1827,7 @@ class Guw::GuwModelsController < ApplicationController
                 end
               end
 
-              @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+              @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
 
                 guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
                                                             guw_model_id: @guw_model.id).first

@@ -185,7 +185,7 @@
                 <% end %>
               </th>
 
-              <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
+              <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
                   <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
                     <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
@@ -327,7 +327,7 @@
                   </span>
                 </td>
 
-                <% @guw_model.orders.sort_by { |k, v| v }.each do |i| %>
+                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% if i[0] == "Coefficient" %>
                       <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
