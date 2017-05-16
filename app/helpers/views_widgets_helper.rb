@@ -951,11 +951,12 @@ module ViewsWidgetsHelper
       module_project_ratio_elements = []
     else
       module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
-    end
 
-    if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
-                                    "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
-      module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL && retained_effort_probable <> ? && retained_effort_most_likely <> ?", 0, 0)
+      if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
+                                      "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
+        module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL && retained_effort_probable <> ? && retained_effort_most_likely <> ?", 0, 0)
+      end
+
     end
 
 
