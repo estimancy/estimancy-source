@@ -125,7 +125,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 # Create orders (coeff and outputs orders)
                 orders = Hash.new
-                i = 8
+                i = 10
                 order_value_coeff = tab[i][0]
                 while order_value_coeff.to_s != I18n.t(:config_type).to_s do
                   begin
@@ -234,6 +234,7 @@ class Guw::GuwModelsController < ApplicationController
                                               allow_complexity: tab[7][1] == 1,
                                               allow_criteria: tab[2][1] == 1,
                                               attribute_type: "Coefficient",
+                                              display_threshold: tab[6][1] == 1,
                                               guw_model_id: @guw_model.id)
 
               [2,7,12].each do |column_index|
