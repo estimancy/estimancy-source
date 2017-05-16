@@ -1302,7 +1302,11 @@ class Guw::GuwModelsController < ApplicationController
           end
           sn += 1
         end
+
         cn += 5
+
+        un_column_number = (2 + @guw_outputs.size) <= 7 ? 7 : (2 + @guw_outputs.size)
+        uo_cplx_column_number = (2 + @guw_outputs.size) <= 7 ? 7 : (2 + @guw_outputs.size)
       end
 
       column_number = ind + 2
