@@ -949,6 +949,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
 
+        result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
+        result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
+        result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
+
         if guw_unit_of_work.guw_complexity.nil?
           @final_value = nil
         else
@@ -960,10 +964,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
             end
           else
-            result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
-            result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
-            result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
-
+            # result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
+            # result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
+            # result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
             if params["complexity_coeff_ajusted"].present?
               if params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].blank?
                 cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
