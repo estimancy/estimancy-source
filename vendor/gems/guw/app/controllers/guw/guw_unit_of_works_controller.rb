@@ -1075,14 +1075,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             unless params['guw_coefficient'].nil?
               unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
-                unless params['deported_guw_coefficient'].nil?
-                  begin
+                begin
+                  unless params['deported_guw_coefficient'].nil?
                     ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-                  rescue
-                    ce = nil
+                  else
+                    ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
                   end
-                else
-                  ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                rescue
+                  ce = nil
                 end
               end
             end
