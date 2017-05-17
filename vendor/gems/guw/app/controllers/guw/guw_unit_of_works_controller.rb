@@ -948,6 +948,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
+        weight_b = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight_b.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight_b.to_f))
 
         result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
         result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
@@ -990,7 +991,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
-              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent) + (weight_b.nil? ? 1 : weight_b.to_f)
             end
 
             # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
