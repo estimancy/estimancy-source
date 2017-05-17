@@ -21,9 +21,11 @@
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stats_modal">
         Statistiques détaillées
       </button>
-      <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#ml">
-        Comptage automatique
-      </button>
+      <% if @guw_model.allow_ml == true %>
+        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#ml">
+          Comptage automatique
+        </button>
+      <% end %>
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
   </div>
@@ -471,7 +473,9 @@
 
                 <td class="span3">
                   <% if can? :execute_estimation_plan, @project %>
-                    <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
+                    <% if @guw_model.allow_ml == true %>
+                      <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
+                    <% end %>
                     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
 
                     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
