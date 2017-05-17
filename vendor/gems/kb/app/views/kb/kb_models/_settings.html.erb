@@ -142,7 +142,7 @@
                end
              end
 
-             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id)
+             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
 
 
              effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
@@ -261,11 +261,11 @@
   <div class="row-fluid">
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-primary">
-          <%= I18n.t(:save) %>
+        <button type="submit" class="btn btn-primary button_margin_right">
+          <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
-      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right", :method => "post" %>
+      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right pull-left", :method => "post" %>
     </div>
   </div>
 <% end %>
