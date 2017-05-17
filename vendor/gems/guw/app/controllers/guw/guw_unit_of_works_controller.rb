@@ -1514,7 +1514,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
       end
 
-      @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.guw_type_id = @guw_type.nil? ? nil : @guw_type.id
       @guw_unit_of_work.save
 
       redirect_to :back and return
