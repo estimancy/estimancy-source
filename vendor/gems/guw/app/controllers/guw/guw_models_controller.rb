@@ -243,7 +243,8 @@ class Guw::GuwModelsController < ApplicationController
                                                          bottom_range: tab[11][column_index + 1],
                                                          top_range: tab[11][column_index + 2],
                                                          weight: tab[11][column_index + 3],
-                                                         weight_b: tab[11][column_index + 4])
+                                                         weight_b: tab[11][column_index + 4],
+                                                         enable_value: (tab[11][column_index] == 0) ? false : true)
 
                 @guw_complexity.save(validate: false)
 
@@ -284,13 +285,12 @@ class Guw::GuwModelsController < ApplicationController
                         value = ""
                       end
 
-                      if value.is_a?(Numeric)
-                        Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
-                                                                    guw_coefficient_element_id: guw_coefficient_element.id,
-                                                                    guw_output_id: guw_output.id,
-                                                                    guw_type_id: @guw_type.id,
-                                                                    value: value)
-                      end
+                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                  guw_output_id: guw_output.id,
+                                                                  guw_type_id: @guw_type.id,
+                                                                  value: value.is_a?(Numeric) ? value : nil)
+
                     end
                     next_item = next_item + 1
                   end
