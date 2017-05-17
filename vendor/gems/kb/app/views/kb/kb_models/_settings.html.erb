@@ -142,7 +142,7 @@
                end
              end
 
-             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id)
+             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
 
 
              effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
