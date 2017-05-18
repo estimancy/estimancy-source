@@ -1498,26 +1498,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                     selected: true,
                                                     guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                @guw_model.guw_attributes.each do |gac|
-                  @guw_model.guw_attributes.size.times do |jj|
-                    tmp_val = row[15 + @guw_model.orders.size + jj]
-                    unless tmp_val.nil?
-                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+                @guw_model.guw_attributes.size.times do |jj|
+                  tmp_val = row[15 + @guw_model.orders.size + jj]
+                  unless tmp_val.nil?
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
 
-                      if gac.name == tab[0][15 + @guw_model.orders.size + jj]
-                        unless guw_type.nil?
-                          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                                    guw_unit_of_work_id: guw_uow.id,
-                                                                    guw_attribute_id: gac.id).first_or_create
-                          guowa.low = val.to_i
-                          guowa.most_likely = val.to_i
-                          guowa.high = val.to_i
-                          guowa.save
-                        end
+                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                      unless @guw_type.nil?
+                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                  guw_unit_of_work_id: guw_uow.id,
+                                                                  guw_attribute_id: gac.id).first_or_create
+                        guowa.low = val.to_i
+                        guowa.most_likely = val.to_i
+                        guowa.high = val.to_i
+                        guowa.save
                       end
                     end
                   end
                 end
+
               end
             end
           end
