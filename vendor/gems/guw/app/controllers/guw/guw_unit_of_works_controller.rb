@@ -1498,7 +1498,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                     selected: true,
                                                     guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                @guw_model.guw_attributes.size.times do |jj|
+                @guw_model.guw_attributes.times do |gac, jj|
                   tmp_val = row[15 + @guw_model.orders.size + jj]
                   unless tmp_val.nil?
                     val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
