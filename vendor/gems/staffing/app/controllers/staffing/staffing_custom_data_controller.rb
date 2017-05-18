@@ -123,6 +123,17 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
     @staffing_custom_data.percent = params[:percents]
 
+    if @staffing_custom_data.standard_effort == 0
+      @staffing_custom_data.global_effort_value = nil
+      @staffing_custom_data.duration = nil
+      @staffing_custom_data.max_staffing_rayleigh = nil
+      @staffing_custom_data.max_staffing = nil
+      @staffing_custom_data.percent = nil
+
+      @staffing_custom_data.save
+      redirect_to :back and return
+    end
+
 
     ###########
     # Graphe d'origine
@@ -145,7 +156,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
     rescue
       ev = nil
     end
-
 
     begin
       begin
