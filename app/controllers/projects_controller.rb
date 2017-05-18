@@ -2535,9 +2535,9 @@ public
           # end
 
           unless new_prj.is_model == true || @current_user.super_admin == true
-            unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
-              @organization.estimations_counter -= 1
-              @organization.save
+            unless @current_organization.estimations_counter.nil? || @current_organization.estimations_counter == 0
+              @current_organization.estimations_counter -= 1
+              @current_organization.save
             end
           end
 
