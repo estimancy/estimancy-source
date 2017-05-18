@@ -17,15 +17,16 @@
           <%= I18n.t(:import) %>
         </a>
       <% end %>
+      <% if @guw_model.allow_ml == true %>
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml">
+          Importer (ML)
+        </button>
+      <% end %>
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
+
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stats_modal">
         Statistiques détaillées
       </button>
-      <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#ml">
-          Comptage automatique
-        </button>
-      <% end %>
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
   </div>
