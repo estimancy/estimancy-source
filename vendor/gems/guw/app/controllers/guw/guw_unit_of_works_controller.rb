@@ -1473,7 +1473,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if index > 0
             unless row[5].blank?
 
-              @http = Curl.post("http://localhost:5001/estimate", { us: row[0] } )
+              @http = Curl.post("http://localhost:5001/estimate", { us: row[5] } )
 
               complete_str = row[5].to_s
               reduce_str = row[5].to_s.truncate(60)
