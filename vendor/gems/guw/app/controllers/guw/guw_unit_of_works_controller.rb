@@ -1453,8 +1453,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
   def ml
-    expire_fragment "guw"
-
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     if params[:file].present?
