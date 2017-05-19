@@ -196,7 +196,7 @@
                       </th>
                     <% end %>
                   <% elsif i[0] == "Coeff. de Complexité" %>
-                    <% if i[1].nil? %>
+                    <% if i[1].blank? %>
                     <% else %>
                       <th>
                         <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
