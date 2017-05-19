@@ -55,19 +55,35 @@
                 Position
               </th>
             </tr>
-            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Complexité"]).flatten.each do |item| %>
+            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Coeff. de Complexité"]).flatten.each do |item| %>
               <tr>
                 <% begin %>
-                  <td>
-                    <%= item %>
-                  </td>
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité" %>
+                    <td>
+                      <b>
+                        <%= item %>
+                      </b>
+                    </td>
+                  <% else %>
+                    <td>
+                      <%= item %>
+                    </td>
+                  <% end %>
                   <td>
                     <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
                   </td>
                 <% rescue %>
-                  <td>
-                    <%= item %>
-                  </td>
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité" %>
+                    <td>
+                      <b>
+                        <%= item %>
+                      </b>
+                    </td>
+                  <% else %>
+                    <td>
+                      <%= item %>
+                    </td>
+                  <% end %>
                   <td>
                     <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
                   </td>
