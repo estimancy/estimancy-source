@@ -55,7 +55,7 @@
                 Position
               </th>
             </tr>
-            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient"]).flatten.each do |item| %>
+            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Complexité"]).flatten.each do |item| %>
               <tr>
                 <% begin %>
                   <td>

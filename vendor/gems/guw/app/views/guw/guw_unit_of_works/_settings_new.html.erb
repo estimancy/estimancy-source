@@ -180,14 +180,6 @@
                 </th>
               <% end %>
 
-              <th class="">
-                <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                  Coeff. de complexité
-                <% else %>
-                  Complexité
-                <% end %>
-              </th>
-
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
                   <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
@@ -201,6 +193,17 @@
                     <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
                       <th>
                         <%= i[0] %>
+                      </th>
+                    <% end %>
+                  <% elsif i[0] == "Complexité" %>
+                    <% if i[1].nil? %>
+                    <% else %>
+                      <th>
+                        <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                          Coeff. de complexité
+                        <% else %>
+                          Complexité
+                        <% end %>
                       </th>
                     <% end %>
                   <% else %>
@@ -250,8 +253,8 @@
                   <% end %>
                 </td>
 
-                <td class="span2">
-                  <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                  <td class="span2">
                     <% unless @guw_type.nil? %>
                       <% if @guw_type.allow_criteria == true %>
                         <span class="text-center criteria_label_<%= guow.id %>">
@@ -268,70 +271,18 @@
                         </span>
                       <% end %>
                     <% end %>
-                  <% end %>
-                </td>
-
-                <td class="span2">
-                  <span class="cotation_label_<%= guow.id %>">
-                    <% unless @guw_type.nil? %>
-                      <% if @guw_type.display_threshold == true %>
-                          <% if guow.off_line == true %>
-                            <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
-                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                           guw: guow.id,
-                                           class: "guw_complexity",
-                                           prompt: "HSAT",
-                                           readonly: !@guw_type.allow_complexity,
-                                           style: "width: 70px;" %>
-                          <% elsif guow.off_line_uo == true %>
-                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                           guw: guow.id,
-                                           class: "guw_complexity",
-                                           prompt: "HSUO",
-                                           readonly: !@guw_type.allow_complexity,
-                                           style: "width: 70px;" %>
-                          <% elsif guow.guw_complexity.nil? %>
-                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
-                                           guw: guow.id,
-                                           class: "guw_complexity",
-                                           include_blank: false,
-                                           readonly: !@guw_type.allow_complexity,
-                                           style: "width: 70px;" %>
-                          <% else %>
-                            <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                                           class: "guw_complexity",
-                                           include_blank: false,
-                                           readonly: !@guw_type.allow_complexity,
-                                           style: "width: 70px;" %>
-                          <% end %>
-                      <% else %>
-                        <% if guow.off_line == true %>
-                          HSAT
-                        <% elsif  guow.off_line_uo == true %>
-                          HSUO
-                        <% else %>
-                          <% if guow.guw_complexity.nil? %>
-                            -
-                          <% else %>
-                            <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
-                                                 style: "width: 43px;",
-                                                 class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
-                                                 readonly: true %>
-                            <% if @guw_type.allow_complexity %>
-                              <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
-                                                   style: "width: 43px;",
-                                                   class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
-                                                   step: 0.001 %>
-                            <% end %>
-                          <% end %>
-                        <% end %>
-                      <% end %>
-                    <% end %>
-                  </span>
-                </td>
+                  </td>
+                <% end %>
 
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
-                  <% unless i[1].blank? %>
+                  <% if i[1].blank? %>
+                    <% if i[0] == "Complexité" %>
+                      <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|j| [j.name, j.id] },
+                                                                                     selected: @guw_type.guw_complexities.first.nil? ? nil : @guw_type.guw_complexities.first.id),
+                                     guw: guow.id,
+                                     class: "guw_complexity hide" %>
+                    <% end %>
+                  <% else %>
                     <% if i[0] == "Coefficient" %>
                       <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
                         <%
@@ -355,6 +306,65 @@
                         </td>
 
                       <% end %>
+                    <% elsif i[0] == "Complexité" %>
+                      <td class="span2">
+                        <span class="cotation_label_<%= guow.id %>">
+                          <% unless @guw_type.nil? %>
+                            <% if @guw_type.display_threshold == true %>
+                              <% if guow.off_line == true %>
+                                <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                               guw: guow.id,
+                                               class: "guw_complexity",
+                                               prompt: "HSAT",
+                                               readonly: !@guw_type.allow_complexity,
+                                               style: "width: 70px;" %>
+                              <% elsif guow.off_line_uo == true %>
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                               guw: guow.id,
+                                               class: "guw_complexity",
+                                               prompt: "HSUO",
+                                               readonly: !@guw_type.allow_complexity,
+                                               style: "width: 70px;" %>
+                              <% elsif guow.guw_complexity.nil? %>
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
+                                               guw: guow.id,
+                                               class: "guw_complexity",
+                                               include_blank: false,
+                                               readonly: !@guw_type.allow_complexity,
+                                               style: "width: 70px;" %>
+                              <% else %>
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
+                                               class: "guw_complexity",
+                                               include_blank: false,
+                                               readonly: !@guw_type.allow_complexity,
+                                               style: "width: 70px;" %>
+                              <% end %>
+                            <% else %>
+                              <% if guow.off_line == true %>
+                                HSAT
+                              <% elsif  guow.off_line_uo == true %>
+                                HSUO
+                              <% else %>
+                                <% if guow.guw_complexity.nil? %>
+                                  -
+                                <% else %>
+                                  <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
+                                                       style: "width: 43px;",
+                                                       class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                                       readonly: true %>
+                                      <% if @guw_type.allow_complexity %>
+                                    <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
+                                                         style: "width: 43px;",
+                                                         class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
+                                                         step: 0.001 %>
+                                  <% end %>
+                                <% end %>
+                              <% end %>
+                            <% end %>
+                          <% end %>
+                        </span>
+                      </td>
                     <% elsif Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
                       <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
