@@ -44,8 +44,6 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
     @guw_unit_of_work_group.save
 
-    expire_fragment "guw"
-
     redirect_to main_app.dashboard_path(@project)
   end
 
@@ -53,8 +51,6 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.find(params[:id])
-
-    expire_fragment "guw"
 
     if @guw_unit_of_work_group.update_attributes(params[:guw_unit_of_work_group])
       redirect_to main_app.dashboard_path(@project) and return

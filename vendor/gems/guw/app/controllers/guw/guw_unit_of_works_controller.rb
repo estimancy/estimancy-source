@@ -1176,8 +1176,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    expire_fragment "guw"
-
     if @guw_unit_of_works.last.nil?
       redirect_to main_app.dashboard_path(@project)
     else

@@ -251,7 +251,9 @@ class ViewsWidgetsController < ApplicationController
       end
 
       if pf.nil?
-        ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+        ProjectField.create(project_id: project.id,
+                            field_id: params["field"].to_i,
+                            views_widget_id: @views_widget.id, value: @value)
       else
         pf.value = get_kpi_value_without_unit(@views_widget)
         pf.views_widget_id = @views_widget.id
