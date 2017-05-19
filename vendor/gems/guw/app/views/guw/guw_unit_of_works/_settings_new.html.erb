@@ -195,7 +195,7 @@
                         <%= i[0] %>
                       </th>
                     <% end %>
-                  <% elsif i[0] == "Complexité" %>
+                  <% elsif i[0] == "Coeff. de Complexité" %>
                     <% if i[1].nil? %>
                     <% else %>
                       <th>
@@ -276,7 +276,7 @@
 
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
-                    <% if i[0] == "Complexité" %>
+                    <% if i[0] == "Coeff. de Complexité" %>
                       <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|j| [j.name, j.id] },
                                                                                      selected: @guw_type.guw_complexities.first.nil? ? nil : @guw_type.guw_complexities.first.id),
                                      guw: guow.id,
@@ -306,7 +306,7 @@
                         </td>
 
                       <% end %>
-                    <% elsif i[0] == "Complexité" %>
+                    <% elsif i[0] == "Coeff. de Complexité" %>
                       <td class="span2">
                         <span class="cotation_label_<%= guow.id %>">
                           <% unless @guw_type.nil? %>
