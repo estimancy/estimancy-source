@@ -1667,19 +1667,20 @@ class Guw::GuwModelsController < ApplicationController
       @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
           guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-          unless guw_coefficient.guw_coefficient_elements.empty?
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                              guw_coefficient_id: guw_coefficient.id).first
+          unless guw_coefficient.nil?
+            unless guw_coefficient.guw_coefficient_elements.empty?
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                guw_coefficient_id: guw_coefficient.id).first
 
-            if guw_coefficient.coefficient_type == "Pourcentage"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            elsif guw_coefficient.coefficient_type == "Coefficient"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            else
-              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              if guw_coefficient.coefficient_type == "Pourcentage"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              elsif guw_coefficient.coefficient_type == "Coefficient"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              else
+                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              end
             end
           end
-
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
           guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
