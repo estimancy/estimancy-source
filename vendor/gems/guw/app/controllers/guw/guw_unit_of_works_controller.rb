@@ -1157,8 +1157,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_hash_res["#{guw_output.id}"] = tmp
               tmp_hash_ares["#{guw_output.id}"] = tmp
             else
-              tmp_hash_res["#{guw_output.id}"] = tmp
+
+              if tmp == 0
+                tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+              else
+                tmp_hash_res["#{guw_output.id}"] = 0
+              end
+
               tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
             end
           end
         else

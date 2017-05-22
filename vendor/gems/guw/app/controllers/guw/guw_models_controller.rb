@@ -1690,7 +1690,8 @@ class Guw::GuwModelsController < ApplicationController
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
           guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
-            worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+            v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+            worksheet.add_cell(ind, 17 + j, v.to_s)
           end
         end
       end
