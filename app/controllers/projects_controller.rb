@@ -2362,6 +2362,7 @@ public
   #Checkout the project : create a new version of the project
   def checkout
     old_prj = Project.find(params[:project_id])
+    @organization = @current_organization
 
     authorize! :commit_project, old_prj
 
@@ -2430,6 +2431,14 @@ public
             end
           end
 
+          #For applications
+          old_prj.applications.each do |application|
+            app = Application.where(name: application.name, organization_id: @organization.id).first
+            ap = ApplicationsProjects.create(application_id: app.id,
+                                             project_id: new_prj.id)
+            ap.save
+          end
+
           # For ModuleProject associations
           old_prj.module_projects.group(:id).each do |old_mp|
             new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
@@ -2440,8 +2449,56 @@ public
               new_mp.associated_module_projects << new_associated_mp
             end
 
-            #For initialization module level
-            update_views_and_widgets(new_prj, old_mp, new_mp)
+            ### Wbs activity
+            #create module_project ratio elements
+            old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+
+              mp_ratio_element = old_mp_ratio_elt.dup
+              mp_ratio_element.module_project_id = new_mp.id
+              mp_ratio_element.copy_id = old_mp_ratio_elt.id
+
+              pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
+              mp_ratio_element.pbs_project_element_id = pbs_id
+              mp_ratio_element.save
+            end
+
+            new_mp_ratio_elements = new_mp.module_project_ratio_elements
+            new_mp_ratio_elements.each do |mp_ratio_element|
+
+              #unless mp_ratio_element.is_root?
+              new_ancestor_ids_list = []
+              mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                if ancestor
+                  ancestor_id = ancestor.id
+                  new_ancestor_ids_list.push(ancestor_id)
+                end
+              end
+              mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+              #end
+              mp_ratio_element.save
+            end
+            ### End wbs_activity
+
+            # For SKB-Input
+            old_mp.skb_inputs.each do |skbi|
+              Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
+                                   organization_id: @organization.id, module_project_id: new_mp.id)
+            end
+
+            #For ge_model_factor_descriptions
+            old_mp.ge_model_factor_descriptions.each do |factor_description|
+              Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
+                                                  factor_alias: factor_description.factor_alias, description: factor_description.description,
+                                                  module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
+            end
+
+            # if the module_project is nil
+            unless old_mp.view.nil?
+              #Update the new project/estimation views and widgets
+              update_views_and_widgets(new_prj, old_mp, new_mp)
+            end
+
 
             #Update the Unit of works's groups
             new_mp.guw_unit_of_work_groups.each do |guw_group|
@@ -2459,13 +2516,6 @@ public
                 guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
               end
             end
-
-            # new_mp.uow_inputs.each do |uo|
-            #   new_pbs_project_element = new_prj_components.find_by_copy_id(uo.pbs_project_element_id)
-            #   new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-            #
-            #   uo.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-            # end
 
             ["input", "output"].each do |io|
               new_mp.pemodule.pe_attributes.each do |attr|
@@ -2527,21 +2577,12 @@ public
             end
           end
 
-          # Update project's organization estimations counter
-          # if new_prj.is_model != true
-          #   unless @current_organization.estimations_counter.nil?
-          #     @current_organization.estimations_counter -= 1
-          #     @current_organization.save
-          #   end
-          # end
-
           unless new_prj.is_model == true || @current_user.super_admin == true
-            unless @current_organization.estimations_counter.nil? || @current_organization.estimations_counter == 0
-              @current_organization.estimations_counter -= 1
-              @current_organization.save
+            unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
+              @organization.estimations_counter -= 1
+              @organization.save
             end
           end
-
 
           flash[:success] = I18n.t(:notice_project_successful_checkout)
           redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
@@ -2561,6 +2602,7 @@ public
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}
     #end  # END commit permission
   end
+
 
 private
 
