@@ -2033,3 +2033,4 @@ frsncf_amoa_infra:
   new_input_attribute: "Nouvel attribut d'entrée"
   liste_des_estimations: "Liste des estimations"
   copy_in_progress: "Copie en cours..."
+  warning_intermediate_project_version_cannot_be_deleted: "Seules les versions non intermédiaires d'une estimation peuvent être supprimées."

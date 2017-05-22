@@ -1036,6 +1036,7 @@ class ProjectsController < ApplicationController
         end
       end
     else
+      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
   end

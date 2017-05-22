@@ -1651,3 +1651,4 @@ en-gb:
   profiles_list: "List of profiles"
   copy_in_progress: "Copy in progress..."
   is_new_status: "Is the default status of new estimation version "
+  warning_intermediate_project_version_cannot_be_deleted: "Only non-intermediate versions of an estimation can be deleted."
