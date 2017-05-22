@@ -1038,9 +1038,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
 
           elsif  guw_coefficient.coefficient_type == "Coefficient"
 
@@ -1072,9 +1070,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
           else
 
             unless params['guw_coefficient'].nil?
