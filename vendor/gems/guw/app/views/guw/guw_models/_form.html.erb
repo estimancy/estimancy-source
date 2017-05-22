@@ -55,10 +55,10 @@
                 Position
               </th>
             </tr>
-            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Coeff. de Complexité"]).flatten.each do |item| %>
+            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Critères", "Coeff. de Complexité"]).flatten.each do |item| %>
               <tr>
                 <% begin %>
-                  <% if item == "Coefficient" || item == "Coeff. de Complexité" %>
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
                     <td>
                       <b>
                         <%= item %>
@@ -73,7 +73,7 @@
                     <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
                   </td>
                 <% rescue %>
-                  <% if item == "Coefficient" || item == "Coeff. de Complexité" %>
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
                     <td>
                       <b>
                         <%= item %>

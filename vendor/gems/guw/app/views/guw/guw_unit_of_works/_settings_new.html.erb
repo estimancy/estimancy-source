@@ -174,12 +174,6 @@
               <th><%= I18n.t :name %></th>
               <th>UO</th>
 
-              <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                <th>
-                  <%= I18n.t :criteria %>
-                </th>
-              <% end %>
-
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
                   <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
@@ -193,6 +187,12 @@
                     <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
                       <th>
                         <%= i[0] %>
+                      </th>
+                    <% end %>
+                  <% elsif i[0] == "Critères" %>
+                    <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                      <th>
+                        <%= I18n.t :criteria %>
                       </th>
                     <% end %>
                   <% elsif i[0] == "Coeff. de Complexité" %>
@@ -253,27 +253,6 @@
                   <% end %>
                 </td>
 
-                <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                  <td class="span2">
-                    <% unless @guw_type.nil? %>
-                      <% if @guw_type.allow_criteria == true %>
-                        <span class="text-center criteria_label_<%= guow.id %>">
-                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id).map(&:most_likely).compact %>
-                          <% if counting.empty? %>
-                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
-                          <% else %>
-                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
-                          <% end %>
-                        </span>
-                      <% else %>
-                        <span class="text-center">
-                          -
-                        </span>
-                      <% end %>
-                    <% end %>
-                  </td>
-                <% end %>
-
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
                     <% if i[0] == "Coeff. de Complexité" %>
@@ -305,6 +284,27 @@
                           <%= link_to v.nil? ? '...' : v.to_f.round(user_number_precision), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
                         </td>
 
+                      <% end %>
+                    <% elsif i[0] == "Critères" %>
+                      <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                        <td class="span2">
+                          <% unless @guw_type.nil? %>
+                            <% if @guw_type.allow_criteria == true %>
+                              <span class="text-center criteria_label_<%= guow.id %>">
+                                <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id).map(&:most_likely).compact %>
+                                <% if counting.empty? %>
+                                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                                <% else %>
+                                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                                <% end %>
+                              </span>
+                            <% else %>
+                              <span class="text-center">
+                                -
+                              </span>
+                            <% end %>
+                          <% end %>
+                        </td>
                       <% end %>
                     <% elsif i[0] == "Coeff. de Complexité" %>
                       <td class="span2">
