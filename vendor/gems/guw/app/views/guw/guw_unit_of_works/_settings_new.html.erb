@@ -366,7 +366,8 @@
                         </span>
                       </td>
                     <% elsif Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
+                                                                     guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
 
                         <% results = guw_coefficient.guw_coefficient_elements %>
@@ -414,7 +415,7 @@
                           </td>
                         <% end %>
                       <% else %>
-                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id ) %>
+                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.id) : default.id) : ceuw.guw_coefficient_element_id ) %>
                       <% end %>
                     <% end %>
                     <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>

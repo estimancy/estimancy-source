@@ -1567,6 +1567,10 @@ class Guw::GuwModelsController < ApplicationController
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id)
 
+    hash = @guw_model.orders
+    hash.delete("Critères")
+    hash.delete("Coeff. de Complexité")
+
     @guw_unit_of_works.each do |i|
       if i.nil?
         i.destroy
@@ -1604,7 +1608,7 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:results),
      I18n.t(:retained_result),
       "COEF"] +
-        @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
+        hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
@@ -1664,13 +1668,15 @@ class Guw::GuwModelsController < ApplicationController
 
       worksheet.add_cell(ind, 16, guow.intermediate_weight)
 
-      @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
+
+      hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
           guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guw_coefficient.nil?
             unless guw_coefficient.guw_coefficient_elements.empty?
               ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                guw_coefficient_id: guw_coefficient.id).first
+                                                                guw_coefficient_id: guw_coefficient.id,
+                                                                module_project_id: current_module_project.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
                 worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
