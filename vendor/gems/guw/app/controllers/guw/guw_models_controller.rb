@@ -1609,6 +1609,9 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     worksheet.change_row_bold(0,true)
+
+    jj = 19 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+
     @guw_unit_of_works.each_with_index do |guow, i|
 
       ind = i + 1
@@ -1664,19 +1667,20 @@ class Guw::GuwModelsController < ApplicationController
       @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
           guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-          unless guw_coefficient.guw_coefficient_elements.empty?
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                              guw_coefficient_id: guw_coefficient.id).first
+          unless guw_coefficient.nil?
+            unless guw_coefficient.guw_coefficient_elements.empty?
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                guw_coefficient_id: guw_coefficient.id).first
 
-            if guw_coefficient.coefficient_type == "Pourcentage"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            elsif guw_coefficient.coefficient_type == "Coefficient"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            else
-              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              if guw_coefficient.coefficient_type == "Pourcentage"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              elsif guw_coefficient.coefficient_type == "Coefficient"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              else
+                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              end
             end
           end
-
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
           guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
@@ -1688,7 +1692,7 @@ class Guw::GuwModelsController < ApplicationController
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
         unless guowa.nil?
-          worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
         else
           p "GUOWA is nil"
         end
@@ -1696,7 +1700,7 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-      worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
+      worksheet.add_cell(0, jj + i, guw_attribute.name)
     end
 
     # send_data(workbook.stream.string, filename: "export.xlsx", type: "application/vnd.ms-excel")
@@ -1802,20 +1806,22 @@ class Guw::GuwModelsController < ApplicationController
 
                 @guw_model.guw_attributes.size.times do |jj|
 
-                  tmp_val = row[16 + @guw_model.orders.size + jj]
+                  ind = 19 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + jj
+
+                  tmp_val = row[ind]
 
                   unless tmp_val.nil?
 
-                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[16 + @guw_model.orders.size + jj]
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
 
-                    if gac.name == tab[0][16 + @guw_model.orders.size + jj]
+                    if gac.name == tab[0][ind]
                       unless guw_type.nil?
                         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
                                                                   guw_unit_of_work_id: guw_uow.id,
                                                                   guw_attribute_id: gac.id).first_or_create
-                        guowa.low = val.to_i
-                        guowa.most_likely = val.to_i
-                        guowa.high = val.to_i
+                        guowa.low = val
+                        guowa.most_likely = val
+                        guowa.high = val
                         guowa.save
                       end
                     end
@@ -1830,7 +1836,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 if guw_coefficient.class == Guw::GuwCoefficient
 
-                  (16..30).to_a.each do |k|
+                  (16..60).to_a.each do |k|
                     if guw_coefficient.name == tab[0][k]
 
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
@@ -1854,7 +1860,7 @@ class Guw::GuwModelsController < ApplicationController
                                                     guw_model_id: @guw_model.id).first
 
                   unless guw_output.nil?
-                    (16..30).to_a.each do |k|
+                    (16..60).to_a.each do |k|
                       if guw_output.name == tab[0][k]
                         # tmp_hash_res["#{guw_output.id}"] = row[k]
                         tmp_hash_ares["#{guw_output.id}"] = row[k]

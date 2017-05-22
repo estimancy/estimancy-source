@@ -1176,8 +1176,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    expire_fragment "guw"
-
     if @guw_unit_of_works.last.nil?
       redirect_to main_app.dashboard_path(@project)
     else
@@ -1453,8 +1451,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
   def ml
-    expire_fragment "guw"
-
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     if params[:file].present?
@@ -1472,32 +1468,54 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         worksheet = workbook[0]
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
+          if index > 0
+            unless row[5].blank?
 
-          unless row[0].blank?
+              @http = Curl.post("http://localhost:5001/estimate", { us: row[5] } )
 
-            @http = Curl.post("http://localhost:5001/estimate", { us: row[0] } )
+              complete_str = row[5].to_s
+              reduce_str = row[5].to_s.truncate(60)
 
-            complete_str = row[0].to_s
-            reduce_str = row[0].to_s.truncate(60)
+              JSON.parse(@http.body_str).each do |output|
 
-            JSON.parse(@http.body_str).each do |output|
-              unless output.blank? || output == "NULL"
-                @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
-              else
-                @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+                unless output.blank? || output == "NULL"
+                  @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+                else
+                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                end
+
+                guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
+                                                    comments: complete_str,
+                                                    guw_unit_of_work_group_id: @guw_group.id,
+                                                    module_project_id: current_module_project.id,
+                                                    pbs_project_element_id: current_component.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    display_order: index.to_i,
+                                                    tracking: complete_str,
+                                                    quantity: 1,
+                                                    selected: true,
+                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+                @guw_model.guw_attributes do |gac, jj|
+                  tmp_val = row[15 + @guw_model.orders.size + jj]
+                  unless tmp_val.nil?
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+
+                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                      unless @guw_type.nil?
+                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                  guw_unit_of_work_id: guw_uow.id,
+                                                                  guw_attribute_id: gac.id).first_or_create
+                        guowa.low = val.to_i
+                        guowa.most_likely = val.to_i
+                        guowa.high = val.to_i
+                        guowa.save
+                      end
+                    end
+                  end
+                end
+
               end
-
-              Guw::GuwUnitOfWork.create(name: reduce_str,
-                                        comments: complete_str,
-                                        guw_unit_of_work_group_id: @guw_group.id,
-                                        module_project_id: current_module_project.id,
-                                        pbs_project_element_id: current_component.id,
-                                        guw_model_id: @guw_model.id,
-                                        display_order: index.to_i,
-                                        tracking: complete_str,
-                                        quantity: 1,
-                                        selected: true,
-                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
             end
           end
         end
@@ -1511,10 +1529,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
         @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_unit_of_work.guw_model.id).first
       else
-        @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
 
-      @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.guw_type_id = @guw_type.nil? ? nil : @guw_type.id
       @guw_unit_of_work.save
 
       redirect_to :back and return

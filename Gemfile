@@ -44,7 +44,7 @@ gem 'curb'
 
 #Permissions
 # gem 'cancan'
-gem 'cancancan'
+gem 'cancancan', '~> 1.10'
 
 #Authentication for tests
 gem "warden"
