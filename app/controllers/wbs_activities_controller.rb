@@ -391,7 +391,9 @@ class WbsActivitiesController < ApplicationController
                 theoretical_est_val[:description] = theoretical_attribute.description
               end
 
-              theoretical_est_val.save
+              if theoretical_est_val.changed?
+                theoretical_est_val.save
+              end
             end
           end
         end
@@ -505,7 +507,10 @@ class WbsActivitiesController < ApplicationController
             mp_ratio_element.selected = true
           end
         end
-        mp_ratio_element.save
+
+        if mp_ratio_element.changed?
+          mp_ratio_element.save
+        end
       end
 
     end
@@ -590,7 +595,9 @@ class WbsActivitiesController < ApplicationController
                 #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
                 #end
 
-                mp_ratio_element.save
+                if mp_ratio_element.changed?
+                  mp_ratio_element.save
+                end
               end
             end
             #=========== END Save results in the Module-Project Ratio Elements  ===================
@@ -840,7 +847,9 @@ class WbsActivitiesController < ApplicationController
                 end
               end
 
-              mp_ratio_element.save
+              if mp_ratio_element.changed?
+                mp_ratio_element.save
+              end
             end
 
           ###elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
