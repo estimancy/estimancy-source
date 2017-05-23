@@ -82,7 +82,7 @@ Guw::Engine.routes.draw do
 
   post "import_old_config" => "guw_models#import_old_config"
   post "import_new_config" => "guw_models#import_new_config"
-  post "import_guw" => "guw_models#import_guw"
+  post "import_guw" => "guw_unit_of_works#import_guw"
 
   post "guw_unit_of_works/save_guw_unit_of_works"
   post "guw_unit_of_works/save_guw_unit_of_works_with_multiple_outputs"
