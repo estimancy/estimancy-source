@@ -37,6 +37,7 @@ module Guw
     has_many :guw_scale_module_attributes, dependent: :destroy
 
     has_many :attribute_modules, dependent: :destroy
+    has_many :guw_output_types, dependent: :destroy
 
     belongs_to :organization
 
@@ -192,6 +193,25 @@ module Guw
 
           end
         end
+      end
+
+      #update GuwOutputType
+      old_model.guw_output_types.each do |output_type|
+
+        new_output = GuwOutput.where(guw_model_id: guw_model.id,
+                                     copy_id: output_type.guw_output_id).first
+
+        new_type = GuwType.where(guw_model_id: guw_model.id,
+                                  copy_id: output_type.guw_type_id).first
+
+        begin
+          GuwOutputType.create(guw_model_id: guw_model.id,
+                               guw_output_id: new_output.id,
+                               guw_type_id: new_type.id,
+                               display_type: output_type.display_type)
+        rescue
+        end
+
       end
     end
 

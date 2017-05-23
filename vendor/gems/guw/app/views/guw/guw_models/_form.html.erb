@@ -49,44 +49,63 @@
           <table>
             <tr>
               <th>
-                Colonne
-              </th>
-              <th>
                 Position
               </th>
+              <th>
+                Colonne
+              </th>
             </tr>
-            <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Coefficient", "Critères", "Coeff. de Complexité"]).flatten.each do |item| %>
+
+            <% @guw_model_orders = @guw_model.orders %>
+            <% @guw_model_orders = @guw_model_orders.delete_if { |k, v| v.blank? }.sort_by{ |k,v| v }.to_h %>
+
+            <% all_coeff_and_outputs =  (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten %>
+            <% all_coeff_and_outputs.each do |key|
+               unless @guw_model_orders.key?("#{key}")
+                 @guw_model_orders["#{key}"] = nil
+               end
+             end
+            %>
+
+            <%# (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten.each do |item| %>
+            <% @guw_model_orders.each do |item, value| %>
               <tr>
                 <% begin %>
+
+                  <td>
+                    <%= text_field_tag "items[#{item}]", value, class: "order_size" %>
+                  </td>
+
                   <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                    <td>
+                    <td class="orders_padding">
                       <b>
                         <%= item %>
                       </b>
                     </td>
                   <% else %>
-                    <td>
+                    <td class="orders_padding">
                       <%= item %>
                     </td>
                   <% end %>
-                  <td>
-                    <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
-                  </td>
+
                 <% rescue %>
+                  <td>
+                    <%#= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item], class: "order_size" %>
+                    <%= text_field_tag "items[#{item}]", YAML::load(@guw_model_orders.value)[item], class: "order_size" %>
+                  </td>
+
                   <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                    <td>
+                    <td class="orders_padding">
                       <b>
                         <%= item %>
                       </b>
                     </td>
                   <% else %>
-                    <td>
+                    <td class="orders_padding">
                       <%= item %>
                     </td>
                   <% end %>
-                  <td>
-                    <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
-                  </td>
+
                 <% end %>
               </tr>
             <% end %>
