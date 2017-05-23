@@ -56,8 +56,9 @@
               </th>
             </tr>
 
-            <% @guw_model_orders = @guw_model.orders %>
-            <% @guw_model_orders = @guw_model_orders.delete_if { |k, v| v.blank? }.sort_by{ |k,v| v }.to_h %>
+            <% @initial_guw_model_orders = @guw_model.orders %>
+            <% @guw_model_orders = @initial_guw_model_orders.delete_if { |k, v| v.blank? } %>
+            <% @guw_model_orders = @guw_model_orders.sort_by{ |k,v| v.to_f }.to_h %>
 
             <% all_coeff_and_outputs = (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten %>
             <% all_coeff_and_outputs.each do |key|

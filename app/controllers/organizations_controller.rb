@@ -1212,7 +1212,7 @@ class OrganizationsController < ApplicationController
 
               ###### Replace the code below
 
-              guw_model.terminate_guw_model_duplication(guw_model) #A modifier
+              guw_model.terminate_guw_model_duplication(guw_model, true) #A modifier
             end
 
             # Copy the modules's GUW Models instances
