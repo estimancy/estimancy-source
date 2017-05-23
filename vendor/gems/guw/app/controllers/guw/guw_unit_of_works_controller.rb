@@ -1038,9 +1038,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
 
           elsif  guw_coefficient.coefficient_type == "Coefficient"
 
@@ -1072,9 +1070,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
           else
 
             unless params['guw_coefficient'].nil?
@@ -1103,17 +1099,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               unless ceuw.nil?
                 unless params['deported_guw_coefficient'].nil?
-                  ceuw.guw_coefficient_element_id = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                  v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
                 else
-                  ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                  v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
                 end
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
 
-                # if ceuw.changed?
                 ceuw.save
-                # end
               end
 
               unless cce.nil?
@@ -1131,7 +1127,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         coef = coeffs.compact.inject(&:*)
 
         oa_value = []
-        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id, guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
+        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
+                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
           unless goa.value.to_f == 0
             unless goa.aguw_output.nil?
               oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
@@ -1152,12 +1149,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         if params["ajusted_size"].present?
-          if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
             tmp_hash_res["#{guw_output.id}"] = tmp
             tmp_hash_ares["#{guw_output.id}"] = tmp
           else
-            tmp_hash_res["#{guw_output.id}"] = tmp
-            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+            if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = tmp
+            else
+
+              if tmp == 0
+                tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+              else
+                tmp_hash_res["#{guw_output.id}"] = 0
+              end
+
+              tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
+            end
           end
         else
           tmp_hash_res["#{guw_output.id}"] = tmp
@@ -1397,7 +1406,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           unless ceuw.nil?
-            ceuw.guw_coefficient_element_id = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+
+            v = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id

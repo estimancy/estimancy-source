@@ -11,14 +11,15 @@
   <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
 
     <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                         guw_coefficient_id: guw_coefficient.id).first %>
+                                                         guw_coefficient_id: guw_coefficient.id,
+                                                         module_project_id: current_module_project.id).first %>
 
     <% if guw_coefficient.coefficient_type == "Liste" %>
       <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
     <% elsif guw_coefficient.coefficient_type == "Pourcentage" %>
-      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.id %>
     <% elsif guw_coefficient.coefficient_type == "Coefficient" %>
-      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.percent %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.id %>
     <% else %>
       <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
     <% end %>
