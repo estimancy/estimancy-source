@@ -69,6 +69,42 @@ module Guw
       guw_model = self
       guw_model_organization = guw_model.organization
 
+      # Copy PeAttributes for  the new model outputs
+      pm = Pemodule.where(alias: "guw").first
+      old_pe_attributes = PeAttribute.where(guw_model_id: old_model.id)
+
+      old_pe_attributes.each do |old_pe_attribute|
+        new_pe_attribute = old_pe_attribute.dup
+        new_pe_attribute.guw_model_id = guw_model.id
+        new_pe_attribute.save
+
+        am = AttributeModule.where(pe_attribute_id: old_pe_attribute.id, pemodule_id: pm.id, in_out: "both", guw_model_id: guw_model.id).first
+        if am.nil?
+          am = AttributeModule.where(pe_attribute_id: new_pe_attribute.id, pemodule_id: pm.id, in_out: "both",
+                                     guw_model_id: guw_model.id).first_or_create!
+        else
+          am.pe_attribute_id = new_pe_attribute.id
+          am.save
+        end
+
+        if is_organization_copy == true
+          guw_model.module_projects.each do |module_project|
+            module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+
+              estimation_value.pe_attribute_id = new_pe_attribute.id
+              estimation_value.save
+
+              estimation_value.views_widgets.where(pe_attribute_id: old_pe_attribute.id).each do |view_widget|
+                view_widget.pe_attribute_id = new_pe_attribute.id
+                view_widget.save
+              end
+            end
+          end
+
+        end
+      end
+
+
       guw_model.guw_types.each do |guw_type|
 
         # Copy the complexities technologies
@@ -154,9 +190,9 @@ module Guw
             guw_uow_attr.update_attributes(guw_type_id: new_guw_type_id, guw_attribute_id: new_guw_attribute_id)
           end
 
+
           if is_organization_copy == true
             #Guw UnitOfWorks AJUSTED_SIZE and SIZE update according to the outputs keys
-
             if guw_unit_of_work.ajusted_size.is_a?(Hash)
               new_ajusted_size = Hash.new
               guw_unit_of_work.ajusted_size.each do |guw_output_key, value|
