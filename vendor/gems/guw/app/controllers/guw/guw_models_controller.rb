@@ -1688,16 +1688,21 @@ class Guw::GuwModelsController < ApplicationController
             end
           end
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-          guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
+          guw_output = Guw::GuwOutput.where(name: i[0],
+                                            guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
-            v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
-            worksheet.add_cell(ind, 17 + j, v.to_s)
+            unless guw_output.nil?
+              v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+              worksheet.add_cell(ind, 17 + j, v.to_s)
+            end
           end
         end
       end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
+        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+                                                  guw_attribute_id: guw_attribute.id,
+                                                  guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
         unless guowa.nil?
           worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
         else
