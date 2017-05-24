@@ -155,8 +155,43 @@ module Guw
           end
 
           if is_organization_copy == true
-            #Guw UnitOfWorks AJUSTED_SIZE and SIZE update according to the outputs keys
 
+            # Copy PeAttribute for outputs
+            pm = Pemodule.where(alias: "guw").first
+            old_pe_attributes = PeAttribute.where(guw_model_id: guw_model.id)
+
+            # old_pe_attributes.each do |old_pe_attribute|
+            #   new_pe_attribute = old_pe_attribute.dup
+            #   new_pe_attribute.guw_model_id = guw_model.id
+            #   new_pe_attribute.save
+            #
+            #   am = AttributeModule.where(pe_attribute_id: new_pe_attribute.id,
+            #                              pemodule_id: pm.id,
+            #                              in_out: "both",
+            #                              guw_model_id: guw_model.id).first_or_create!
+            #
+            #   guw_model.module_projects.each do |module_project|
+            #     module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+            #       estimation_value.pe_attribute_id = new_pe_attribute.id
+            #       estimation_value.save
+            #     end
+            #   end
+            # end
+            #
+            # guw_model.guw_outputs.each do |guw_output|
+            #   attr = PeAttribute.where(name: guw_output.name,
+            #                            alias: guw_output.name.underscore.gsub(" ", "_"),
+            #                            description: guw_output.name,
+            #                            guw_model_id: guw_model.id).first_or_create!
+            #
+            #   am = AttributeModule.where(pe_attribute_id: attr.id,
+            #                              pemodule_id: pm.id,
+            #                              in_out: "both",
+            #                              guw_model_id: guw_model.id).first_or_create!
+            #
+            # end
+
+            #Guw UnitOfWorks AJUSTED_SIZE and SIZE update according to the outputs keys
             if guw_unit_of_work.ajusted_size.is_a?(Hash)
               new_ajusted_size = Hash.new
               guw_unit_of_work.ajusted_size.each do |guw_output_key, value|

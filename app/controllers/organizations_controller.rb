@@ -959,7 +959,6 @@ class OrganizationsController < ApplicationController
 
           new_organization.is_image_organization = false
 
-
           if new_organization.save(validate: false)
 
             organization_image.save #Original organization copy number will be incremented to 1
