@@ -163,31 +163,30 @@ class Guw::GuwOutputsController < ApplicationController
   end
 
   def destroy
+    @pemodule = Pemodule.where(alias: "guw").first
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_model = @guw_output.guw_model
-    attr_name = @guw_output.name
+
     @guw_output.delete
 
-    #Pas encore bon !
-    attr = PeAttribute.where(alias: attr_name.underscore.gsub(" ", "_")).first
+    attr_name = @guw_output.name
+    attr = PeAttribute.where(alias: attr_name.underscore.gsub(" ", "_"),
+                             guw_model_id: @guw_model.id).first
 
-    pm = Pemodule.where(alias: "guw").first
     AttributeModule.where(pe_attribute_id: attr.id,
-                          pemodule_id: pm.id,
+                          pemodule_id: @pemodule.id,
                           guw_model_id: @guw_output.guw_model.id).all.each do |am|
       am.delete
     end
 
-    attr.delete
-
     orders = @guw_model.orders
-
     unless attr.nil?
       attr_name = attr.name
       orders.delete(attr_name)
       @guw_model.orders = orders
     end
 
+    attr.destroy
     @guw_model.save
 
     if @guw_model.default_display == "list"
