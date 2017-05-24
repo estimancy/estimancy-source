@@ -1563,7 +1563,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
     @component = current_component
     @project = current_module_project.project
-    @guw_model = current_module_project.guw_model
 
     ind = 0
     indexing_field_error = [[false],[false],[false],[false]]
@@ -1752,8 +1751,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
                                                                         guw_coefficient_id: guw_coefficient.id).first_or_create
 
-                      ce = Guw::GuwCoefficientElement.where(name: row[k],
-                                                            guw_model_id: @guw_model.id).first
+                      ce = guw_coefficient.guw_coefficient_elements.where(name: row[k]).first
 
                       unless ce.nil?
                         ceuw.guw_coefficient_element_id = ce.id
