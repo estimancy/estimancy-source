@@ -1011,21 +1011,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
 
-            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
 
-              # if !guw_coefficient_element.min_value.nil? || !guw_coefficient_element.max_value.nil?
-              #   if pc < guw_coefficient_element.min_value || pc > guw_coefficient_element.max_value
-              #     pc = 1
-              #   end
-              # end
-
               unless cce.value.blank?
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
               else
@@ -1033,39 +1027,35 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.percent = pc
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
             ceuw.save
 
-          elsif  guw_coefficient.coefficient_type == "Coefficient"
+          elsif guw_coefficient.coefficient_type == "Coefficient"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
+
+            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
 
-              # unless guw_coefficient_element.min_value.nil? || guw_coefficient_element.max_value.nil?
-              #   if pc < guw_coefficient_element.min_value || pc > guw_coefficient_element.max_value
-              #     pc = 1
-              #   end
-              # end
-
               unless cce.value.blank?
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                coeffs << pc.to_f
+                coeffs << pc
+                coeffs << cce.value.to_f
               else
                 coeffs << 1
               end
             end
 
-            ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.percent = pc
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
