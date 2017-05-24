@@ -188,6 +188,8 @@ class Guw::GuwOutputsController < ApplicationController
       @guw_model.orders = orders
     end
 
+    @guw_model.save
+
     if @guw_model.default_display == "list"
       redirect_to guw.guw_model_all_guw_types_path(@guw_model)
     else
