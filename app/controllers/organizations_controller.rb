@@ -682,7 +682,6 @@ class OrganizationsController < ApplicationController
         app = Application.where(name: application.name, organization_id: new_organization.id).first
         ap = ApplicationsProjects.create(application_id: app.id,
                                          project_id: new_prj.id)
-
         # new_prj.application_id = app.id
         # new_prj.save(validate: false)
         ap.save
@@ -864,16 +863,34 @@ class OrganizationsController < ApplicationController
           end
         end
 
+        new_mp_pemodule_attributes = new_mp.pemodule.pe_attributes
+        if new_mp.pemodule.alias == "guw"
+          new_mp_pemodule_attributes = new_mp_pemodule_attributes.where(guw_model_id: new_mp.guw_model_id)
+        elsif new_mp.pemodule.alias == "operation" #Operation
+          new_mp_pemodule_attributes = new_mp_pemodule_attributes.where(operation_model_id: new_mp.operation_model_id)
+        end
+
         ["input", "output"].each do |io|
-          new_mp.pemodule.pe_attributes.each do |attr|
+          new_mp_pemodule_attributes.each do |attr|
             old_prj.pbs_project_elements.each do |old_component|
               new_prj_components.each do |new_component|
                 ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                 unless ev.nil?
-                  ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                  ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                  ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                  ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                  ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id.to_i]
+                  ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id.to_i]
+                  ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id.to_i]
+                  ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id.to_i]
+
+                  # ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
+                  # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
+                  # ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
+                  # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                  # ev.string_data_low.delete(old_component.id)
+                  # ev.string_data_most_likely.delete(old_component.id)
+                  # ev.string_data_high.delete(old_component.id)
+                  # ev.string_data_probable.delete(old_component.id)
 
                   # update ev attribute links (input attribute link from preceding module_project)
                   unless ev.estimation_value_id.nil?
@@ -1211,7 +1228,11 @@ class OrganizationsController < ApplicationController
 
               ###### Replace the code below
 
-              guw_model.terminate_guw_model_duplication(guw_model, true) #A modifier
+              old_guw_model = Guw::GuwModel.find(guw_model.copy_id)
+              if old_guw_model.nil?
+                old_guw_model = guw_model
+              end
+              guw_model.terminate_guw_model_duplication(old_guw_model, true) #A modifier
             end
 
             # Copy the modules's GUW Models instances
