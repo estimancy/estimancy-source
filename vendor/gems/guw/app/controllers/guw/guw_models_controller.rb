@@ -160,9 +160,11 @@ class Guw::GuwModelsController < ApplicationController
               tab.each_with_index do |row, i|
                 if i != 0 && !row.nil?
                   Guw::GuwCoefficient.create(name: row[0],
-                                             coefficient_type: row[1],
+                                             description: row[1],
+                                             coefficient_type: row[2],
                                              guw_model_id: @guw_model.id,
-                                             allow_intermediate_value: (row[2] == 0) ? false : true )
+                                             allow_intermediate_value: (row[3] == 0) ? false : true,
+                                             deported: (row[4] == 0) ? false : true)
                 end
               end
 
