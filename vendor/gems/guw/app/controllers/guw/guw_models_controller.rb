@@ -233,66 +233,70 @@ class Guw::GuwModelsController < ApplicationController
                                               allow_retained: tab[4][1] == 1,
                                               allow_complexity: tab[7][1] == 1,
                                               allow_criteria: tab[2][1] == 1,
-                                              attribute_type: "Coefficient",
+                                              attribute_type: (tab[3][1] == "Pourcentage") ? "Pourcentage" : "Coefficient",
                                               display_threshold: tab[6][1] == 1,
                                               guw_model_id: @guw_model.id)
 
               [2,7,12].each do |column_index|
-                @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
-                                                         name: tab[9][column_index].nil? ? nil : tab[9][column_index],
-                                                         bottom_range: tab[11][column_index + 1],
-                                                         top_range: tab[11][column_index + 2],
-                                                         weight: tab[11][column_index + 3],
-                                                         weight_b: tab[11][column_index + 4],
-                                                         enable_value: (tab[11][column_index] == 0) ? false : true)
+                name = tab[9][column_index].nil? ? nil : tab[9][column_index]
 
-                @guw_complexity.save(validate: false)
+                unless name.blank?
+                  @guw_complexity = Guw::GuwComplexity.new(name: name,
+                                                           guw_type_id: @guw_type.id,
+                                                           bottom_range: tab[11][column_index + 1],
+                                                           top_range: tab[11][column_index + 2],
+                                                           weight: tab[11][column_index + 3],
+                                                           weight_b: tab[11][column_index + 4],
+                                                           enable_value: (tab[11][column_index] == 0) ? false : true)
 
-                @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, i|
+                  @guw_complexity.save(validate: false)
 
-                  Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
-                                                                guw_output_id: guw_output.id,
-                                                                init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
+                  @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, i|
 
-                  Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
-                                                  guw_output_id: guw_output.id,
-                                                  value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
-
-                  @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
-                    value = tab[15 + j][column_index + i]
-
-                    oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
-                                                          guw_output_associated_id: aguw_output.id,
-                                                          guw_output_id: guw_output.id,
-                                                          value: value)
-
-                    Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
-                                              guw_output_id: aguw_output.id,
-                                              guw_type_id: @guw_type.id,
-                                              display_type: tab[15 + j][1])
-                  end
-
-                  nb_output = @guw_model.guw_outputs.order("display_order ASC").size
-                  next_item = 15 + nb_output
-                  @guw_model.guw_coefficients.each do |guw_coefficient|
-                    guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
-
-                      next_item = next_item + 1
-
-                      begin
-                        value = tab[next_item][column_index + i]
-                      rescue
-                        value = ""
-                      end
-
-                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
-                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+                    Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
                                                                   guw_output_id: guw_output.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  value: value.is_a?(Numeric) ? value : nil)
+                                                                  init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
 
+                    Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
+                                                    guw_output_id: guw_output.id,
+                                                    value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
+
+                    @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
+                      value = tab[15 + j][column_index + i]
+
+                      oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
+                                                            guw_output_associated_id: aguw_output.id,
+                                                            guw_output_id: guw_output.id,
+                                                            value: value)
+
+                      Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
+                                                guw_output_id: aguw_output.id,
+                                                guw_type_id: @guw_type.id,
+                                                display_type: tab[15 + j][1])
                     end
-                    next_item = next_item + 1
+
+                    nb_output = @guw_model.guw_outputs.order("display_order ASC").size
+                    next_item = 15 + nb_output
+                    @guw_model.guw_coefficients.each do |guw_coefficient|
+                      guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+
+                        next_item = next_item + 1
+
+                        begin
+                          value = tab[next_item][column_index + i]
+                        rescue
+                          value = ""
+                        end
+
+                        Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                                                                    guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                    guw_output_id: guw_output.id,
+                                                                    guw_type_id: @guw_type.id,
+                                                                    value: value.is_a?(Numeric) ? value : nil)
+
+                      end
+                      next_item = next_item + 1
+                    end
                   end
                 end
               end
@@ -310,24 +314,27 @@ class Guw::GuwModelsController < ApplicationController
                   end
                 end
 
-                @guw_att_complexity = Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
-                                                                    name: tab[row_number][column_index],
-                                                                    value: tab[row_number][column_index + 1])
+                name = tab[row_number][column_index].nil? ? nil : tab[row_number][column_index]
 
-                @guw_model.guw_attributes.each_with_index do |att, j|
+                unless name.nil?
+                  @guw_att_complexity = Guw::GuwTypeComplexity.create(name: name,
+                                                                      guw_type_id: @guw_type.id,
+                                                                      value: tab[row_number][column_index + 1])
 
-                  Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                     guw_attribute_id: att.id,
-                                                     guw_type_id: @guw_type.id,
-                                                     enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
-                                                     bottom_range: tab[row_number + j + 2][column_index + 1],
-                                                     top_range: tab[row_number + j + 2][column_index + 2],
-                                                     value: tab[row_number + j + 2][column_index + 3],
-                                                     value_b: tab[row_number + j + 2][column_index + 4])
+                  @guw_model.guw_attributes.each_with_index do |att, j|
 
+                    Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                       guw_attribute_id: att.id,
+                                                       guw_type_id: @guw_type.id,
+                                                       enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
+                                                       bottom_range: tab[row_number + j + 2][column_index + 1],
+                                                       top_range: tab[row_number + j + 2][column_index + 2],
+                                                       value: tab[row_number + j + 2][column_index + 3],
+                                                       value_b: tab[row_number + j + 2][column_index + 4])
+
+                  end
+                  row_number += 1
                 end
-
-                row_number += 1
               end
             end
           end
