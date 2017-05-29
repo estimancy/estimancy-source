@@ -93,14 +93,14 @@ module Guw
 
               estimation_value.pe_attribute_id = new_pe_attribute.id
               estimation_value.save
-
-              estimation_value.views_widgets.where(pe_attribute_id: old_pe_attribute.id).each do |view_widget|
-                view_widget.pe_attribute_id = new_pe_attribute.id
-                view_widget.save
-              end
             end
-          end
 
+            module_project.views_widgets.where(pe_attribute_id: old_pe_attribute.id).each do |view_widget|
+              view_widget.pe_attribute_id = new_pe_attribute.id
+              view_widget.save
+            end
+
+          end
         end
       end
 
@@ -273,6 +273,7 @@ module Guw
         rescue
         end
       end
+
     end
 
     def self.display_value(data_probable, estimation_value, vw)
