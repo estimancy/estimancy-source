@@ -170,10 +170,14 @@
                end
 
                if ev
-                 if ev.module_project.pemodule.alias == "effort_breakdown"
-                   @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
-                 else
-                   @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 begin
+                   if ev.module_project.pemodule.alias == "effort_breakdown"
+                     @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                   else
+                     @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                   end
+                 rescue
+                   @previous_effort = 0
                  end
                end
              end
