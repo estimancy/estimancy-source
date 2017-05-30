@@ -59,9 +59,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_unit_of_work.display_order = params[:position].to_i - 1
     end
 
-    # @guw_unit_of_work.save
-
-    # reorder(@guw_unit_of_work.guw_unit_of_work_group)
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_unit_of_work.save
 
@@ -94,7 +92,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
 
-    # reorder group
     expire_fragment "guw"
 
     update_estimation_values
@@ -382,7 +379,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      # reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       begin
         guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -906,7 +903,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      #reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
         guw_type = guw_unit_of_work.guw_type
@@ -1986,6 +1983,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def update_view_widgets_and_project_fields
     @module_project.views_widgets.each do |vw|
       ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
+    end
+  end
+
+  def reorder(group)
+    group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
+      u.display_order = i
+      u.save
     end
   end
 
