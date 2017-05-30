@@ -1419,6 +1419,7 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model = Guw::GuwModel.find(params[:id])
     @organization = @guw_model.organization
+    @current_organization = @organization
 
     set_page_title @guw_model.name
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
