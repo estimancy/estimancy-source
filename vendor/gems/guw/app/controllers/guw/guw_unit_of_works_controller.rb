@@ -59,9 +59,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_unit_of_work.display_order = params[:position].to_i - 1
     end
 
-    # @guw_unit_of_work.save
-
-    # reorder(@guw_unit_of_work.guw_unit_of_work_group)
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_unit_of_work.save
 
@@ -94,7 +92,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
 
-    # reorder group
     expire_fragment "guw"
 
     update_estimation_values
@@ -382,7 +379,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      # reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       begin
         guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -906,7 +903,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      #reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
         guw_type = guw_unit_of_work.guw_type
@@ -965,9 +962,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
             end
           else
-            # result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
-            # result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
-            # result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
             if params["complexity_coeff_ajusted"].present?
               if params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].blank?
                 cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
@@ -987,15 +981,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               intermediate_percent = (cplx_coeff.to_f / 100)
             end
 
-            # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent) + (weight_b.nil? ? 1 : weight_b.to_f)
             end
-
-            # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
-            # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
 
           end
         end
@@ -1019,9 +1009,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
 
               unless cce.value.blank?
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << (v / 100)
+
               else
                 percents << 1
               end
@@ -1043,6 +1036,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
@@ -1050,6 +1044,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless cce.value.blank?
                 coeffs << pc
                 coeffs << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << v
+
               else
                 coeffs << 1
               end
@@ -1741,7 +1739,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
                                                                         guw_coefficient_id: guw_coefficient.id).first_or_create
 
-                      ce = guw_coefficient.guw_coefficient_elements.where(name: row[k]).first
+
+                      if row[k].blank?
+                        ce = guw_coefficient.guw_coefficient_elements.where(default: true).first
+                      else
+                        ce = guw_coefficient.guw_coefficient_elements.where(name: row[k]).first
+                      end
 
                       unless ce.nil?
                         ceuw.guw_coefficient_element_id = ce.id
@@ -1771,59 +1774,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guw_uow.size = tmp_hash_res
               guw_uow.ajusted_size = tmp_hash_ares
 
-              @guw_model.guw_types.each do |type|
-
-                if row[6] == type.name
-                  guw_uow.guw_type_id = type.id
-                  if !row[13].nil?
-                    type.guw_complexities.each do |complexity|
-                      if row[13] == complexity.name
-                        guw_uow.guw_complexity_id = complexity.id
-                      end
-                    end
-                  end
-
-                  if @guw_model.allow_technology == true
-                    if !row[10].nil?
-                      type.guw_complexity_technologies.each do |techno|
-                        unless techno.organization_technology.nil?
-                          if row[10] == techno.organization_technology.name
-                            guw_uow.organization_technology_id = techno.organization_technology.id
-                            ind += 1
-                            indexing_field_error[2][0] = true
-                            break
-                          end
-                        end
-                        indexing_field_error[2][0] = false
-                      end
-                    else
-                      guw_ct = type.guw_complexity_technologies.select{ |i| i.coefficient != nil }.first
-                      unless guw_ct.nil?
-                        guw_uow.organization_technology_id = guw_ct.organization_technology.id
-                      else
-                        guw_uow.organization_technology_id = nil
-                      end
-
-                      ind += 1
-                      indexing_field_error[2][0] = true
-                    end
-
-                    unless indexing_field_error[2][0]
-                      indexing_field_error[2] << index
-                    end
-                  end
-
-                  @guw_model.guw_attributes.all.each do |gac|
-                    guw_uow.save(validate: false)
-                    finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
-                                                               guw_unit_of_work_id: guw_uow.id,
-                                                               guw_attribute_id: gac.id).first_or_create
-
-                    finder.save
-                  end
-                end
-                guw_uow.save
-              end
             end
             ok = true
           end
@@ -2033,6 +1983,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def update_view_widgets_and_project_fields
     @module_project.views_widgets.each do |vw|
       ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
+    end
+  end
+
+  def reorder(group)
+    group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
+      u.display_order = i
+      u.save
     end
   end
 
