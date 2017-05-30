@@ -1456,19 +1456,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
-        @guw_group = current_module_project.guw_unit_of_work_groups.first
-
-        if @guw_group.nil?
-          @guw_group = Guw::GuwUnitOfWorkGroup.create(name: "Groupe 1",
-                                                      module_project_id: current_module_project.id,
-                                                      pbs_project_element_id: current_component.id)
-        end
-
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
+
           if index > 0
+
+            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
+                                                       module_project_id: current_module_project.id,
+                                                       pbs_project_element_id: current_component.id).first_or_create
+
             unless row[5].blank?
 
               @http = Curl.post("http://localhost:5001/estimate", { us: row[5] } )
@@ -1514,7 +1512,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     end
                   end
                 end
-
               end
             end
           end
@@ -1527,7 +1524,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
 
       unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
-        @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_unit_of_work.guw_model.id).first
+        @guw_type = Guw::GuwType.where(name: @http.body_str,
+                                       guw_model_id: @guw_unit_of_work.guw_model.id).first
       else
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
