@@ -1556,7 +1556,7 @@ class Guw::GuwModelsController < ApplicationController
         new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
     end
-
+    
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
   end
 

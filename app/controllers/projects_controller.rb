@@ -2377,7 +2377,7 @@ public
       redirect_to organization_estimations_path(@current_organization), :flash => {:warning => I18n.t('warning_not_allow_to_create_new_branch_of_project')} and return
     end
 
-    begin
+    #begin
       old_prj_copy_number = old_prj.copy_number
 
       #old_prj_pe_wbs_product_name = old_prj.pe_wbs_projects.products_wbs.first.name
@@ -2411,7 +2411,7 @@ public
           #pe_wbs_product.name = old_prj_pe_wbs_product_name
           #pe_wbs_activity.name = old_prj_pe_wbs_activity_name
 
-          pe_wbs_product.save
+          pe_wbs_product.save(validate: false)
           #pe_wbs_activity.save
 
           # For PBS
@@ -2427,7 +2427,7 @@ public
               # For PBS-Project-Element Links with modules
               #old_pbs = PbsProjectElement.find(new_c.copy_id)
               #new_c.module_projects = old_pbs.module_projects
-              new_c.save
+              new_c.save(validate: false)
             end
           end
 
@@ -2592,11 +2592,11 @@ public
           redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
         end
       end
-    rescue
-      flash[:error] = I18n.t(:error_project_checkout_failed)
-      redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
-      ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
-    end
+    # rescue
+    #   flash[:error] = I18n.t(:error_project_checkout_failed)
+    #   redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
+    #   ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
+    # end
 
     #else
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}

@@ -47,6 +47,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
   helper_method :root_url
   helper_method :browser
   helper_method :version_browser
