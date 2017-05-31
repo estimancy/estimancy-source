@@ -454,7 +454,12 @@ class ViewsWidgetsController < ApplicationController
             worksheet.add_cell(ind_y, 5, '').set_number_format('.##')
           end
 
-          worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          begin
+            worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          rescue
+            worksheet.add_cell(ind_y, 6, nil)
+          end
+
           ind_y += 1
         end
       end
