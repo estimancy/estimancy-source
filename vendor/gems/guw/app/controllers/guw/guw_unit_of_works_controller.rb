@@ -1783,6 +1783,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guw_uow.size = tmp_hash_res
               guw_uow.ajusted_size = tmp_hash_ares
 
+              unless guw_uow.changed?
+                guw_uow.save
+              end
+
+              @guw_model.guw_attributes.all.each do |gac|
+                finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                           guw_unit_of_work_id: guw_uow.id,
+                                                           guw_attribute_id: gac.id).first_or_create
+
+                finder.save
+              end
+
             end
             ok = true
           end
