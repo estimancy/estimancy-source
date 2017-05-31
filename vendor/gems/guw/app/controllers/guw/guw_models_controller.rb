@@ -1419,6 +1419,7 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model = Guw::GuwModel.find(params[:id])
     @organization = @guw_model.organization
+    session[:organization_id] = @organization.id
     @current_organization = @organization
 
     set_page_title @guw_model.name

@@ -454,7 +454,12 @@ class ViewsWidgetsController < ApplicationController
             worksheet.add_cell(ind_y, 5, '').set_number_format('.##')
           end
 
-          worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          begin
+            worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          rescue
+            worksheet.add_cell(ind_y, 6, '')
+          end
+
           ind_y += 1
         end
       end
@@ -465,7 +470,7 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first
+        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id, pbs_project_element_id: current_component.id).first
 
         if wbs_activity_input.nil?
           ratio = nil
@@ -494,7 +499,8 @@ class ViewsWidgetsController < ApplicationController
                   worksheet.add_cell(ind_y, 6, widget.estimation_value.string_data_probable[current_component.id][element.id]["profiles"]["profile_id_#{profil.id}"]["ratio_id_#{ratio.id}"][:value]).set_number_format('.##')
                   worksheet.add_cell(ind_y, 7, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
                 rescue
-                  worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
+                  #worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
+                  worksheet.add_cell(ind_y, 6, "")
                   worksheet.add_cell(ind_y, 7, "")
                 end
                 ind_y += 1
