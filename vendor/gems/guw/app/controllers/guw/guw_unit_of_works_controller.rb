@@ -1149,7 +1149,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if tmp == 0
                 tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
               else
-                tmp_hash_res["#{guw_output.id}"] = 0
+                tmp_hash_res["#{guw_output.id}"] = tmp
               end
 
               tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
@@ -1558,7 +1558,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       worksheet = workbook[0]
       tab = worksheet.extract_data
 
-      tab.each_with_index  do |row, index|
+      tab.each_with_index do |row, index|
         unless row.nil?
           unless row[4].nil?
             if index > 0
@@ -1654,15 +1654,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               guw_uow.guw_type_id ||= @guw_type.id
 
-              unless params["guw_complexity_#{guw_uow.id}"].nil?
-                guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
-                guw_uow.guw_complexity_id = guw_complexity_id
-                guw_uow.guw_original_complexity_id = guw_complexity_id
-                if guw_uow.changed?
-                  guw_uow.save
+              begin
+                unless params["guw_complexity_#{guw_uow.id}"].nil?
+                  guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
+                  guw_uow.guw_complexity_id = guw_complexity_id
+                  guw_uow.guw_original_complexity_id = guw_complexity_id
+                else
+                  unless row[13].blank?
+                    guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                              name: row[13]).first
+                  end
+
+                  guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                 end
-              else
-                guw_complexity_id = guw_uow.guw_complexity_id
+              rescue
+              end
+
+              if guw_uow.changed?
+                guw_uow.save
               end
 
               if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
