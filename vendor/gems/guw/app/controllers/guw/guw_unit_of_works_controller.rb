@@ -1165,6 +1165,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.ajusted_size = tmp_hash_ares
       end
 
+      reorder guw_unit_of_work.guw_unit_of_work_group
+
       if guw_unit_of_work.changed?
         guw_unit_of_work.save
       end
@@ -1996,7 +1998,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def reorder(group)
     group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
       u.display_order = i
-      u.save
+      if u.changed?
+        u.save
+      end
     end
   end
 
