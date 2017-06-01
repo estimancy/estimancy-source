@@ -59,9 +59,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_unit_of_work.display_order = params[:position].to_i - 1
     end
 
-    reorder(@guw_unit_of_work.guw_unit_of_work_group)
-
     @guw_unit_of_work.save
+
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
