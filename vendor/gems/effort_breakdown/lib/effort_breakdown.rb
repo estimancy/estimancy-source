@@ -196,7 +196,11 @@ module EffortBreakdown
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
           if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable ###&& @changed_retained_cost_values[element.id].to_f != 0
-            output_cost[element.id] = @changed_retained_cost_values[element.id].nil? ? nil : @changed_retained_cost_values[element.id].to_f
+            if @changed_retained_cost_values[element.id].blank?
+              output_cost[element.id] = @theoretical_cost[element.id]
+            else
+              output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f
+            end
           else
             if element.is_childless? || element.has_new_complement_child?
               # Calculate cost for each profile
@@ -529,7 +533,7 @@ module EffortBreakdown
             end
 
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.is_modifiable
-              if @changed_retained_effort_values[element.id].nil? || @changed_retained_effort_values[element.id].to_f == 0
+              if @changed_retained_effort_values[element.id].blank? #|| @changed_retained_effort_values[element.id].to_f == 0
                 begin
                   output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 rescue
