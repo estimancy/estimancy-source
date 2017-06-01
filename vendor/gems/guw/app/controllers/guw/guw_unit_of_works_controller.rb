@@ -1333,6 +1333,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << (v / 100)
+
               else
                 percents << 1
               end
@@ -1362,6 +1366,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless cce.value.blank?
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 coeffs << pc.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << v
+
               else
                 coeffs << 1
               end
@@ -1782,6 +1790,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               guw_uow.size = tmp_hash_res
               guw_uow.ajusted_size = tmp_hash_ares
+
+              unless guw_uow.changed?
+                guw_uow.save
+              end
+
+              @guw_model.guw_attributes.all.each do |gac|
+                finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                           guw_unit_of_work_id: guw_uow.id,
+                                                           guw_attribute_id: gac.id).first_or_create
+
+                finder.save
+              end
 
             end
             ok = true
