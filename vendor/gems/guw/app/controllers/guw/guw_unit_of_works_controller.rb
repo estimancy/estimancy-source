@@ -56,7 +56,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if params[:position].blank?
       @guw_unit_of_work.display_order = @guw_unit_of_work.guw_unit_of_work_group.guw_unit_of_works.size.to_i + 1
     else
-      @guw_unit_of_work.display_order = params[:position].to_i - 1
+      @guw_unit_of_work.display_order = params[:position].to_i
     end
 
     @guw_unit_of_work.save
