@@ -363,6 +363,11 @@ class WbsActivitiesController < ApplicationController
     #======= Voir si les attributs theoretical_effort et theoretical_cost existe sinon les créer ============
     # Update the Activity module-project attributes if they don't exist (theoretical_effort, theoretical_cost)
     unless @module_project.wbs_activity.nil?
+
+      # Sauvegarder le ratio utilisé lors du calcul
+      @module_project.wbs_activity_ratio_id = @ratio_reference.id
+      @module_project.save
+
       theoretical_effort = PeAttribute.find_by_alias("theoretical_effort")
       theoretical_cost = PeAttribute.find_by_alias("theoretical_cost")
 
@@ -930,8 +935,9 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
-    wai = WbsActivityInput.where(module_project_id: current_module_project.id,
-                                 wbs_activity_id: @wbs_activity.id).first
+    wai = WbsActivityInput.where(module_project_id: current_module_project.id, wbs_activity_id: @wbs_activity.id,
+                                 pbs_project_element_id: current_component.id).first
+
     wai.wbs_activity_ratio_id = @ratio_reference.id.to_i
     wai.comment = params[:comment][wai.id.to_s]
     wai.save

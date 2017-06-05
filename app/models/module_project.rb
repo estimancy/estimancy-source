@@ -38,6 +38,7 @@ class ModuleProject < ActiveRecord::Base
   belongs_to :staffing_model, class_name: "Staffing::StaffingModel"
   belongs_to :expert_judgement_instance, class_name: "ExpertJudgement::Instance"
   belongs_to :wbs_activity
+  belongs_to :wbs_activity_ratio
 
   has_many :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWorkGroup", dependent: :destroy
   has_many :guw_unit_of_works, :through => :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
@@ -214,6 +215,25 @@ class ModuleProject < ActiveRecord::Base
     else
       ""
     end
+  end
+
+  
+  # get Wbs-Activity-Ratio when the module_project use the WBS-Activity
+  def get_wbs_activity_ratio(pbs_project_element_id = nil)
+    module_project = self
+
+    if module_project.wbs_activity_ratio.nil?
+      wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, pbs_project_element_id: pbs_project_element_id).first #.first_or_create(module_project_id: module_project.id, pbs_project_element_id: pbs_project_element_id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      selected_ratio = wai.nil? ? nil : wai.wbs_activity_ratio
+    else
+      selected_ratio = module_project.wbs_activity_ratio
+    end
+
+    if selected_ratio.nil?
+      selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
+    end
+
+    selected_ratio
   end
 
 

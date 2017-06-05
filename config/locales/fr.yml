@@ -2064,4 +2064,4 @@ fr:
   liste_des_estimations: "Liste des estimations"
   copy_in_progress: "Copie en cours..."
   is_new_status: "Nouveau statut de la nouvelle version"
-  warning_intermediate_project_version_cannot_be_deleted: "seules les versions non intermédiaires d'une estimation peuvent être supprimées."
+  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."

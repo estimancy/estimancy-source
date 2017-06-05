@@ -252,9 +252,14 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
       @wbs_activity = current_module_project.wbs_activity
-      if params[:ratio].nil?
-        @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      else
+
+      # if params[:ratio].nil?
+      #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+      # else
+      #   @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+      # end
+      @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
+      if @wbs_activity_ratio.nil?
         @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
       end
 
@@ -1036,7 +1041,7 @@ class ProjectsController < ApplicationController
         end
       end
     else
-      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+      flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
   end
@@ -1185,10 +1190,17 @@ class ProjectsController < ApplicationController
       elsif @pemodule.alias == "effort_breakdown"
         wbs_id = params[:module_selected].split(',').first.to_i
         my_module_project.wbs_activity_id = wbs_id
-        wai = WbsActivityInput.new(module_project_id: my_module_project.id,
-                                wbs_activity_id: wbs_id,
-                                wbs_activity_ratio_id: my_module_project.wbs_activity.wbs_activity_ratios.first )
-        wai.save
+
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio_wai = WbsActivityInput.new(module_project_id: my_module_project.id,
+                                     wbs_activity_id: wbs_id,
+                                     wbs_activity_ratio_id: ratio.id,
+                                     pbs_project_element_id: @pbs_project_element.id)
+          ratio_wai.save
+        end
+
+
+        wai = my_module_project.wbs_activity_inputs.first
 
         #create module_project ratio elements
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
@@ -1979,12 +1991,6 @@ public
           ### Wbs activity
           #create module_project ratio elements
           old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
-            # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
-            #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
-            #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
-            #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
-            #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
-
             mp_ratio_element = old_mp_ratio_elt.dup
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2080,13 +2086,6 @@ public
         end
 
         # Update project's organization estimations counter
-        # if new_prj.is_model != true
-        #   unless @organization.estimations_counter.nil?
-        #     @organization.estimations_counter -= 1
-        #     @organization.save
-        #   end
-        # end
-
         unless new_prj.is_model == true || @current_user.super_admin == true
           unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
             @organization.estimations_counter -= 1
