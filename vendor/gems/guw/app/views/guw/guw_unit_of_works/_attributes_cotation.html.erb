@@ -75,7 +75,7 @@
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire" %>
+                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
               </td>
 
               <% if @guw_model.three_points_estimation == true %>

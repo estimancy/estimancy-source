@@ -56,12 +56,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if params[:position].blank?
       @guw_unit_of_work.display_order = @guw_unit_of_work.guw_unit_of_work_group.guw_unit_of_works.size.to_i + 1
     else
-      @guw_unit_of_work.display_order = params[:position].to_i - 1
+      @guw_unit_of_work.display_order = params[:position].to_i
     end
 
-    reorder(@guw_unit_of_work.guw_unit_of_work_group)
-
     @guw_unit_of_work.save
+
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
@@ -1559,9 +1559,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
     @component = current_component
     @project = current_module_project.project
-
-    ind = 0
-    indexing_field_error = [[false],[false],[false],[false]]
+    @guw_attributes = @guw_model.guw_attributes
+    @guw_coefficients = @guw_model.guw_coefficients
+    @guw_outputs = @guw_model.guw_outputs
 
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -1596,14 +1596,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               guw_uow.save(validate: false)
 
-              @guw_model.guw_attributes.each_with_index do |gac, ii|
+              @guw_attributes.each_with_index do |gac, ii|
 
                 @guw_type = Guw::GuwType.where(name: row[6],
                                                guw_model_id: @guw_model.id).first
 
-                @guw_model.guw_attributes.size.times do |jj|
+                @guw_attributes.size.times do |jj|
 
-                  ind = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + jj
+                  ind = 18 + @guw_outputs.size + @guw_coefficients.size + jj
 
                   tmp_val = row[ind]
 
@@ -1769,7 +1769,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         ceuw.percent = row[k].to_f
                       end
 
-                      ceuw.save
+                      unless guw_uow.changed?
+                        ceuw.save
+                      end
                     end
                   end
                 elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
@@ -1795,16 +1797,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.save
               end
 
-              @guw_model.guw_attributes.all.each do |gac|
+              @guw_attributes.all.each do |gac|
                 finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
                                                            guw_unit_of_work_id: guw_uow.id,
                                                            guw_attribute_id: gac.id).first_or_create
-
-                finder.save
               end
 
             end
-            ok = true
           end
         end
       end
