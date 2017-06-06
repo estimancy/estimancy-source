@@ -1001,7 +1001,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
 
-            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            begin
+              pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            rescue
+              pc = 100
+            end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
@@ -1033,7 +1037,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
 
-            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            begin
+              pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            rescue
+              pc = 1
+            end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
 
