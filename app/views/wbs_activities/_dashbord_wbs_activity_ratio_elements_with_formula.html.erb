@@ -39,7 +39,7 @@
       <%# allow_modify_ratio_value = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_modify_ratio_value) %>
       <% allow_add_new_phase = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_add_new_phase) %>
       <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
-      <% cost_unit =  get_attribute_unit(PeAttribute.find_by_alias("cost")) %>
+      <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
 
 
       <table class="table-condensed">

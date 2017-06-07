@@ -4,11 +4,6 @@
   </strong>
 </h4>
 
-<!--Attributes-->
-<% effort = PeAttribute.find_by_alias("effort") %>   <!-- Retained effort -->
-<% theoretical_effort =  PeAttribute.find_by_alias("theoretical_effort") %>
-<% ratio = PeAttribute.find_by_alias("ratio") %>
-
 <!-- Params -->
 <% component_id = current_component.id %>
 <% pbs_project_element = current_component %>
@@ -17,8 +12,13 @@
 <% module_project = current_module_project %>
 <% wbs_activity = module_project.wbs_activity %>
 
-<!-- RATIO -->
+<!--Attributes-->
+<% effort = module_project.pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
+<% theoretical_effort = module_project.pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
+<% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
 
+
+<!-- RATIO -->
 <% selected_ratio = module_project.get_wbs_activity_ratio(component_id) ## @wbs_activity_ratio # %>
 
 <% if selected_ratio.nil?
