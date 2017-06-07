@@ -1611,6 +1611,8 @@ en-gb:
   change_module_project_instance: "Change the module instance"
   edit_estimation_model: "Edit estimation model \"%{value}\""
 
+  multiple_delete: "Suppression multiple"
+
   create_button: "Create"
   created_date: "Created date"
   label_Guw_model: "Generic unit of work module"

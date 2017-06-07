@@ -24,7 +24,7 @@ if File.exist?(database_file)
         when 'mysql2'
           gem 'mysql2', '~> 0.3.11'
         when /postgres/
-          # gem 'pg'
+           gem 'pg'
         else
           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
@@ -37,8 +37,7 @@ else
 end
 
 #For PostgreSQL database
-# gem 'pg'
-gem 'pg'
+ #gem 'pg'
 
 gem 'curb'
 
@@ -86,6 +85,9 @@ gem 'cache_digests'
 
 #Databases data translations
 gem 'globalize', '~> 3.1.0'
+
+#Dumping and restoring data :
+gem 'yaml_db'
 
 #Optional gem for monitoring
 group :ic do

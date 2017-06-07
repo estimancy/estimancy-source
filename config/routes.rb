@@ -333,7 +333,7 @@ Projestimate::Application.routes.draw do
   get 'add_comment_on_status_change' => 'projects#add_comment_on_status_change', as: 'add_comment_on_status_change'
   get 'change_new_estimation_data' => 'projects#change_new_estimation_data', as: 'change_new_estimation_data'
   get 'set_checkout_version' => 'projects#set_checkout_version', as: 'set_checkout_version'
-  get 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
+  match 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
 
   match 'update_comments_status_change' => 'projects#update_comments_status_change', as: 'update_comments_status_change'
   post 'add_wbs_activity_to_project' => 'projects#add_wbs_activity_to_project',  :as => 'add_wbs_activity_to_project'
@@ -347,7 +347,7 @@ Projestimate::Application.routes.draw do
   match 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
   match 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
-  match 'projects/:project_id/confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
+  match 'projects/confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
   match 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
 

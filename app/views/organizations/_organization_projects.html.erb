@@ -28,7 +28,7 @@
 
               <td>
                 <span>
-                  <input type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
+                  <input name="deleted_projects[]" type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
                 </span>
               </td>
 
@@ -62,7 +62,7 @@
 
                 <% if (can? :delete_project, project) || (can? :manage, project) %>
                   <% if can_delete_estimation?(project) %>
-                    <%= link_to('', confirm_deletion_path(project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
+                    <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete'), method: "POST") %>
                   <% end %>
                 <% end %>
               </td>

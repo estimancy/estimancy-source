@@ -1,13 +1,23 @@
-<%= form_tag url_for( {:action => 'destroy', :controller => 'projects', :id => @project.id}), {:method => 'delete', :class=>'simple_form'} do %>
-        <h3><%= "#{@project.title}-#{@project.version_number} " %></h3>
+<%= form_tag url_for( {:action => 'destroy_multiple_project', :controller => 'projects',
+                       :project_ids_to_delete => @project_ids}), {:method => 'post', :class=>'simple_form'} do %>
     <div class="confirm_deletion">
-      <%= hidden_field_tag 'from_tree_history_view', @from_tree_history_view %>
-      <%= hidden_field_tag 'current_showed_project_id', @current_showed_project_id %>
-      <% if @project.is_model %>
-        <%= I18n.t('text_confirm_estimation_model_deletion') %>
-      <% else %>
-          <%= I18n.t('text_confirm_project_deletion') %>
+
+
+
+      <% if params[:deleted_projects].present? %>
+          <%= I18n.t(:are_you_sure_multiple_delete)%>
+      <%else %>
+          <%= I18n.t(:are_you_sure_simple_delete)%>
       <% end %>
+
+      <ul>
+        <% @projects.each do |p| %>
+            <li>
+            <%= p.title %>
+            </li>
+        <% end %>
+      </ul>
+
 
       <br /><br />
       <div class="actions-tabs">
@@ -15,5 +25,5 @@
         <%= submit_tag I18n.t('delete'), :class => 'btn', :id => 'yes_delete_project' %>
         <%= submit_tag I18n.t('cancel'), :class => 'btn', :id => 'cancel_project_deletion' %>
       </div>
-    </div>
+  </div>
 <% end %>

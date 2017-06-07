@@ -926,6 +926,7 @@ fr:
   warning_master_data_unauthorized_action: "action non autorisée: vous essayez de restaurer un enregistrement qui n'est pas 'retired'! "
   notice_project_successful_updated: "Le projet a été mis à jour avec succès"
   notice_project_successful_deleted: "Le projet a été supprimé"
+  notice_multiple_project_successful_deleted: "Les projets ont été supprimés"
   error_project_creation_failed: "Une erreur est survenue lors de la création de l'estimation"
   notice_project_successful_duplicated: "Le projet a été dupliqué avec succès"
   error_project_duplication_failed: "Une erreur est survenue lors de la duplication du projet"
@@ -2010,6 +2011,7 @@ fr:
   associate_inputs_with_outputs: "Associer les attributs d'entrée de \"%{current_mp}\" au attributs de sortie des modules le précédent"
   change_module_project_instance: "Changer l'instance du module"
   create_button: "Créer"
+  multiple_delete: "Suppression Multiple"
   created_date: "Date de création"
   knowledge_base_module: "Module Base de connaissance"
   operation_module: "Module d'opération"
@@ -2065,3 +2067,6 @@ fr:
   copy_in_progress: "Copie en cours..."
   is_new_status: "Nouveau statut de la nouvelle version"
   warning_intermediate_project_version_cannot_be_deleted: "seules les versions non intermédiaires d'une estimation peuvent être supprimées."
+
+  are_you_sure_multiple_delete: "Êtes vous sûr de vouloir supprimer ces projets ?"
+  are_you_sure_simple_delete: "Êtes vous sûr de vouloir supprimer ce projet ?"
