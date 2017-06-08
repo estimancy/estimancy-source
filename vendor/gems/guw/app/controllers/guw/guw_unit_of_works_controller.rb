@@ -726,10 +726,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(guw_type_id: guw_type.id,
+    @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(guw_type_id: (guw_type.nil? ? nil : guw_type.id),
                                                                     guw_attribute_id: guowa.guw_attribute_id).all
 
-    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.nil? ? nil : guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
 
     unless sum_range.nil? || sum_range.blank? || sum_range == 0
       @guw_attribute_complexities.each do |guw_ac|
@@ -1670,7 +1670,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.result_high = @highs.sum
               end
 
-              guw_uow.guw_type_id ||= @guw_type.id
+              guw_uow.guw_type_id ||= (@guw_type.nil? ? nil : @guw_type.id)
 
               begin
                 unless params["guw_complexity_#{guw_uow.id}"].nil?
@@ -1679,8 +1679,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   guw_uow.guw_original_complexity_id = guw_complexity_id
                 else
                   unless row[13].blank?
-                    guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                    unless @guw_type.nil?
+                      guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                               name: row[13]).first
+                    end
                   end
 
                   guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
@@ -1692,41 +1694,43 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.save
               end
 
-              if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
+              unless @guw_type.nil?
+                if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
 
-                tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
-                                                           organization_technology_id: guw_uow.organization_technology_id).first
+                  tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
+                                                             organization_technology_id: guw_uow.organization_technology_id).first
 
-                if guw_uow.guw_complexity.nil?
-                  array_pert << 0
-                else
-                  array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
-                end
-                if guw_uow.changed?
-                  guw_uow.save
-                end
-              else
-                if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
-                  guw_uow.off_line_uo = nil
-                else
-                  #Save if uo is simple/ml/high
-                  value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
-                  if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
-                    guw_uow.off_line_uo = true
-                  elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
-                    guw_uow.off_line_uo = true
-                    cplx = @guw_type.guw_complexities.last
-                    if cplx.nil?
-                      guw_uow.guw_complexity_id = nil
-                      guw_uow.guw_original_complexity_id = nil
-                    else
-                      guw_uow.guw_complexity_id = cplx.id
-                      guw_uow.guw_original_complexity_id = cplx.id
-                      array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
-                    end
+                  if guw_uow.guw_complexity.nil?
+                    array_pert << 0
                   else
-                    @guw_type.guw_complexities.each do |guw_c|
-                      array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                    array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
+                  end
+                  if guw_uow.changed?
+                    guw_uow.save
+                  end
+                else
+                  if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
+                    guw_uow.off_line_uo = nil
+                  else
+                    #Save if uo is simple/ml/high
+                    value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
+                    if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
+                      guw_uow.off_line_uo = true
+                    elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
+                      guw_uow.off_line_uo = true
+                      cplx = @guw_type.guw_complexities.last
+                      if cplx.nil?
+                        guw_uow.guw_complexity_id = nil
+                        guw_uow.guw_original_complexity_id = nil
+                      else
+                        guw_uow.guw_complexity_id = cplx.id
+                        guw_uow.guw_original_complexity_id = cplx.id
+                        array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+                      end
+                    else
+                      @guw_type.guw_complexities.each do |guw_c|
+                        array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                      end
                     end
                   end
                 end
@@ -1806,9 +1810,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               @guw_attributes.all.each do |gac|
-                finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                unless @guw_type.nil?
+                  finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
                                                            guw_unit_of_work_id: guw_uow.id,
                                                            guw_attribute_id: gac.id).first_or_create
+                end
               end
 
             end
