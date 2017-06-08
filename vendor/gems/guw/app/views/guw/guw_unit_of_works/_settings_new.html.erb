@@ -22,6 +22,11 @@
           Importer (ML)
         </button>
       <% end %>
+
+      <button type="button" class="btn" data-toggle="modal" data-target="#extract">
+        Importer (UrL)
+      </button>
+
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stats_modal">
@@ -697,4 +702,60 @@
       <% end %>
     </div>
   </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="extract" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_tag guw.extract_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">
+              Comptage automatique à partir d'une URL (JIRA)
+            </h4>
+          </div>
+
+          <div class="modal-body" style="height: inherit;">
+
+            <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+
+            <h5>
+              Copier le lien à intégrer :
+            </h5>
+            <%= text_field_tag "url" %>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div id="import_guw" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <%= form_tag guw.import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+      <div class="modal-header modal-drag">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
+      </div>
+      <div class="modal-body">
+        <%= file_field_tag :file %>
+
+        <div class="loading span11 hide">
+          <h4>
+            <%= I18n.t(:please_wait_import) %>
+            <%= image_tag 'ajax-loader.gif' %>
+          </h4>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
+        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+      </div>
+  <% end %>
 </div>
