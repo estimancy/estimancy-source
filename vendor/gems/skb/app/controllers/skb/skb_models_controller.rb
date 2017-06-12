@@ -333,8 +333,8 @@ class Skb::SkbModelsController < ApplicationController
       @skb_input.data = nil
       @skb_input.processing = nil
       @skb_input.retained_size = nil
-      @skb_input.save
     end
+    @skb_input.save
     redirect_to :back
   end
 
