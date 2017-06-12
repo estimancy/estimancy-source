@@ -241,6 +241,7 @@ Projestimate::Application.routes.draw do
     get "export_project_categories" => 'organizations#export_project_categories'
 
     post "import_project_areas" => 'organizations#import_project_areas'
+    post "import_project_profile" => 'organizations#import_project_profile'
     post "import_project_categories" => 'organizations#import_project_categories'
     post "import_platform_categories" => 'organizations#import_platform_categories'
     post "import_acquisition_categories" => 'organizations#import_acquisition_categories'

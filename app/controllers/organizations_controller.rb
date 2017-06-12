@@ -50,7 +50,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to :back
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_areas")
   end
 
   def import_project_categories
@@ -76,7 +76,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to :back
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_categories")
   end
 
   def import_platform_categories
@@ -102,7 +102,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to :back
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-platform_categories")
   end
 
   def import_acquisition_categories
@@ -128,7 +128,38 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to :back
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-acquisition_categories")
+  end
+
+  def import_project_profile
+    p "rentre"
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      p "aaa"
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2],organization_id: @organization.id)
+          p "bb"
+          unless new_profile.save
+            tab_error << index + 1
+            p "cc"
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+          p "dd"
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = "Une erreur est survenue durant l'import"
+    end
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile")
   end
 
   def export_project_areas
