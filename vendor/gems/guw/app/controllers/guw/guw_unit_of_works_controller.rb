@@ -1539,7 +1539,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       redirect_to :back and return
     else
       @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-      @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
+      @http = Curl.post("http://localhost:5001/estimate_trt", { us: @guw_unit_of_work.comments } )
 
       unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
         @guw_type = Guw::GuwType.where(name: @http.body_str,
@@ -1575,46 +1575,34 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             unless row[5].blank?
 
-              @http = Curl.get("http://localhost:5001/estimate_data")
+              @http = Curl.post("http://localhost:5001/estimate_data", { us: "test 123" })
 
-              complete_str = row[5].to_s
-              reduce_str = row[5].to_s.truncate(60)
+              # complete_str = row[5].to_s
+              # reduce_str = row[5].to_s.truncate(60)
+
+              p @http.body_str
 
               JSON.parse(@http.body_str).each do |output|
 
-                unless output.blank? || output == "NULL"
-                  @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
-                else
-                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-                end
+                data_array = output.scan(/<data=(.*?)>/)
+                attr_array = output.scan(/<attribut=(.*?)>/)
 
-                guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
-                                                    comments: complete_str,
-                                                    guw_unit_of_work_group_id: @guw_group.id,
-                                                    module_project_id: current_module_project.id,
-                                                    pbs_project_element_id: current_component.id,
-                                                    guw_model_id: @guw_model.id,
-                                                    display_order: index.to_i,
-                                                    tracking: complete_str,
-                                                    quantity: 1,
-                                                    selected: true,
-                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                p data_array
+                p attr_array
 
-                @guw_model.guw_attributes do |gac, jj|
-                  tmp_val = row[15 + @guw_model.orders.size + jj]
-                  unless tmp_val.nil?
-                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
-
-                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
-                      unless @guw_type.nil?
-                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                                  guw_unit_of_work_id: guw_uow.id,
-                                                                  guw_attribute_id: gac.id).first_or_create
-                        guowa.save
-                      end
-                    end
-                  end
-                end
+                # data_array.each do |oa|
+                #   guw_uow = Guw::GuwUnitOfWork.create(name: oa,
+                #                                       comments: attr_array.join(","),
+                #                                       guw_unit_of_work_group_id: @guw_group.id,
+                #                                       module_project_id: current_module_project.id,
+                #                                       pbs_project_element_id: current_component.id,
+                #                                       guw_model_id: @guw_model.id,
+                #                                       display_order: index.to_i,
+                #                                       tracking: nil,
+                #                                       quantity: 1,
+                #                                       selected: true,
+                #                                       guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                # end
               end
             end
           end
