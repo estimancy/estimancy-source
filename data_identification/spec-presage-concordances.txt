@@ -1,0 +1,6 @@
+	saisir l'adresse par client<data=client> <attribut=adresse>	
+	fournir un reporting <attribut= Coût\,> <attribut= volume et> <attribut= coût unitaire> des <data= produits intermédiaires>	
+	saisie du réalisé : en volume (exprimés UO) par produit final (maille article) et client pour permettre la répartition entre produit finalData	
+	comprenant <data= Prestation\,> <data= Libellé Prestation\,> <data= Version (R1\, R2\, PMT\, BA)\,> <data= Période (mois\, année)\,>  <data= OPEX / CAPEX\,> <data= Structure (niveau département)\,> <data= Libellé Structure\,>  <data=coût réalisé (non chargé) et> <data= Coût Prévisionnel>	
+	paramétrage de la clé de répartition<data=la clé de répartition> <attribut=paramétrage> entre <data= activité et> <attribut=la clé de répartition> <data= produit intermédiaire> <attribut=la clé de répartition>	
+	paramétrage de la clé de répartition<data=clé de répartition> <attribut=paramétrage> entre <data= activité et> <attribut=clé de répartition> <data= produit intermédiaire> <attribut=clé de répartition>	
