@@ -19,8 +19,11 @@
         </a>
       <% end %>
       <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml">
-          Importer (ML)
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
+          Identifier les traitements
+        </button>
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml_data">
+          Identifier les données
         </button>
       <% end %>
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
@@ -497,7 +500,7 @@
                 <td class="span3">
                   <% if can? :execute_estimation_plan, @project %>
                     <% if @guw_model.allow_ml == true %>
-                      <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
+                      <%= link_to "", guw.ml_trt_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
                     <% end %>
                     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
 
@@ -673,15 +676,15 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="ml" aria-labelledby="myModalLabel">
+<div class="modal fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag guw.ml_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Comptage automatique
+            Importer les traitements
           </h4>
         </div>
 
@@ -690,14 +693,41 @@
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-              Sélectionner un modèle d'IA
-            </h5>
-            <%= select_tag "ml_model", options_for_select(["MLB - Multi Label Binarizer (76%)", "DT - Arbre de décision (75%)", "SVC - Support Vector Classification", "Autres (en cours de développement)"]) %>
+            Importer un fichier Excel (xlsx uniquement)
+          </h5>
+          <%= file_field_tag :file %>
+        </div>
 
-            <h5>
-              Importer un fichier Excel (xlsx uniquement)
-            </h5>
-            <%= file_field_tag :file %>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Importer les données
+          </h4>
+        </div>
+
+        <div class="modal-body" style="height: inherit;">
+
+          <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+
+          <h5>
+            Importer un fichier Excel (xlsx uniquement)
+          </h5>
+          <%= file_field_tag :file %>
         </div>
 
         <div class="modal-footer">

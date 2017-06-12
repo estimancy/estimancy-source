@@ -2678,30 +2678,10 @@ public
   def add_filter_on_project_version
     #No authorize required
     selected_filter_version = params[:filter_selected]
-    #"Display leaves projects only",1], ["Display all versions",2], ["Display root version only",3], ["Most recent version",4]
 
-    # The current user can only see projects of its organizations
-    @organization_user_projects = []
-    current_user.organizations.each do |organization|
-      @organization_user_projects << organization.projects.all
-    end
+    @organization = Organization.find(params[:organization_id])
 
-    # Differents parameters according to the page on witch the filter is set ("filter_projects_version", "filter_organization_projects_version", "filter_user_projects_version","filter_group_projects_version")
-    case params[:project_list_name]
-      when "filter_projects_version"
-        # Then only projects on which the current is authorise to see will be displayed
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-
-      when "filter_organization_projects_version"
-        # The current organizations's projects
-        organization_id = params['organization_id']
-        if organization_id.present? && organization_id != 'undefined'
-          @organization = Organization.find(organization_id.to_i)
-          @projects = @organization.projects.all
-        end
-      else
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-    end
+    @projects = @organization.projects
 
     unless selected_filter_version.empty?
       case selected_filter_version
@@ -2719,6 +2699,20 @@ public
       end
     end
     @projects = @projects.reject{|i| i.is_model ==  true}
+
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   #Function that manage link_to from project history graphical view

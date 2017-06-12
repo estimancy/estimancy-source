@@ -1468,7 +1468,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
 
-  def ml
+  def ml_trt
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     if params[:file].present?
@@ -1481,13 +1481,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           if index > 0
 
-            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
+            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Traitements' : row[2],
                                                        module_project_id: current_module_project.id,
                                                        pbs_project_element_id: current_component.id).first_or_create
 
             unless row[5].blank?
 
-              @http = Curl.post("http://localhost:5001/estimate", { us: row[5] } )
+              @http = Curl.post("http://localhost:5001/estimate_trt", { us: row[5] } )
 
               complete_str = row[5].to_s
               reduce_str = row[5].to_s.truncate(60)
@@ -1539,7 +1539,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       redirect_to :back and return
     else
       @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-      @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
+      @http = Curl.post("http://localhost:5001/estimate_trt", { us: @guw_unit_of_work.comments } )
 
       unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
         @guw_type = Guw::GuwType.where(name: @http.body_str,
@@ -1554,6 +1554,61 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       redirect_to :back and return
     end
 
+  end
+
+  def ml_data
+    @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+
+    if params[:file].present?
+      if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+
+        workbook = RubyXL::Parser.parse(params[:file].path)
+        worksheet = workbook[0]
+        tab = worksheet.extract_data
+        tab.each_with_index do |row, index|
+
+          if index > 0
+
+            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Données' : row[2],
+                                                       module_project_id: current_module_project.id,
+                                                       pbs_project_element_id: current_component.id).first_or_create
+
+            unless row[5].blank?
+
+              @http = Curl.post("http://localhost:5001/estimate_data", { us: "test 123" })
+
+              # complete_str = row[5].to_s
+              # reduce_str = row[5].to_s.truncate(60)
+
+              p @http.body_str
+
+              JSON.parse(@http.body_str).each do |output|
+
+                data_array = output.scan(/<data=(.*?)>/)
+                attr_array = output.scan(/<attribut=(.*?)>/)
+
+                p data_array
+                p attr_array
+
+                # data_array.each do |oa|
+                #   guw_uow = Guw::GuwUnitOfWork.create(name: oa,
+                #                                       comments: attr_array.join(","),
+                #                                       guw_unit_of_work_group_id: @guw_group.id,
+                #                                       module_project_id: current_module_project.id,
+                #                                       pbs_project_element_id: current_component.id,
+                #                                       guw_model_id: @guw_model.id,
+                #                                       display_order: index.to_i,
+                #                                       tracking: nil,
+                #                                       quantity: 1,
+                #                                       selected: true,
+                #                                       guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                # end
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   def deported
