@@ -23,9 +23,10 @@
 
 <% if selected_ratio.nil?
      selected_ratio_id = nil
-     wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil, pbs_project_element_id: component_id)
-             .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
-                              wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil)
+     wai = nil
+     # wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil, pbs_project_element_id: component_id)
+     #         .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
+     #                          wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil)
   else
     selected_ratio_id = selected_ratio.id
     wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id, pbs_project_element_id: component_id)
@@ -320,7 +321,8 @@
 
       <td>
         <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                       selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
+                       #selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
+                       selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
                        readonly: cannot?(:execute_estimation_plan, @project) %>
       </td>
 

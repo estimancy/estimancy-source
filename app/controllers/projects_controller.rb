@@ -1193,8 +1193,7 @@ class ProjectsController < ApplicationController
 
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
           ratio_wai = WbsActivityInput.new(module_project_id: my_module_project.id,
-                                     wbs_activity_id: wbs_id,
-                                     wbs_activity_ratio_id: ratio.id,
+                                     wbs_activity_id: wbs_id, wbs_activity_ratio_id: ratio.id,
                                      pbs_project_element_id: @pbs_project_element.id)
           ratio_wai.save
         end

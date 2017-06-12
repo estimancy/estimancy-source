@@ -470,13 +470,14 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id, pbs_project_element_id: current_component.id).first
+        ratio = widget.module_project.wbs_activity_ratio
 
-        if wbs_activity_input.nil?
-          ratio = nil
-        else
-          ratio = wbs_activity_input.wbs_activity_ratio
-        end
+        # wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, wbs_activity_ratio_id: ratio.id, module_project_id: widget.module_project.id, pbs_project_element_id: current_component.id).first
+        # if wbs_activity_input.nil?
+        #   ratio = nil
+        # else
+        #   ratio = wbs_activity_input.wbs_activity_ratio
+        # end
 
         unless ratio.nil?
           activity.wbs_activity_elements.each do |element|

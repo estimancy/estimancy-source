@@ -58,6 +58,7 @@ class ModuleProject < ActiveRecord::Base
 
   has_many :wbs_activity_inputs, :dependent => :destroy
   has_many :module_project_ratio_elements, dependent: :destroy
+  has_many :wbs_activity_elements, through: :module_project_ratio_elements
   has_many :module_project_ratio_variables, dependent: :destroy
   has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
   has_many :ge_model_factor_descriptions, class_name: "Ge::GeModelFactorDescription", dependent: :destroy
@@ -223,14 +224,18 @@ class ModuleProject < ActiveRecord::Base
     module_project = self
 
     if module_project.wbs_activity_ratio.nil?
-      wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, pbs_project_element_id: pbs_project_element_id).first #.first_or_create(module_project_id: module_project.id, pbs_project_element_id: pbs_project_element_id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
-      selected_ratio = wai.nil? ? nil : wai.wbs_activity_ratio
+      #wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, pbs_project_element_id: pbs_project_element_id).first #.first_or_create(module_project_id: module_project.id, pbs_project_element_id: pbs_project_element_id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      selected_ratio = nil #wai.nil? ? nil : wai.wbs_activity_ratio
     else
       selected_ratio = module_project.wbs_activity_ratio
     end
 
     if selected_ratio.nil?
       selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
+      unless selected_ratio.nil?
+        module_project.wbs_activity_ratio_id = selected_ratio.id
+        module_project.save
+      end
     end
 
     selected_ratio
