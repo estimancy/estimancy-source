@@ -2521,10 +2521,20 @@ public
                   new_prj_components.each do |new_component|
                     ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                     unless ev.nil?
-                      ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                      ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                      ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                      ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+                      ev_low = ev.string_data_low[old_component.id]
+                      ev_most_likely = ev.string_data_most_likely[old_component.id]
+                      ev_high = ev.string_data_high[old_component.id]
+                      ev_probable = ev.string_data_probable[old_component.id]
+
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
+
+                      ev.string_data_low.delete old_component.id
+                      ev.string_data_most_likely.delete old_component.id
+                      ev.string_data_high.delete old_component.id
+                      ev.string_data_probable.delete old_component.id
 
                       # update ev attribute links
                       unless ev.estimation_value_id.nil?
