@@ -1,0 +1,28 @@
+#Unigraph
+SIZE 1455 995
+FONT Times New Roman:  10
+OFONT Arial Unicode MS:B 12
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 13487565
+SCOLOR 16711680
+CCOLOR 255
+DBOXES y
+DFRAME n
+DDATE n
+DFILE n
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+8
+"<E>" 46 386 2 2 7 
+"" 847 413 0 
+"<afficher>+<créer>+<saisir>+<ajouter>+<modifier>+<fournir>+<comprendre>+<paramétrer>" 274 387 4 3 4 5 6 
+":data-motif1.grf" 486 257 1 1 
+":data-motif2.grf" 488 310 1 1 
+":data-motif3.grf" 489 365 1 1 
+":data-motif4.grf" 491 416 1 1 
+":data-motif5.grf" 490 549 1 1 
