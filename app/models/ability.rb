@@ -230,7 +230,6 @@ class Ability
             end
           end
         end
-
       end
 
       global = @array_users + @array_groups + @array_owners

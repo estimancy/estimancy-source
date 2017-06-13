@@ -1587,8 +1587,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             attr_array = output.scan(/<attribut=(.*?)>/)
 
             data_array.each do |d|
-              guw_uow = Guw::GuwUnitOfWork.create(name: d,
-                                                  comments: attr_array.join(","),
+              guw_uow = Guw::GuwUnitOfWork.create(name: d.first.gsub!(/[^0-9A-Za-z ]/, ''),
+                                                  comments: attr_array.uniq.join(", "),
                                                   guw_unit_of_work_group_id: @guw_group.id,
                                                   module_project_id: current_module_project.id,
                                                   pbs_project_element_id: current_component.id,
@@ -1599,10 +1599,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   selected: true,
                                                   guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-              @guw_model.guw_attributes.each do |gac|
-                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                          guw_unit_of_work_id: guw_uow.id,
-                                                          guw_attribute_id: gac.id).first_or_create
+              @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
+
+                guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
+                                                           guw_unit_of_work_id: guw_uow.id,
+                                                           guw_attribute_id: gac.id)
+                if gac.name == "DET"
+                  guowa.low = attr_array.size
+                  guowa.most_likely = attr_array.size
+                  guowa.high = attr_array.size
+                  guowa.comments = attr_array.join(", ")
+                else
+                  guowa.low = 0
+                  guowa.most_likely = 0
+                  guowa.high = 0
+                end
+
+                guowa.save
+
               end
             end
           end
