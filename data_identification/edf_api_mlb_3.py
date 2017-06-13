@@ -6,6 +6,7 @@ import json
 from random import *
 from nltk.corpus import stopwords
 
+
 reload(sys)
 sys.setdefaultencoding('utf8')
 
