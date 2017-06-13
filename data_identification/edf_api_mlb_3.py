@@ -3,12 +3,12 @@ import re
 import sys
 import pickle
 import json
-from random import *    
+from random import *
 from nltk.corpus import stopwords
 
-reload(sys)  
+reload(sys)
 sys.setdefaultencoding('utf8')
-    
+
 stop_words = stopwords.words('french')
 
 from treetagger import TreeTagger
@@ -20,14 +20,14 @@ from flask import request
 app = Flask(__name__)
 
 @app.route("/estimate_trt", methods=['GET', 'POST'])
-def estimate_trt():    
-    estimate = mlb_estimate(request.form['us'], './mlb_model_1.obj')     
+def estimate_trt():
+    estimate = mlb_estimate(request.form['us'], './mlb_model_1.obj')
     return json.dumps(estimate)
 
 @app.route("/estimate_data", methods=['GET', 'POST'])
-def estimate_data():    
+def estimate_data():
     file_us = open("tmp.txt", "w")
-    file_us.write(request.form['txt'])    
+    file_us.write(request.form['txt'])
     os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 tmp.txt')
     lines = tuple(open('spec-presage-concordances.txt', 'r'))
     return json.dumps(lines)
@@ -53,9 +53,9 @@ def tranform_userStory (userStory, model_feature, vectorizer):
     words= clean_text(userStory).split()
     print words
     #Remove stop words from "words"
-    stops = set(stopwords.words("french"))       
+    stops = set(stopwords.words("french"))
     meaningful_words = ' '.join([w for w in words if not w in stops])
-    print meaningful_words  
+    print meaningful_words
     vector=vectorizer.transform([meaningful_words])
     vector_features=model_feature.transform(vector).toarray()
     return vector_features
