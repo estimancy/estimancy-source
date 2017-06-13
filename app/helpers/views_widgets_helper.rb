@@ -443,17 +443,8 @@ module ViewsWidgetsHelper
           wbs_activity_elt_root_id = wbs_activity_elt_root.id
 
           # get the wbs_activity_selected ratio
+          #ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_elt.id) #module_project.wbs_activity_ratio #@wbs_activity_ratio
           ratio_reference = module_project.wbs_activity_ratio #@wbs_activity_ratio
-
-          if ratio_reference.nil?
-            wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id, pbs_project_element_id: pbs_project_elt.id).first
-            begin
-              ratio_reference = wai.wbs_activity_ratio
-            rescue
-              ratio_reference = wbs_activity.wbs_activity_ratios.first
-            end
-          end
-
 
           text_data_probable = data_probable
 
@@ -771,7 +762,7 @@ module ViewsWidgetsHelper
           when "table_effort_per_phase", "table_cost_per_phase", "table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero"
             unless estimation_value.in_out == "input"
               wbs_activity = module_project.wbs_activity
-              wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id, pbs_project_element_id: pbs_project_elt.id).first
+              wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, wbs_activity_ratio_id: ratio_reference.id, module_project_id: module_project.id, pbs_project_element_id: pbs_project_elt.id).first
 
               if ratio_reference.nil?
                 module_project_ratio_elements = []
@@ -899,7 +890,7 @@ module ViewsWidgetsHelper
 
     return nil if wbs_activity.nil?
 
-    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id, pbs_project_element_id: pbs_project_element.id).first
+    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, wbs_activity_ratio_id: ratio_reference.id, module_project_id: module_project.id, pbs_project_element_id: pbs_project_element.id).first
 
     if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
       wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
