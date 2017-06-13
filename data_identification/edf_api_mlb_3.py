@@ -27,7 +27,7 @@ def estimate_trt():
 @app.route("/estimate_data", methods=['GET', 'POST'])
 def estimate_data():    
     file_us = open("tmp.txt", "w")
-    file_us.write(request.form['us'])    
+    file_us.write(request.form['txt'])    
     os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 tmp.txt')
     lines = tuple(open('spec-presage-concordances.txt', 'r'))
     return json.dumps(lines)

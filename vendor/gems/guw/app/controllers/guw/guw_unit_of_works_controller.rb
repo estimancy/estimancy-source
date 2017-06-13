@@ -1512,7 +1512,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                     selected: true,
                                                     guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                @guw_model.guw_attributes do |gac, jj|
+                @guw_model.guw_attributes.each_with_index do |gac, jj|
                   tmp_val = row[15 + @guw_model.orders.size + jj]
                   unless tmp_val.nil?
                     val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
@@ -1559,56 +1559,57 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def ml_data
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
+    txt = ""
+
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
+
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
+          txt << row[5]
+        end
 
-          if index > 0
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
 
-            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Données' : row[2],
-                                                       module_project_id: current_module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create
+        unless txt.blank?
 
-            unless row[5].blank?
+          @http = Curl.post("http://localhost:5001/estimate_data", { txt: txt })
 
-              @http = Curl.post("http://localhost:5001/estimate_data", { us: "test 123" })
+          JSON.parse(@http.body_str).each do |output|
 
-              # complete_str = row[5].to_s
-              # reduce_str = row[5].to_s.truncate(60)
+            data_array = output.scan(/<data=(.*?)>/)
+            attr_array = output.scan(/<attribut=(.*?)>/)
 
-              p @http.body_str
+            data_array.each do |d|
+              guw_uow = Guw::GuwUnitOfWork.create(name: d,
+                                                  comments: attr_array.join(","),
+                                                  guw_unit_of_work_group_id: @guw_group.id,
+                                                  module_project_id: current_module_project.id,
+                                                  pbs_project_element_id: current_component.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  display_order: nil,
+                                                  tracking: nil,
+                                                  quantity: 1,
+                                                  selected: true,
+                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-              JSON.parse(@http.body_str).each do |output|
-
-                data_array = output.scan(/<data=(.*?)>/)
-                attr_array = output.scan(/<attribut=(.*?)>/)
-
-                p data_array
-                p attr_array
-
-                # data_array.each do |oa|
-                #   guw_uow = Guw::GuwUnitOfWork.create(name: oa,
-                #                                       comments: attr_array.join(","),
-                #                                       guw_unit_of_work_group_id: @guw_group.id,
-                #                                       module_project_id: current_module_project.id,
-                #                                       pbs_project_element_id: current_component.id,
-                #                                       guw_model_id: @guw_model.id,
-                #                                       display_order: index.to_i,
-                #                                       tracking: nil,
-                #                                       quantity: 1,
-                #                                       selected: true,
-                #                                       guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                # end
+              @guw_model.guw_attributes.each do |gac|
+                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                          guw_unit_of_work_id: guw_uow.id,
+                                                          guw_attribute_id: gac.id).first_or_create
               end
             end
           end
         end
       end
     end
+    redirect_to :back
   end
 
   def deported
