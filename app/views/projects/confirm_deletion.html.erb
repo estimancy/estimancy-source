@@ -4,22 +4,25 @@
 
 
 
-      <% if params[:deleted_projects].present? %>
+      <h4>
+        <% if params[:deleted_projects].present? %>
           <%= I18n.t(:are_you_sure_multiple_delete)%>
-      <%else %>
+        <%else %>
           <%= I18n.t(:are_you_sure_simple_delete)%>
-      <% end %>
+        <% end %>
+      </h4>
 
+      <br>
       <ul>
         <% @projects.each do |p| %>
-            <li>
-            <%= p.title %>
-            </li>
+          <li>
+            <b>
+              <%= p.title %> - <%= p.version_number %>
+            </b>
+          </li>
         <% end %>
       </ul>
 
-
-      <br /><br />
       <div class="actions-tabs">
         <span style="margin-right: 10px;"> <%= check_box_tag "yes_confirmation", 'selected' %>  <%= I18n.t('simple_form.yes') %></span>
         <%= submit_tag I18n.t('delete'), :class => 'btn', :id => 'yes_delete_project' %>

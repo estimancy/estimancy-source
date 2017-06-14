@@ -40,7 +40,7 @@
               <% end %>
             </td>
             <td class="center"><%= project.version_number %></td>
-            <td class="center"><%= project.description %></td>
+            <td class="text_field_text_overflow"><%= project.description %></td>
             <td class="text_field_text_overflow"><%= project.root_component %></td>
             <td class="center"><%= I18n.l(project.created_at) %></td>
             <td><span class="badge" style="background-color: <%= project.status_background_color %>"><%= project.status_name %></span></td>
