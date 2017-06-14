@@ -1,0 +1,66 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:contactsupport) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <div class="row-fluid">
+      <div class="span3">
+        <h2><%= I18n.t(:your_configuration) %></h2>
+
+        <!--
+  Un probleme? contacter le numero...
+      <p>
+        <%= I18n.t('text_projestimate_open_source_references') %> <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
+      </p>
+  -->
+        <hr class="bs-docs-separator">
+        <dl class="dl-horizontal">
+          <dt>Estimancy</dt>
+          <dd><span class="label label-info"><%= @functional_version_number %></span>
+          <dt><%= I18n.t(:last_update) %></dt>
+          <dd><span class="label label-info"><%= update_date %></span>
+          </dd>
+          <dt>Ruby</dt>
+          <dd><span class="label label-info"><%= ruby_version %> </span></dd>
+          <dt>Rails</dt>
+          <dd><span class="label label-info"> <%= rails_version %> </span></dd>
+          <dt>Environnement</dt>
+          <dd><span class="label label-info"> <%= environment %> </span></dd>
+          <dt>SGBD</dt>
+          <dd><span class="label label-info"> <%= database_adapter %> </span></dd>
+          <dt>Domaine</dt>
+          <dd><span class="label label-info"> <%= root_url %> </span></dd>
+          <dt>Navigateur</dt>
+          <dd><span class="label label-info"> <%= browser %> <%= version_browser %> (<%= platform %>)</span></dd>
+          <dt>OS</dt>
+          <dd><span class="label label-info"> <%= os %></span></dd>
+        </dl>
+      </div>
+
+
+      <div class="span3">
+        <h2><%= I18n.t(:contact_us) %></h2>
+
+        <hr class="bs-docs-separator">
+        <ul>
+          <li> <b>Mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li>
+          <li> <b>Télephone : </b> 09 ... </li>
+          <li> <b> Skype : </b>
+            <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
+              <div id="SkypeButton_Call_PSEUDO_1">
+                <script type="text/javascript">
+                  Skype.ui({
+                    "name": "dropdown",
+                    "element": "SkypeButton_Call_PSEUDO_1",
+                    "participants": ["support@estimancy.com"],
+                    "imageSize":32
+                });
+                </script>
+              </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

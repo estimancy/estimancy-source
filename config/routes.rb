@@ -90,6 +90,7 @@ Projestimate::Application.routes.draw do
   post 'create_inactive_user' => 'users#create_inactive_user', :as => 'create_inactive_user'
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
   get 'about' => 'users#about', :as => 'about'
+  get 'contactsupport' => 'users#contactsupport', :as => 'contactsupport'
   match 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'

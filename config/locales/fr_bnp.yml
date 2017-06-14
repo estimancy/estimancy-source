@@ -289,6 +289,7 @@ fr_bnp:
   services: "Services"
   wiki: "Wiki"
   about: "A propos"
+  contactsupport: "Contact support"
 
   #attributes
   name: "Nom"
@@ -651,7 +652,7 @@ fr_bnp:
   auth_type: "Authentification de l'utilisateur"
   informations: "Informations sur l'utilisateur"
   user_status: "Statut de l'utilisateur"
-  created_at: "Créer le"
+  created_at: "Crée le"
   updated_at: "Mis à jour le"
   last_login: "Dernière connexion"
   previous_login: "Connexion précédente"
@@ -2061,3 +2062,6 @@ fr_bnp:
 
   are_you_sure_multiple_delete: "Êtes vous sûr de vouloir supprimer ces projets ?"
   are_you_sure_simple_delete: "Êtes vous sûr de vouloir supprimer ce projet ?"
+
+  your_configuration: "Votre configuration"
+  contact_us: "Contacter l'équipe technique"
