@@ -445,6 +445,9 @@ module ViewsWidgetsHelper
           # get the wbs_activity_selected ratio
           #ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_elt.id) #module_project.wbs_activity_ratio #@wbs_activity_ratio
           ratio_reference = module_project.wbs_activity_ratio #@wbs_activity_ratio
+          if ratio_reference.nil?
+            ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_elt.id)
+          end
 
           text_data_probable = data_probable
 
@@ -887,10 +890,14 @@ module ViewsWidgetsHelper
     ###return result if probable_est_value.nil? || pbs_probable_est_value.nil?
 
     wbs_activity = module_project.wbs_activity
-
     return nil if wbs_activity.nil?
 
-    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, wbs_activity_ratio_id: ratio_reference.id, module_project_id: module_project.id, pbs_project_element_id: pbs_project_element.id).first
+    if ratio_reference.nil?
+      ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_element.id)
+    end
+    return nil if ratio_reference.nil?
+
+    wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, wbs_activity_ratio_id: ratio_reference.id, module_project_id: module_project.id, pbs_project_element_id: pbs_project_element.id).first_or_create
 
     if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
       wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
@@ -929,13 +936,17 @@ module ViewsWidgetsHelper
     if ratio_reference.nil?
       module_project_ratio_elements = []
     else
+
+      if module_project.module_project_ratio_elements.all.empty?
+        module_project.get_module_project_ratio_elements(ratio_reference, pbs_project_element)
+      end
+
       module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
 
       if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
                                       "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
         module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL AND retained_effort_probable <> ? AND retained_effort_most_likely <> ?", 0, 0)
       end
-
     end
 
 

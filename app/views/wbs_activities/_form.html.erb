@@ -180,39 +180,44 @@
             <!--</div>-->
           <!--<%# end %>-->
 
-          <div class="well well-rounded">
-              <!--  Test formula with percentage calculations -->
-              <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
-                  <div id="percentage_of_input_ratio_section">
-                    <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
-                  </div>
-              <% end %>
-          </div>
-          <br />
-
-          <div class="well well-rounded">
-              <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
-                  <div id="formula_ratio_section">
-                    <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
-                  </div>
-              <% end %>
-          </div>
-
-
-          <br />
-          <!-- Table of of Ratio values per profile -->
-          <div class="well well-rounded">
-            <div class="pull-left">
-              <h4 style="color: #0073ea;"><%= I18n.t(:wbs_ratio_per_profile) %></h4>
-            </div><br>
-            <%= form_tag save_wbs_activity_ratio_per_profile_path, remote: true, class: 'simple_form' do %>
-              <div id="activities_ratio_per_profile">
-                <% @wbs_organization_profiles = @wbs_organization_profiles.order('name') %>
-                <%= render :partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles] %>
+          <% if @wbs_activity_ratio.nil?  %>
+              <div class="well well-rounded">
+                Aucun ratio sélectionné
               </div>
-            <% end %>
-          </div>
 
+          <% else %>
+              <div class="well well-rounded">
+                  <!--  Test formula with percentage calculations -->
+                  <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                      <div id="percentage_of_input_ratio_section">
+                        <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+                      </div>
+                  <% end %>
+              </div>
+              <br />
+
+              <div class="well well-rounded">
+                  <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                      <div id="formula_ratio_section">
+                        <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
+                      </div>
+                  <% end %>
+              </div>
+
+              <br />
+              <!-- Table of of Ratio values per profile -->
+              <div class="well well-rounded">
+                <div class="pull-left">
+                  <h4 style="color: #0073ea;"><%= I18n.t(:wbs_ratio_per_profile) %></h4>
+                </div><br>
+                <%= form_tag save_wbs_activity_ratio_per_profile_path, remote: true, class: 'simple_form' do %>
+                  <div id="activities_ratio_per_profile">
+                    <% @wbs_organization_profiles = @wbs_organization_profiles.order('name') %>
+                    <%= render :partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles] %>
+                  </div>
+                <% end %>
+              </div>
+          <% end %>
         </div>
 
         </div>
