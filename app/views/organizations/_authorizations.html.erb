@@ -116,7 +116,7 @@
               <% @organization_permissions.each do |perm| %>
                 <% if (current_user.super_admin == false) &&
                         (perm.alias == "manage" && perm.object_associated == "") ||
-                        (perm.alias == "manage" && perm.object_associated == "Organization")
+                        (perm.alias == "manage" && perm.object_associated == "Organization") ||
                         (perm.alias == "create_organizations" && perm.object_associated == "Organization")
                 %>
                   <tr>
