@@ -2065,3 +2065,5 @@ fr_bnp:
 
   your_configuration: "Votre configuration"
   contact_us: "Contacter l'équipe technique"
+
+  display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
