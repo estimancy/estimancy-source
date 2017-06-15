@@ -250,7 +250,7 @@
                 <td class="span3">
                   <% unless @guw_type.nil? %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map do |i|
-                                                                                default_complexity = @guw_type.guw_complexities.where(default_value: true).first
+                                                                                default_complexity = i.guw_complexities.where(default_value: true).first
                                                                                 ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
                                                                               end,
                                                                               selected: @guw_type.id),
