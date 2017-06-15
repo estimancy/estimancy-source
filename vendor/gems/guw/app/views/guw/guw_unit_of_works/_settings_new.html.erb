@@ -170,7 +170,7 @@
       </div>
 
       <div id="collapse<%= uowg.id %>" class="accordion-body collapse in">
-        <% @guw_types = @guw_model.guw_types %>
+        <% @guw_types = @guw_model.guw_types.includes(:guw_complexity) %>
 
         <div class="accordion-inner">
           <table class="table table-bordered table-condensed">
@@ -241,8 +241,10 @@
                 <td class="span3">
                   <% unless @guw_type.nil? %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map do |i|
-                                                                                default_complexity = @guw_type.guw_complexities.where(default_value: true).first
-                                                                                ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
+
+                                                                                default_complexity = i.guw_complexities.where(default_value: true).first
+
+                                                                                ["#{i.name} #{ default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')' }", i.id]
                                                                               end,
                                                                               selected: @guw_type.id),
                                    class: "guw_type",
