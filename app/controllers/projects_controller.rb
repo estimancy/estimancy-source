@@ -251,7 +251,9 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
+      @pbs_project_element = current_component
       @wbs_activity = current_module_project.wbs_activity
+      @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
       # if params[:ratio].nil?
       #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
@@ -260,22 +262,23 @@ class ProjectsController < ApplicationController
       # end
       @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
       if @wbs_activity_ratio.nil?
-        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+        unless params[:ratio].nil?
+          @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+        end
       end
 
-      @pbs_project_element = current_component
-      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
-      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+      unless @wbs_activity_ratio.nil?
+        ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+        @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
-      @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
+        # Module_project Ratio elements
+        @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
 
-      # Module_project Ratio elements
-      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
-
-      # Module Project Ratio Variables
-      @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
-
+        # Module Project Ratio Variables
+        @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      end
     else
+      # other
     end
   end
 
@@ -2448,6 +2451,10 @@ public
             end
 
             ### Wbs activity
+            if new_mp.wbs_activity_ratio.nil?
+              new_mp.wbs_activity_ratio = new_mp.get_wbs_activity_ratio
+            end
+
             #create module_project ratio elements
             old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
 
@@ -2521,20 +2528,17 @@ public
                   new_prj_components.each do |new_component|
                     ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                     unless ev.nil?
-                      ev_low = ev.string_data_low[old_component.id]
-                      ev_most_likely = ev.string_data_most_likely[old_component.id]
-                      ev_high = ev.string_data_high[old_component.id]
-                      ev_probable = ev.string_data_probable[old_component.id]
 
-                      ev.string_data_low[new_component.id.to_i] = ev_low
-                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                      ev.string_data_high[new_component.id.to_i] = ev_high
-                      ev.string_data_probable[new_component.id.to_i] = ev_probable
+                      # ev_low = ev.string_data_low[old_component.id]
+                      # ev_most_likely = ev.string_data_most_likely[old_component.id]
+                      # ev_high = ev.string_data_high[old_component.id]
+                      # ev_probable = ev.string_data_probable[old_component.id]
 
-                      ev.string_data_low.delete old_component.id
-                      ev.string_data_most_likely.delete old_component.id
-                      ev.string_data_high.delete old_component.id
-                      ev.string_data_probable.delete old_component.id
+                      ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
+                      ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
+                      ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
+                      ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
 
                       # update ev attribute links
                       unless ev.estimation_value_id.nil?
