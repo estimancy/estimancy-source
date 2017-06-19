@@ -1,77 +1,86 @@
-    <table id="table_list_1" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-        <tr>
-          <th class="action" style="width: 25px;">
-            <%= link_to "", "#!",
-                        onclick: "toggle_group();",
-                        class: "fa fa-check-square-o" %>
-            <%#= link_to "" ,"#!", onclick: "delete_all_selected_checkbox_projects();", id: "destroy_multiple_checked_projects", class: "fa fa-trash-o", style: "color: #0088cc; position: absolute;bottom: 9px; left: 20px", title: "Supprimer toutes les estimations sélectionnées", confirm: "Etes vous sûr de vouloir supprimer tous les estimations sélectionnées", remote: true %>
-            <%###= link_to "", "#!", onclick: "delete_all_selected_checkbox_projects();",
-                        class: "fa fa-trash-o", title: "Supprimer toutes les estimations sélectionnées" %>
-          </th>
-          <% selected_inline_columns = update_selected_inline_columns(Project) %>
+<table class="table table-striped table-bordered table-condensed">
+  <tr>
+    <th class="action" style="width: 25px;">
+      <%= link_to "", "#!",
+                  onclick: "toggle_group();",
+                  class: "fa fa-check-square-o" %>
+    </th>
 
-          <% selected_inline_columns.each do |column| %>
-            <%= column_header(column) %>
-          <% end %>
+    <% selected_inline_columns = update_selected_inline_columns(Project) %>
+    <% selected_inline_columns.each do |column| %>
+      <%= column_header(column) %>
+    <% end %>
 
-          <th class="action">
-            <%= I18n.t(:actions) %>
-          </th>
-        </tr>
-      </thead>
+    <th class="action">
+      <%= I18n.t(:actions) %>
+    </th>
+  </tr>
 
-      <tbody>
-        <% @projects.each_with_index  do |project, index| %>
-          <% if can_see_estimation?(project) %>
-            <tr>
+  <tr style="background-color: #eeeeee;">
+    <td></td>
+      <% selected_inline_columns.each do |column| %>
+        <td>
+          <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
+        </td>
+      <% end %>
+    <td></td>
+  </tr>
 
-              <td>
-                <span>
-                  <input name="deleted_projects[]" type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
-                </span>
-              </td>
+  <% @projects.each_with_index do |project, index| %>
+    <% if can_see_estimation?(project) %>
+      <tr>
 
-              <% selected_inline_columns.each do |column| %>
-                <%= column_content(@pfs, column, project, @fields_coefficients) %>
-              <% end %>
+        <td>
+          <span>
+            <input name="deleted_projects[]" type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
+          </span>
+        </td>
 
-              <td style="min-width: 130px;">
-                <% if can_show_estimation?(project) %>
-                  <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
-                  <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
-                <% end %>
-
-                <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
-                  <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
-                    <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
-                  <% end %>
-                <% end %>
-
-                <% if can?(:commit_project, project) %>
-                  <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout))) %>
-                <% end %>
-
-                <%= link_to('', edit_project_path(project, :anchor => 'tabs-history'), :class => 'fa fa-film pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('label_project_history')) %>
-
-                <%= link_to('', {:controller => 'projects', :action => 'find_use_project', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'fa fa-map-marker pull-left', style: "color: black; margin-top:4px;", :id => 'find_use_projects', :title => I18n.t('button_find_use')) %>
-
-                <% if can? :copy_project, project %>
-                  <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
-                <% end %>
-
-                <% if (can? :delete_project, project) || (can? :manage, project) %>
-                  <% if can_delete_estimation?(project) %>
-                    <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete'), method: "POST") %>
-                  <% end %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
+        <% selected_inline_columns.each do |column| %>
+          <%= column_content(@pfs, column, project, @fields_coefficients) %>
         <% end %>
-      </tbody>
-      <%= render :partial => 'layouts/footer_table' %>
-    </table>
+
+        <td style="min-width: 130px;">
+          <% if can_show_estimation?(project) %>
+            <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
+            <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
+          <% end %>
+
+          <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
+            <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
+              <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
+            <% end %>
+          <% end %>
+
+          <% if can?(:commit_project, project) %>
+            <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout))) %>
+          <% end %>
+
+          <%= link_to('', edit_project_path(project, :anchor => 'tabs-history'), :class => 'fa fa-film pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('label_project_history')) %>
+
+          <%= link_to('', {:controller => 'projects', :action => 'find_use_project', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'fa fa-map-marker pull-left', style: "color: black; margin-top:4px;", :id => 'find_use_projects', :title => I18n.t('button_find_use')) %>
+
+          <% if can? :copy_project, project %>
+            <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
+          <% end %>
+
+          <% if (can? :delete_project, project) || (can? :manage, project) %>
+            <% if can_delete_estimation?(project) %>
+              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete'), method: "POST") %>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  <% end %>
+
+  <tr>
+    <th colspan="100" class="pager form-horizontal">
+      <%= will_paginate @projects %>
+    </th>
+  </tr>
+
+</table>
 
 <script>
 

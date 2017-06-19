@@ -2380,6 +2380,30 @@ public
     end
   end
 
+  def search
+
+    options = {}
+
+    params.delete("utf8")
+    params.delete("commit")
+    params.delete("action")
+    params.delete("controller")
+    params.delete("filter_organization_projects_version")
+    params.delete_if { |k, v| v.nil? || v.blank? }
+
+    params.each do |k,v|
+      case k
+        when "creator"
+          u = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[v]}%", "%#{params[v]}%" ).first
+          options[:creator_id] = u.nil? ? nil : u.id
+        else
+          options[k] = v
+      end
+    end
+
+    redirect_to organization_estimations_path(@current_organization, options)
+  end
+
   #Checkout the project : create a new version of the project
   def checkout
     old_prj = Project.find(params[:project_id])
