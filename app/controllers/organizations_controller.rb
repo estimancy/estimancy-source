@@ -986,12 +986,15 @@ class OrganizationsController < ApplicationController
                     if new_level_value.nil?
                       ev.send("string_data_#{level}=", new_level_value)
                     else
-                      old_pbs_level_value = old_level_value[old_component.id.to_i]
-
-                      new_level_value[new_component.id.to_i] = old_pbs_level_value
-                      new_level_value.delete(old_component.id)
+                      # old_pbs_level_value = old_level_value.delete(old_component.id.to_i)
+                      # new_level_value[new_component.id.to_i] = old_pbs_level_value
 
                       if level == "probable" && new_mp.pemodule.alias == "effort_breakdown"
+
+                        old_pbs_level_value = old_level_value[old_component.id.to_i]
+                        new_level_value[new_component.id.to_i] = old_pbs_level_value
+                        new_level_value.delete(old_component.id)
+
                         new_pbs_level_value = new_level_value[new_component.id]
 
                         if new_pbs_level_value.nil?
@@ -1053,10 +1056,18 @@ class OrganizationsController < ApplicationController
                           end
                         end
                       else
+                        #ev_level = new_level_value.delete(old_component.id)
+                        new_level_value[new_component.id.to_i] = old_level_value[old_component.id.to_i]
+
                         ev.send("string_data_#{level}=", new_level_value)
                       end
                     end
-                  end
+
+                  end  ###
+                  # ev_low = ev.string_data_low.delete(old_component.id)
+                  # ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                  # ev_high = ev.string_data_high.delete(old_component.id)
+                  # ev_probable = ev.string_data_probable.delete(old_component.id)
 
                   # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id.to_i]
                   # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id.to_i]
