@@ -7,8 +7,10 @@
     <table border="0" width="100%">
       <tr>
         <td style="text-align:right;">
-          <%= link_to I18n.t('new_widget'), new_widget_path, :class => 'btn' %>
-          <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-plus pull-right", title: I18n.t(:label_add_new_view_widget), remote: true %>
+          <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+            <%= link_to I18n.t('new_widget'), new_widget_path, :class => 'btn' %>
+            <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-plus pull-right", title: I18n.t(:label_add_new_view_widget), remote: true %>
+          <% end %>
         </td>
       </tr>
     </table>

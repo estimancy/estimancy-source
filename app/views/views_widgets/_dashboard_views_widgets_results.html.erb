@@ -22,7 +22,7 @@
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true), class: "icon icon-text-width icon-large icon_margin_right", title: I18n.t(:label_add_new_widget_comment), remote: true %>
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true), class: "icon icon-superscript icon-large icon_margin_right", title: I18n.t(:label_add_new_kpi_widget), remote: true %>
                       <%= link_to "", edit_module_project_view_config_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-cog icon-large icon_padding_right", title: I18n.t(:label_parameters), remote: true %>
-                  <% end %>
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -107,15 +107,17 @@
 
                                   </span>
 
-                                  <span id="show_view_widget_params_<%= view_widget.id %>" class="span3 widget_icon_edit">
-                                    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && view_widget.project_fields.empty? ) %>
-                                      <%= link_to(' ', view_widget, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
-                                      <%= link_to '', edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
-                                    <% end %>
-                                    <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
-                                      <%= link_to '', export_vignette_path(view_widget_id: view_widget.id, module_project_id: module_project.id), class: 'icon-download-alt icon_smaller', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                                    <% end %>
-                                  </span>
+                                  <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                                    <span id="show_view_widget_params_<%= view_widget.id %>" class="span3 widget_icon_edit">
+                                      <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && view_widget.project_fields.empty? ) %>
+                                        <%= link_to(' ', view_widget, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
+                                        <%= link_to '', edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                                      <% end %>
+                                      <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                                        <%= link_to '', export_vignette_path(view_widget_id: view_widget.id, module_project_id: module_project.id), class: 'icon-download-alt icon_smaller', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                                      <% end %>
+                                    </span>
+                                  <% end %>
                                 </span>
 
                                 <span class="row-fluid widget_values">
