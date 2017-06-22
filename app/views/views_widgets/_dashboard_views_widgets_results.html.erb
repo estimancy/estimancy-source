@@ -113,10 +113,10 @@
                                         <%= link_to(' ', view_widget, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
                                         <%= link_to '', edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
                                       <% end %>
-                                      <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
-                                        <%= link_to '', export_vignette_path(view_widget_id: view_widget.id, module_project_id: module_project.id), class: 'icon-download-alt icon_smaller', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                                      <% end %>
                                     </span>
+                                  <% end %>
+                                  <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                                    <%= link_to '', export_vignette_path(view_widget_id: view_widget.id, module_project_id: module_project.id), class: 'icon-download-alt icon_smaller', title: I18n.t(:export_vignette, :value => view_widget.name) %>
                                   <% end %>
                                 </span>
 
