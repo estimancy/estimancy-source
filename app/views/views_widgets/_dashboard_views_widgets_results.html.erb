@@ -94,15 +94,15 @@
 
                                     <!-- Show the selected Ratio name -->
                                     <% if view_widget.show_wbs_activity_ratio %>
-                                        <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity,
-                                                                             wbs_activity_ratio_id: view_widget.module_project.wbs_activity_ratio_id,
-                                                                             module_project_id: view_widget.module_project_id,
-                                                                             pbs_project_element_id: current_component.id).first %>
+                                      <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity,
+                                                                           wbs_activity_ratio_id: view_widget.module_project.wbs_activity_ratio_id,
+                                                                           module_project_id: view_widget.module_project_id,
+                                                                           pbs_project_element_id: current_component.id).first %>
 
-                                        <% selected_ratio = view_widget.module_project.get_wbs_activity_ratio(current_component.id) %>
-                                        <span class="widget_name" style="float: right; width: auto">
-                                          <%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %>
-                                        </span>
+                                      <% selected_ratio = view_widget.module_project.get_wbs_activity_ratio(current_component.id) %>
+                                      <span class="widget_name" style="float: right; width: auto">
+                                        <%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %>
+                                      </span>
                                     <% end %>
 
                                   </span>

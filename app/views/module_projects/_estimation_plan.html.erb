@@ -63,9 +63,9 @@
         </div>
     <% end %>
 
-    <% if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
-      <%= render :partial => 'module_projects/dynamic_estimation_paths', :locals => { :module_projects => module_projects, estimation_view: "estimation_plan" } %>
-    <% end %>
+    <%# if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
+    <%= render :partial => 'module_projects/dynamic_estimation_paths', :locals => { :module_projects => module_projects, estimation_view: "estimation_plan" } %>
+    <%# end %>
 <% else %>
   <%= content_tag(:div, I18n.t(:notice_no_estimation_plan_defined), :class => 'alert alert-info') %>
 <% end %>
