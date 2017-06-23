@@ -815,10 +815,47 @@ class OrganizationsController < ApplicationController
             Skb::SkbInput.create(skb_model_id: new_skb_model.id, data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
                                  organization_id: new_organization_id, module_project_id: new_mp.id)
           end
-
         end
 
-        ##==========================
+        # For Expert-Judgment Input Estimates
+        old_mp.ej_instance_estimates.each do |ie|
+          new_expert_judgment_model = new_organization.expert_judgement_instances.where(copy_id: ie.expert_judgement_instance_id).first
+
+          if new_expert_judgment_model
+            # Update the module_project expert_judgement_instance_id
+            new_mp.expert_judgement_instance_id = new_expert_judgment_model.id
+
+            new_ej_instance_estimate = ie.dup  ##ExpertJudgement::InstanceEstimate.create
+            new_ej_instance_estimate.expert_judgement_instance_id = new_expert_judgment_model.id
+            new_ej_instance_estimate.module_project_id = new_mp.id
+            new_pbs = new_prj_components.where(copy_id: ie.pbs_project_element_id).first
+            begin
+              new_ej_instance_estimate.pbs_project_element_id = new_pbs.id
+            rescue
+              new_ej_instance_estimate.pbs_project_element_id = nil
+            end
+            new_ej_instance_estimate.save
+            new_mp.save
+          end
+        end
+
+        old_mp.staffing_custom_data.each do |staffing_custom_data|
+          new_staffing_model = new_organization.staffing_models.where(copy_id: staffing_custom_data.staffing_model_id).first
+          if new_staffing_model
+            new_staffing_custom_data = staffing_custom_data.dup
+            new_staffing_custom_data.staffing_model_id = new_staffing_model.id
+            new_staffing_custom_data.module_project_id = new_mp.id
+
+            new_pbs = new_prj_components.where(copy_id: staffing_custom_data.pbs_project_element_id).first
+            begin
+              new_staffing_custom_data.pbs_project_element_id = new_pbs.id
+            rescue
+              new_staffing_custom_data.pbs_project_element_id = nil
+            end
+            new_staffing_custom_data.save
+
+          end
+        end
 
         # GeFactorDescription
         old_mp.ge_model_factor_descriptions.each do |factor_description|
@@ -1057,17 +1094,42 @@ class OrganizationsController < ApplicationController
                         end
                       else
                         #ev_level = new_level_value.delete(old_component.id)
-                        new_level_value[new_component.id.to_i] = old_level_value[old_component.id.to_i]
 
+                        new_level_value[new_component.id.to_i] = old_level_value[old_component.id.to_i]
                         ev.send("string_data_#{level}=", new_level_value)
+
+                        # case level
+                        #   when "low"
+                        #     ev_low = ev.string_data_low.delete(old_component.id)
+                        #     ev.string_data_low[new_component.id.to_i] = ev_low
+                        #   when "most_likely"
+                        #     ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                        #     ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                        #   when "high"
+                        #     ev_high = ev.string_data_high.delete(old_component.id)
+                        #     ev.string_data_high[new_component.id.to_i] = ev_high
+                        #   when "probable"
+                        #     ev_probable = ev.string_data_probable.delete(old_component.id)
+                        #     ev.string_data_probable[new_component.id.to_i] = ev_probable
+                        # end
+
                       end
                     end
 
                   end  ###
+
+                  #puts "hello"
+                  #puts "hello2"
+
                   # ev_low = ev.string_data_low.delete(old_component.id)
                   # ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
                   # ev_high = ev.string_data_high.delete(old_component.id)
                   # ev_probable = ev.string_data_probable.delete(old_component.id)
+                  #
+                  # puts "low = #{ ev.string_data_low}"
+                  # puts "ml = #{ ev.string_data_most_likely}"
+                  # puts "high = #{ ev.string_data_high}"
+                  # puts "probable = #{ ev.string_data_probable}"
 
                   # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id.to_i]
                   # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id.to_i]
@@ -1309,6 +1371,25 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(wbs_activity_id: wbs_activity_copy_id).update_all(wbs_activity_id: new_wbs_activity.id)
             end
 
+
+            # Copy the modules's Operation Models instances
+            new_organization.operation_models.each do |operation_model|
+              # Update all the new organization module_project's operation_model with the current operation_model
+              operation_model_copy_id = operation_model.copy_id
+              new_organization.module_projects.where(operation_model_id: operation_model_copy_id).update_all(operation_model_id: operation_model.id)
+
+              # Terminate duplication
+              operation_model.terminate_operation_model_duplication(new_organization_id = new_organization.id)
+            end
+
+            # Update the Expert Judgement modules's Models instances
+            new_organization.expert_judgement_instances.each do |expert_judgment|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              expert_judgment_copy_id = expert_judgment.copy_id
+              new_organization.module_projects.where(expert_judgement_instance_id: expert_judgment_copy_id).update_all(expert_judgement_instance_id: expert_judgment.id)
+            end
+
+
             # copy the organization's projects
             organization_image.projects.all.each do |project|
               #OrganizationDuplicateProjectWorker.perform_async(project.id, new_organization.id, current_user.id)
@@ -1365,13 +1446,6 @@ class OrganizationsController < ApplicationController
               end
             end
 
-            # Update the Expert Judgement modules's Models instances
-            new_organization.expert_judgement_instances.each do |expert_judgment|
-              # Update all the new organization module_project's guw_model with the current guw_model
-              expert_judgment_copy_id = expert_judgment.copy_id
-              new_organization.module_projects.where(expert_judgement_instance_id: expert_judgment_copy_id).update_all(expert_judgement_instance_id: expert_judgment.id)
-            end
-
             # Update the modules's GE Models instances
             new_organization.ge_models.each do |ge_model|
               #Terminate the model duplication with the copie of the factors values
@@ -1398,10 +1472,12 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
             end
 
+
             # Update the modules's Staffing Models instances
             new_organization.staffing_models.each do |staffing_model|
               # Update all the new organization module_project's guw_model with the current guw_model
               staffing_model_copy_id = staffing_model.copy_id
+              module_projects_with_staffing = new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id)
               new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
             end
 
@@ -1426,16 +1502,6 @@ class OrganizationsController < ApplicationController
                 old_guw_model = guw_model
               end
               guw_model.terminate_guw_model_duplication(old_guw_model, true) #A modifier
-            end
-
-            # Copy the modules's GUW Models instances
-            new_organization.operation_models.each do |operation_model|
-              # Update all the new organization module_project's operation_model with the current operation_model
-              operation_model_copy_id = operation_model.copy_id
-              new_organization.module_projects.where(operation_model_id: operation_model_copy_id).update_all(operation_model_id: operation_model.id)
-
-              # Terminate duplication
-              operation_model.terminate_operation_model_duplication
             end
 
             sleep(15)

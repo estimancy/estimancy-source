@@ -31,7 +31,6 @@
 
       <%#= select_tag "dashboard_selected_ratio_id", options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
                                  selected: wai.wbs_activity_ratio_id), readonly: cannot?(:execute_estimation_plan, @project) %>
-      <%#= hidden_field_tag "dashboard_selected_ratio_id", wai.wbs_activity_ratio_id %>
       <%= hidden_field_tag "dashboard_selected_ratio_id", wbs_activity_ratio.id %>
       <br>
 

@@ -251,6 +251,11 @@
                 </strong>
               </h5>
               <%= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+
+              <!-- Update Percentage ecart -->
+              <%#= ecart =  (@effort.to_f * @kb_model.standard_unit_coefficient.to_f) - @previous_effort.to_f %>
+              <%# percent_ecart_ev =  EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                           :module_project_id => module_project.id, :in_out => "output").first%>
             <% end %>
 
         <% end %>

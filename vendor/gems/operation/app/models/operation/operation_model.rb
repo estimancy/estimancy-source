@@ -33,10 +33,11 @@ module Operation
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy
     has_many :operation_inputs, dependent: :destroy
+    has_many :pe_attributes, through: :operation_inputs
 
     amoeba do
       enable
-      exclude_association [:module_projects]
+      exclude_association [:module_projects, :pe_attributes]
 
       customize(lambda { |original_ge_model, new_ge_model|
         new_ge_model.copy_id = original_ge_model.id
@@ -44,9 +45,12 @@ module Operation
     end
 
 
-    def terminate_operation_model_duplication
+    def terminate_operation_model_duplication(new_organisation_id = nil)
       new_operation_model = self
       pm = Pemodule.where(alias: "operation").first
+
+      old_operation_model = OperationModel.find(new_operation_model.copy_id)
+      old_operation_model_attributes = old_operation_model.pe_attributes
 
       new_operation_model.operation_inputs.each do |operation_input|
         attr = PeAttribute.where(name: operation_input.name,
@@ -60,7 +64,20 @@ module Operation
                                    in_out: operation_input.in_out,
                                    operation_model_id: operation_input.operation_model_id).first_or_create!
 
+        # Update estimation_values pe_attributes when copying organization
+        unless new_organisation_id.nil?
+          # Update estimation_values pe_attribute
+          new_operation_model.module_projects.each do |mp|
+            ev_with_current_attribute = mp.estimation_values.includes(:pe_attribute).where(pe_attribute: { alias: attr.alias })
+            ev_with_current_attribute.each do |est_val|
+              est_val.pe_attribute_id = attr.id
+              est_val.save
+            end
+          end
+        end
       end
+
+      old_operation_model_attributes
     end
 
 
