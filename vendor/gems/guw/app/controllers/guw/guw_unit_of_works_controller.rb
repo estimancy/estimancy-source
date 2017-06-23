@@ -689,6 +689,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type)
 
+    if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
+      guw_unit_of_work.missing_value = true
+    else
+      guw_unit_of_work.missing_value = false
+    end
+
     #Peut être factorisé  dans une boucle !
     if @guw_model.three_points_estimation == true
       #Estimation 3 points
@@ -715,11 +721,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     else
       begin
         #Estimation 1 point
-        if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.sum.blank?
+        if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.map(&:to_f).flatten.sum.blank?
           low = most_likely = high = guowa.most_likely
           guw_unit_of_work.flagged = true
         else
-          low = most_likely = high = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
+          if params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
+            low = most_likely = high = nil
+          else
+            low = most_likely = high = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i
+          end
         end
       rescue
         low = most_likely = high = guowa.most_likely
@@ -733,6 +743,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     unless sum_range.nil? || sum_range.blank? || sum_range == 0
       @guw_attribute_complexities.each do |guw_ac|
+
+        guw_ac_guw_type_complexity = guw_ac.guw_type_complexity
+
         unless low.nil?
           unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
             if (low >= @guw_attribute_complexities.map(&:bottom_range).compact.min.to_i) and (low < @guw_attribute_complexities.map(&:top_range).compact.max.to_i)
@@ -741,9 +754,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   if guw_ac.enable_value == true
                     @lows << (guw_ac.value.to_f * low.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                   else
-                    @lows << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                    @lows << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                   end
-                  guw_unit_of_work.missing_value = false
                 end
               end
             else
@@ -751,8 +763,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guw_unit_of_work.flagged = true
             end
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
 
         unless most_likely.nil?
@@ -762,17 +775,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_ac.enable_value == true
                   @mls << (guw_ac.value.to_f * most_likely.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
-                  @mls << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                  @mls << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                 end
-                guw_unit_of_work.missing_value = false
               end
             end
           else
             guw_unit_of_work.off_line = true
             guw_unit_of_work.flagged = true
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
 
         unless high.nil?
@@ -782,17 +795,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_ac.enable_value == true
                   @highs << (guw_ac.value.to_f * high + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
-                  @highs << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                  @highs << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                 end
-                guw_unit_of_work.missing_value = false
               end
             end
           else
             guw_unit_of_work.off_line = true
             guw_unit_of_work.flagged = true
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
       end
     end
@@ -1217,7 +1230,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_unit_of_work.off_line = false
     guw_unit_of_work.off_line_uo = false
 
-    guw_unit_of_work.guw_unit_of_work_attributes.each do |guowa|
+    guw_unit_of_work.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).each do |guowa|
       calculate_guowa(guowa, guw_unit_of_work, guw_type)
     end
 

@@ -1,7 +1,7 @@
 <h4 class="ui-widget">
   <%= @project.title %>
   <% if can_show_estimation?(@project) %>
-    <%= link_to I18n.t(:label_activate_project), dashboard_path(@project), class: "pull-right" %>
+    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary" %>
   <% end %>
 </h4>
 
