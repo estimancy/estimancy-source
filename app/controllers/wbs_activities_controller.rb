@@ -441,12 +441,18 @@ class WbsActivitiesController < ApplicationController
 
         # Retained Effort
         level_retained_effort_with_wbs_activity_elt_id = Hash.new
-        each_level_retained_effort = []
+
         each_level_retained_effort = params["retained_effort_#{level}"]
+        if each_level_retained_effort.nil?
+          each_level_retained_effort = []
+        end
 
         # Retained Cost
         level_retained_cost_with_wbs_activity_elt_id = Hash.new
         each_level_retained_cost = params["retained_cost_#{level}"]
+        if each_level_retained_cost.nil?
+          each_level_retained_cost = []
+        end
 
         each_level_retained_effort.each do |key, value|
           mp_ratio_element = ModuleProjectRatioElement.find(key)

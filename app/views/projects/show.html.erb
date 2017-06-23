@@ -1,9 +1,17 @@
 <h4 class="ui-widget">
-  <%= @project.title %>
-  <% if can_show_estimation?(@project) %>
-    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary" %>
+  <% if params[:is_model] == "true" %>
+      <%= I18n.t(:edit_estimation_model, :value => "#{@project.title} (version:#{@project.version_number})") %>
+  <% else %>
+      <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
   <% end %>
 </h4>
+
+<% if can_show_estimation?(@project) %>
+    <div style="margin-bottom: 35px; margin-top: -24px;">
+      <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary" %>
+    </div>
+<% end %>
+
 
 <%= simple_form_for(@project) do |f| %>
 
