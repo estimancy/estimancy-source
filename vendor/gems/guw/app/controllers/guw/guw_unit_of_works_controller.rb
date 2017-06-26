@@ -323,6 +323,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
     end
 
+    guw_unit_of_work.flagged = false
+
     guw_unit_of_work.save
 
     if guw_unit_of_work.guw_type.allow_retained == false
@@ -330,14 +332,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     guw_unit_of_work.save
-
-    if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
-      guw_unit_of_work.flagged = true
-    elsif guw_unit_of_work.size != guw_unit_of_work.ajusted_size
-      guw_unit_of_work.flagged = true
-    else
-      guw_unit_of_work.flagged = false
-    end
 
     guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
         (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
@@ -984,8 +978,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
                 guw_unit_of_work.intermediate_weight = cplx_coeff
               end
+            end
+
+            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+              guw_unit_of_work.flagged = true
             else
-              #??
+              guw_unit_of_work.flagged = false
             end
 
             if cplx_coeff.nil?
