@@ -367,6 +367,8 @@ class Kb::KbModelsController < ApplicationController
     @kb_model.save
     @kb_input.save
 
+    @data_for_ecart = Hash.new
+
     module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
@@ -381,6 +383,7 @@ class Kb::KbModelsController < ApplicationController
         else
           size = params[:"retained_size_most_likely"].to_f
         end
+
 
         if am.pe_attribute.alias == "effort"
           effort = (coef_10.to_f * params[:size].to_f ** pente.to_f) * @kb_model.standard_unit_coefficient.to_i
@@ -401,7 +404,43 @@ class Kb::KbModelsController < ApplicationController
       end
 
       unless ev.nil?
-        ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+        probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
+        ev.update_attribute(:"string_data_probable", { current_component.id => probable_value } )
+        @data_for_ecart["#{am.pe_attribute.alias}"] = probable_value
+      end
+    end
+
+    # Mettre a jour l'écart (en j.h, m.h,...)
+    #===
+    effort_attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
+    unless effort_attribute.nil?
+      input_effort = params[:previous_effort].to_f
+      input_effort_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "input").first
+      unless input_effort_ev.nil?
+        ["low", "most_likely", "high", "probable"].each do |level|
+          input_effort_ev.send("string_data_#{level}")[current_component.id] = input_effort
+        end
+        input_effort_ev.save
+      end
+
+      output_effort_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "output").first
+      if output_effort_ev.nil?
+        output_effort = 0
+      else
+        output_effort = output_effort_ev.send("string_data_probable")[current_component.id]
+      end
+    end
+
+    ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first
+    unless ecart_pe_attribute.nil?
+      ecart_percent = output_effort.to_f - input_effort.to_f
+
+      ecart_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+      unless ecart_ev.nil?
+        ["low", "most_likely", "high", "probable"].each do |level|
+          ecart_ev.send("string_data_#{level}")[current_component.id] = ecart_percent
+        end
+        ecart_ev.save
       end
     end
 
