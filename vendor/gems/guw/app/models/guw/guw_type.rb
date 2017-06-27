@@ -29,6 +29,7 @@ module Guw
     has_many :guw_type_complexities, dependent: :destroy
     has_many :guw_unit_of_works, dependent: :destroy
     has_many :guw_complexity_technologies, dependent: :destroy
+    has_many :guw_complexity_coefficient_elements, dependent: :destroy
 
     validates_presence_of :name
 

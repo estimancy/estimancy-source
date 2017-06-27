@@ -161,10 +161,10 @@ class PemodulesController < ApplicationController
       #   project_value = params[:project_value][i]
       # end
 
-      attribute_module.update_attributes(:in_out => params[:in_out]["#{attribute_module.id}"],
-                                         :default_low =>  params[:default_low]["#{attribute_module.id}"],
-                                         :default_most_likely =>  params[:default_most_likely]["#{attribute_module.id}"],
-                                         :default_high =>  params[:default_high]["#{attribute_module.id}"])
+      attribute_module.update_attributes(:in_out => params[:in_out]["#{attribute_module.id}"])
+                                         #:default_low =>  params[:default_low]["#{attribute_module.id}"],
+                                         #:default_most_likely =>  params[:default_most_likely]["#{attribute_module.id}"],
+                                         #:default_high =>  params[:default_high]["#{attribute_module.id}"])
     end
     redirect_to redirect_apply(edit_pemodule_path(@pemodule, :anchor=>'tabs-3'), nil, pemodules_path), :notice => "#{I18n.t (:notice_module_project_successful_updated)}"
   end

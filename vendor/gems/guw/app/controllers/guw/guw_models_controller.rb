@@ -90,25 +90,26 @@ class Guw::GuwModelsController < ApplicationController
 
   def import_new_config
 
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-      @workbook = RubyXL::Parser.parse(params[:file].path)
-      @workbook.each_with_index do |worksheet, index|
-        tab = worksheet.extract_data
-        if !tab.empty?
-          if index == 0
+    ActiveRecord::Base.transaction do
+      if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+        @workbook = RubyXL::Parser.parse(params[:file].path)
+        @workbook.each_with_index do |worksheet, index|
+          tab = worksheet.extract_data
+          if !tab.empty?
+            if index == 0
 
-            if worksheet.sheet_name != I18n.t(:is_model)
-              break
-            end
+              if worksheet.sheet_name != I18n.t(:is_model)
+                break
+              end
 
-            if tab[0][1].nil? || tab[0][1].empty?
-              break
-            end
+              if tab[0][1].nil? || tab[0][1].empty?
+                break
+              end
 
-            @guw_model = Guw::GuwModel.where(name: tab[0][1],
-                                             organization_id: @current_organization.id).first
-            if @guw_model.nil?
-              @guw_model = Guw::GuwModel.create(name: tab[0][1],
+              @guw_model = Guw::GuwModel.where(name: tab[0][1],
+                                               organization_id: @current_organization.id).first
+              if @guw_model.nil?
+                @guw_model = Guw::GuwModel.new( name: tab[0][1],
                                                 description: tab[1][1],
                                                 coefficient_label: tab[2][1],
                                                 weightings_label: tab[3][1],
@@ -116,131 +117,233 @@ class Guw::GuwModelsController < ApplicationController
                                                 three_points_estimation: tab[5][1].to_i == 1,
                                                 retained_size_unit: tab[6][1],
                                                 hour_coefficient_conversion: tab[7][1],
-                                                organization_id: @current_organization.id)
-              critical_flag = false
-            else
-              # break
-            end
-
-          elsif index == 1
-
-            tab.each_with_index do |row, i|
-              if i != 0 && !row.nil?
-                Guw::GuwAttribute.create(name: row[0],
-                                         description: row[1],
-                                         guw_model_id: @guw_model.id)
-              end
-            end
-
-          elsif index == 2
-
-            tab.each_with_index do |row, i|
-              if i != 0 && !row.nil?
-                Guw::GuwCoefficient.create(name: row[0],
-                                           coefficient_type: row[1],
-                                           guw_model_id: @guw_model.id,
-                                           allow_intermediate_value: (row[2] == 0) ? false : true )
-              end
-            end
-
-          elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
-
-            coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
-                                                    guw_model_id: @guw_model.id).first
-
-            tab.each_with_index do |row, i|
-              if i > 3 && !row.nil?
-                Guw::GuwCoefficientElement.create(name: row[1],
-                                                  value: row[2],
-                                                  guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  min_value: 0,
-                                                  max_value: 300,
-                                                  default_value: nil)
-              end
-            end
-
-          elsif index == (3 + @guw_model.guw_coefficients.size)
-
-            tab.each_with_index do |row, i|
-              if i >= 1 && !row.nil?
-                Guw::GuwOutput.create(name: row[0],
-                                      output_type: row[1],
-                                      guw_model_id: @guw_model.id,
-                                      allow_intermediate_value: (row[2] == 0) ? false : true,
-                                      allow_subtotal: (row[3] == 0) ? false : true,
-                                      standard_coefficient: row[4])
-              end
-            end
-
-          else
-            @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                            description: tab[0][0],
-                                            allow_quantity: tab[2][1] == 1,
-                                            allow_retained: tab[1][1] == 1,
-                                            allow_complexity: tab[3][1] == 1,
-                                            allow_criteria: tab[4][1] == 1,
-                                            guw_model_id: @guw_model.id)
+                                                default_display: tab[9][1],
+                                                organization_id: @current_organization.id,
+                                                allow_technology: false,
+                                                allow_ml: (tab[8][1] == "false") ? false : true)
 
 
-            [1,6,11].each do |column_index|
-              @guw_complexity = Guw::GuwComplexity.new(guw_type_id: @guw_type.id,
-                                                       name: tab[9][column_index].nil? ? nil : tab[9][column_index],
-                                                       bottom_range: 0,
-                                                       weight: 1,
-                                                       weight_b: 1,
-                                                       top_range: 100)
-
-              @guw_complexity.save(validate: false)
-
-              @guw_model.guw_outputs.each_with_index do |guw_output, i|
-
-                Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
-                                                              guw_output_id: guw_output.id,
-                                                              init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
-
-                Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
-                                                guw_output_id: guw_output.id,
-                                                value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
-
-                @guw_model.guw_outputs.each_with_index do |aguw_output, j|
-                  value = tab[15 + j][column_index + i]
-                  oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
-                                                        guw_output_associated_id: aguw_output.id,
-                                                        guw_output_id: guw_output.id,
-                                                        value: value)
+                # Create orders (coeff and outputs orders)
+                orders = Hash.new
+                i = 10
+                order_value_coeff = tab[i][0]
+                while order_value_coeff.to_s != I18n.t(:config_type).to_s do
+                  begin
+                    orders["#{tab[i][0]}"] = tab[i][1]
+                    i = i+1
+                    order_value_coeff = tab[i][0]
+                  rescue
+                  end
                 end
 
-                nb_output = @guw_model.guw_outputs.size
-                next_item = 15 + nb_output
-                @guw_model.guw_coefficients.each do |guw_coefficient|
-                  guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+                @guw_model.orders = orders
+                @guw_model.config_type = tab[i][1]
+                @guw_model.save
 
-                    next_item = next_item + 1
+              else
+                flash[:error] = "Erreur : une instance avec le nom '#{@guw_model.name}' existe déjà"
+                redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
+              end
 
-                    begin
-                      value = tab[next_item][column_index + i]
-                    rescue
-                      value = ""
-                    end
+            elsif index == 1
 
-                    if value.is_a?(Numeric)
-                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
-                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
-                                                                  guw_output_id: guw_output.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  value: value)
+              tab.each_with_index do |row, i|
+                if i != 0 && !row.nil?
+                  Guw::GuwAttribute.create(name: row[0],
+                                           description: row[1],
+                                           guw_model_id: @guw_model.id)
+                end
+              end
+
+            elsif index == 2
+
+              tab.each_with_index do |row, i|
+                if i != 0 && !row.nil?
+                  Guw::GuwCoefficient.create(name: row[0],
+                                             description: row[1],
+                                             coefficient_type: row[2],
+                                             guw_model_id: @guw_model.id,
+                                             allow_intermediate_value: (row[3] == 0) ? false : true,
+                                             deported: (row[4] == 0) ? false : true)
+                end
+              end
+
+            elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
+
+              unless tab[0].nil?
+                coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
+                                                        guw_model_id: @guw_model.id).first
+
+                tab.each_with_index do |row, i|
+                  if i >= 3 && !row.nil?
+                    gce = Guw::GuwCoefficientElement.new(name: row[1],
+                                                         value: row[3],
+                                                         description: row[2],
+                                                         display_order: row[4],
+                                                         guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
+                                                         guw_model_id: @guw_model.id,
+                                                         default_value: row[5])
+                    gce.save(validate: false)
+                  end
+                end
+              end
+
+            elsif index == (3 + @guw_model.guw_coefficients.size)
+
+              tab.each_with_index do |row, i|
+                if i >= 1 && !row.nil?
+                  guw_output = Guw::GuwOutput.create(name: row[0],
+                                                     output_type: row[1],
+                                                     guw_model_id: @guw_model.id,
+                                                     allow_intermediate_value: (row[2] == 0) ? false : true,
+                                                     allow_subtotal: (row[3] == 0) ? false : true,
+                                                     standard_coefficient: row[4],
+                                                     display_order: row[5],
+                                                     unit: row[6])
+
+                  attr = PeAttribute.where(name: guw_output.name,
+                                           alias: guw_output.name.underscore.gsub(" ", "_"),
+                                           description: guw_output.name,
+                                           guw_model_id: guw_output.guw_model_id).first_or_create!
+
+                  pm = Pemodule.where(alias: "guw").first
+
+                  am = AttributeModule.where(pe_attribute_id: attr.id,
+                                             pemodule_id: pm.id,
+                                             in_out: "both",
+                                             guw_model_id: guw_output.guw_model_id).first_or_create!
+
+                  @guw_model.module_projects.each do |module_project|
+                    ['input', 'output'].each do |in_out|
+                      mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                                   module_project_id: module_project.id,
+                                                   in_out: in_out,
+                                                   string_data_low: { :pe_attribute_name => @guw_output.name },
+                                                   string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                                   string_data_high: { :pe_attribute_name => @guw_output.name })
                     end
                   end
-                  next_item = next_item + 1
+
+                end
+              end
+
+            else
+
+              @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
+                                              description: tab[1][0],
+                                              allow_quantity: tab[5][1] == 1,
+                                              allow_retained: tab[4][1] == 1,
+                                              allow_complexity: tab[7][1] == 1,
+                                              allow_criteria: tab[2][1] == 1,
+                                              attribute_type: (tab[3][1] == "Pourcentage") ? "Pourcentage" : "Coefficient",
+                                              display_threshold: tab[6][1] == 1,
+                                              guw_model_id: @guw_model.id)
+
+              [2,7,12].each do |column_index|
+                name = tab[9][column_index].nil? ? nil : tab[9][column_index]
+
+                unless name.blank?
+                  @guw_complexity = Guw::GuwComplexity.new(name: name,
+                                                           guw_type_id: @guw_type.id,
+                                                           bottom_range: tab[11][column_index + 1],
+                                                           top_range: tab[11][column_index + 2],
+                                                           weight: tab[11][column_index + 3],
+                                                           weight_b: tab[11][column_index + 4],
+                                                           enable_value: (tab[11][column_index] == 0) ? false : true)
+
+                  @guw_complexity.save(validate: false)
+
+                  @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, i|
+
+                    Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
+                                                                  guw_output_id: guw_output.id,
+                                                                  init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
+
+                    Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
+                                                    guw_output_id: guw_output.id,
+                                                    value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
+
+                    @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
+                      value = tab[15 + j][column_index + i]
+
+                      oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
+                                                            guw_output_associated_id: aguw_output.id,
+                                                            guw_output_id: guw_output.id,
+                                                            value: value)
+
+                      Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
+                                                guw_output_id: aguw_output.id,
+                                                guw_type_id: @guw_type.id,
+                                                display_type: tab[15 + j][1])
+                    end
+
+                    nb_output = @guw_model.guw_outputs.order("display_order ASC").size
+                    next_item = 15 + nb_output
+                    @guw_model.guw_coefficients.each do |guw_coefficient|
+                      guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
+
+                        next_item = next_item + 1
+
+                        begin
+                          value = tab[next_item][column_index + i]
+                        rescue
+                          value = ""
+                        end
+
+                        Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                                                                    guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                    guw_output_id: guw_output.id,
+                                                                    guw_type_id: @guw_type.id,
+                                                                    value: value.is_a?(Numeric) ? value : nil)
+
+                      end
+                      next_item = next_item + 1
+                    end
+                  end
+                end
+              end
+
+              row_number = 0
+
+              [1,6,11].each do |column_index|
+
+                (0..9999).each do |i|
+                  unless tab[i].nil?
+                    if tab[i][0] == "Seuils de Complexités Attributs"
+                      row_number = i
+                      break
+                    end
+                  end
+                end
+
+                name = tab[row_number][column_index].nil? ? nil : tab[row_number][column_index]
+
+                unless name.nil?
+                  @guw_att_complexity = Guw::GuwTypeComplexity.create(name: name,
+                                                                      guw_type_id: @guw_type.id,
+                                                                      value: tab[row_number][column_index + 1])
+
+                  @guw_model.guw_attributes.each_with_index do |att, j|
+
+                    Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                       guw_attribute_id: att.id,
+                                                       guw_type_id: @guw_type.id,
+                                                       enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
+                                                       bottom_range: tab[row_number + j + 2][column_index + 1],
+                                                       top_range: tab[row_number + j + 2][column_index + 2],
+                                                       value: tab[row_number + j + 2][column_index + 3],
+                                                       value_b: tab[row_number + j + 2][column_index + 4])
+
+                  end
+                  row_number += 1
                 end
               end
             end
           end
         end
       end
-    end
 
+    end
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
 
   end
@@ -885,6 +988,8 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     @guw_organisation = @guw_model.organization
     @guw_types = @guw_model.guw_types
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
+
     first_page = [[I18n.t(:model_name),  @guw_model.name],
                   [I18n.t(:model_description), @guw_model.description],
                   [I18n.t(:work_unit_label),  @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label],
@@ -892,42 +997,34 @@ class Guw::GuwModelsController < ApplicationController
                   [I18n.t(:factors_label),  @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label],
                   [I18n.t(:three_points_estimation), @guw_model.three_points_estimation ? 1 : 0],
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
-                  [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion]
+                  [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion],
+                  ["Autoriser le comptage automatique", @guw_model.allow_ml],
+                  ["Affichage par défaut", @guw_model.default_display]
                   ]
 
     # Add Action & Coeff & coefficientElements
     @guw_model.orders.each do |coefficient, value|
-      first_page << [coefficient, value]
+      first_page << [coefficient, value.blank? ? '' : value.to_i]
     end
 
     first_page << [I18n.t(:config_type), @guw_model.config_type]
-    first_page << [I18n.t(:advice), ""]
 
     ind = 0
     ind2 = 1
-    ind3 = 5
-    used_column = []
 
     worksheet = workbook[0]
     worksheet.sheet_name = I18n.t(:is_model)
     workbook.add_worksheet(I18n.t(:attribute_description))
 
-    line_number = 0
     first_page.each_with_index do |row, index|
       worksheet.add_cell(index, 0, row[0])
-      worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
-      ["bottom", "right"].each do |symbole|
-        worksheet[index][0].change_border(symbole.to_sym, 'thin')
-        worksheet[index][1].change_border(symbole.to_sym, 'thin')
-      end
+      worksheet.add_cell(index, 1, row[1])
     end
 
     worksheet.change_column_bold(0,true)
     worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
-    worksheet.change_column_width(0, 38)
-    worksheet.change_column_width(1, 30)
-    # worksheet.merge_cells(6, 0, 6, 1)
-    # worksheet.change_row_height(6, 25)
+    worksheet.change_column_width(0, 45)
+    worksheet.change_column_width(1, 45)
 
     worksheet = workbook[1]
 
@@ -961,31 +1058,28 @@ class Guw::GuwModelsController < ApplicationController
     ind = 0
     ind2 = 6
 
-
     #==================  GUW-COEFFICIENTS  ==================
 
     coefficients_worksheet = workbook.add_worksheet(I18n.t(:weighting_coefficients))
     ind = 0
-    ind2 = 1
     counter_line = 1
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
-    coefficients_worksheet.add_cell(0, 1, I18n.t(:coefficient_type))
-    coefficients_worksheet.add_cell(0, 2, I18n.t(:allow_intermediate_value))
+    coefficients_worksheet.add_cell(0, 1, I18n.t(:description))
+    coefficients_worksheet.add_cell(0, 2, I18n.t(:coefficient_type))
+    coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
+    coefficients_worksheet.add_cell(0, 4, "Coefficient déporté")
     coefficients_worksheet.change_row_bold(0,true)
     coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
 
-    coefficients_worksheet.change_column_width(0, I18n.t(:name).size)
-    coefficients_worksheet.change_column_width(1, I18n.t(:coefficient_type).size)
-    coefficients_worksheet.change_column_width(2, I18n.t(:allow_intermediate_value).size)
-
     column_0_width = coefficients_worksheet.get_column_width(0)
     column_1_width = coefficients_worksheet.get_column_width(1)
-    column_2_width = coefficients_worksheet.get_column_width(2)
 
     @guw_model.guw_coefficients.each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
-      coefficients_worksheet.add_cell(index + 1, 1, coeff.coefficient_type)
-      coefficients_worksheet.add_cell(index + 1, 2, (coeff.allow_intermediate_value == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 1, coeff.description)
+      coefficients_worksheet.add_cell(index + 1, 2, coeff.coefficient_type)
+      coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
 
       coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
 
@@ -1013,7 +1107,7 @@ class Guw::GuwModelsController < ApplicationController
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "value", "display_order"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1071,7 +1165,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
@@ -1079,7 +1173,7 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     line_number = 1
-    @guw_model.guw_outputs.each do |output|
+    @guw_outputs.each do |output|
       outputs_attributes.each_with_index do |attr, index|
         column_value = output.send(attr)
         outputs_worksheet.add_cell(line_number, index, column_value)
@@ -1093,7 +1187,7 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     outputs_worksheet.change_row_bold(0,true)
-    counter_line += @guw_model.guw_outputs.all.size
+    counter_line += @guw_outputs.size
 
     counter_line.times do |indx|
       outputs_attributes.each_with_index do |attr, col|
@@ -1129,18 +1223,9 @@ class Guw::GuwModelsController < ApplicationController
 
       guw_type_attributes.each_with_index do |line, index|
         worksheet.add_cell(index, 0, line[0]).change_font_bold(true)
-        worksheet.add_cell(index, 1, line[1]).change_horizontal_alignment('center')
+        worksheet.add_cell(index, 1, line[1])
 
-        ["bottom", "right", "top"].each do |symbole|
-          worksheet[index][0].change_border(symbole.to_sym, 'thin')
-          worksheet[index][1].change_border(symbole.to_sym, 'thin')
-        end
         counter_line += 1
-      end
-
-      #worksheet.add_cell(0, ind, description)
-      ["bottom", "right"].each do |symbole|
-        worksheet[0][0].change_border(symbole.to_sym, 'thin')
       end
 
       unless description.empty?
@@ -1158,48 +1243,82 @@ class Guw::GuwModelsController < ApplicationController
 
       @guw_complexities = guw_type.guw_complexities.order("display_order asc")
 
-      worksheet.add_cell(ind2, 0,  I18n.t(:UO_type_complexity))
-      worksheet[ind2][0].change_border(:top, 'thin')
-      worksheet.sheet_data[ind2][0].change_font_bold(true)
-
-      worksheet.add_cell(ind2 + 2, 0, I18n.t(:threshold))
-      worksheet[ind2 + 2][0].change_border(:bottom, 'thin')
-
-      worksheet.sheet_data[ind2 + 2][0].change_font_bold(true)
+      worksheet.add_cell(ind2, 0,  I18n.t(:UO_type_complexity)).change_font_bold(true)
+      worksheet.add_cell(ind2 + 2, 0, I18n.t(:threshold)).change_font_bold(true)
 
       #======   Colonne 0 =============
       # Valeur initiale (Σ)
       worksheet.change_row_bold(ind2 + 3,true)
-      worksheet.add_cell(ind2 + 3, 0, I18n.t(:initial_value_sum))
-      worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 3, 0, "Valeur initiale").change_font_bold(true)
 
       # Un (1)
-      worksheet.add_cell(ind2 + 4, 0, "Un (1)")
-      worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 4, 0, "Un (1)").change_font_bold(true)
       un_line_number = ind2 + 4
 
       # UO CPLX
-      worksheet.add_cell(ind2 + 5, 0, "UO CPLX")
-      worksheet[ind2 + 5][0].change_border(:bottom, 'thin')
+      worksheet.add_cell(ind2 + 5, 0, "UO CPLX").change_font_bold(true)
       uo_cplx_line_number = ind2 + 5
 
       # OUTPUTS
-      output_line_number = ind2 + 6
       output_line = ind2 + 6
-      @guw_model.guw_outputs.each_with_index do |guw_output, index|
+      @guw_outputs.each do |guw_output|
         worksheet.add_cell(output_line, 0, guw_output.name)
-        ["bottom", "right"].each do |symbole|
-          worksheet[output_line][0].change_border(symbole.to_sym, 'thin')
-        end
+
+        got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                       guw_output_id: guw_output.id,
+                                       guw_type_id: guw_type.id).first
+
+        worksheet.add_cell(output_line, 1, got.nil? ? nil : got.display_type)
+
         output_line += 1
       end
 
-      output_line_number = ind2 + @guw_model.guw_outputs.size
+      # UN (1) : un_line_number Values
+      # UO CPLX VALUES : uo_cplx_line_number
+      un_column_number = 2
+      cn = 2
+      guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
 
-      line_number = ind2
-      column_number = ind + 1
+        @guw_outputs.each_with_index do |guw_output, ii|
+          oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
+                                                             guw_output_id: guw_output.id).first
+          oci_value = oci.nil? ? '' : oci.init_value
+          worksheet.add_cell(13, un_column_number + ii, oci_value)
 
-      @guw_complexities.each do |guw_complexity|
+          oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_complexity.id,
+                                              guw_output_id: guw_output.id).first
+          oc_value = (oc.nil? ? '' : oc.value)
+          worksheet.add_cell(14, un_column_number + ii, oc_value)
+        end
+
+        sn = 15
+        @guw_outputs.each do |aguw_output|
+          @guw_outputs.each_with_index do |guw_output, j|
+
+            oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+                                                  guw_output_associated_id: aguw_output.id,
+                                                  guw_output_id: guw_output.id).first
+            oa_value = (oa.nil? ? '' : oa.value)
+
+            worksheet.add_cell(sn, cn+j, oa_value)
+          end
+          sn += 1
+        end
+
+        cn += 5
+
+        if @guw_outputs.size <= 5
+          un_column_number = un_column_number + 5
+        else
+          un_column_number = (2 + @guw_outputs.size)
+        end
+
+      end
+
+      column_number = ind + 2
+
+      cn = 2
+      @guw_complexities.each_with_index do |guw_complexity|
 
         guw_complexity_attributes_values = [
             ["Prod", guw_complexity.enable_value ? 1 : 0],
@@ -1212,122 +1331,83 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(ind2, column_number, guw_complexity.name)
 
         guw_complexity_attributes_values.each_with_index do |name_cell, index|
-          worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0]).change_horizontal_alignment('center')
-          worksheet.add_cell(ind2 + 2, column_number + index, name_cell[1]).change_horizontal_alignment('center')
+          worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0])
+          worksheet.add_cell(ind2 + 2, column_number + index, name_cell[1])
         end
 
         counter_line = ind2 + 3
-
-        @guw_model.guw_outputs.each_with_index do |guw_output, index|
-          worksheet.add_cell(counter_line, column_number + index, guw_output.name).change_horizontal_alignment('center')
+        @guw_outputs.each_with_index do |guw_output, index|
+          worksheet.add_cell(counter_line, column_number + index, guw_output.name)
         end
 
-        output_line = 15 + @guw_model.guw_outputs.size
-
+        output_line = 15 + @guw_outputs.size
         @guw_model.guw_coefficients.each do |guw_coefficient|
 
           worksheet.add_cell(output_line, 0, guw_coefficient.name)
           worksheet.change_row_bold(output_line, true)
 
-          @guw_model.guw_outputs.each_with_index do |guw_output, index|
+          @guw_outputs.each_with_index do |guw_output, index|
             worksheet.add_cell(output_line, column_number + index, guw_output.name)
           end
 
           output_line += 1
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-            @guw_model.guw_outputs.each_with_index do |guw_output, index|
+
+            worksheet.add_cell(output_line, 0, guw_coefficient_element.name)
+
+            @guw_outputs.each_with_index do |guw_output, j|
 
               cf = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: guw_complexity.id,
                                                               guw_coefficient_element_id: guw_coefficient_element.id,
                                                               guw_output_id: guw_output.id).first
 
-              worksheet.add_cell(output_line, index + 1, cf.nil? ? nil : cf.value)
-
+              worksheet.add_cell(output_line, cn+j, (cf.nil? ? nil : cf.value))
             end
-
-            worksheet.add_cell(output_line, 0, guw_coefficient_element.name)
-
             output_line += 1
           end
         end
+        cn += 5
 
-        column_number += guw_complexity_attributes_values.size + 1
+        column_number += guw_complexity_attributes_values.size
       end
 
-      # UN (1) un_line_number Values    ET  # UO CPLX VALUES   : uo_cplx_line_number
-      un_column_number = 1
-      uo_cplx_column_number = 1
-      guw_type.guw_complexities.order("display_order asc").each do |guw_complexity|
+      sln = 16 + @guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      scn = 0
 
-        #====== UN (1) un_line_number Values
-        @guw_model.guw_outputs.each_with_index do |guw_output, index|
-          oci = Guw::GuwOutputComplexityInitialization.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
-          oci_value = oci.nil? ? '' : oci.init_value
-          worksheet.add_cell(un_line_number, un_column_number, oci_value).change_horizontal_alignment('center')
+      aln1 = 17 + @guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      an = 1
 
-          worksheet[un_line_number][un_column_number]
+      aln2 = 18 + @guw_outputs.size + @guw_model.guw_coefficients.size + @guw_model.guw_coefficients.map(&:guw_coefficient_elements).flatten.size
+      an2 = 1
 
-          un_column_number += 1
+      worksheet.add_cell(sln, 0, "Seuils de Complexités Attributs").change_font_bold(true)
+      worksheet.add_cell(aln1, 0, "Attributs").change_font_bold(true)
+
+      guw_type.guw_type_complexities.each do |type_attribute_complexity|
+
+        worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name).change_font_bold(true)
+        worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
+        scn += 5
+
+        ["Prod","[","[","A","B"].each_with_index do |val, index|
+          worksheet.add_cell(aln1, an + index, val).change_font_bold(true)
         end
-        un_column_number += 1
+        an += 5
 
-        #===== UO CPLX VALUES : uo_cplx_line_number
-        @guw_model.guw_outputs.each do |guw_output|
-          oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id, guw_output_id: guw_output.id).first
-          oc_value = oc.nil? ? '' : oc.value
-          worksheet.add_cell(uo_cplx_line_number, uo_cplx_column_number, oc_value)
-          uo_cplx_column_number += @guw_model.guw_outputs.size - 1
-        end
-        uo_cplx_column_number += @guw_model.guw_outputs.size - 1
-      end
+        @guw_model.guw_attributes.order("name ASC").each_with_index do |attribute, index|
+          worksheet.add_cell(aln2 + index, 0, attribute.name)
 
-
-      #=====  GUW-OUTPUTS COEFF VALUES : output_line_number
-      @guw_model.guw_outputs.each do |aguw_output|
-        output_column_number = 1
-        @guw_complexities.each do |guw_complexity|
-          @guw_model.guw_outputs.each do |guw_output|   #colonne
-            oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id, guw_output_associated_id: aguw_output.id, guw_output_id: guw_output.id).first
-            oa_value = oa.nil? ? '' : oa.value
-            worksheet.add_cell(output_line_number, output_column_number, oa_value).change_horizontal_alignment('center')
-
-            output_column_number += @guw_model.guw_outputs.size - 1
+          att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
+          unless att_val.nil?
+            [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b].each_with_index do |val, j|
+              worksheet.add_cell(aln2 + index, an2 + j, val)
+            end
           end
-          output_column_number += @guw_model.guw_outputs.size - 1
         end
-      end
+        an2 += 5
 
-      # guw_type.guw_type_complexities.each  do |type_attribute_complexity|
-        # worksheet.add_cell(ind3, ind + 1, type_attribute_complexity.name).change_horizontal_alignment('center')
-        # worksheet.add_cell(ind3, ind + 2, type_attribute_complexity.value).change_horizontal_alignment('center')
-        # worksheet[ind3][ind + 1].change_border(:top, 'thin')
-        # worksheet[ind3][ind + 1].change_border(:right, 'thin')
-        # worksheet[ind3][ind + 1].change_border(:left, 'thin')
-        # ["Prod","[","[",I18n.t(:my_display)].each_with_index do |val, index|
-        #   worksheet.add_cell(ind3 + 1, ind + index + 1, val ).change_horizontal_alignment('center')
-        #   ["top","bottom", "left", "right"].each do |sym_val|
-        #     worksheet[ind3 + 1][ind + index +1].change_border(sym_val.to_sym, 'thin')
-        #   end
-        # end
-        #
-        # ind4 = ind3 + 2
-        # @guw_model.guw_attributes.order("name ASC").each do |attribute|
-        #   worksheet.add_cell(ind4, 0, attribute.name)
-        #   worksheet[ind4][0].change_border(:right, 'thin')
-        #
-        #   att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
-        #   unless att_val.nil?
-        #     [att_val.enable_value ? 1 : 0, att_val.bottom_range,att_val.top_range, att_val.value].each_with_index do |val, index|
-        #       worksheet.add_cell(ind4, ind + index + 1, val).change_horizontal_alignment('center')
-        #       worksheet[ind4][ind + index +1].change_border(:right, 'thin')
-        #     end
-        #   end
-        #   ind4 += 1
-        # end
-      #
-      #   ind += @guw_model.guw_outputs.size
-      # end
+      end
     end
 
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
@@ -1339,6 +1419,8 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model = Guw::GuwModel.find(params[:id])
     @organization = @guw_model.organization
+    session[:organization_id] = @organization.id
+    @current_organization = @organization
 
     set_page_title @guw_model.name
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -1371,7 +1453,7 @@ class Guw::GuwModelsController < ApplicationController
     @guw_work_units = @guw_model.guw_work_units
     @guw_weightings = @guw_model.guw_weightings
     @guw_factors = @guw_model.guw_factors
-    @guw_outputs = @guw_model.guw_outputs
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
     @guw_coefficients = @guw_model.guw_coefficients
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
@@ -1485,7 +1567,7 @@ class Guw::GuwModelsController < ApplicationController
         new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
     end
-
+    
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
   end
 
@@ -1495,6 +1577,10 @@ class Guw::GuwModelsController < ApplicationController
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id)
+
+    hash = @guw_model.orders
+    hash.delete("Critères")
+    hash.delete("Coeff. de Complexité")
 
     @guw_unit_of_works.each do |i|
       if i.nil?
@@ -1533,11 +1619,14 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:results),
      I18n.t(:retained_result),
       "COEF"] +
-        @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
+        hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
     worksheet.change_row_bold(0,true)
+
+    jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+
     @guw_unit_of_works.each_with_index do |guow, i|
 
       ind = i + 1
@@ -1590,34 +1679,43 @@ class Guw::GuwModelsController < ApplicationController
 
       worksheet.add_cell(ind, 16, guow.intermediate_weight)
 
-      @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
+
+      hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
           guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-          unless guw_coefficient.guw_coefficient_elements.empty?
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                              guw_coefficient_id: guw_coefficient.id).first
+          unless guw_coefficient.nil?
+            unless guw_coefficient.guw_coefficient_elements.empty?
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                guw_coefficient_id: guw_coefficient.id,
+                                                                module_project_id: current_module_project.id).first
 
-            if guw_coefficient.coefficient_type == "Pourcentage"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            elsif guw_coefficient.coefficient_type == "Coefficient"
-              worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-            else
-              worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              if guw_coefficient.coefficient_type == "Pourcentage"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              elsif guw_coefficient.coefficient_type == "Coefficient"
+                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+              else
+                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+              end
             end
           end
-
         elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-          guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
+          guw_output = Guw::GuwOutput.where(name: i[0],
+                                            guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
-            worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+            unless guw_output.nil?
+              v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+              worksheet.add_cell(ind, 17 + j, v.to_s)
+            end
           end
         end
       end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
+        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+                                                  guw_attribute_id: guw_attribute.id,
+                                                  guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
         unless guowa.nil?
-          worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
         else
           p "GUOWA is nil"
         end
@@ -1625,7 +1723,7 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-      worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
+      worksheet.add_cell(0, jj + i, guw_attribute.name)
     end
 
     # send_data(workbook.stream.string, filename: "export.xlsx", type: "application/vnd.ms-excel")
@@ -1674,198 +1772,6 @@ class Guw::GuwModelsController < ApplicationController
     unless final_mess.empty?
       flash[:error] = final_mess.join("<br/>").html_safe
     end
-  end
-
-  def import_guw
-
-    @guw_model = current_module_project.guw_model
-    @component = current_component
-
-    ind = 0
-    ok = false
-    already_exist = ["first"]
-    first = false
-    type_save = nil
-    guw_uow_save = nil
-    gac_save = nil
-    tab_error = [[false], [false], [false], [false], [false]]
-    indexing_field_error = [[false],[false],[false],[false]]
-
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-      workbook = RubyXL::Parser.parse(params[:file].path)
-      worksheet = workbook[0]
-      tab = worksheet.extract_data
-
-      tab.each_with_index  do |row, index|
-        unless row.nil?
-          unless row[4].nil?
-            if index > 0
-
-              guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
-                                                            module_project_id: current_module_project.id,
-                                                            pbs_project_element_id: @component.id).first_or_create
-
-              tmp_hash_res = Hash.new
-              tmp_hash_ares  = Hash.new
-
-              guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
-                                                  name: row[4],
-                                                  comments: row[5],
-                                                  guw_unit_of_work_group_id: guw_uow_group.id,
-                                                  module_project_id: current_module_project.id,
-                                                  pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  tracking: row[12],
-                                                  quantity: row[11].nil? ? 1 : row[11],
-                                                  size: row[14].nil? ? nil : row[14],
-                                                  ajusted_size: row[15].nil? ? nil : row[15],
-                                                  intermediate_percent: row[16].nil? ? nil : row[16],
-                                                  intermediate_weight: row[16].nil? ? nil : row[16])
-
-              guw_uow.save(validate: false)
-
-              @guw_model.guw_attributes.each_with_index do |gac, ii|
-
-                guw_type = Guw::GuwType.where(name: row[6],
-                                              guw_model_id: @guw_model.id).first
-
-                @guw_model.guw_attributes.size.times do |jj|
-
-                  tmp_val = row[16 + @guw_model.orders.size + jj]
-
-                  unless tmp_val.nil?
-
-                    val = (tmp_val == "N/A" || tmp_val < 0) ? nil : row[16 + @guw_model.orders.size + jj]
-
-                    if gac.name == tab[0][16 + @guw_model.orders.size + jj]
-                      unless guw_type.nil?
-                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_type.id,
-                                                                  guw_unit_of_work_id: guw_uow.id,
-                                                                  guw_attribute_id: gac.id).first_or_create
-                        guowa.low = val.to_i
-                        guowa.most_likely = val.to_i
-                        guowa.high = val.to_i
-                        guowa.save
-                      end
-                    end
-                  end
-                end
-              end
-
-              @guw_model.orders.sort_by { |k, v| v }.each_with_index do |i, j|
-
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
-                                                            guw_model_id: @guw_model.id).first
-
-                if guw_coefficient.class == Guw::GuwCoefficient
-
-                  (16..30).to_a.each do |k|
-                    if guw_coefficient.name == tab[0][k]
-
-                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
-                                                                        guw_coefficient_id: guw_coefficient.id).first_or_create
-
-                      ce = Guw::GuwCoefficientElement.where(name: row[k],
-                                                            guw_model_id: @guw_model.id).first
-
-                      unless ce.nil?
-                        ceuw.guw_coefficient_element_id = ce.id
-                      else
-                        ceuw.percent = row[k].to_f
-                      end
-
-                      ceuw.save
-                    end
-                  end
-                elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-
-                  guw_output = Guw::GuwOutput.where(name: i[0],
-                                                    guw_model_id: @guw_model.id).first
-
-                  unless guw_output.nil?
-                    (16..30).to_a.each do |k|
-                      if guw_output.name == tab[0][k]
-                        # tmp_hash_res["#{guw_output.id}"] = row[k]
-                        tmp_hash_ares["#{guw_output.id}"] = row[k]
-                      end
-                    end
-                  end
-                end
-              end
-
-              guw_uow.size = tmp_hash_res
-              guw_uow.ajusted_size = tmp_hash_ares
-
-              @guw_model.guw_types.each do |type|
-
-                if row[6] == type.name
-                  guw_uow.guw_type_id = type.id
-                  if !row[13].nil?
-                    type.guw_complexities.each do |complexity|
-                      if row[13] == complexity.name
-                        guw_uow.guw_complexity_id = complexity.id
-                      end
-                    end
-                  end
-
-                  if @guw_model.allow_technology == true
-                    if !row[10].nil?
-                      type.guw_complexity_technologies.each do |techno|
-                        unless techno.organization_technology.nil?
-                          if row[10] == techno.organization_technology.name
-                            guw_uow.organization_technology_id = techno.organization_technology.id
-                            ind += 1
-                            indexing_field_error[2][0] = true
-                            break
-                          end
-                        end
-                        indexing_field_error[2][0] = false
-                      end
-                    else
-                      guw_ct = type.guw_complexity_technologies.select{ |i| i.coefficient != nil }.first
-                      unless guw_ct.nil?
-                        guw_uow.organization_technology_id = guw_ct.organization_technology.id
-                      else
-                        guw_uow.organization_technology_id = nil
-                      end
-
-                      ind += 1
-                      indexing_field_error[2][0] = true
-                    end
-
-                    unless indexing_field_error[2][0]
-                      indexing_field_error[2] << index
-                    end
-                  end
-
-                  @guw_model.guw_attributes.all.each do |gac|
-                    guw_uow.save(validate: false)
-                    finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: type.id,
-                                                               guw_unit_of_work_id: guw_uow.id,
-                                                               guw_attribute_id: gac.id).first_or_create
-
-                    finder.save
-                  end
-                end
-                guw_uow.save
-              end
-            end
-            ok = true
-          end
-        end
-      end
-    end
-
-    my_verrif_tab_error(tab_error, indexing_field_error)
-    if ok
-      flash[:notice] = I18n.t(:importation_sucess_uo)
-    else ok
-      flash[:error] = I18n.t(:route_flag_error_4)
-    end
-
-    expire_fragment "guw"
-
-    redirect_to :back
   end
 
   def all_guw_types

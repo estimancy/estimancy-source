@@ -3,44 +3,53 @@
 </h3>
 
 <%
-   attribute = PeAttribute.find_by_alias("effort")
-   # unless current_module_project.previous.first.nil?
-   #   previous_activity = current_module_project.previous.first.wbs_activity
-   # end
-   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
-   # unless previous_activity.nil?
-   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                              :module_project_id => current_module_project.id,
-                              :in_out => "input").first
+   module_project = current_module_project
+   attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
 
-   effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-   if effort == 0
+   effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
 
-     if !ev.estimation_value_id.nil?
-       ev = EstimationValue.find(ev.estimation_value_id)
-     else
-        ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                :module_project_id => current_module_project.previous.last,
-                                :in_out => "output").first
-     end
-
-     begin
-       begin
-         previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
-         effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-       rescue
-         effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-       end
-     rescue
-       begin
-         effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
-       rescue
-         effort = 0
-       end
-     end
+   if attribute.nil?
+     effort = 0
    else
+       ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => module_project.id, :in_out => "input").first
+
+       unless ev.nil?
+           ev_effort_value = ev.string_data_probable[current_component.id]
+
+           if ev_effort_value.blank? || !@staffing_model.enabled_input  #effort == 0
+             if !ev.estimation_value_id.nil?
+               ev = EstimationValue.find(ev.estimation_value_id)
+             else
+                ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => module_project.previous.last, :in_out => "output").first
+             end
+
+             begin
+               begin
+                 previous_activity_root = module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+                 effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+               rescue
+                 effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+               end
+             rescue
+               begin
+                 effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+               rescue
+                 effort = 0
+               end
+             end
+           else
+
+             begin
+               effort = ev.string_data_probable[current_component.id].to_f / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
+             rescue
+               effort = 0
+             end
+
+           end
+       end
    end
-   @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
+
+   @md_duration = @staffing_model.mc_donell_coef * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
    # else
    #   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
    #                              :module_project_id => current_module_project.id,

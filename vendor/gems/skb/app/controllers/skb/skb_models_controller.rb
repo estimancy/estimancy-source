@@ -246,7 +246,11 @@ class Skb::SkbModelsController < ApplicationController
                             skb_model_id: @skb_model.id)
       end
     end
-    redirect_to skb.edit_skb_model_path(@skb_model.id, organization_id: @organization.id)
+    if @skb_model.nil?
+      redirect_to :back
+    else
+      redirect_to skb.edit_skb_model_path(@skb_model.id, organization_id: @organization.id)
+    end
   end
 
   def save_filters
@@ -329,8 +333,8 @@ class Skb::SkbModelsController < ApplicationController
       @skb_input.data = nil
       @skb_input.processing = nil
       @skb_input.retained_size = nil
-      @skb_input.save
     end
+    @skb_input.save
     redirect_to :back
   end
 

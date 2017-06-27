@@ -212,10 +212,20 @@
                 <% unless @guw_model.coefficient_label.blank? %>
                   <td class="span2">
                     <span class="work_unit_<%= guow.id %>" >
-                      <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% disabled_work_units = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_work_units.map(&:id).include?(guow.guw_work_unit_id) %>
+                        <% disabled_work_units = disabled_work_units %>
+                        <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_work_units = [] %>
+                        <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+
                       <% unless results.empty? %>
                         <%= select_tag "guw_work_unit[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                       selected: guow.guw_work_unit_id),
+                                                                                       selected: guow.guw_work_unit_id,
+                                                                                       disabled: disabled_work_units.map(&:id)),
                                        class: "guw_work_unit input-xsmall",
                                        guw: guow.id,
                                        required: true,
@@ -228,10 +238,21 @@
                 <% unless @guw_model.weightings_label.blank? %>
                   <td class="span2">
                     <span class="weighting_<%= guow.id %>" >
-                      <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      
+                      <% disabled_weightings = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_weightings.map(&:id).include?(guow.guw_weighting_id) %>
+                        <% disabled_weightings = disabled_weightings %>
+                        <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_weightings = [] %>
+                        <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+                      
                       <% unless results.empty? %>
                         <%= select_tag "guw_weighting[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                       selected: guow.guw_weighting_id),
+                                                                                       selected: guow.guw_weighting_id,
+                                                                                       disabled: disabled_weightings.map(&:id)),
                                        class: "guw_weighting input-xsmall",
                                        guw: guow.id,
                                        required: true,
@@ -244,12 +265,21 @@
                 <% unless @guw_model.factors_label.blank? %>
                   <td class="span2">
                     <span class="factor_<%= guow.id %>" >
-                      <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
-                      <%# results = Guw::GuwComplexityFactor.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq %>
-                      <%# results = Guw::GuwComplexityFactor.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_factor }.uniq %>
+
+                      <% disabled_factors = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_factors.map(&:id).include?(guow.guw_factor_id) %>
+                        <% disabled_factors = disabled_factors %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_factors = [] %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+
                       <% unless results.empty? %>
                         <%= select_tag "guw_factor[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                       selected: guow.guw_factor_id),
+                                                                                    selected: guow.guw_factor_id,
+                                                                                    disabled: disabled_factors.map(&:id)),
                                        class: "guw_factor input-xsmall",
                                        guw: guow.id,
                                        required: true,
@@ -440,6 +470,18 @@
         url: "<%= guw.change_selected_state_path %>",
         data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
       });
+    });
+
+    $('select.guw_factor').on('click', function(){
+      $(this).find('option:disabled').remove();
+    });
+
+    $('select.guw_weighting').on('click', function(){
+      $(this).find('option:disabled').remove();
+    });
+
+    $('select.guw_work_unit').on('click', function(){
+      $(this).find('option:disabled').remove();
     });
 
     $('.guw_type').change(function(){

@@ -103,6 +103,8 @@ class PermissionsController < ApplicationController
       authorize! :manage_organization_permissions, Permission
     elsif params['global_permissions']
       authorize! :manage_global_permissions, Permission
+    elsif params['modules_permissions']
+      authorize! :manage_modules_permissions, Permission
     else
       authorize! :manage_organization_permissions, Permission
       authorize! :manage_global_permissions, Permission

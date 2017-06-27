@@ -33,7 +33,7 @@ class EstimationValue < ActiveRecord::Base
 
   has_many :associated_estimation_values, class_name: "EstimationValue", foreign_key: :estimation_value_id, dependent: :nullify
 
-  has_many :views_widgets
+  has_many :views_widgets, :dependent => :destroy
 
 
   amoeba do

@@ -24,6 +24,51 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   include ModuleProjectsHelper
 
+  def extract
+    nom = ""
+    description = ""
+    url = params[:url]
+
+    agent = Mechanize.new
+    agent.get(url)
+
+    agent.page.search("#summary-val").each do |item|
+      nom << item.text
+    end
+
+    agent.page.search(".user-content-block p").each do |item|
+      description << item.text
+    end
+
+    @guw_model = current_module_project.guw_model
+    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+    @guw_group = Guw::GuwUnitOfWorkGroup.where(name: "Groupe par défaut",
+                                               module_project_id: current_module_project.id,
+                                               pbs_project_element_id: current_component.id).first_or_create
+
+    @guw_uow = Guw::GuwUnitOfWork.create(name: nom,
+                                        comments: description,
+                                        guw_unit_of_work_group_id: @guw_group.id,
+                                        module_project_id: current_module_project.id,
+                                        pbs_project_element_id: current_component.id,
+                                        guw_model_id: @guw_model.id,
+                                        display_order: nil,
+                                        tracking: nil,
+                                        quantity: 1,
+                                        selected: true,
+                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+    @guw_model.guw_attributes.all.each do |gac|
+      guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                guw_unit_of_work_id: @guw_uow.id,
+                                                guw_attribute_id: gac.id).first_or_create
+      guowa.save
+    end
+
+    redirect_to :back
+
+  end
+
   def new
     @guw_unit_of_work = Guw::GuwUnitOfWork.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
@@ -56,14 +101,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if params[:position].blank?
       @guw_unit_of_work.display_order = @guw_unit_of_work.guw_unit_of_work_group.guw_unit_of_works.size.to_i + 1
     else
-      @guw_unit_of_work.display_order = params[:position].to_i - 1
+      @guw_unit_of_work.display_order = params[:position].to_i
     end
 
-    # @guw_unit_of_work.save
-
-    # reorder(@guw_unit_of_work.guw_unit_of_work_group)
-
     @guw_unit_of_work.save
+
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
@@ -94,7 +137,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
 
-    # reorder group
     expire_fragment "guw"
 
     update_estimation_values
@@ -326,6 +368,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
     end
 
+    guw_unit_of_work.flagged = false
+
     guw_unit_of_work.save
 
     if guw_unit_of_work.guw_type.allow_retained == false
@@ -333,14 +377,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     guw_unit_of_work.save
-
-    if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
-      guw_unit_of_work.flagged = true
-    elsif guw_unit_of_work.size != guw_unit_of_work.ajusted_size
-      guw_unit_of_work.flagged = true
-    else
-      guw_unit_of_work.flagged = false
-    end
 
     guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
         (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
@@ -359,17 +395,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def duplicate
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
-    @new_guw_unit_of_work = @guw_unit_of_work.dup
+    # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
+    @new_guw_unit_of_work = @guw_unit_of_work.amoeba_dup
     @new_guw_unit_of_work.save
-
-    @guw_unit_of_work.guw_unit_of_work_attributes.each do |guowa|
-      nguowa = guowa.dup
-      nguowa.guw_unit_of_work_id = @new_guw_unit_of_work.id
-      nguowa.save
-    end
-
-    # reorder @new_guw_unit_of_work.guw_unit_of_work_group
-    expire_fragment "guw"
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
@@ -390,7 +418,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      # reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       begin
         guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -633,13 +661,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              guw_unit_of_work_group_id: @group.id,
                                              pbs_project_element_id: current_component.id,
                                              module_project_id: current_module_project.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
+                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(user_number_precision)
 
     @group_size_theorical = Guw::GuwUnitOfWork.where(selected: true,
                                                      guw_unit_of_work_group_id: @group.id,
                                                      pbs_project_element_id: current_component.id,
                                                      module_project_id: current_module_project.id,
-                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
+                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(user_number_precision)
 
     @group_number_of_unit_of_works = Guw::GuwUnitOfWork.where(guw_unit_of_work_group_id: @group.id,
                                                               pbs_project_element_id: current_component.id,
@@ -700,25 +728,31 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type)
 
+    if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
+      guw_unit_of_work.missing_value = true
+    else
+      guw_unit_of_work.missing_value = false
+    end
+
     #Peut être factorisé  dans une boucle !
     if @guw_model.three_points_estimation == true
       #Estimation 3 points
       if params["low"]["#{guw_unit_of_work.id}"].nil?
-        low = 0
+        low = guowa.low
         guw_unit_of_work.flagged = true
       else
         low = params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["most_likely"]["#{guw_unit_of_work.id}"].nil?
-        most_likely = 0
+        most_likely = guowa.most_likely
         guw_unit_of_work.flagged = true
       else
         most_likely = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["high"]["#{guw_unit_of_work.id}"].nil?
-        high = 0
+        high = guowa.high
         guw_unit_of_work.flagged = true
       else
         high = params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
@@ -726,24 +760,31 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     else
       begin
         #Estimation 1 point
-        if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.sum.blank?
-          low = most_likely = high = nil
+        if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.map(&:to_f).flatten.sum.blank?
+          low = most_likely = high = guowa.most_likely
           guw_unit_of_work.flagged = true
         else
-          low = most_likely = high = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
+          if params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
+            low = most_likely = high = nil
+          else
+            low = most_likely = high = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i
+          end
         end
       rescue
-        low = most_likely = high = nil
+        low = most_likely = high = guowa.most_likely
       end
     end
 
-    @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(guw_type_id: guw_type.id,
+    @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(guw_type_id: (guw_type.nil? ? nil : guw_type.id),
                                                                     guw_attribute_id: guowa.guw_attribute_id).all
 
-    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.nil? ? nil : guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
 
     unless sum_range.nil? || sum_range.blank? || sum_range == 0
       @guw_attribute_complexities.each do |guw_ac|
+
+        guw_ac_guw_type_complexity = guw_ac.guw_type_complexity
+
         unless low.nil?
           unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
             if (low >= @guw_attribute_complexities.map(&:bottom_range).compact.min.to_i) and (low < @guw_attribute_complexities.map(&:top_range).compact.max.to_i)
@@ -752,9 +793,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   if guw_ac.enable_value == true
                     @lows << (guw_ac.value.to_f * low.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                   else
-                    @lows << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                    @lows << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                   end
-                  guw_unit_of_work.missing_value = false
                 end
               end
             else
@@ -762,8 +802,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guw_unit_of_work.flagged = true
             end
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
 
         unless most_likely.nil?
@@ -773,17 +814,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_ac.enable_value == true
                   @mls << (guw_ac.value.to_f * most_likely.to_f + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
-                  @mls << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                  @mls << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                 end
-                guw_unit_of_work.missing_value = false
               end
             end
           else
             guw_unit_of_work.off_line = true
             guw_unit_of_work.flagged = true
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
 
         unless high.nil?
@@ -793,17 +834,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_ac.enable_value == true
                   @highs << (guw_ac.value.to_f * high + guw_ac.value_b.to_f) * guw_ac.guw_type_complexity.value.to_f
                 else
-                  @highs << guw_ac.value.to_f * guw_ac.guw_type_complexity.value.to_f
+                  @highs << guw_ac.value.to_f * guw_ac_guw_type_complexity.value.to_f
                 end
-                guw_unit_of_work.missing_value = false
               end
             end
           else
             guw_unit_of_work.off_line = true
             guw_unit_of_work.flagged = true
           end
+          # guw_unit_of_work.missing_value = false
         else
-          guw_unit_of_work.missing_value = true
+          # guw_unit_of_work.missing_value = true
         end
       end
     end
@@ -895,7 +936,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
 
     @guw_coefficients = @guw_model.guw_coefficients
-    @guw_outputs = @guw_model.guw_outputs
+    @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
@@ -914,7 +955,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      #reorder guw_unit_of_work.guw_unit_of_work_group
+      reorder guw_unit_of_work.guw_unit_of_work_group
 
       if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
         guw_type = guw_unit_of_work.guw_type
@@ -937,13 +978,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
         guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
         guw_unit_of_work.guw_complexity_id = guw_complexity_id
+        guw_unit_of_work.off_line_uo = false
+        guw_unit_of_work.off_line = false
       end
 
       #Pour le calcul des valeurs intermédiares, on prend uniquement le premier attributs (pour l'instant)
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
-
-      # guw_unit_of_work.save
 
       @guw_outputs.each_with_index do |guw_output, index|
 
@@ -956,6 +997,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
+        weight_b = (guw_unit_of_work.guw_complexity.nil? ? 0 : (guw_unit_of_work.guw_complexity.weight_b.nil? ? 0 : guw_unit_of_work.guw_complexity.weight_b.to_f))
+
+        result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
+        result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
+        result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
 
         if guw_unit_of_work.guw_complexity.nil?
           @final_value = nil
@@ -968,10 +1014,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
             end
           else
-            result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
-            result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
-            result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
-
             if params["complexity_coeff_ajusted"].present?
               if params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].blank?
                 cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
@@ -981,8 +1023,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
                 guw_unit_of_work.intermediate_weight = cplx_coeff
               end
+            end
+
+            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+              guw_unit_of_work.flagged = true
             else
-              #??
+              guw_unit_of_work.flagged = false
             end
 
             if cplx_coeff.nil?
@@ -991,15 +1037,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               intermediate_percent = (cplx_coeff.to_f / 100)
             end
 
-            # @final_value = ((result_low + 4 * result_most_likely + result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
-              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent)
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent) + (weight_b.nil? ? 0 : weight_b.to_f)
             end
-
-            # guw_unit_of_work.intermediate_percent = intermediate_percent * 100
-            # guw_unit_of_work.intermediate_weight = intermediate_percent * 100
 
           end
         end
@@ -1015,75 +1057,85 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
 
-            pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+            begin
+              pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            rescue
+              pc = 100
+            end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
 
-              # if !guw_coefficient_element.min_value.nil? || !guw_coefficient_element.max_value.nil?
-              #   if pc < guw_coefficient_element.min_value || pc > guw_coefficient_element.max_value
-              #     pc = 1
-              #   end
-              # end
-
               unless cce.value.blank?
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << (v / 100)
+
               else
                 percents << 1
               end
             end
 
-            ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.percent = pc
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
 
-          elsif  guw_coefficient.coefficient_type == "Coefficient"
+          elsif guw_coefficient.coefficient_type == "Coefficient"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
                                                               guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                       guw_coefficient_id: guw_coefficient.id)
 
+            begin
+              pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            rescue
+              pc = 1
+            end
+
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
 
-              # unless guw_coefficient_element.min_value.nil? || guw_coefficient_element.max_value.nil?
-              #   if pc < guw_coefficient_element.min_value || pc > guw_coefficient_element.max_value
-              #     pc = 1
-              #   end
-              # end
-
               unless cce.value.blank?
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                coeffs << pc.to_f
+                coeffs << pc
+                coeffs << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << v
+
               else
                 coeffs << 1
               end
             end
 
-            ceuw.percent = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.percent = pc
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            if ceuw.changed?
-              ceuw.save
-            end
+            ceuw.save
           else
 
             unless params['guw_coefficient'].nil?
               unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
-                ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                begin
+                  unless params['deported_guw_coefficient'].nil?
+                    ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                  else
+                    ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+                  end
+                rescue
+                  ce = nil
+                end
               end
             end
 
@@ -1098,14 +1150,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                        guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
 
               unless ceuw.nil?
-                ceuw.guw_coefficient_element_id = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+                unless params['deported_guw_coefficient'].nil?
+                  v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                else
+                  v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                end
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
 
-                if ceuw.changed?
-                  ceuw.save
-                end
+                ceuw.save
               end
 
               unless cce.nil?
@@ -1124,32 +1180,45 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         oa_value = []
         Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |goa|
-
+                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
           unless goa.value.to_f == 0
             unless goa.aguw_output.nil?
               oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
             end
           end
-
         end
 
         inter_value = oa_value.compact.sum.to_f
 
-        if inter_value == 0
-          tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+        unless @final_value.nil?
+          if inter_value == 0
+            tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+          else
+            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+          end
         else
-          tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+          tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
         end
 
         if params["ajusted_size"].present?
-          if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-          #if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil? || params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
             tmp_hash_res["#{guw_output.id}"] = tmp
             tmp_hash_ares["#{guw_output.id}"] = tmp
           else
-            tmp_hash_res["#{guw_output.id}"] = tmp
-            tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+            if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = tmp
+            else
+
+              if tmp == 0
+                tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+              else
+                tmp_hash_res["#{guw_output.id}"] = tmp
+              end
+
+              tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
+            end
           end
         else
           tmp_hash_res["#{guw_output.id}"] = tmp
@@ -1160,6 +1229,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.ajusted_size = tmp_hash_ares
       end
 
+      reorder guw_unit_of_work.guw_unit_of_work_group
+
       if guw_unit_of_work.changed?
         guw_unit_of_work.save
       end
@@ -1167,8 +1238,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     update_estimation_values
     update_view_widgets_and_project_fields
-
-    expire_fragment "guw"
 
     if @guw_unit_of_works.last.nil?
       redirect_to main_app.dashboard_path(@project)
@@ -1204,7 +1273,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_unit_of_work.off_line = false
     guw_unit_of_work.off_line_uo = false
 
-    guw_unit_of_work.guw_unit_of_work_attributes.each do |guowa|
+    guw_unit_of_work.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).each do |guowa|
       calculate_guowa(guowa, guw_unit_of_work, guw_type)
     end
 
@@ -1300,7 +1369,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     tmp_hash_res = Hash.new
     tmp_hash_ares = Hash.new
 
-    @guw_model.guw_outputs.each_with_index do |guw_output, index|
+    @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, index|
 
       @oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                             guw_output_id: guw_output.id,
@@ -1328,6 +1397,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << (v / 100)
+
               else
                 percents << 1
               end
@@ -1342,6 +1415,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if ceuw.changed?
             ceuw.save
           end
+
         elsif guw_coefficient.coefficient_type == "Coefficient"
 
         ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1356,6 +1430,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               unless cce.value.blank?
                 pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
                 coeffs << pc.to_f
+
+                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                selected_coefficient_values["#{guw_output.id}"] << v
+
               else
                 coeffs << 1
               end
@@ -1390,7 +1468,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           unless ceuw.nil?
-            ceuw.guw_coefficient_element_id = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i
+
+            v = params['hidden_coefficient_element']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+            ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
@@ -1439,58 +1520,73 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    expire_fragment "guw"
-
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
 
-  def ml
-    expire_fragment "guw"
-
+  def ml_trt
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-
-        @guw_group = current_module_project.guw_unit_of_work_groups.first
-
-        if @guw_group.nil?
-          @guw_group = Guw::GuwUnitOfWorkGroup.create(name: "Groupe 1",
-                                                      module_project_id: current_module_project.id,
-                                                      pbs_project_element_id: current_component.id)
-        end
 
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
 
-          unless row[0].blank?
+          if index > 0
 
-            @http = Curl.post("http://localhost:5001/estimate", { us: row[0] } )
+            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Traitements' : row[2],
+                                                       module_project_id: current_module_project.id,
+                                                       pbs_project_element_id: current_component.id).first_or_create
 
-            complete_str = row[0].to_s
-            reduce_str = row[0].to_s.truncate(60)
+            unless row[5].blank?
 
-            JSON.parse(@http.body_str).each do |output|
-              unless output.blank? || output == "NULL"
-                @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
-              else
-                @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+              @http = Curl.post("http://localhost:5001/estimate_trt", { us: row[5] } )
+
+              complete_str = row[5].to_s
+              reduce_str = row[5].to_s.truncate(60)
+
+              JSON.parse(@http.body_str).each do |output|
+
+                unless output.blank? || output == "NULL"
+                  @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+                else
+                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                end
+
+                guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
+                                                    comments: complete_str,
+                                                    guw_unit_of_work_group_id: @guw_group.id,
+                                                    module_project_id: current_module_project.id,
+                                                    pbs_project_element_id: current_component.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    display_order: index.to_i,
+                                                    tracking: complete_str,
+                                                    quantity: 1,
+                                                    selected: true,
+                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+                @guw_model.guw_attributes.each_with_index do |gac, jj|
+                  tmp_val = row[15 + @guw_model.orders.size + jj]
+                  unless tmp_val.nil?
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+
+                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                      unless @guw_type.nil?
+                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                  guw_unit_of_work_id: guw_uow.id,
+                                                                  guw_attribute_id: gac.id).first_or_create
+                        guowa.low = val.to_i
+                        guowa.most_likely = val.to_i
+                        guowa.high = val.to_i
+                        guowa.save
+                      end
+                    end
+                  end
+                end
               end
-
-              Guw::GuwUnitOfWork.create(name: reduce_str,
-                                        comments: complete_str,
-                                        guw_unit_of_work_group_id: @guw_group.id,
-                                        module_project_id: current_module_project.id,
-                                        pbs_project_element_id: current_component.id,
-                                        guw_model_id: @guw_model.id,
-                                        display_order: index.to_i,
-                                        tracking: complete_str,
-                                        quantity: 1,
-                                        selected: true,
-                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
             end
           end
         end
@@ -1499,20 +1595,361 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       redirect_to :back and return
     else
       @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-      @http = Curl.post("http://localhost:5001/estimate", { us: @guw_unit_of_work.comments } )
+      @http = Curl.post("http://localhost:5001/estimate_trt", { us: @guw_unit_of_work.comments } )
 
       unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
-        @guw_type = Guw::GuwType.where(name: @http.body_str, guw_model_id: @guw_unit_of_work.guw_model.id).first
+        @guw_type = Guw::GuwType.where(name: @http.body_str,
+                                       guw_model_id: @guw_unit_of_work.guw_model.id).first
       else
-        @guw_type = Guw::GuwType.where(name: "Inconnu", guw_model_id: @guw_model.id).first
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
 
-      @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.guw_type_id = @guw_type.nil? ? nil : @guw_type.id
       @guw_unit_of_work.save
 
       redirect_to :back and return
     end
 
+  end
+
+  def ml_data
+    @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+
+    txt = ""
+
+    if params[:file].present?
+      if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+
+        workbook = RubyXL::Parser.parse(params[:file].path)
+        worksheet = workbook[0]
+
+        tab = worksheet.extract_data
+        tab.each_with_index do |row, index|
+          txt << row[5]
+        end
+
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
+
+        unless txt.blank?
+
+          @http = Curl.post("http://localhost:5001/estimate_data", { txt: txt })
+
+          JSON.parse(@http.body_str).each do |output|
+
+            data_array = output.scan(/<data=(.*?)>/)
+            attr_array = output.scan(/<attribut=(.*?)>/)
+
+            data_array.each do |d|
+              guw_uow = Guw::GuwUnitOfWork.create(name: d.first.gsub!(/[^0-9A-Za-z ]/, ''),
+                                                  comments: attr_array.uniq.join(", "),
+                                                  guw_unit_of_work_group_id: @guw_group.id,
+                                                  module_project_id: current_module_project.id,
+                                                  pbs_project_element_id: current_component.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  display_order: nil,
+                                                  tracking: nil,
+                                                  quantity: 1,
+                                                  selected: true,
+                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+              @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
+
+                guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
+                                                           guw_unit_of_work_id: guw_uow.id,
+                                                           guw_attribute_id: gac.id)
+                if gac.name == "DET"
+                  guowa.low = attr_array.size
+                  guowa.most_likely = attr_array.size
+                  guowa.high = attr_array.size
+                  guowa.comments = attr_array.join(", ")
+                else
+                  guowa.low = 0
+                  guowa.most_likely = 0
+                  guowa.high = 0
+                end
+
+                guowa.save
+
+              end
+            end
+          end
+        end
+      end
+    end
+    redirect_to :back
+  end
+
+  def deported
+    @guw_unit_of_work = Guw::GuwUnitOfWork.where(id: params[:guw_unit_of_work_id]).first
+    @guw_type = @guw_unit_of_work.guw_type
+    @guw_model = current_module_project.guw_model
+  end
+
+  def import_guw
+
+    @guw_model = current_module_project.guw_model
+    @component = current_component
+    @project = current_module_project.project
+    @guw_attributes = @guw_model.guw_attributes
+    @guw_coefficients = @guw_model.guw_coefficients
+    @guw_outputs = @guw_model.guw_outputs
+
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      worksheet = workbook[0]
+      tab = worksheet.extract_data
+
+      tab.each_with_index do |row, index|
+        unless row.nil?
+          unless row[4].nil?
+            if index > 0
+
+              guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
+                                                            module_project_id: current_module_project.id,
+                                                            pbs_project_element_id: @component.id).first_or_create
+
+              tmp_hash_res = Hash.new
+              tmp_hash_ares  = Hash.new
+
+              guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
+                                                  name: row[4],
+                                                  comments: row[5],
+                                                  guw_unit_of_work_group_id: guw_uow_group.id,
+                                                  module_project_id: current_module_project.id,
+                                                  pbs_project_element_id: @component.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  tracking: row[12],
+                                                  quantity: row[11].nil? ? 1 : row[11],
+                                                  size: row[14].nil? ? nil : row[14],
+                                                  ajusted_size: row[15].nil? ? nil : row[15],
+                                                  intermediate_percent: row[16].nil? ? nil : row[16],
+                                                  intermediate_weight: row[16].nil? ? nil : row[16])
+
+              guw_uow.save(validate: false)
+
+              @guw_attributes.each_with_index do |gac, ii|
+
+                @guw_type = Guw::GuwType.where(name: row[6],
+                                               guw_model_id: @guw_model.id).first
+
+                @guw_attributes.size.times do |jj|
+
+                  ind = 18 + @guw_outputs.size + @guw_coefficients.size + jj
+
+                  tmp_val = row[ind]
+
+                  unless tmp_val.nil?
+
+                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
+
+                    if gac.name == tab[0][ind]
+                      unless @guw_type.nil?
+                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                  guw_unit_of_work_id: guw_uow.id,
+                                                                  guw_attribute_id: gac.id).first_or_create
+                        guowa.low = val
+                        guowa.most_likely = val
+                        guowa.high = val
+                        guowa.save
+                      end
+                    end
+                  end
+                end
+              end
+
+              @lows = Array.new
+              @mls = Array.new
+              @highs = Array.new
+              array_pert = Array.new
+
+              guw_uow.off_line = false
+              guw_uow.off_line_uo = false
+
+              guw_uow.guw_unit_of_work_attributes.each do |guowa|
+                calculate_guowa(guowa, guw_uow, @guw_type)
+              end
+
+              if @lows.empty?
+                guw_uow.guw_complexity_id = nil
+                guw_uow.guw_original_complexity_id = nil
+                guw_uow.result_low = nil
+              else
+                guw_uow.result_low = @lows.sum
+              end
+
+              if @mls.empty?
+                guw_uow.guw_complexity_id = nil
+                guw_uow.guw_original_complexity_id = nil
+                guw_uow.result_most_likely = nil
+              else
+                guw_uow.result_most_likely = @mls.sum
+              end
+
+              if @highs.empty?
+                guw_uow.guw_complexity_id = nil
+                guw_uow.guw_original_complexity_id = nil
+                guw_uow.result_high = nil
+              else
+                guw_uow.result_high = @highs.sum
+              end
+
+              guw_uow.guw_type_id ||= (@guw_type.nil? ? nil : @guw_type.id)
+
+              begin
+                unless params["guw_complexity_#{guw_uow.id}"].nil?
+                  guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
+                  guw_uow.guw_complexity_id = guw_complexity_id
+                  guw_uow.guw_original_complexity_id = guw_complexity_id
+                else
+                  unless row[13].blank?
+                    unless @guw_type.nil?
+                      guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                              name: row[13]).first
+                    end
+                  end
+
+                  guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                end
+              rescue
+              end
+
+              if guw_uow.changed?
+                guw_uow.save
+              end
+
+              unless @guw_type.nil?
+                if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
+
+                  tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
+                                                             organization_technology_id: guw_uow.organization_technology_id).first
+
+                  if guw_uow.guw_complexity.nil?
+                    array_pert << 0
+                  else
+                    array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
+                  end
+                  if guw_uow.changed?
+                    guw_uow.save
+                  end
+                else
+                  if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
+                    guw_uow.off_line_uo = nil
+                  else
+                    #Save if uo is simple/ml/high
+                    value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
+                    if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
+                      guw_uow.off_line_uo = true
+                    elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
+                      guw_uow.off_line_uo = true
+                      cplx = @guw_type.guw_complexities.last
+                      if cplx.nil?
+                        guw_uow.guw_complexity_id = nil
+                        guw_uow.guw_original_complexity_id = nil
+                      else
+                        guw_uow.guw_complexity_id = cplx.id
+                        guw_uow.guw_original_complexity_id = cplx.id
+                        array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+                      end
+                    else
+                      @guw_type.guw_complexities.each do |guw_c|
+                        array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                      end
+                    end
+                  end
+                end
+              end
+
+              #gestion des valeurs intermédiaires
+              @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+
+              guw_uow.quantity = 1
+
+              if guw_uow.changed?
+                guw_uow.save
+              end
+
+              guw_uow.ajusted_size = nil
+              guw_uow.size = nil
+
+              if guw_uow.changed?
+                guw_uow.save
+              end
+
+              update_estimation_values
+              update_view_widgets_and_project_fields
+
+              @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
+
+                guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
+                                                            guw_model_id: @guw_model.id).first
+
+                if guw_coefficient.class == Guw::GuwCoefficient
+
+                  (16..60).to_a.each do |k|
+                    if guw_coefficient.name == tab[0][k]
+
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
+                                                                        guw_coefficient_id: guw_coefficient.id).first_or_create
+
+
+                      if row[k].blank?
+                        ce = guw_coefficient.guw_coefficient_elements.where(default: true).first
+                      else
+                        ce = guw_coefficient.guw_coefficient_elements.where(name: row[k]).first
+                      end
+
+                      unless ce.nil?
+                        ceuw.guw_coefficient_element_id = ce.id
+                      else
+                        ceuw.percent = row[k].to_f
+                      end
+
+                      unless guw_uow.changed?
+                        ceuw.save
+                      end
+                    end
+                  end
+                elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+
+                  guw_output = Guw::GuwOutput.where(name: i[0],
+                                                    guw_model_id: @guw_model.id).first
+
+                  unless guw_output.nil?
+                    (16..60).to_a.each do |k|
+                      if guw_output.name == tab[0][k]
+                        # tmp_hash_res["#{guw_output.id}"] = row[k]
+                        tmp_hash_ares["#{guw_output.id}"] = row[k]
+                      end
+                    end
+                  end
+                end
+              end
+
+              guw_uow.size = tmp_hash_res
+              guw_uow.ajusted_size = tmp_hash_ares
+
+              unless guw_uow.changed?
+                guw_uow.save
+              end
+
+              @guw_attributes.all.each do |gac|
+                unless @guw_type.nil?
+                  finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                           guw_unit_of_work_id: guw_uow.id,
+                                                           guw_attribute_id: gac.id).first_or_create
+                end
+              end
+
+            end
+          end
+        end
+      end
+    end
+
+    redirect_to :back
   end
 
   private
@@ -1621,7 +2058,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @module_project = current_module_project
       @module_project.guw_model_id = @guw_model.id
       @module_project.save
-      @guw_outputs = @guw_model.guw_outputs
+      @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
       number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id,
                                                              module_project_id: current_module_project.id).all.map{|i| i.guw_unit_of_works}.flatten.size
@@ -1709,16 +2146,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    expire_fragment "guw"
-
   end
 
   def update_view_widgets_and_project_fields
     @module_project.views_widgets.each do |vw|
       ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
     end
+  end
 
-    expire_fragment "guw"
+  def reorder(group)
+    group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
+      u.display_order = i
+      if u.changed?
+        u.save
+      end
+    end
   end
 
 end

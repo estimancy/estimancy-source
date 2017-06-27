@@ -1611,6 +1611,8 @@ en-gb:
   change_module_project_instance: "Change the module instance"
   edit_estimation_model: "Edit estimation model \"%{value}\""
 
+  multiple_delete: "Suppression multiple"
+
   create_button: "Create"
   created_date: "Created date"
   label_Guw_model: "Generic unit of work module"
@@ -1649,3 +1651,6 @@ en-gb:
 
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
+  copy_in_progress: "Copy in progress..."
+  is_new_status: "Is the default status of new estimation version "
+  warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."

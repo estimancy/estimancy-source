@@ -64,7 +64,7 @@ class Operation::OperationInputsController < ApplicationController
                                    operation_input_id: @operation_input.id,
                                    operation_model_id: @operation_input.operation_model_id).first_or_create!
 
-          pm = Pemodule.where(alias: "operation").first
+          pm = Pemodule.where(alias: "operation").first_or_create(alias: "operation", title: "Module de calcul", description: "Module de calcul", with_activities: "no")
 
           am = AttributeModule.where(pe_attribute_id: attr.id,
                                      pemodule_id: pm.id,
@@ -102,7 +102,8 @@ class Operation::OperationInputsController < ApplicationController
 
           description = (@operation_input.description.nil? || @operation_input.description.empty?) ? @operation_input.name : @operation_input.description
 
-          pm = Pemodule.where(alias: "operation").first
+          pm = Pemodule.where(alias: "operation").first_or_create(alias: "operation", title: "Module de calcul", description: "Module de calcul", with_activities: "no")
+
           old_attr = PeAttribute.where(name: old_attr_name, operation_model_id: @operation_model.id).first
 
           if old_attr.nil?
@@ -136,6 +137,7 @@ class Operation::OperationInputsController < ApplicationController
 
               am = AttributeModule.where(pe_attribute_id: old_attr.id,
                                          pemodule_id: pm.id,
+                                         in_out: @operation_input.in_out,
                                          operation_model_id: @operation_input.operation_model_id).first_or_create
 
               am.save

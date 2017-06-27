@@ -23,7 +23,6 @@
 class AdminSetting < ActiveRecord::Base
   attr_accessible :key, :value, :description, :category
 
-  validates :value, :presence => true
   validates :key, :presence => true
 
 end

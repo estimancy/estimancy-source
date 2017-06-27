@@ -174,7 +174,8 @@ class ViewsWidgetsController < ApplicationController
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
 
-        format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
+        format.js { render(:js => "window.location.replace('#{dashboard_path(@project)}');")}
+        format.html { redirect_to dashboard_path(@project) and return }
       else
         flash[:error] = "Erreur d'ajout de Vignette"
         @position_x = 1; @position_y = 1
@@ -190,6 +191,8 @@ class ViewsWidgetsController < ApplicationController
         rescue
           @views_widget_types = []
         end
+
+        flash.keep(:error)
 
         format.html { render action: :new }
         format.js   { render action: :new }
@@ -248,7 +251,9 @@ class ViewsWidgetsController < ApplicationController
       end
 
       if pf.nil?
-        ProjectField.create(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+        ProjectField.create(project_id: project.id,
+                            field_id: params["field"].to_i,
+                            views_widget_id: @views_widget.id, value: @value)
       else
         pf.value = get_kpi_value_without_unit(@views_widget)
         pf.views_widget_id = @views_widget.id
@@ -269,6 +274,7 @@ class ViewsWidgetsController < ApplicationController
         #end
 
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
+        format.html { redirect_to dashboard_path(@project) and return }
       else
         flash[:error] = "Erreur lors de la mise à jour du Widget dans la vue"
         @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x
@@ -448,7 +454,12 @@ class ViewsWidgetsController < ApplicationController
             worksheet.add_cell(ind_y, 5, '').set_number_format('.##')
           end
 
-          worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          begin
+            worksheet.add_cell(ind_y, 6, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
+          rescue
+            worksheet.add_cell(ind_y, 6, '')
+          end
+
           ind_y += 1
         end
       end
@@ -459,13 +470,14 @@ class ViewsWidgetsController < ApplicationController
         worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
-        wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, module_project_id: widget.module_project.id).first
+        ratio = widget.module_project.wbs_activity_ratio
 
-        if wbs_activity_input.nil?
-          ratio = nil
-        else
-          ratio = wbs_activity_input.wbs_activity_ratio
-        end
+        # wbs_activity_input = WbsActivityInput.where(wbs_activity_id: activity.id, wbs_activity_ratio_id: ratio.id, module_project_id: widget.module_project.id, pbs_project_element_id: current_component.id).first
+        # if wbs_activity_input.nil?
+        #   ratio = nil
+        # else
+        #   ratio = wbs_activity_input.wbs_activity_ratio
+        # end
 
         unless ratio.nil?
           activity.wbs_activity_elements.each do |element|
@@ -488,7 +500,8 @@ class ViewsWidgetsController < ApplicationController
                   worksheet.add_cell(ind_y, 6, widget.estimation_value.string_data_probable[current_component.id][element.id]["profiles"]["profile_id_#{profil.id}"]["ratio_id_#{ratio.id}"][:value]).set_number_format('.##')
                   worksheet.add_cell(ind_y, 7, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
                 rescue
-                  worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
+                  #worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
+                  worksheet.add_cell(ind_y, 6, "")
                   worksheet.add_cell(ind_y, 7, "")
                 end
                 ind_y += 1

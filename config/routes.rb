@@ -19,7 +19,7 @@
 #
 #############################################################################
 
-require 'sidekiq/web'
+###require 'sidekiq/web'
 
 Projestimate::Application.routes.draw do
 
@@ -31,7 +31,7 @@ Projestimate::Application.routes.draw do
 
   resources :fields
   resources :views_widgets
-  get 'update_view_widget_positions' => 'views_widgets#update_view_widget_positions', :as => 'update_view_widget_positions'
+  post 'update_view_widget_positions' => 'views_widgets#update_view_widget_positions', :as => 'update_view_widget_positions'
   get 'update_view_widget_sizes' => 'views_widgets#update_view_widget_sizes', :as => 'update_view_widget_sizes'
   get 'update_widget_module_project_data' => 'views_widgets#update_widget_module_project_data', :as => 'update_widget_module_project_data'
   get 'show_widget_effort_display_unit' => 'views_widgets#show_widget_effort_display_unit', :as => 'show_widget_effort_display_unit'
@@ -56,7 +56,7 @@ Projestimate::Application.routes.draw do
   resources :profiles
 
   # Mount the Sidekiq web interface
-  mount Sidekiq::Web, at: "/sidekiq"
+  ###mount Sidekiq::Web, at: "/sidekiq"
 
   resources :technologies
 
@@ -90,6 +90,7 @@ Projestimate::Application.routes.draw do
   post 'create_inactive_user' => 'users#create_inactive_user', :as => 'create_inactive_user'
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
   get 'about' => 'users#about', :as => 'about'
+  get 'contactsupport' => 'users#contactsupport', :as => 'contactsupport'
   match 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'
@@ -159,9 +160,9 @@ Projestimate::Application.routes.draw do
   resources :admin_settings
 
   # searches controller routes
-  post 'searches/results'
-  get 'searches/results' => 'searches#results', :as => 'searches/results'
-  match 'searches/results' => 'searches#results', :as => 'search_results'
+  # post 'searches/results'
+  # get 'searches/results' => 'searches#results', :as => 'searches/results'
+  # match 'searches/results' => 'searches#results', :as => 'search_results'
 
   resources :estimation_values
   match 'estimation_values/:type/convert' => 'estimation_values#convert', :as => 'convert'
@@ -241,6 +242,7 @@ Projestimate::Application.routes.draw do
     get "export_project_categories" => 'organizations#export_project_categories'
 
     post "import_project_areas" => 'organizations#import_project_areas'
+    post "import_project_profile" => 'organizations#import_project_profile'
     post "import_project_categories" => 'organizations#import_project_categories'
     post "import_platform_categories" => 'organizations#import_platform_categories'
     post "import_acquisition_categories" => 'organizations#import_acquisition_categories'
@@ -302,6 +304,7 @@ Projestimate::Application.routes.draw do
 
   resources :projects
   match 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
+  get 'search' => 'projects#search', :as => 'search'
 
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'
@@ -333,7 +336,7 @@ Projestimate::Application.routes.draw do
   get 'add_comment_on_status_change' => 'projects#add_comment_on_status_change', as: 'add_comment_on_status_change'
   get 'change_new_estimation_data' => 'projects#change_new_estimation_data', as: 'change_new_estimation_data'
   get 'set_checkout_version' => 'projects#set_checkout_version', as: 'set_checkout_version'
-  get 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
+  match 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
 
   match 'update_comments_status_change' => 'projects#update_comments_status_change', as: 'update_comments_status_change'
   post 'add_wbs_activity_to_project' => 'projects#add_wbs_activity_to_project',  :as => 'add_wbs_activity_to_project'
@@ -347,7 +350,7 @@ Projestimate::Application.routes.draw do
   match 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
   match 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
-  match 'projects/:project_id/confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
+  match 'projects/confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
   match 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
 

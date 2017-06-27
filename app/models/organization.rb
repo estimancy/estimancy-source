@@ -84,7 +84,7 @@ class Organization < ActiveRecord::Base
   validates :number_hours_per_month, :cost_per_hour, numericality: { greater_than: 0 }   ###, on: :update, :unless => Proc.new {|organization| organization.number_hours_per_day.nil? || organization.number_hours_per_month.nil? || organization.cost_per_hour.nil? }
   validates :currency_id, :presence => true
   validates_presence_of :limit1, :limit2, :limit3
-  validates :estimations_counter, numericality: { greater_than_or_equal_to: 0 }
+  validates :estimations_counter, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
   #Search fields
   scoped_search :on => [:name, :description, :created_at, :updated_at]
@@ -122,6 +122,7 @@ class Organization < ActiveRecord::Base
       new_organization.name = "#{original_organization.name}(#{new_copy_number})" ###"Copy of '#{original_organization.name}' at #{Time.now}"
       original_organization.copy_number = new_copy_number
       new_organization.copy_number = 0
+      new_organization.copy_in_progress = false
     })
   end
 

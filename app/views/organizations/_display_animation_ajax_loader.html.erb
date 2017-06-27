@@ -1,11 +1,14 @@
 <div class="modal-header modal-drag">
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <button type="button" class="close" id="close_copy_modal" data-dismiss="modal" aria-hidden="true">×</button>
   <h3 id="myModalLabel"><%= I18n.t (:organization_copy) %></h3>
 </div>
 
 <div class="modal-body" style="max-height:100px; margin-top: 20px;">
   <div id="display_animation_ajax_loader">
-    <h4 style=" margin-bottom: 20px;"><%= I18n.t(:wait_message_for_organization_copy) %></h4>
+    <h4 style=" margin-bottom: 20px;">
+      <%= I18n.t(:wait_message_for_organization_copy) %>
+      <%= "Le popup va se fermer dans quelques secondes, la copie de l'organisation va continuer... " %>
+    </h4>
     <%= image_tag 'animate-ajax-loader.gif' %>
   </div>
 
@@ -13,7 +16,6 @@
   <%#= button_tag :class => "btn btn-danger pull-right", :type => "reset", :data => { :disable_with => "Annulation en cours" } do %>
       <%#= I18n.t("cancel") %>
   <%# end %>
-
 </div>
 
 <!--<div class="modal-footer">-->

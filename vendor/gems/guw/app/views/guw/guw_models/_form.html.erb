@@ -43,27 +43,82 @@
             <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
             <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
             <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
+            <%= f.input :allow_ml, label: "Activer le comptage automatique" %>
           </div>
 
-          <% (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name)).flatten.each do |item| %>
-            <% begin %>
-              <p>
-                <%= item %> : <%= text_field_tag "items[#{item}]", @guw_model.orders[item] %>
-              </p>
-            <% rescue %>
-              <p>
-                <%= item %> : <%= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item] %>
-              </p>
-            <% end %>
-          <% end %>
+          <table>
+            <tr>
+              <th>
+                Position
+              </th>
+              <th>
+                Colonne
+              </th>
+            </tr>
 
-            <div class="actions-tabs">
-              <% if can? :manage_modules_instances, ModuleProject %>
-                <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-                <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
-              <% end %>
-              <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
-            </div>
+            <% @initial_guw_model_orders = @guw_model.orders %>
+            <% @guw_model_orders = @initial_guw_model_orders.delete_if { |k, v| v.blank? } %>
+            <% @guw_model_orders = @guw_model_orders.sort_by{ |k,v| v.to_f }.to_h %>
+
+            <% all_coeff_and_outputs = (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten %>
+            <% all_coeff_and_outputs.each do |key|
+               unless @guw_model_orders.key?("#{key}")
+                 @guw_model_orders["#{key}"] = nil
+               end
+             end
+            %>
+
+            <%# (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten.each do |item| %>
+            <% @guw_model_orders.each do |item, value| %>
+              <tr>
+                <% begin %>
+
+                  <td>
+                    <%= text_field_tag "items[#{item}]", value, class: "order_size" %>
+                  </td>
+
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                    <td class="orders_padding">
+                      <b>
+                        <%= item %>
+                      </b>
+                    </td>
+                  <% else %>
+                    <td class="orders_padding">
+                      <%= item %>
+                    </td>
+                  <% end %>
+
+                <% rescue %>
+                  <td>
+                    <%#= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item], class: "order_size" %>
+                    <%= text_field_tag "items[#{item}]", YAML::load(@guw_model_orders.value)[item], class: "order_size" %>
+                  </td>
+
+                  <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                    <td class="orders_padding">
+                      <b>
+                        <%= item %>
+                      </b>
+                    </td>
+                  <% else %>
+                    <td class="orders_padding">
+                      <%= item %>
+                    </td>
+                  <% end %>
+
+                <% end %>
+              </tr>
+            <% end %>
+          </table>
+
+          <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+              <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
+            <% end %>
+            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+          </div>
         <% end %>
       </div>
 
@@ -135,36 +190,40 @@
     </div>
 
     <div id="tabs-output">
-      <table class="table table-bordered">
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th>Type de sortie</th>
-          <th>Unité de sortie</th>
-          <th>Valeurs intermédiaires</th>
-          <th>Sous-total</th>
-          <th>Coefficient Standard</th>
-          <th></th>
-        </tr>
-
-        <% unless @guw_outputs.empty? %>
-          <% @guw_outputs.each do |guw_output| %>
+      <div class="row-fluid">
+        <div class="span6">
+          <table class="table table-bordered">
             <tr>
-              <td><%= guw_output.name %></td>
-              <td><%= guw_output.output_type %></td>
-              <td><%= guw_output.unit %></td>
-              <td><%= guw_output.allow_intermediate_value %></td>
-              <td><%= guw_output.allow_subtotal %></td>
-              <td><%= guw_output.standard_coefficient %></td>
-              <td class="center">
-                <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
-                <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
-                <% end %>
-              </td>
+              <th><%= I18n.t(:name) %></th>
+              <th class="span2">Type de sortie</th>
+              <th class="span2">Unité de sortie</th>
+              <th class="span2">Sous-total</th>
+              <th class="span2">Coefficient Standard</th>
+              <th class="span2">Ordre de calcul</th>
+              <th>Actions</th>
             </tr>
-          <% end %>
-        <% end %>
-      </table>
+
+            <% unless @guw_outputs.empty? %>
+              <% @guw_outputs.each do |guw_output| %>
+                <tr>
+                  <td class="align-center"><%= guw_output.name %></td>
+                  <td class="align-center"><%= guw_output.output_type %></td>
+                  <td class="align-center"><%= guw_output.unit %></td>
+                  <td class="align-center"><%= guw_output.allow_subtotal %></td>
+                  <td class="align-center"><%= guw_output.standard_coefficient %></td>
+                  <td class="align-center"><%= guw_output.display_order %></td>
+                  <td class="center">
+                    <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </table>
+        </div>
+      </div>
 
       <br>
 
@@ -177,28 +236,34 @@
     <div id="tabs-coefficients">
       <% @guw_coefficients.each do |guw_coefficient| %>
         <div class="row-fluid">
-          <div class="span12">
+          <div class="span6">
             <b>
               <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
             </b>
 
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right" %>
+              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", confirm: I18n.t(:are_you_sure) %>
             <% end %>
             <%= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
 
             <table class="table table-bordered">
               <tr>
-                <th>Nom</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Valeur</th>
-                <th></th>
+                <th class="span2">Nom</th>
+                <th class="span2">Description</th>
+                <th class="span2">Min</th>
+                <th class="span2">Max</th>
+                <th class="span2">Valeur</th>
+                <th class="span2">Valeur par défaut</th>
+                <th class="span2">Ordre d'affichage</th>
+                <th>Actions</th>
               </tr>
               <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
                 <tr>
                   <td class="align-center">
                     <%= guw_coefficient_element.name %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.description %>
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.min_value %>
@@ -208,6 +273,12 @@
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.value %>
+                  </td>
+                  <td class="align-center">
+                    <%= (guw_coefficient_element.default == true) ? "Oui" : "Non" %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.display_order %>
                   </td>
                   <td class="align-center">
                     <%= link_to "", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
@@ -226,8 +297,6 @@
         </div>
         <hr>
       <% end %>
-
-      <hr>
 
       <% if can? :manage_modules_instances, ModuleProject %>
         <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn" %>

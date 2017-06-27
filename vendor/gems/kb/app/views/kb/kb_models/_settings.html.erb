@@ -94,6 +94,7 @@
             <% array = ["most_likely"] %>
           <% end %>
 
+
           <% array.each do |level| %>
 
             <h5>
@@ -103,58 +104,80 @@
             </h5>
 
             <%
-             size_attr = PeAttribute.find_by_alias("retained_size")
+             module_project =  current_module_project
+             size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
 
-             size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                     :module_project_id => current_module_project.id,
-                                                     :in_out => "input").first
              begin
-               if size_current_ev && !size_current_ev.estimation_value_id.nil?
-                 size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
-               else
-                  size_possible_module_projects = current_module_project.possible_previous_mp_for_attribute(size_attr)
-                  mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
-                  size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                           :module_project_id => mpsize.id,
-                                                           :in_out => "output").first
-               end
+                size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id, :module_project_id => module_project.id, :in_out => "input").first
              rescue
+                size_current_ev = nil
+             end
+
+             unless size_current_ev.nil?
+               ev_size_value = size_current_ev.string_data_probable[current_component.id]
+
                begin
-                mpsize = current_module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
-                size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                        :module_project_id => mpsize.id,
-                                                        :in_out => "output").first
-               rescue
-                 size_previous_ev = nil
+                 if ev_size_value.blank? || !@kb_model.enabled_input
+
+                   if !size_current_ev.estimation_value_id.nil?
+                     size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
+                   else
+                      size_possible_module_projects = module_project.possible_previous_mp_for_attribute(size_attr)
+
+                      mpsize = module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+                      begin
+                        size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                               :module_project_id => mpsize.id, :in_out => "output").first
+                      rescue
+                        begin
+                          mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+                          size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                                   :module_project_id => mpsize.id, :in_out => "output").first
+                        rescue
+                          size_previous_ev = nil
+                        end
+                      end
+                   end
+                 end
                end
              end
 
+             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
 
 
-             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id)
+             effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
 
+             begin
+              effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                       :module_project_id => module_project.id, :in_out => "input").first
+             rescue
+               effort_current_ev = nil
+             end
 
-             effort_attr = PeAttribute.find_by_alias("effort")
-             effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
-                                                       :module_project_id => current_module_project.id,
-                                                       :in_out => "input").first
-             effort_possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort_attr)
+             effort_possible_module_projects = module_project.possible_previous_mp_for_attribute(effort_attr)
 
-             if current_module_project.previous.size > 1
+             if module_project.previous.size > 1
 
                if effort_current_ev && !effort_current_ev.estimation_value_id.nil?
                  ev = EstimationValue.find(effort_current_ev.estimation_value_id)
                else
-                  ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
-                                             module_project_id: current_module_project.previous.last.id,
-                                             in_out: "output").first
+                 begin
+                    ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
+                                               module_project_id: module_project.previous.last.id, in_out: "output").first
+                 rescue
+                    ev = nil
+                 end
                end
 
                if ev
-                 if ev.module_project.pemodule.alias == "effort_breakdown"
-                   @previous_effort = ev.send("string_data_probable")[current_component.id][current_module_project.previous.last.wbs_activity.root_element.id][:value].to_f
-                 else
-                   @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 begin
+                   if ev.module_project.pemodule.alias == "effort_breakdown"
+                     @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                   else
+                     @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                   end
+                 rescue
+                   @previous_effort = 0
                  end
                end
              end
@@ -174,11 +197,22 @@
                 Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
               </strong>
             </h5>
-            <% effort_attr = PeAttribute.find_by_alias("effort") %>
-            <% effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
-                                                         :module_project_id => current_module_project.id,
-                                                         :in_out => "output").first %>
-            <% @effort = effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient) %>
+            <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+
+            <% begin
+                output_effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                         :module_project_id => module_project.id, :in_out => "output").first
+               rescue
+                 output_effort_current_ev = nil
+               end
+            %>
+
+            <% if output_effort_current_ev.nil?
+                  @effort = 0
+               else
+                  @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
+               end
+            %>
 
             <% unless @kb_model.enabled_input %>
               <span id="effort_label">
@@ -193,6 +227,7 @@
                                    class: "string required input-xlarge", step: "any" %>
             <% end %>
           <% end %>
+
           <hr>
 
           <% if current_module_project.previous.size > 1 %>
@@ -216,6 +251,11 @@
                 </strong>
               </h5>
               <%= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+
+              <!-- Update Percentage ecart -->
+              <%#= ecart =  (@effort.to_f * @kb_model.standard_unit_coefficient.to_f) - @previous_effort.to_f %>
+              <%# percent_ecart_ev =  EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                           :module_project_id => module_project.id, :in_out => "output").first%>
             <% end %>
 
         <% end %>
@@ -230,11 +270,11 @@
   <div class="row-fluid">
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-primary">
-          <%= I18n.t(:save) %>
+        <button type="submit" class="btn btn-primary button_margin_right">
+          <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
-      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right", :method => "post" %>
+      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right pull-left", :method => "post" %>
     </div>
   </div>
 <% end %>
@@ -319,7 +359,7 @@
           },
           type: 'scatter',
           color: 'rgba(0, 0, 0, 1)',
-          data: <%= [[@size, @effort.round(2)]] %>
+          data: <%= [[@size, @effort.to_f.round(2)]] %>
         }]
       });
     });

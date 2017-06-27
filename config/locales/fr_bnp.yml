@@ -289,6 +289,7 @@ fr_bnp:
   services: "Services"
   wiki: "Wiki"
   about: "A propos"
+  contactsupport: "Contact support"
 
   #attributes
   name: "Nom"
@@ -651,7 +652,7 @@ fr_bnp:
   auth_type: "Authentification de l'utilisateur"
   informations: "Informations sur l'utilisateur"
   user_status: "Statut de l'utilisateur"
-  created_at: "Créer le"
+  created_at: "Crée le"
   updated_at: "Mis à jour le"
   last_login: "Dernière connexion"
   previous_login: "Connexion précédente"
@@ -1609,7 +1610,7 @@ fr_bnp:
   unit_value: "Unité"
   group: "Groupe"
   profile: "Profil"
-  UO_type_complexity: "Seuils de complexité de lUO"
+  UO_type_complexity: "Seuils de complexités"
   advice: "Attention: Ne pas modifier les cases contenant des caractères en gras, cela pourrait causer une incapacité à importer votre fichier depuis l'application.\nPour plus de conseils d'utilisation: http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work"
   Edit_Units_Of_Work: "Editer unité d'oeuvre"
   New_Units_Of_Work: "Nouvelle unité d'oeuvre"
@@ -2053,3 +2054,14 @@ fr_bnp:
   new_input_attribute: "Nouvel attribut d'entrée"
 
   liste_des_estimations: "Liste des estimations"
+  copy_in_progress: "Copie en cours..."
+  is_new_status: "Nouveau statut de la nouvelle version"
+  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."  
+
+  are_you_sure_multiple_delete: "Êtes vous sûr de vouloir supprimer ces projets ?"
+  are_you_sure_simple_delete: "Êtes vous sûr de vouloir supprimer ce projet ?"
+
+  your_configuration: "Votre configuration"
+  contact_us: "Contacter l'équipe technique"
+
+  display_estimation: "Afficher les tableaux de bord de l'estimation en cours"

@@ -251,26 +251,34 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
-      @wbs_activity = current_module_project.wbs_activity
-      if params[:ratio].nil?
-        @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      else
-        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
-      end
-
       @pbs_project_element = current_component
-      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
-      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
-
+      @wbs_activity = current_module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      # Module_project Ratio elements
-      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+      # if params[:ratio].nil?
+      #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+      # else
+      #   @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+      # end
+      @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
+      if @wbs_activity_ratio.nil?
+        unless params[:ratio].nil?
+          @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+        end
+      end
 
-      # Module Project Ratio Variables
-      @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      unless @wbs_activity_ratio.nil?
+        ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+        @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
+        # Module_project Ratio elements
+        @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+
+        # Module Project Ratio Variables
+        @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      end
     else
+      # other
     end
   end
 
@@ -880,7 +888,12 @@ class ProjectsController < ApplicationController
 
     @organization = @project.organization
 
-    set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    #set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    if @project.is_model
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    end
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
@@ -970,6 +983,7 @@ class ProjectsController < ApplicationController
   # Multiple deletion
   def destroy_multiple_project
     if params['project_ids_to_delete']
+      puts params['project_ids_to_delete']
       project_ids = params['project_ids_to_delete']
       project_ids.each do |project_id|
         project = Project.find(project_id)
@@ -982,9 +996,9 @@ class ProjectsController < ApplicationController
         end
       end
 
-      flash[:notice] = I18n.t(:notice_project_successful_deleted)
+      flash[:notice] = I18n.t(:notice_multiple_project_successful_deleted)
     end
-    redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
+    redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@current_organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
   end
 
 
@@ -1019,25 +1033,48 @@ class ProjectsController < ApplicationController
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 
-    @project = Project.find(params[:project_id])
-    if @project.is_childless?
-      authorize! :delete_project, @project
-
-      @from_tree_history_view = params[:from_tree_history_view]
-      @current_showed_project_id = params['current_showed_project_id']
-
-      #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
-      if @project.has_children?
-        if @from_tree_history_view
-          redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
-        else
-          flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
-          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
-        end
-      end
+    if params[:deleted_projects].present?
+      @projects = Project.where(id: params[:deleted_projects]).all
     else
+      @projects = Project.where(id: params[:project_id]).all
+      flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
+
+    @project_ids = params[:deleted_projects]
+
+    #@projects.each do |p|
+
+    # @project = Project.find(params[:project_id])
+    # if @project.is_childless?
+    #   authorize! :delete_project, @project
+    #
+    #   @from_tree_history_view = params[:from_tree_history_view]
+    #   @current_showed_project_id = params['current_showed_project_id']
+    #
+    #   #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
+    #   if @project.has_children?
+    #     if @from_tree_history_view
+    #       redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
+    #     else
+    #       flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
+    #       redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+    #     end
+    #   end
+    # else
+    #   flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+    #   redirect_to :back
+    # end
+  end
+
+  def confirm_deletion_multiple
+    set_page_title I18n.t(:confirm_deletion)
+
+    @projects = Project.where(id: params[:deleted_projects]).all
+
+    puts(" ids = #{params[:deleted_projects]}")
+    @projects = Project.find(params[:project_id])
+
   end
 
   def select_categories
@@ -1184,10 +1221,16 @@ class ProjectsController < ApplicationController
       elsif @pemodule.alias == "effort_breakdown"
         wbs_id = params[:module_selected].split(',').first.to_i
         my_module_project.wbs_activity_id = wbs_id
-        wai = WbsActivityInput.new(module_project_id: my_module_project.id,
-                                wbs_activity_id: wbs_id,
-                                wbs_activity_ratio_id: my_module_project.wbs_activity.wbs_activity_ratios.first )
-        wai.save
+
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio_wai = WbsActivityInput.new(module_project_id: my_module_project.id,
+                                     wbs_activity_id: wbs_id, wbs_activity_ratio_id: ratio.id,
+                                     pbs_project_element_id: @pbs_project_element.id)
+          ratio_wai.save
+        end
+
+
+        wai = my_module_project.wbs_activity_inputs.first
 
         #create module_project ratio elements
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
@@ -1259,64 +1302,70 @@ class ProjectsController < ApplicationController
         #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
         attribute_modules.each do |am|
 
-          if am.in_out == 'both'
-            ['input', 'output'].each do |in_out|
+          unless am.pe_attribute.nil?
+            if am.in_out == 'both'
+              ['input', 'output'].each do |in_out|
+                mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                             :module_project_id => my_module_project.id,
+                                             :in_out => in_out,
+                                             :is_mandatory => am.is_mandatory,
+                                             :description => am.description,
+                                             :display_order => am.display_order,
+                                             :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                             :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                             :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                             :custom_attribute => am.custom_attribute,
+                                             :project_value => am.project_value)
+
+              end
+            elsif am.in_out != nil
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
                                            :module_project_id => my_module_project.id,
-                                           :in_out => in_out,
+                                           :in_out => am.in_out,
                                            :is_mandatory => am.is_mandatory,
-                                           :description => am.description,
                                            :display_order => am.display_order,
+                                           :description => am.description,
                                            :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
                                            :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
                                            :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
                                            :custom_attribute => am.custom_attribute,
                                            :project_value => am.project_value)
-
             end
-          elsif am.in_out != nil
-            mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                         :module_project_id => my_module_project.id,
-                                         :in_out => am.in_out,
-                                         :is_mandatory => am.is_mandatory,
-                                         :display_order => am.display_order,
-                                         :description => am.description,
-                                         :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                         :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                         :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                         :custom_attribute => am.custom_attribute,
-                                         :project_value => am.project_value)
           end
         end
+
       else
         #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
         my_module_project.pemodule.attribute_modules.each do |am|
-          if am.in_out == 'both'
-            ['input', 'output'].each do |in_out|
+          unless am.pe_attribute.nil?
+
+            if am.in_out == 'both'
+              ['input', 'output'].each do |in_out|
+                mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                             :module_project_id => my_module_project.id,
+                                             :in_out => in_out,
+                                             :is_mandatory => am.is_mandatory,
+                                             :description => am.description,
+                                             :display_order => am.display_order,
+                                             :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                             :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                             :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                             :custom_attribute => am.custom_attribute,
+                                             :project_value => am.project_value)
+              end
+            else
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
                                            :module_project_id => my_module_project.id,
-                                           :in_out => in_out,
+                                           :in_out => am.in_out,
                                            :is_mandatory => am.is_mandatory,
-                                           :description => am.description,
                                            :display_order => am.display_order,
+                                           :description => am.description,
                                            :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
                                            :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
                                            :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
                                            :custom_attribute => am.custom_attribute,
                                            :project_value => am.project_value)
             end
-          else
-            mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                         :module_project_id => my_module_project.id,
-                                         :in_out => am.in_out,
-                                         :is_mandatory => am.is_mandatory,
-                                         :display_order => am.display_order,
-                                         :description => am.description,
-                                         :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                         :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                         :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                         :custom_attribute => am.custom_attribute,
-                                         :project_value => am.project_value)
           end
         end
       end
@@ -1613,8 +1662,7 @@ class ProjectsController < ApplicationController
 
       # Save estimation for the current component parent
       if est_val.save
-        EstimationsWorker.perform_async(@pbs_project_element.id, est_val.id)
-        ###perform_test(@pbs_project_element.id, est_val.id)
+        ###EstimationsWorker.perform_async(@pbs_project_element.id, est_val.id)
       end
     end
   end
@@ -1973,12 +2021,6 @@ public
           ### Wbs activity
           #create module_project ratio elements
           old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
-            # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
-            #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
-            #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
-            #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
-            #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
-
             mp_ratio_element = old_mp_ratio_elt.dup
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2050,10 +2092,21 @@ public
                 new_prj_components.each do |new_component|
                   ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                   unless ev.nil?
-                    ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                    ev_low = ev.string_data_low.delete(old_component.id)
+                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                    ev_high = ev.string_data_high.delete(old_component.id)
+                    ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                    ev.string_data_low[new_component.id.to_i] = ev_low
+                    ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                    ev.string_data_high[new_component.id.to_i] = ev_high
+                    ev.string_data_probable[new_component.id.to_i] = ev_probable
 
                     # update ev attribute links
                     unless ev.estimation_value_id.nil?
@@ -2074,13 +2127,6 @@ public
         end
 
         # Update project's organization estimations counter
-        # if new_prj.is_model != true
-        #   unless @organization.estimations_counter.nil?
-        #     @organization.estimations_counter -= 1
-        #     @organization.save
-        #   end
-        # end
-
         unless new_prj.is_model == true || @current_user.super_admin == true
           unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
             @organization.estimations_counter -= 1
@@ -2353,9 +2399,34 @@ public
     end
   end
 
+  def search
+
+    options = {}
+
+    params.delete("utf8")
+    params.delete("commit")
+    params.delete("action")
+    params.delete("controller")
+    params.delete("filter_organization_projects_version")
+    params.delete_if { |k, v| v.nil? || v.blank? }
+
+    params.each do |k,v|
+      case k
+        when "creator"
+          u = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[v]}%", "%#{params[v]}%" ).first
+          options[:creator_id] = u.nil? ? nil : u.id
+        else
+          options[k] = v
+      end
+    end
+
+    redirect_to organization_estimations_path(@current_organization, options)
+  end
+
   #Checkout the project : create a new version of the project
   def checkout
     old_prj = Project.find(params[:project_id])
+    @organization = @current_organization
 
     authorize! :commit_project, old_prj
 
@@ -2370,7 +2441,7 @@ public
       redirect_to organization_estimations_path(@current_organization), :flash => {:warning => I18n.t('warning_not_allow_to_create_new_branch_of_project')} and return
     end
 
-    begin
+    #begin
       old_prj_copy_number = old_prj.copy_number
 
       #old_prj_pe_wbs_product_name = old_prj.pe_wbs_projects.products_wbs.first.name
@@ -2404,7 +2475,7 @@ public
           #pe_wbs_product.name = old_prj_pe_wbs_product_name
           #pe_wbs_activity.name = old_prj_pe_wbs_activity_name
 
-          pe_wbs_product.save
+          pe_wbs_product.save(validate: false)
           #pe_wbs_activity.save
 
           # For PBS
@@ -2420,8 +2491,16 @@ public
               # For PBS-Project-Element Links with modules
               #old_pbs = PbsProjectElement.find(new_c.copy_id)
               #new_c.module_projects = old_pbs.module_projects
-              new_c.save
+              new_c.save(validate: false)
             end
+          end
+
+          #For applications
+          old_prj.applications.each do |application|
+            app = Application.where(name: application.name, organization_id: @organization.id).first
+            ap = ApplicationsProjects.create(application_id: app.id,
+                                             project_id: new_prj.id)
+            ap.save
           end
 
           # For ModuleProject associations
@@ -2434,8 +2513,56 @@ public
               new_mp.associated_module_projects << new_associated_mp
             end
 
-            #For initialization module level
-            update_views_and_widgets(new_prj, old_mp, new_mp)
+            ### Wbs activity
+            #create module_project ratio elements
+            old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+
+              mp_ratio_element = old_mp_ratio_elt.dup
+              mp_ratio_element.module_project_id = new_mp.id
+              mp_ratio_element.copy_id = old_mp_ratio_elt.id
+
+              pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
+              mp_ratio_element.pbs_project_element_id = pbs_id
+              mp_ratio_element.save
+            end
+
+            new_mp_ratio_elements = new_mp.module_project_ratio_elements
+            new_mp_ratio_elements.each do |mp_ratio_element|
+
+              #unless mp_ratio_element.is_root?
+              new_ancestor_ids_list = []
+              mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                if ancestor
+                  ancestor_id = ancestor.id
+                  new_ancestor_ids_list.push(ancestor_id)
+                end
+              end
+              mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+              #end
+              mp_ratio_element.save
+            end
+            ### End wbs_activity
+
+            # For SKB-Input
+            old_mp.skb_inputs.each do |skbi|
+              Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
+                                   organization_id: @organization.id, module_project_id: new_mp.id)
+            end
+
+            #For ge_model_factor_descriptions
+            old_mp.ge_model_factor_descriptions.each do |factor_description|
+              Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
+                                                  factor_alias: factor_description.factor_alias, description: factor_description.description,
+                                                  module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
+            end
+
+            # if the module_project is nil
+            unless old_mp.view.nil?
+              #Update the new project/estimation views and widgets
+              update_views_and_widgets(new_prj, old_mp, new_mp)
+            end
+
 
             #Update the Unit of works's groups
             new_mp.guw_unit_of_work_groups.each do |guw_group|
@@ -2454,23 +2581,27 @@ public
               end
             end
 
-            # new_mp.uow_inputs.each do |uo|
-            #   new_pbs_project_element = new_prj_components.find_by_copy_id(uo.pbs_project_element_id)
-            #   new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-            #
-            #   uo.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-            # end
-
             ["input", "output"].each do |io|
               new_mp.pemodule.pe_attributes.each do |attr|
                 old_prj.pbs_project_elements.each do |old_component|
                   new_prj_components.each do |new_component|
                     ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                     unless ev.nil?
-                      ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                      ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                      ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                      ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                      # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                      # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                      # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                      # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
 
                       # update ev attribute links
                       unless ev.estimation_value_id.nil?
@@ -2521,21 +2652,12 @@ public
             end
           end
 
-          # Update project's organization estimations counter
-          # if new_prj.is_model != true
-          #   unless @current_organization.estimations_counter.nil?
-          #     @current_organization.estimations_counter -= 1
-          #     @current_organization.save
-          #   end
-          # end
-
           unless new_prj.is_model == true || @current_user.super_admin == true
             unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
               @organization.estimations_counter -= 1
               @organization.save
             end
           end
-
 
           flash[:success] = I18n.t(:notice_project_successful_checkout)
           redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
@@ -2545,16 +2667,17 @@ public
           redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
         end
       end
-    rescue
-      flash[:error] = I18n.t(:error_project_checkout_failed)
-      redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
-      ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
-    end
+    # rescue
+    #   flash[:error] = I18n.t(:error_project_checkout_failed)
+    #   redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
+    #   ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
+    # end
 
     #else
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}
     #end  # END commit permission
   end
+
 
 private
 
@@ -2632,30 +2755,10 @@ public
   def add_filter_on_project_version
     #No authorize required
     selected_filter_version = params[:filter_selected]
-    #"Display leaves projects only",1], ["Display all versions",2], ["Display root version only",3], ["Most recent version",4]
 
-    # The current user can only see projects of its organizations
-    @organization_user_projects = []
-    current_user.organizations.each do |organization|
-      @organization_user_projects << organization.projects.all
-    end
+    @organization = Organization.find(params[:organization_id])
 
-    # Differents parameters according to the page on witch the filter is set ("filter_projects_version", "filter_organization_projects_version", "filter_user_projects_version","filter_group_projects_version")
-    case params[:project_list_name]
-      when "filter_projects_version"
-        # Then only projects on which the current is authorise to see will be displayed
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-
-      when "filter_organization_projects_version"
-        # The current organizations's projects
-        organization_id = params['organization_id']
-        if organization_id.present? && organization_id != 'undefined'
-          @organization = Organization.find(organization_id.to_i)
-          @projects = @organization.projects.all
-        end
-      else
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-    end
+    @projects = @organization.projects
 
     unless selected_filter_version.empty?
       case selected_filter_version
@@ -2673,6 +2776,20 @@ public
       end
     end
     @projects = @projects.reject{|i| i.is_model ==  true}
+
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   #Function that manage link_to from project history graphical view

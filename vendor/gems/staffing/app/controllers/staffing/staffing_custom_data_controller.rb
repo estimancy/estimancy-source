@@ -116,11 +116,31 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
     @staffing_custom_data.percent = params[:percents]
-    @staffing_custom_data.global_effort_value = params[:new_effort]
+    @staffing_custom_data.standard_effort = params[:standard_effort].to_f
+    @staffing_custom_data.global_effort_value = params[:new_effort].to_f
     @staffing_custom_data.duration = params[:new_duration]
     @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
     @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
     @staffing_custom_data.percent = params[:percents]
+
+    if @staffing_custom_data.standard_effort == 0
+      @staffing_custom_data.global_effort_value = nil
+      @staffing_custom_data.duration = nil
+      @staffing_custom_data.max_staffing_rayleigh = nil
+      @staffing_custom_data.max_staffing = nil
+      @staffing_custom_data.percent = nil
+
+      @staffing_custom_data.save
+
+      update_staffing_estimation_values
+
+      current_module_project.views_widgets.each do |vw|
+        cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
+        ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+      end
+
+      redirect_to :back and return
+    end
 
 
     ###########
@@ -129,15 +149,25 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
     #### Rayleigh
 
-    attribute = PeAttribute.find_by_alias("effort")
-    ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                               :module_project_id => current_module_project.previous.last,
-                               :in_out => "output").first
-    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit
+    attribute = @module_project.pemodule.pe_attributes.where(alias: "effort").first
+    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
+
+    begin
+      current_ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => @module_project.id, :in_out => "input").first
+
+      if !current_ev.estimation_value_id.nil?
+        ev = EstimationValue.find(current_ev.estimation_value_id)
+      else
+        ev = EstimationValue.where(:pe_attribute_id => attribute.id,
+                                 :module_project_id => @module_project.previous.last, :in_out => "output").first
+      end
+    rescue
+      ev = nil
+    end
 
     begin
       begin
-        previous_activity_root = current_module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
+        previous_activity_root = @module_project.previous.last.wbs_activity.wbs_activity_elements.first.root
         effort = ev.string_data_probable[current_component.id][previous_activity_root.id][:value] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
       rescue
         effort = ev.string_data_probable[current_component.id] / (@staffing_model.standard_unit_coefficient.nil? ? 1 : @staffing_model.standard_unit_coefficient.to_f)
@@ -208,7 +238,12 @@ class Staffing::StaffingCustomDataController < ApplicationController
       chart_actual_coordinates << ["#{t}", t_staffing]
     end
     @staffing_custom_data.chart_actual_coordinates = chart_actual_coordinates
-    @staffing_custom_data.save
+
+    begin
+      @staffing_custom_data.save
+    rescue
+      #
+    end
 
 
     ###########
@@ -265,8 +300,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
       trapeze_theorical_staffing_values << ["#{t}", t_staffing]
     end
     @staffing_custom_data.trapeze_chart_theoretical_coordinates = trapeze_theorical_staffing_values
-    @staffing_custom_data.save
-
+    begin
+      @staffing_custom_data.save
+    rescue
+    end
 
     ##### Rayleigh
 
@@ -281,9 +318,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
     end
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
 
-
-
-    @staffing_custom_data.save
+    begin
+      @staffing_custom_data.save
+    rescue
+    end
 
     update_staffing_estimation_values
 
@@ -386,7 +424,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @staffing_custom_data.coef_b = coef_b
 
       # a' = M(1 - y3) / D(x2 - x3)
-      coef_a_prime = (@staffing_trapeze*(1-y3)) / (@duration*(x2-x3))
+      coef_a_prime = (@staffing_trapeze*(1-y3)) / (@duration * (x2-x3))
       @staffing_custom_data.coef_a_prime = coef_a_prime
 
       # b' = M(x2y3 - x3) / D(x2 - x3)
@@ -539,7 +577,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last #first
 
     current_module_project.pemodule.attribute_modules.each do |am|
-      tmp_prbl = Array.new
       in_out = []
 
       if am.in_out == "both"
@@ -552,6 +589,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       evs.each do |ev|
         #ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+        tmp_prbl = Array.new
+
         ["low", "most_likely", "high"].each do |level|
 
           if @staffing_model.three_points_estimation?
@@ -565,10 +604,16 @@ class Staffing::StaffingCustomDataController < ApplicationController
           # new_staffing_rayleigh = params[:new_staffing_rayleigh]
           # new_staffing_trapeze = params[:new_staffing_trapeze]
 
-          if am.pe_attribute.alias == "effort"
-            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+          if am.pe_attribute.alias == "effort" && ev.in_out == "input"
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.standard_effort.to_f * @staffing_model.standard_unit_coefficient.to_f
             ev.save
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+
+          elsif am.pe_attribute.alias == "effort" && ev.in_out == "output"
+              ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+              ev.save
+              tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+
           elsif am.pe_attribute.alias == "duration"
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
             ev.save

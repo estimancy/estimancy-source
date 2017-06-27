@@ -29,41 +29,41 @@
         </table>
     </div>
     <div class="well well-rounded" style="border-width: 1px;">
-        <table>
-          <tr>
-            <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
-            <td>
-              <% if @views_widget.new_record? %>
-                <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
-              <% else %>
-                <%= f.input :color, label: I18n.t(:status_color) %>
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label><%= I18n.t :fields %></label>
-              <% selected = @views_widget.project_fields.first %>
-              <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
-            </td>
+      <table>
+        <tr>
+          <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
+          <td>
+            <% if @views_widget.new_record? %>
+              <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
+            <% else %>
+              <%= f.input :color, label: I18n.t(:status_color) %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label><%= I18n.t :fields %></label>
+            <% selected = @views_widget.project_fields.first %>
+            <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
+          </td>
 
-            <td>
-              <label class="checkbox" style="margin-top: -9px;"></label>
-              <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-            </td>
-            <td><div id="view_icon_class_image"></div></td>
-          </tr>
-          <tr>
-            <td>
-              <label class="checkbox"></label>
-              <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-              <%# if @module_project.wbs_activity %>
-              <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
-              <%# end %>
-            </td>
-          </tr>
-        </table>
-        <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
+          <td>
+            <label class="checkbox" style="margin-top: -9px;"></label>
+            <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+          </td>
+          <td><div id="view_icon_class_image"></div></td>
+        </tr>
+        <tr>
+          <td>
+            <label class="checkbox"></label>
+            <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
+            <%# if @module_project.wbs_activity %>
+            <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
+            <%# end %>
+          </td>
+        </tr>
+      </table>
+      <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
     </div>
   </div>
   

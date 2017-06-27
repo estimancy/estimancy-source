@@ -68,7 +68,13 @@
                       </span>
                       <%= check_box_tag 'pemodule[pe_attribute_ids][]', attr.id, @attribute_settings.map(&:pe_attribute_id).include?(attr.id), :disabled => @pemodule == @initialization_module %>
                     <td><%= attr.description %></td>
-                    <td><%= attr.guw_model_id %></td>
+                    <td>
+                      <% if attr.guw_model_id %>
+                        <%= "#{attr.guw_model_id }   (#{attr.guw_model})" %>
+                      <% elsif attr.operation_model_id %>
+                          <%= "#{attr.operation_model_id }   (#{attr.operation_model})" %>
+                      <% end %>
+                    </td>
                   </tr>
               <% end %>
               <%= render :partial => 'layouts/footer_table' %>

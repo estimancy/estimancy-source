@@ -1954,4 +1954,7 @@ es:
   warning_minimum_estimations_counter: "Be careful, you only have %{counter} estimates on the subscription account of your organization"
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
+  copy_in_progress: "Copy in progress..."
+  is_new_status: "Is the default status of new estimation version "
+  warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
 

@@ -21,7 +21,10 @@
 
 
 class ModuleProject < ActiveRecord::Base
-  attr_accessible  :project_id, :pemodule_id, :pemodule, :position_x, :position_y, :top_position, :left_position, :creation_order, :nb_input_attr, :nb_output_attr, :view_id, :color
+
+  attr_accessible :project_id, :pemodule_id, :pemodule, :position_x, :position_y,
+                  :top_position, :left_position, :creation_order, :nb_input_attr,
+                  :nb_output_attr, :view_id, :color
 
   belongs_to :pemodule
   belongs_to :project, :touch => true
@@ -35,6 +38,7 @@ class ModuleProject < ActiveRecord::Base
   belongs_to :staffing_model, class_name: "Staffing::StaffingModel"
   belongs_to :expert_judgement_instance, class_name: "ExpertJudgement::Instance"
   belongs_to :wbs_activity
+  belongs_to :wbs_activity_ratio
 
   has_many :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWorkGroup", dependent: :destroy
   has_many :guw_unit_of_works, :through => :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
@@ -54,8 +58,11 @@ class ModuleProject < ActiveRecord::Base
 
   has_many :wbs_activity_inputs, :dependent => :destroy
   has_many :module_project_ratio_elements, dependent: :destroy
+  has_many :wbs_activity_elements, through: :module_project_ratio_elements
   has_many :module_project_ratio_variables, dependent: :destroy
   has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
+  has_many :ej_instance_estimates, class_name: "ExpertJudgement::InstanceEstimate", :dependent => :destroy
+  has_many :staffing_custom_data, class_name: "Staffing::StaffingCustomDatum", :dependent => :destroy
   has_many :ge_model_factor_descriptions, class_name: "Ge::GeModelFactorDescription", dependent: :destroy
 
   default_scope :order => 'position_x ASC, position_y ASC'
@@ -211,6 +218,29 @@ class ModuleProject < ActiveRecord::Base
     else
       ""
     end
+  end
+
+  
+  # get Wbs-Activity-Ratio when the module_project use the WBS-Activity
+  def get_wbs_activity_ratio(pbs_project_element_id = nil)
+    module_project = self
+
+    if module_project.wbs_activity_ratio.nil?
+      #wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, pbs_project_element_id: pbs_project_element_id).first #.first_or_create(module_project_id: module_project.id, pbs_project_element_id: pbs_project_element_id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      selected_ratio = nil #wai.nil? ? nil : wai.wbs_activity_ratio
+    else
+      selected_ratio = module_project.wbs_activity_ratio
+    end
+
+    if selected_ratio.nil?
+      selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
+      unless selected_ratio.nil?
+        module_project.wbs_activity_ratio_id = selected_ratio.id
+        module_project.save
+      end
+    end
+
+    selected_ratio
   end
 
 
@@ -434,35 +464,36 @@ class ModuleProject < ActiveRecord::Base
       #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
       #self.pemodule.attribute_modules.each do |am|
       attribute_modules.each do |am|
-
-        if am.in_out == 'both'
-          ['input', 'output'].each do |in_out|
-            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
+        unless am.pe_attribute.nil?
+          if am.in_out == 'both'
+            ['input', 'output'].each do |in_out|
+              ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => in_out)
+                       .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                                        :module_project_id => self.id,
+                                        :in_out => in_out,
+                                        :is_mandatory => am.is_mandatory,
+                                        :description => am.description,
+                                        :display_order => am.display_order,
+                                        :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                        :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                        :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                        :custom_attribute => am.custom_attribute,
+                                        :project_value => am.project_value)
+            end
+          else
+            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => am.in_out)
                      .first_or_create(:pe_attribute_id => am.pe_attribute.id,
                                       :module_project_id => self.id,
-                                      :in_out => in_out,
+                                      :in_out => am.in_out,
                                       :is_mandatory => am.is_mandatory,
-                                      :description => am.description,
                                       :display_order => am.display_order,
+                                      :description => am.description,
                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                      :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                      :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high },
                                       :custom_attribute => am.custom_attribute,
                                       :project_value => am.project_value)
           end
-        else
-          ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
-                   .first_or_create(:pe_attribute_id => am.pe_attribute.id,
-                                    :module_project_id => self.id,
-                                    :in_out => am.in_out,
-                                    :is_mandatory => am.is_mandatory,
-                                    :display_order => am.display_order,
-                                    :description => am.description,
-                                    :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                    :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                    :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high },
-                                    :custom_attribute => am.custom_attribute,
-                                    :project_value => am.project_value)
         end
       end
     end

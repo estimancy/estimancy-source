@@ -176,7 +176,7 @@ class Kb::KbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[1]
-      ((file.first_row + 1)..file.last_row).each do |line|
+      ((file.first_row.to_i + 1)..file.last_row).each do |line|
         size   = file.cell(line, 'A')
         effort   = file.cell(line, 'B')
         pd   = file.cell(line, 'C')
@@ -274,6 +274,8 @@ class Kb::KbModelsController < ApplicationController
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
     @kb_input = @kb_model.kb_inputs.where(module_project_id: current_module_project.id).first_or_create
 
+    module_project = current_module_project
+
     if @kb_model.date_min.nil? || @kb_model.date_max.nil?
       if @kb_model.n_max.nil?
         @kb_datas = @kb_model.kb_datas
@@ -365,10 +367,10 @@ class Kb::KbModelsController < ApplicationController
     @kb_model.save
     @kb_input.save
 
-    current_module_project.pemodule.attribute_modules.each do |am|
+    module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(module_project_id: current_module_project.id,
+      ev = EstimationValue.where(module_project_id: module_project.id,
                                  pe_attribute_id: am.pe_attribute.id,
                                  in_out: "output").first
 
@@ -386,7 +388,7 @@ class Kb::KbModelsController < ApplicationController
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
         elsif am.pe_attribute.alias == "retained_size"
-          ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+          ev = EstimationValue.where(:module_project_id => module_project.id, :pe_attribute_id => am.pe_attribute.id).first
           ev.send("string_data_#{level}")[current_component.id] = params[:size].to_f
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
@@ -403,8 +405,8 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    current_module_project.nexts.each do |n|
-      ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    module_project.nexts.each do |n|
+      ModuleProject::common_attributes(module_project, n).each do |ca|
         ["low", "most_likely", "high"].each do |level|
           EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
           EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
@@ -412,22 +414,37 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    current_module_project.views_widgets.each do |vw|
+    module_project.views_widgets.each do |vw|
       cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+      ViewsWidget::update_field(vw, @current_organization, module_project.project, cpt)
     end
 
-    size_attr = PeAttribute.find_by_alias("retained_size")
-    size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                             :module_project_id => current_module_project.previous.first.id,
-                                             :in_out => "output").first
-    size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                            :module_project_id => current_module_project.id,
-                                            :in_out => "input").first
-    effort_attr = PeAttribute.find_by_alias("effort")
-    effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
-                                              :module_project_id => current_module_project.id,
-                                              :in_out => "output").first
+    size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
+
+    if size_attr.nil?
+      size_previous_ev = nil
+      size_current_ev = nil
+
+    else
+      size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                               :module_project_id => module_project.previous.first.id,
+                                               :in_out => "output").first
+
+      size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                              :module_project_id => module_project.id,
+                                              :in_out => "input").first
+    end
+
+
+    effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first  #PeAttribute.find_by_alias("effort")
+
+    if effort_attr.nil?
+      effort_current_ev = nil
+    else
+      effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                :module_project_id => module_project.id,
+                                                :in_out => "output").first
+    end
 
     @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, "most_likely", current_component.id)
     eff = effort_current_ev.send("string_data_probable")[current_component.id].to_f

@@ -47,6 +47,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
   helper_method :root_url
   helper_method :browser
   helper_method :version_browser
@@ -88,7 +89,6 @@ class ApplicationController < ActionController::Base
     return render(:nothing => true, :status => 204)
   end
 
-
   def check_access
     begin
       @online_support = AdminSetting.where(key: "online_support").first.value
@@ -101,19 +101,6 @@ class ApplicationController < ActionController::Base
       @offline_message = "L'application est actuellement hors-ligne"
       @functional_version_number = "-"
     end
-
-    # if user_signed_in?
-    #   unless current_user.super_admin == true || current_user.subscription_end_date.nil?
-    #     if current_user.subscription_end_date < Time.now
-    #       flash[:error] = "La licence de votre compte est expirée."
-    #       reset_session
-    #       redirect_to(root_path)
-    #     elsif @disable_access == "1"
-    #       reset_session
-    #       redirect_to(root_path)
-    #     end
-    #   end
-    # end
 
     if user_signed_in?
       unless current_user.super_admin == true || current_user.subscription_end_date.nil?
@@ -141,7 +128,13 @@ class ApplicationController < ActionController::Base
         @current_organization = @project.organization
       end
     end
-    @current_ability ||= Ability.new(current_user, @current_organization)
+
+    unless @projects.nil?
+      @current_ability ||= Ability.new(current_user, @current_organization, @projects)
+    else
+      @current_ability ||= Ability.new(current_user, @current_organization, [])
+    end
+
   end
 
   def update_activity_time
@@ -255,8 +248,7 @@ class ApplicationController < ActionController::Base
       #Si ya pas de sessions
       else
         @current_organization = current_user.organizations.where(is_image_organization: false).first
-        if
-        @current_organization.nil?
+        if @current_organization.nil?
           session[:organization_id] = current_user.organizations.first.id
           @current_organization = Organization.find(session[:organization_id])
         else

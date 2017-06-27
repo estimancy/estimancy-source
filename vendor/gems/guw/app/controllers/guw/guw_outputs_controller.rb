@@ -74,9 +74,7 @@ class Guw::GuwOutputsController < ApplicationController
       end
     end
 
-    expire_fragment "guw"
-
-    redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_output.guw_model_id, organization_id: @current_organization.id, anchor: "tabs-output")
   end
 
   def update
@@ -158,37 +156,38 @@ class Guw::GuwOutputsController < ApplicationController
     set_page_title I18n.t(:Edit_Units_Of_Work)
     redirect_to guw.edit_guw_model_path(@guw_model.id,
                                         organization_id: @current_organization.id,
-                                        anchor: "tabs-factors")
+                                        anchor: "tabs-output")
 
     expire_fragment "guw"
 
   end
 
   def destroy
+    @pemodule = Pemodule.where(alias: "guw").first
     @guw_output = Guw::GuwOutput.find(params[:id])
     @guw_model = @guw_output.guw_model
-    attr_name = @guw_output.name
+
     @guw_output.delete
 
-    #Pas encore bon !
-    attr = PeAttribute.where(alias: attr_name.underscore.gsub(" ", "_")).first
+    attr_name = @guw_output.name
+    attr = PeAttribute.where(alias: attr_name.underscore.gsub(" ", "_"),
+                             guw_model_id: @guw_model.id).first
 
-    pm = Pemodule.where(alias: "guw").first
     AttributeModule.where(pe_attribute_id: attr.id,
-                          pemodule_id: pm.id,
+                          pemodule_id: @pemodule.id,
                           guw_model_id: @guw_output.guw_model.id).all.each do |am|
       am.delete
     end
 
-    attr.delete
-
     orders = @guw_model.orders
-
     unless attr.nil?
       attr_name = attr.name
       orders.delete(attr_name)
       @guw_model.orders = orders
     end
+
+    attr.destroy
+    @guw_model.save
 
     if @guw_model.default_display == "list"
       redirect_to guw.guw_model_all_guw_types_path(@guw_model)

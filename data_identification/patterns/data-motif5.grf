@@ -1,0 +1,38 @@
+#Unigraph
+SIZE 1602 840
+FONT Times New Roman:  10
+OFONT Arial Unicode MS:B 12
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 13487565
+SCOLOR 16711680
+CCOLOR 255
+DBOXES y
+DFRAME n
+DDATE n
+DFILE n
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+18
+"<E>" 70 207 1 16 
+"" 1194 207 0 
+"<DET>" 316 206 1 10 
+"<N>" 437 208 3 4 11 3 
+"<DET>" 490 294 1 5 
+"<N>" 557 294 1 11 
+"<PREP>" 690 207 1 12 
+"<N>,+<N> et /${0}$<data= " 894 207 1 13 
+"<N>  <N> + <N+NA>+<N+NA>,+<N+NA> et /${1}$<data= " 873 79 1 13 
+"<N> <N>, /<data= " 894 304 1 13 
+"$var2(" 407 207 1 3 
+"$var2)" 594 207 1 15 
+"<E>" 768 207 3 8 7 9 
+"<E>/> <attribut=$var2$>" 1058 207 4 9 8 7 1 
+"<paramétrage>" 167 207 1 17 
+"<E>/<data=$var2$> <attribut=$var1$>" 636 207 1 6 
+"$var1(" 132 207 1 14 
+"$var1)" 272 207 1 2 

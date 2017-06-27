@@ -289,6 +289,7 @@ fr:
   services: "Services"
   wiki: "Wiki"
   about: "A propos"
+  contactsupport: "Contact support"
 
   #attributes
   name: "Nom"
@@ -1609,7 +1610,7 @@ fr:
   unit_value: "Unité"
   group: "Groupe"
   profile: "Profil"
-  UO_type_complexity: "Seuils de complexité de lUO"
+  UO_type_complexity: "Seuils de complexités"
   advice: "Attention: Ne pas modifier les cases contenant des caractères en gras, cela pourrait causer une incapacité à importer votre fichier depuis l'application.\npour plus de conseils d'utilisation: http://forge.estimancy.com/projects/pe/wiki/Importation_unit_of_work"
   Edit_Units_Of_Work: "Editer unité d'oeuvre"
   New_Units_Of_Work: "Nouvelle unité d'oeuvre"
@@ -2062,3 +2063,29 @@ fr:
   new_input_attribute: "Nouvel attribut d'entrée"
 
   liste_des_estimations: "Liste des estimations"
+  copy_in_progress: "Copie en cours..."
+  is_new_status: "Nouveau statut de la nouvelle version"
+  warning_intermediate_project_version_cannot_be_deleted: "seules les versions non intermédiaires d'une estimation peuvent être supprimées."
+
+  are_you_sure_multiple_delete: "Êtes vous sûr de vouloir supprimer ces projets ?"
+  are_you_sure_simple_delete: "Êtes vous sûr de vouloir supprimer ce projet ?"
+
+  your_configuration: "Votre configuration"
+  contact_us: "Contacter l'équipe technique"
+  display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
+
+  will_paginate:
+    next_label: suivant →
+    page_entries_info:
+      multi_page: "%{model} %{from} - %{to} sur %{count} au total"
+      multi_page_html: "%{model} <strong>%{from} - %{to}</strong> sur <strong>%{count}</strong> au total"
+      single_page:
+        one: "%{count} %{model} affiché(e)"
+        other: "%{count} %{model} affiché(e)s"
+      single_page_html:
+        one: "%{count} %{model} affiché(e)"
+        other: "%{count} %{model} affiché(e)s"
+    page_gap: "&hellip;"
+    previous_label: "← précédent"  
+  
+  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."

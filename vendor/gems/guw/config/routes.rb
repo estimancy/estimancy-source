@@ -82,7 +82,7 @@ Guw::Engine.routes.draw do
 
   post "import_old_config" => "guw_models#import_old_config"
   post "import_new_config" => "guw_models#import_new_config"
-  post "import_guw" => "guw_models#import_guw"
+  post "import_guw" => "guw_unit_of_works#import_guw"
 
   post "guw_unit_of_works/save_guw_unit_of_works"
   post "guw_unit_of_works/save_guw_unit_of_works_with_multiple_outputs"
@@ -98,10 +98,13 @@ Guw::Engine.routes.draw do
   post "save_name" => "guw_unit_of_works#save_name", as: "save_name"
   post "save_comments" => "guw_unit_of_works#save_comments", as: "save_comments"
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
-  post "ml" => "guw_unit_of_works#ml", as: "ml"
+  post "ml_trt" => "guw_unit_of_works#ml_trt", as: "ml_trt"
+  post "ml_data" => "guw_unit_of_works#ml_data", as: "ml_data"
 
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
   post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"
 
   post "auto_sizing" => "guw_models#auto_sizing", as: "auto_sizing"
+
+  post "deported" => "guw_unit_of_works#deported", as: "deported"
 end

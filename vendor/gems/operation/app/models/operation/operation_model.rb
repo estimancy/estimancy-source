@@ -33,10 +33,11 @@ module Operation
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy
     has_many :operation_inputs, dependent: :destroy
+    has_many :pe_attributes, through: :operation_inputs
 
     amoeba do
       enable
-      exclude_association [:module_projects]
+      exclude_association [:module_projects, :pe_attributes]
 
       customize(lambda { |original_ge_model, new_ge_model|
         new_ge_model.copy_id = original_ge_model.id
@@ -44,9 +45,12 @@ module Operation
     end
 
 
-    def terminate_operation_model_duplication
+    def terminate_operation_model_duplication(new_organisation_id = nil)
       new_operation_model = self
       pm = Pemodule.where(alias: "operation").first
+
+      old_operation_model = OperationModel.find(new_operation_model.copy_id)
+      old_operation_model_attributes = old_operation_model.pe_attributes
 
       new_operation_model.operation_inputs.each do |operation_input|
         attr = PeAttribute.where(name: operation_input.name,
@@ -60,7 +64,20 @@ module Operation
                                    in_out: operation_input.in_out,
                                    operation_model_id: operation_input.operation_model_id).first_or_create!
 
+        # Update estimation_values pe_attributes when copying organization
+        unless new_organisation_id.nil?
+          # Update estimation_values pe_attribute
+          new_operation_model.module_projects.each do |mp|
+            ev_with_current_attribute = mp.estimation_values.includes(:pe_attribute).where(pe_attribute: { alias: attr.alias })
+            ev_with_current_attribute.each do |est_val|
+              est_val.pe_attribute_id = attr.id
+              est_val.save
+            end
+          end
+        end
       end
+
+      old_operation_model_attributes
     end
 
 
@@ -71,6 +88,48 @@ module Operation
         "#{self.name} (#{mp.creation_order})"
       end
     end
+
+    def self.display_value(data_probable, estimation_value, view_widget)
+
+      module_project = estimation_value.module_project
+      operation_model = module_project.operation_model
+      value = data_probable.to_f.round(2)
+
+      if view_widget.use_organization_effort_unit == true
+        tab = get_organization_unit(value, operation_model.organization)
+        unit_coefficient = tab.first
+        unit = tab.last
+      else
+        begin
+          operation_input = estimation_value.pe_attribute.operation_input
+        rescue
+          operation_input = nil
+        end
+
+        unless operation_input.nil?
+          unit_coefficient = operation_input.send("standard_unit_coefficient")
+          unit_coefficient = unit_coefficient.nil? ? 1 : unit_coefficient.to_f
+
+          unit = operation_input.send("standard_unit")
+        else
+          unit_coefficient = 1
+          unit = ''
+        end
+      end
+
+      begin
+        if data_probable.nil?
+          result_value = nil
+        else
+          result_value = (data_probable.to_f / unit_coefficient).round(2)
+        end
+      rescue
+        result_value = nil
+      end
+
+      return "#{result_value} #{unit}"
+    end
+
 
     def self.display_size(p, c, level, component_id, operation_model)
       standard_coefficient = 1
@@ -89,5 +148,27 @@ module Operation
         nil
       end
     end
+
+
+    private
+    def self.get_organization_unit(v, organization)
+      unless v.class == Hash
+        value = v.to_f
+        if value < organization.limit1.to_i
+          [organization.limit1_coef.to_f, organization.limit1_unit]
+        elsif value < organization.limit2.to_i
+          [organization.limit2_coef.to_f, organization.limit2_unit]
+        elsif value < organization.limit3.to_i
+          [organization.limit3_coef.to_f, organization.limit3_unit]
+        elsif value < organization.limit4.to_i
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        else
+          [organization.limit4_coef.to_f, organization.limit4_unit]
+        end
+      else
+        []
+      end
+    end
+
   end
 end

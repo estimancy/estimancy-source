@@ -1,7 +1,7 @@
 
 <% if @current_module_project %>
     $('#<%= "preceding_#{@current_estimation_value.id}" %>').html("<%=raw j(select_tag "preceding[#{@current_estimation_value.id}]",
-                                                                options_for_select(@preceding_estimations_values.map{|i| [i.pe_attribute.name, i.id]}),
+                                                                options_for_select(@preceding_estimations_values.map{|i| [i.pe_attribute.name, i.id] unless i.pe_attribute.nil? }),
                                                                 :include_blank => true) %>");
 <% end %>
 

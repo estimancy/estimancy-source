@@ -55,8 +55,8 @@ module Kb
       end
     end
 
-    def self.display_size(p, c, level, component_id)
-      if c.nil?
+    def self.display_size(p, c, level, component_id, kb_model=nil)
+      if c.nil? || (kb_model != nil && !kb_model.enabled_input)
         begin
           p.send("string_data_#{level}")[component_id]
         rescue

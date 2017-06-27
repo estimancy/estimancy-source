@@ -5,7 +5,7 @@
     <div class="span6">
 
       <% module_project_attributes = current_module_project.pemodule.pe_attributes %>
-      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first  %>
+      <% attr = module_project_attributes.where(alias: "effort").first  %>
       <% if attr.nil? %>
         <% attr =  module_project_attributes.where(operation_model_id: @operation_model.id).first %>
       <% end %>

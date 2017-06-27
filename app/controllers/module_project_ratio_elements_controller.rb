@@ -87,7 +87,7 @@ class ModuleProjectRatioElementsController < ApplicationController
     if @wbs_activity_ratio
 
       @wbs_activity = @wbs_activity_ratio.wbs_activity
-      @wbs_activity_input = WbsActivityInput.where(module_project_id: @module_project.id, wbs_activity_id: @module_project.wbs_activity_id, pbs_project_element_id: @pbs_project_element.id).first
+      @wbs_activity_input = WbsActivityInput.where(module_project_id: @module_project.id, wbs_activity_id: @module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id, pbs_project_element_id: @pbs_project_element.id).first_or_create!
       @organization = @wbs_activity.organization
       @effort_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient
 

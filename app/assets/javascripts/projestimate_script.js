@@ -55,6 +55,10 @@ $(document).ready(function() {
         handle: ".modal-drag"
     });
 
+    $("#edit_component").draggable({
+        handle: ".modal-header, .modal-body"
+    });
+
     // Modal bug
     $('.modal-backdrop').remove();
     $(".modal").hide();
@@ -65,6 +69,8 @@ $(document).ready(function() {
 
     // Update the jscolor library Dir to resolve bug on colors detection
     jscolor.dir = '/assets/';
+
+
 
     // ============================ GRIDSTER widgets management ================================================
 
@@ -84,6 +90,16 @@ $(document).ready(function() {
                 widget_selector: "li",
                 extra_rows: 0,
                 extra_cols: 0,
+                shift_widgets_up: false,
+                shift_larger_widgets_down: false,
+                collision: {
+                    wait_for_mouseup: true
+                },
+
+                //autogenerate_stylesheet: true,
+                min_cols: 1,
+                max_cols: 100,
+
                 serialize_params: function($w, wgd) {
                     return {
                         /* add element (ID, view_widget_id and container_id) to data*/
@@ -101,8 +117,13 @@ $(document).ready(function() {
                         //var gridster = $(".gridster ul").gridster().data('gridster');
                         var gridster = $('#'+container_id+".gridster ul").gridster().data('gridster');
                         var gridster_elements = gridster.serialize();
+
+                        //alert(JSON.stringify(gridster_elements));
+                        //alert(gridster_elements);
+                        //alert(JSON.parse(gridster_elements);
+
                         $.ajax({
-                            method: 'GET',
+                            type: 'POST',
                             url: "/update_view_widget_positions",
                             data: {
                                 view_id: this.id,
@@ -112,10 +133,18 @@ $(document).ready(function() {
                     }
                 },
 
+
+                // Qui marchait avec l'ancienne version
                 resize: {
                     enabled: true,
                     axes: ['both'],
+
+                    //handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
+                    //max_size: [20, 20],
+                    //min_size: [1, 1],
+
                     stop: function(event, ui, $widget) {
+
                         // Get final width and height of widget
                         var newHeight = this.resize_coords.data.height;
                         var newWidth = this.resize_coords.data.width;
@@ -143,9 +172,9 @@ $(document).ready(function() {
                                 sizey: newDimensions.size_y
                             }
                         });
-
                     }
                 }
+
             }).data('gridster');
         })
     });

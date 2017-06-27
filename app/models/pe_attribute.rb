@@ -30,9 +30,10 @@ class PeAttribute < ActiveRecord::Base
   has_many :attribute_modules, :dependent => :destroy
   has_many :pemodules, :through => :attribute_modules
   has_many :estimation_values, :dependent => :destroy
-  has_many :views_widgets, dependent: :destroy
+  has_many :views_widgets, :dependent => :destroy
 
-  belongs_to :operation_model
+  belongs_to :guw_model, foreign_key: :guw_model_id, class_name: Guw::GuwModel
+  belongs_to :operation_model, foreign_key: :operation_model_id, class_name: Operation::OperationModel
   belongs_to :operation_input, foreign_key: :operation_input_id, class_name: Operation::OperationInput
 
   ###validates_presence_of :description

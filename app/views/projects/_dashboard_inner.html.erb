@@ -67,9 +67,11 @@
           <!--<div class="module_box_min estimation_plan_min overflow">-->
           <div class="module_box_min estimation_plan_min">
 
-            <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini pull-right">
-              <%= I18n.t(:button_estimation_plan) %>
-            </a>
+            <% if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
+              <a href="<%= edit_project_path(@project.id, :anchor => 'tabs-4') %>" class="btn btn-mini pull-right">
+                <%= I18n.t(:button_estimation_plan) %>
+              </a>
+            <% end %>
 
             <%= render 'module_projects/estimation_plan_min', :locals => {:module_projects => @project.module_projects} %>
           </div>

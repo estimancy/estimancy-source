@@ -37,6 +37,7 @@ module Guw
     has_many :guw_scale_module_attributes, dependent: :destroy
 
     has_many :attribute_modules, dependent: :destroy
+    has_many :guw_output_types, dependent: :destroy
 
     belongs_to :organization
 
@@ -63,10 +64,46 @@ module Guw
     end
 
     #Terminate the duplication
-    def terminate_guw_model_duplication(old_model)
+    def terminate_guw_model_duplication(old_model, is_organization_copy=false)
       #new_organization.guw_models.each do |guw_model|
       guw_model = self
       guw_model_organization = guw_model.organization
+
+      # Copy PeAttributes for  the new model outputs
+      pm = Pemodule.where(alias: "guw").first
+      old_pe_attributes = PeAttribute.where(guw_model_id: old_model.id)
+
+      old_pe_attributes.each do |old_pe_attribute|
+        new_pe_attribute = old_pe_attribute.dup
+        new_pe_attribute.guw_model_id = guw_model.id
+        new_pe_attribute.save
+
+        am = AttributeModule.where(pe_attribute_id: old_pe_attribute.id, pemodule_id: pm.id, in_out: "both", guw_model_id: guw_model.id).first
+        if am.nil?
+          am = AttributeModule.where(pe_attribute_id: new_pe_attribute.id, pemodule_id: pm.id, in_out: "both",
+                                     guw_model_id: guw_model.id).first_or_create!
+        else
+          am.pe_attribute_id = new_pe_attribute.id
+          am.save
+        end
+
+        if is_organization_copy == true
+          guw_model.module_projects.each do |module_project|
+            module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+
+              estimation_value.pe_attribute_id = new_pe_attribute.id
+              estimation_value.save
+            end
+
+            module_project.views_widgets.where(pe_attribute_id: old_pe_attribute.id).each do |view_widget|
+              view_widget.pe_attribute_id = new_pe_attribute.id
+              view_widget.save
+            end
+
+          end
+        end
+      end
+
 
       guw_model.guw_types.each do |guw_type|
 
@@ -140,8 +177,9 @@ module Guw
           end
         end
 
-        #Guw UnitOfWorkAttributes
+        #Guw UnitOfWorkAttributes && Guw UnitOfWorks AJUSTED_SIZE and SIZE update if is_organization_copy=true
         guw_type.guw_unit_of_works.each do |guw_unit_of_work|
+
           guw_unit_of_work.guw_unit_of_work_attributes.each do |guw_uow_attr|
             new_guw_type = guw_model.guw_types.where(copy_id: guw_uow_attr.guw_type_id).first
             new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
@@ -150,8 +188,39 @@ module Guw
             new_guw_attribute_id = new_guw_attribute.nil? ? nil : new_guw_attribute.id
 
             guw_uow_attr.update_attributes(guw_type_id: new_guw_type_id, guw_attribute_id: new_guw_attribute_id)
-
           end
+
+
+          if is_organization_copy == true
+            #Guw UnitOfWorks AJUSTED_SIZE and SIZE update according to the outputs keys
+            if guw_unit_of_work.ajusted_size.is_a?(Hash)
+              new_ajusted_size = Hash.new
+              guw_unit_of_work.ajusted_size.each do |guw_output_key, value|
+                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                unless new_guw_ouput.nil?
+                  new_ajusted_size["#{new_guw_ouput.id}"] = value
+                end
+              end
+              guw_unit_of_work.ajusted_size = new_ajusted_size
+            end
+
+            # SIZE
+            if guw_unit_of_work.size.is_a?(Hash)
+              new_size = Hash.new
+              guw_unit_of_work.size.each do |guw_output_key, value|
+                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                unless new_guw_ouput.nil?
+                  new_size["#{new_guw_ouput.id}"] = value
+                end
+              end
+              guw_unit_of_work.size = new_size
+            end
+
+            if guw_unit_of_work.changed?
+              guw_unit_of_work.save
+            end
+          end
+
         end
 
       end
@@ -193,6 +262,18 @@ module Guw
           end
         end
       end
+
+      #update GuwOutputType
+      old_model.guw_output_types.each do |output_type|
+        new_output = GuwOutput.where(guw_model_id: guw_model.id, copy_id: output_type.guw_output_id).first
+        new_type = GuwType.where(guw_model_id: guw_model.id, copy_id: output_type.guw_type_id).first
+
+        begin
+          GuwOutputType.create(guw_model_id: guw_model.id, guw_output_id: new_output.id, guw_type_id: new_type.id, display_type: output_type.display_type)
+        rescue
+        end
+      end
+
     end
 
     def self.display_value(data_probable, estimation_value, vw)
