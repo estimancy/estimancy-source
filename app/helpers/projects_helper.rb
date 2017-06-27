@@ -51,11 +51,19 @@ module ProjectsHelper
   end
 
   # Display the units of attributes
-  def get_attribute_unit(pe_attribute, view_widget=nil)
+  def get_attribute_unit(pe_attribute, estimation_value = nil)
     unless pe_attribute.nil?
+
       case pe_attribute.alias
         when "effort", "theoretical_effort", "E1", "E2", "E3", "E4"
           I18n.t(:unit_effort_person_hour)
+
+        when "ent1", "ent2", "ent3", "ent4", "sort1", "sort2", "sort3", "sort4"
+          unless estimation_value.nil?
+            if estimation_value.module_project.pemodule.alias == "ge"
+              estimation_value.module_project.ge_model.send("#{pe_attribute.alias}_unit")
+            end
+          end
         when "staffing"
           I18n.t(:unit_staffing)
         when "end_date"
@@ -244,7 +252,7 @@ module ProjectsHelper
   end
 
   #Afficher les valeurs du module de transformation
-  def convert_ge_model_value_with_precision(ge_model, ev, value, precision =2)
+  def convert_ge_model_value_with_precision(ge_model, ev, value, precision=2)
     in_out_effort_standard_unit_coefficient = 1
     in_out = ev.in_out
 
@@ -265,6 +273,7 @@ module ProjectsHelper
 
     result_value
   end
+
 
   #Afficher les valeurs du module d'Operation
   def convert_operation_model_value_with_precision(operation_model, ev, value, precision=2)
