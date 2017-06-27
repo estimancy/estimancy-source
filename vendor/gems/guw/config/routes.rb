@@ -100,6 +100,7 @@ Guw::Engine.routes.draw do
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
   post "ml_trt" => "guw_unit_of_works#ml_trt", as: "ml_trt"
   post "ml_data" => "guw_unit_of_works#ml_data", as: "ml_data"
+  post "extract" => "guw_unit_of_works#extract", as: "extract"
 
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
   post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"

@@ -704,9 +704,14 @@ class OrganizationsController < ApplicationController
     # (0..25).each do |i|
     #   projects << Project.where(organization_id: @organization.id).first
     # end
-    #
+
+
     #Méthodes avec Will Pagniate (mais sans gestion des droits)
-    projects = @organization.projects
+    archived_status = EstimationStatus.where(is_archive_status: true,
+                                             organization_id: @organization.id).first
+
+    projects = @organization.projects.where("estimation_status_id != ?", archived_status.id)
+
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
     else
@@ -714,8 +719,10 @@ class OrganizationsController < ApplicationController
       tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
       projects = (tmp1 + tmp2).uniq
     end
-    @projects = projects.paginate(:page => params[:page], :per_page => 10)
-    projects = nil
+
+    # projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+
+    @projects = projects.paginate(:page => params[:page], :per_page => (current_user.object_per_page || 10))
 
     @fields_coefficients = {}
     @pfs = {}
