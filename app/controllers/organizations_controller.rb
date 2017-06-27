@@ -664,17 +664,18 @@ class OrganizationsController < ApplicationController
     params.each do |k,v|
       options[k] = v
     end
-    @projects = @organization.projects
+
+    projects = @organization.projects
 
     if current_user.super_admin == true
-      @projects = @projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
+      projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
     else
-      tmp1 = @projects.where(is_model: false, private: false).all
-      tmp2 = @projects.where(creator_id: current_user.id, is_model: false, private: true).all
-      @projects = (tmp1 + tmp2).uniq
+      tmp1 = projects.where(is_model: false, private: false).all
+      tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
+      projects = (tmp1 + tmp2).uniq
     end
 
-    @projects = @projects.paginate(:page => params[:page], :per_page => current_user.object_per_page || 10)
+    @projects = projects.paginate(:page => params[:page], :per_page => current_user.object_per_page || 10)
 
     @fields_coefficients = {}
     @pfs = {}
