@@ -160,9 +160,11 @@ class Guw::GuwModelsController < ApplicationController
               tab.each_with_index do |row, i|
                 if i != 0 && !row.nil?
                   Guw::GuwCoefficient.create(name: row[0],
-                                             coefficient_type: row[1],
+                                             description: row[1],
+                                             coefficient_type: row[2],
                                              guw_model_id: @guw_model.id,
-                                             allow_intermediate_value: (row[2] == 0) ? false : true )
+                                             allow_intermediate_value: (row[3] == 0) ? false : true,
+                                             deported: (row[4] == 0) ? false : true)
                 end
               end
 
@@ -1417,6 +1419,8 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model = Guw::GuwModel.find(params[:id])
     @organization = @guw_model.organization
+    session[:organization_id] = @organization.id
+    @current_organization = @organization
 
     set_page_title @guw_model.name
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -1563,7 +1567,7 @@ class Guw::GuwModelsController < ApplicationController
         new_guw_model.terminate_guw_model_duplication(@guw_model)
       end
     end
-
+    
     redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
   end
 

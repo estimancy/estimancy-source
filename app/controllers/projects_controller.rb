@@ -251,26 +251,34 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
-      @wbs_activity = current_module_project.wbs_activity
-      if params[:ratio].nil?
-        @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      else
-        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
-      end
-
       @pbs_project_element = current_component
-      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
-      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
-
+      @wbs_activity = current_module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      # Module_project Ratio elements
-      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+      # if params[:ratio].nil?
+      #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+      # else
+      #   @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+      # end
+      @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
+      if @wbs_activity_ratio.nil?
+        unless params[:ratio].nil?
+          @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+        end
+      end
 
-      # Module Project Ratio Variables
-      @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      unless @wbs_activity_ratio.nil?
+        ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+        @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
+        # Module_project Ratio elements
+        @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+
+        # Module Project Ratio Variables
+        @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      end
     else
+      # other
     end
   end
 
@@ -880,7 +888,12 @@ class ProjectsController < ApplicationController
 
     @organization = @project.organization
 
-    set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    #set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    if @project.is_model
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+    end
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
@@ -1024,6 +1037,8 @@ class ProjectsController < ApplicationController
       @projects = Project.where(id: params[:deleted_projects]).all
     else
       @projects = Project.where(id: params[:project_id]).all
+      flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+      redirect_to :back
     end
 
     @project_ids = params[:deleted_projects]
@@ -1206,10 +1221,16 @@ class ProjectsController < ApplicationController
       elsif @pemodule.alias == "effort_breakdown"
         wbs_id = params[:module_selected].split(',').first.to_i
         my_module_project.wbs_activity_id = wbs_id
-        wai = WbsActivityInput.new(module_project_id: my_module_project.id,
-                                wbs_activity_id: wbs_id,
-                                wbs_activity_ratio_id: my_module_project.wbs_activity.wbs_activity_ratios.first )
-        wai.save
+
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio_wai = WbsActivityInput.new(module_project_id: my_module_project.id,
+                                     wbs_activity_id: wbs_id, wbs_activity_ratio_id: ratio.id,
+                                     pbs_project_element_id: @pbs_project_element.id)
+          ratio_wai.save
+        end
+
+
+        wai = my_module_project.wbs_activity_inputs.first
 
         #create module_project ratio elements
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
@@ -2000,12 +2021,6 @@ public
           ### Wbs activity
           #create module_project ratio elements
           old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
-            # mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: old_mp_ratio_elt.pbs_project_element_id, module_project_id: new_mp.id,
-            #                           wbs_activity_ratio_id: old_mp_ratio_elt.wbs_activity_ratio_id, copy_id: old_mp_ratio_elt.id, ancestry: old_mp_ratio_elt.ancestry,
-            #                           wbs_activity_ratio_element_id: old_mp_ratio_elt.wbs_activity_ratio_element_id, multiple_references: old_mp_ratio_elt.multiple_references,
-            #                           name: old_mp_ratio_elt.name, description: old_mp_ratio_elt.description, selected: old_mp_ratio_elt.selected, is_optional: old_mp_ratio_elt.is_optional,
-            #                           ratio_value: old_mp_ratio_elt.ratio_value, wbs_activity_element_id: old_mp_ratio_elt.wbs_activity_element_id, position: old_mp_ratio_elt.position)
-
             mp_ratio_element = old_mp_ratio_elt.dup
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2077,10 +2092,21 @@ public
                 new_prj_components.each do |new_component|
                   ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                   unless ev.nil?
-                    ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                    ev_low = ev.string_data_low.delete(old_component.id)
+                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                    ev_high = ev.string_data_high.delete(old_component.id)
+                    ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                    ev.string_data_low[new_component.id.to_i] = ev_low
+                    ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                    ev.string_data_high[new_component.id.to_i] = ev_high
+                    ev.string_data_probable[new_component.id.to_i] = ev_probable
 
                     # update ev attribute links
                     unless ev.estimation_value_id.nil?
@@ -2101,13 +2127,6 @@ public
         end
 
         # Update project's organization estimations counter
-        # if new_prj.is_model != true
-        #   unless @organization.estimations_counter.nil?
-        #     @organization.estimations_counter -= 1
-        #     @organization.save
-        #   end
-        # end
-
         unless new_prj.is_model == true || @current_user.super_admin == true
           unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
             @organization.estimations_counter -= 1
@@ -2422,7 +2441,7 @@ public
       redirect_to organization_estimations_path(@current_organization), :flash => {:warning => I18n.t('warning_not_allow_to_create_new_branch_of_project')} and return
     end
 
-    begin
+    #begin
       old_prj_copy_number = old_prj.copy_number
 
       #old_prj_pe_wbs_product_name = old_prj.pe_wbs_projects.products_wbs.first.name
@@ -2456,7 +2475,7 @@ public
           #pe_wbs_product.name = old_prj_pe_wbs_product_name
           #pe_wbs_activity.name = old_prj_pe_wbs_activity_name
 
-          pe_wbs_product.save
+          pe_wbs_product.save(validate: false)
           #pe_wbs_activity.save
 
           # For PBS
@@ -2472,7 +2491,7 @@ public
               # For PBS-Project-Element Links with modules
               #old_pbs = PbsProjectElement.find(new_c.copy_id)
               #new_c.module_projects = old_pbs.module_projects
-              new_c.save
+              new_c.save(validate: false)
             end
           end
 
@@ -2568,10 +2587,21 @@ public
                   new_prj_components.each do |new_component|
                     ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
                     unless ev.nil?
-                      ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                      ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                      ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                      ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
+
+                      # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                      # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                      # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                      # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
 
                       # update ev attribute links
                       unless ev.estimation_value_id.nil?
@@ -2637,11 +2667,11 @@ public
           redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
         end
       end
-    rescue
-      flash[:error] = I18n.t(:error_project_checkout_failed)
-      redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
-      ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
-    end
+    # rescue
+    #   flash[:error] = I18n.t(:error_project_checkout_failed)
+    #   redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
+    #   ##redirect_to(edit_project_path(old_prj, :anchor => 'tabs-history'), :flash => {:error => I18n.t(:error_project_checkout_failed)} ) and return
+    # end
 
     #else
     #redirect_to "#{session[:return_to]}", :flash => {:warning => I18n.t('warning_project_cannot_be_checkout')}
@@ -2725,30 +2755,10 @@ public
   def add_filter_on_project_version
     #No authorize required
     selected_filter_version = params[:filter_selected]
-    #"Display leaves projects only",1], ["Display all versions",2], ["Display root version only",3], ["Most recent version",4]
 
-    # The current user can only see projects of its organizations
-    @organization_user_projects = []
-    current_user.organizations.each do |organization|
-      @organization_user_projects << organization.projects.all
-    end
+    @organization = Organization.find(params[:organization_id])
 
-    # Differents parameters according to the page on witch the filter is set ("filter_projects_version", "filter_organization_projects_version", "filter_user_projects_version","filter_group_projects_version")
-    case params[:project_list_name]
-      when "filter_projects_version"
-        # Then only projects on which the current is authorise to see will be displayed
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-
-      when "filter_organization_projects_version"
-        # The current organizations's projects
-        organization_id = params['organization_id']
-        if organization_id.present? && organization_id != 'undefined'
-          @organization = Organization.find(organization_id.to_i)
-          @projects = @organization.projects.all
-        end
-      else
-        @projects = @organization_user_projects.flatten ###& current_user.projects
-    end
+    @projects = @organization.projects
 
     unless selected_filter_version.empty?
       case selected_filter_version
@@ -2766,6 +2776,20 @@ public
       end
     end
     @projects = @projects.reject{|i| i.is_model ==  true}
+
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   #Function that manage link_to from project history graphical view

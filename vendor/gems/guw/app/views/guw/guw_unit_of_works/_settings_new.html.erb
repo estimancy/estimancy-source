@@ -8,6 +8,7 @@
   </div>
 
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+  <% @guw_coefficients = @guw_model.guw_coefficients %>
 
   <div class="row-fluid">
     <div class="span12">
@@ -18,8 +19,11 @@
         </a>
       <% end %>
       <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml">
-          Importer (ML)
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
+          Identifier les traitements
+        </button>
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml_data">
+          Identifier les données
         </button>
       <% end %>
 
@@ -175,7 +179,8 @@
         <div class="accordion-inner">
           <table class="table table-bordered table-condensed">
             <tr>
-              <th class="span1">#</th>
+              <th></th>
+              <th>#</th>
               <th><%= I18n.t :name %></th>
               <th>UO</th>
 
@@ -224,6 +229,9 @@
 
            <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
+              <% unless @guw_type.nil? %>
+                <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
+              <% end %>
               <tr>
 
                 <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>" class="span1">
@@ -232,7 +240,13 @@
                   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
                 </td>
 
-                <td class="text_field_text_overflow span2">
+                <td class="span1">
+                  <span class="badge badge-default">
+                    <%= j %><%= guow.display_order %>
+                  </span>
+                </td>
+
+                <td class="text_field_text_overflow span3">
                   <span class="pull-left">
                     <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
                   </span>
@@ -241,10 +255,8 @@
                 <td class="span3">
                   <% unless @guw_type.nil? %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map do |i|
-
                                                                                 default_complexity = i.guw_complexities.where(default_value: true).first
-
-                                                                                ["#{i.name} #{ default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')' }", i.id]
+                                                                                ["#{i.name} #{default_complexity.nil? ? nil : '(' + default_complexity.weight.to_s + ')'}", i.id]
                                                                               end,
                                                                               selected: @guw_type.id),
                                    class: "guw_type",
@@ -264,15 +276,15 @@
                   <% if i[1].blank? %>
                     <% if i[0] == "Coeff. de Complexité" %>
                       <% unless @guw_type.nil? %>
-                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|j| [j.name, j.id] },
-                                                                                       selected: @guw_type.guw_complexities.first.nil? ? nil : @guw_type.guw_complexities.first.id),
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|j| [j.name, j.id] },
+                                                                                       selected: @guw_complexities.first.nil? ? nil : @guw_complexities.first.id),
                                        guw: guow.id,
                                        class: "guw_complexity hide" %>
                       <% end %>
                     <% end %>
                   <% else %>
                     <% if i[0] == "Coefficient" %>
-                      <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                      <% unless @guw_coefficients.where(deported: true).map(&:id).empty? %>
                         <%
                            elmnts = []
                            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
@@ -493,7 +505,7 @@
                 <td class="span3">
                   <% if can? :execute_estimation_plan, @project %>
                     <% if @guw_model.allow_ml == true %>
-                      <%= link_to "", guw.ml_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
+                      <%= link_to "", guw.ml_trt_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
                     <% end %>
                     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
 
@@ -669,15 +681,15 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="ml" aria-labelledby="myModalLabel">
+<div class="modal fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag guw.ml_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Comptage automatique
+            Importer les traitements
           </h4>
         </div>
 
@@ -686,14 +698,41 @@
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-              Sélectionner un modèle d'IA
-            </h5>
-            <%= select_tag "ml_model", options_for_select(["MLB - Multi Label Binarizer (76%)", "DT - Arbre de décision (75%)", "SVC - Support Vector Classification", "Autres (en cours de développement)"]) %>
+            Importer un fichier Excel (xlsx uniquement)
+          </h5>
+          <%= file_field_tag :file %>
+        </div>
 
-            <h5>
-              Importer un fichier Excel (xlsx uniquement)
-            </h5>
-            <%= file_field_tag :file %>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Importer les données
+          </h4>
+        </div>
+
+        <div class="modal-body" style="height: inherit;">
+
+          <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+
+          <h5>
+            Importer un fichier Excel (xlsx uniquement)
+          </h5>
+          <%= file_field_tag :file %>
         </div>
 
         <div class="modal-footer">

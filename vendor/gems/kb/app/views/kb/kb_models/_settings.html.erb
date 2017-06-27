@@ -170,10 +170,14 @@
                end
 
                if ev
-                 if ev.module_project.pemodule.alias == "effort_breakdown"
-                   @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
-                 else
-                   @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                 begin
+                   if ev.module_project.pemodule.alias == "effort_breakdown"
+                     @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                   else
+                     @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                   end
+                 rescue
+                   @previous_effort = 0
                  end
                end
              end
@@ -247,6 +251,11 @@
                 </strong>
               </h5>
               <%= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+
+              <!-- Update Percentage ecart -->
+              <%#= ecart =  (@effort.to_f * @kb_model.standard_unit_coefficient.to_f) - @previous_effort.to_f %>
+              <%# percent_ecart_ev =  EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                           :module_project_id => module_project.id, :in_out => "output").first%>
             <% end %>
 
         <% end %>
