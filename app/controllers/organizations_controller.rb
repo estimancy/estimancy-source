@@ -665,8 +665,48 @@ class OrganizationsController < ApplicationController
       options[k] = v
     end
 
+    # Méthode 1
+    # projects = @organization.projects.order("created_at DESC").take(25)
+    # projects = []
+    # (0..projects.size).each do |i|
+    #   #faire un modulo pour "faire des trous"
+    #   prj = projects[i]
+    #   unless prj.nil?
+    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
+    #       projects << prj
+    #     end
+    #   end
+    #
+    #   if projects.size == (10)
+    #     break
+    #   end
+    # end
+    #
+    #Methode 1bis
+    # projects = @organization.projects.limit(25)
+    # projects = []
+    # (0..projects.size).each do |i|
+    #   prj = projects[i]
+    #   unless prj.nil?
+    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
+    #       projects << prj
+    #     end
+    #   end
+    #
+    #   if projects.size == (25)
+    #     break
+    #   else
+    #   end
+    # end
+    #
+    # Methode 2 (avec n fois la meme requete jusqu'à n valeurs)
+    # projects = []
+    # (0..25).each do |i|
+    #   projects << Project.where(organization_id: @organization.id).first
+    # end
+    #
+    #Méthodes avec Will Pagniate (mais sans gestion des droits)
     projects = @organization.projects
-
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
     else
@@ -674,8 +714,8 @@ class OrganizationsController < ApplicationController
       tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
       projects = (tmp1 + tmp2).uniq
     end
-
-    @projects = projects.paginate(:page => params[:page], :per_page => current_user.object_per_page || 10)
+    @projects = projects.paginate(:page => params[:page], :per_page => 10)
+    projects = nil
 
     @fields_coefficients = {}
     @pfs = {}
