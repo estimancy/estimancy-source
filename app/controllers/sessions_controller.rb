@@ -31,26 +31,28 @@ class SessionsController < Devise::SessionsController
   def create
     self.resource = warden.authenticate!(auth_options)
 
-    d = Date.parse(resource.subscription_end_date.to_s) - Date.parse(Time.now.to_s)
-    case d.to_i
-      when 90
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 30
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 15
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 15 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 7
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 7 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 3
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 2
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 2 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      when 1
-        flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 jour (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-      else
-        if d.to_i <= 0
-          flash[:error] = "Attention #{resource.name}. \n Votre abonnement a expiré depuis le (#{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
-        end
+    unless resource.subscription_end_date.nil?
+      d = Date.parse(resource.subscription_end_date.to_s) - Date.parse(Time.now.to_s)
+      case d.to_i
+        when 90
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 30
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 15
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 15 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 7
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 7 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 3
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 2
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 2 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        when 1
+          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 jour (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+        else
+          if d.to_i <= 0
+            flash[:error] = "Attention #{resource.name}. \n Votre abonnement a expiré depuis le (#{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          end
+      end
     end
 
     if resource.auth_method.name == "Application"
