@@ -467,10 +467,12 @@ class WbsActivitiesController < ApplicationController
       # Get the input effort values
       probable_input_effort_values = input_effort_values["most_likely"] ###params[:values]["most_likely"].to_f * effort_unit_coefficient
       if @wbs_activity.three_points_estimation?
-        ###probable_input_effort_values = ((params[:values]["low"].to_f + (4 * params[:values]["most_likely"].to_f) + params[:values]["high"])/6) * effort_unit_coefficient
-        probable_input_effort_values = (input_effort_values["low"].to_f + (4 * input_effort_values["most_likely"].to_f) + input_effort_values["high"].to_f)/6
+        ###probable_input_effort_values = (input_effort_values["low"].to_f + (4 * input_effort_values["most_likely"].to_f) + input_effort_values["high"].to_f)/6
+        probable_input_effort_values = Hash.new
+        input_effort_values["most_likely"].each do |key, value|
+          probable_input_effort_values[key] = (input_effort_values["low"][key].to_f + (4 * input_effort_values["most_likely"][key].to_f) + input_effort_values["high"][key].to_f)/6
+        end
       end
-
 
       #### Save the module_project_ratio_variables values from de probable value
       calculator = Dentaku::Calculator.new
@@ -590,7 +592,9 @@ class WbsActivitiesController < ApplicationController
             ["low", "most_likely", "high"].each do |level|
               if @wbs_activity.three_points_estimation?
                 ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["#{level}"], retained_cost_level["#{level}"], initialize_calculation)
+                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
+                                                                        @ratio_reference, just_changed_values, retained_effort_level[level],
+                                                                        retained_cost_level[level], initialize_calculation)
                 theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
               else
                 #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
