@@ -522,6 +522,16 @@ class ViewsWidgetsController < ApplicationController
 
     if module_project.pemodule.alias == "guw"
       estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
+
+    elsif module_project.pemodule.alias == "ge"
+      if module_project.ge_model.ge_model_instance_mode == "standard"
+        module_project_attributes = module_project.pemodule.pe_attributes
+        standard_effort_ids = module_project_attributes.where(alias: Ge::GeModel::GE_ATTRIBUTES_ALIAS).map(&:id).flatten
+        standard_effort_evs = module_project.estimation_values.where(pe_attribute_id: standard_effort_ids)
+        estimation_values = standard_effort_evs.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
+      else
+        estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
+      end
     else
       estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
     end

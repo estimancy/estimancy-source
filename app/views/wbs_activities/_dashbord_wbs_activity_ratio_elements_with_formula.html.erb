@@ -97,12 +97,12 @@
           <% if @wbs_activity_ratio.wbs_activity.three_points_estimation? %>
               <!-- LOW -->
               <th><%= "#{I18n.t(:calculated_effort)} L (#{effort_unit})" %></th>
-              <% if @wbs_activity_ratio.do_not_show_cost %>
+              <% unless @wbs_activity_ratio.do_not_show_cost %>
                   <th><%= "#{I18n.t(:calculated_cost)} L (#{cost_unit})" %></th>
               <% end %>
 
               <th><%= "#{I18n.t(:retained_effort)} L (#{effort_unit})" %></th>
-              <% if @wbs_activity_ratio.do_not_show_cost %>
+              <% unless @wbs_activity_ratio.do_not_show_cost %>
                   <th><%= "#{I18n.t(:retained_cost)} L (#{cost_unit})" %></th>
               <% end %>
 
