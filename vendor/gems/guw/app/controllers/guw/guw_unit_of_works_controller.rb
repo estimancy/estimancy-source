@@ -1580,7 +1580,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
-          txt << row[5].to_s
+          unless row.nil?
+            txt << row[5].to_s
+          end
         end
 
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
