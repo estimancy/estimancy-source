@@ -792,7 +792,7 @@ class WbsActivitiesController < ApplicationController
                 sorted_node_elements = node.subtree.order('ancestry_depth desc')
                 sorted_node_elements.each do |wbs_activity_element|
                 #wbs_activity_elements.each do |wbs_activity_element|
-                  #begin
+                  begin
                     ###probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"] = { "ratio_id_#{@ratio_reference.id}" => {:value => parent_profile_est_value["#{wbs_activity_element.id}"]} }
                     if wbs_activity_element.has_children?
                       ancestor_value = nil
@@ -830,9 +830,9 @@ class WbsActivitiesController < ApplicationController
                       probable_estimation_value[@pbs_project_element.id][wbs_activity_element.id]["profiles"]["profile_id_#{profile.id}"]["ratio_id_#{@ratio_reference.id}"] =  { :value => parent_profile_est_value["#{wbs_activity_element.id}"] }
                     end
 
-                  #rescue
-                  #end
-                end  ####
+                  rescue
+                  end
+                end
               end
             end
 

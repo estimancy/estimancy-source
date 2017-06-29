@@ -119,7 +119,7 @@
 
     <% unless current_inputs_evs.empty? %>
         <% current_inputs_evs.each do |ev| %>
-            <% current_ev = ev.string_data_most_likely[component_id] %>
+            <% current_ev = ev.send("string_data_#{level}")[component_id] %>
             <% begin %>
                 <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
             <% rescue %>
