@@ -817,6 +817,20 @@ class OrganizationsController < ApplicationController
           end
         end
 
+        # For KB-Inputs
+        old_mp.kb_inputs.each do |kbi|
+          new_kb_model = new_organization.kb_models.where(copy_id: kbi.kb_model_id).first
+          if new_kb_model
+            kb_input = Kb::KbInput.where(kb_model_id: new_kb_model.id, module_project_id: new_mp.copy_id).first
+            if kb_input.nil?
+              kb_input = kbi.dup
+              kb_input.save
+            end
+
+            kb_input.update_attributes(kb_model_id: new_kb_model.id, organization_id: new_organization_id, module_project_id: new_mp.id)
+          end
+        end
+
         # For Expert-Judgment Input Estimates
         old_mp.ej_instance_estimates.each do |ie|
           new_expert_judgment_model = new_organization.expert_judgement_instances.where(copy_id: ie.expert_judgement_instance_id).first
@@ -1472,6 +1486,12 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
             end
 
+            # Update the modules's KB Models instances
+            new_organization.kb_models.each do |kb_model|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              kb_copy_id = kb_model.copy_id
+              new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
+            end
 
             # Update the modules's Staffing Models instances
             new_organization.staffing_models.each do |staffing_model|
@@ -1481,12 +1501,6 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
             end
 
-            # Update the modules's KB Models instances
-            new_organization.kb_models.each do |kb_model|
-              # Update all the new organization module_project's guw_model with the current guw_model
-              kb_copy_id = kb_model.copy_id
-              new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
-            end
 
             # Copy the modules's GUW Models instances
             new_organization.guw_models.each do |guw_model|
