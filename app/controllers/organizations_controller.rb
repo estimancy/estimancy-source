@@ -706,7 +706,7 @@ class OrganizationsController < ApplicationController
     # end
 
 
-    #Méthodes avec Will Pagniate (mais sans gestion des droits)
+    #Méthodes avec Will Paginate
     archived_status = EstimationStatus.where(is_archive_status: true,
                                              organization_id: @organization.id).first
 
@@ -720,7 +720,7 @@ class OrganizationsController < ApplicationController
       projects = (tmp1 + tmp2).uniq
     end
 
-    # projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
 
     @projects = projects.paginate(:page => params[:page], :per_page => (current_user.object_per_page || 10))
 

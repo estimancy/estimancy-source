@@ -59,6 +59,8 @@ gem 'net-ldap', '~> 0.3.1'
 gem 'will_paginate'
 gem 'will_paginate-bootstrap'
 
+gem 'filterrific'
+
 #Searching
 gem 'scoped_search'
 

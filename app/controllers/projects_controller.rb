@@ -2401,26 +2401,33 @@ public
 
   def search
 
-    options = {}
+    # options = {}
+    #
+    # params.delete("utf8")
+    # params.delete("commit")
+    # params.delete("action")
+    # params.delete("controller")
+    # params.delete("filter_organization_projects_version")
+    # params.delete_if { |k, v| v.nil? || v.blank? }
+    #
+    # params.each do |k,v|
+    #   case k
+    #     when "creator"
+    #       u = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[v]}%", "%#{params[v]}%" ).first
+    #       options[:creator_id] = u.nil? ? nil : u.id
+    #     else
+    #       options[k] = v
+    #   end
+    # end
 
-    params.delete("utf8")
-    params.delete("commit")
-    params.delete("action")
-    params.delete("controller")
-    params.delete("filter_organization_projects_version")
-    params.delete_if { |k, v| v.nil? || v.blank? }
+    @filterrific = initialize_filterrific(
+        Project,
+        { title: "001-NLD" }
+    ) or return
 
-    params.each do |k,v|
-      case k
-        when "creator"
-          u = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[v]}%", "%#{params[v]}%" ).first
-          options[:creator_id] = u.nil? ? nil : u.id
-        else
-          options[k] = v
-      end
-    end
+    @projects = @filterrific.find.page(params[:page])
 
-    redirect_to organization_estimations_path(@current_organization, options)
+    redirect_to organization_estimations_path(@current_organization)
   end
 
   #Checkout the project : create a new version of the project
