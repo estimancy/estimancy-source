@@ -1492,51 +1492,53 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           if index > 0
 
-            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Traitements' : row[2],
-                                                       module_project_id: current_module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create
+            unless row.nil?
+              @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Traitements' : row[2],
+                                                         module_project_id: current_module_project.id,
+                                                         pbs_project_element_id: current_component.id).first_or_create
 
-            unless row[5].blank?
+              unless row[5].blank?
 
-              @http = Curl.post("http://localhost:5001/estimate_trt", { us: row[5] } )
+                @http = Curl.post("http://localhost:5001/estimate_trt", { us: row[5] } )
 
-              complete_str = row[5].to_s
-              reduce_str = row[5].to_s.truncate(60)
+                complete_str = row[5].to_s
+                reduce_str = row[5].to_s.truncate(60)
 
-              JSON.parse(@http.body_str).each do |output|
+                JSON.parse(@http.body_str).each do |output|
 
-                unless output.blank? || output == "NULL"
-                  @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
-                else
-                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-                end
+                  unless output.blank? || output == "NULL"
+                    @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+                  else
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                  end
 
-                guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
-                                                    comments: complete_str,
-                                                    guw_unit_of_work_group_id: @guw_group.id,
-                                                    module_project_id: current_module_project.id,
-                                                    pbs_project_element_id: current_component.id,
-                                                    guw_model_id: @guw_model.id,
-                                                    display_order: index.to_i,
-                                                    tracking: complete_str,
-                                                    quantity: 1,
-                                                    selected: true,
-                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                  guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
+                                                      comments: complete_str,
+                                                      guw_unit_of_work_group_id: @guw_group.id,
+                                                      module_project_id: current_module_project.id,
+                                                      pbs_project_element_id: current_component.id,
+                                                      guw_model_id: @guw_model.id,
+                                                      display_order: index.to_i,
+                                                      tracking: complete_str,
+                                                      quantity: 1,
+                                                      selected: true,
+                                                      guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                @guw_model.guw_attributes.each_with_index do |gac, jj|
-                  tmp_val = row[15 + @guw_model.orders.size + jj]
-                  unless tmp_val.nil?
-                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+                  @guw_model.guw_attributes.each_with_index do |gac, jj|
+                    tmp_val = row[15 + @guw_model.orders.size + jj]
+                    unless tmp_val.nil?
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
 
-                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
-                      unless @guw_type.nil?
-                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                                  guw_unit_of_work_id: guw_uow.id,
-                                                                  guw_attribute_id: gac.id).first_or_create
-                        guowa.low = val.to_i
-                        guowa.most_likely = val.to_i
-                        guowa.high = val.to_i
-                        guowa.save
+                      if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                        unless @guw_type.nil?
+                          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                    guw_unit_of_work_id: guw_uow.id,
+                                                                    guw_attribute_id: gac.id).first_or_create
+                          guowa.low = val.to_i
+                          guowa.most_likely = val.to_i
+                          guowa.high = val.to_i
+                          guowa.save
+                        end
                       end
                     end
                   end
@@ -1580,10 +1582,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
-          txt << row[5]
+          unless row.nil?
+            txt << row[5].to_s
+          end
         end
 
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).first
         @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
                                                    module_project_id: current_module_project.id,
                                                    pbs_project_element_id: current_component.id).first_or_create
