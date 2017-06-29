@@ -38,6 +38,7 @@ class ModuleProject < ActiveRecord::Base
   belongs_to :staffing_model, class_name: "Staffing::StaffingModel"
   belongs_to :expert_judgement_instance, class_name: "ExpertJudgement::Instance"
   belongs_to :wbs_activity
+  belongs_to :wbs_activity_ratio
 
   has_many :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWorkGroup", dependent: :destroy
   has_many :guw_unit_of_works, :through => :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
@@ -57,8 +58,11 @@ class ModuleProject < ActiveRecord::Base
 
   has_many :wbs_activity_inputs, :dependent => :destroy
   has_many :module_project_ratio_elements, dependent: :destroy
+  has_many :wbs_activity_elements, through: :module_project_ratio_elements
   has_many :module_project_ratio_variables, dependent: :destroy
   has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
+  has_many :ej_instance_estimates, class_name: "ExpertJudgement::InstanceEstimate", :dependent => :destroy
+  has_many :staffing_custom_data, class_name: "Staffing::StaffingCustomDatum", :dependent => :destroy
   has_many :ge_model_factor_descriptions, class_name: "Ge::GeModelFactorDescription", dependent: :destroy
 
   default_scope :order => 'position_x ASC, position_y ASC'
@@ -214,6 +218,29 @@ class ModuleProject < ActiveRecord::Base
     else
       ""
     end
+  end
+
+  
+  # get Wbs-Activity-Ratio when the module_project use the WBS-Activity
+  def get_wbs_activity_ratio(pbs_project_element_id = nil)
+    module_project = self
+
+    if module_project.wbs_activity_ratio.nil?
+      #wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, pbs_project_element_id: pbs_project_element_id).first #.first_or_create(module_project_id: module_project.id, pbs_project_element_id: pbs_project_element_id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id)
+      selected_ratio = nil #wai.nil? ? nil : wai.wbs_activity_ratio
+    else
+      selected_ratio = module_project.wbs_activity_ratio
+    end
+
+    if selected_ratio.nil?
+      selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
+      unless selected_ratio.nil?
+        module_project.wbs_activity_ratio_id = selected_ratio.id
+        module_project.save
+      end
+    end
+
+    selected_ratio
   end
 
 

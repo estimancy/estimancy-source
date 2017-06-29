@@ -161,9 +161,9 @@ Projestimate::Application.routes.draw do
   resources :admin_settings
 
   # searches controller routes
-  post 'searches/results'
-  get 'searches/results' => 'searches#results', :as => 'searches/results'
-  match 'searches/results' => 'searches#results', :as => 'search_results'
+  # post 'searches/results'
+  # get 'searches/results' => 'searches#results', :as => 'searches/results'
+  # match 'searches/results' => 'searches#results', :as => 'search_results'
 
   resources :estimation_values
   match 'estimation_values/:type/convert' => 'estimation_values#convert', :as => 'convert'
@@ -305,6 +305,7 @@ Projestimate::Application.routes.draw do
 
   resources :projects
   match 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
+  get 'search' => 'projects#search', :as => 'search'
 
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'

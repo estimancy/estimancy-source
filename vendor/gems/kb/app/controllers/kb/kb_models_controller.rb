@@ -176,7 +176,7 @@ class Kb::KbModelsController < ApplicationController
       end
 
       file.default_sheet = file.sheets[1]
-      ((file.first_row + 1)..file.last_row).each do |line|
+      ((file.first_row.to_i + 1)..file.last_row).each do |line|
         size   = file.cell(line, 'A')
         effort   = file.cell(line, 'B')
         pd   = file.cell(line, 'C')

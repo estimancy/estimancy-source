@@ -4,34 +4,63 @@
   </strong>
 </h4>
 
-<% effort = PeAttribute.find_by_alias("effort") %>   <!-- Retained effort -->
-<% theoretical_effort =  PeAttribute.find_by_alias("theoretical_effort") %>
-<% ratio = PeAttribute.find_by_alias("ratio") %>
+<!-- Params -->
+<% component_id = current_component.id %>
+<% pbs_project_element = current_component %>
+<% organization = @project.organization %>
+
+<% module_project = current_module_project %>
+<% wbs_activity = module_project.wbs_activity %>
+
+<!--Attributes-->
+<% effort = module_project.pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
+<% theoretical_effort = module_project.pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
+<% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
+
+
+<!-- RATIO -->
+<% selected_ratio = module_project.get_wbs_activity_ratio(component_id) ## @wbs_activity_ratio # %>
+
+<% if selected_ratio.nil?
+     selected_ratio_id = nil
+     wai = nil
+     # wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil, pbs_project_element_id: component_id)
+     #         .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
+     #                          wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil)
+  else
+    selected_ratio_id = selected_ratio.id
+    wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id, pbs_project_element_id: component_id)
+            .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
+                             wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id)
+  end %>
+
+
+<% coeff = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient %>
 
 <% cev = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => current_module_project.id,
+                               :module_project_id => module_project.id,
                                :in_out => "input").first unless effort.nil? %>
 <% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
-                                      :module_project_id => current_module_project.id,
+                                      :module_project_id => module_project.id,
                                       :in_out => "output").first unless effort.nil? %>
 
 <% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                               :module_project_id => current_module_project.id,
+                               :module_project_id => module_project.id,
                                :in_out => "input").first unless theoretical_effort.nil? %>
 
 <% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                                      :module_project_id => current_module_project.id,
+                                      :module_project_id => module_project.id,
                                       :in_out => "output").first unless theoretical_effort.nil? %>
 
 <% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
-                                      :module_project_id => current_module_project.id,
+                                      :module_project_id => module_project.id,
                                       :in_out => "output").first unless ratio.nil? %>
 
 <% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => current_module_project.previous.first,
+                               :module_project_id => module_project.previous.first,
                                :in_out => "output").first unless effort.nil? %>
 
-<% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(effort) %>
+<% possible_module_projects = module_project.possible_previous_mp_for_attribute(effort) %>
 
 <% begin %>
     <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
@@ -42,34 +71,11 @@
 <% rescue %>
 <% end %>
 
-<%# current_module_project.possible_previous_mp_for_attribute(effort).each do |mp| %>
-  <%# mp.estimation_values.where(in_out: "output").each do |ev| %>
-    <%# gm = Guw::GuwModel.where(id: mp.guw_model_id).first %>
-    <%# gm.guw_outputs.each do |go| %>
-      <%# if (ev.pe_attribute.alias == go.name.underscore.gsub(" ", "_")) %>
-        <!--<p>-->
-          <%#= "#{ev.pe_attribute.name} :" %>
-          <%#= ev.string_data_probable[current_component.id] %>
-        <!--</p>-->
-      <%# end %>
-    <%# end %>
-  <%# end %>
-<%# end %>
-
 <% levels = ["most_likely"] %>
-<% if current_module_project.wbs_activity.three_points_estimation? %>
+<% if wbs_activity.three_points_estimation? %>
     <% levels = ["low", "most_likely", "high"] %>
 <% end %>
 
-<% component_id = current_component.id %>
-<% organization = @project.organization %>
-<% wai = WbsActivityInput.where(module_project_id: current_module_project.id, wbs_activity_id: current_module_project.wbs_activity_id, pbs_project_element_id: current_component.id)
-                                .first_or_create(module_project_id: current_module_project.id, pbs_project_element_id: current_component.id,
-                                                 wbs_activity_id: current_module_project.wbs_activity_id, wbs_activity_ratio_id: @wbs_activity_ratio.id) %>
-
-<% selected_ratio = wai.wbs_activity_ratio.nil? ? @wbs_activity_ratio : wai.wbs_activity_ratio %>
-
-<% coeff = current_module_project.wbs_activity.effort_unit_coefficient.nil? ? 1 : current_module_project.wbs_activity.effort_unit_coefficient %>
 
 <% if cev.nil? %>
     <% v_low = nil %>
@@ -97,12 +103,12 @@
 <% end %>
 
 <% effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-<% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+<% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
 <% initial_entry_values = {} %>
 <% entry_values = {} %>
-<% if current_inputs_evs.empty? %>
-    <% current_inputs_evs = current_module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio.id, component_id, v_low*coeff, v_most_likely*coeff, v_high*coeff) %>
+<% if current_inputs_evs.all.empty? %>
+    <% current_inputs_evs = module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio_id, component_id, v_low.to_f*coeff, v_most_likely.to_f*coeff, v_high.to_f*coeff) %>
 <% end %>
 
 <% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
@@ -113,36 +119,24 @@
 
     <% unless current_inputs_evs.empty? %>
         <% current_inputs_evs.each do |ev| %>
+            <% current_ev = ev.string_data_most_likely[component_id] %>
+            <% begin %>
+                <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+            <% rescue %>
+                <% previous_mp_ev = nil %>
+            <% end %>
 
-            <%# if !possible_module_projects.all.empty? possible_module_projects.last.pemodule.alias == "guw" %>
-                <% current_ev = ev.string_data_most_likely[component_id] %>
-                <% begin %>
-                    <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
-                <% rescue %>
-                    <% previous_mp_ev = nil %>
-                <% end %>
+            <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[component_id] %>
 
-                <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[current_component.id] %>
+            <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
+                <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+            <% else %>
+                <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+            <% end %>
 
-                <% if !current_module_project.wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
-                    <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-                <% else %>
-                    <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
-                <% end %>
+            <!-- Les valeurs d'entree initiales -->
+            <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
 
-                <!-- Les valeurs d'entree initiales -->
-                <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-
-            <%# else %>
-                <%# if ev.pe_attribute.alias == "E1" %>
-                    <%# entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
-                    <%# initial_entry_values["#{level}"][ev.id] = previous_level_values["#{level}"] %>
-                <%# else %>
-                    <%# entry_values["#{level}"][ev.id] = nil %>
-                    <%# initial_entry_values["#{level}"][ev.id] = nil %>
-                <%# end %>
-
-            <%# end %>
         <% end %>
     <% end %>
 <% end %>
@@ -152,9 +146,9 @@
 
   <table class="table table-bordered">
 
-    <% if current_module_project.wbs_activity.enabled_input %>
+    <% if wbs_activity.enabled_input %>
       <tr>
-        <% if current_module_project.wbs_activity.three_points_estimation? %>
+        <% if wbs_activity.three_points_estimation? %>
             <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
             <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
         <% else %>
@@ -162,21 +156,21 @@
             <th><%= I18n.t(:retained_input_value) %></th>
         <% end %>
 
-        <th colspan="7"></th>
+        <th colspan="9"></th>
       </tr>
     <% end %>
 
-    <% current_mp_wbs_activity_root_id = current_module_project.wbs_activity.root_element.id %>
+    <% current_mp_wbs_activity_root_id = wbs_activity.root_element.id %>
 
     <tr>
 
-      <% if current_module_project.wbs_activity.enabled_input && current_module_project.wbs_activity.three_points_estimation? %>
+      <% if wbs_activity.enabled_input && wbs_activity.three_points_estimation? %>
         <th>L</th>
         <th>M</th>
         <th>H</th>
       <% end %>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
+      <% if wbs_activity.three_points_estimation? %>
         <th>Effort (L)</th>
         <th>Effort (M)</th>
         <th>Effort (H)</th>
@@ -186,7 +180,7 @@
 
       <th><%= I18n.t(:change_ratio) %></th>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
+      <% if wbs_activity.three_points_estimation? %>
         <th>Effort total calculé (L)</th>
         <th>Effort total retenu (L)</th>
 
@@ -207,7 +201,7 @@
 
     <tr>
       <!-- Les valeurs d'entreé initiales venant du module du dessous -->
-      <% if current_module_project.wbs_activity.enabled_input %>
+      <% if wbs_activity.enabled_input %>
        <% levels.each do |level| %>
            <td>
              <% current_inputs_evs.each do |ev| %>
@@ -221,8 +215,8 @@
        <% end %>
       <% end %>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
-        <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+      <% if wbs_activity.three_points_estimation? %>
+        <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
           <td>
             <% if current_inputs_evs.empty? %>
                 <!-- Anciennes valeurs -->
@@ -260,7 +254,7 @@
       <% end %>
 
 
-      <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+      <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
         <td>
           <% if current_inputs_evs.empty? %>
               <!-- Anciennes valeurs -->
@@ -293,8 +287,8 @@
         </td>
       <% end %>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
-        <% if (!current_module_project.wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+      <% if wbs_activity.three_points_estimation? %>
+        <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
           <td>
             <%#= hidden_field_tag "values[high]", v_high %>
             <%#= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
@@ -326,12 +320,13 @@
       <% end %>
 
       <td>
-        <%= select_tag "ratio", options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                       selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
+        <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                       #selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
+                       selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
                        readonly: cannot?(:execute_estimation_plan, @project) %>
       </td>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
+      <% if wbs_activity.three_points_estimation? %>
         <!-- Effort Theorique calculé -->
         <td>
             <strong>
@@ -375,7 +370,7 @@
         </strong>
       </td>
 
-      <% if current_module_project.wbs_activity.three_points_estimation? %>
+      <% if wbs_activity.three_points_estimation? %>
 
         <!-- Effort Theorique calculé -->
         <td>
@@ -407,35 +402,38 @@
       </td>
 
       <td>
-        <span class="pull-left" >
-          <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
-        </span>
-        <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header modal-drag">
-                <h4 class="modal-title" id="comment_label<%= wai.id %>">
-                  <b>
-                    <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
-                  </b>
-                </h4>
-              </div>
-              <div class="modal-body">
-                <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area" %>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
-                <% if can?(:execute_estimation_plan, @project) %>
-                    <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
-                <% end %>
+        <% if wai.nil? %>
+            <%= '----' %>
+        <% else %>
+            <span class="pull-left" >
+                <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
+            </span>
+            <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header modal-drag">
+                    <h4 class="modal-title" id="comment_label<%= wai.id %>">
+                      <b>
+                        <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
+                      </b>
+                    </h4>
+                  </div>
+                  <div class="modal-body">
+                    <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area" %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                    <% if can?(:execute_estimation_plan, @project) %>
+                        <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
+                    <% end %>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+        <% end %>
       </td>
     </tr>
   </table>
-
 
   <!-- Ajout des valeurs des Ratios -->
   <div id="module_project_ratio_elements">
@@ -444,13 +442,18 @@
                :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
                locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
 
-        <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+        <% @wbs_activity_ratio =  selected_ratio %>
+
+        <% if selected_ratio.nil? %>
+           <%= render :text => "Aucun ratio sélectionné" %>
+        <% else %>
+            <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
                    :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
                    locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+         <% end %>
       </div>
   </div>
   <!-- Fin Ajout des valeurs des Ratios -->
-
 
   <% if can?(:execute_estimation_plan, @project) %>
     <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", class: "pull-right btn btn-primary" %></span>
@@ -460,33 +463,9 @@
 <% end %>
 
 
-<!-- Ajout des valeurs des Ratios -->
-<!--<div id="module_project_ratio_elements">-->
-  <!--<%#= form_tag update_effort_breakdown_retained_values_path do %>-->
+<%#
 
-    <!--<div id="module_project_ratio_section">-->
-        <!--<%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',-->
-                   <!--:object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],-->
-                   <!--locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>-->
-
-      <%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-#                  :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
-                 locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-    <!--</div>-->
-
-    <!--<%# if can?(:execute_estimation_plan, @project) %>-->
-      <!--<%#= submit_tag I18n.t(:save_modifications), class: "pull-right btn btn-mini" %>-->
-    <!--<%# end %>-->
-  <!--<%# end %>-->
-<!--</div>-->
-<!-- Fin Ajout des valeurs des Ratios -->
-
-
-<%
-   pbs_project_element = current_component
-   wbs_activity = current_module_project.wbs_activity
-   module_project = current_module_project
-   wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id).first
+   wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, module_project_id: module_project.id, pbs_project_element_id: pbs_project_element.id).first
    probable_est_value = cev_output.nil? ? nil : cev_output.send("string_data_probable")
    pbs_probable_est_value = probable_est_value.nil? ? nil : probable_est_value[pbs_project_element.id]
 

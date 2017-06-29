@@ -24,7 +24,7 @@ class Ability
   include CanCan::Ability
 
   #Initialize Ability then load permissions
-  def initialize(user, organization)
+  def initialize(user, organization, projects)
 
     #Uncomment in order to authorize everybody to manage all the app
     if Rails.env == "test" || user.super_admin == true
@@ -36,7 +36,12 @@ class Ability
       can :manage_master_data, :all
     end
 
-    organization_projects = organization.projects
+    if projects.empty?
+      organization_projects = organization.projects
+    else
+      organization_projects = projects
+    end
+
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups
 
@@ -230,7 +235,6 @@ class Ability
             end
           end
         end
-
       end
 
       global = @array_users + @array_groups + @array_owners
@@ -260,24 +264,10 @@ class Ability
 
       [status, global].inject(:&).each_with_index do |a, i|
         unless hash_project[a[1]].nil?
-          # p "#{hash_permission[a[0]]}, #{hash_project[a[1]]}, #{hash_status[a[2]]}"
           can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
-          # p "#{hash_permission[a[0]]}, #{hash_project[a[1]]}, estimation_status_id: #{hash_status[a[2]]} => #{organization}"
         end
       end
 
-      #p "#{permission.alias} #{project} #{e}"
-      #[status, global].inject(:&).each_with_index do |a, i|
-      #  permission = Permission.find(a[0]).alias  permission_hash[a0]
-      #  project = Project.find(a[1])
-      #  status = EstimationStatus.find(a[2])
-      #
-      #  unless project.nil?
-      #    unless project.is_model == true && (permission.start_with?("alter") || permission.include?("widget"))
-      #      can permission.to_sym, project, estimation_status_id: status.id
-      #    end
-      #  end
-      #end
     end
   end
 end

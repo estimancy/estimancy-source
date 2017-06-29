@@ -338,10 +338,24 @@ class WbsActivitiesController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @pbs_project_element = current_component
-    @ratio_reference = WbsActivityRatio.find(params[:ratio])
-    # Project wbs_activity
-    @wbs_activity = current_module_project.wbs_activity
     @module_project = current_module_project
+    @wbs_activity = @module_project.wbs_activity
+    module_project_attributes = @module_project.pemodule.pe_attributes
+
+    # Get selected Ratio
+    @ratio_reference = WbsActivityRatio.find(params[:ratio])
+
+    if @ratio_reference.nil?
+      flash[:warning] = "Erreur : vous devez sélectionner un Ratio pour continuer"
+      redirect_to dashboard_path(@project, ratio: nil, anchor: 'save_effort_breakdown_form') and return
+    else
+      wai = @module_project.wbs_activity_inputs.where(wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
+                                               .first_or_create(module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
+                                                                wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @ratio_reference.id)
+      wai.comment = params[:comment][wai.id.to_s]
+      wai.save
+    end
+
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
@@ -363,8 +377,13 @@ class WbsActivitiesController < ApplicationController
     #======= Voir si les attributs theoretical_effort et theoretical_cost existe sinon les créer ============
     # Update the Activity module-project attributes if they don't exist (theoretical_effort, theoretical_cost)
     unless @module_project.wbs_activity.nil?
-      theoretical_effort = PeAttribute.find_by_alias("theoretical_effort")
-      theoretical_cost = PeAttribute.find_by_alias("theoretical_cost")
+
+      # Sauvegarder le ratio utilisé lors du calcul
+      @module_project.wbs_activity_ratio_id = @ratio_reference.id
+      @module_project.save
+
+      theoretical_effort = module_project_attributes.where(alias: "theoretical_effort").first #PeAttribute.find_by_alias("theoretical_effort")
+      theoretical_cost = module_project_attributes.where(alias: "theoretical_cost").first #PeAttribute.find_by_alias("theoretical_cost")
 
       [theoretical_effort, theoretical_cost].compact.each do |theoretical_attribute|
         ["input", "output"].each do |in_out|
@@ -376,9 +395,9 @@ class WbsActivitiesController < ApplicationController
 
               case theoretical_attribute.alias
                 when "theoretical_effort"
-                  retained_attribute = PeAttribute.find_by_alias("effort")
+                  retained_attribute = module_project_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
                 when "theoretical_cost"
-                  retained_attribute = PeAttribute.find_by_alias("cost")
+                  retained_attribute = module_project_attributes.where(alias: "cost").first #PeAttribute.find_by_alias("cost")
               end
 
               retained_attribute_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
@@ -422,12 +441,18 @@ class WbsActivitiesController < ApplicationController
 
         # Retained Effort
         level_retained_effort_with_wbs_activity_elt_id = Hash.new
-        each_level_retained_effort = []
+
         each_level_retained_effort = params["retained_effort_#{level}"]
+        if each_level_retained_effort.nil?
+          each_level_retained_effort = []
+        end
 
         # Retained Cost
         level_retained_cost_with_wbs_activity_elt_id = Hash.new
         each_level_retained_cost = params["retained_cost_#{level}"]
+        if each_level_retained_cost.nil?
+          each_level_retained_cost = []
+        end
 
         each_level_retained_effort.each do |key, value|
           mp_ratio_element = ModuleProjectRatioElement.find(key)
@@ -442,16 +467,18 @@ class WbsActivitiesController < ApplicationController
       # Get the input effort values
       probable_input_effort_values = input_effort_values["most_likely"] ###params[:values]["most_likely"].to_f * effort_unit_coefficient
       if @wbs_activity.three_points_estimation?
-        ###probable_input_effort_values = ((params[:values]["low"].to_f + (4 * params[:values]["most_likely"].to_f) + params[:values]["high"])/6) * effort_unit_coefficient
-        probable_input_effort_values = (input_effort_values["low"].to_f + (4 * input_effort_values["most_likely"].to_f) + input_effort_values["high"].to_f)/6
+        ###probable_input_effort_values = (input_effort_values["low"].to_f + (4 * input_effort_values["most_likely"].to_f) + input_effort_values["high"].to_f)/6
+        probable_input_effort_values = Hash.new
+        input_effort_values["most_likely"].each do |key, value|
+          probable_input_effort_values[key] = (input_effort_values["low"][key].to_f + (4 * input_effort_values["most_likely"][key].to_f) + input_effort_values["high"][key].to_f)/6
+        end
       end
-
 
       #### Save the module_project_ratio_variables values from de probable value
       calculator = Dentaku::Calculator.new
 
       #store entries value
-      effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+      effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten  #PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
         effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient
@@ -553,10 +580,10 @@ class WbsActivitiesController < ApplicationController
             mp_ratio_element_attribute_alias = pe_attribute_alias
             case pe_attribute_alias
               when "theoretical_effort"
-                retained_attribute = PeAttribute.find_by_alias("effort")
+                retained_attribute = module_project_attributes.where(alias: "effort").first  #PeAttribute.find_by_alias("effort")
                 mp_ratio_element_attribute_alias = "effort"
               when "theoretical_cost"
-                retained_attribute = PeAttribute.find_by_alias("cost")
+                retained_attribute = module_project_attributes.where(alias: "cost").first  #PeAttribute.find_by_alias("cost")
                 mp_ratio_element_attribute_alias = "cost"
             end
 
@@ -565,7 +592,9 @@ class WbsActivitiesController < ApplicationController
             ["low", "most_likely", "high"].each do |level|
               if @wbs_activity.three_points_estimation?
                 ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["#{level}"], retained_cost_level["#{level}"], initialize_calculation)
+                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
+                                                                        @ratio_reference, just_changed_values, retained_effort_level[level],
+                                                                        retained_cost_level[level], initialize_calculation)
                 theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
               else
                 #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
@@ -929,12 +958,6 @@ class WbsActivitiesController < ApplicationController
         mp_ratio_element.save
       end
     end
-
-    wai = WbsActivityInput.where(module_project_id: current_module_project.id,
-                                 wbs_activity_id: @wbs_activity.id).first
-    wai.wbs_activity_ratio_id = @ratio_reference.id.to_i
-    wai.comment = params[:comment][wai.id.to_s]
-    wai.save
 
 
     current_module_project.nexts.each do |n|

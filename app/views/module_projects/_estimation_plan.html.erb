@@ -27,16 +27,16 @@
             <% top_position = pmod.top_position.nil? ? "#{pmod.position_y.to_i*10}em" : "#{pmod.top_position.to_f}px" %>
         <% end %>
 
-        <div class="<%= pbs_class %> module_project <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center"
-             id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>"
-             style="top: <%= top_position %>; left: <%= left_position %>">
+        <div class="<%= pbs_class %> module_project <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>" style="top: <%= top_position %>; left: <%= left_position %>">
 
             <% if pmod.id != @initialization_module_project.id %>
               <%= link_to pmod, edit_module_project_path(pmod), class: "a_white" %>
             <% else %>
               <%= link_to pmod, "#", class: "a_white" %> <%#= pmod %>
             <% end %>
+
             <br>
+
             <% unless @project.locked? %>
               <% if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
                 <%#= link_to '', pemodules_left_path(pmod.id), :class => 'icon-arrow-left a_white' %>
@@ -51,20 +51,21 @@
                   <%#= link_to '', edit_module_project_path(pmod.id), :class => "icon-pencil a_white" %>
                   <%= link_to('', pmod, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash a_white') %>
                 <% end %>
-              <% else %>
-                  <%= link_to '', '#', :title => "#{pmod.pemodule.title}: \n #{pmod.pemodule.description}", :class => "icon-info attribute_tooltip a_white" %>
+
+                <% if pmod.show_results_view %>
+                  <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+                <% else %>
+                  <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+                <% end %>
               <% end %>
 
-              <% if pmod.show_results_view %>
-                <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
-              <% else %>
-                <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
-              <% end %>
             <% end %>
         </div>
-        <%#= render :partial => 'module_projects/estimation_paths', :locals => { :pmod => pmod } %>
     <% end %>
+
+    <%# if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
     <%= render :partial => 'module_projects/dynamic_estimation_paths', :locals => { :module_projects => module_projects, estimation_view: "estimation_plan" } %>
+    <%# end %>
 <% else %>
   <%= content_tag(:div, I18n.t(:notice_no_estimation_plan_defined), :class => 'alert alert-info') %>
 <% end %>

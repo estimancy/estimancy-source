@@ -652,7 +652,7 @@ fr:
   auth_type: "Authentification de l'utilisateur"
   informations: "Informations sur l'utilisateur"
   user_status: "Statut de l'utilisateur"
-  created_at: "Crée le"
+  created_at: "Créer le"
   updated_at: "Mis à jour le"
   last_login: "Dernière connexion"
   previous_login: "Connexion précédente"
@@ -927,7 +927,6 @@ fr:
   warning_master_data_unauthorized_action: "action non autorisée: vous essayez de restaurer un enregistrement qui n'est pas 'retired'! "
   notice_project_successful_updated: "Le projet a été mis à jour avec succès"
   notice_project_successful_deleted: "Le projet a été supprimé"
-  notice_multiple_project_successful_deleted: "Les projets ont été supprimés"
   error_project_creation_failed: "Une erreur est survenue lors de la création de l'estimation"
   notice_project_successful_duplicated: "Le projet a été dupliqué avec succès"
   error_project_duplication_failed: "Une erreur est survenue lors de la duplication du projet"
@@ -2012,7 +2011,6 @@ fr:
   associate_inputs_with_outputs: "Associer les attributs d'entrée de \"%{current_mp}\" au attributs de sortie des modules le précédent"
   change_module_project_instance: "Changer l'instance du module"
   create_button: "Créer"
-  multiple_delete: "Suppression Multiple"
   created_date: "Date de création"
   knowledge_base_module: "Module Base de connaissance"
   operation_module: "Module d'opération"
@@ -2075,3 +2073,19 @@ fr:
   your_configuration: "Votre configuration"
   contact_us: "Contacter l'équipe technique"
   display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
+
+  will_paginate:
+    next_label: suivant →
+    page_entries_info:
+      multi_page: "%{model} %{from} - %{to} sur %{count} au total"
+      multi_page_html: "%{model} <strong>%{from} - %{to}</strong> sur <strong>%{count}</strong> au total"
+      single_page:
+        one: "%{count} %{model} affiché(e)"
+        other: "%{count} %{model} affiché(e)s"
+      single_page_html:
+        one: "%{count} %{model} affiché(e)"
+        other: "%{count} %{model} affiché(e)s"
+    page_gap: "&hellip;"
+    previous_label: "← précédent"  
+  
+  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."

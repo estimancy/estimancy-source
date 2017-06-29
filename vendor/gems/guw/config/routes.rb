@@ -98,7 +98,8 @@ Guw::Engine.routes.draw do
   post "save_name" => "guw_unit_of_works#save_name", as: "save_name"
   post "save_comments" => "guw_unit_of_works#save_comments", as: "save_comments"
   post "save_trackings" => "guw_unit_of_works#save_trackings", as: "save_trackings"
-  post "ml" => "guw_unit_of_works#ml", as: "ml"
+  post "ml_trt" => "guw_unit_of_works#ml_trt", as: "ml_trt"
+  post "ml_data" => "guw_unit_of_works#ml_data", as: "ml_data"
   post "extract" => "guw_unit_of_works#extract", as: "extract"
 
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"

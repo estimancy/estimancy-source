@@ -94,6 +94,16 @@ class Project < ActiveRecord::Base
     propagate
   end
 
+  filterrific(
+    available_filters: [
+        :title,
+    ]
+  )
+
+  scope :title, lambda { |query|
+    where(:title => query )
+  }
+
   # get the selectable/available inline columns
   class_attribute :available_inline_columns
   self.available_inline_columns =

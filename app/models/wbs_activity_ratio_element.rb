@@ -37,5 +37,10 @@ class WbsActivityRatioElement < ActiveRecord::Base
   amoeba do
     enable
     include_association [:wbs_activity_ratio_profiles]
+
+    customize(lambda { |original_wbs_activity_ratio_elt, new_wbs_activity_ratio_elt|
+                        new_wbs_activity_ratio_elt.copy_id = original_wbs_activity_ratio_elt.id
+    })
+
   end
 end

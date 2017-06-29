@@ -29,6 +29,20 @@ module Staffing
 
     serialize :trapeze_default_values, Hash
 
+    belongs_to :organization
+    has_many :module_projects, :dependent => :destroy
+    has_many :staffing_custom_data
+
+    INPUT_EFFORTS_ALIAS = ["effort"]
+
+    amoeba do
+      enable
+      exclude_association [:module_projects, :staffing_custom_data]
+      customize(lambda { |original_staffing_model, new_staffing_model|
+                  new_staffing_model.copy_id = original_staffing_model.id
+                })
+    end
+
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
     validates :mc_donell_coef, :puissance_n, :organization_id, presence: true
     validates :standard_unit_coefficient, :presence => true
@@ -76,14 +90,8 @@ module Staffing
             end
         end
       end
-
     end
 
-    belongs_to :organization
-    has_many :module_projects, :dependent => :destroy
-    has_many :staffing
-
-    INPUT_EFFORTS_ALIAS = ["effort"]
 
     def to_s(mp=nil)
       if mp.nil?

@@ -65,6 +65,9 @@
         <% ev = EstimationValue.find(current_ev.estimation_value_id) %>
       <% else %>
         <% ev = EstimationValue.where(:pe_attribute_id => eja.id, :module_project_id => module_project.previous.first, :in_out => "output").first %>
+        <% if ev.nil? %>
+            <% ev =  current_ev %>
+        <% end %>
       <% end %>
 
       <tr>
