@@ -1,7 +1,8 @@
 <div class="row-fluid">
   <div class="span3 pbs">
-    <div class="widget-box collapsible">
-      <div class="widget-title">
+
+    <div class="widget-box collapsible" style="display:none;">
+      <div class="widget-title" >
         <!--<a href="#collapseProduct" data-toggle="collapse">-->
           <!--<span class="icon">-->
             <!--<i class="icon-eye-open"></i>-->
@@ -19,6 +20,29 @@
         </div>
       </div>
     </div>
+
+    <div class="widget-box collapsible" >
+      <div class="widget-title" >
+        <h5><%= I18n.t(:wbs_product) %>
+          <span class="component_name">
+            <%= current_component %>
+          </span>
+        </h5>
+      </div>
+      <div class="collapse in" id="collapseProduct">
+        <div class="widget-content resizableProduct">
+
+          <%= @project.description%>
+          <%= @project.title%>
+          <h5>blalblalblalal</h5>
+
+
+        </div>
+      </div>
+    </div>
+
+
+
   </div>
 
   <div class="span9 estimation_plan">

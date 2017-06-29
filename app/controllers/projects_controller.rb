@@ -2954,6 +2954,18 @@ public
     end
   end
 
+
+  def export_pdf
+    @project = Project.find(params[:project_id])
+    pdf = WickedPdf.new.pdf_from_url('https://github.com/mileszs/wicked_pdf')
+d
+    save_path = Rails.root.join('pdfs','filename.pdf')
+    File.open(save_path, 'wb') do |file|
+      file << pdf
+    end
+    redirect_to :back
+   end
+
   private
   def generate_dashboard
     authorize! :show_project, @project

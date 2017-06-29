@@ -478,5 +478,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def showpdf
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "file_name"   # Excluding ".pdf" extension.
+      end
+    end
+  end
 
 end
