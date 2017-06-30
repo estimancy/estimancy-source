@@ -225,3 +225,12 @@ if File.exists?(local_gemfile)
   puts 'Loading Gemfile.local ...' if $DEBUG # `ruby -d` or `bundle -v`
   instance_eval File.read(local_gemfile)
 end
+
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
+gem 'prawn', '~> 1.2.1'
+gem 'prawn-table', '~> 0.1.0'
+
+
+

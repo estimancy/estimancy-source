@@ -22,6 +22,7 @@
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true), class: "icon icon-text-width icon-large icon_margin_right", title: I18n.t(:label_add_new_widget_comment), remote: true %>
                       <%= link_to "", new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true), class: "icon icon-superscript icon-large icon_margin_right", title: I18n.t(:label_add_new_kpi_widget), remote: true %>
                       <%= link_to "", edit_module_project_view_config_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-cog icon-large icon_padding_right", title: I18n.t(:label_parameters), remote: true %>
+                      <%= link_to "PDF File", export_pdf_path(format: 'pdf', project_id: params[:project_id])%>
                     <% end %>
                   </div>
                 </div>
