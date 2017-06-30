@@ -64,18 +64,10 @@ class Project < ActiveRecord::Base
   serialize :included_wbs_activities, Array
 
   validates_presence_of :organization_id, :estimation_status_id, :creator_id
-  # validates :title, :presence => true, :uniqueness => true
   validates :title, :presence => true, :uniqueness => {  :scope => [:version_number,:organization_id], case_sensitive: false, :message => I18n.t(:error_validation_project) }
-  ###validates :alias, :presence => true, :uniqueness => { :scope => :organization_id, case_sensitive: false, :message => I18n.t(:error_validation_project) }
-  # validates :version_number, :presence => true, :length => { :maximum => 64 }, :uniqueness => { scope: [:title, :organization_id],
-  #                                                                                        case_sensitive: false,
-  #                                                                                        message: I18n.t(:error_validation_project) }
 
   #Search fields
   scoped_search :on => [:title, :alias, :description, :start_date, :created_at, :updated_at]
-  # scoped_search :in => :organization, :on => :name
-  # scoped_search :in => :pbs_project_elements, :on => :name
-  # scoped_search :in => :wbs_project_elements, :on => [:name, :description]
 
   amoeba do
     enable
@@ -93,16 +85,6 @@ class Project < ActiveRecord::Base
 
     propagate
   end
-
-  filterrific(
-    available_filters: [
-        :title,
-    ]
-  )
-
-  scope :title, lambda { |query|
-    where(:title => query )
-  }
 
   # get the selectable/available inline columns
   class_attribute :available_inline_columns
@@ -125,12 +107,29 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation")
     ]
 
-  #class_attribute :selected_inline_columns
-  #self.selected_inline_columns = update_selected_inline_columns(Project)
-  #self.selected_inline_columns = self.available_inline_columns.select{ |column| column.name.to_s.in?(@current_organization.project_selected_columns)}
-
   class_attribute :default_selected_columns
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
+
+  after_save :reload_cache_archived
+  def reload_cache_archived
+    key = "not_archived_#{self.organization_id}"
+    archived_status = EstimationStatus.where(is_archive_status: true,
+                                             organization_id: self.organization_id).first
+
+    Rails.cache.fetch(key, force: true) do
+      Project.get_unarchived_projects(archived_status, self.organization_id)
+    end
+  end
+
+  def self.get_unarchived_projects(archived_status, organization_id)
+    if archived_status.nil?
+      Project.where(organization_id: organization_id)
+    else
+      Project
+          .where(organization_id: organization_id)
+          .where("estimation_status_id != ?", archived_status.id)
+    end
+  end
 
   def self.selectable_inline_columns
     [

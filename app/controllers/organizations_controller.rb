@@ -705,12 +705,17 @@ class OrganizationsController < ApplicationController
     #   projects << Project.where(organization_id: @organization.id).first
     # end
 
-
-    #Méthodes avec Will Paginate
+    key = "not_archived_#{@organization.id}"
     archived_status = EstimationStatus.where(is_archive_status: true,
-                                             organization_id: @organization.id).first
+                                             organization_id: @organization_id).first
 
-    projects = @organization.projects.where("estimation_status_id != ?", archived_status.id)
+    projects = Rails.cache.read(key)
+
+    if projects.nil?
+      projects = Rails.cache.fetch(key, force: true) do
+        Project.get_unarchived_projects(archived_status, @organization.id)
+      end
+    end
 
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
