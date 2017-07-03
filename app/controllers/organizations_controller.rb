@@ -662,13 +662,13 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    options = {}
-    params.delete("action")
-    params.delete("controller")
-    params.each do |k,v|
-      options[k] = v
-    end
-
+    # options = {}
+    # params.delete("action")
+    # params.delete("controller")
+    # params.each do |k,v|
+    #   options[k] = v
+    # end
+    #
     # Méthode 1
     # projects = @organization.projects.order("created_at DESC").take(25)
     # projects = []
@@ -723,9 +723,10 @@ class OrganizationsController < ApplicationController
     # end
     # projects = Project.where(id: project_ids)
 
-
     #############   SGA avec SQl View   ############
     # projects = @organization.organization_estimations
+
+    projects = nil
     projects = @organization.projects
 
     if current_user.super_admin == true
@@ -736,7 +737,7 @@ class OrganizationsController < ApplicationController
       projects = (tmp1 + tmp2).uniq
     end
 
-    projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    # projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
 
     @projects = projects.paginate(:page => params[:page], :per_page => (current_user.object_per_page || 10))
 

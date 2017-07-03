@@ -110,27 +110,27 @@ class Project < ActiveRecord::Base
   class_attribute :default_selected_columns
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
 
-  after_save :reload_cache_archived
-  def reload_cache_archived
-    key = "not_archived_#{self.organization_id}"
-    archived_status = EstimationStatus.where(is_archive_status: true,
-                                             organization_id: self.organization_id).first
-
-    Rails.cache.fetch(key, force: true) do
-      Project.get_unarchived_project_ids(archived_status, self.organization_id)
-    end
-  end
-
-  def self.get_unarchived_project_ids(archived_status, organization_id)
-    if archived_status.nil?
-      Project.where(organization_id: organization_id).pluck(:id)
-    else
-      Project
-          .where(organization_id: organization_id)
-          .where("estimation_status_id != ?", archived_status.id)
-          .pluck(:id)
-    end
-  end
+  # after_save :reload_cache_archived
+  # def reload_cache_archived
+  #   key = "not_archived_#{self.organization_id}"
+  #   archived_status = EstimationStatus.where(is_archive_status: true,
+  #                                            organization_id: self.organization_id).first
+  #
+  #   Rails.cache.fetch(key, force: true) do
+  #     Project.get_unarchived_project_ids(archived_status, self.organization_id)
+  #   end
+  # end
+  #
+  # def self.get_unarchived_project_ids(archived_status, organization_id)
+  #   if archived_status.nil?
+  #     Project.where(organization_id: organization_id).pluck(:id)
+  #   else
+  #     Project
+  #         .where(organization_id: organization_id)
+  #         .where("estimation_status_id != ?", archived_status.id)
+  #         .pluck(:id)
+  #   end
+  # end
 
   def self.selectable_inline_columns
     [
