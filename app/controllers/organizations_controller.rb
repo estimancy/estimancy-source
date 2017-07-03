@@ -712,13 +712,14 @@ class OrganizationsController < ApplicationController
     # projects = Rails.cache.read(key)
 
     project_ids = Rails.cache.read(key)
-    projects = Project.where(id: project_ids)
 
-    if projects.nil?
-      projects = Rails.cache.fetch(key, force: true) do
+    if project_ids.nil?
+      project_ids = Rails.cache.fetch(key, force: true) do
         Project.get_unarchived_project_ids(archived_status, @organization.id)
       end
     end
+
+    projects = Project.where(id: project_ids)
 
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
