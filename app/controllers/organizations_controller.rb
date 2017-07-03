@@ -709,11 +709,14 @@ class OrganizationsController < ApplicationController
     archived_status = EstimationStatus.where(is_archive_status: true,
                                              organization_id: @organization_id).first
 
-    projects = Rails.cache.read(key)
+    # projects = Rails.cache.read(key)
+
+    project_ids = Rails.cache.read(key)
+    projects = Project.where(id: project_ids)
 
     if projects.nil?
       projects = Rails.cache.fetch(key, force: true) do
-        Project.get_unarchived_projects(archived_status, @organization.id)
+        Project.get_unarchived_project_ids(archived_status, @organization.id)
       end
     end
 
