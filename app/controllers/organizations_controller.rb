@@ -725,7 +725,7 @@ class OrganizationsController < ApplicationController
 
     #############   SGA avec SQl View   ############
     # projects = @organization.organization_estimations
-
+    #
     # projects = nil
     # projects = @organization.projects
 

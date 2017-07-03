@@ -122,13 +122,18 @@ class Project < ActiveRecord::Base
   end
 
   def self.get_unarchived_project_ids(archived_status, organization_id)
+
+    @organization = Organization.find(organization_id)
+
     if archived_status.nil?
-      Project.where(organization_id: organization_id).pluck(:id)
+      # Project.where(organization_id: organization_id).pluck(:id)
+      project_ids = @organization.organization_estimations.pluck(:id)
     else
-      Project
-          .where(organization_id: organization_id)
-          .where("estimation_status_id != ?", archived_status.id)
-          .pluck(:id)
+      # Project
+      #     .where(organization_id: organization_id)
+      #     .where("estimation_status_id != ?", archived_status.id)
+      #     .pluck(:id)
+      project_ids = @organization.organization_estimations.pluck(:id)
     end
   end
 
