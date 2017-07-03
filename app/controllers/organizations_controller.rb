@@ -710,21 +710,21 @@ class OrganizationsController < ApplicationController
     # end
 
     ############ NRE avec Cache  ############
-    # key = "not_archived_#{@organization.id}"
-    # archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
+    key = "not_archived_#{@organization.id}"
+    archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
 
-    # # projects = Rails.cache.read(key)
-    # project_ids = Rails.cache.read(key)
-    #
-    # if project_ids.nil?
-    #   project_ids = Rails.cache.fetch(key, force: true) do
-    #     Project.get_unarchived_project_ids(archived_status, @organization.id)
-    #   end
-    # end
-    # projects = Project.where(id: project_ids)
+    # projects = Rails.cache.read(key)
+    project_ids = Rails.cache.read(key)
+
+    if project_ids.nil?
+      project_ids = Rails.cache.fetch(key, force: true) do
+        Project.get_unarchived_project_ids(archived_status, @organization.id)
+      end
+    end
+    projects = Project.where(id: project_ids)
 
     #############   SGA avec SQl View   ############
-    projects = @organization.organization_estimations
+    # projects = @organization.organization_estimations
 
     # projects = nil
     # projects = @organization.projects
