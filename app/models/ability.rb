@@ -37,7 +37,8 @@ class Ability
     end
 
     if projects.empty?
-      organization_projects = organization.projects
+      #organization_projects = organization.projects    # NRE
+      organization_projects = organization.organization_estimations    # SGA View
     else
       organization_projects = projects
     end

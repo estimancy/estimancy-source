@@ -29,6 +29,9 @@ class Organization < ActiveRecord::Base
 
   serialize :project_selected_columns, Array
 
+  # View
+  has_many :organization_estimations
+
   #has_and_belongs_to_many :users
   #Groups created on local, will be attached to an organization
   has_many :groups, :dependent => :destroy

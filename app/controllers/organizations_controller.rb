@@ -367,14 +367,18 @@ class OrganizationsController < ApplicationController
     @organization = @current_organization
     check_if_organization_is_image(@organization)
 
-    tmp1 = @organization.projects.where(creator_id: current_user.id,
+    current_organization_projects = @organization.projects   #NRE
+    #current_organization_projects = @organization.organization_estimations  # SGA
+
+
+    tmp1 = current_organization_projects.where(creator_id: current_user.id,
                                         is_model: false,
                                         private: true).all
 
     if params[:report_date][:start_date].blank? || params[:report_date][:end_date].blank?
-      tmp2 = @organization.projects.where(is_model: false, private: false).where(conditions).where("title like ?", "%#{params[:title]}%").all
+      tmp2 = current_organization_projects.where(is_model: false, private: false).where(conditions).where("title like ?", "%#{params[:title]}%").all
     else
-      tmp2 = @organization.projects.where(is_model: false, private: false).where(conditions).where(start_date: (Time.parse(start_date)..Time.parse(end_date))).where("title like ?", "%#{params[:title]}%").all
+      tmp2 = current_organization_projects.where(is_model: false, private: false).where(conditions).where(start_date: (Time.parse(start_date)..Time.parse(end_date))).where("title like ?", "%#{params[:title]}%").all
     end
 
     @projects = (tmp1 + tmp2).uniq

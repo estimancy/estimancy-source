@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170608161210) do
+ActiveRecord::Schema.define(:version => 20170703085928) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1084,6 +1084,44 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.boolean  "modify_output"
   end
 
+  create_table "organization_estimations", :id => false, :force => true do |t|
+    t.integer  "current_organization_id",               :default => 0,     :null => false
+    t.string   "organization_name"
+    t.date     "project_start_date"
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
+    t.string   "title"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
+    t.string   "state"
+    t.date     "start_date"
+    t.integer  "organization_id"
+    t.integer  "original_model_id"
+    t.integer  "project_area_id"
+    t.integer  "project_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "acquisition_category_id"
+    t.boolean  "is_model"
+    t.integer  "master_anscestry"
+    t.integer  "creator_id"
+    t.text     "purpose"
+    t.text     "level_of_detail"
+    t.text     "scope"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.text     "included_wbs_activities"
+    t.boolean  "is_historicized"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "status_comment"
+    t.integer  "application_id"
+    t.string   "application_name"
+    t.boolean  "private",                               :default => false
+  end
+
   create_table "organization_labor_categories", :force => true do |t|
     t.integer  "organization_id"
     t.integer  "labor_category_id"
@@ -1440,7 +1478,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.integer  "copy_number"
     t.integer  "copy_id"
     t.text     "included_wbs_activities"
-    t.boolean  "is_locked"
+    t.boolean  "is_historicized"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "status_comment"
