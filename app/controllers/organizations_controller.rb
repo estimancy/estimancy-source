@@ -724,10 +724,10 @@ class OrganizationsController < ApplicationController
     # projects = Project.where(id: project_ids)
 
     #############   SGA avec SQl View   ############
-    # projects = @organization.organization_estimations
+    projects = @organization.organization_estimations
 
-    projects = nil
-    projects = @organization.projects
+    # projects = nil
+    # projects = @organization.projects
 
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
