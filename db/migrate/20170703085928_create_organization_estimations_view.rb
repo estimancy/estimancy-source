@@ -9,7 +9,8 @@ class CreateOrganizationEstimationsView < ActiveRecord::Migration
       FROM projects p
       INNER JOIN organizations o ON o.id = p.organization_id
       WHERE p.is_historicized != true
-      ORDER BY start_date DESC
+      ORDER BY current_organization_id, start_date DESC
+
     SQL
 
   end
@@ -21,3 +22,4 @@ class CreateOrganizationEstimationsView < ActiveRecord::Migration
   end
 
 end
+

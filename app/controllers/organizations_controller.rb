@@ -367,8 +367,8 @@ class OrganizationsController < ApplicationController
     @organization = @current_organization
     check_if_organization_is_image(@organization)
 
-    current_organization_projects = @organization.projects   #NRE
-    #current_organization_projects = @organization.organization_estimations  # SGA
+    ###current_organization_projects = @organization.projects   #NRE
+    current_organization_projects = @organization.organization_estimations  # SGA
 
 
     tmp1 = current_organization_projects.where(creator_id: current_user.id,
@@ -709,21 +709,23 @@ class OrganizationsController < ApplicationController
     #   projects << Project.where(organization_id: @organization.id).first
     # end
 
-    key = "not_archived_#{@organization.id}"
-    archived_status = EstimationStatus.where(is_archive_status: true,
-                                             organization_id: @organization_id).first
+    ############ NRE avec Cache  ############
+    # key = "not_archived_#{@organization.id}"
+    # archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
 
-    # projects = Rails.cache.read(key)
+    # # projects = Rails.cache.read(key)
+    # project_ids = Rails.cache.read(key)
+    #
+    # if project_ids.nil?
+    #   project_ids = Rails.cache.fetch(key, force: true) do
+    #     Project.get_unarchived_project_ids(archived_status, @organization.id)
+    #   end
+    # end
+    # projects = Project.where(id: project_ids)
 
-    project_ids = Rails.cache.read(key)
 
-    if project_ids.nil?
-      project_ids = Rails.cache.fetch(key, force: true) do
-        Project.get_unarchived_project_ids(archived_status, @organization.id)
-      end
-    end
-
-    projects = Project.where(id: project_ids)
+    #############   SGA avec SQl View   ############
+    projects = @organization.organization_estimations
 
     if current_user.super_admin == true
       projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
