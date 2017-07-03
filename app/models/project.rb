@@ -117,17 +117,18 @@ class Project < ActiveRecord::Base
                                              organization_id: self.organization_id).first
 
     Rails.cache.fetch(key, force: true) do
-      Project.get_unarchived_projects(archived_status, self.organization_id)
+      Project.get_unarchived_project_ids(archived_status, self.organization_id)
     end
   end
 
-  def self.get_unarchived_projects(archived_status, organization_id)
+  def self.get_unarchived_project_ids(archived_status, organization_id)
     if archived_status.nil?
-      Project.where(organization_id: organization_id)
+      Project.where(organization_id: organization_id).pluck(:id)
     else
       Project
           .where(organization_id: organization_id)
           .where("estimation_status_id != ?", archived_status.id)
+          .pluck(:id)
     end
   end
 
