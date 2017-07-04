@@ -74,9 +74,16 @@
     <% end %>
   <%# end %>
 
+  <!--<tr>-->
+    <!--<th colspan="100" class="pager form-horizontal">-->
+      <!--<%# will_paginate @projects, page_links: false %>-->
+    <!--</th>-->
+  <!--</tr>-->
+
   <tr>
     <th colspan="100" class="pager form-horizontal">
-      <%= will_paginate @projects %>
+      <%= link_to "Précedent", organization_estimations_path(@organization.id, max: @max - 25, min: @min - 25) %> -
+      <%= link_to "Suivant", organization_estimations_path(@organization.id, max: @max + 25, min: @min + 25) %>
     </th>
   </tr>
 
