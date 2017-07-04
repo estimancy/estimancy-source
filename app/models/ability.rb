@@ -36,12 +36,12 @@ class Ability
       can :manage_master_data, :all
     end
 
-    if projects.empty?
+    # if projects.empty?
       # organization_projects = organization.projects    # NRE
-      organization_projects = organization.organization_estimations    # SGA View
-    else
+      # organization_projects = organization.organization_estimations    # SGA View
+    # else
       organization_projects = projects
-    end
+    # end
 
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups

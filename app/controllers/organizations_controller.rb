@@ -710,9 +710,9 @@ class OrganizationsController < ApplicationController
     # end
 
     ############ NRE avec Cache  ############
-    key = "not_archived_#{@organization.id}"
-    archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
-
+    # key = "not_archived_#{@organization.id}"
+    # archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
+    #
     # projects = Rails.cache.read(key)
     # project_ids = Rails.cache.read(key)
     #
@@ -733,6 +733,8 @@ class OrganizationsController < ApplicationController
     per_page = (current_user.object_per_page || 10)
     start_range = 0
     load_limit = 24
+
+    @projects = @organization.organization_estimations[start_range..(start_range + load_limit)]
 
     tmp_projects = load_estimations(tmp_projects, start_range, load_limit)
 
