@@ -714,32 +714,28 @@ class OrganizationsController < ApplicationController
     archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
 
     # projects = Rails.cache.read(key)
-    project_ids = Rails.cache.read(key)
-
-    if project_ids.nil?
-      project_ids = Rails.cache.fetch(key, force: true) do
-        Project.get_unarchived_project_ids(archived_status, @organization.id)
-      end
-    end
-    projects = Project.where(id: project_ids)
-
-    #############   SGA avec SQl View   ############
-    # projects = @organization.organization_estimations
+    # project_ids = Rails.cache.read(key)
     #
+    # if project_ids.nil?
+    #   project_ids = Rails.cache.fetch(key, force: true) do
+    #     Project.get_unarchived_project_ids(archived_status, @organization.id)
+    #   end
+    # end
+    # projects = Project.where(id: project_ids)
+    #
+
     # projects = nil
     # projects = @organization.projects
 
-    if current_user.super_admin == true
-      projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
-    else
-      tmp1 = projects.where(is_model: false, private: false).all
-      tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
-      projects = (tmp1 + tmp2).uniq
-    end
+    #############   SGA avec SQl View   ############
 
-    projects = projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    tmp_projects = []
+    per_page = (current_user.object_per_page || 10)
+    load_limit = 25
 
-    @projects = projects.paginate(:page => params[:page], :per_page => (current_user.object_per_page || 10))
+    tmp_projects = load_estimations(tmp_projects, load_limit)
+
+    @projects = tmp_projects.paginate(:page => params[:page], :per_page => per_page)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -752,6 +748,30 @@ class OrganizationsController < ApplicationController
 
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
+    end
+  end
+
+  private def load_estimations(tmp_projects, load_limit)
+
+    projects = @organization.organization_estimations.limit(load_limit)
+    if current_user.super_admin == true
+      projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
+    else
+      tmp1 = projects.where(is_model: false, private: false).all
+      tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
+      projects = (tmp1 + tmp2).uniq
+    end
+
+    projects.each do |prj|
+      if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
+        tmp_projects << prj
+      end
+    end
+
+    if tmp_projects.size < load_limit
+      load_estimations(tmp_projects, load_limit)
+    else
+      return tmp_projects
     end
   end
 

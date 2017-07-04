@@ -34,7 +34,7 @@
         <div style="margin: 27px 0 0 250px; font-weight: bold;" >
           <% as = AdminSetting.where(key: "environnement").first %>
           <% if !as.nil? %>
-            <%= as.value %>
+            <%= raw(as.value) %>
           <% end %>
         </div>
 
