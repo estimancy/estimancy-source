@@ -731,9 +731,10 @@ class OrganizationsController < ApplicationController
 
     tmp_projects = []
     per_page = (current_user.object_per_page || 10)
-    load_limit = 25
+    start_range = 0
+    load_limit = 24
 
-    tmp_projects = load_estimations(tmp_projects, load_limit)
+    tmp_projects = load_estimations(tmp_projects, start_range, load_limit)
 
     @projects = tmp_projects.paginate(:page => params[:page], :per_page => per_page)
 
@@ -751,16 +752,18 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  private def load_estimations(tmp_projects, load_limit)
+  private def load_estimations(tmp_projects, start_range, load_limit)
 
-    projects = @organization.organization_estimations.limit(load_limit)
-    if current_user.super_admin == true
-      projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
-    else
-      tmp1 = projects.where(is_model: false, private: false).all
-      tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
-      projects = (tmp1 + tmp2).uniq
-    end
+    # projects = @organization.organization_estimations.limit(load_limit)
+    projects = @organization.organization_estimations[start_range..load_limit]
+
+    # if current_user.super_admin == true
+    #   projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
+    # else
+    #   tmp1 = projects.where(is_model: false, private: false).all
+    #   tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
+    #   projects = (tmp1 + tmp2).uniq
+    # end
 
     projects.each do |prj|
       if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
@@ -768,8 +771,9 @@ class OrganizationsController < ApplicationController
       end
     end
 
+    start_range += load_limit
     if tmp_projects.size < load_limit
-      load_estimations(tmp_projects, load_limit)
+      load_estimations(tmp_projects, start_range, load_limit)
     else
       return tmp_projects
     end
