@@ -27,7 +27,7 @@
   </tr>
 
   <% @projects.each_with_index do |project, index| %>
-    <%# if can_see_estimation?(project) %>
+    <% if can_see_estimation?(project) %>
       <tr>
 
         <td>
@@ -71,7 +71,7 @@
           <% end %>
         </td>
       </tr>
-    <%# end %>
+    <% end %>
   <% end %>
 
   <tr>
