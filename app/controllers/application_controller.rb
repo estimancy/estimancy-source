@@ -129,13 +129,11 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    # if @current_ability.nil?
     unless @projects.nil?
       @current_ability ||= Ability.new(current_user, @current_organization, @projects)
     else
       @current_ability ||= Ability.new(current_user, @current_organization, [])
     end
-    # end
 
   end
 
