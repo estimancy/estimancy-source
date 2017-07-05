@@ -21,7 +21,7 @@
 
 class OrganizationsController < ApplicationController
 
-  load_resource
+  skip_load_resource :only => :estimations
 
   require 'will_paginate/array'
   require 'securerandom'
@@ -744,7 +744,7 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations#.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
 
-    @projects = check_for_primes(@min, @max)
+    @projects = check_for_projects(@min, @max)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -760,14 +760,17 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  private def check_for_primes(start_number, desired_size)
+  private def check_for_projects(start_number, desired_size)
+
     projects = @organization.organization_estimations
     result = []
     i = start_number
+
     while result.size < desired_size do
       if projects[i].nil?
         break
       else
+        @current_ability_for_project = AbilityProject.new(current_user, @current_organization, projects[i])
         result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
         i += 1
       end

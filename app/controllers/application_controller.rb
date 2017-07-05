@@ -129,11 +129,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    unless @projects.nil?
-      @current_ability ||= Ability.new(current_user, @current_organization, @projects)
-    else
-      @current_ability ||= Ability.new(current_user, @current_organization, [])
-    end
+    @current_ability ||= Ability.new(current_user, @current_organization)
 
   end
 
