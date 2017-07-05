@@ -738,9 +738,10 @@ class OrganizationsController < ApplicationController
     end
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-    @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
-    # @projects.find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-    # @projects = load_estimations(@min, @max)
+    # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
+    # @projects = @organization.organization_estimations#.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
+
+    @projects = check_for_primes(@min, @max)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -756,51 +757,19 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  private def load_estimations(min, max)
-
-    # if current_user.super_admin == true
-    #   projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
-    # else
-    #   tmp1 = projects.where(is_model: false, private: false).all
-    #   tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
-    #   projects = (tmp1 + tmp2).uniq
-    # end
-    # projects = (@organization.organization_estimations[min..max] || [])
-    # @min = 0
-    # @max = 10
-    # projects = []
-    # while projects.size < 10 do i
-    #   projects << (@organization.organization_estimations[@min..4] || [])
-    #   projects = projects.flatten.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-    #   @min = @min + projects.size
-    #   @max = 10
-    # end
-
-    # projects
-
-    # @projects = @projects.flatten
-    #
-    # @projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-    #
-    # if @projects.size < 9
-    #   load_estimations(@projects.size, 9)
-    # else
-    #   return true
-    # end
-
-    # projects.each_with_index do |prj, i|
-    #   if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-    #     results << prj
-    #     min = i
-    #   end
-    # end
-
-    # if results.size < max
-    #   return results
-    #   # load_estimations(results, min, max)
-    # else
-    #   return results
-    # end
+  private def check_for_primes(start_number, desired_size)
+    projects = @organization.organization_estimations
+    result = []
+    i = start_number
+    while result.size < desired_size do
+      if projects[i].nil?
+        break
+      else
+        result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
+        i += 1
+      end
+    end
+    result
   end
 
   # New organization from image
