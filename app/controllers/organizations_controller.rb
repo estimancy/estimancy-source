@@ -729,12 +729,14 @@ class OrganizationsController < ApplicationController
 
     #############   SGA avec SQl View   ############
 
+    @object_per_page = (current_user.object_per_page || 10)
+
     if params[:min].present? && params[:max].present?
       @min = params[:min].to_i
       @max = params[:max].to_i
     else
       @min = 0
-      @max = (current_user.object_per_page || 10)
+      @max = (current_user.object_per_page || @object_per_page)
     end
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
