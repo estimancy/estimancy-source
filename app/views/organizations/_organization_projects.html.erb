@@ -82,8 +82,8 @@
 
   <tr>
     <th colspan="100" class="pager form-horizontal">
-      <%= link_to "Précedent", organization_estimations_path(@organization.id, max: @max - (current_user.object_per_page || 10), min: @min - (current_user.object_per_page || 10)) %> -
-      <%= link_to "Suivant", organization_estimations_path(@organization.id, max: @max + (current_user.object_per_page || 10), min: @min + (current_user.object_per_page || 10)) %>
+      <%= link_to "Précedent", organization_estimations_path(@organization.id, min: @min - 25, max: @max - 25) %> -
+      <%= link_to "Suivant", organization_estimations_path(@organization.id, min: @min + 25, max: @max + 25) %>
     </th>
   </tr>
 

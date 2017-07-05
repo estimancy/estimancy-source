@@ -734,11 +734,13 @@ class OrganizationsController < ApplicationController
       @max = params[:max].to_i
     else
       @min = 0
-      @max = (current_user.object_per_page || 10)
+      @max = 25
     end
 
-    @projects = []
-    load_estimations(@min, @max)
+    # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
+    # @projects.find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    # @projects = load_estimations(@min, @max)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -763,17 +765,28 @@ class OrganizationsController < ApplicationController
     #   tmp2 = projects.where(creator_id: current_user.id, is_model: false, private: true).all
     #   projects = (tmp1 + tmp2).uniq
     # end
+    # projects = (@organization.organization_estimations[min..max] || [])
+    # @min = 0
+    # @max = 10
+    # projects = []
+    # while projects.size < 10 do i
+    #   projects << (@organization.organization_estimations[@min..4] || [])
+    #   projects = projects.flatten.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    #   @min = @min + projects.size
+    #   @max = 10
+    # end
 
-    @projects << (@organization.organization_estimations[min..max] || [])
-    @projects = @projects.flatten
+    # projects
 
-    @projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-
-    if @projects.size < (current_user.object_per_page || 10)
-      load_estimations(@projects.size, (current_user.object_per_page || 10))
-    else
-      return true
-    end
+    # @projects = @projects.flatten
+    #
+    # @projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+    #
+    # if @projects.size < 9
+    #   load_estimations(@projects.size, 9)
+    # else
+    #   return true
+    # end
 
     # projects.each_with_index do |prj, i|
     #   if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
