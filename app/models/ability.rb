@@ -233,7 +233,7 @@ class Ability
                 # if permission.alias == "manage" and permission.category == "Project"
                 #   can :manage, project, estimation_status_id: esgr_estimation_status_id
                 # else
-                #   @array_status_groups << [permission.id, project.id, esgr_estimation_status_id]
+                  @array_status_groups << [permission.id, project.id, esgr_estimation_status_id]
                 # end
               end
             end
