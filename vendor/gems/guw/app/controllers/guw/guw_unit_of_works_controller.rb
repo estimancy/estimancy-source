@@ -1182,6 +1182,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         if tmp != params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
           guw_unit_of_work.flagged = true
+        else
+          guw_unit_of_work.flagged = false
         end
 
         guw_unit_of_work.size = tmp_hash_res
