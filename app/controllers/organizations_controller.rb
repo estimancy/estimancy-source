@@ -21,7 +21,7 @@
 
 class OrganizationsController < ApplicationController
 
-  skip_load_resource :only => :estimations
+  # load_resource
 
   require 'will_paginate/array'
   require 'securerandom'
@@ -770,7 +770,7 @@ class OrganizationsController < ApplicationController
       if projects[i].nil?
         break
       else
-        @current_ability_for_project = AbilityProject.new(current_user, @current_organization, projects[i])
+        # @current_ability_for_project = AbilityProject.new(current_user, @current_organization, projects[i])
         result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
         i += 1
       end
