@@ -355,19 +355,13 @@ class ViewsWidgetsController < ApplicationController
       end
 
       @letter = params[:letter]
-      if !@letter.nil?
-        @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-        @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
-      else
-        @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-        @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
+      #@module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
+      #@module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
 
-        #the widget type
-        # if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-        #   @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-        # else
-        #   @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
-        # end
+      # Get the possible attribute grouped by type (input, output)
+      @module_project_attributes = get_module_project_attributes_input_output(@module_project)
+
+      if @letter.nil?
         @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
       end
     end
@@ -522,6 +516,10 @@ class ViewsWidgetsController < ApplicationController
 
     if module_project.pemodule.alias == "guw"
       estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
+
+      if module_project.guw_model.config_type == "new"
+      else
+      end
 
     elsif module_project.pemodule.alias == "ge"
       if module_project.ge_model.ge_model_instance_mode == "standard"
