@@ -729,16 +729,16 @@ class OrganizationsController < ApplicationController
 
     #############   SGA avec SQl View   ############
 
-    tmp_projects = []
     if params[:min].present? && params[:max].present?
       @min = params[:min].to_i
       @max = params[:max].to_i
     else
       @min = 0
-      @max = 25
+      @max = 9
     end
 
-    @projects = @organization.organization_estimations[@min..@max] || []
+    @projects = []
+    load_estimations(@min, @max)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -754,7 +754,7 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  private def load_estimations(tmp_projects, start_range, load_limit, per_page)
+  private def load_estimations(min, max)
 
     # if current_user.super_admin == true
     #   projects = projects.includes(:estimation_status, :project_area, :application, :creator, :acquisition_category).where(is_model: false).all
@@ -764,18 +764,30 @@ class OrganizationsController < ApplicationController
     #   projects = (tmp1 + tmp2).uniq
     # end
 
-    projects.each do |prj|
-      if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-        tmp_projects << prj
-      end
+    @projects << (@organization.organization_estimations[min..max] || [])
+    @projects = @projects.flatten
+
+    @projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
+
+    if @projects.size < 9
+      load_estimations(@projects.size, 9)
+    else
+      return true
     end
 
-    start_range += load_limit
-    if tmp_projects.size < per_page
-      load_estimations(tmp_projects, start_range, (start_range + load_limit), per_page)
-    else
-      return tmp_projects
-    end
+    # projects.each_with_index do |prj, i|
+    #   if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
+    #     results << prj
+    #     min = i
+    #   end
+    # end
+
+    # if results.size < max
+    #   return results
+    #   # load_estimations(results, min, max)
+    # else
+    #   return results
+    # end
   end
 
   # New organization from image
