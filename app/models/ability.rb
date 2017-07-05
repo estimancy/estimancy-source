@@ -37,8 +37,8 @@ class Ability
     end
 
     # if projects.empty?
-    #   organization_projects = organization.projects    # NRE
-      organization_projects = organization.organization_estimations # SGA View
+    organization_projects = organization.projects # NRE
+    #   organization_projects = organization.organization_estimations # SGA View
     # else
     #   organization_projects = projects
     # end
@@ -222,7 +222,7 @@ class Ability
         grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).each do |esgr|
 
           esgr_security_level = esgr.project_security_level
-          esgr_estimation_status_id = esgr.estimation_status.id
+          esgr_estimation_status_id = esgr.estimation_status_id
 
           unless esgr_security_level.nil?
 
@@ -230,11 +230,11 @@ class Ability
 
             prj_scrt_project_security_level_permissions.each do |permission|
               organization_projects.each do |project|
-                if permission.alias == "manage" and permission.category == "Project"
-                  can :manage, project, estimation_status_id: esgr_estimation_status_id
-                else
-                  @array_status_groups << [permission.id, project.id, esgr_estimation_status_id]
-                end
+                # if permission.alias == "manage" and permission.category == "Project"
+                #   can :manage, project, estimation_status_id: esgr_estimation_status_id
+                # else
+                #   @array_status_groups << [permission.id, project.id, esgr_estimation_status_id]
+                # end
               end
             end
           end

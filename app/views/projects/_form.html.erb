@@ -217,55 +217,53 @@
 
       <div id="tabs-4" class="tabs_4_with_estimation_plan2">
         <% if controller.controller_name == 'projects' %>
-          <% if @project.is_locked == false or @project.is_locked.nil? %>
-            <div class="row-fluid">
-              <div class="span12">
-                <%= I18n.t(:label_add_a_module_to_project) %>
-                <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
-                                                                            "Base de connaissance de taille" => @skb_models,
-                                                                            "Modules d'opération" => @operation_models,
-                                                                            "Modules de Jugement d'Expert" => @ej_modules,
-                                                                            "Modules Activités / Profils" => @wbs_instances,
-                                                                            "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
-                                                                            "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
-                                                                            "Module d'Effort Génériques (ax^b)" => @ge_models}), :prompt => '' %>
-                <script>
-                  $(document).ready(function(){
-                    $("#select_module").on('change', function() {
-                      if ($("#select_module").val() !== "") {
-                        return $.ajax({
-                          url: "/append_pemodule",
-                          method: "get",
-                          data: {
-                            module_selected: $(this).val(),
-                            project_id: $("#project_id").val(),
-                            pbs_project_element_id: $("#select_pbs_project_elements").val()
-                          }
-                          ,
-                          success: function(data) {
-                            //return alert("success");
-                            //jsPlumb.repaintEverything();
-                            //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
-                          },
-                          error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            return alert("Error! :" + textStatus + ";" + errorThrown );
-                          }
-                        });
-                      }
-                    });
+          <div class="row-fluid">
+            <div class="span12">
+              <%= I18n.t(:label_add_a_module_to_project) %>
+              <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                          "Base de connaissance de taille" => @skb_models,
+                                                                          "Modules d'opération" => @operation_models,
+                                                                          "Modules de Jugement d'Expert" => @ej_modules,
+                                                                          "Modules Activités / Profils" => @wbs_instances,
+                                                                          "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
+                                                                          "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
+                                                                          "Module d'Effort Génériques (ax^b)" => @ge_models}), :prompt => '' %>
+              <script>
+                $(document).ready(function(){
+                  $("#select_module").on('change', function() {
+                    if ($("#select_module").val() !== "") {
+                      return $.ajax({
+                        url: "/append_pemodule",
+                        method: "get",
+                        data: {
+                          module_selected: $(this).val(),
+                          project_id: $("#project_id").val(),
+                          pbs_project_element_id: $("#select_pbs_project_elements").val()
+                        }
+                        ,
+                        success: function(data) {
+                          //return alert("success");
+                          //jsPlumb.repaintEverything();
+                          //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                          return alert("Error! :" + textStatus + ";" + errorThrown );
+                        }
+                      });
+                    }
                   });
-                </script>
-              </div>
+                });
+              </script>
             </div>
+          </div>
 
             <!--<br>-->
-            <!--<div class="row-fluid">-->
-              <!--<div class="span12">-->
-                <%= hidden_field_tag 'project_id', @project.id %>
-                <!--<%#= link_to I18n.t(:button_build_estimation_path), module_projects_matrix_path(@project.id), :class => 'btn' %>-->
-              <!--</div>-->
+          <!--<div class="row-fluid">-->
+            <!--<div class="span12">-->
+              <%= hidden_field_tag 'project_id', @project.id %>
+              <!--<%#= link_to I18n.t(:button_build_estimation_path), module_projects_matrix_path(@project.id), :class => 'btn' %>-->
             <!--</div>-->
-          <% end %>
+          <!--</div>-->
         <% end %>
         <br>
         <div class="module_box" style="width: auto; overflow-x:auto;">

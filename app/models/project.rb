@@ -278,7 +278,8 @@ class Project < ActiveRecord::Base
 
   #Estimation plan o project is locked or not?
   def locked?
-    (self.is_locked.nil? or self.is_locked == true) ? true : false
+    # (self.is_locked.nil? or self.is_locked == true) ? true : false
+    false
   end
 
   def in_frozen_status?
