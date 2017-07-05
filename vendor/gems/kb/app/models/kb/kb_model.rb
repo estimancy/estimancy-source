@@ -84,7 +84,7 @@ module Kb
       unit_coefficient = 1
 
       case estimation_value.pe_attribute.alias
-        when "effort", "percent"
+        when "effort"
 
           if view_widget.use_organization_effort_unit == true
             tab = Organization.get_organization_unit(value, kb_model.organization)
@@ -103,7 +103,9 @@ module Kb
         when "retained_size"
           unit_coefficient = 1
           unit = ""
-
+        when "percent"
+          unit_coefficient = 1
+          unit = "%"
       end
 
 

@@ -50,7 +50,7 @@
                 <tr>
                   <td><label><%= mp_ratio_variable.wbs_activity_ratio_variable.name %></label></td>
                   <td>
-                    <% if  mp_ratio_variable.wbs_activity_ratio_variable.is_modifiable %>
+                    <% if mp_ratio_variable.wbs_activity_ratio_variable.is_modifiable %>
                         <% mp_wbs_ratio_variable =  mp_ratio_variable.percentage_of_input %>
                         <%= text_field_tag("mp_ratio_variable[#{mp_ratio_variable.id}]", mp_wbs_ratio_variable) %>
                     <% else %>

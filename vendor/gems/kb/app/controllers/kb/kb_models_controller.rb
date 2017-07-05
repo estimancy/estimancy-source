@@ -433,7 +433,12 @@ class Kb::KbModelsController < ApplicationController
 
     ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first
     unless ecart_pe_attribute.nil?
-      ecart_percent = output_effort.to_f - input_effort.to_f
+      begin
+        ###ecart_percent = ((output_effort.to_f - input_effort.to_f)/output_effort.to_f) * 100
+        ecart_percent = ((input_effort.to_f - output_effort.to_f)/output_effort.to_f) * 100
+      rescue
+        ecart_percent = nil
+      end
 
       ecart_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
       unless ecart_ev.nil?
