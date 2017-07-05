@@ -734,7 +734,7 @@ class OrganizationsController < ApplicationController
       @max = params[:max].to_i
     else
       @min = 0
-      @max = 9
+      @max = (current_user.object_per_page || 10)
     end
 
     @projects = []
@@ -769,8 +769,8 @@ class OrganizationsController < ApplicationController
 
     @projects.keep_if{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
 
-    if @projects.size < 9
-      load_estimations(@projects.size, 9)
+    if @projects.size < (current_user.object_per_page || 10)
+      load_estimations(@projects.size, (current_user.object_per_page || 10))
     else
       return true
     end
