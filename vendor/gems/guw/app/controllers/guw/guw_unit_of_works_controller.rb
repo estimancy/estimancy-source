@@ -941,6 +941,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
+      guw_unit_of_work.flagged = false
+
       @guw_outputs.each_with_index do |guw_output, index|
 
         @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
@@ -980,11 +982,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
-              guw_unit_of_work.flagged = true
-            else
-              guw_unit_of_work.flagged = false
-            end
+            # if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+            #   guw_unit_of_work.flagged = true
+            # else
+            #   guw_unit_of_work.flagged = false
+            # end
 
             if cplx_coeff.nil?
               intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
@@ -1180,10 +1182,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           tmp_hash_ares["#{guw_output.id}"] = tmp
         end
 
-        if tmp != params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+        if tmp_hash_res["#{guw_output.id}"].to_f != tmp_hash_ares["#{guw_output.id}"].to_f
           guw_unit_of_work.flagged = true
-        else
-          guw_unit_of_work.flagged = false
         end
 
         guw_unit_of_work.size = tmp_hash_res
