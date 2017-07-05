@@ -38,9 +38,9 @@ class Ability
 
     # if projects.empty?
       # organization_projects = organization.projects    # NRE
-      # organization_projects = organization.organization_estimations    # SGA View
+      organization_projects = organization.organization_estimations    # SGA View
     # else
-      organization_projects = projects
+    #   organization_projects = projects
     # end
 
     organization_estimation_statuses = organization.estimation_statuses
@@ -270,6 +270,21 @@ class Ability
       end
 
     end
+  end
+
+  def check_for_projects(start_number, desired_size)
+    projects = @organization.organization_estimations
+    result = []
+    i = start_number
+    while result.size < desired_size do
+      if projects[i].nil?
+        break
+      else
+        result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
+        i += 1
+      end
+    end
+    result
   end
 end
 

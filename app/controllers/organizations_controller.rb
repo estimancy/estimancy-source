@@ -20,7 +20,8 @@
 #############################################################################
 
 class OrganizationsController < ApplicationController
-  # load_resource
+
+  load_resource
 
   require 'will_paginate/array'
   require 'securerandom'
