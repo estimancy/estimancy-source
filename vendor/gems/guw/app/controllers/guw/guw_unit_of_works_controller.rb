@@ -1608,17 +1608,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             attr_array = output.scan(/<attribut=(.*?)>/)
 
             data_array.each do |d|
-              guw_uow = Guw::GuwUnitOfWork.create(name: (d.first.gsub(",","").gsub("\\", "")),
-                                                  comments: attr_array.uniq.join(", "),
-                                                  guw_unit_of_work_group_id: @guw_group.id,
-                                                  module_project_id: current_module_project.id,
-                                                  pbs_project_element_id: current_component.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  display_order: nil,
-                                                  tracking: nil,
-                                                  quantity: 1,
-                                                  selected: true,
-                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+              txt = (d.first.gsub(",","").gsub("\\", ""))
+              guw_uow = Guw::GuwUnitOfWork.where(name: txt,
+                                                 guw_model_id: @guw_model.id).first
+
+              if guw_uow.nil?
+                guw_uow = Guw::GuwUnitOfWork.create(name: (d.first.gsub(",","").gsub("\\", "")),
+                                                    comments: attr_array.uniq.join(", "),
+                                                    guw_unit_of_work_group_id: @guw_group.id,
+                                                    module_project_id: current_module_project.id,
+                                                    pbs_project_element_id: current_component.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    display_order: nil,
+                                                    tracking: nil,
+                                                    quantity: 1,
+                                                    selected: true,
+                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+              end
 
               @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
 
