@@ -1608,7 +1608,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             attr_array = output.scan(/<attribut=(.*?)>/)
 
             data_array.each do |d|
-              guw_uow = Guw::GuwUnitOfWork.create(name: d.first.gsub!(/[^0-9A-Za-z ]/, ''),
+              guw_uow = Guw::GuwUnitOfWork.create(name: (d.first.gsub(",","").gsub("\\", "")),
                                                   comments: attr_array.uniq.join(", "),
                                                   guw_unit_of_work_group_id: @guw_group.id,
                                                   module_project_id: current_module_project.id,
