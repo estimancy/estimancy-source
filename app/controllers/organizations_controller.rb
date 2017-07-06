@@ -744,7 +744,8 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations#.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
 
-    @projects = check_for_projects(@min, @max)
+    #@projects = check_for_projects(@min, @max)
+    @projects = check_for_projects(@min, @object_per_page)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -760,23 +761,56 @@ class OrganizationsController < ApplicationController
     end
   end
 
+
   private def check_for_projects(start_number, desired_size)
 
-    projects = @organization.organization_estimations
-    result = []
-    i = start_number
-
-    while result.size < desired_size do
-      if projects[i].nil?
-        break
-      else
-        @current_ability = Ability.new(current_user, @current_organization, projects[i])
-        result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
-        i += 1
-      end
+    if start_number == 0
+      projects = @organization.organization_estimations.limit(desired_size)
+    else
+      project = @organization.organization_estimations.all[start_number-1]
+      projects = project.next_ones_by_date(desired_size)
     end
+    last_project = projects.last
+
+    # Ability.new(user, organization, project, nb_project = 1, estimation_view = false, first_iteration=false)
+    @current_ability = Ability.new(current_user, @current_organization, projects, desired_size, true)
+
+    result = []
+    i = 0
+    estimations_abilities = lambda do |projects|
+
+      while result.size < desired_size do
+        project = projects[i]
+
+        if project.nil?
+          break
+        else
+          if can?(:see_project, project, estimation_status_id: project.estimation_status_id)
+            result << project
+            last_project = project
+          end
+          i += 1
+        end
+      end
+
+      if result.size == desired_size
+        return result
+      else
+
+        next_projects = last_project.next_ones_by_date(desired_size)
+        @current_ability = Ability.new(current_user, @current_organization, last_project, desired_size, true)
+        i = 0
+        estimations_abilities.call(next_projects)
+      end
+
+    end
+
+    estimations_abilities.call(projects)
+
     result
+
   end
+
 
   # New organization from image
   def new_organization_from_image

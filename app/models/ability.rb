@@ -24,7 +24,7 @@ class Ability
   include CanCan::Ability
 
   #Initialize Ability then load permissions
-  def initialize(user, organization, project)
+  def initialize(user, organization, projects, nb_project = 1, estimation_view = false)
 
     #Uncomment in order to authorize everybody to manage all the app
     if Rails.env == "test" || user.super_admin == true
@@ -36,13 +36,19 @@ class Ability
       can :manage_master_data, :all
     end
 
-    # if projects.empty?
-    # organization_projects = organization.projects # NRE
-    #   organization_projects = organization.organization_estimations # SGA View
-    # else
-    #   organization_projects = projects
-    # end
-    organization_projects = [project]
+    if projects.nil?
+      organization_projects = []
+    else
+      if estimation_view == true
+        if projects.empty?
+          organization_projects = []
+        else
+          organization_projects = projects
+        end
+      else
+        organization_projects = projects
+      end
+    end
 
 
     organization_estimation_statuses = organization.estimation_statuses

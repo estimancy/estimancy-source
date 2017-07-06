@@ -2,21 +2,32 @@
 class OrganizationEstimation < ActiveRecord::Base
   self.primary_key = 'project_id'
 
-  belongs_to :organization
+  #### Nexts and Previous by date
+  scope :next_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at < ?", organization_id, created_at) }
+  scope :previous_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at > ?", organization_id, created_at) }
 
-  #estimation_status, :project_area, :application, :creator, :acquisition_category
+  belongs_to :organization
   belongs_to :application
   has_and_belongs_to_many :applications
 
   belongs_to :estimation_status
-
-
   belongs_to :project_area
   belongs_to :acquisition_category
   belongs_to :platform_category
   belongs_to :project_category
   belongs_to :acquisition_category
   belongs_to :creator, :class_name => 'User', :foreign_key => 'creator_id'
+
+
+  # Next ones by Created_at DESC
+  def next_ones_by_date(n)
+    OrganizationEstimation.next_by_date(self.organization_id, self.created_at).limit(n)
+  end
+
+  #Previous ones by Created_at DESC
+  def previous_ones_by_date(n)
+    OrganizationEstimation.previous_by_date(self.organization_id, self.created_at).limit(n)
+  end
 
 
   #  Estimation status name
