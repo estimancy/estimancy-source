@@ -770,7 +770,7 @@ class OrganizationsController < ApplicationController
       if projects[i].nil?
         break
       else
-        # @current_ability_for_project = AbilityProject.new(current_user, @current_organization, projects[i])
+        @current_ability = Ability.new(current_user, @current_organization, projects[i])
         result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
         i += 1
       end

@@ -129,7 +129,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    @current_ability ||= Ability.new(current_user, @current_organization)
+    @current_ability ||= Ability.new(current_user, @current_organization, @project)
 
   end
 
