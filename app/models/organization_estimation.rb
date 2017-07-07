@@ -31,30 +31,6 @@ class OrganizationEstimation < ActiveRecord::Base
     OrganizationEstimation.previous_by_date(self.organization_id, self.created_at).limit(n)
   end
 
-  # get the selectable/available inline columns
-  class_attribute :available_inline_columns
-  self.available_inline_columns =
-      [
-          QueryColumn.new(:title, :sortable => "#{Project.table_name}.title", :caption => "label_project_name"),
-          QueryColumn.new(:application, :sortable => "#{Application.table_name}.name", :caption => "application"),
-          QueryColumn.new(:original_model, :sortable => "#{Project.table_name}.name", :caption => "original_model"),
-          QueryColumn.new(:version_number, :sortable => "#{Project.table_name}.version_number", :caption => "label_version"),
-          QueryColumn.new(:status_name, :sortable => "#{EstimationStatus.table_name}.name", :caption => "state"),
-          QueryColumn.new(:project_area, :sortable => "#{ProjectArea.table_name}.name", :caption => "project_area"),
-          QueryColumn.new(:project_category, :sortable => "#{ProjectCategory.table_name}.name", :caption => "category"),
-          QueryColumn.new(:acquisition_category, :sortable => "#{AcquisitionCategory.table_name}.name", :caption => "label_acquisition"),
-          QueryColumn.new(:platform_category, :sortable => "#{PlatformCategory.table_name}.name", :caption => "label_platform"),
-          QueryColumn.new(:description, :sortable => "#{Project.table_name}.description", :caption => "description"),
-          QueryColumn.new(:start_date, :sortable => "#{Project.table_name}.start_date", :caption => "label_date"),
-          QueryColumn.new(:creator, :sortable => "#{User.table_name}.first_name", :caption => "author"),
-          QueryColumn.new(:created_at, :sortable => "#{Project.table_name}.created_at", :caption => "created_at"),
-          QueryColumn.new(:updated_at, :sortable => "#{Project.table_name}.updated_at", :caption => "updated_at"),
-          QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation")
-      ]
-
-  class_attribute :default_selected_columns
-  self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
-
 
   #  Estimation status name
   def status_name

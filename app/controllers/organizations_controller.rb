@@ -764,25 +764,31 @@ class OrganizationsController < ApplicationController
 
   private def check_for_projects(start_number, desired_size)
 
+    organization_estimations = @organization.organization_estimations
+
     if start_number == 0
-      projects = @organization.organization_estimations.limit(desired_size)
+      projects = organization_estimations.limit(desired_size)
     else
-      project = @organization.organization_estimations.all[start_number-1]
-      projects = project.next_ones_by_date(desired_size)
+      project = organization_estimations.all[start_number-1] || organization_estimations.last
+      begin
+        projects = project.next_ones_by_date(desired_size)
+      rescue
+        projects = []
+      end
     end
-    last_project = projects.last
 
     # Ability.new(user, organization, project, nb_project = 1, estimation_view = false, first_iteration=false)
     @current_ability = Ability.new(current_user, @current_organization, projects, desired_size, true)
 
+    last_project = projects.last
     result = []
     i = 0
-    estimations_abilities = lambda do |projects|
 
+    estimations_abilities = lambda do |projects|
       while result.size < desired_size do
         project = projects[i]
 
-        if project.nil?
+        if project.nil? || projects.empty?
           break
         else
           if can?(:see_project, project, estimation_status_id: project.estimation_status_id)
@@ -796,19 +802,18 @@ class OrganizationsController < ApplicationController
       if result.size == desired_size
         return result
       else
-
         next_projects = last_project.next_ones_by_date(desired_size)
-        @current_ability = Ability.new(current_user, @current_organization, last_project, desired_size, true)
-        i = 0
-        estimations_abilities.call(next_projects)
+        unless next_projects.all.empty?
+          @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
+          i = 0
+          estimations_abilities.call(next_projects)
+        end
       end
-
     end
 
     estimations_abilities.call(projects)
 
     result
-
   end
 
 
