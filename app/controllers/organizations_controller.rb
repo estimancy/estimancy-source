@@ -769,7 +769,7 @@ class OrganizationsController < ApplicationController
     if start_number == 0
       projects = organization_estimations.limit(desired_size)
     else
-      project = organization_estimations.all[start_number-1] || organization_estimations.last
+      project = organization_estimations.all[start_number-1] #|| organization_estimations.last
       begin
         projects = project.next_ones_by_date(desired_size)
       rescue
@@ -785,21 +785,21 @@ class OrganizationsController < ApplicationController
     i = 0
 
     estimations_abilities = lambda do |projects|
-      while result.size < desired_size do
-        project = projects[i]
+      while result.size < desired_size && !projects.empty? do
+        organization_project = projects[i]
 
-        if project.nil? || projects.empty?
+        if organization_project.nil?
           break
         else
-          if can?(:see_project, project, estimation_status_id: project.estimation_status_id)
-            result << project
-            last_project = project
+          if can?(:see_project, organization_project.project, estimation_status_id: organization_project.estimation_status_id)
+            result << organization_project
+            last_project = organization_project
           end
           i += 1
         end
       end
 
-      if result.size == desired_size
+      if result.size == desired_size || last_project.nil?
         return result
       else
         next_projects = last_project.next_ones_by_date(desired_size)

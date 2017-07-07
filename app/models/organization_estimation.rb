@@ -16,9 +16,20 @@ class OrganizationEstimation < ActiveRecord::Base
   belongs_to :project_category
   belongs_to :creator, :class_name => 'User', :foreign_key => 'creator_id'
   belongs_to :estimation_status
+  belongs_to :project
 
+  has_many :module_projects, :dependent => :destroy
+  has_many :pemodules, :through => :module_projects
+  has_many :project_securities, :dependent => :destroy
   has_many :project_fields, :dependent => :destroy
+
   has_many :projects_from_model, foreign_key: "original_model_id", class_name: "Project"
+
+  has_and_belongs_to_many :groups
+
+  has_many :pe_wbs_projects
+  has_many :pbs_project_elements, :through => :pe_wbs_projects
+  has_many :wbs_project_elements, :through => :pe_wbs_projects
 
 
   # Next ones by Created_at DESC
