@@ -2,7 +2,7 @@
 class OrganizationEstimation < ActiveRecord::Base
   self.primary_key = 'project_id'
 
-  #### Nexts and Previous by date
+  #### Nexts and Previous by date DESC
   scope :next_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at < ?", organization_id, created_at) }
   scope :previous_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at > ?", organization_id, created_at) }
 
@@ -10,13 +10,15 @@ class OrganizationEstimation < ActiveRecord::Base
   belongs_to :application
   has_and_belongs_to_many :applications
 
-  belongs_to :estimation_status
   belongs_to :project_area
   belongs_to :acquisition_category
   belongs_to :platform_category
   belongs_to :project_category
-  belongs_to :acquisition_category
   belongs_to :creator, :class_name => 'User', :foreign_key => 'creator_id'
+  belongs_to :estimation_status
+
+  has_many :project_fields, :dependent => :destroy
+  has_many :projects_from_model, foreign_key: "original_model_id", class_name: "Project"
 
 
   # Next ones by Created_at DESC
