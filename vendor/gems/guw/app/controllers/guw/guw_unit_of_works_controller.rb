@@ -941,6 +941,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
+      guw_unit_of_work.flagged = false
+
       @guw_outputs.each_with_index do |guw_output, index|
 
         @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
@@ -966,7 +968,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
-              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) + (weight_b.nil? ? 0 : weight_b.to_f)
             end
           else
             if params["complexity_coeff_ajusted"].present?
@@ -980,11 +982,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
-              guw_unit_of_work.flagged = true
-            else
-              guw_unit_of_work.flagged = false
-            end
+            # if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+            #   guw_unit_of_work.flagged = true
+            # else
+            #   guw_unit_of_work.flagged = false
+            # end
 
             if cplx_coeff.nil?
               intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
@@ -1178,6 +1180,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         else
           tmp_hash_res["#{guw_output.id}"] = tmp
           tmp_hash_ares["#{guw_output.id}"] = tmp
+        end
+
+        if tmp_hash_res["#{guw_output.id}"].to_f != tmp_hash_ares["#{guw_output.id}"].to_f
+          guw_unit_of_work.flagged = true
         end
 
         guw_unit_of_work.size = tmp_hash_res
@@ -1602,17 +1608,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             attr_array = output.scan(/<attribut=(.*?)>/)
 
             data_array.each do |d|
-              guw_uow = Guw::GuwUnitOfWork.create(name: d.first.gsub!(/[^0-9A-Za-z ]/, ''),
-                                                  comments: attr_array.uniq.join(", "),
-                                                  guw_unit_of_work_group_id: @guw_group.id,
-                                                  module_project_id: current_module_project.id,
-                                                  pbs_project_element_id: current_component.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  display_order: nil,
-                                                  tracking: nil,
-                                                  quantity: 1,
-                                                  selected: true,
-                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+              txt = (d.first.gsub(",","").gsub("\\", ""))
+              guw_uow = Guw::GuwUnitOfWork.where(name: txt,
+                                                 guw_model_id: @guw_model.id).first
+
+              if guw_uow.nil?
+                guw_uow = Guw::GuwUnitOfWork.create(name: (d.first.gsub(",","").gsub("\\", "")),
+                                                    comments: attr_array.uniq.join(", "),
+                                                    guw_unit_of_work_group_id: @guw_group.id,
+                                                    module_project_id: current_module_project.id,
+                                                    pbs_project_element_id: current_component.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    display_order: nil,
+                                                    tracking: nil,
+                                                    quantity: 1,
+                                                    selected: true,
+                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+              end
 
               @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
 

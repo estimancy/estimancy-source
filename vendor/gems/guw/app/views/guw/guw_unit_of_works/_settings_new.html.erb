@@ -19,12 +19,15 @@
         </a>
       <% end %>
       <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
-          Identifier les traitements
-        </button>
+
         <button type="button" class="btn" data-toggle="modal" data-target="#ml_data">
           Identifier les données
         </button>
+
+        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
+          Identifier les traitements
+        </button>
+
       <% end %>
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
