@@ -4,17 +4,15 @@
                                      class: 'inline_attr') %>");
 <% else %>
   //Update the selected module attributes
-  //$('#views_widget_estimation_value_id').html("<%#= escape_javascript(grouped_options_for_select(@module_project_attributes)) %>");
-//Marche ok
-  //$('#views_widget_estimation_value_id').html("<%#= raw j select_tag 'views_widget[estimation_value_id]',
+    //Marche ok
+    $('#views_widget_estimation_value_id').html("<%= raw j select_tag 'views_widget[estimation_value_id]',
                                                            grouped_options_for_select({"input" => @module_project_attributes_input,
                                                                                        "output" => @module_project_attributes_output}),
                                                                                        :prompt => I18n.t(:select_associated_attribute) %>");
 
-$('#views_widget_estimation_value_id').html("<%= raw j select_tag 'views_widget[estimation_value_id]',
+    //$('#views_widget_estimation_value_id').html("<%#= raw j select_tag 'views_widget[estimation_value_id]',
                                                            grouped_options_for_select(@module_project_attributes),
                                                            :prompt => I18n.t(:select_associated_attribute) %>");
-
 
   //Update the possible widget types
   //$('#views_widget_widget_type').html("<%#= escape_javascript(options_for_select(@views_widget_types)) %>");
