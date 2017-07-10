@@ -1702,10 +1702,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               guw_uow.save(validate: false)
 
-              @guw_attributes.each_with_index do |gac, ii|
+              @guw_type = Guw::GuwType.where(name: row[6],
+                                             guw_model_id: @guw_model.id).first
 
-                @guw_type = Guw::GuwType.where(name: row[6],
-                                               guw_model_id: @guw_model.id).first
+              @guw_attributes.each_with_index do |gac, ii|
 
                 unless @guw_type.nil?
                   if @guw_type.allow_criteria == true
@@ -1805,6 +1805,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
                                                              organization_technology_id: guw_uow.organization_technology_id).first
+
+                  if array_pert.nil?
+                    array_pert = []
+                  end
 
                   if guw_uow.guw_complexity.nil?
                     array_pert << 0
