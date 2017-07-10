@@ -1545,13 +1545,15 @@ class WbsActivitiesController < ApplicationController
 
                               @wbs_activity_profiles.each do |profile|
                                 k = profile_col_number["#{profile.name}"]
-                                if row[k].blank?
-                                  ratio_value = nil
-                                else
-                                  ratio_value = row[k].to_f
-                                end
+                                unless k.nil?
+                                  if row[k].blank?
+                                    ratio_value = nil
+                                  else
+                                    ratio_value = row[k].to_f
+                                  end
 
-                                WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
+                                  WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
+                                end
                               end
                             end
                         end
