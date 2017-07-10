@@ -4,12 +4,16 @@
                                      class: 'inline_attr') %>");
 <% else %>
   //Update the selected module attributes
+    //$('#views_widget_estimation_value_id').html("<%#= escape_javascript(grouped_options_for_select(@module_project_attributes)) %>");
+
     //Marche ok
     $('#views_widget_estimation_value_id').html("<%= raw j select_tag 'views_widget[estimation_value_id]',
                                                            grouped_options_for_select({"input" => @module_project_attributes_input,
                                                                                        "output" => @module_project_attributes_output}),
                                                                                        :prompt => I18n.t(:select_associated_attribute) %>");
-
+    //Test
+    //$('#views_widget_estimation_value_id').html("<%#= raw j option_groups_from_collection_for_select(@module_project_attributes, :last, 'last', 'id', 'pe_attribute') %>");
+    //Fin test
     //$('#views_widget_estimation_value_id').html("<%#= raw j select_tag 'views_widget[estimation_value_id]',
                                                            grouped_options_for_select(@module_project_attributes),
                                                            :prompt => I18n.t(:select_associated_attribute) %>");
