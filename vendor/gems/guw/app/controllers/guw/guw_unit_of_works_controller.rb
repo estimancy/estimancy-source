@@ -968,7 +968,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
-              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
+              @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) + (weight_b.nil? ? 0 : weight_b.to_f)
             end
           else
             if params["complexity_coeff_ajusted"].present?
