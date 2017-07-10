@@ -1707,65 +1707,73 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 @guw_type = Guw::GuwType.where(name: row[6],
                                                guw_model_id: @guw_model.id).first
 
-                @guw_attributes.size.times do |jj|
+                unless @guw_type.nil?
+                  if @guw_type.allow_criteria == true
+                    @guw_attributes.size.times do |jj|
 
-                  ind = 18 + @guw_outputs.size + @guw_coefficients.size + jj
+                      ind = 18 + @guw_outputs.size + @guw_coefficients.size + jj
+                      tmp_val = row[ind]
 
-                  tmp_val = row[ind]
+                      unless tmp_val.nil?
 
-                  unless tmp_val.nil?
+                        val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
 
-                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
-
-                    if gac.name == tab[0][ind]
-                      unless @guw_type.nil?
-                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                                  guw_unit_of_work_id: guw_uow.id,
-                                                                  guw_attribute_id: gac.id).first_or_create
-                        guowa.low = val
-                        guowa.most_likely = val
-                        guowa.high = val
-                        guowa.save
+                        if gac.name == tab[0][ind]
+                          unless @guw_type.nil?
+                            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                      guw_unit_of_work_id: guw_uow.id,
+                                                                      guw_attribute_id: gac.id).first_or_create
+                            guowa.low = val
+                            guowa.most_likely = val
+                            guowa.high = val
+                            guowa.save
+                          end
+                        end
                       end
                     end
                   end
                 end
               end
 
-              @lows = Array.new
-              @mls = Array.new
-              @highs = Array.new
-              array_pert = Array.new
+              unless @guw_type.nil?
+                if @guw_type.allow_criteria == true
 
-              guw_uow.off_line = false
-              guw_uow.off_line_uo = false
+                  @lows = Array.new
+                  @mls = Array.new
+                  @highs = Array.new
+                  array_pert = Array.new
 
-              guw_uow.guw_unit_of_work_attributes.each do |guowa|
-                calculate_guowa(guowa, guw_uow, @guw_type)
-              end
+                  guw_uow.off_line = false
+                  guw_uow.off_line_uo = false
 
-              if @lows.empty?
-                guw_uow.guw_complexity_id = nil
-                guw_uow.guw_original_complexity_id = nil
-                guw_uow.result_low = nil
-              else
-                guw_uow.result_low = @lows.sum
-              end
+                  guw_uow.guw_unit_of_work_attributes.each do |guowa|
+                    calculate_guowa(guowa, guw_uow, @guw_type)
+                  end
 
-              if @mls.empty?
-                guw_uow.guw_complexity_id = nil
-                guw_uow.guw_original_complexity_id = nil
-                guw_uow.result_most_likely = nil
-              else
-                guw_uow.result_most_likely = @mls.sum
-              end
+                  if @lows.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_low = nil
+                  else
+                    guw_uow.result_low = @lows.sum
+                  end
 
-              if @highs.empty?
-                guw_uow.guw_complexity_id = nil
-                guw_uow.guw_original_complexity_id = nil
-                guw_uow.result_high = nil
-              else
-                guw_uow.result_high = @highs.sum
+                  if @mls.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_most_likely = nil
+                  else
+                    guw_uow.result_most_likely = @mls.sum
+                  end
+
+                  if @highs.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_high = nil
+                  else
+                    guw_uow.result_high = @highs.sum
+                  end
+                end
               end
 
               guw_uow.guw_type_id ||= (@guw_type.nil? ? nil : @guw_type.id)
@@ -1834,24 +1842,32 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
               end
 
-              #gestion des valeurs intermédiaires
-              @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+              unless @guw_type.nil?
+                if @guw_type.allow_criteria == true
+                  begin
+                    #gestion des valeurs intermédiaires
+                    @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+                  rescue
+                    @final_value = nil
+                  end
 
-              guw_uow.quantity = 1
+                  guw_uow.quantity = 1
 
-              if guw_uow.changed?
-                guw_uow.save
+                  if guw_uow.changed?
+                    guw_uow.save
+                  end
+
+                  guw_uow.ajusted_size = nil
+                  guw_uow.size = nil
+
+                  if guw_uow.changed?
+                    guw_uow.save
+                  end
+
+                  update_estimation_values
+                  update_view_widgets_and_project_fields
+                end
               end
-
-              guw_uow.ajusted_size = nil
-              guw_uow.size = nil
-
-              if guw_uow.changed?
-                guw_uow.save
-              end
-
-              update_estimation_values
-              update_view_widgets_and_project_fields
 
               @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
 
@@ -1907,14 +1923,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.save
               end
 
-              @guw_attributes.all.each do |gac|
-                unless @guw_type.nil?
-                  finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                           guw_unit_of_work_id: guw_uow.id,
-                                                           guw_attribute_id: gac.id).first_or_create
+              unless @guw_type.nil?
+                if @guw_type.allow_criteria == true
+                  @guw_attributes.all.each do |gac|
+                    unless @guw_type.nil?
+                      finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                               guw_unit_of_work_id: guw_uow.id,
+                                                               guw_attribute_id: gac.id).first_or_create
+                    end
+                  end
                 end
               end
-
             end
           end
         end
