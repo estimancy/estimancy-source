@@ -29,11 +29,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     agent = Mechanize.new
     agent.get(params[:url]) #url de toutes les issues
 
-    agent.page.search("...").each do |item|
+    myTab = Array.new
+    agent.page.search("ol.issue-list").each do |item|
+      puts item
+      myTab << item
       #remplir un tableau avec les noms des issues (CAMEL123)
     end
 
     #Boucler sur chaque val du tableau précedement rempli et créer une UO pour chaque
+    myTab.each do |val|
       nom = ""
       description = ""
       url = "https://issues.apache.org/jira/browse/#{val}"
@@ -73,6 +77,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_attribute_id: gac.id).first_or_create
         guowa.save
       end
+    end
 
     redirect_to :back
 
