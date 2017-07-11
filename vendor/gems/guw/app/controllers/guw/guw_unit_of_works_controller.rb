@@ -25,45 +25,54 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   include ModuleProjectsHelper
 
   def extract
-    nom = ""
-    description = ""
-    url = params[:url]
 
     agent = Mechanize.new
-    agent.get(url)
+    agent.get(params[:url]) #url de toutes les issues
 
-    agent.page.search("#summary-val").each do |item|
-      nom << item.text
+    agent.page.search("...").each do |item|
+      #remplir un tableau avec les noms des issues (CAMEL123)
     end
 
-    agent.page.search(".user-content-block p").each do |item|
-      description << item.text
-    end
+    #Boucler sur chaque val du tableau précedement rempli et créer une UO pour chaque
+      nom = ""
+      description = ""
+      url = "https://issues.apache.org/jira/browse/#{val}"
 
-    @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-    @guw_group = Guw::GuwUnitOfWorkGroup.where(name: "Groupe par défaut",
-                                               module_project_id: current_module_project.id,
-                                               pbs_project_element_id: current_component.id).first_or_create
+      agent = Mechanize.new
+      agent.get(url)
 
-    @guw_uow = Guw::GuwUnitOfWork.create(name: nom,
-                                        comments: description,
-                                        guw_unit_of_work_group_id: @guw_group.id,
-                                        module_project_id: current_module_project.id,
-                                        pbs_project_element_id: current_component.id,
-                                        guw_model_id: @guw_model.id,
-                                        display_order: nil,
-                                        tracking: nil,
-                                        quantity: 1,
-                                        selected: true,
-                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+      agent.page.search("#summary-val").each do |item|
+        nom << item.text
+      end
 
-    @guw_model.guw_attributes.all.each do |gac|
-      guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                guw_unit_of_work_id: @guw_uow.id,
-                                                guw_attribute_id: gac.id).first_or_create
-      guowa.save
-    end
+      agent.page.search(".user-content-block p").each do |item|
+        description << item.text
+      end
+
+      @guw_model = current_module_project.guw_model
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: "Groupe par défaut",
+                                                 module_project_id: current_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create
+
+      @guw_uow = Guw::GuwUnitOfWork.create(name: nom,
+                                          comments: description,
+                                          guw_unit_of_work_group_id: @guw_group.id,
+                                          module_project_id: current_module_project.id,
+                                          pbs_project_element_id: current_component.id,
+                                          guw_model_id: @guw_model.id,
+                                          display_order: nil,
+                                          tracking: nil,
+                                          quantity: 1,
+                                          selected: true,
+                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+      @guw_model.guw_attributes.all.each do |gac|
+        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                  guw_unit_of_work_id: @guw_uow.id,
+                                                  guw_attribute_id: gac.id).first_or_create
+        guowa.save
+      end
 
     redirect_to :back
 
