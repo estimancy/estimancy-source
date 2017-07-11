@@ -91,6 +91,11 @@ Projestimate::Application.routes.draw do
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
   get 'about' => 'users#about', :as => 'about'
   get 'contactsupport' => 'users#contactsupport', :as => 'contactsupport'
+
+  # Page de support qui redirige vers le site Estimancy
+  get '/support' => redirect("https://estimancy-themes.com/en/support/")
+
+
   get 'export_pdf' => 'projects#export_pdf', :as => 'export_pdf'
   match 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'

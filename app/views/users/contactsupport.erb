@@ -5,7 +5,7 @@
 
   <div id="tabs-1">
     <div class="row-fluid">
-      <div class="span3">
+      <div class="span4">
         <h2><%= I18n.t(:your_configuration) %></h2>
 
         <%= I18n.t('text_projestimate_open_source_references') %> <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
@@ -58,6 +58,11 @@
           </li>
         </ul>
       </div>
+
+      <div class="span4">
+        <h2><%= link_to "Support / Documentation", support_path %></h2>
+      </div>
+
     </div>
   </div>
 </div>
