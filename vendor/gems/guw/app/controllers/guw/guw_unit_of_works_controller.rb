@@ -26,23 +26,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def extract
 
-    agent = Mechanize.new
-    agent.get(params[:url]) #url de toutes les issues
-
     myTab = Array.new
-    agent.page.search("ol.issue-list").each do |item|
-      puts item
-      myTab << item
-      #remplir un tableau avec les noms des issues (CAMEL123)
+    agent = Mechanize.new
+    (0..2).step(1).each do |i|
+      url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
+      agent.get(url) #url de toutes les issues
+      page = agent.page
+      myTab << page.search("//@data-issue-key").map(&:value)
     end
 
     #Boucler sur chaque val du tableau précedement rempli et créer une UO pour chaque
+    myTab.flatten
     myTab.each do |val|
       nom = ""
       description = ""
       url = "https://issues.apache.org/jira/browse/#{val}"
 
       agent = Mechanize.new
+
       agent.get(url)
 
       agent.page.search("#summary-val").each do |item|
@@ -77,6 +78,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_attribute_id: gac.id).first_or_create
         guowa.save
       end
+
     end
 
     redirect_to :back

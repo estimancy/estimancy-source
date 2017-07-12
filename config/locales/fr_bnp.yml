@@ -2065,3 +2065,4 @@ fr_bnp:
   contact_us: "Contacter l'équipe technique"
 
   display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
+  multiple_delete: "Suppression multiple"
