@@ -2420,12 +2420,12 @@ public
     #   end
     # end
 
-    @filterrific = initialize_filterrific(
-        Project,
-        { title: "001-NLD" }
-    ) or return
-
-    @projects = @filterrific.find.page(params[:page])
+    # @filterrific = initialize_filterrific(
+    #     Project,
+    #     { title: "001-NLD" }
+    # ) or return
+    #
+    # @projects = @filterrific.find.page(params[:page])
 
     redirect_to organization_estimations_path(@current_organization)
   end
