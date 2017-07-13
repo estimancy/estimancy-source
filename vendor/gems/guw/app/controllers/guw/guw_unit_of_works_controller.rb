@@ -24,67 +24,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   include ModuleProjectsHelper
 
-  def extract
-
-    myTab = Array.new
-    agent = Mechanize.new
-    (0..2).step(1).each do |i|
-      url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
-      agent.get(url) #url de toutes les issues
-      page = agent.page
-      myTab << page.search("//@data-issue-key").map(&:value)
-    end
-
-    #Boucler sur chaque val du tableau précedement rempli et créer une UO pour chaque
-    myTab.flatten
-    myTab.each do |val|
-      nom = ""
-      description = ""
-      url = "https://issues.apache.org/jira/browse/#{val}"
-
-      agent = Mechanize.new
-
-      agent.get(url)
-
-      agent.page.search("#summary-val").each do |item|
-        nom << item.text
-      end
-
-      agent.page.search(".user-content-block p").each do |item|
-        description << item.text
-      end
-
-      @guw_model = current_module_project.guw_model
-      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: "Groupe par défaut",
-                                                 module_project_id: current_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create
-
-      @guw_uow = Guw::GuwUnitOfWork.create(name: nom,
-                                          comments: description,
-                                          guw_unit_of_work_group_id: @guw_group.id,
-                                          module_project_id: current_module_project.id,
-                                          pbs_project_element_id: current_component.id,
-                                          guw_model_id: @guw_model.id,
-                                          display_order: nil,
-                                          tracking: nil,
-                                          quantity: 1,
-                                          selected: true,
-                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-
-      @guw_model.guw_attributes.all.each do |gac|
-        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                  guw_unit_of_work_id: @guw_uow.id,
-                                                  guw_attribute_id: gac.id).first_or_create
-        guowa.save
-      end
-
-    end
-
-    redirect_to :back
-
-  end
-
   def new
     @guw_unit_of_work = Guw::GuwUnitOfWork.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
@@ -1539,10 +1478,46 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
+  def extract_from_url
+
+    myTab = check_domains(params[:from])
+
+    myTab.flatten.take(50).each do |val|
+      nom = ""
+      description = ""
+      url = "https://issues.apache.org/jira/browse/#{val}"
+
+      agent = Mechanize.new
+
+      agent.get(url)
+
+      agent.page.search("#summary-val").each do |item|
+        nom << item.text
+      end
+
+      agent.page.search(".user-content-block p").each do |item|
+        description << item.text
+      end
+
+      text = "#{nom} #{description}"
+      results = get_trt(text)
+
+      results.each do |uo|
+        @guw_model.guw_attributes.all.each do |gac|
+          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                    guw_unit_of_work_id: uo.id,
+                                                    guw_attribute_id: gac.id).first_or_create
+          guowa.save
+        end
+      end
+
+    end
+    redirect_to :back
+  end
 
   def ml_trt
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
-
+    results =[]
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
@@ -1552,52 +1527,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         tab.each_with_index do |row, index|
 
           if index > 0
+            unless row.nil?
+              unless row[5].blank?
 
-            @guw_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? 'Traitements' : row[2],
-                                                       module_project_id: current_module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create
+                results = get_trt(row[5])
 
-            unless row[5].blank?
+                results.each do |guw_uow|
+                  @guw_model.guw_attributes.each_with_index do |gac, jj|
+                    tmp_val = row[15 + @guw_model.orders.size + jj]
+                    unless tmp_val.nil?
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
 
-              @http = Curl.post("http://localhost:5001/estimate_trt", { us: row[5] } )
-
-              complete_str = row[5].to_s
-              reduce_str = row[5].to_s.truncate(60)
-
-              JSON.parse(@http.body_str).each do |output|
-
-                unless output.blank? || output == "NULL"
-                  @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
-                else
-                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-                end
-
-                guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
-                                                    comments: complete_str,
-                                                    guw_unit_of_work_group_id: @guw_group.id,
-                                                    module_project_id: current_module_project.id,
-                                                    pbs_project_element_id: current_component.id,
-                                                    guw_model_id: @guw_model.id,
-                                                    display_order: index.to_i,
-                                                    tracking: complete_str,
-                                                    quantity: 1,
-                                                    selected: true,
-                                                    guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-
-                @guw_model.guw_attributes.each_with_index do |gac, jj|
-                  tmp_val = row[15 + @guw_model.orders.size + jj]
-                  unless tmp_val.nil?
-                    val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
-
-                    if gac.name == tab[0][15 + @guw_model.orders.size + jj]
-                      unless @guw_type.nil?
-                        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                                  guw_unit_of_work_id: guw_uow.id,
-                                                                  guw_attribute_id: gac.id).first_or_create
-                        guowa.low = val.to_i
-                        guowa.most_likely = val.to_i
-                        guowa.high = val.to_i
-                        guowa.save
+                      if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                        unless @guw_type.nil?
+                          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_uow.guw_type_id,
+                                                                    guw_unit_of_work_id: guw_uow.id,
+                                                                    guw_attribute_id: gac.id).first_or_create
+                          guowa.low = val.to_i
+                          guowa.most_likely = val.to_i
+                          guowa.high = val.to_i
+                          guowa.save
+                        end
                       end
                     end
                   end
@@ -1625,7 +1575,63 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       redirect_to :back and return
     end
+  end
 
+  private def check_domains(from)
+    if from == ""
+      myTab = Array.new
+      agent = Mechanize.new
+      (0..2).step(1).each do |i|
+        url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
+        agent.get(url)
+        page = agent.page
+        myTab << page.search("//@data-issue-key").map(&:value)
+      end
+    elsif from = ""
+      url = "http://www.redmine.org/projects/redmine/issues"
+    end
+
+    return myTab
+  end
+
+  private def get_trt(user_story)
+    @http = Curl.post("http://localhost:5001/estimate_trt", { us: user_story } )
+
+    complete_str = user_story.to_s
+    reduce_str = user_story.to_s.truncate(60)
+
+    results = []
+
+    JSON.parse(@http.body_str).each do |output|
+
+      @guw_model = current_module_project.guw_model
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Traitements',
+                                                 module_project_id: current_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create
+
+
+      unless output.blank? || output == "NULL"
+        @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+      else
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+      end
+
+      results << Guw::GuwUnitOfWork.create( name: reduce_str,
+                                            comments: complete_str,
+                                            guw_unit_of_work_group_id: @guw_group.id,
+                                            module_project_id: current_module_project.id,
+                                            pbs_project_element_id: current_component.id,
+                                            guw_model_id: @guw_model.id,
+                                            display_order: nil,
+                                            tracking: complete_str,
+                                            quantity: 1,
+                                            selected: true,
+                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+    end
+
+    return results
   end
 
   def ml_data
@@ -1704,262 +1710,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
     redirect_to :back
-  end
-
-  private def stem(word)
-            #    Letters in French include the following accented forms,
-            #        â   à   ç   ë   é   ê   è   ï   î   ô   û   ù
-            #    The following letters are vowels:
-            #        a   e   i   o   u   y   â   à   ë   é   ê   è   ï   î   ô   û   ù
-
-    original_word = word
-
-    # Downcase it
-    word = word.downcase
-    tmp = -1
-
-    # Uppercase some part to exclude them later on
-    word.gsub!(/qu/, 'qU')
-    word.gsub!(/([aeiouyâàëéêèïîôûù])u([aeiouyâàëéêèïîôûù])/, '\1U\2')
-    word.gsub!(/([aeiouyâàëéêèïîôûù])i([aeiouyâàëéêèïîôûù])/, '\1I\2')
-    word.gsub!(/([aeiouyâàëéêèïîôûù])y/, '\1Y')
-    word.gsub!(/y([aeiouyâàëéêèïîôûù])/, 'Y\1')
-
-    # Determine RV
-    rv = '';
-    rv_index = -1;
-
-    if word =~ /^(par|col|tap)/ || word =~ /^[aeiouyâàëéêèïîôûù]{2}/
-      rv = word[3..word.length]
-      rv_index = 3
-    else
-      rv_index = (word[1..word.length]) =~ /[aeiouyâàëéêèïîôûù]/
-      if rv_index
-        rv_index += 2
-        rv = word[rv_index..word.length]
-      else
-        rv_index = word.length
-      end
-    end
-
-    # R1 is the region after the first non-vowel following a vowel, or the end of the word if there is no such non-vowel.
-    # R2 is the region after the first non-vowel following a vowel in R1, or the end of the word if there is no such non-vowel
-    r1_index = word =~ /[aeiouyâàëéêèïîôûù][^aeiouyâàëéêèïîôûù]/
-    r1 = ''
-    if r1_index
-      r1_index += 2
-      r1 = word[r1_index..word.length]
-    else
-      r1_index = word.length
-    end
-
-    r2_index = -1
-    r2 = ''
-    if r1_index
-      r2_index = r1 =~ /[aeiouyâàëéêèïîôûù][^aeiouyâàëéêèïîôûù]/
-      if r2_index
-        r2_index += 2
-        r2 = r1[r2_index..r1.length]
-        r2_index += r1_index
-      else
-        r2 = ''
-        r2_index = word.length
-      end
-    end
-    if r1_index && r1_index < 3
-      r1_index = 3
-      r1 = word[r1_index..word.length]
-    end
-
-    # Step 1: Standard suffix removal
-
-    a1_index = word =~ /(ance|iqUe|isme|able|iste|eux|ances|iqUes|ismes|ables|istes)$/
-    a2_index = word =~ /(atrice|ateur|ation|atrices|ateurs|ations)$/
-    a3_index = word =~ /(logie|logies)$/
-    a4_index = word =~ /(usion|ution|usions|utions)$/
-    a5_index = word =~ /(ence|ences)$/
-    a6_index = word =~ /(ement|ements)$/
-    a7_index = word =~ /(ité|ités)$/
-    a8_index = word =~ /(if|ive|ifs|ives)$/
-    a9_index = word =~ /(eaux)$/
-    a10_index = word =~ /(aux)$/
-    a11_index = word =~ /(euse|euses)$/
-    a12_index = word =~ /[^aeiouyâàëéêèïîôûù](issement|issements)$/
-    a13_index = word =~ /(amment)$/
-    a14_index = word =~ /(emment)$/
-    a15_index = word =~ /[aeiouyâàëéêèïîôûù](ment|ments)$/
-
-    if a1_index && a1_index >= r2_index
-      word = word[0..a1_index - 1]
-    elsif a2_index && a2_index >= r2_index
-      word = word[0..a2_index - 1]
-      a2_index2 = word =~ /(ic)$/
-      if a2_index2 && a2_index2 >= r2_index
-        word = word[0..a2_index2 - 1]
-      else
-        word.gsub!(/(ic)$/, 'iqU')
-      end
-    elsif a3_index && a3_index >= r2_index
-      word.gsub!(/(logie|logies)$/, 'log')
-    elsif a4_index && a4_index >= r2_index
-      word.gsub!(/(usion|ution|usions|utions)$/, 'u')
-    elsif a5_index && a5_index >= r2_index
-      word.gsub!(/(ence|ences)$/, 'ent')
-    elsif a6_index && a6_index >= rv_index
-      word = word[0..a6_index - 1]
-      tmp = word =~ /(iv)$/
-      if !tmp.nil? && tmp >= r2_index
-        word.gsub!(/(iv)$/, '')
-        tmp = word =~ /(at)$/
-        if !tmp.nil? && tmp >= r2_index
-          word.gsub!(/(at)$/, '')
-        end
-      elsif word =~ /(eus)$/
-        a6_index2 = word =~ /(eus)$/
-        if a6_index2 >= r2_index
-          word = word[0..a6_index2 - 1]
-        elsif a6_index2 >= r1_index
-          word = word[0..a6_index2 - 1] + 'eux';
-        end
-      elsif !(tmp = (word =~ /(abl|iqU)$/)).nil? && tmp >= r2_index
-        word.gsub!(/(abl|iqU)$/, '')
-      elsif !(tmp = (word =~ /(ièr|Ièr)$/)).nil? && tmp >= rv_index
-        word.gsub!(/(ièr|Ièr)$/, 'i')
-      end
-    elsif a7_index && a7_index >= r2_index
-      word = word[0..a7_index - 1]
-      if word =~ /(abil)$/
-        a7_index2 = word =~ /(abil)$/
-        if a7_index2 >= r2_index
-          word = word[0..a7_index2 - 1]
-        else
-          word = word[0..a7_index2 - 1] + 'abl'
-        end
-      elsif word =~ /(ic)$/
-        a7_index3 = word =~ /(ic)$/
-        if a7_index3 && a7_index3 >= r2_index
-          word = word[0..a7_index3 - 1]
-        else
-          word.gsub!(/(ic)$/, 'iqU')
-        end
-      elsif !(tmp = (word =~ /(iv)$/)).nil? && tmp != r2_index
-        word.gsub!(/(iv)$/, '')
-      end
-    elsif a8_index && a8_index >= r2_index
-      word = word[0..a8_index - 1]
-      tmp = word =~ /(at)$/
-      if !tmp.nil? && tmp >= r2_index
-        word.gsub!(/(at)$/, '')
-        tmp = word =~ /(ic)$/
-        if !tmp.nil? && tmp >= r2_index
-          word.gsub!(/(ic)$/, '')
-        else
-          word.gsub!(/(ic)$/, 'iqU')
-        end
-      end
-    elsif a9_index
-      word.gsub!(/(eaux)/, 'eau')
-    elsif a10_index && a10_index >= r1_index
-      word.gsub!(/(aux)/, 'al')
-    elsif a11_index
-      a11_index2 = word =~ /(euse|euses)$/
-      if a11_index2 >= r2_index
-        word = word[0..a11_index2 - 1]
-      elsif a11_index2 >= r1_index
-        word = word[0..a11_index2 - 1] + 'eux'
-      end
-    elsif a12_index && a12_index >= r1_index
-      word = word[0..a12_index]
-    elsif a13_index && a13_index >= rv_index
-      word.gsub!(/(amment)$/, 'ant')
-    elsif a14_index && a14_index >= rv_index
-      word.gsub!(/(emment)$/, 'ent')
-    elsif a15_index && a15_index >= rv_index
-      word = word[0..a15_index]
-    end
-
-    # Step 2a: Verb suffixes beginning i
-
-    word_step1 = word.clone
-    step_2a_done = false
-    if original_word == word.downcase || original_word =~ /(amment|emment|ment|ments)$/
-      step_2a_done = true
-      b1_regex = /([^aeiouyâàëéêèïîôûù])(îmes|ît|îtes|i|ie|ies|ir|ira|irai|iraIent|irais|irait|iras|irent|irez|iriez|irions|irons|iront|is|issaIent|issais|issait|issant|issante|issantes|issants|isse|issent|isses|issez|issiez|issions|issons|it)$/i
-      tmp = word =~ b1_regex
-      if !tmp.nil? && tmp >= rv_index
-        word.gsub!(b1_regex, '\1')
-      end
-    end
-
-    # Step 2b: Other verb suffixes
-    if step_2a_done && word_step1 == word
-      b2_regex = /(é|ée|ées|és|èrent|er|era|erai|eraIent|erais|erait|eras|erez|eriez|erions|erons|eront|ez|iez)$/i
-      tmp = word =~ b2_regex
-      if tmp && tmp >= rv_index
-        word.gsub!(b2_regex, '')
-      else
-        tmp = word =~ /(ions)$/
-        if tmp && tmp >= r2_index
-          word.gsub!(/(ions)$/, '')
-        else
-          b3_regex = /e(âmes|ât|âtes|a|ai|aIent|ais|ait|ant|ante|antes|ants|as|asse|assent|asses|assiez|assions)$/i
-          tmp = word =~ b3_regex
-          if tmp && tmp >= rv_index
-            word.gsub!(b3_regex, '')
-          else
-            b3_regex2 = /(âmes|ât|âtes|a|ai|aIent|ais|ait|ant|ante|antes|ants|as|asse|assent|asses|assiez|assions)$/i
-            tmp = word =~ b3_regex2
-            if tmp && tmp >= rv_index
-              word.gsub!(b3_regex2, '')
-            end
-          end
-        end
-      end
-    end
-
-    if original_word != word.downcase
-      # Step 3
-      rep = ''
-      if word =~ /Y$/
-        word.gsub!(/Y$/, 'i')
-      elsif word =~ /ç$/
-        word.gsub!(/ç$/, 'c')
-      end
-    else
-      # Step 4
-      # If the word ends s, not preceded by a, i, o, u, è or s, delete it
-      tmp = word =~ /([^aiouès])s$/
-      if tmp && tmp >= rv_index
-        word.gsub!(/([^aiouès])s$/, '\1')
-      end
-      e1_index = word =~ /ion$/
-      tmp = word =~ /[st]ion$/
-      if e1_index && e1_index >= r2_index && tmp && tmp >= rv_index
-        word = word[0..e1_index - 1]
-      else
-        e2_index = word =~ /(ier|ière|Ier|Ière)$/
-        if e2_index && e2_index >= rv_index
-          word = word[0..e2_index - 1] + 'i'
-        else
-          tmp = word =~ /e$/
-          if tmp && tmp >= rv_index
-            word.gsub!(/e$/, '')
-          elsif !(tmp = (word =~ /guë$/)).nil? && tmp >= rv_index
-            word.gsub!(/guë$/, 'gu')
-          end
-        end
-      end
-    end
-
-    # Step 5: Undouble
-    word.gsub!(/(en|on)(n)$/, '\1')
-    word.gsub!(/(ett)$/, 'et')
-    word.gsub!(/(el|eil)(l)$/, '\1')
-
-    # Step 6: Un-accent
-    word.gsub!(/[éè]([^aeiouyâàëéêèïîôûù]+)$/, 'e\1')
-    word.downcase.strip
-
   end
 
   def deported

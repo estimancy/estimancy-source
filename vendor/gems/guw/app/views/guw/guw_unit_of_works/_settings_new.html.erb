@@ -748,7 +748,7 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="extract" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag guw.extract_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.extract_from_url_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
           <div class="modal-header modal-drag">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -762,9 +762,12 @@
             <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
             <h5>
-              Copier le lien à intégrer :
+              Lien à intégrer
             </h5>
             <%= text_field_tag "url" %>
+
+            <h5>Source</h5>
+            <%= select_tag "from", options_for_select(["Jira", "Redmine"]) %>
 
           </div>
 
