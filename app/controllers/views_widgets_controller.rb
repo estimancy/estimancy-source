@@ -529,33 +529,7 @@ class ViewsWidgetsController < ApplicationController
 
   # Get the module_project attributes grouped by Input and Ouput
   def get_module_project_attributes_input_output(module_project)
-    ###estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
-
-    case module_project.pemodule.alias
-      when "guw"
-        estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
-
-        # if module_project.guw_model.config_type == "new"
-        # else
-        # end
-
-      when "ge"
-        if module_project.ge_model.ge_model_instance_mode == "standard"
-          module_project_attributes = module_project.pemodule.pe_attributes
-          standard_effort_ids = module_project_attributes.where(alias: Ge::GeModel::GE_ATTRIBUTES_ALIAS).map(&:id).flatten
-          standard_effort_evs = module_project.estimation_values.where(pe_attribute_id: standard_effort_ids)
-          estimation_values = standard_effort_evs.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-        else
-          estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-        end
-
-      #when effort_breakdown
-
-      else
-        estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-    end
-
-    estimation_values
+    estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
 end

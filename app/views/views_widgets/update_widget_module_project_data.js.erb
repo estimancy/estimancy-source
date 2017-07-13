@@ -1,6 +1,6 @@
 <% if !@letter.nil? %>
   $("#<%= @letter %>").html("<%=raw j(select_tag "#{@letter}",
-                                     options_for_select(@module_project.estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]}),
+                                     options_for_select(@module_project.get_module_project_estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]}),
                                      class: 'inline_attr') %>");
 <% else %>
   //Update the selected module attributes

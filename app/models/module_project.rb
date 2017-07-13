@@ -445,11 +445,52 @@ class ModuleProject < ActiveRecord::Base
   end
 
 
+  # Récupère les estimation-values du module_project avec le filtre sur le netoyage des attributs
+  def get_module_project_estimation_values
+    module_project = self
+    all_estimation_values = module_project.estimation_values.where('in_out IS NOT NULL')
+
+    begin
+      case module_project.pemodule.alias
+        when "guw"
+          estimation_values = all_estimation_values.where(in_out: 'output')
+          shared_attributes = module_project.pemodule.pe_attributes.where(alias: ['flagged_unit_of_work', 'offline_unit_of_work', 'selected_of_unit_of_work', 'number_of_unit_of_work'], guw_model_id: module_project.guw_model_id)
+          shared_attribute_ids = shared_attributes.map(&:id).flatten
+
+          if module_project.guw_model.config_type == "new"
+            #module_project_attributes_ids = module_project.pemodule.pe_attributes.where("guw_model_id = ? OR id IN (?)", module_project.guw_model_id, shared_attribute_ids).map(&:id).flatten
+            module_project_attributes_ids = module_project.pemodule.pe_attributes.where("pe_attributes.guw_model_id = ? OR pe_attributes.id IN (?)", module_project.guw_model_id, shared_attribute_ids).map(&:id)
+            estimation_values = estimation_values.where(pe_attribute_id: module_project_attributes_ids)
+          end
+
+        when "ge"
+          if module_project.ge_model.ge_model_instance_mode == "standard"
+            module_project_attributes = module_project.pemodule.pe_attributes
+            standard_effort_ids = module_project_attributes.where(alias: Ge::GeModel::GE_ATTRIBUTES_ALIAS).map(&:id).flatten
+            estimation_values = all_estimation_values.where(pe_attribute_id: standard_effort_ids)
+          else
+            estimation_values = all_estimation_values
+          end
+
+        when "effort_breakdown"
+          excluded_evs = all_estimation_values.includes(:pe_attribute).where(pe_attributes: {alias: ['theoretical_effort', 'effort']}, in_out:'input')
+          estimation_values = all_estimation_values.where('id NOT IN (?)', excluded_evs.map(&:id))
+        else
+          estimation_values = all_estimation_values
+      end
+    rescue
+      estimation_values = []
+    end
+
+    estimation_values
+  end
+
+
   # Get Estimation_values or Create them if not exist
   def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids = [])
 
-    current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
-    current_outputs_evs = self.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
+    current_inputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")     #self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
+    current_outputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")  #self.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
     if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length)
 
