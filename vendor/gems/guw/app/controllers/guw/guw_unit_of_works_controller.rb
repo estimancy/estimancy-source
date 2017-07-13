@@ -1480,38 +1480,77 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def extract_from_url
 
-    myTab = check_domains(params[:from])
+    myTab = Array.new
+    agent = Mechanize.new
 
-    myTab.flatten.take(50).each do |val|
-      nom = ""
-      description = ""
-      url = "https://issues.apache.org/jira/browse/#{val}"
-
-      agent = Mechanize.new
-
-      agent.get(url)
-
-      agent.page.search("#summary-val").each do |item|
-        nom << item.text
+    if params[:from] == "Jira"
+      (0..2).step(1).each do |i|
+        url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
+        agent.get(url)
+        page = agent.page
+        myTab << page.search("//@data-issue-key").map(&:value)
       end
 
-      agent.page.search(".user-content-block p").each do |item|
-        description << item.text
+      myTab.flatten.take(50).each do |val|
+        nom = ""
+        description = ""
+        url = "https://issues.apache.org/jira/browse/#{val}"
+        agent = Mechanize.new
+        agent.get(url)
+        agent.page.search("#summary-val").each do |item|
+          nom << item.text
+        end
+
+        agent.page.search(".user-content-block p").each do |item|
+          description << item.text
+        end
+
+        text = "#{nom} #{description}"
+        results = get_trt(text)
+
+        results.each do |uo|
+          @guw_model.guw_attributes.all.each do |gac|
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                      guw_unit_of_work_id: uo.id,
+                                                      guw_attribute_id: gac.id).first_or_create
+            guowa.save
+          end
+        end
+
       end
 
-      text = "#{nom} #{description}"
-      results = get_trt(text)
+    elsif params[:from] = "Redmine"
+      (0..2).step(1).each do |i|
+        url = "http://www.redmine.org/projects/redmine/issues"
+        agent.get(url)
+        page = agent.page
+        #*[@id="issue-26422"]
+        myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
 
-      results.each do |uo|
-        @guw_model.guw_attributes.all.each do |gac|
-          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                    guw_unit_of_work_id: uo.id,
-                                                    guw_attribute_id: gac.id).first_or_create
-          guowa.save
+
+        myTab.flatten.take(50).each do |val|
+          agent = Mechanize.new
+          url = "http://www.redmine.org/issues/#{val}"
+          agent.get(url)
+          nom = agent.page.search(".subject h3").text
+          description = agent.page.search(".description").text
+
+          text = "#{nom} #{description}"
+          results = get_trt(text)
+
+          results.each do |uo|
+            @guw_model.guw_attributes.all.each do |gac|
+              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                        guw_unit_of_work_id: uo.id,
+                                                        guw_attribute_id: gac.id).first_or_create
+              guowa.save
+            end
+          end
+
         end
       end
-
     end
+
     redirect_to :back
   end
 
@@ -1578,19 +1617,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   private def check_domains(from)
-    if from == ""
-      myTab = Array.new
-      agent = Mechanize.new
+    myTab = Array.new
+    agent = Mechanize.new
+
+    if from == "Jira"
       (0..2).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
         page = agent.page
         myTab << page.search("//@data-issue-key").map(&:value)
       end
-    elsif from = ""
-      url = "http://www.redmine.org/projects/redmine/issues"
+    elsif from = "Redmine"
+      (0..2).step(1).each do |i|
+        url = "http://www.redmine.org/projects/redmine/issues"
+        agent.get(url)
+        page = agent.page
+        #*[@id="issue-26422"]
+        myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+      end
     end
-
     return myTab
   end
 
@@ -2192,5 +2237,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
   end
-
 end
+
+
