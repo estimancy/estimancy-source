@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170608161210) do
+ActiveRecord::Schema.define(:version => 20170703085928) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -688,7 +688,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology"
+    t.boolean  "allow_technology",            :default => true
     t.string   "work_unit_type"
     t.string   "weighting_type"
     t.string   "factor_type"
@@ -962,12 +962,6 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.string   "reference_uuid"
   end
 
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "module_project_ratio_elements", :force => true do |t|
     t.integer  "pbs_project_element_id"
     t.integer  "module_project_id"
@@ -1082,6 +1076,44 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "modify_output"
+  end
+
+  create_table "organization_estimations", :id => false, :force => true do |t|
+    t.integer  "current_organization_id",               :default => 0,     :null => false
+    t.string   "organization_name"
+    t.datetime "project_created_date"
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
+    t.string   "title"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
+    t.string   "state"
+    t.date     "start_date"
+    t.integer  "organization_id"
+    t.integer  "original_model_id"
+    t.integer  "project_area_id"
+    t.integer  "project_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "acquisition_category_id"
+    t.boolean  "is_model"
+    t.integer  "master_anscestry"
+    t.integer  "creator_id"
+    t.text     "purpose"
+    t.text     "level_of_detail"
+    t.text     "scope"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.text     "included_wbs_activities"
+    t.boolean  "is_historicized"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "status_comment"
+    t.integer  "application_id"
+    t.string   "application_name"
+    t.boolean  "private",                               :default => false
   end
 
   create_table "organization_labor_categories", :force => true do |t|
@@ -1440,7 +1472,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.integer  "copy_number"
     t.integer  "copy_id"
     t.text     "included_wbs_activities"
-    t.boolean  "is_locked"
+    t.boolean  "is_historicized"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "status_comment"
@@ -1696,7 +1728,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",                    :null => false
+    t.string   "email",                  :default => "",    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
     t.datetime "created_at"
@@ -1716,11 +1748,11 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.text     "ten_latest_projects"
     t.integer  "organization_id"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",     :default => "",                    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0,                     :null => false
+    t.integer  "sign_in_count",          :default => 0,     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -1728,7 +1760,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        :default => 0,                     :null => false
+    t.integer  "failed_attempts",        :default => 0,     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
@@ -1738,7 +1770,7 @@ ActiveRecord::Schema.define(:version => 20170608161210) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
+    t.datetime "subscription_end_date"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
