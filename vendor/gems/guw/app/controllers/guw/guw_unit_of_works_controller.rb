@@ -1520,8 +1520,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
     elsif params[:from] = "Redmine"
-      (0..2).step(1).each do |i|
-        url = "http://www.redmine.org/projects/redmine/issues"
+      (0..1).each do |i|
+        url = "#{params[:url]}?page=#{i}"
         agent.get(url)
         page = agent.page
         #*[@id="issue-26422"]

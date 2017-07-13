@@ -688,7 +688,7 @@ ActiveRecord::Schema.define(:version => 20170703085928) do
     t.string   "factors_label"
     t.string   "effort_unit"
     t.string   "cost_unit"
-    t.boolean  "allow_technology",            :default => true
+    t.boolean  "allow_technology"
     t.string   "work_unit_type"
     t.string   "weighting_type"
     t.string   "factor_type"
@@ -1728,7 +1728,7 @@ ActiveRecord::Schema.define(:version => 20170703085928) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",    :null => false
+    t.string   "email",                  :default => "",                    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
     t.datetime "created_at"
@@ -1748,11 +1748,11 @@ ActiveRecord::Schema.define(:version => 20170703085928) do
     t.text     "ten_latest_projects"
     t.integer  "organization_id"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",     :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",                    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0,     :null => false
+    t.integer  "sign_in_count",          :default => 0,                     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -1760,7 +1760,7 @@ ActiveRecord::Schema.define(:version => 20170703085928) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        :default => 0,     :null => false
+    t.integer  "failed_attempts",        :default => 0,                     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
@@ -1770,7 +1770,7 @@ ActiveRecord::Schema.define(:version => 20170703085928) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date"
+    t.datetime "subscription_end_date",  :default => '2016-11-25 14:37:58'
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
