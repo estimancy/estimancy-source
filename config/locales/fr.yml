@@ -2089,3 +2089,4 @@ fr:
     previous_label: "← précédent"  
   
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
+  multiple_delete: "Suppression multiple"
