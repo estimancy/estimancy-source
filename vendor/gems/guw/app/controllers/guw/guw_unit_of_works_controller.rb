@@ -982,11 +982,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            # if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
-            #   guw_unit_of_work.flagged = true
-            # else
-            #   guw_unit_of_work.flagged = false
-            # end
+            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+              guw_unit_of_work.flagged = true
+            else
+              guw_unit_of_work.flagged = false
+            end
 
             if cplx_coeff.nil?
               intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
