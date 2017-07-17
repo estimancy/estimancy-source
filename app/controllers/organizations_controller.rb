@@ -799,7 +799,7 @@ class OrganizationsController < ApplicationController
         end
       end
 
-      if result.size == desired_size || last_project.nil?
+      if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
         return result
       else
         next_projects = last_project.next_ones_by_date(desired_size)
