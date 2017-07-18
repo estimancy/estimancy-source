@@ -1530,7 +1530,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         myTab.flatten.take(50).each do |val|
           agent = Mechanize.new
-          url = "http://www.redmine.org/issues/#{val}"
+          url = params[:url]/#{val}"
+          #TODO: Retirer ce qu'il y a entre le nom de domaine et /issues
+          my_match=/\//.match(url)
+          url= my_match.pre_match.to_s + "/issues/" + #{val}
+          #http://forge.estimancy.com/projects/pe/issues
           agent.get(url)
           nom = agent.page.search(".subject h3").text
           description = agent.page.search(".description").text
