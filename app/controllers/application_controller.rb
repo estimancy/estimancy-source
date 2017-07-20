@@ -465,11 +465,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def showpdf
+  def show
+
     respond_to do |format|
-      format.html
+      format.html {render :show}
       format.pdf do
-        render pdf: "file_name"   # Excluding ".pdf" extension.
+        render pdf: "show", :layout => 'pdf.html'
+        # Excluding ".pdf" extension.
       end
     end
   end
