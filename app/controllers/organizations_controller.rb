@@ -805,7 +805,6 @@ class OrganizationsController < ApplicationController
         next_projects = last_project.next_ones_by_date(desired_size)
         unless next_projects.all.empty?
           @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
-          i = 0
           estimations_abilities.call(next_projects)
         end
       end

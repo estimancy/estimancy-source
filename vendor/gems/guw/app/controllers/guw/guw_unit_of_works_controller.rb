@@ -1522,35 +1522,33 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     elsif params[:from] = "Redmine"
       (0..1).each do |i|
         url = "#{params[:url]}?page=#{i}"
-        agent.get(url)
-        page = agent.page
-        #*[@id="issue-26422"]
-        myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
-
+        agent.auth('hghanem', 'projestimate2014')
+        agent.get(url) do |page|
+          myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+        end
 
         myTab.flatten.take(50).each do |val|
           agent = Mechanize.new
           url = params[:url]/#{val}"
-          #TODO: Retirer ce qu'il y a entre le nom de domaine et /issues
           my_match=/\//.match(url)
-          url= my_match.pre_match.to_s + "/issues/" + #{val}
-          #http://forge.estimancy.com/projects/pe/issues
-          agent.get(url)
-          nom = agent.page.search(".subject h3").text
-          description = agent.page.search(".description").text
+          url= my_match.pre_match.to_s + "/issues/" + val
+          agent.auth('hghanem', 'projestimate2014')
+          agent.get(url) do |page|
+            nom = page.search(".subject h3").text
+            description = page.search(".description").text
 
-          text = "#{nom} #{description}"
-          results = get_trt(text)
+            text = "#{nom} #{description}"
+            results = get_trt(text)
 
-          results.each do |uo|
-            @guw_model.guw_attributes.all.each do |gac|
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                        guw_unit_of_work_id: uo.id,
-                                                        guw_attribute_id: gac.id).first_or_create
-              guowa.save
+            results.each do |uo|
+              @guw_model.guw_attributes.all.each do |gac|
+                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                          guw_unit_of_work_id: uo.id,
+                                                          guw_attribute_id: gac.id).first_or_create
+                guowa.save
+              end
             end
           end
-
         end
       end
     end
