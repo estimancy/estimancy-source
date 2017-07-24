@@ -64,12 +64,7 @@ class Project < ActiveRecord::Base
   serialize :included_wbs_activities, Array
 
   validates_presence_of :organization_id, :estimation_status_id, :creator_id
-  # validates :title, :presence => true, :uniqueness => true
   validates :title, :presence => true, :uniqueness => {  :scope => [:version_number,:organization_id], case_sensitive: false, :message => I18n.t(:error_validation_project) }
-  ###validates :alias, :presence => true, :uniqueness => { :scope => :organization_id, case_sensitive: false, :message => I18n.t(:error_validation_project) }
-  # validates :version_number, :presence => true, :length => { :maximum => 64 }, :uniqueness => { scope: [:title, :organization_id],
-  #                                                                                        case_sensitive: false,
-  #                                                                                        message: I18n.t(:error_validation_project) }
 
   #Search fields
   scoped_search :on => [:title, :alias, :description, :start_date, :created_at, :updated_at]
@@ -114,10 +109,6 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:updated_at, :sortable => "#{Project.table_name}.updated_at", :caption => "updated_at"),
       QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation")
     ]
-
-  #class_attribute :selected_inline_columns
-  #self.selected_inline_columns = update_selected_inline_columns(Project)
-  #self.selected_inline_columns = self.available_inline_columns.select{ |column| column.name.to_s.in?(@current_organization.project_selected_columns)}
 
   class_attribute :default_selected_columns
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
