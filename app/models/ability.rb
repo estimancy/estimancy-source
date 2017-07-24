@@ -222,9 +222,9 @@ class Ability
             prj_scrt_project_security_level_permissions.each do |permission|
               organization_projects.each do |project|
                 if permission.alias == "manage" and permission.category == "Project"
-                  can :manage, project, estimation_status_id: esgr.estimation_status.id
+                  can :manage, project, estimation_status_id: esgr.estimation_status_id
                 else
-                  @array_status_groups << [permission.id, project.id, esgr.estimation_status.id]
+                  @array_status_groups << [permission.id, project.id, esgr.estimation_status_id]
                 end
               end
             end
