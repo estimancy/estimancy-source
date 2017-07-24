@@ -43,7 +43,7 @@
      @project_list = @project_list.uniq
 
      @project_list.map do |i|
-       @my_skb_datas << { x: i.data, y: i.processing, z: i.data + i.processing, name: i.name, description: simple_format(i.description.to_s) }
+       @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: simple_format(i.description.to_s) }
      end
      @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
                         y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
