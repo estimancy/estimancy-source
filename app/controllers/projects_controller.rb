@@ -94,11 +94,10 @@ class ProjectsController < ApplicationController
       redirect_to organization_estimations_path(@current_organization) and return
     end
 
-    begin
-      clean_view_widget
-    rescue
-
-    end
+    # begin
+    #   clean_view_widget
+    # rescue
+    # end
 
     @current_organization = @project.organization
 
