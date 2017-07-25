@@ -97,7 +97,7 @@ class ProjectsController < ApplicationController
     begin
       clean_view_widget
     rescue
-      #
+
     end
 
     @current_organization = @project.organization
@@ -3110,15 +3110,15 @@ public
   end
 
   private def clean_view_widget
-    if @project.is_model == true
-      pf = ProjectField.where(project_id: @project.id,
-                              value: nil).first
-      unless pf.nil?
-        if pf.view_widget.nil?
-          pf.delete
-        end
-      end
-    else
+    # if @project.is_model == true
+    #   pf = ProjectField.where(project_id: @project.id,
+    #                           value: nil).first
+    #   unless pf.nil?
+    #     if pf.view_widget.nil?
+    #       pf.delete
+    #     end
+    #   end
+    if @project.is_model == false
       ProjectField.where(project_id: @project.id,
                          value: nil).all.each{ |i| i.delete }
     end
