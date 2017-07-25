@@ -334,10 +334,10 @@ class PemodulesController < ApplicationController
 
 
         unless @instance_model
-          @pemodule_title = @instance_model.name
+          @pemodule_title = @instance_model.nil? ? '-' : @instance_model.name
         end
 
-        @organization = @instance_model.organization
+        @organization = @instance_model.nil? ? '-' : @instance_model.organization
         @related_projects = ModuleProject.where("#{params[:instance_model_name]}" => params[:instance_model_id]).uniq
       end
     end
