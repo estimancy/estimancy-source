@@ -260,27 +260,31 @@ class OrganizationsController < ApplicationController
   def import_appli
     @organization = Organization.find(params[:organization_id])
     tab_error = []
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+
+    if params[:file].nil?
+      flash[:error] = I18n.t(:route_flag_error_17)
+    elsif !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       tab = workbook[0].extract_data
 
       tab.each_with_index do |row, index|
         if index > 0
-          new_app = Application.new(name: row[0], organization_id: @organization.id)
+          new_app = Application.new(name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0]), organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
         end
       end
+      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
-    flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     redirect_to :back
   end
+
 
   def export_appli
     @organization = Organization.find(params[:organization_id])

@@ -1,3 +1,4 @@
+
 <% if @related_projects.nil? || @related_projects.empty? %>
     <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_pemodule_finduse_no_project, :value => @pemodule)}" %></div><br>
 <% else %>
@@ -7,8 +8,10 @@
         <th><%= I18n.t(:label_version) %></th>
         <th><%= I18n.t(:label_product_name) %></th>
       </tr>
+
       <% @related_projects.each do |module_project| %>
           <% project = module_project.project %>
+
           <tr>
             <td>
               <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{project.title}", edit_project_path(project, anchor: "tabs-4")) %> </span>

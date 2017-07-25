@@ -332,6 +332,7 @@ class PemodulesController < ApplicationController
             @instance_model = ExpertJudgement::Instance.find(params[:instance_model_id])
         end
 
+
         unless @instance_model
           @pemodule_title = @instance_model.name
         end
