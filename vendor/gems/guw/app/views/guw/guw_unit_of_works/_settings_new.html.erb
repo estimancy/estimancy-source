@@ -14,21 +14,14 @@
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
         <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn" %>
-        <a href="#import_guw" role="button" class="btn" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
+
       <% end %>
       <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
-          Identifier les traitements
-        </button>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml_data">
-          Identifier les données
-        </button>
+
       <% end %>
 
       <button type="button" class="btn" data-toggle="modal" data-target="#extract">
-        Importer (UrL)
+        <%= I18n.t(:import) %>
       </button>
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
@@ -761,13 +754,34 @@
 
             <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
-            <h5>
-              Lien à intégrer
-            </h5>
-            <%= text_field_tag "url" %>
+            <h5>Type de source</h5>
+            <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]) %>
 
-            <h5>Source</h5>
-            <%= select_tag "from", options_for_select(["Jira", "Redmine"]) %>
+            <div id="file-block" >
+              <h5>
+                Importer un fichier Excel (xlsx uniquement)
+              </h5>
+              <%= file_field_tag :file %>
+            </div >
+
+            <div class="hide" id="url-block">
+              <h5>
+                URL
+              </h5>
+              <%= text_field_tag :url %>
+            </div>
+
+            <h5>ML</h5>
+            <% if @guw_model.allow_ml == true && @guw_model.allow_man == true %>
+              <% toto = ["Données", "Traitements", "Manuel"] %>
+            <% elsif @guw_model.allow_man == true %>
+                <% toto = ["Manuel"] %>
+            <% else @guw_model.allow_ml == true %>
+                <% toto = ["Données", "Traitements"] %>
+            <% end %>
+
+            <%= select_tag "kind", options_for_select(toto) %>
+
 
           </div>
 
@@ -777,6 +791,25 @@
           </div>
 
       <% end %>
+
+
+
+
+      <script>
+          $(document).ready(function(){
+              $("#from").on("change",function(){
+                  if (this.value == "Excel") {
+                      $("#file-block").show();
+                      $("#url-block").hide();
+                  }
+                  else {
+                      $("#url-block").show();
+                      $("#file-block").hide();
+                  }
+
+              })
+          });
+      </script>
     </div>
   </div>
 </div>

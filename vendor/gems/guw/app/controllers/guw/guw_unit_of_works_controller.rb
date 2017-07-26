@@ -1483,7 +1483,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     myTab = Array.new
     agent = Mechanize.new
 
-    if params[:from] == "Jira"
+    if params[:from] == "Excel"
+      if params[:kind] == "Données"
+        ml_data
+      elsif params[:kind] == "Traitements"
+        ml_trt
+      elsif params[:kind] == "Manuel"
+        import_guw
+      end
+    elsif params[:from] == "Jira"
       (0..2).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
@@ -1519,7 +1527,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       end
 
-    elsif params[:from] = "Redmine"
+    else params[:from] = "Redmine"
       (0..1).each do |i|
         url = "#{params[:url]}?page=#{i}"
         agent.auth('hghanem', 'projestimate2014')
@@ -1765,7 +1773,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
   end
 
-  def import_guw
+  private def import_guw
 
     @guw_model = current_module_project.guw_model
     @component = current_component
@@ -2025,8 +2033,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
     end
-
-    redirect_to :back
   end
 
   private
