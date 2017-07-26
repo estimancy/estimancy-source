@@ -772,7 +772,16 @@
             </div>
 
             <h5>ML</h5>
-            <%= select_tag "kind", options_for_select(["Données", "Traitements", "Manuel"]) %>
+            <% if @guw_model.allow_ml == true && @guw_model.allow_man == true %>
+              <% toto = ["Données", "Traitements", "Manuel"] %>
+            <% elsif @guw_model.allow_man == true %>
+                <% toto = ["Manuel"] %>
+            <% else @guw_model.allow_ml == true %>
+                <% toto = ["Données", "Traitements"] %>
+            <% end %>
+
+            <%= select_tag "kind", options_for_select(toto) %>
+
 
           </div>
 
@@ -782,6 +791,9 @@
           </div>
 
       <% end %>
+
+
+
 
       <script>
           $(document).ready(function(){
@@ -793,7 +805,7 @@
                   else {
                       $("#url-block").show();
                       $("#file-block").hide();
-                      }
+                  }
 
               })
           });
