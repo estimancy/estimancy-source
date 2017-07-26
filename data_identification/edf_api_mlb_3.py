@@ -64,15 +64,15 @@ def tranform_userStory (userStory, model_feature, vectorizer):
 
 
 def clean_text(line):
-    line= re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '').replace('|','').replace('\r', '').replace('\n', '')).lower()
+    #line= re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '').replace('|','').replace('\r', '').replace('\n', '')).lower()
     line_cl=""
-    stemmed_us= tt.tag(line) ### Tagging (lematization) using tree tagger
-    for w in stemmed_us:
-        if len(w[0])>2:
-            if not str(w[2])=='<unknown>':
-                line_cl+=" "+ str(w[2])
-            else:
-                line_cl+=" "+ str(w[0])
+    #stemmed_us= tt.tag(line) ### Tagging (lematization) using tree tagger
+    #for w in stemmed_us:
+    #    if len(w[0])>2:
+    #        if not str(w[2])=='<unknown>':
+    #            line_cl+=" "+ str(w[2])
+    #        else:
+    #            line_cl+=" "+ str(w[0])
     return line_cl
 
 # Class of model
