@@ -43,8 +43,27 @@
             <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
             <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
             <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
-            <%= f.input :allow_ml, label: "Activer l'import par ML" %>
-            <%= f.input :allow_man, label: "Activer l'import manuel" %>
+
+ <!--       <%= f.input :allow_ml, label: "Activer l'import par ML" %>
+            <%= f.input :allow_man, label: "Activer l'import manuel" %> -->
+            <hr />
+<!--         Nouvelles modifs Eric. Revoir les fonctions associées
+--> 
+            <%= f.input :allow_excel,label: "Activer l'import par Excel" %>
+            <%= f.input :allow_jira, label: "Activer l'import via JIRA" %>
+            <%= f.input :allow_redmine, label: "Activer l'import via Redmine" %>
+            <hr /> 
+            
+           <%= f.input :allow_ml, label: "Activer l'import par ML" %>
+
+            <h5> Choix du serveur ML à utiliser :</h5>
+            <%= select_tag "MLserver", options_for_select(["","one","two","three"]) %>
+
+              <hr />
+
+
+<!--        Mettre un champ 'Nom du serveur ML'. Si on choisit OUI à la ML alors on peut choisir le serveur ML qu'on va utiliser. -->
+            
           </div>
 
           <table>
