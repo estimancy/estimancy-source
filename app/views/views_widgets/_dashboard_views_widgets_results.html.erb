@@ -24,6 +24,7 @@
                       <%= link_to "", edit_module_project_view_config_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-cog icon-large icon_padding_right", title: I18n.t(:label_parameters), remote: true %>
                       <%= link_to "PDF File", export_pdf_path(format: 'pdf', project_id: params[:project_id])%>
                     <% end %>
+
                   </div>
                 </div>
               </div>
@@ -53,7 +54,7 @@
                             <% view_widget_min_max_size = view_widget_data[:min_max_size] %>
                             <% min_without_min_max = '12px' ; one_height = ""
                                min_with_min_max = '9px'
-                               max_without_min_max = '30px' #'50px'
+                              max_without_min_max = '30px' #'50px'
                                max_with_min_max = '20px' #'40px'
                                ft_minMax_minFontSize = '12px'
                                ft_minMax_maxFontSize = '15px'
