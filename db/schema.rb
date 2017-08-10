@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170809095626) do
+ActiveRecord::Schema.define(:version => 20170726090756) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -701,10 +701,15 @@ ActiveRecord::Schema.define(:version => 20170809095626) do
     t.text     "orders"
     t.string   "config_type",                 :default => "old"
     t.boolean  "allow_ml"
-    t.boolean  "allow_man"
     t.boolean  "allow_excel"
     t.boolean  "allow_jira"
     t.boolean  "allow_redmine"
+    t.string   "excel_ml_server"
+    t.string   "jira_ml_server"
+    t.string   "redmine_ml_server"
+    t.boolean  "allow_ml_excel"
+    t.boolean  "allow_ml_jira"
+    t.boolean  "allow_ml_redmine"
   end
 
   create_table "guw_guw_output_associations", :force => true do |t|
