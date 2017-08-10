@@ -44,32 +44,76 @@
             <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
             <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
 
- <!--       <%= f.input :allow_ml, label: "Activer l'import par ML" %>
-            <%= f.input :allow_man, label: "Activer l'import manuel" %> -->
             <hr />
-<!--         Nouvelles modifs Eric. Revoir les fonctions associées
---> 
-            <%= f.input :allow_excel,label: "Activer l'import par Excel" %>
-            <%= f.input :allow_jira, label: "Activer l'import via JIRA" %>
-            <%= f.input :allow_redmine, label: "Activer l'import via Redmine" %>
-            <hr /> 
-            
-           <%= f.input :allow_ml, label: "Activer l'import par ML" %>
 
-            <div id="server" style="<%= @guw_model.allow_ml == true ? "" : "display: none ;" %>">
-              <h5> Choix du serveur ML à utiliser :</h5>
-              <%= select_tag "MLserver", options_for_select(["","one","two","three"]) %>
+            <h5>Configuration du type d'import</h5>
+            <div class="row-fluid">
+              <div class="span3">
+                <%= f.input :allow_excel,label: "Activer l'import par Excel" %>
+              </div>
+              <div class="span3">
+                <%= f.input :excel_ml_server, label: false %>
+              </div>
+              <div class="span3 allow_ml_excel" style="display: none;">
+                <%= f.input :allow_ml_excel, label: "IA Optionelle" %>
+              </div>
+            </div>
+
+            <div class="row-fluid">
+              <div class="span3">
+                <%= f.input :allow_jira, label: "Activer l'import via JIRA" %>
+              </div>
+              <div class="span3">
+                <%= f.input :jira_ml_server, label: false %>
+              </div>
+              <div class="span3 allow_ml_jira" style="display: none;">
+                <%= f.input :allow_ml_jira, label: "IA Optionelle" %>
+              </div>
+            </div>
+
+            <div class="row-fluid">
+              <div class="span3">
+                <%= f.input :allow_redmine, label: "Activer l'import via Redmine" %>
+              </div>
+              <div class="span3">
+                <%= f.input :redmine_ml_server, label: false %>
+              </div>
+              <div class="span3 allow_ml_redmine" style="display: none;">
+                <%= f.input :allow_ml_redmine, label: "IA Optionelle" %>
+              </div>
             </div>
             <hr />
+
+            <!--<div id="server" style="<%# @guw_model.allow_ml == true ? "" : "display: none ;" %>">-->
+              <!--<h5> Choix du serveur ML à utiliser :</h5>-->
+              <!--<%# select_tag "MLserver", options_for_select(["","one","two","three"]) %>-->
+            <!--</div>-->
+            <!--<hr />-->
 
 
 <!--        Mettre un champ 'Nom du serveur ML'. Si on choisit OUI à la ML alors on peut choisir le serveur ML qu'on va utiliser. -->
 
     <script>
-          $("#guw_model_allow_ml").click(function(){
-            $("#server").toggle()
-          });
+      $("#guw_model_excel_ml_server").keyup(function() {
+        if($("#guw_model_excel_ml_server").val() != "")
+          $(".allow_ml_excel").show();
+        else
+          $(".allow_ml_excel").hide();
+      });
 
+      $("#guw_model_jira_ml_server").keyup(function() {
+        if($("#guw_model_jira_ml_server").val() != "")
+          $(".allow_ml_jira").show();
+        else
+          $(".allow_ml_jira").hide();
+      });
+
+      $("#guw_model_redmine_ml_server").keyup(function() {
+        if($("#guw_model_redmine_ml_server").val() != "")
+          $(".allow_ml_redmine").show();
+        else
+          $(".allow_ml_redmine").hide();
+      });
     </script>
   
 
