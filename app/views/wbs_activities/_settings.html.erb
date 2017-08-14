@@ -1,4 +1,4 @@
-<h4>
+<h4 class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
   <strong>
     <%= I18n.t(:wbs_activities) %>
   </strong>
@@ -16,7 +16,6 @@
 <% effort = module_project.pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
 <% theoretical_effort = module_project.pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
 <% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
-
 
 <!-- RATIO -->
 <% selected_ratio = module_project.get_wbs_activity_ratio(component_id) ## @wbs_activity_ratio # %>
@@ -144,7 +143,7 @@
 
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
-  <table class="table table-bordered">
+  <table class="table table-bordered <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
 
     <% if wbs_activity.enabled_input %>
       <tr>
@@ -191,8 +190,8 @@
         <th>Effort total retenu (H)</th>
 
       <% else %>
-          <th>Effort total Calculé</th>
-          <th>Effort total Retenu</th>
+        <th>Effort total Calculé</th>
+        <th>Effort total Retenu</th>
       <% end %>
 
       <th>Ratio global</th>
@@ -274,7 +273,6 @@
         </td>
       <% else %>
         <td>
-          <%#= number_field_tag "values[most_likely]", v_most_likely.to_f.round(user_number_precision), step: "any", style: "width: 100px;" %>
 
           <!-- Nouvelles entrees -->
           <% current_inputs_evs.each do |ev| %>
@@ -437,21 +435,18 @@
 
   <!-- Ajout des valeurs des Ratios -->
   <div id="module_project_ratio_elements">
-      <div id="module_project_ratio_section">
-        <%#= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements',
-               :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio],
-               locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+    <div id="module_project_ratio_section">
 
-        <% @wbs_activity_ratio =  selected_ratio %>
+      <% @wbs_activity_ratio =  selected_ratio %>
 
-        <% if selected_ratio.nil? %>
-           <%= render :text => "Aucun ratio sélectionné" %>
-        <% else %>
-            <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
-                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-         <% end %>
-      </div>
+      <% if selected_ratio.nil? %>
+         <%= render :text => "Aucun ratio sélectionné" %>
+      <% else %>
+          <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                 :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
+                 locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+       <% end %>
+    </div>
   </div>
   <!-- Fin Ajout des valeurs des Ratios -->
 
@@ -508,5 +503,20 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function(){
+    $(".selected_phase").click(function(){
+      var val = this.value;
+      if ($("#retained_effort_most_likely_" + val).val() == "") {
+        $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
+        $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
+      } else {
+        $("#retained_effort_most_likely_" + val).val("");
+        $("#retained_cost_most_likely_" + val).val("");
+      }
+    })
+  })
+</script>
 
 
