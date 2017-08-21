@@ -1520,7 +1520,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 JSON.parse(@http.body_str).each do |output|
 
                   unless output.blank? || output == "NULL"
-                    @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+                    @guw_type = Guw::GuwType.where(name: output,
+                                                   guw_model_id: @guw_model.id,
+                                                   is_default: true).first
+
+                    if @guw_type.nil?
+                      @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).last
+                    end
+
                   else
                     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
                   end
@@ -1605,7 +1612,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).first
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                       is_default: true).first
+        if @guw_type.nil?
+          @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        end
+
         @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
                                                    module_project_id: current_module_project.id,
                                                    pbs_project_element_id: current_component.id).first_or_create
