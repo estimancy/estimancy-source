@@ -1544,7 +1544,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             description = page.search(".description").text
 
             text = "#{nom} #{description}"
-            results = get_trt(text, default_group)
+
+            #A modifier
+            if params[:kind] == "Données"
+              results = get_trt(text, default_group)
+            elsif params[:kind] == "Traitements"
+              results = get_trt(text, default_group)
+            elsif params[:kind] == "Manuel"
+              results = get_trt(text, default_group)
+
+            end
 
             results.each do |uo|
               @guw_model.guw_attributes.all.each do |gac|
