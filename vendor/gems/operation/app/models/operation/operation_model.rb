@@ -96,7 +96,7 @@ module Operation
       value = data_probable.to_f.round(2)
 
       if view_widget.use_organization_effort_unit == true
-        tab = get_organization_unit(value, operation_model.organization)
+        tab = Organization.get_organization_unit(value, operation_model.organization)
         unit_coefficient = tab.first
         unit = tab.last
       else
@@ -133,7 +133,6 @@ module Operation
 
     def self.display_size(p, c, level, component_id, operation_model)
       standard_coefficient = 1
-
       begin
         if c.send("string_data_#{level}")[component_id].nil?
           begin
@@ -146,27 +145,6 @@ module Operation
         end
       rescue
         nil
-      end
-    end
-
-
-    private
-    def self.get_organization_unit(v, organization)
-      unless v.class == Hash
-        value = v.to_f
-        if value < organization.limit1.to_i
-          [organization.limit1_coef.to_f, organization.limit1_unit]
-        elsif value < organization.limit2.to_i
-          [organization.limit2_coef.to_f, organization.limit2_unit]
-        elsif value < organization.limit3.to_i
-          [organization.limit3_coef.to_f, organization.limit3_unit]
-        elsif value < organization.limit4.to_i
-          [organization.limit4_coef.to_f, organization.limit4_unit]
-        else
-          [organization.limit4_coef.to_f, organization.limit4_unit]
-        end
-      else
-        []
       end
     end
 

@@ -53,28 +53,8 @@ class EstimationValue < ActiveRecord::Base
   serialize :string_data_probable, Hash
   serialize :notes, Hash
 
-  #Metaprogrammation
-  #input or output
-  EstimationValue.all.map(&:in_out).each do |type|
-    define_method("#{type}?") do
-      (in_out == type) ? true : false
-    end
-  end
-
   def to_s
-    # self.nil? ? '' : self.pe_attribute.name
-
-    # if self.pe_attribute.alias.in?("effort", "cost", "theoretical_effort", "theoretical_cost")
-    #   case self.pe_attribute.alias
-    #     when "effort", "cost"
-    #       self.nil? ? '' : I18n.t("retained_#{self.pe_attribute.alias}")
-    #     else
-    #       self.nil? ? '' : I18n.t("#{self.pe_attribute.alias}")
-    #   end
-    # else
-      self.nil? ? '' : (self.pe_attribute.nil? ? '-' : self.pe_attribute.name)
-    # end
-
+    self.nil? ? '' : (self.pe_attribute.nil? ? '-' : self.pe_attribute.name)
   end
 
   # Verify if params val is validate

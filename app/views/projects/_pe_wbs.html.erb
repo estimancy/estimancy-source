@@ -35,7 +35,14 @@
          end
       %>
 
-      <%= raw(generate_wbs_product(@project.pe_wbs_projects.products_wbs.last.pbs_project_elements.last.root, @project, '', 5)) %>
+      <% pbs = @project.pe_wbs_projects.products_wbs.last.pbs_project_elements.last %>
+
+      <% if pbs.nil? %>
+        -
+      <% else %>
+        <%= raw(generate_wbs_product(pbs.root, @project, '', 5)) %>
+      <% end %>
+
     <% end %>
   </div>
 

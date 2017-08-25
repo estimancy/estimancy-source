@@ -1,15 +1,19 @@
 class CreateOperationOperationInputs < ActiveRecord::Migration
   def change
-    create_table :operation_operation_inputs do |t|
-      t.string :name
-      t.text :description
-      t.string  :in_out
-      t.integer :operation_model_id
-      t.boolean :is_modifiable
-      t.float   :standard_unit_coefficient
-      t.string  :standard_unit
+    begin
+      create_table :operation_operation_inputs do |t|
+        t.string :name
+        t.text :description
+        t.string  :in_out
+        t.integer :operation_model_id
+        t.boolean :is_modifiable
+        t.float   :standard_unit_coefficient
+        t.string  :standard_unit
 
-      t.timestamps
+        t.timestamps
+      end
+    rescue
+      #
     end
 
     add_column :operation_operation_models, :modify_output, :boolean

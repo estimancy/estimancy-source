@@ -1,5 +1,9 @@
 class AddDefaultToGuwGuwCoefficientElements < ActiveRecord::Migration
   def change
-    add_column :guw_guw_coefficient_elements, :default, :boolean
+    begin
+      add_column :guw_guw_coefficient_elements, :default, :boolean
+    rescue
+      #
+    end
   end
 end

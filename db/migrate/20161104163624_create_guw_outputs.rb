@@ -1,11 +1,15 @@
 class CreateGuwOutputs < ActiveRecord::Migration
   def change
-    create_table :guw_guw_outputs do |t|
-      t.string :name
-      t.string :output_type
-      t.integer :guw_model_id
+    begin
+      create_table :guw_guw_outputs do |t|
+        t.string :name
+        t.string :output_type
+        t.integer :guw_model_id
 
-      t.timestamps
+        t.timestamps
+      end
+    rescue
+      #Outputs already exists
     end
 
     add_column :guw_guw_complexity_work_units, :guw_output_id, :integer

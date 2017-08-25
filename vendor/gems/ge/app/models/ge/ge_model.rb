@@ -77,6 +77,7 @@ module Ge
       end
     end
 
+
     # display input size or effort according to pe_attribute
     # For input attribute: so we are going to use the : input_effort_standard_unit_coefficient
     def self.display_size(p, c, level, component_id, ge_model)
@@ -128,6 +129,50 @@ module Ge
         nil
       end
     end
+
+
+    def self.display_value(data_probable, estimation_value, view_widget)
+
+      module_project = estimation_value.module_project
+      ge_model = module_project.ge_model
+      value = data_probable.to_f
+      unit_coefficient = 1
+
+      if estimation_value.pe_attribute.alias == "remaining_defects" || estimation_value.pe_attribute.alias == "introduced_defects"
+        unless value.class == Hash
+          "#{convert_with_precision(value, 2, true)}"
+        end
+      else
+        if view_widget.use_organization_effort_unit == true
+          tab = Organization.get_organization_unit(value, ge_model.organization)
+          unit_coefficient = tab.first
+          unit = tab.last
+        else
+          begin
+            in_out_ev_attr_alias = estimation_value.pe_attribute.alias
+            unit_coefficient = ge_model.send("#{in_out_ev_attr_alias}_unit_coefficient")
+            unit = ge_model.send("#{in_out_ev_attr_alias}_unit")
+          rescue
+            unit_coefficient = 1
+            unit = ""
+          end
+        end
+      end
+
+
+      begin
+        if value.nil?
+          result_value = nil
+        else
+          result_value = (value / unit_coefficient.to_f).round(2)
+        end
+      rescue
+        result_value = nil
+      end
+
+      return "#{result_value} #{unit}"
+    end
+
 
   end
 end

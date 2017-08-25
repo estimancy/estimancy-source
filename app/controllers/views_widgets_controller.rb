@@ -205,11 +205,7 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    # if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
-    #   project = @project
-    # else
-      project = @project
-    # end
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -220,7 +216,6 @@ class ViewsWidgetsController < ApplicationController
         unless params[letter.to_sym].nil?
           equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
         end
-        ###equation[letter] = params[letter.to_sym].to_s.upcase
       end
 
       @views_widget.equation = equation
@@ -253,7 +248,8 @@ class ViewsWidgetsController < ApplicationController
       if pf.nil?
         ProjectField.create(project_id: project.id,
                             field_id: params["field"].to_i,
-                            views_widget_id: @views_widget.id, value: @value)
+                            views_widget_id: @views_widget.id,
+                            value: @value)
       else
         pf.value = get_kpi_value_without_unit(@views_widget)
         pf.views_widget_id = @views_widget.id
@@ -354,22 +350,16 @@ class ViewsWidgetsController < ApplicationController
         @show_ratio_name = true
       end
 
-      @letter = params[:letter]
-      if !@letter.nil?
-        @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-        @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
-      else
-        @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-        @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
+      @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
+      @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
 
-        #the widget type
-        # if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
-        #   @views_widget_types = Projestimate::Application::BREAKDOWN_WIDGETS_TYPE
-        # else
-        #   @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
-        # end
+      @letter = params[:letter]
+      if @letter.nil?
         @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
       end
+
+      # A tester  Get the possible attribute grouped by type (input, output)
+      #@module_project_attributes = get_module_project_attributes_input_output(@module_project)
     end
   end
 
@@ -522,6 +512,20 @@ class ViewsWidgetsController < ApplicationController
 
     if module_project.pemodule.alias == "guw"
       estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
+
+      # if module_project.guw_model.config_type == "new"
+      # else
+      # end
+
+    elsif module_project.pemodule.alias == "ge"
+      if module_project.ge_model.ge_model_instance_mode == "standard"
+        module_project_attributes = module_project.pemodule.pe_attributes
+        standard_effort_ids = module_project_attributes.where(alias: Ge::GeModel::GE_ATTRIBUTES_ALIAS).map(&:id).flatten
+        standard_effort_evs = module_project.estimation_values.where(pe_attribute_id: standard_effort_ids)
+        estimation_values = standard_effort_evs.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
+      else
+        estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
+      end
     else
       estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
     end
