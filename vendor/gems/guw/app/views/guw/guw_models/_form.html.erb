@@ -52,7 +52,7 @@
                 <%= f.input :allow_excel,label: "Activer l'import par Excel" %>
               </div>
               <div class="span3">
-                <%= f.input :excel_ml_server, label: false %>
+                <%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML" %>
               </div>
               <div class="span3 allow_ml_excel" style="display: none;">
                 <%= f.input :allow_ml_excel, label: "IA Optionelle" %>
@@ -67,7 +67,7 @@
                 <%= f.input :jira_ml_server, label: false %>
               </div>
               <div class="span3 allow_ml_jira" style="display: none;">
-                <%= f.input :allow_ml_jira, label: "IA Optionelle" %>
+                <%= f.input :allow_ml_jira, label: "IA Optionelle", placeholder: "Adresse du serveur de ML" %>
               </div>
             </div>
 
@@ -76,7 +76,7 @@
                 <%= f.input :allow_redmine, label: "Activer l'import via Redmine" %>
               </div>
               <div class="span3">
-                <%= f.input :redmine_ml_server, label: false %>
+                <%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML" %>
               </div>
               <div class="span3 allow_ml_redmine" style="display: none;">
                 <%= f.input :allow_ml_redmine, label: "IA Optionelle" %>
