@@ -47,41 +47,32 @@
             <hr />
 
             <h5>Configuration du type d'import</h5>
-            <div class="row-fluid">
-              <div class="span3">
-                <%= f.input :allow_excel,label: "Activer l'import par Excel" %>
-              </div>
-              <div class="span3">
-                <%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML" %>
-              </div>
-              <div class="span3 allow_ml_excel" style="display: none;">
-                <%= f.input :allow_ml_excel, label: "IA Optionelle" %>
-              </div>
-            </div>
 
             <div class="row-fluid">
-              <div class="span3">
-                <%= f.input :allow_jira, label: "Activer l'import via JIRA" %>
-              </div>
-              <div class="span3">
-                <%= f.input :jira_ml_server, label: false %>
-              </div>
-              <div class="span3 allow_ml_jira" style="display: none;">
-                <%= f.input :allow_ml_jira, label: "IA Optionelle", placeholder: "Adresse du serveur de ML" %>
-              </div>
+              <table class="table span8">
+                <tr>
+                  <th>Activer Import</th>
+                  <th>Serveur IA</th>
+                  <th>IA facultatif</th>
+                </tr>
+                <tr>
+                  <td class="span4"><%= f.input :allow_excel,label: "Activer l'import par Excel" %></td>
+                  <td class="span4"><%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
+                  <td class="span4"><%= f.input :allow_ml_excel, label: "IA Optionelle" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_jira, label: "Activer l'import via JIRA" %></td>
+                  <td><%= f.input :jira_ml_server, label: false %></td>
+                  <td><%= f.input :allow_ml_jira, label: "IA Optionelle", placeholder: "Adresse du serveur de ML" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_redmine, label: "Activer l'import via Redmine" %></td>
+                  <td><%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
+                  <td><%= f.input :allow_ml_redmine, label: "IA Optionelle" %></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="row-fluid">
-              <div class="span3">
-                <%= f.input :allow_redmine, label: "Activer l'import via Redmine" %>
-              </div>
-              <div class="span3">
-                <%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML" %>
-              </div>
-              <div class="span3 allow_ml_redmine" style="display: none;">
-                <%= f.input :allow_ml_redmine, label: "IA Optionelle" %>
-              </div>
-            </div>
             <hr />
 
             <!--<div id="server" style="<%# @guw_model.allow_ml == true ? "" : "display: none ;" %>">-->

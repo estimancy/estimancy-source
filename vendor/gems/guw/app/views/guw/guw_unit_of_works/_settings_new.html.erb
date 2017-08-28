@@ -755,31 +755,23 @@
 
             <h5>Type de source</h5>
             
-          <%if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-            <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]) %>
-
-          <%elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-          <%= select_tag "from", options_for_select(["Excel", "Jira"]) %>
-
-         <%elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-         <%= select_tag "from", options_for_select(["Excel", "Redmine"]) %>
-
-         <%elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-         <%= select_tag "from", options_for_select(["Excel"]) %>
-
-         <%elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-         <%= select_tag "from", options_for_select(["Jira","Redmine"]) %>
-
-         <%elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-         <%= select_tag "from", options_for_select(["Jira"]) %>
-
-         <%elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-         <%= select_tag "from", options_for_select(["Redmine"]) %>
-
-         <%else%>
-         <%= select_tag "from", options_for_select([""]) %>
-        
-        <%end%>
+            <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner une type de source"  %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% else %>
+              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source" %>
+            <% end %>
 
             <div id="file-block" >
               <h5>
