@@ -782,7 +782,7 @@
 
             <div class="hide" id="url-block">
               <h5>
-                URL
+                Liens de la liste des demandes
               </h5>
               <%= text_field_tag :url %>
             </div>
@@ -828,8 +828,11 @@
                     <% else %>
                       $("#type-block").hide();
                     <% end %>
-                  }
-                  else {
+                  } else if (this.value == "Redmine") {
+
+                    $("#url-block").show();
+                    $("#file-block").hide();
+
                     <% if @guw_model.allow_ml_redmine == true %>
                       $("#type-block").show();
                     <% else %>
