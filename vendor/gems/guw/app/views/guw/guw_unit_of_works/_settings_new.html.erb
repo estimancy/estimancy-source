@@ -787,10 +787,10 @@
               <%= text_field_tag :url %>
             </div>
 
-            <% if @guw_model.allow_ml == true %>
+            <div class="show" id="type-block">
               <h5>Types de composant à importer</h5>
               <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
-            <% end %>
+            </div>
 
             <h5>
               Groupe d'accueil
@@ -813,12 +813,29 @@
                   if (this.value == "Excel") {
                       $("#file-block").show();
                       $("#url-block").hide();
+
+                    <% if @guw_model.allow_ml_excel == true %>
+                      $("#type-block").show();
+                    <% else %>
+                      $("#type-block").hide();
+                    <% end %>
+                  } else if (this.value == "Jira") {
+                    $("#url-block").show();
+                    $("#file-block").hide();
+
+                    <% if @guw_model.allow_ml_jira == true %>
+                      $("#type-block").show();
+                    <% else %>
+                      $("#type-block").hide();
+                    <% end %>
                   }
                   else {
-                      $("#url-block").show();
-                      $("#file-block").hide();
+                    <% if @guw_model.allow_ml_redmine == true %>
+                      $("#type-block").show();
+                    <% else %>
+                      $("#type-block").hide();
+                    <% end %>
                   }
-
               })
           });
       </script>

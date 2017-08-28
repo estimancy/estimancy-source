@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170814083216) do
+ActiveRecord::Schema.define(:version => 20170821101024) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -795,6 +795,7 @@ ActiveRecord::Schema.define(:version => 20170814083216) do
     t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
     t.string   "attribute_type"
+    t.boolean  "is_default"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -1877,9 +1878,9 @@ ActiveRecord::Schema.define(:version => 20170814083216) do
     t.string   "name"
     t.text     "description"
     t.string   "ancestry"
-    t.integer  "ancestry_depth",     :default => 0
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.integer  "ancestry_depth",   :default => 0
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
@@ -1891,8 +1892,6 @@ ActiveRecord::Schema.define(:version => 20170814083216) do
     t.string   "master_ancestry"
     t.float    "position"
     t.string   "phase_short_name"
-    t.boolean  "allow_modif_effort"
-    t.boolean  "allow_modif_cost"
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
