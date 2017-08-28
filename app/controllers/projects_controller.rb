@@ -433,7 +433,7 @@ class ProjectsController < ApplicationController
       new_defaut_group_ps.save
     end
 
-    @project.is_locked = false
+    @project.is_historicized = false
 
     if @project.start_date.nil? or @project.start_date.blank?
       @project.start_date = Time.now.to_date
@@ -2373,15 +2373,6 @@ public
       end
     end
 
-  end
-
-  def locked_plan
-    @project = Project.find(params[:project_id])
-    authorize! :alter_estimation_plan, @project
-
-    @project.locked? ? @project.is_locked = false : @project.is_locked = true
-    @project.save
-    redirect_to edit_project_path(@project, :anchor => 'tabs-4')
   end
 
   def projects_from

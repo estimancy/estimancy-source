@@ -220,7 +220,7 @@
 
     <div id="tabs-4" class="tabs_4_with_estimation_plan2">
         <% if controller.controller_name == 'projects' %>
-          <% if @project.is_locked == false or @project.is_locked.nil? %>
+          <% if @project.is_historicized == false or @project.is_historicized.nil? %>
             <% if can? :alter_estimation_plan, @project %>
               <div class="row-fluid">
                 <div class="span12">
