@@ -83,12 +83,16 @@
   <tr>
     <th colspan="100" class="pager form-horizontal">
       <% if @min == 0 %>
-        Précedent -
+          <%= I18n.t(:previous) %>  -
       <% else %>
-        <%= link_to "Précedent", organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
+        <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
       <% end %>
 
-      <%= link_to "Suivant", organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
+      <%# if @projects.size < @object_per_page %>
+        <%#= I18n.t(:next) %>
+      <%# else %>
+        <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
+      <%# end %>
     </th>
   </tr>
 
