@@ -1,48 +1,31 @@
 <div class="accordion" id="accordion">
+
   <div class="accordion-heading" style="padding:5px;">
     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse_dashbord_ratio_elts" id="accordion_dashbord_ratio_elts">
       <span style="font-weight: bold; font-size: 20px;" title="">
-          <%#= I18n.t(:ratios_elements) %>
+        <%#= I18n.t(:ratios_elements) %>
       </span>
     </a>
 
-    <h4>
+    <h4 class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
       <strong>
         <%= "Adaptation de la valeur d'entrée" %>
       </strong>
     </h4>
-    <!--<span class="label label-success">-->
-    <!--<%#= I18n.t(:sum_of_ratio_values) %>-->
-    <!--<span class="total-ratios">-->
-    <!-- <%#= @module_project_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value) %> %  -->
-    <!--</span>-->
-    <!--</span>-->
   </div>
 
-
   <div id="collapse_dashbord_ratio_elts" class="accordion-body collapse in">
-    <div class="accordion-inner">
+    <div class="accordion-inner <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
 
-      <%# use_real_base_percentage = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.use_real_base_percentage) %>
-      <!--<label class="checkbox pull-left" style="margin-left: 40px;">-->
-      <!--<%#= check_box_tag :use_real_base_percentage, 1, use_real_base_percentage, disabled: true %>-->
-      <!--<%#= I18n.t(:use_real_base_percentage ) %>-->
-      <!--</label>-->
-
-      <%#= select_tag "dashboard_selected_ratio_id", options_for_select(current_module_project.wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                                 selected: wai.wbs_activity_ratio_id), readonly: cannot?(:execute_estimation_plan, @project) %>
       <%= hidden_field_tag "dashboard_selected_ratio_id", wbs_activity_ratio.id %>
       <br>
 
-      <%# allow_modify_retained_effort = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_modify_retained_effort) %>
-      <%# allow_modify_ratio_reference = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_modify_ratio_reference) %>
-      <%# allow_modify_ratio_value = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_modify_ratio_value) %>
       <% allow_add_new_phase = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_add_new_phase) %>
       <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
       <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
 
 
-      <table class="table-condensed">
+      <table class="table-condensed <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
         <%# @wbs_activity_ratio.module_project_ratio_variables.each do |mp_ratio_variable| %>
         <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
             <% unless mp_ratio_variable.wbs_activity_ratio_variable.name.blank? %>
@@ -50,7 +33,7 @@
                 <tr>
                   <td><label><%= mp_ratio_variable.wbs_activity_ratio_variable.name %></label></td>
                   <td>
-                    <% if  mp_ratio_variable.wbs_activity_ratio_variable.is_modifiable %>
+                    <% if mp_ratio_variable.wbs_activity_ratio_variable.is_modifiable %>
                         <% mp_wbs_ratio_variable =  mp_ratio_variable.percentage_of_input %>
                         <%= text_field_tag("mp_ratio_variable[#{mp_ratio_variable.id}]", mp_wbs_ratio_variable) %>
                     <% else %>
@@ -73,9 +56,9 @@
             <% end %>
         <% end %>
       </table>
+    </div>
 
-
-      <br >
+    <br >
       <h4>
         <strong>
           <%= "Calcul des phases" %>

@@ -1,5 +1,9 @@
 class AddDescriptionToGuwGuwCoefficients < ActiveRecord::Migration
   def change
-    add_column :guw_guw_coefficients, :description, :text
+    begin
+      add_column :guw_guw_coefficients, :description, :text
+    rescue
+      #
+    end
   end
 end

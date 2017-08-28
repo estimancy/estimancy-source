@@ -14,22 +14,14 @@
     <div class="span12">
       <% if can? :execute_estimation_plan, @project %>
         <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn" %>
-        <a href="#import_guw" role="button" class="btn" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-      <% end %>
-      <% if @guw_model.allow_ml == true %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml_trt">
-          Identifier les traitements
-        </button>
-        <button type="button" class="btn" data-toggle="modal" data-target="#ml_data">
-          Identifier les données
-        </button>
+
       <% end %>
 
-      <button type="button" class="btn" data-toggle="modal" data-target="#extract">
-        Importer (UrL)
-      </button>
+      <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
+        <button type="button" class="btn" data-toggle="modal" data-target="#extract">
+          <%= I18n.t(:import) %>
+        </button>
+      <% end %>
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
@@ -753,7 +745,7 @@
           <div class="modal-header modal-drag">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">
-              Comptage automatique à partir d'une URL (JIRA)
+              Importer les exigences
             </h4>
           </div>
 
@@ -761,13 +753,49 @@
 
             <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
-            <h5>
-              Lien à intégrer
-            </h5>
-            <%= text_field_tag "url" %>
+            <h5>Type de source</h5>
+            
+            <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner une type de source"  %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source" %>
+            <% else %>
+              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source" %>
+            <% end %>
 
-            <h5>Source</h5>
-            <%= select_tag "from", options_for_select(["Jira", "Redmine"]) %>
+            <div id="file-block" >
+              <h5>
+                Importer un fichier Excel (xlsx uniquement)
+              </h5>
+              <%= file_field_tag :file %>
+            </div >
+
+            <div class="hide" id="url-block">
+              <h5>
+                URL
+              </h5>
+              <%= text_field_tag :url %>
+            </div>
+
+            <% if @guw_model.allow_ml == true %>
+              <h5>Types de composant à importer</h5>
+              <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+            <% end %>
+
+            <h5>
+              Groupe d'accueil
+            </h5>
+            <%= text_field_tag :group_name %>
 
           </div>
 
@@ -777,6 +805,24 @@
           </div>
 
       <% end %>
+
+
+      <script>
+          $(document).ready(function(){
+              $("#from").on("change",function(){
+                  if (this.value == "Excel") {
+                      $("#file-block").show();
+                      $("#url-block").hide();
+                  }
+                  else {
+                      $("#url-block").show();
+                      $("#file-block").hide();
+                  }
+
+              })
+          });
+      </script>
+
     </div>
   </div>
 </div>

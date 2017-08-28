@@ -260,27 +260,31 @@ class OrganizationsController < ApplicationController
   def import_appli
     @organization = Organization.find(params[:organization_id])
     tab_error = []
-    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+
+    if params[:file].nil?
+      flash[:error] = I18n.t(:route_flag_error_17)
+    elsif !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       tab = workbook[0].extract_data
 
       tab.each_with_index do |row, index|
         if index > 0
-          new_app = Application.new(name: row[0], organization_id: @organization.id)
+          new_app = Application.new(name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0]), organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
         end
       end
+      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
     unless tab_error.empty?
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
-    flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     redirect_to :back
   end
+
 
   def export_appli
     @organization = Organization.find(params[:organization_id])
@@ -463,24 +467,28 @@ class OrganizationsController < ApplicationController
             @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
                 guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-                unless guw_coefficient.guw_coefficient_elements.empty?
-                  ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                    guw_coefficient_id: guw_coefficient.id,
-                                                                    module_project_id: current_module_project.id).first
+                unless guw_coefficient.nil?
+                  unless guw_coefficient.guw_coefficient_elements.empty?
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                      guw_coefficient_id: guw_coefficient.id,
+                                                                      module_project_id: guow.module_project_id).first
 
-                  if guw_coefficient.coefficient_type == "Pourcentage"
-                    worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                  elsif guw_coefficient.coefficient_type == "Coefficient"
-                    worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                  else
-                    worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                    if guw_coefficient.coefficient_type == "Pourcentage"
+                      worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                    elsif guw_coefficient.coefficient_type == "Coefficient"
+                      worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                    else
+                      worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                    end
                   end
                 end
 
               elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
                 guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
-                unless guow.guw_type.nil?
-                  worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+                unless guw_output.nil?
+                  unless guow.guw_type.nil?
+                    worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+                  end
                 end
               end
             end
@@ -990,6 +998,20 @@ class OrganizationsController < ApplicationController
           if new_skb_model
             Skb::SkbInput.create(skb_model_id: new_skb_model.id, data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
                                  organization_id: new_organization_id, module_project_id: new_mp.id)
+          end
+        end
+
+        # For KB-Inputs
+        old_mp.kb_inputs.each do |kbi|
+          new_kb_model = new_organization.kb_models.where(copy_id: kbi.kb_model_id).first
+          if new_kb_model
+            kb_input = Kb::KbInput.where(kb_model_id: new_kb_model.id, module_project_id: new_mp.copy_id).first
+            if kb_input.nil?
+              kb_input = kbi.dup
+              kb_input.save
+            end
+
+            kb_input.update_attributes(kb_model_id: new_kb_model.id, organization_id: new_organization_id, module_project_id: new_mp.id)
           end
         end
 
@@ -1648,6 +1670,12 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
             end
 
+            # Update the modules's KB Models instances
+            new_organization.kb_models.each do |kb_model|
+              # Update all the new organization module_project's guw_model with the current guw_model
+              kb_copy_id = kb_model.copy_id
+              new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
+            end
 
             # Update the modules's Staffing Models instances
             new_organization.staffing_models.each do |staffing_model|
@@ -1657,12 +1685,6 @@ class OrganizationsController < ApplicationController
               new_organization.module_projects.where(staffing_model_id: staffing_model_copy_id).update_all(staffing_model_id: staffing_model.id)
             end
 
-            # Update the modules's KB Models instances
-            new_organization.kb_models.each do |kb_model|
-              # Update all the new organization module_project's guw_model with the current guw_model
-              kb_copy_id = kb_model.copy_id
-              new_organization.module_projects.where(kb_model_id: kb_copy_id).update_all(kb_model_id: kb_model.id)
-            end
 
             # Copy the modules's GUW Models instances
             new_organization.guw_models.each do |guw_model|

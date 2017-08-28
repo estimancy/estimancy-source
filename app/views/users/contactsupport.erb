@@ -8,6 +8,8 @@
       <div class="span4">
         <h2><%= I18n.t(:your_configuration) %></h2>
 
+        <hr class="bs-docs-separator">
+
         <%= I18n.t('text_projestimate_open_source_references') %> <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
 
         <hr class="bs-docs-separator">
@@ -37,15 +39,14 @@
 
       <div class="span4">
         <h2><%= I18n.t(:contact_us) %></h2>
-
         <hr class="bs-docs-separator">
         <ul>
-          <li> <b>par e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li>
-          <li> <b>par télephone : </b> 09 77 21 67 89 </li>
-          <li> <b>par Skype : </b> </li>
-          <li>
+          <li> <b>Par e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li><br/>
+          <li> <b>Par télephone : </b> 09 77 21 67 89 </li><br/>
+          <li> <b>Par Skype : </b> </li><br/>
+
             <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
-            <div id="SkypeButton_Call_PSEUDO_1">
+            <div id="SkypeButton_Call_PSEUDO_1" class="skype">
               <script type="text/javascript">
                 Skype.ui({
                   "name": "call",
@@ -55,12 +56,15 @@
               });
               </script>
             </div>
-          </li>
+
         </ul>
       </div>
 
       <div class="span4">
         <h2><%= link_to "Support / Documentation", support_path %></h2>
+
+        <hr class="bs-docs-separator">
+
       </div>
 
     </div>

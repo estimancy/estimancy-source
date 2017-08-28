@@ -57,26 +57,6 @@ class PbsProjectElement < ActiveRecord::Base
     })
   end
 
-
-  #Metaprogrammation
-  #Generate an method folder?, link?, etc...
-  #Usage: component1.folder?
-  #Return a boolean.
-  # Load this list unless on Test ENV
-  # types_wet = nil
-  # unless Rails.env.test?
-  #   types_wet = WorkElementType::work_element_type_list
-  #   types_wet.each do |type|
-  #     define_method("#{type}?") do
-  #       begin
-  #         (self.work_element_type.alias == type) ? true : false
-  #       rescue
-  #         false
-  #       end
-  #     end
-  #   end
-  # end
-
   #Override
   def to_s
     self.nil? ? '' : self.name

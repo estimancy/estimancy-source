@@ -94,6 +94,11 @@ class ProjectsController < ApplicationController
       redirect_to organization_estimations_path(@current_organization) and return
     end
 
+    # begin
+    #   clean_view_widget
+    # rescue
+    # end
+
     @current_organization = @project.organization
 
     # return if user doesn't have the rigth to consult the estimation
@@ -428,7 +433,7 @@ class ProjectsController < ApplicationController
       new_defaut_group_ps.save
     end
 
-    @project.is_locked = false
+    @project.is_historicized = false
 
     if @project.start_date.nil? or @project.start_date.blank?
       @project.start_date = Time.now.to_date
@@ -2370,15 +2375,6 @@ public
 
   end
 
-  def locked_plan
-    @project = Project.find(params[:project_id])
-    authorize! :alter_estimation_plan, @project
-
-    @project.locked? ? @project.is_locked = false : @project.is_locked = true
-    @project.save
-    redirect_to edit_project_path(@project, :anchor => 'tabs-4')
-  end
-
   def projects_from
     set_page_title I18n.t(:text_create_from_model_2)
 
@@ -3013,7 +3009,6 @@ public
   def export_pdf
     @project = Project.find(params[:project_id])
     pdf = WickedPdf.new.pdf_from_url('https://github.com/mileszs/wicked_pdf')
-d
     save_path = Rails.root.join('pdfs','filename.pdf')
     File.open(save_path, 'wb') do |file|
       file << pdf
@@ -3166,6 +3161,21 @@ d
                                                                      trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
       end
     else
+    end
+  end
+
+  private def clean_view_widget
+    # if @project.is_model == true
+    #   pf = ProjectField.where(project_id: @project.id,
+    #                           value: nil).first
+    #   unless pf.nil?
+    #     if pf.view_widget.nil?
+    #       pf.delete
+    #     end
+    #   end
+    if @project.is_model == false
+      ProjectField.where(project_id: @project.id,
+                         value: nil).all.each{ |i| i.delete }
     end
   end
 end

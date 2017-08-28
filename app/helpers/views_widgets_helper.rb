@@ -28,27 +28,27 @@ module ViewsWidgetsHelper
     formula = eq["formula"].to_s
 
     unless eq["A"].blank?
-      a_value = get_ev_value(eq["A"].first, current_component.id)
+      a_value = get_ev_value(eq["A"].first, current_component.id, view_widget.id)
       formula = formula.gsub("A", a_value)
     end
 
     unless eq["B"].blank?
-      b_value = get_ev_value(eq["B"].first, current_component.id)
+      b_value = get_ev_value(eq["B"].first, current_component.id, view_widget.id)
       formula = formula.gsub("B", b_value)
     end
 
     unless eq["C"].blank?
-      c_value = get_ev_value(eq["C"].first, current_component.id)
+      c_value = get_ev_value(eq["C"].first, current_component.id, view_widget.id)
       formula = formula.gsub("C", c_value)
     end
 
     unless eq["D"].blank?
-      d_value = get_ev_value(eq["D"].first, current_component.id)
+      d_value = get_ev_value(eq["D"].first, current_component.id, view_widget.id)
       formula = formula.gsub("D", d_value)
     end
 
     unless eq["E"].blank?
-      e_value = get_ev_value(eq["E"].first, current_component.id)
+      e_value = get_ev_value(eq["E"].first, current_component.id, view_widget.id)
       formula = formula.gsub("E", e_value)
     end
 
@@ -69,27 +69,27 @@ module ViewsWidgetsHelper
     formula = eq["formula"].to_s
 
     unless eq["A"].blank?
-      a_value = get_ev_value(eq["A"].first, current_component.id)
+      a_value = get_ev_value(eq["A"].first, current_component.id, view_widget.id)
       formula = formula.gsub("A", a_value)
     end
 
     unless eq["B"].blank?
-      b_value = get_ev_value(eq["B"].first, current_component.id)
+      b_value = get_ev_value(eq["B"].first, current_component.id, view_widget.id)
       formula = formula.gsub("B", b_value)
     end
 
     unless eq["C"].blank?
-      c_value = get_ev_value(eq["C"].first, current_component.id)
+      c_value = get_ev_value(eq["C"].first, current_component.id, view_widget.id)
       formula = formula.gsub("C", c_value)
     end
 
     unless eq["D"].blank?
-      d_value = get_ev_value(eq["D"].first, current_component.id)
+      d_value = get_ev_value(eq["D"].first, current_component.id, view_widget.id)
       formula = formula.gsub("D", d_value)
     end
 
     unless eq["E"].blank?
-      e_value = get_ev_value(eq["E"].first, current_component.id)
+      e_value = get_ev_value(eq["E"].first, current_component.id, view_widget.id)
       formula = formula.gsub("E", e_value)
     end
 
@@ -104,18 +104,43 @@ module ViewsWidgetsHelper
     end
   end
 
-  def get_ev_value(ev_id, current_component_id)
+  def get_ev_value(ev_id, current_component_id, view_widget_id=nil)
+
+    unless view_widget_id.nil?
+      view_widget = ViewsWidget.find(view_widget_id)
+    end
+
     unless ev_id.to_i == 0
-      ev = EstimationValue.find(ev_id.to_i)
-      unless ev.nil?
+      current_ev = EstimationValue.find(ev_id.to_i)
+
+      unless current_ev.nil?
+        if !current_ev.estimation_value_id.nil?
+          ev = EstimationValue.find(current_ev.estimation_value_id)
+        else
+          ev = current_ev
+        end
+
         val = ev.string_data_probable[current_component_id]
         if val.is_a?(Hash)
-          test = compute_value(val, ev, current_component_id)
-          val = "hello"
-          #val.to_s
+          val = compute_value(val, ev, current_component_id)
+          val.to_s
         else
           val.to_s
         end
+
+        #====
+        # begin
+        #   if ev.module_project.pemodule.alias == "effort_breakdown"
+        #     val = ev.send("string_data_probable")[current_component_id][view_widget.module_project.wbs_activity.root_element.id][:value].to_f
+        #   else
+        #     val = ev.send("string_data_probable")[current_component_id].to_f
+        #   end
+        # rescue
+        #   val = 0
+        # end
+
+        #====
+
       else
         nil
       end
@@ -233,7 +258,7 @@ module ViewsWidgetsHelper
     initial_width = 60; initial_height = 60
     value_to_show = nil
     ft_maxFontSize_without_mm = 50
-    icon_font_size = 1.7
+    icon_font_size = 1.6
 
     height = (initial_height*view_widget.height.to_i) + 5*(view_widget.height.to_i - 1)   #margin is now 5 unless of 10
     width = (initial_width*view_widget.width.to_i) + 5*(view_widget.width.to_i - 1)
@@ -243,19 +268,19 @@ module ViewsWidgetsHelper
 
     case view_widget.height.to_i
       when 1..2
-        icon_font_size = 1.2 ###2
+        icon_font_size = 1.7 ###2
         if view_widget.height.to_i == 3
-          icon_font_size = 2.6 ###3
+          icon_font_size = 2.5 ###3
         end
-        ft_maxFontSize_without_mm = 10###20
+        ft_maxFontSize_without_mm = 20 #10###20
         if view_widget.width.to_i <= 1
-          ft_minMax_minFontSize = 3###3.5
+          ft_minMax_minFontSize = 4 #3###3.5
         else
           ft_minMax_minFontSize = 5###6.5
         end
       when 3
-        icon_font_size = 2.5
-        ft_maxFontSize_without_mm = 10###20
+        icon_font_size = 2 #2.5
+        ft_maxFontSize_without_mm = 20 #10###20
       else
         icon_font_size = ((height+width)/2) * 0.025
         if icon_font_size > 3 && icon_font_size < 6
@@ -265,7 +290,7 @@ module ViewsWidgetsHelper
         end
     end
 
-    text_size = ((height+width)/2) * 0.006  # 0.015
+    text_size = ((height+width)/2) * 0.011  #0.006  # 0.015
     # get the fitText minFontSize and maxFontSize
     widget_data[:icon_font_size] = icon_font_size
     widget_data[:text_size] = text_size
@@ -420,7 +445,7 @@ module ViewsWidgetsHelper
         estimation_value = module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', view_widget_attribute.id, view_widget_est_val.in_out).last
       end
 
-      attribute_unit_label = get_attribute_unit(view_widget_attribute)
+      attribute_unit_label = get_attribute_unit(view_widget_attribute, view_widget_est_val)
 
       unless estimation_value.nil?
         data_low = estimation_value.string_data_low[pbs_project_elt.id]
@@ -510,8 +535,34 @@ module ViewsWidgetsHelper
         elsif estimation_value.module_project.pemodule.alias == "guw"
           probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget)
 
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Guw::GuwModel.display_value(data_high, estimation_value, view_widget)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Guw::GuwModel.display_value(data_low, estimation_value, view_widget)}"
+
         elsif estimation_value.module_project.pemodule.alias == "operation"
           probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Operation::OperationModel.display_value(data_high, estimation_value, view_widget)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Operation::OperationModel.display_value(data_low, estimation_value, view_widget)}"
+
+        elsif  estimation_value.module_project.pemodule.alias == "ge" && estimation_value.pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
+          ge_model = module_project.ge_model
+          #probable_value_text = "#{convert_ge_model_value_with_precision(ge_model, estimation_value, data_probable, user_number_precision)} #{attribute_unit_label}"
+          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' : Ge::GeModel.display_value(data_high, estimation_value, view_widget)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Ge::GeModel.display_value(data_low, estimation_value, view_widget)}"
+
+        elsif  estimation_value.module_project.pemodule.alias == "kb"
+          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' : Kb::KbModel.display_value(data_high, estimation_value, view_widget)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget)}"
+
+        elsif  estimation_value.module_project.pemodule.alias == "skb"
+          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' : Skb::SkbModel.display_value(data_high, estimation_value, view_widget)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Skb::SkbModel.display_value(data_low, estimation_value, view_widget)}"
 
         else
           if data_probable.nil?

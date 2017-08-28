@@ -1483,7 +1483,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     myTab = Array.new
     agent = Mechanize.new
 
-    if params[:from] == "Jira"
+    default_group = params[:group_name]
+
+    if params[:from] == "Excel"
+      if params[:kind] == "Données"
+        ml_data(default_group)
+      elsif params[:kind] == "Traitements"
+        ml_trt(default_group)
+      elsif params[:kind] == "Manuel"
+        import_guw
+      end
+    elsif params[:from] == "Jira"
       (0..2).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
@@ -1506,7 +1516,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         text = "#{nom} #{description}"
-        results = get_trt(text)
+        results = get_trt(text, default_group)
 
         results.each do |uo|
           @guw_model.guw_attributes.all.each do |gac|
@@ -1519,34 +1529,41 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       end
 
-    elsif params[:from] = "Redmine"
-      (0..1).each do |i|
+    else params[:from] = "Redmine"
+      (0..2).each do |i|
         url = "#{params[:url]}?page=#{i}"
-        agent.get(url)
-        page = agent.page
-        #*[@id="issue-26422"]
-        myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
-
+        agent.get(url) do |page|
+          myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+        end
 
         myTab.flatten.take(50).each do |val|
           agent = Mechanize.new
-          url = "http://www.redmine.org/issues/#{val}"
-          agent.get(url)
-          nom = agent.page.search(".subject h3").text
-          description = agent.page.search(".description").text
+          url = "http://forge.estimancy.com/issues/#{val}"
+          agent.get(url) do |page|
+            nom = page.search(".subject h3").text
+            description = page.search(".description").text
 
-          text = "#{nom} #{description}"
-          results = get_trt(text)
+            text = "#{nom} #{description}"
 
-          results.each do |uo|
-            @guw_model.guw_attributes.all.each do |gac|
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                        guw_unit_of_work_id: uo.id,
-                                                        guw_attribute_id: gac.id).first_or_create
-              guowa.save
+            #A modifier
+            if params[:kind] == "Données"
+              results = get_trt(text, default_group)
+            elsif params[:kind] == "Traitements"
+              results = get_trt(text, default_group)
+            elsif params[:kind] == "Manuel"
+              results = get_trt(text, default_group)
+
+            end
+
+            results.each do |uo|
+              @guw_model.guw_attributes.all.each do |gac|
+                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                          guw_unit_of_work_id: uo.id,
+                                                          guw_attribute_id: gac.id).first_or_create
+                guowa.save
+              end
             end
           end
-
         end
       end
     end
@@ -1554,7 +1571,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to :back
   end
 
-  def ml_trt
+  def ml_trt(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     results =[]
     if params[:file].present?
@@ -1569,7 +1586,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row.nil?
               unless row[5].blank?
 
-                results = get_trt(row[5])
+                results = get_trt(row[5], default_group)
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
@@ -1639,7 +1656,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return myTab
   end
 
-  private def get_trt(user_story)
+  private def get_trt(user_story, default_group)
     @http = Curl.post("http://localhost:5001/estimate_trt", { us: user_story } )
 
     complete_str = user_story.to_s
@@ -1651,15 +1668,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_model = current_module_project.guw_model
       @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Traitements',
-                                                 module_project_id: current_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create
-
+      if default_group == ""
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Traitements',
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
+      else
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
+      end
 
       unless output.blank? || output == "NULL"
         @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
       else
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+        if @guw_type.nil?
+          @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        end
       end
 
       results << Guw::GuwUnitOfWork.create( name: reduce_str,
@@ -1679,7 +1704,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return results
   end
 
-  def ml_data
+  def ml_data(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     txt = ""
@@ -1699,10 +1724,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
-                                                   module_project_id: current_module_project.id,
-                                                   pbs_project_element_id: current_component.id).first_or_create
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+        if @guw_type.nil?
+          @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        end
+
+        if default_group == ""
+          @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
+                                                     module_project_id: current_module_project.id,
+                                                     pbs_project_element_id: current_component.id).first_or_create
+        else
+          @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                     module_project_id: current_module_project.id,
+                                                     pbs_project_element_id: current_component.id).first_or_create
+        end
 
         unless txt.blank?
 
@@ -1763,7 +1798,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
   end
 
-  def import_guw
+  private def import_guw
 
     @guw_model = current_module_project.guw_model
     @component = current_component
@@ -2023,8 +2058,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
     end
-
-    redirect_to :back
   end
 
   private

@@ -167,11 +167,12 @@
   <li class="divider-vertical"></li>
 
   <li>
-    <a href="/exportpdf"  title="PDF" target=_blank">
-      <i class="fa fa-file-pdf-o"></i>
+    <a href="#" onclick="javascript:print(); return false;" title="Enregister en PDF">
+      <i class="fa fa-file-pdf-o" ></i>
     </a>
   </li>
 
+  <li class="divider-vertical"></li>
   <li>
     <a href="/contactsupport" title="<%= I18n.t 'contact_us' %>" target="_blank">
       <i class="fa fa-phone" ></i>
@@ -189,6 +190,9 @@
   <li>
     <%= image_tag '/assets/ajax-loader.gif', :class => 'spiner hide' %>
   </li>
+
+
+
 </ul>
 
 

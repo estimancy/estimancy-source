@@ -43,7 +43,74 @@
             <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
             <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
             <%= f.input :hour_coefficient_conversion, label: I18n.t(:hour_coefficient_conversion) %>
-            <%= f.input :allow_ml, label: "Activer le comptage automatique" %>
+
+            <hr />
+
+            <h5>Configuration du type d'import</h5>
+
+            <div class="row-fluid">
+              <table class="table span8">
+                <tr>
+                  <th>Activer Import</th>
+                  <th>Serveur IA</th>
+                  <th>IA facultatif</th>
+                </tr>
+                <tr>
+                  <td class="span4"><%= f.input :allow_excel,label: "Activer l'import par Excel" %></td>
+                  <td class="span4"><%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
+                  <td class="span4"><%= f.input :allow_ml_excel, label: "IA Optionelle" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_jira, label: "Activer l'import via JIRA" %></td>
+                  <td><%= f.input :jira_ml_server, label: false %></td>
+                  <td><%= f.input :allow_ml_jira, label: "IA Optionelle", placeholder: "Adresse du serveur de ML" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_redmine, label: "Activer l'import via Redmine" %></td>
+                  <td><%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
+                  <td><%= f.input :allow_ml_redmine, label: "IA Optionelle" %></td>
+                </tr>
+              </table>
+            </div>
+
+            <hr />
+
+            <!--<div id="server" style="<%# @guw_model.allow_ml == true ? "" : "display: none ;" %>">-->
+              <!--<h5> Choix du serveur ML à utiliser :</h5>-->
+              <!--<%# select_tag "MLserver", options_for_select(["","one","two","three"]) %>-->
+            <!--</div>-->
+            <!--<hr />-->
+
+
+<!--        Mettre un champ 'Nom du serveur ML'. Si on choisit OUI à la ML alors on peut choisir le serveur ML qu'on va utiliser. -->
+
+    <script>
+      $("#guw_model_excel_ml_server").keyup(function() {
+        if($("#guw_model_excel_ml_server").val() != "")
+          $(".allow_ml_excel").show();
+        else
+          $(".allow_ml_excel").hide();
+      });
+
+      $("#guw_model_jira_ml_server").keyup(function() {
+        if($("#guw_model_jira_ml_server").val() != "")
+          $(".allow_ml_jira").show();
+        else
+          $(".allow_ml_jira").hide();
+      });
+
+      $("#guw_model_redmine_ml_server").keyup(function() {
+        if($("#guw_model_redmine_ml_server").val() != "")
+          $(".allow_ml_redmine").show();
+        else
+          $(".allow_ml_redmine").hide();
+      });
+    </script>
+  
+
+
+
+            
           </div>
 
           <table>

@@ -37,6 +37,9 @@ class ApplicationController < ActionController::Base
         else
           redirect_to root_path
         end
+      elsif exception.class == Curl::Err::ConnectionFailedError
+        flash[:error] = "Le serveur IA n'est pas démarré. Veuillez contactez un administrateur Estimancy."
+        redirect_to :back and return
       elsif exception.class == ActiveRecord::RecordNotFound
         flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
@@ -465,11 +468,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def showpdf
+  def show
+
     respond_to do |format|
-      format.html
+      format.html {render :show}
       format.pdf do
-        render pdf: "file_name"   # Excluding ".pdf" extension.
+        render pdf: "show", :layout => 'pdf.html'
+        # Excluding ".pdf" extension.
       end
     end
   end

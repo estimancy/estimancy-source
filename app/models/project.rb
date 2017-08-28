@@ -278,7 +278,7 @@ class Project < ActiveRecord::Base
 
   #Estimation plan o project is locked or not?
   def locked?
-    # (self.is_locked.nil? or self.is_locked == true) ? true : false
+    # (self.is_historicized.nil? or self.is_historicized == true) ? true : false
     false
   end
 

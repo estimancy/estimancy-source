@@ -134,6 +134,27 @@ class Organization < ActiveRecord::Base
   #  OrganizationDeleteWorker.perform_async(self.id)
   #end
 
+
+  # Get organisation
+  def self.get_organization_unit(v, organization)
+    unless v.class == Hash
+      value = v.to_f
+      if value < organization.limit1.to_i
+        [organization.limit1_coef.to_f, organization.limit1_unit]
+      elsif value < organization.limit2.to_i
+        [organization.limit2_coef.to_f, organization.limit2_unit]
+      elsif value < organization.limit3.to_i
+        [organization.limit3_coef.to_f, organization.limit3_unit]
+      elsif value < organization.limit4.to_i
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      else
+        [organization.limit4_coef.to_f, organization.limit4_unit]
+      end
+    else
+      []
+    end
+  end
+
 end
 
 

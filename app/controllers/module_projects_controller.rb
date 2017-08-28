@@ -267,6 +267,7 @@ class ModuleProjectsController < ApplicationController
   def activate_module_project
     session[:module_project_id] = params[:module_project_id]
     @module_project = ModuleProject.find(params[:module_project_id])
+    @project = @module_project.project
 
     authorize! :show_project, @project
 
