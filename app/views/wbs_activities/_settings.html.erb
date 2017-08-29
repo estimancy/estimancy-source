@@ -143,7 +143,7 @@
 
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
-  <table class="table table-bordered <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
+  <table class="table table-bordered <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">
 
     <% if wbs_activity.enabled_input %>
       <tr>
