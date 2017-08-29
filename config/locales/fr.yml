@@ -2090,3 +2090,4 @@ fr:
   
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   multiple_delete: "Suppression multiple"
+  hide_wbs_header: "Masquer l'entête de la WBS"

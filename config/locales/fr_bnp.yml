@@ -2056,7 +2056,8 @@ fr_bnp:
   liste_des_estimations: "Liste des estimations"
   copy_in_progress: "Copie en cours..."
   is_new_status: "Nouveau statut de la nouvelle version"
-  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."  
+  warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
+  hide_wbs_header: "Masquer l'entête de la WBS"
 
   are_you_sure_multiple_delete: "Êtes vous sûr de vouloir supprimer ces projets ?"
   are_you_sure_simple_delete: "Êtes vous sûr de vouloir supprimer ce projet ?"

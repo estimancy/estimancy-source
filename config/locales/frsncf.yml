@@ -2039,6 +2039,8 @@ frsncf:
   copy_in_progress: "Copie en cours..."
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   warning_intermediate_project_version_cannot_be_deleted: "seules les versions non intermédiaires d'une estimation peuvent être supprimées."
+  multiple_delete: "Suppression multiple"
+  hide_wbs_header: "Masquer l'entête de la WBS"
 
   will_paginate:
     next_label: suivant →
