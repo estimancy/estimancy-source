@@ -94,6 +94,11 @@ class ProjectsController < ApplicationController
       redirect_to organization_estimations_path(@current_organization) and return
     end
 
+    # begin
+    #   clean_view_widget
+    # rescue
+    # end
+
     @current_organization = @project.organization
 
     # return if user doesn't have the rigth to consult the estimation
@@ -3100,6 +3105,21 @@ public
                                                                      trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
       end
     else
+    end
+  end
+
+  private def clean_view_widget
+    # if @project.is_model == true
+    #   pf = ProjectField.where(project_id: @project.id,
+    #                           value: nil).first
+    #   unless pf.nil?
+    #     if pf.view_widget.nil?
+    #       pf.delete
+    #     end
+    #   end
+    if @project.is_model == false
+      ProjectField.where(project_id: @project.id,
+                         value: nil).all.each{ |i| i.delete }
     end
   end
 end

@@ -205,11 +205,7 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    # if @views_widget.is_label_widget? || @views_widget.is_kpi_widget?
-    #   project = @project
-    # else
-      project = @project
-    # end
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -220,7 +216,6 @@ class ViewsWidgetsController < ApplicationController
         unless params[letter.to_sym].nil?
           equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
         end
-        ###equation[letter] = params[letter.to_sym].to_s.upcase
       end
 
       @views_widget.equation = equation
@@ -253,7 +248,8 @@ class ViewsWidgetsController < ApplicationController
       if pf.nil?
         ProjectField.create(project_id: project.id,
                             field_id: params["field"].to_i,
-                            views_widget_id: @views_widget.id, value: @value)
+                            views_widget_id: @views_widget.id,
+                            value: @value)
       else
         pf.value = get_kpi_value_without_unit(@views_widget)
         pf.views_widget_id = @views_widget.id

@@ -683,10 +683,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type)
 
-    if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
-      guw_unit_of_work.missing_value = true
-    else
-      guw_unit_of_work.missing_value = false
+    begin
+      if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
+        guw_unit_of_work.missing_value = true
+      else
+        guw_unit_of_work.missing_value = false
+      end
+    rescue
+      #
     end
 
     #Peut être factorisé  dans une boucle !
@@ -982,11 +986,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            # if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
-            #   guw_unit_of_work.flagged = true
-            # else
-            #   guw_unit_of_work.flagged = false
-            # end
+            if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
+              guw_unit_of_work.flagged = true
+            else
+              guw_unit_of_work.flagged = false
+            end
 
             if cplx_coeff.nil?
               intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
@@ -1487,6 +1491,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def ml_trt
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+    cmp = current_module_project
+    cc = current_component
+    @guw_model_guw_attributes = @guw_model.guw_attributes
 
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
@@ -1513,7 +1520,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 JSON.parse(@http.body_str).each do |output|
 
                   unless output.blank? || output == "NULL"
-                    @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+                    @guw_type = Guw::GuwType.where(name: output,
+                                                   guw_model_id: @guw_model.id,
+                                                   is_default: true).first
+
+                    if @guw_type.nil?
+                      @guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).last
+                    end
+
                   else
                     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
                   end
@@ -1521,8 +1535,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   guw_uow = Guw::GuwUnitOfWork.create(name: reduce_str,
                                                       comments: complete_str,
                                                       guw_unit_of_work_group_id: @guw_group.id,
-                                                      module_project_id: current_module_project.id,
-                                                      pbs_project_element_id: current_component.id,
+                                                      module_project_id: cmp.id,
+                                                      pbs_project_element_id: cc.id,
                                                       guw_model_id: @guw_model.id,
                                                       display_order: index.to_i,
                                                       tracking: complete_str,
@@ -1530,10 +1544,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                       selected: true,
                                                       guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                  @guw_model.guw_attributes.each_with_index do |gac, jj|
+                  @guw_model_guw_attributes.each_with_index do |gac, jj|
                     tmp_val = row[15 + @guw_model.orders.size + jj]
                     unless tmp_val.nil?
-                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : (row[15 + @guw_model.orders.size + jj])
 
                       if gac.name == tab[0][15 + @guw_model.orders.size + jj]
                         unless @guw_type.nil?
@@ -1546,6 +1561,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                           guowa.save
                         end
                       end
+                    else
+                      guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                guw_unit_of_work_id: guw_uow.id,
+                                                                guw_attribute_id: gac.id).first_or_create
                     end
                   end
                 end
@@ -1593,7 +1612,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).first
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                       is_default: true).first
+        if @guw_type.nil?
+          @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        end
+
         @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
                                                    module_project_id: current_module_project.id,
                                                    pbs_project_element_id: current_component.id).first_or_create
@@ -1932,8 +1956,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   @guw_attributes.all.each do |gac|
                     unless @guw_type.nil?
                       finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                               guw_unit_of_work_id: guw_uow.id,
-                                                               guw_attribute_id: gac.id).first_or_create
+                                                                 guw_unit_of_work_id: guw_uow.id,
+                                                                 guw_attribute_id: gac.id).first_or_create
                     end
                   end
                 end
