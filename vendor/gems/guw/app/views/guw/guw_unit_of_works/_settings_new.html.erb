@@ -756,7 +756,7 @@
             <h5>Type de source</h5>
             
             <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner une type de source"  %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
               <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
@@ -773,7 +773,7 @@
               <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source" %>
             <% end %>
 
-            <div id="file-block" >
+            <div class ="hide" id="file-block" >
               <h5>
                 Importer un fichier Excel (xlsx uniquement)
               </h5>
@@ -787,16 +787,16 @@
               <%= text_field_tag :url %>
             </div>
 
-            <div class="show" id="type-block">
+            <div class="hide" id="type-block">
               <h5>Types de composant à importer</h5>
               <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
             </div>
-
-            <h5>
-              Groupe d'accueil
-            </h5>
-            <%= text_field_tag :group_name %>
-
+            <div class="hide">
+              <h5>
+                Groupe d'accueil
+              </h5>
+              <%= text_field_tag :group_name %>
+            </div>
           </div>
 
           <div class="modal-footer">
