@@ -1038,38 +1038,39 @@ class ProjectsController < ApplicationController
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 
-    if params[:deleted_projects].present?
-      @projects = Project.where(id: params[:deleted_projects]).all
+    # if params[:deleted_projects].present?
+    #   @projects = Project.where(id: params[:deleted_projects]).all
+    # else
+    #   @projects = Project.where(id: params[:project_id]).all
+    #   flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+    #   redirect_to :back
+    # end
+    #
+    # @project_ids = params[:deleted_projects]
+    #
+    #@projects.each do |p|
+
+    @project = Project.find(params[:project_id])
+    if @project.is_childless?
+      authorize! :delete_project, @project
+
+      @from_tree_history_view = params[:from_tree_history_view]
+      @current_showed_project_id = params['current_showed_project_id']
+
+      #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
+      if @project.has_children?
+        if @from_tree_history_view
+          redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
+        else
+          flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
+          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+        end
+      end
     else
-      @projects = Project.where(id: params[:project_id]).all
-      flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
 
-    @project_ids = params[:deleted_projects]
-
-    #@projects.each do |p|
-
-    # @project = Project.find(params[:project_id])
-    # if @project.is_childless?
-    #   authorize! :delete_project, @project
-    #
-    #   @from_tree_history_view = params[:from_tree_history_view]
-    #   @current_showed_project_id = params['current_showed_project_id']
-    #
-    #   #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
-    #   if @project.has_children?
-    #     if @from_tree_history_view
-    #       redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
-    #     else
-    #       flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
-    #       redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
-    #     end
-    #   end
-    # else
-    #   flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
-    #   redirect_to :back
-    # end
   end
 
   def confirm_deletion_multiple
