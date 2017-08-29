@@ -791,7 +791,7 @@
               <h5>Types de composant à importer</h5>
               <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
             </div>
-            <div class="hide">
+            <div id ="groups-block" class="hide">
               <h5>
                 Groupe d'accueil
               </h5>
@@ -810,9 +810,18 @@
       <script>
           $(document).ready(function(){
               $("#from").on("change",function(){
-                  if (this.value == "Excel") {
+                  if (this.value == "") {
+                      $("#file-block").hide();
+                      $("#url-block").hide();
+                      $("#groups-block").hide();
+                      $("#type-block").hide();
+                  }
+
+                  else if (this.value == "Excel") {
                       $("#file-block").show();
                       $("#url-block").hide();
+                      $("#groups-block").show();
+                      
 
                     <% if @guw_model.allow_ml_excel == true %>
                       $("#type-block").show();
