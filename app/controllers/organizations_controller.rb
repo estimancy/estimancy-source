@@ -790,14 +790,14 @@ class OrganizationsController < ApplicationController
 
     last_project = projects.last
     result = []
-    #i = 0
-    nb_total = 0
+    i = 0
+    # nb_total = 0
 
     estimations_abilities = lambda do |projects|
       i = 0
       while result.size < desired_size && !projects.empty? do
         organization_project = projects[i]
-        nb_total += 1
+        # nb_total += 1
 
         if organization_project.nil?
           break
@@ -810,10 +810,10 @@ class OrganizationsController < ApplicationController
         end
       end
 
-      if nb_total >= 12100
-        puts "Test"
-        puts "nb_total = #{nb_total}"
-      end
+      # if nb_total >= 12100
+      #   puts "Test"
+      #   puts "nb_total = #{nb_total}"
+      # end
 
       if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
         return result
@@ -821,7 +821,7 @@ class OrganizationsController < ApplicationController
         next_projects = last_project.next_ones_by_date(desired_size)
         unless next_projects.all.empty?
           @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
-          #i = 0
+          i = 0
           estimations_abilities.call(next_projects)
         end
       end
