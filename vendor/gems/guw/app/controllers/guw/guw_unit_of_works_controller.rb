@@ -1515,7 +1515,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           description << item.text
         end
 
-        text = "#{nom} #{description}"
+        text = description
 
         if params[:kind] == "Données"
           results = get_data(text, default_group, "Jira")
