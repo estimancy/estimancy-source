@@ -1536,27 +1536,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
-        myTab.flatten.take(50).each do |val|
+        myTab.flatten.take(7).each do |val|
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
             nom = page.search(".subject h3").text
             description = page.search(".description").text
 
-            text = "#{nom} #{description}"
+            text = description
 
-            #A modifier
             if params[:kind] == "Données"
-              results = get_trt(text, default_group, "Redmine")
+              results = get_data(text, default_group, "Redmine")
             elsif params[:kind] == "Traitements"
               results = get_trt(text, default_group, "Redmine")
-            elsif params[:kind] == "Manuel"
-              results = get_trt(text, default_group, "Redmine")
-
             end
 
+            @guw_model_guw_attributes = @guw_model.guw_attributes.all
+
             results.each do |uo|
-              @guw_model.guw_attributes.all.each do |gac|
+              @guw_model_guw_attributes.each do |gac|
                 guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
                                                           guw_unit_of_work_id: uo.id,
                                                           guw_attribute_id: gac.id).first_or_create
@@ -1613,51 +1611,95 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
       end
-
-      redirect_to :back and return
-    else
-      @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-      @http = Curl.post("http://localhost:5001/estimate_trt", { us: @guw_unit_of_work.comments } )
-
-      unless @http.body_str.to_s.blank? || @http.body_str.to_s == "NULL"
-        @guw_type = Guw::GuwType.where(name: @http.body_str,
-                                       guw_model_id: @guw_unit_of_work.guw_model.id).first
-      else
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-      end
-
-      @guw_unit_of_work.guw_type_id = @guw_type.nil? ? nil : @guw_type.id
-      @guw_unit_of_work.save
-
       redirect_to :back and return
     end
   end
 
-  private def check_domains(from)
-    myTab = Array.new
-    agent = Mechanize.new
+  private def get_data(user_story, default_group, data_type)
 
-    if from == "Jira"
-      (0..2).step(1).each do |i|
-        url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
-        agent.get(url)
-        page = agent.page
-        myTab << page.search("//@data-issue-key").map(&:value)
-      end
-    elsif from = "Redmine"
-      (0..2).step(1).each do |i|
-        url = "http://www.redmine.org/projects/redmine/issues"
-        agent.get(url)
-        page = agent.page
-        #*[@id="issue-26422"]
-        myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+    results = []
+
+    @guw_model = current_module_project.guw_model
+    txt = user_story
+
+    if data_type == "Excel"
+      url = @guw_model.excel_ml_server
+    elsif data_type == "Redmine"
+      url = @guw_model.redmine_ml_server
+    elsif data_type == "Jira"
+      url = @guw_model.jira_ml_server
+    end
+
+    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+    if @guw_type.nil?
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+    end
+
+    if default_group == ""
+      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
+                                                 module_project_id: current_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create
+    else
+      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                 module_project_id: current_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create
+    end
+
+    unless txt.blank?
+
+      @http = Curl.post("http://#{url}/estimate_data", { txt: txt })
+
+      JSON.parse(@http.body_str).each do |output|
+
+        data_array = output.scan(/<data=(.*?)>/)
+        attr_array = output.scan(/<attribut=(.*?)>/)
+
+        data_array.each do |d|
+          t = d.first
+          unless t.nil?
+            v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
+          end
+          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize,
+                                             guw_model_id: @guw_model.id).first_or_create(
+                                                                      comments: attr_array.uniq.join(", "),
+                                                                      guw_unit_of_work_group_id: @guw_group.id,
+                                                                      module_project_id: current_module_project.id,
+                                                                      pbs_project_element_id: current_component.id,
+                                                                      display_order: nil,
+                                                                      tracking: nil,
+                                                                      quantity: 1,
+                                                                      selected: true,
+                                                                      guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+          results << guw_uow
+
+          @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
+
+            guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
+                                                       guw_unit_of_work_id: guw_uow.id,
+                                                       guw_attribute_id: gac.id)
+            if gac.name == "DET"
+              guowa.low = attr_array.size
+              guowa.most_likely = attr_array.size
+              guowa.high = attr_array.size
+              guowa.comments = attr_array.join(", ")
+            else
+              guowa.low = 0
+              guowa.most_likely = 0
+              guowa.high = 0
+            end
+
+            guowa.save
+
+          end
+        end
       end
     end
-    return myTab
+
+    return results
   end
 
   private def get_trt(user_story, default_group, trt_type)
-
     @guw_model = current_module_project.guw_model
     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
 
@@ -1734,69 +1776,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
-        if @guw_type.nil?
-          @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-        end
-
-        if default_group == ""
-          @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
-                                                     module_project_id: current_module_project.id,
-                                                     pbs_project_element_id: current_component.id).first_or_create
-        else
-          @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
-                                                     module_project_id: current_module_project.id,
-                                                     pbs_project_element_id: current_component.id).first_or_create
-        end
-
-        unless txt.blank?
-
-          @http = Curl.post("http://localhost:5001/estimate_data", { txt: txt })
-
-          JSON.parse(@http.body_str).each do |output|
-
-            data_array = output.scan(/<data=(.*?)>/)
-            attr_array = output.scan(/<attribut=(.*?)>/)
-
-            data_array.each do |d|
-              t = d.first
-              unless t.nil?
-                v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('\\"', '').delete('\\"')
-              end
-              guw_uow = Guw::GuwUnitOfWork.create(name: v.singularize,
-                                                  comments: attr_array.uniq.join(", "),
-                                                  guw_unit_of_work_group_id: @guw_group.id,
-                                                  module_project_id: current_module_project.id,
-                                                  pbs_project_element_id: current_component.id,
-                                                  guw_model_id: @guw_model.id,
-                                                  display_order: nil,
-                                                  tracking: nil,
-                                                  quantity: 1,
-                                                  selected: true,
-                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-
-              @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
-
-                guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
-                                                           guw_unit_of_work_id: guw_uow.id,
-                                                           guw_attribute_id: gac.id)
-                if gac.name == "DET"
-                  guowa.low = attr_array.size
-                  guowa.most_likely = attr_array.size
-                  guowa.high = attr_array.size
-                  guowa.comments = attr_array.join(", ")
-                else
-                  guowa.low = 0
-                  guowa.most_likely = 0
-                  guowa.high = 0
-                end
-
-                guowa.save
-
-              end
-            end
-          end
-        end
+        get_data(txt, default_group, "Excel")
       end
     end
     redirect_to :back

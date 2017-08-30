@@ -1,1 +1,9 @@
-DescriptionPRESAGE doit devoir fournir un reporting Coût, volume et coût unitaire des produits intermédiaires (nb : le traitement devra être calculé)
+
+  
+  
+  
+
+  Description
+  
+  Saisie des coûts unitaires métier pour avoir une estimation de coût lors de la saisie des volumes aussi bien pour les activités que les PI
+  
