@@ -56,14 +56,14 @@
                   <th>IA facultatif</th>
                 </tr>
                 <tr>
-                  <td class="span4"><%= f.input :allow_excel,label: "Activer l'import par Excel" %></td>
-                  <td class="span4"><%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
-                  <td class="span4"><%= f.input :allow_ml_excel, label: "IA Optionelle" %></td>
+                  <td><%= f.input :allow_excel, label: "Activer l'import par Excel"  %></td>
+                  <td><%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur de ML", disabled: !@guw_model.allow_excel %></td>
+                  <td><%= f.input :allow_ml_excel, label: "IA Optionelle" %></td>
                 </tr>
                 <tr>
                   <td><%= f.input :allow_jira, label: "Activer l'import via JIRA" %></td>
-                  <td><%= f.input :jira_ml_server, label: false %></td>
-                  <td><%= f.input :allow_ml_jira, label: "IA Optionelle", placeholder: "Adresse du serveur de ML" %></td>
+                  <td><%= f.input :jira_ml_server, label: false , placeholder: "Adresse du serveur de ML"  %></td>
+                  <td><%= f.input :allow_ml_jira, label: "IA Optionelle" %></td>
                 </tr>
                 <tr>
                   <td><%= f.input :allow_redmine, label: "Activer l'import via Redmine" %></td>
@@ -74,22 +74,85 @@
             </div>
 
             <hr />
-
-            <!--<div id="server" style="<%# @guw_model.allow_ml == true ? "" : "display: none ;" %>">-->
-              <!--<h5> Choix du serveur ML à utiliser :</h5>-->
-              <!--<%# select_tag "MLserver", options_for_select(["","one","two","three"]) %>-->
-            <!--</div>-->
-            <!--<hr />-->
-
-
-<!--        Mettre un champ 'Nom du serveur ML'. Si on choisit OUI à la ML alors on peut choisir le serveur ML qu'on va utiliser. -->
-
     <script>
+
+  //       # Si activer import cochée => On dégrise colonne milieu et droite
+  //       # Sinon colonnes 2 et 3 grisées.
+  //       # ou inverse
+
+$(document).ready(function() {
+  
+    
+    $('#guw_model_allow_excel').change(function() {
+        if($(this).is(":checked")) {
+            $('#guw_model_excel_ml_server').removeAttr("disabled", "true");
+            $('#guw_model_allow_ml_excel').removeAttr("disabled", "true");
+  
+        } else { 
+            $('#guw_model_excel_ml_server').attr("disabled","false");
+            $('#guw_model_allow_ml_excel').attr("disabled","false");
+        }
+            
+    });
+});
+  
+    
+    $('#guw_model_allow_jira').change(function() {
+        if($(this).is(":checked")) {
+            $('#guw_model_jira_ml_server').removeAttr("disabled", "true");
+            $('#guw_model_allow_ml_jira').removeAttr("disabled", "true");
+  
+        } else { 
+            $('#guw_model_jira_ml_server').attr("disabled","false");
+            $('#guw_model_allow_ml_jira').attr("disabled","false");
+        }
+            
+    });
+  
+    
+    $('#guw_model_allow_redmine').change(function() {
+        if($(this).is(":checked")) {
+            $('#guw_model_redmine_ml_server').removeAttr("disabled", "true");
+            $('#guw_model_allow_ml_redmine').removeAttr("disabled", "true");
+  
+        } else { 
+            $('#guw_model_redmine_ml_server').attr("disabled","false");
+            $('#guw_model_allow_ml_redmine').attr("disabled","false");
+        }
+            
+    });
+
+
+
+  // function grise(element) {
+  //         var text = document.getElementById(element);
+  //         if(text.disabled == true)
+  //                 text.disabled = false;
+  //         else
+  //                 text.disabled = true;
+  // }
+
+        // $('#guw_model_allow_excel').click(function(){
+        //   $('guw_model_excel_ml_server').attr('disabled', $(this).attr('checked'));
+        // });
+
+
+
+        // $("#guw_model_allow_excel").onClick(function() {
+        //   if ($("#guw_model_allow_excel").val() == true)
+        //      $("#guw_model_excel_ml_server").disabled();
+         
+        //   else
+        // alert('bb');
+        // });  
+        
+
+
       $("#guw_model_excel_ml_server").keyup(function() {
         if($("#guw_model_excel_ml_server").val() != "")
           $(".allow_ml_excel").show();
         else
-          $(".allow_ml_excel").hide();
+            $(".allow_ml_excel").hide();
       });
 
       $("#guw_model_jira_ml_server").keyup(function() {
