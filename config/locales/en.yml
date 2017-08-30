@@ -2036,4 +2036,5 @@ en:
   copy_in_progress: "Copy in progress..."
   is_new_status: "Is the default status of new estimation version "
   warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
-  multiple_delete: "Suppression multiple"
+  multiple_delete: "Multiple deletion"
+  hide_wbs_header: "Hide WBS header"

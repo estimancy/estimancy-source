@@ -1038,38 +1038,39 @@ class ProjectsController < ApplicationController
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 
-    if params[:deleted_projects].present?
-      @projects = Project.where(id: params[:deleted_projects]).all
+    # if params[:deleted_projects].present?
+    #   @projects = Project.where(id: params[:deleted_projects]).all
+    # else
+    #   @projects = Project.where(id: params[:project_id]).all
+    #   flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+    #   redirect_to :back
+    # end
+    #
+    # @project_ids = params[:deleted_projects]
+    #
+    #@projects.each do |p|
+
+    @project = Project.find(params[:project_id])
+    if @project.is_childless?
+      authorize! :delete_project, @project
+
+      @from_tree_history_view = params[:from_tree_history_view]
+      @current_showed_project_id = params['current_showed_project_id']
+
+      #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
+      if @project.has_children?
+        if @from_tree_history_view
+          redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
+        else
+          flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
+          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+        end
+      end
     else
-      @projects = Project.where(id: params[:project_id]).all
-      flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
+      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
 
-    @project_ids = params[:deleted_projects]
-
-    #@projects.each do |p|
-
-    # @project = Project.find(params[:project_id])
-    # if @project.is_childless?
-    #   authorize! :delete_project, @project
-    #
-    #   @from_tree_history_view = params[:from_tree_history_view]
-    #   @current_showed_project_id = params['current_showed_project_id']
-    #
-    #   #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
-    #   if @project.has_children?
-    #     if @from_tree_history_view
-    #       redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
-    #     else
-    #       flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
-    #       redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
-    #     end
-    #   end
-    # else
-    #   flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
-    #   redirect_to :back
-    # end
   end
 
   def confirm_deletion_multiple
@@ -2397,33 +2398,57 @@ public
 
   def search
 
-    # options = {}
-    #
-    # params.delete("utf8")
-    # params.delete("commit")
-    # params.delete("action")
-    # params.delete("controller")
-    # params.delete("filter_organization_projects_version")
-    # params.delete_if { |k, v| v.nil? || v.blank? }
-    #
-    # params.each do |k,v|
-    #   case k
-    #     when "creator"
-    #       u = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[v]}%", "%#{params[v]}%" ).first
-    #       options[:creator_id] = u.nil? ? nil : u.id
-    #     else
-    #       options[k] = v
-    #   end
-    # end
+    @organization = @current_organization
+    options = {}
+    results = []
 
-    # @filterrific = initialize_filterrific(
-    #     Project,
-    #     { title: "001-NLD" }
-    # ) or return
-    #
-    # @projects = @filterrific.find.page(params[:page])
+    params.delete("utf8")
+    params.delete("commit")
+    params.delete("action")
+    params.delete("controller")
+    params.delete("filter_organization_projects_version")
+    params.delete_if { |k, v| v.nil? || v.blank? }
 
-    redirect_to organization_estimations_path(@current_organization)
+    params.each do |k,v|
+      val = params[k]
+      case k
+        when "title"
+          if val.blank?
+            results = Project.where("title liKE ?", "%#{val}%").all
+          else
+            results = Project.all #A changer
+          end
+        when "creator"
+          results = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+        else
+          options[k] = v
+      end
+    end
+
+    @projects = results
+
+    @object_per_page = (current_user.object_per_page || 10)
+
+    if params[:min].present? && params[:max].present?
+      @min = params[:min].to_i
+      @max = params[:max].to_i
+    else
+      @min = 0
+      @max = (current_user.object_per_page || @object_per_page)
+    end
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   #Checkout the project : create a new version of the project

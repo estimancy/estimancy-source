@@ -1118,13 +1118,14 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.integer  "copy_number"
     t.integer  "copy_id"
     t.text     "included_wbs_activities"
-    t.boolean  "is_historicized"
+    t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
     t.boolean  "private",                               :default => false
+    t.boolean  "is_historicized"
   end
 
   create_table "organization_labor_categories", :force => true do |t|
@@ -1483,13 +1484,14 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.integer  "copy_number"
     t.integer  "copy_id"
     t.text     "included_wbs_activities"
-    t.boolean  "is_historicized"
+    t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
     t.boolean  "private",                               :default => false
+    t.boolean  "is_historicized"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
