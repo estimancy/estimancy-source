@@ -1516,7 +1516,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         text = "#{nom} #{description}"
-        results = get_trt(text, default_group)
+        results = get_trt(text, default_group, "Jira")
 
         results.each do |uo|
           @guw_model.guw_attributes.all.each do |gac|
@@ -1547,11 +1547,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             #A modifier
             if params[:kind] == "Données"
-              results = get_trt(text, default_group)
+              results = get_trt(text, default_group, "Redmine")
             elsif params[:kind] == "Traitements"
-              results = get_trt(text, default_group)
+              results = get_trt(text, default_group, "Redmine")
             elsif params[:kind] == "Manuel"
-              results = get_trt(text, default_group)
+              results = get_trt(text, default_group, "Redmine")
 
             end
 
@@ -1586,7 +1586,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row.nil?
               unless row[5].blank?
 
-                results = get_trt(row[5], default_group)
+                results = get_trt(row[5], default_group, "Excel")
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
@@ -1656,8 +1656,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return myTab
   end
 
-  private def get_trt(user_story, default_group)
-    @http = Curl.post("http://localhost:5001/estimate_trt", { us: user_story } )
+  private def get_trt(user_story, default_group, trt_type)
+
+    @guw_model = current_module_project.guw_model
+    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+
+    if trt_type == "Excel"
+      url = @guw_model.excel_ml_server
+    elsif trt_type == "Redmine"
+      url = @guw_model.redmine_ml_server
+    elsif trt_type == "Jira"
+      url = @guw_model.jira_ml_server
+    end
+
+    @http = Curl.post("http://#{url}/estimate_trt", { us: user_story } )
 
     complete_str = user_story.to_s
     reduce_str = user_story.to_s.truncate(60)
@@ -1666,8 +1678,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     JSON.parse(@http.body_str).each do |output|
 
-      @guw_model = current_module_project.guw_model
-      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       if default_group == ""
         @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Traitements',
                                                    module_project_id: current_module_project.id,
