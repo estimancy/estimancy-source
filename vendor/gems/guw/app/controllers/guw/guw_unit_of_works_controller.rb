@@ -1527,20 +1527,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         else
           results = import_guw(text, default_group, "Jira")
         end
-
-        results.each do |uo|
-          @guw_model.guw_attributes.all.each do |gac|
-            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                      guw_unit_of_work_id: uo.id,
-                                                      guw_attribute_id: gac.id).first_or_create
-            guowa.save
-          end
-        end
-
       end
 
     else params[:from] = "Redmine"
-      (0..3).each do |i|
+      (0..1).each do |i|
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
           myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
@@ -1552,7 +1542,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           agent.get(url) do |page|
             description = page.search(".description").text
 
-            text = description.gsub("\n", "").gsub("        Description    ", "")
+            text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
 
             unless text.blank?
               if params[:kind] == "Données"
@@ -1761,6 +1751,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                             quantity: 1,
                                             selected: true,
                                             guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+
+      results.each do |uo|
+        @guw_model.guw_attributes.all.each do |gac|
+          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                    guw_unit_of_work_id: uo.id,
+                                                    guw_attribute_id: gac.id).first_or_create
+          guowa.save
+        end
+      end
 
     end
 
@@ -2091,7 +2090,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_uow.save(validate: false)
 
       results << guw_uow
+    end
 
+    results.each do |uo|
+      @guw_model.guw_attributes.all.each do |gac|
+        guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                  guw_unit_of_work_id: uo.id,
+                                                  guw_attribute_id: gac.id).first_or_create
+        guowa.save
+      end
     end
 
     return results

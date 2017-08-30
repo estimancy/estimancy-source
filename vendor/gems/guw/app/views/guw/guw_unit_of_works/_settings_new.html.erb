@@ -756,21 +756,21 @@
             <h5>Type de source</h5>
             
             <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source" %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% else %>
-              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source" %>
+              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
             <% end %>
 
             <div class ="hide" id="file-block" >
@@ -784,33 +784,33 @@
               <h5>
                 Liens de la liste des demandes
               </h5>
-              <%= text_field_tag :url %>
+              <%= text_field_tag :url, "", class: "span8" %>
             </div>
 
             <div class="hide" id="type-block">
-              <h5>Types de composant à importer</h5>
+              <h5>Types d'UO à identifier</h5>
                     
               <div id="excel-type-block">
                 <% if @guw_model.allow_ml_excel == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Aucun"]), class: "span8" %>
                 <% end %>
               </div>
 
               <div id="jira-type-block">
                 <% if @guw_model.allow_ml_jira == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
                 <% end %>
               </div>
 
               <div id="redmine-type-block">
                 <% if @guw_model.allow_ml_redmine == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
                 <% end %>
               </div>   
 
@@ -819,7 +819,7 @@
               <h5>
                 Groupe d'accueil
               </h5>
-              <%= text_field_tag :group_name %>
+              <%= text_field_tag :group_name, "", class: "span8" %>
             </div>
           </div>
 
