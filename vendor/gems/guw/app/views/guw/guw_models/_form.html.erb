@@ -62,12 +62,12 @@
                 </tr>
                 <tr>
                   <td><%= f.input :allow_jira, label: "Activer l'import via JIRA" %></td>
-                  <td><%= f.input :jira_ml_server, label: false , placeholder: "Adresse du serveur de ML"  %></td>
+                  <td><%= f.input :jira_ml_server, label: false , placeholder: "Adresse du serveur de ML", disabled: !@guw_model.allow_jira  %></td>
                   <td><%= f.input :allow_ml_jira, label: "IA Optionelle" %></td>
                 </tr>
                 <tr>
                   <td><%= f.input :allow_redmine, label: "Activer l'import via Redmine" %></td>
-                  <td><%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML" %></td>
+                  <td><%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur de ML", disabled: !@guw_model.allow_redmine %></td>
                   <td><%= f.input :allow_ml_redmine, label: "IA Optionelle" %></td>
                 </tr>
               </table>

@@ -789,7 +789,31 @@
 
             <div class="hide" id="type-block">
               <h5>Types de composant à importer</h5>
-              <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                    
+              <div id="excel-type-block">
+                <% if @guw_model.allow_ml_excel == false %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                <% else %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                <% end %>
+              </div>
+
+              <div id="jira-type-block">
+                <% if @guw_model.allow_ml_jira == false %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                <% else %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                <% end %>
+              </div>
+
+              <div id="redmine-type-block">
+                <% if @guw_model.allow_ml_redmine == false %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements"]) %>
+                <% else %>
+                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Sans IA"]) %>
+                <% end %>
+              </div>   
+
             </div>
             <div id ="groups-block" class="hide">
               <h5>
@@ -815,15 +839,21 @@
                       $("#url-block").hide();
                       $("#groups-block").hide();
                       $("#type-block").hide();
+                      $("#excel-type-block").hide();
+                      $("#jira-type-block").hide();
+                      $("#redmine-type-block").hide();
+
                   }
 
                   else if (this.value == "Excel") {
                       $("#file-block").show();
                       $("#url-block").hide();
                       $("#groups-block").show();
-                      
+                      $("#excel-type-block").show();
+                      $("#jira-type-block").hide();
+                      $("#redmine-type-block").hide();
 
-                    <% if @guw_model.allow_ml_excel == true %>
+                    <% if !@guw_model.excel_ml_server.blank? %>
                       $("#type-block").show();
                     <% else %>
                       $("#type-block").hide();
@@ -831,8 +861,12 @@
                   } else if (this.value == "Jira") {
                     $("#url-block").show();
                     $("#file-block").hide();
+                    $("#excel-type-block").hide();
+                    $("#jira-type-block").show();
+                    $("#redmine-type-block").hide();
 
-                    <% if @guw_model.allow_ml_jira == true %>
+
+                    <% if !@guw_model.jira_ml_server.blank? %>
                       $("#type-block").show();
                     <% else %>
                       $("#type-block").hide();
@@ -841,8 +875,11 @@
 
                     $("#url-block").show();
                     $("#file-block").hide();
+                    $("#excel-type-block").hide();
+                    $("#jira-type-block").hide();
+                    $("#redmine-type-block").show();
 
-                    <% if @guw_model.allow_ml_redmine == true %>
+                    <% if !@guw_model.redmine_ml_server.blank? %>
                       $("#type-block").show();
                     <% else %>
                       $("#type-block").hide();
