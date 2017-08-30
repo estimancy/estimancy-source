@@ -1494,7 +1494,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         import_guw
       end
     elsif params[:from] == "Jira"
-      (0..2).step(1).each do |i|
+      (0..5).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
         page = agent.page
@@ -1516,7 +1516,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         text = "#{nom} #{description}"
-        results = get_trt(text, default_group, "Jira")
+
+        if params[:kind] == "Données"
+          results = get_data(text, default_group, "Jira")
+        elsif params[:kind] == "Traitements"
+          results = get_trt(text, default_group, "Jira")
+        end
 
         results.each do |uo|
           @guw_model.guw_attributes.all.each do |gac|
@@ -1530,35 +1535,36 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
     else params[:from] = "Redmine"
-      (0..2).each do |i|
+      (0..3).each do |i|
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
           myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
-        myTab.flatten.take(7).each do |val|
+        myTab.flatten.each do |val|
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
-            nom = page.search(".subject h3").text
             description = page.search(".description").text
 
-            text = description
+            text = description.gsub("\n", "").gsub("        Description    ", "")
 
-            if params[:kind] == "Données"
-              results = get_data(text, default_group, "Redmine")
-            elsif params[:kind] == "Traitements"
-              results = get_trt(text, default_group, "Redmine")
-            end
+            unless text.blank?
+              if params[:kind] == "Données"
+                results = get_data(text, default_group, "Redmine")
+              elsif params[:kind] == "Traitements"
+                results = get_trt(text, default_group, "Redmine")
+              end
 
-            @guw_model_guw_attributes = @guw_model.guw_attributes.all
+              @guw_model_guw_attributes = @guw_model.guw_attributes.all
 
-            results.each do |uo|
-              @guw_model_guw_attributes.each do |gac|
-                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                          guw_unit_of_work_id: uo.id,
-                                                          guw_attribute_id: gac.id).first_or_create
-                guowa.save
+              results.each do |uo|
+                @guw_model_guw_attributes.each do |gac|
+                  guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                            guw_unit_of_work_id: uo.id,
+                                                            guw_attribute_id: gac.id).first_or_create
+                  guowa.save
+                end
               end
             end
           end
@@ -1661,15 +1667,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
           guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize,
                                              guw_model_id: @guw_model.id).first_or_create(
-                                                                      comments: attr_array.uniq.join(", "),
-                                                                      guw_unit_of_work_group_id: @guw_group.id,
-                                                                      module_project_id: current_module_project.id,
-                                                                      pbs_project_element_id: current_component.id,
-                                                                      display_order: nil,
-                                                                      tracking: nil,
-                                                                      quantity: 1,
-                                                                      selected: true,
-                                                                      guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                                                                            comments: attr_array.uniq.join(", "),
+                                                                            guw_unit_of_work_group_id: @guw_group.id,
+                                                                            module_project_id: current_module_project.id,
+                                                                            pbs_project_element_id: current_component.id,
+                                                                            display_order: nil,
+                                                                            tracking: nil,
+                                                                            quantity: 1,
+                                                                            selected: true,
+                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
           results << guw_uow
 

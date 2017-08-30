@@ -26,10 +26,13 @@ def estimate_trt():
 
 @app.route("/estimate_data", methods=['GET', 'POST'])
 def estimate_data():
-    file_us = open("tmp.txt", "w")
+    txt = request.form['txt']
+    print txt
+    file_us = open("concord.txt", "w")
     file_us.write(request.form['txt'])
-    os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 tmp.txt')
-    lines = tuple(open('tmp-concordances.txt', 'r'))
+    file_us.close()
+    os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
+    lines = tuple(open('concord-concordances.txt', 'r'))
     return json.dumps(lines)
 
 @app.route("/", methods=['GET', 'POST'])
