@@ -1530,7 +1530,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
     else params[:from] = "Redmine"
-      (0..1).each do |i|
+      (0..2).each do |i|
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
           myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
@@ -1661,10 +1661,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
           end
           guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize,
-                                             guw_model_id: @guw_model.id).first_or_create(
+                                             guw_model_id: @guw_model.id,
+                                             module_project_id: current_module_project.id,).first_or_create(
                                                                             comments: attr_array.uniq.join(", "),
                                                                             guw_unit_of_work_group_id: @guw_group.id,
-                                                                            module_project_id: current_module_project.id,
                                                                             pbs_project_element_id: current_component.id,
                                                                             display_order: nil,
                                                                             tracking: nil,
