@@ -5,12 +5,12 @@ global:
   verbose: 0
   virtualization: true
 resources:
-  alphabet: !!python/str "/home/laqrichi/T\xE9l\xE9chargements/Unitex-GramLab-3.1/English/Alphabet.txt"
-  alphabet-sorted: !!python/str "/home/laqrichi/T\xE9l\xE9chargements/Unitex-GramLab-3.1/English/Alphabet_sort.txt"
+  alphabet: !!python/str "/root/Unitex-GramLab-3.1/English/Alphabet.txt"
+  alphabet-sorted: !!python/str "/root/Unitex-GramLab-3.1/English/Alphabet_sort.txt"
   dictionaries:
-  - "/home/laqrichi/T\xE9l\xE9chargements/Unitex-GramLab-3.1/English/Dela/dela-en-public.bin"
+  - "/root/Unitex-GramLab-3.1/English/Dela/dela-en-public.bin"
   language: -en
-  replace: !!python/str "/home/laqrichi/T\xE9l\xE9chargements/Unitex-GramLab-3.1/English/Graphs/Preprocessing/Replace/Replace.fst2"
+  replace: !!python/str "/root/Unitex-GramLab-3.1/English/Graphs/Preprocessing/Replace/Replace.fst2"
   sentence: null
 tools:
   check_dic:

@@ -5,15 +5,15 @@ global:
   verbose: 0
   virtualization: true
 resources:
-  alphabet: /Users/nicolasrenard/Unitex-GramLab-3.1/French/Alphabet.txt
-  alphabet-sorted: /Users/nicolasrenard/Unitex-GramLab-3.1/French/Alphabet_sort.txt
+  alphabet: /root/Unitex-GramLab-3.1/French/Alphabet.txt
+  alphabet-sorted: /root/Unitex-GramLab-3.1/French/Alphabet_sort.txt
   dictionaries:
-  - !!python/unicode '/Users/nicolasrenard/Unitex-GramLab-3.1/French/Dela/dela-fr-public.bin'
-  - !!python/unicode '/Users/nicolasrenard/Unitex-GramLab-3.1/French/Dela/ajouts80jours.bin'
-  - !!python/unicode '/Users/nicolasrenard/Unitex-GramLab-3.1/French/Dela/motsGramf-.bin'
+  - !!python/unicode '/root/Unitex-GramLab-3.1/French/Dela/dela-fr-public.bin'
+  - !!python/unicode '/root/Unitex-GramLab-3.1/French/Dela/ajouts80jours.bin'
+  - !!python/unicode '/root/Unitex-GramLab-3.1/French/Dela/motsGramf-.bin'
   language: fr
-  replace: /Users/nicolasrenard/Unitex-GramLab-3.1/French/Graphs/Preprocessing/Replace/Replace.fst2
-  sentence: /Users/nicolasrenard/Unitex-GramLab-3.1/French/Graphs/Preprocessing/Sentence/Sentence.fst2
+  replace: /root/Unitex-GramLab-3.1/French/Graphs/Preprocessing/Replace/Replace.fst2
+  sentence: /root/Unitex-GramLab-3.1/French/Graphs/Preprocessing/Sentence/Sentence.fst2
 tools:
   check_dic:
     no_space_warning: false

@@ -1,1 +1,0 @@
-DescriptionPRESAGE doit devoir fournir un reporting Coût, volume et coût unitaire des produits intermédiaires (nb : le traitement devra être calculé)
