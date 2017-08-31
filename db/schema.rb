@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170703085920) do
+ActiveRecord::Schema.define(:version => 20170821101024) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -701,6 +701,15 @@ ActiveRecord::Schema.define(:version => 20170703085920) do
     t.text     "orders"
     t.string   "config_type",                 :default => "old"
     t.boolean  "allow_ml"
+    t.boolean  "allow_excel"
+    t.boolean  "allow_jira"
+    t.boolean  "allow_redmine"
+    t.string   "excel_ml_server"
+    t.string   "jira_ml_server"
+    t.string   "redmine_ml_server"
+    t.boolean  "allow_ml_excel"
+    t.boolean  "allow_ml_jira"
+    t.boolean  "allow_ml_redmine"
   end
 
   create_table "guw_guw_output_associations", :force => true do |t|
@@ -786,6 +795,7 @@ ActiveRecord::Schema.define(:version => 20170703085920) do
     t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
     t.string   "attribute_type"
+    t.boolean  "is_default"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -1076,6 +1086,44 @@ ActiveRecord::Schema.define(:version => 20170703085920) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "modify_output"
+  end
+
+  create_table "organization_estimations", :id => false, :force => true do |t|
+    t.integer  "current_organization_id",               :default => 0,     :null => false
+    t.string   "organization_name"
+    t.datetime "project_created_date"
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
+    t.string   "title"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
+    t.string   "state"
+    t.date     "start_date"
+    t.integer  "organization_id"
+    t.integer  "original_model_id"
+    t.integer  "project_area_id"
+    t.integer  "project_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "acquisition_category_id"
+    t.boolean  "is_model"
+    t.integer  "master_anscestry"
+    t.integer  "creator_id"
+    t.text     "purpose"
+    t.text     "level_of_detail"
+    t.text     "scope"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.text     "included_wbs_activities"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "status_comment"
+    t.integer  "application_id"
+    t.string   "application_name"
+    t.boolean  "private",                               :default => false
+    t.boolean  "is_historicized"
   end
 
   create_table "organization_labor_categories", :force => true do |t|
@@ -1434,7 +1482,6 @@ ActiveRecord::Schema.define(:version => 20170703085920) do
     t.integer  "copy_number"
     t.integer  "copy_id"
     t.text     "included_wbs_activities"
-    t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "status_comment"
@@ -1814,6 +1861,7 @@ ActiveRecord::Schema.define(:version => 20170703085920) do
     t.float    "effort_unit_coefficient"
     t.boolean  "enabled_input"
     t.integer  "phases_short_name_number", :default => 0
+    t.boolean  "hide_wbs_header"
   end
 
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"
