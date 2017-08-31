@@ -1662,7 +1662,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
           guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
                                              guw_model_id: @guw_model.id,
-                                             module_project_id: current_module_project.id,).first_or_create(
+                                             module_project_id: current_module_project.id).first_or_create(
                                                                             comments: attr_array.uniq.join(", "),
                                                                             guw_unit_of_work_group_id: @guw_group.id,
                                                                             pbs_project_element_id: current_component.id,
@@ -1672,7 +1672,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                             selected: true,
                                                                             guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-          calculate_attribute(guw_uow)
+          # calculate_attribute(guw_uow)
 
           results << guw_uow
 
