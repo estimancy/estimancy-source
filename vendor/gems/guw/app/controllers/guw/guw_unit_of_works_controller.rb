@@ -1660,7 +1660,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           unless t.nil?
             v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
           end
-          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize,
+          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
                                              guw_model_id: @guw_model.id,
                                              module_project_id: current_module_project.id,).first_or_create(
                                                                             comments: attr_array.uniq.join(", "),
