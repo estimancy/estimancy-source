@@ -1490,9 +1490,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     if params[:from] == "Excel"
       if params[:kind] == "Données"
-        ml_data(default_group)
+        extract_data_from_excel(default_group)
       elsif params[:kind] == "Traitements"
-        ml_trt(default_group)
+        extract_trt_from_excel(default_group)
       elsif params[:kind] == "Manuel"
         import_guw("", default_group, "Excel")
       end
@@ -1570,7 +1570,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to :back
   end
 
-  def ml_trt(default_group)
+  def extract_trt_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     results =[]
     if params[:file].present?
@@ -1631,7 +1631,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       url = @guw_model.jira_ml_server
     end
 
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, name: "GDI").first
     if @guw_type.nil?
       @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
     end
@@ -1769,7 +1769,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return results
   end
 
-  def ml_data(default_group)
+  def extract_data_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
     txt = ""
@@ -2147,122 +2147,39 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_uow.result_high = @highs.sum
     end
 
-    guw_uow.guw_type_id ||= (@guw_type.nil? ? nil : @guw_type.id)
-
     if guw_uow.changed?
       guw_uow.save
     end
 
     unless @guw_type.nil?
-      if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
-
-        tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
-                                                   organization_technology_id: guw_uow.organization_technology_id).first
-
-        if guw_uow.guw_complexity.nil?
-          array_pert << 0
-        else
-          array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
-        end
-        if guw_uow.changed?
-          guw_uow.save
-        end
+      if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
+        guw_uow.off_line_uo = nil
       else
-        if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
-          guw_uow.off_line_uo = nil
-        else
-          #Save if uo is simple/ml/high
-          value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
-          if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
-            guw_uow.off_line_uo = true
-          elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
-            guw_uow.off_line_uo = true
-            cplx = @guw_type.guw_complexities.last
-            if cplx.nil?
-              guw_uow.guw_complexity_id = nil
-              guw_uow.guw_original_complexity_id = nil
-            else
-              guw_uow.guw_complexity_id = cplx.id
-              guw_uow.guw_original_complexity_id = cplx.id
-              array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
-            end
+        #Save if uo is simple/ml/high
+        value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
+        if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
+          guw_uow.off_line_uo = true
+        elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
+          guw_uow.off_line_uo = true
+          cplx = @guw_type.guw_complexities.last
+          if cplx.nil?
+            guw_uow.guw_complexity_id = nil
+            guw_uow.guw_original_complexity_id = nil
           else
-            @guw_type.guw_complexities.each do |guw_c|
-              array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
-            end
+            guw_uow.guw_complexity_id = cplx.id
+            guw_uow.guw_original_complexity_id = cplx.id
+            array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+          end
+        else
+          @guw_type.guw_complexities.each do |guw_c|
+            array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
           end
         end
       end
-    end
-
-    #gestion des valeurs intermédiaires
-    @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
-
-    guw_uow.quantity = 1
-
-    if guw_uow.changed?
-      guw_uow.save
-    end
-
-    guw_uow.ajusted_size = nil
-    guw_uow.size = nil
-
-    if guw_uow.changed?
-      guw_uow.save
     end
 
     update_estimation_values
     update_view_widgets_and_project_fields
-
-    @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
-
-      guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
-                                                  guw_model_id: @guw_model.id).first
-
-      if guw_coefficient.class == Guw::GuwCoefficient
-
-        (16..60).to_a.each do |k|
-          if guw_coefficient.name == tab[0][k]
-
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
-                                                              guw_coefficient_id: guw_coefficient.id).first_or_create
-
-
-            if row[k].blank?
-              ce = guw_coefficient.guw_coefficient_elements.where(default: true).first
-            else
-              ce = guw_coefficient.guw_coefficient_elements.where(name: row[k]).first
-            end
-
-            unless ce.nil?
-              ceuw.guw_coefficient_element_id = ce.id
-            else
-              ceuw.percent = row[k].to_f
-            end
-
-            unless guw_uow.changed?
-              ceuw.save
-            end
-          end
-        end
-      elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-
-        guw_output = Guw::GuwOutput.where(name: i[0],
-                                          guw_model_id: @guw_model.id).first
-
-        unless guw_output.nil?
-          (16..60).to_a.each do |k|
-            if guw_output.name == tab[0][k]
-              # tmp_hash_res["#{guw_output.id}"] = row[k]
-              tmp_hash_ares["#{guw_output.id}"] = row[k]
-            end
-          end
-        end
-      end
-    end
-
-    guw_uow.size = tmp_hash_res
-    guw_uow.ajusted_size = tmp_hash_ares
 
     unless guw_uow.changed?
       guw_uow.save
