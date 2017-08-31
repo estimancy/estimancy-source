@@ -1678,9 +1678,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
 
-            guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
-                                                       guw_unit_of_work_id: guw_uow.id,
-                                                       guw_attribute_id: gac.id)
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                      guw_unit_of_work_id: guw_uow.id,
+                                                      guw_attribute_id: gac.id).first_or_create
             if gac.name == "DET"
               guowa.low = attr_array.size
               guowa.most_likely = attr_array.size
