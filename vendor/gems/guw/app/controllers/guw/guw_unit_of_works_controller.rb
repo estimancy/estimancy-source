@@ -1559,7 +1559,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             title = page.search(".subject h3").text
             description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
 
-            unless text.blank?
+            unless description.blank?
               if params[:kind_redmine] == "Données"
                 results = get_data(id, title, description, url, default_group, "Redmine")
               elsif params[:kind_redmine] == "Traitements"
