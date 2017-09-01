@@ -1557,9 +1557,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
             title = page.search(".subject h3").text
-            description = page.search(".description").text
-
-            text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
+            description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
 
             unless text.blank?
               if params[:kind_redmine] == "Données"
@@ -1744,7 +1742,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       title = "##{id} - #{title}"
     end
 
-    description = description.to_s.truncate(60)
+    description = description.to_s
 
     results = []
 
@@ -2111,9 +2109,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
 
+      unless id.blank?
+        title = "##{id} - #{title}"
+      end
+
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
                                           name: "##{id} - #{title}",
                                           comments: description,
+                                          tracability: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
                                           module_project_id: current_module_project.id,
                                           pbs_project_element_id: @component.id,
