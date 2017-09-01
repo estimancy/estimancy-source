@@ -476,12 +476,16 @@
 <script>
   $(document).ready(function(){
 
-    $(".selected_phase").click(function(){
+    $(".selected_phase").change(function(){
       var val = this.value;
-      if ($("#retained_effort_most_likely_" + val).val() == "") {
-        $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
-        $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
-      } else {
+
+      if ($(this).is(':checked') ) {
+          if ($("#retained_effort_most_likely_" + val).val() == "") {
+            $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
+            $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
+          }
+      }
+      else{
         $("#retained_effort_most_likely_" + val).val("");
         $("#retained_cost_most_likely_" + val).val("");
       }
@@ -497,7 +501,6 @@
 
         } else {
             $("#table_hide_wbs_header").children().hide();
-            //$(".ratio_hide_wbs_header").hide();
         }
     }
 

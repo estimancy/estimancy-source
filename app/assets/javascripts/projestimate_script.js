@@ -1209,10 +1209,8 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
 
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
     $('.selected_phase_SAVE').change(function(){
-
         var $obj = $(this);
         var val = $obj.val();
-
         var checked_or_not;  //var checked_or_not = $(".selected_phase").is(':checked') ? 1 : 0;
 
         if ($(this).is(':checked') ) {
@@ -1221,7 +1219,6 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
         else{
             checked_or_not = 0;
         }
-
 
         //alert("val = "+ val);
         var mp_ratio_element_id = val; //$(this).data("mp_ratio_element_id");
