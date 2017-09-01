@@ -1504,7 +1504,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         myTab << page.search("//@data-issue-key").map(&:value)
       end
 
-      myTab.flatten.take(50).each do |val|
+      myTab.flatten.take(5).each do |val|
         id = val
         title = ""
         description = ""
@@ -1520,12 +1520,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           description << item.text
         end
 
-        if params[:kind] == "Données"
-          results = get_data(id, title, description, url, default_group, "Jira")
-        elsif params[:kind] == "Traitements"
-          results = get_trt(id, title, description, url, default_group, "Jira")
-        else
-          results = import_guw(description, default_group, "Jira")
+        unless description.blank?
+          if params[:kind] == "Données"
+            results = get_data(id, title, description, url, default_group, "Jira")
+          elsif params[:kind] == "Traitements"
+            results = get_trt(id, title, description, url, default_group, "Jira")
+          else
+            results = import_guw(description, default_group, "Jira")
+          end
+        end
+
+        results.each do |uo|
+          @guw_model_guw_attributes.each do |gac|
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                      guw_unit_of_work_id: uo.id,
+                                                      guw_attribute_id: gac.id).first_or_create
+            guowa.save
+          end
         end
       end
 
