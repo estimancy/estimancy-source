@@ -2114,7 +2114,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
-                                          name: "##{id} - #{title}",
+                                          name: title,
                                           comments: description,
                                           tracability: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
