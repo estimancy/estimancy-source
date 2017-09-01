@@ -1628,7 +1628,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
     end
-    redirect_to :back and return
   end
 
   private def get_data(id, title, description, url, default_group, data_type)
@@ -1809,8 +1808,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
-          title << row[4]
-          description << row[5]
+          title << row[4].to_s
+          description << row[5].to_s
         end
 
         get_data(id, title, description, url, default_group, "Excel")
