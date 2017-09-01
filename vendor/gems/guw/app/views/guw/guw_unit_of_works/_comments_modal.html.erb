@@ -29,7 +29,11 @@
     </label>
     <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
-    <br>
+    <label>
+      <b>
+        URL d'origine
+      </b>
+    </label>
     <%= link_to guow.url, guow.url %>
   </div>
   <div class="modal-footer">

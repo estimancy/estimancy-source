@@ -1541,7 +1541,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
-            title = page.search(".description").text
+            title = page.search(".subject h3").text
             description = page.search(".description").text
 
             text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
