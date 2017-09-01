@@ -1715,14 +1715,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
 
     if trt_type == "Excel"
-      url = @guw_model.excel_ml_server
+      url_server = @guw_model.excel_ml_server
     elsif trt_type == "Redmine"
-      url = @guw_model.redmine_ml_server
+      url_server = @guw_model.redmine_ml_server
     elsif trt_type == "Jira"
-      url = @guw_model.jira_ml_server
+      url_server = @guw_model.jira_ml_server
     end
 
-    @http = Curl.post("http://#{url}/estimate_trt", { us: description } )
+    @http = Curl.post("http://#{url_server}/estimate_trt", { us: description } )
 
     title = "##{id} - #{title}"
     description = description.to_s.truncate(60)
