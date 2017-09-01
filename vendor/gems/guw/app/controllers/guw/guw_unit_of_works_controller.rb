@@ -1884,6 +1884,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   @guw_type = Guw::GuwType.where(name: row[6],
                                                  guw_model_id: @guw_model.id).first
+                  if @guw_type.nil?
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                                   is_default: true).first
+                    if @guw_type.nil?
+                      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                    end
+                  end
 
                   @guw_attributes.size.times do |jj|
 
