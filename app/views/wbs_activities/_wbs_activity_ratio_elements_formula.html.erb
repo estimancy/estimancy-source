@@ -7,7 +7,8 @@
     <th><%= I18n.t(:name) %></th>
     <th><%= I18n.t(:description) %></th>
     <th><%= I18n.t(:is_optional) %></th>
-    <th><%= I18n.t(:is_modifiable) %></th>
+    <th><%= I18n.t(:effort_is_modifiable) %></th>
+    <th><%= I18n.t(:cost_is_modifiable) %></th>
     <th><%= I18n.t(:wbs_phase_formula) %></th>
   </tr>
 
@@ -29,9 +30,11 @@
 
         <% if ! wbs_activity_ratio_element.wbs_activity_element.has_children? %>
             <td style="text-align: center"><%= check_box_tag 'is_optional[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.is_optional %></td>
-            <td style="text-align: center"><%= check_box_tag 'is_modifiable[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.is_modifiable %></td>
+            <td style="text-align: center"><%= check_box_tag 'effort_is_modifiable[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.effort_is_modifiable %></td>
+            <td style="text-align: center"><%= check_box_tag 'cost_is_modifiable[]', wbs_activity_ratio_element.id, wbs_activity_ratio_element.cost_is_modifiable %></td>
             <td style="text-align: center"><%= text_field_tag "formula[#{wbs_activity_ratio_element.id}]", wbs_activity_ratio_element.formula, :class => 'input-xxl', :tabindex => i %></td>
         <% else %>
+            <td style="text-align: center"> - </td>
             <td style="text-align: center"> - </td>
             <td style="text-align: center"> - </td>
             <td style="text-align: center"> - </td>

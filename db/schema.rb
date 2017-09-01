@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170821101024) do
+ActiveRecord::Schema.define(:version => 20170901080027) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1918,6 +1918,8 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.string   "formula"
     t.boolean  "is_modifiable",           :default => false
     t.integer  "copy_id"
+    t.boolean  "effort_is_modifiable"
+    t.boolean  "cost_is_modifiable"
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"

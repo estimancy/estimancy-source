@@ -2002,6 +2002,8 @@ fral:
   ge_model_instance_mode: "Mode d'instance"
 
   is_modifiable: "Est modifiable"
+  effort_is_modifiable: "L'Effort est modifiable"
+  cost_is_modifiable: "Le Coût est modifiable"
 
   warning_zero_estimations_counter: "Attention, le compteur d'estimations sur le compte de l'abonnement de votre organisation est à zéro.\n Veuillez contacter l'administrateur de votre compte, pour le renouvellement de votre abonnement."
   warning_minimum_estimations_counter: "Attention, il ne vous reste plus que %{counter} estimations sur le compte de l'abonnement de votre organisation"
@@ -2016,3 +2018,4 @@ fral:
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   multiple_delete: "Suppression multiple"
   hide_wbs_header: "Masquer l'entête de la WBS"
+  phase_short_name: "Nom court de la phase"

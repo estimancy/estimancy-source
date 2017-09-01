@@ -2033,6 +2033,8 @@ frsncf:
   warning_minimum_estimations_counter: "Attention, il ne vous reste plus que %{counter} devis sur le compte de l'abonnement de votre organisation"
 
   is_modifiable: "Est modifiable"
+  effort_is_modifiable: "L'Effort est modifiable"
+  cost_is_modifiable: "Le Coût est modifiable"
   new_input_attribute: "Nouvel attribut d'entrée"
 
   liste_des_estimations: "Liste des devis"
@@ -2055,4 +2057,6 @@ frsncf:
         other: "%{count} %{model} affiché(e)s"
     page_gap: "&hellip;"
     previous_label: "← précédent"
+
+    phase_short_name: "Nom court de la phase"
 

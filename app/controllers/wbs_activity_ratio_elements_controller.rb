@@ -121,14 +121,26 @@ class WbsActivityRatioElementsController < ApplicationController
           wbs_activity_ratio_elt.is_optional = false
         end
 
-        if params[:is_modifiable]
-          if params[:is_modifiable].include?("#{wbs_activity_ratio_elt.id}")
-            wbs_activity_ratio_elt.is_modifiable = true
+        #Modification de l'effort
+        if params[:effort_is_modifiable]
+          if params[:effort_is_modifiable].include?("#{wbs_activity_ratio_elt.id}")
+            wbs_activity_ratio_elt.effort_is_modifiable = true
           else
-            wbs_activity_ratio_elt.is_modifiable = false
+            wbs_activity_ratio_elt.effort_is_modifiable = false
           end
         else
-          wbs_activity_ratio_elt.is_modifiable = false
+          wbs_activity_ratio_elt.effort_is_modifiable = false
+        end
+
+        #Modification du cout
+        if params[:cost_is_modifiable]
+          if params[:cost_is_modifiable].include?("#{wbs_activity_ratio_elt.id}")
+            wbs_activity_ratio_elt.cost_is_modifiable = true
+          else
+            wbs_activity_ratio_elt.cost_is_modifiable = false
+          end
+        else
+          wbs_activity_ratio_elt.cost_is_modifiable = false
         end
 
 

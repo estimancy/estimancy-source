@@ -1698,5 +1698,8 @@ fr1:
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   multiple_delete: "Suppression multiple"
   hide_wbs_header: "Masquer l'entête de la WBS"
+  effort_is_modifiable: "L'Effort est modifiable"
+  cost_is_modifiable: "Le Coût est modifiable"
+  phase_short_name: "Nom court de la phase"
 
 

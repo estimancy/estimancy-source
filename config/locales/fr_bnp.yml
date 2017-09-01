@@ -2068,3 +2068,5 @@ fr_bnp:
 
   display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
   multiple_delete: "Suppression multiple"
+  effort_is_modifiable: "L'Effort est modifiable"
+  cost_is_modifiable: "Le Coût est modifiable"
