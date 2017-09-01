@@ -1686,7 +1686,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                             guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
                                                                             url: url)
 
-          # calculate_attribute(guw_uow)
+          calculate_attribute(guw_uow)
 
           results << guw_uow
 
@@ -2200,12 +2200,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    update_estimation_values
-    update_view_widgets_and_project_fields
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
 
-    unless guw_uow.changed?
-      guw_uow.save
-    end
+    # unless guw_uow.changed?
+    #   guw_uow.save
+    # end
   end
 
   private
