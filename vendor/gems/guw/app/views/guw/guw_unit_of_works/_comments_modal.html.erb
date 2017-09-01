@@ -34,7 +34,11 @@
         URL d'origine
       </b>
     </label>
-    <%= link_to guow.url, guow.url %>
+    <% if guow.url %>
+      <%= link_to guow.url, guow.url, target: "_blank" %>
+    <% else %>
+      -
+    <% end %>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>

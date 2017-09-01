@@ -1498,7 +1498,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       elsif params[:kind_excel] == "Traitements"
         extract_trt_from_excel(default_group)
       elsif params[:kind_excel] == "Manuel"
-        import_guw("", default_group, "Excel")
+        import_guw("", "", "", default_group, "Excel", "#")
       end
     elsif params[:from] == "Jira"
       (0..5).step(1).each do |i|
@@ -1530,7 +1530,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
           else
-            results = import_guw(description, default_group, "Jira")
+            results = import_guw(id, title, description, default_group, "Jira", url)
           end
         end
 
@@ -1567,7 +1567,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
               else
-                results = import_guw(description, default_group, "Redmine")
+                results = import_guw(id, title, description, default_group, "Redmine", url)
               end
 
               results.each do |uo|
@@ -1827,7 +1827,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
   end
 
-  private def import_guw(text, default_group, source)
+  private def import_guw(id, title, description, default_group, source, url)
 
     @guw_model = current_module_project.guw_model
     @component = current_component
@@ -2108,13 +2108,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
-                                          name: text,
-                                          comments: text,
+                                          name: "##{id} - #{title}",
+                                          comments: description,
                                           guw_unit_of_work_group_id: @guw_group.id,
                                           module_project_id: current_module_project.id,
                                           pbs_project_element_id: @component.id,
                                           guw_model_id: @guw_model.id,
-                                          guw_type_id: @guw_type.id)
+                                          guw_type_id: @guw_type.id,
+                                          url: url)
 
       guw_uow.save(validate: false)
 
