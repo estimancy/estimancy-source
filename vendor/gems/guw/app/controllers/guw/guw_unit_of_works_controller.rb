@@ -1505,27 +1505,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       myTab.flatten.take(50).each do |val|
-        nom = ""
+        id = val
+        title = ""
         description = ""
+
         url = "https://issues.apache.org/jira/browse/#{val}"
         agent = Mechanize.new
         agent.get(url)
         agent.page.search("#summary-val").each do |item|
-          nom << item.text
+          title << item.text
         end
 
         agent.page.search(".user-content-block p").each do |item|
           description << item.text
         end
 
-        text = description
-
         if params[:kind] == "Données"
-          results = get_data(text, default_group, "Jira")
+          results = get_data(id, title, description, url, default_group, "Jira")
         elsif params[:kind] == "Traitements"
-          results = get_trt(text, default_group, "Jira")
+          results = get_trt(id, title, description, url, default_group, "Jira")
         else
-          results = import_guw(text, default_group, "Jira")
+          results = import_guw(description, default_group, "Jira")
         end
       end
 
@@ -1537,20 +1537,22 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         myTab.flatten.each do |val|
+          id = val
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
+            title = page.search(".description").text
             description = page.search(".description").text
 
             text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
 
             unless text.blank?
               if params[:kind] == "Données"
-                results = get_data(text, default_group, "Redmine")
+                results = get_data(id, title, description, url, default_group, "Redmine")
               elsif params[:kind] == "Traitements"
-                results = get_trt(text, default_group, "Redmine")
+                results = get_trt(id, title, description, url, default_group, "Redmine")
               else
-                results = import_guw(text, default_group, "Redmine")
+                results = import_guw(description, default_group, "Redmine")
               end
 
               results.each do |uo|
@@ -1585,7 +1587,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row.nil?
               unless row[5].blank?
 
-                results = get_trt(row[5], default_group, "Excel")
+                results = get_trt("", "", row[5], "", default_group, "Excel")
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
@@ -1616,12 +1618,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
   end
 
-  private def get_data(user_story, default_group, data_type)
+  private def get_data(id, title, description, url, default_group, data_type)
 
     results = []
 
     @guw_model = current_module_project.guw_model
-    txt = user_story
+    txt = description
 
     if data_type == "Excel"
       url = @guw_model.excel_ml_server
@@ -1670,7 +1672,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                             tracking: nil,
                                                                             quantity: 1,
                                                                             selected: true,
-                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                                                            url: url)
 
           # calculate_attribute(guw_uow)
 
@@ -1696,7 +1699,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guowa.high = 0
             end
 
-
             guowa.save
 
           end
@@ -1708,7 +1710,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return results
   end
 
-  private def get_trt(user_story, default_group, trt_type)
+  private def get_trt(id, title, description, url, default_group, trt_type)
     @guw_model = current_module_project.guw_model
     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
 
@@ -1720,10 +1722,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       url = @guw_model.jira_ml_server
     end
 
-    @http = Curl.post("http://#{url}/estimate_trt", { us: user_story } )
+    @http = Curl.post("http://#{url}/estimate_trt", { us: description } )
 
-    complete_str = user_story.to_s
-    reduce_str = user_story.to_s.truncate(60)
+    title = "##{id} - #{title}"
+    description = description.to_s.truncate(60)
 
     results = []
 
@@ -1748,8 +1750,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      results << Guw::GuwUnitOfWork.create( name: reduce_str,
-                                            comments: complete_str,
+      results << Guw::GuwUnitOfWork.create( name: title,
+                                            comments: description,
                                             guw_unit_of_work_group_id: @guw_group.id,
                                             module_project_id: current_module_project.id,
                                             pbs_project_element_id: current_component.id,
@@ -1758,7 +1760,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                             tracking: complete_str,
                                             quantity: 1,
                                             selected: true,
-                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                            url: url)
 
       results.each do |uo|
         @guw_model.guw_attributes.all.each do |gac|
@@ -1777,7 +1780,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def extract_data_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
-    txt = ""
+    id = ""
+    title = ""
+    description = ""
+    url = ""
 
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
@@ -1788,13 +1794,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
           begin
-            txt << row[5]
+            title << row[5]
           rescue
             #
           end
         end
 
-        get_data(txt, default_group, "Excel")
+        get_data(id, title, description, url, default_group, "Excel")
       end
     end
     redirect_to :back
