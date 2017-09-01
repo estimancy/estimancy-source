@@ -1686,11 +1686,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               guowa.most_likely = attr_array.size
               guowa.high = attr_array.size
               guowa.comments = attr_array.join(", ")
+            elsif gac.name == "RET"
+              guowa.low = 1
+              guowa.most_likely = 1
+              guowa.high = 1
             else
               guowa.low = 0
               guowa.most_likely = 0
               guowa.high = 0
             end
+
 
             guowa.save
 
