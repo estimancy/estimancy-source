@@ -1493,7 +1493,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model_guw_attributes = @guw_model.guw_attributes.all
 
     if params[:from] == "Excel"
-      if params[:gd] == "Données"
+      if params[:kind_excel] == "Données"
         extract_data_from_excel(default_group)
       elsif params[:kind_excel] == "Traitements"
         extract_trt_from_excel(default_group)
@@ -1629,7 +1629,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
     redirect_to :back and return
-
   end
 
   private def get_data(id, title, description, url, default_group, data_type)
@@ -1810,17 +1809,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
-          begin
-            title << row[5]
-          rescue
-            #
-          end
+          title << row[4]
+          description << row[5]
         end
 
         get_data(id, title, description, url, default_group, "Excel")
       end
     end
-    redirect_to :back
   end
 
   def deported
