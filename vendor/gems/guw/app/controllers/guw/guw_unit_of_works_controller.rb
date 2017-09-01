@@ -1602,7 +1602,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row.nil?
               unless row[5].blank?
 
-                results = get_trt("", "", row[5], "", default_group, "Excel")
+                results = get_trt("", row[4], row[5], "", default_group, "Excel")
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
@@ -1629,8 +1629,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
       end
-      redirect_to :back and return
     end
+    redirect_to :back and return
+
   end
 
   private def get_data(id, title, description, url, default_group, data_type)
@@ -1739,7 +1740,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @http = Curl.post("http://#{url_server}/estimate_trt", { us: description } )
 
-    title = "##{id} - #{title}"
+    unless id.blank?
+      title = "##{id} - #{title}"
+    end
+
     description = description.to_s.truncate(60)
 
     results = []
