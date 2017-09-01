@@ -1757,7 +1757,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                             pbs_project_element_id: current_component.id,
                                             guw_model_id: @guw_model.id,
                                             display_order: nil,
-                                            tracking: complete_str,
+                                            tracking: "",
                                             quantity: 1,
                                             selected: true,
                                             guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
