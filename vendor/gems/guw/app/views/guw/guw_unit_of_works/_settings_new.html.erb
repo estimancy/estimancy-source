@@ -792,25 +792,25 @@
                     
               <div id="excel-type-block">
                 <% if @guw_model.allow_ml_excel == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Aucun"]), class: "span8" %>
+                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Aucun"]), class: "span8" %>
                 <% end %>
               </div>
 
               <div id="jira-type-block">
                 <% if @guw_model.allow_ml_jira == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
+                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
                 <% end %>
               </div>
 
               <div id="redmine-type-block">
                 <% if @guw_model.allow_ml_redmine == false %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
+                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
                 <% end %>
               </div>   
 

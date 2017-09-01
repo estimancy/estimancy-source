@@ -1493,11 +1493,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model_guw_attributes = @guw_model.guw_attributes.all
 
     if params[:from] == "Excel"
-      if params[:kind] == "Données"
+      if params[:gd] == "Données"
         extract_data_from_excel(default_group)
-      elsif params[:kind] == "Traitements"
+      elsif params[:kind_excel] == "Traitements"
         extract_trt_from_excel(default_group)
-      elsif params[:kind] == "Manuel"
+      elsif params[:kind_excel] == "Manuel"
         import_guw("", default_group, "Excel")
       end
     elsif params[:from] == "Jira"
@@ -1525,9 +1525,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         unless description.blank?
-          if params[:kind] == "Données"
+          if params[:kind_jira] == "Données"
             results = get_data(id, title, description, url, default_group, "Jira")
-          elsif params[:kind] == "Traitements"
+          elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
           else
             results = import_guw(description, default_group, "Jira")
@@ -1562,9 +1562,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
 
             unless text.blank?
-              if params[:kind] == "Données"
+              if params[:kind_redmine] == "Données"
                 results = get_data(id, title, description, url, default_group, "Redmine")
-              elsif params[:kind] == "Traitements"
+              elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
               else
                 results = import_guw(description, default_group, "Redmine")
