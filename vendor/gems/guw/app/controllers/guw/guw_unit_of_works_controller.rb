@@ -1640,11 +1640,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     txt = description
 
     if data_type == "Excel"
-      url = @guw_model.excel_ml_server
+      server_url = @guw_model.excel_ml_server
     elsif data_type == "Redmine"
-      url = @guw_model.redmine_ml_server
+      server_url = @guw_model.redmine_ml_server
     elsif data_type == "Jira"
-      url = @guw_model.jira_ml_server
+      server_url = @guw_model.jira_ml_server
     end
 
     @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, name: "GDI").first
@@ -1664,7 +1664,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     unless txt.blank?
 
-      @http = Curl.post("http://#{url}/estimate_data", { txt: txt })
+      @http = Curl.post("http://#{server_url}/estimate_data", { txt: txt })
 
       JSON.parse(@http.body_str).each do |output|
 
@@ -2116,7 +2116,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
                                           name: title,
                                           comments: description,
-                                          tracability: "",
+                                          tracking: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
                                           module_project_id: current_module_project.id,
                                           pbs_project_element_id: @component.id,
