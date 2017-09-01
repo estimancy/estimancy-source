@@ -683,10 +683,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type)
 
-    if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
-      guw_unit_of_work.missing_value = true
-    else
-      guw_unit_of_work.missing_value = false
+    begin
+      if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
+        guw_unit_of_work.missing_value = true
+      else
+        guw_unit_of_work.missing_value = false
+      end
+    rescue
+      #
     end
 
     #Peut être factorisé  dans une boucle !
