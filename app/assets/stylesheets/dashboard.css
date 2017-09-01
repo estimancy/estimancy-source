@@ -1318,3 +1318,8 @@ form{
     margin-top: -75px;
     margin-left: 60px;
 }
+
+td.float_left {
+    /*float: left;*/
+    border-top: 0px;
+}
