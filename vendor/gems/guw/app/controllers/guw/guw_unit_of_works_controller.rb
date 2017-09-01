@@ -1851,9 +1851,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row[4].nil?
               if index > 0
 
-                guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
-                                                              module_project_id: current_module_project.id,
-                                                              pbs_project_element_id: @component.id).first_or_create
+                if default_group.blank?
+                  guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
+                                                                module_project_id: current_module_project.id,
+                                                                pbs_project_element_id: @component.id).first_or_create
+                else
+                  guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                                module_project_id: current_module_project.id,
+                                                                pbs_project_element_id: current_component.id).first_or_create
+                end
 
                 tmp_hash_res = Hash.new
                 tmp_hash_ares  = Hash.new
