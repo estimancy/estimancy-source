@@ -219,7 +219,7 @@
               <th class=""><%= I18n.t :actions %></th>
             </tr>
 
-           <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name DESC").each_with_index do |guow, i| %>
+           <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
