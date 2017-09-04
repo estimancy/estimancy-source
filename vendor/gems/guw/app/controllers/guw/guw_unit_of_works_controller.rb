@@ -1551,43 +1551,44 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-    else params[:from] = "Redmine"
-    pages = []
+    elsif params[:from] = "Redmine"
 
       (0..2).each do |i|
+        pages = []
+
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
           pages << page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
         end
-      end
 
-      pages.flatten.each do |val|
-        id = val
-        agent = Mechanize.new
-        url = "http://forge.estimancy.com/issues/#{val}"
-        agent.get(url) do |page|
-          title = page.search(".subject h3").text
-          description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
+        pages.flatten.each do |val|
+          id = val
+          agent = Mechanize.new
+          url = "http://forge.estimancy.com/issues/#{val}"
+          agent.get(url) do |page|
+            title = page.search(".subject h3").text
+            description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
 
-          unless description.blank?
-            if params[:kind_redmine] == "Données"
-              results = get_data(id, title, description, url, default_group, "Redmine")
-            elsif params[:kind_redmine] == "Traitements"
-              results = get_trt(id, title, description, url, default_group, "Redmine")
-            elsif params[:kind_redmine] == "Données + Traitements"
-              a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
-              b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
-              results = a + b
-            else
-              results = import_guw(id, title, description, default_group, "Redmine", url)
-            end
+            unless description.blank?
+              if params[:kind_redmine] == "Données"
+                results = get_data(id, title, description, url, default_group, "Redmine")
+              elsif params[:kind_redmine] == "Traitements"
+                results = get_trt(id, title, description, url, default_group, "Redmine")
+              elsif params[:kind_redmine] == "Données + Traitements"
+                a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
+                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
+                results = a + b
+              else
+                results = import_guw(id, title, description, default_group, "Redmine", url)
+              end
 
-            results.each do |uo|
-              @guw_model_guw_attributes.each do |gac|
-                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                          guw_unit_of_work_id: uo.id,
-                                                          guw_attribute_id: gac.id).first_or_create
-                guowa.save
+              results.each do |uo|
+                @guw_model_guw_attributes.each do |gac|
+                  guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                            guw_unit_of_work_id: uo.id,
+                                                            guw_attribute_id: gac.id).first_or_create
+                  guowa.save
+                end
               end
             end
           end
