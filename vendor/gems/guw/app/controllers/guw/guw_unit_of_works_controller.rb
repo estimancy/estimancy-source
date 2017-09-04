@@ -1553,7 +1553,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     elsif params[:from] = "Redmine"
 
-      (0..2).each do |i|
+      (0..1).each do |i|
+
         pages = []
 
         url = "#{params[:url]}?page=#{i}"
@@ -1683,10 +1684,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         attr_array = output.scan(/<attribut=(.*?)>/)
 
         data_array.each do |d|
+
           t = d.first
+
           unless t.nil?
             v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
           end
+
           guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
                                              guw_model_id: @guw_model.id,
                                              module_project_id: current_module_project.id).first_or_create(
