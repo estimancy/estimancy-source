@@ -1504,7 +1504,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         import_guw("", "", "", default_group, "Excel", "#")
       end
     elsif params[:from] == "Jira"
-      (0..5).step(1).each do |i|
+      (1..5).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
         page = agent.page
@@ -1553,13 +1553,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     elsif params[:from] = "Redmine"
 
-      (0..1).each do |i|
+      (1..2).each do |i|
 
         pages = []
 
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
-          pages << page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+          pages << page.search("//tr[@id]").map{|j| j.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
         pages.uniq.flatten.each do |val|
@@ -1781,18 +1781,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      results << Guw::GuwUnitOfWork.create( name: title.blank? ? description.truncate(50) : title,
-                                            comments: description,
-                                            guw_unit_of_work_group_id: @guw_group.id,
-                                            module_project_id: current_module_project.id,
-                                            pbs_project_element_id: current_component.id,
-                                            guw_model_id: @guw_model.id,
-                                            display_order: nil,
-                                            tracking: "",
-                                            quantity: 1,
-                                            selected: true,
-                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
-                                            url: url)
+      results << Guw::GuwUnitOfWork.where(name: title.blank? ? description.truncate(50) : title,
+                                          comments: description,
+                                          guw_unit_of_work_group_id: @guw_group.id,
+                                          module_project_id: current_module_project.id,
+                                          pbs_project_element_id: current_component.id,
+                                          guw_model_id: @guw_model.id,
+                                          display_order: nil,
+                                          tracking: "",
+                                          quantity: 1,
+                                          selected: true,
+                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                          url: url)
 
       results.each do |uo|
         @guw_model.guw_attributes.all.each do |gac|
