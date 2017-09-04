@@ -1730,7 +1730,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    return results.sort! { |a, b|  a.name <=> b.name }
+    return results.sort! { |a, b|  b.name <=> a.name }
   end
 
   private def get_trt(id, title, description, url, default_group, trt_type)
@@ -1799,7 +1799,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     end
 
-    return results.sort! { |a, b|  a.name <=> b.name }
+    return results.sort! { |a, b|  b.name <=> a.name }
   end
 
   def extract_data_from_excel(default_group)
@@ -2155,7 +2155,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    return results.sort! { |a, b|  a.name <=> b.name }
+    return results.sort! { |a, b|  b.name <=> a.name }
   end
 
   def calculate_attribute(guw_uow)
