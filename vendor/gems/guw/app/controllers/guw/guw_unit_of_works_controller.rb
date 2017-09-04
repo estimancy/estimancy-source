@@ -1497,6 +1497,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         extract_data_from_excel(default_group)
       elsif params[:kind_excel] == "Traitements"
         extract_trt_from_excel(default_group)
+      elsif params[:kind_excel] == "Données + Traitements"
+        extract_data_from_excel(default_group)
+        extract_trt_from_excel(default_group)
       elsif params[:kind_excel] == "Aucun"
         import_guw("", "", "", default_group, "Excel", "#")
       end
