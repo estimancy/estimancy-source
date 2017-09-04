@@ -1511,7 +1511,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         pages << page.search("//@data-issue-key").map(&:value)
       end
 
-      pages.flatten.take(5).each do |val|
+      pages.uniq.flatten.take(5).each do |val|
         id = val
         title = ""
         description = ""
@@ -1561,7 +1561,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           pages << page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
-        pages.flatten.each do |val|
+        pages.uniq.flatten.each do |val|
           id = val
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
