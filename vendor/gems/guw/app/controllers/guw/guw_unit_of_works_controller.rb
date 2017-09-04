@@ -362,7 +362,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id)
+                                                  guw_model_id: @guw_model.id).order("name ASC")
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
       array_pert = Array.new
@@ -892,7 +892,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
+                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
@@ -2440,7 +2440,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
+    group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
       u.display_order = i
       if u.changed?
         u.save
