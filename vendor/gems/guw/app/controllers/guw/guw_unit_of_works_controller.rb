@@ -1532,7 +1532,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             results = get_data(id, title, description, url, default_group, "Jira")
           elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
-          elsif params[:kind_excel] == "Données + Traitements"
+          elsif params[:kind_jira] == "Données + Traitements"
             a = get_trt(id, title, description, url, default_group, "Jira")
             b = get_data(id, title, description, url, default_group, "Jira")
             results = a + b
@@ -1571,7 +1571,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 results = get_data(id, title, description, url, default_group, "Redmine")
               elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
-              elsif params[:kind_excel] == "Données + Traitements"
+              elsif params[:kind_redmine] == "Données + Traitements"
                 a = get_trt(id, title, description, url, default_group, "Redmine")
                 b = get_data(id, title, description, url, default_group, "Redmine")
                 results = a + b
@@ -1735,7 +1735,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   private def get_trt(id, title, description, url, default_group, trt_type)
     @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
 
     if trt_type == "Excel"
       url_server = @guw_model.excel_ml_server
