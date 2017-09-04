@@ -1484,7 +1484,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def extract_from_url
 
-    myTab = Array.new
+    pages = Array.new
     agent = Mechanize.new
 
     default_group = params[:group_name]
@@ -1508,10 +1508,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
         page = agent.page
-        myTab << page.search("//@data-issue-key").map(&:value)
+        pages << page.search("//@data-issue-key").map(&:value)
       end
 
-      myTab.flatten.take(5).each do |val|
+      pages.flatten.take(5).each do |val|
         id = val
         title = ""
         description = ""
@@ -1552,40 +1552,42 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
     else params[:from] = "Redmine"
+    pages = []
+
       (0..2).each do |i|
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
-          myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+          pages << page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
         end
+      end
 
-        myTab.flatten.each do |val|
-          id = val
-          agent = Mechanize.new
-          url = "http://forge.estimancy.com/issues/#{val}"
-          agent.get(url) do |page|
-            title = page.search(".subject h3").text
-            description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
+      pages.flatten.each do |val|
+        id = val
+        agent = Mechanize.new
+        url = "http://forge.estimancy.com/issues/#{val}"
+        agent.get(url) do |page|
+          title = page.search(".subject h3").text
+          description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
 
-            unless description.blank?
-              if params[:kind_redmine] == "Données"
-                results = get_data(id, title, description, url, default_group, "Redmine")
-              elsif params[:kind_redmine] == "Traitements"
-                results = get_trt(id, title, description, url, default_group, "Redmine")
-              elsif params[:kind_redmine] == "Données + Traitements"
-                a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
-                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
-                results = a + b
-              else
-                results = import_guw(id, title, description, default_group, "Redmine", url)
-              end
+          unless description.blank?
+            if params[:kind_redmine] == "Données"
+              results = get_data(id, title, description, url, default_group, "Redmine")
+            elsif params[:kind_redmine] == "Traitements"
+              results = get_trt(id, title, description, url, default_group, "Redmine")
+            elsif params[:kind_redmine] == "Données + Traitements"
+              a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
+              b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
+              results = a + b
+            else
+              results = import_guw(id, title, description, default_group, "Redmine", url)
+            end
 
-              results.each do |uo|
-                @guw_model_guw_attributes.each do |gac|
-                  guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
-                                                            guw_unit_of_work_id: uo.id,
-                                                            guw_attribute_id: gac.id).first_or_create
-                  guowa.save
-                end
+            results.each do |uo|
+              @guw_model_guw_attributes.each do |gac|
+                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                          guw_unit_of_work_id: uo.id,
+                                                          guw_attribute_id: gac.id).first_or_create
+                guowa.save
               end
             end
           end
@@ -1598,7 +1600,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def extract_trt_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
-    results =[]
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
