@@ -1498,8 +1498,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       elsif params[:kind_excel] == "Traitements"
         extract_trt_from_excel(default_group)
       elsif params[:kind_excel] == "Données + Traitements"
-        extract_data_from_excel(default_group)
-        extract_trt_from_excel(default_group)
+        extract_trt_from_excel("T - #{default_group}")
+        extract_data_from_excel("D - #{default_group}")
       elsif params[:kind_excel] == "Aucun"
         import_guw("", "", "", default_group, "Excel", "#")
       end
@@ -1533,8 +1533,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
           elsif params[:kind_jira] == "Données + Traitements"
-            a = get_trt(id, title, description, url, default_group, "Jira")
-            b = get_data(id, title, description, url, default_group, "Jira")
+            a = get_trt(id, title, description, url, "T - #{default_group}", "Jira")
+            b = get_data(id, title, description, url, "D - #{default_group}", "Jira")
             results = a + b
           else
             results = import_guw(id, title, description, default_group, "Jira", url)
@@ -1572,8 +1572,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
               elsif params[:kind_redmine] == "Données + Traitements"
-                a = get_trt(id, title, description, url, default_group, "Redmine")
-                b = get_data(id, title, description, url, default_group, "Redmine")
+                a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
+                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
                 results = a + b
               else
                 results = import_guw(id, title, description, default_group, "Redmine", url)
