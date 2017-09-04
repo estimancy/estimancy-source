@@ -1765,7 +1765,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      results << Guw::GuwUnitOfWork.create( name: title,
+      results << Guw::GuwUnitOfWork.create( name: title.blank? ? description.truncate(50) : title,
                                             comments: description,
                                             guw_unit_of_work_group_id: @guw_group.id,
                                             module_project_id: current_module_project.id,
