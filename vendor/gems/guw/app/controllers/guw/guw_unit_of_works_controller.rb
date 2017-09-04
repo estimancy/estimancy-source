@@ -1532,6 +1532,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             results = get_data(id, title, description, url, default_group, "Jira")
           elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
+          elsif params[:kind_excel] == "Données + Traitements"
+            a = get_trt(id, title, description, url, default_group, "Jira")
+            b = get_data(id, title, description, url, default_group, "Jira")
+            results = a + b
           else
             results = import_guw(id, title, description, default_group, "Jira", url)
           end
@@ -1567,6 +1571,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 results = get_data(id, title, description, url, default_group, "Redmine")
               elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
+              elsif params[:kind_excel] == "Données + Traitements"
+                a = get_trt(id, title, description, url, default_group, "Redmine")
+                b = get_data(id, title, description, url, default_group, "Redmine")
+                results = a + b
               else
                 results = import_guw(id, title, description, default_group, "Redmine", url)
               end
