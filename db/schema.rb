@@ -1965,6 +1965,7 @@ ActiveRecord::Schema.define(:version => 20170901080027) do
     t.boolean  "do_not_show_phases_with_zero_value"
     t.boolean  "allow_modify_ratio_reference"
     t.boolean  "allow_add_new_phase"
+    t.boolean  "comment_required_if_modifiable"
   end
 
   create_table "wbs_project_elements", :force => true do |t|

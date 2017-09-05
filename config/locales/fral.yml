@@ -2019,3 +2019,5 @@ fral:
   multiple_delete: "Suppression multiple"
   hide_wbs_header: "Masquer l'entête de la WBS"
   phase_short_name: "Nom court de la phase"
+  wbs_calculate_button_is_disabled: "Vous devez ajouter un commentaire à chaque phase modifiée pour pouvoir lancer le calcul"
+  comment_required_if_modifiable: "Commentaires requis lorsqu'une phase est modifiable"

@@ -1,9 +1,9 @@
 <% do_not_show_cost = (@selected_ratio.nil? ? nil : @selected_ratio.do_not_show_cost) %>
 <% do_not_show_phases_with_zero_value = (@selected_ratio.nil? ? nil : @selected_ratio.do_not_show_phases_with_zero_value) %>
+<% comment_required_if_modifiable = (@selected_ratio.nil? ? nil : @selected_ratio.comment_required_if_modifiable) %>
 
-<% allow_modify_retained_effort = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_retained_effort) %>
-<% allow_modify_ratio_reference = (@selected_ratio.nil? ? nil : @selected_ratio.allow_modify_ratio_reference) %>
 <% allow_add_new_phase = (@selected_ratio.nil? ? nil : @selected_ratio.allow_add_new_phase) %>
+
 
 <span>
   <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
@@ -18,23 +18,17 @@
     <%= I18n.t(:do_not_show_phases_with_zero_value ) %>
     </label>
 </span>
+
+<span>
+    <label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">
+      <%= check_box_tag :comment_required_if_modifiable, 1, comment_required_if_modifiable %>
+      <%= I18n.t(:comment_required_if_modifiable ) %>
+    </label>
+</span>
+
 <br>
 
 <div class="pull-left">
-    <!--<span>-->
-      <!--<label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">-->
-        <!--<%#= check_box_tag :allow_modify_retained_effort, 1, allow_modify_retained_effort %>-->
-        <!--<%#= I18n.t(:allow_modify_retained_effort ) %>-->
-      <!--</label>-->
-    <!--</span>-->
-
-    <!--<span>-->
-      <!--<label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">-->
-        <!--<%#= check_box_tag :allow_modify_ratio_reference, 1, allow_modify_ratio_reference %>-->
-        <!--<%#= I18n.t(:allow_modify_ratio_reference ) %>-->
-      <!--</label>-->
-    <!--</span>-->
-
     <!--<span>-->
       <!--<label class="checkbox pull-left" style="margin-right: 40px; margin-top: 10px">-->
         <!--<%#= check_box_tag :allow_add_new_phase, 1, allow_add_new_phase %>-->

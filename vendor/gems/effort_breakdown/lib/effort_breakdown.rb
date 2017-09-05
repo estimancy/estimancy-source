@@ -229,6 +229,7 @@ module EffortBreakdown
               output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
             end
           end
+
         end
       end
 

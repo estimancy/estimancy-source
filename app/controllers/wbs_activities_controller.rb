@@ -355,7 +355,6 @@ class WbsActivitiesController < ApplicationController
       wai.comment = params[:comment][wai.id.to_s]
       wai.save
     end
-
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
@@ -846,7 +845,7 @@ class WbsActivitiesController < ApplicationController
               effort_total_for_global_ratio = probable_estimation_value[@pbs_project_element.id][root_element.id][:value]
             end
 
-            #=========== Update Module-Project Ratio-Elements Theoretical and Retained PROBABLE-values  ======
+            #=========== Update Module-Project-Ratio-Elements Theoretical and Retained PROBABLE-values  ======
             mp_pbs_probable_value = probable_estimation_value[@pbs_project_element.id]
             @module_project_ratio_elements.each do |mp_ratio_element|
               wbs_probable_value = mp_pbs_probable_value[mp_ratio_element.wbs_activity_element_id]
@@ -868,12 +867,35 @@ class WbsActivitiesController < ApplicationController
               #  mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
               #end
 
-
               # if value is manually updated, update the flagged attribute
               unless just_changed_values.nil?
                 if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
                   mp_ratio_element.flagged = true
                 end
+              end
+
+              if mp_ratio_element.changed?
+                mp_ratio_element.save
+              end
+            end
+
+            # Update flagged Effort or Cost values
+            @module_project_ratio_elements.each do |mp_ratio_element|
+              wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
+              if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
+                theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+                retained_effort = mp_ratio_element.send("retained_effort_most_likely")
+
+                theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+                retained_cost = mp_ratio_element.send("retained_cost_most_likely")
+
+                if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
+                  mp_ratio_element.flagged = true
+                else
+                  mp_ratio_element.flagged = false
+                end
+              else
+                mp_ratio_element.flagged = false
               end
 
               if mp_ratio_element.changed?

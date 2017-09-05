@@ -452,7 +452,7 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", class: "pull-right btn btn-primary" %></span>
+    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %></span>
     <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
   <% end %>
 
@@ -491,6 +491,7 @@
       }
     });
 
+    //Tester si toutes les phases modifiées ont des commentaires
     //Hide WBS dashboard header if hide_wbs_header is true
     var hide_wbs_header = "<%= @wbs_activity.hide_wbs_header %>";
     var ratio_hide_wbs_header = "<%= @wbs_activity.wbs_activity_ratios.size > 1 %>";
@@ -498,13 +499,41 @@
     if (hide_wbs_header == "true") {
         if (ratio_hide_wbs_header == "true") {
             $(".hide_wbs_header").hide();
-
         } else {
             $("#table_hide_wbs_header").children().hide();
         }
     }
 
+    // Disable the Calculate button if at least one element is flagged and
+    // if comment_required_if_modifiable is true
+      var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
+      if(comment_required_if_modifiable == "true"){
+          var nb_flagged = $("td.flagged.red").length;
+          var disable_calculate_button = false;
 
+          if (nb_flagged >= 1){
+              $("td.flagged.red").find('span').each(function(){
+                  var mp_ratio_element_id = $(this).data('mp_ratio_element');
+
+                  if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
+                      // Get the element comments
+                      var comments = $(this).data('comments');
+                      if (comments == ""){
+                          disable_calculate_button = true;
+                          return false;
+                      }
+                  }
+              });
+          }
+
+          if (disable_calculate_button == true){
+              $("#wbs_calculate_button").attr('disabled', 'disabled');
+              $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
+          }else{
+              $("#wbs_calculate_button").removeAttr('disabled');
+              $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+          }
+      }
 
   })
 </script>

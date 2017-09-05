@@ -45,8 +45,10 @@ class WbsActivityRatioElementsController < ApplicationController
 
     #Select ratio and elements
     wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
-    wbs_activity_ratio.update_attributes( allow_modify_retained_effort: params[:allow_modify_retained_effort], allow_add_new_phase: params[:allow_add_new_phase],
-                                          do_not_show_cost: params[:do_not_show_cost], do_not_show_phases_with_zero_value: params[:do_not_show_phases_with_zero_value])
+    wbs_activity_ratio.update_attributes( allow_modify_retained_effort: params[:allow_modify_retained_effort],
+                                          allow_add_new_phase: params[:allow_add_new_phase], do_not_show_cost: params[:do_not_show_cost],
+                                          do_not_show_phases_with_zero_value: params[:do_not_show_phases_with_zero_value],
+                                          comment_required_if_modifiable: params[:comment_required_if_modifiable])
 
 
     wbs_activity_ratio.wbs_activity_ratio_variables.each do |warv|

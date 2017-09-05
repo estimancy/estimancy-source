@@ -1962,4 +1962,6 @@ es:
   effort_is_modifiable: "Effort is modifiable"
   cost_is_modifiable: "Cost is modifiable"
   phase_short_name: "Phase short name"
+  wbs_calculate_button_is_disabled: "You must add a comment to each modified phase in order to start the calculation"
+  comment_required_if_modifiable: "Comments is required if phase is modifiable"
 
