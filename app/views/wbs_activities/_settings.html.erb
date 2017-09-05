@@ -144,9 +144,9 @@
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
   <table id="table_hide_wbs_header" class="table table-bordered">
-    <thead class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">
+    <!--<thead class="<%#= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">-->
         <% if wbs_activity.enabled_input %>
-          <tr>
+          <tr class="hide_wbs_header">
             <% if wbs_activity.three_points_estimation? %>
                 <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
                 <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
@@ -161,7 +161,7 @@
 
         <% current_mp_wbs_activity_root_id = wbs_activity.root_element.id %>
 
-        <tr>
+        <tr class="hide_wbs_header">
           <% if wbs_activity.enabled_input && wbs_activity.three_points_estimation? %>
             <th>L</th>
             <th>M</th>
@@ -196,7 +196,7 @@
           <th>Ratio global</th>
           <th><%= I18n.t(:comment) %></th>
         </tr>
-    </thead>
+    <!--</thead>-->
 
     <tr class="hide_wbs_header">
       <!-- Les valeurs d'entreé initiales venant du module du dessous -->
