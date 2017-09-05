@@ -58,17 +58,17 @@
                 <tr>
                   <td><%= f.input :allow_excel, label: "Activer l'import par Excel"  %></td>
                   <td><%= f.input :excel_ml_server, label: false, placeholder: "Adresse du serveur", disabled: !@guw_model.allow_excel %></td>
-                  <td><%= f.input :allow_ml_excel, label: "IA Optionelle" %></td>
+                  <td><%= f.input :allow_ml_excel, label: "IA Optionnelle" %></td>
                 </tr>
                 <tr>
                   <td><%= f.input :allow_jira, label: "Activer l'import via JIRA" %></td>
                   <td><%= f.input :jira_ml_server, label: false , placeholder: "Adresse du serveur", disabled: !@guw_model.allow_jira  %></td>
-                  <td><%= f.input :allow_ml_jira, label: "IA Optionelle" %></td>
+                  <td><%= f.input :allow_ml_jira, label: "IA Optionnelle" %></td>
                 </tr>
                 <tr>
                   <td><%= f.input :allow_redmine, label: "Activer l'import via Redmine" %></td>
                   <td><%= f.input :redmine_ml_server, label: false, placeholder: "Adresse du serveur", disabled: !@guw_model.allow_redmine %></td>
-                  <td><%= f.input :allow_ml_redmine, label: "IA Optionelle" %></td>
+                  <td><%= f.input :allow_ml_redmine, label: "IA Optionnelle" %></td>
                 </tr>
               </table>
             </div>

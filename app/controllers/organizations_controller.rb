@@ -377,8 +377,8 @@ class OrganizationsController < ApplicationController
 
 
     tmp1 = current_organization_projects.where(creator_id: current_user.id,
-                                        is_model: false,
-                                        private: true).all
+                                               is_model: false,
+                                               private: true).all
 
     if params[:report_date][:start_date].blank? || params[:report_date][:end_date].blank?
       tmp2 = current_organization_projects.where(is_model: false, private: false).where(conditions).where("title like ?", "%#{params[:title]}%").all
@@ -561,7 +561,6 @@ class OrganizationsController < ApplicationController
             end
           end
         end
-
 
         tmp << (array_project + array_value).flatten(1)
       end

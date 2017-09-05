@@ -34,7 +34,7 @@ module Guw
     has_many :guw_unit_of_work_attributes, dependent: :destroy
     has_many :guw_coefficient_element_unit_of_works, dependent: :destroy
 
-    validates_presence_of :name
+    # validates_presence_of :name
 
     serialize :ajusted_size
     serialize :size

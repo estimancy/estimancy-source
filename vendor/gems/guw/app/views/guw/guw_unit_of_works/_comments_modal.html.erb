@@ -28,6 +28,17 @@
       </b>
     </label>
     <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        URL d'origine
+      </b>
+    </label>
+    <% if guow.url %>
+      <%= link_to guow.url, guow.url, target: "_blank" %>
+    <% else %>
+      -
+    <% end %>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>

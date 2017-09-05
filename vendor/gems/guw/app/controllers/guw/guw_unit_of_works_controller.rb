@@ -362,7 +362,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id)
+                                                  guw_model_id: @guw_model.id).order("name ASC")
 
     @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
       array_pert = Array.new
@@ -683,10 +683,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type)
 
-    if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
-      guw_unit_of_work.missing_value = true
-    else
-      guw_unit_of_work.missing_value = false
+    begin
+      if params["most_likely"]["#{guw_unit_of_work.id}"].values.include?("")
+        guw_unit_of_work.missing_value = true
+      else
+        guw_unit_of_work.missing_value = false
+      end
+    rescue
+      #
     end
 
     #Peut être factorisé  dans une boucle !
@@ -888,7 +892,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity)
+                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
@@ -1480,7 +1484,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def extract_from_url
 
-    myTab = Array.new
+    pages = Array.new
     agent = Mechanize.new
 
     default_group = params[:group_name]
@@ -1489,68 +1493,94 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model_guw_attributes = @guw_model.guw_attributes.all
 
     if params[:from] == "Excel"
-      if params[:kind] == "Données"
-        ml_data(default_group)
-      elsif params[:kind] == "Traitements"
-        ml_trt(default_group)
-      elsif params[:kind] == "Manuel"
-        import_guw("", default_group, "Excel")
+      if params[:kind_excel] == "Données"
+        extract_data_from_excel(default_group)
+      elsif params[:kind_excel] == "Traitements"
+        extract_trt_from_excel(default_group)
+      elsif params[:kind_excel] == "Données + Traitements"
+        extract_trt_from_excel("T - #{default_group}")
+        extract_data_from_excel("D - #{default_group}")
+      elsif params[:kind_excel] == "Aucun"
+        import_guw("", "", "", default_group, "Excel", "#")
       end
     elsif params[:from] == "Jira"
-      (0..5).step(1).each do |i|
+      (1..5).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"
         agent.get(url)
         page = agent.page
-        myTab << page.search("//@data-issue-key").map(&:value)
+        pages << page.search("//@data-issue-key").map(&:value)
       end
 
-      myTab.flatten.take(50).each do |val|
-        nom = ""
+      pages.uniq.flatten.take(5).each do |val|
+        id = val
+        title = ""
         description = ""
+
         url = "https://issues.apache.org/jira/browse/#{val}"
         agent = Mechanize.new
         agent.get(url)
         agent.page.search("#summary-val").each do |item|
-          nom << item.text
+          title << item.text
         end
 
         agent.page.search(".user-content-block p").each do |item|
           description << item.text
         end
 
-        text = description
+        unless description.blank?
+          if params[:kind_jira] == "Données"
+            results = get_data(id, title, description, url, default_group, "Jira")
+          elsif params[:kind_jira] == "Traitements"
+            results = get_trt(id, title, description, url, default_group, "Jira")
+          elsif params[:kind_jira] == "Données + Traitements"
+            a = get_trt(id, title, description, url, "T - #{default_group}", "Jira")
+            b = get_data(id, title, description, url, "D - #{default_group}", "Jira")
+            results = a + b
+          else
+            results = import_guw(id, title, description, default_group, "Jira", url)
+          end
+        end
 
-        if params[:kind] == "Données"
-          results = get_data(text, default_group, "Jira")
-        elsif params[:kind] == "Traitements"
-          results = get_trt(text, default_group, "Jira")
-        else
-          results = import_guw(text, default_group, "Jira")
+        results.each do |uo|
+          @guw_model_guw_attributes.each do |gac|
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                      guw_unit_of_work_id: uo.id,
+                                                      guw_attribute_id: gac.id).first_or_create
+            guowa.save
+          end
         end
       end
 
-    else params[:from] = "Redmine"
-      (0..2).each do |i|
+    elsif params[:from] = "Redmine"
+
+      (1..2).each do |i|
+
+        pages = []
+
         url = "#{params[:url]}?page=#{i}"
         agent.get(url) do |page|
-          myTab = page.search("//tr[@id]").map{|i| i.attributes["id"].value.to_s.gsub("issue-","") }
+          pages << page.search("//tr[@id]").map{|j| j.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
-        myTab.flatten.each do |val|
+        pages.uniq.flatten.each do |val|
+          id = val
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
           agent.get(url) do |page|
-            description = page.search(".description").text
+            title = page.search(".subject h3").text
+            description = page.search(".description").text.gsub("\n", "").gsub("        Description    ", "").lstrip
 
-            text = description.gsub("\n", "").gsub("        Description    ", "").lstrip
-
-            unless text.blank?
-              if params[:kind] == "Données"
-                results = get_data(text, default_group, "Redmine")
-              elsif params[:kind] == "Traitements"
-                results = get_trt(text, default_group, "Redmine")
+            unless description.blank?
+              if params[:kind_redmine] == "Données"
+                results = get_data(id, title, description, url, default_group, "Redmine")
+              elsif params[:kind_redmine] == "Traitements"
+                results = get_trt(id, title, description, url, default_group, "Redmine")
+              elsif params[:kind_redmine] == "Données + Traitements"
+                a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
+                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
+                results = a + b
               else
-                results = import_guw(text, default_group, "Redmine")
+                results = import_guw(id, title, description, default_group, "Redmine", url)
               end
 
               results.each do |uo|
@@ -1570,9 +1600,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to :back
   end
 
-  def ml_trt(default_group)
+  def extract_trt_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
-    results =[]
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
 
@@ -1585,7 +1614,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row.nil?
               unless row[5].blank?
 
-                results = get_trt(row[5], default_group, "Excel")
+                results = get_trt("", row[4], row[5], "", default_group, "Excel")
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
@@ -1612,26 +1641,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
       end
-      redirect_to :back and return
     end
   end
 
-  private def get_data(user_story, default_group, data_type)
+  private def get_data(id, title, description, url, default_group, data_type)
 
     results = []
 
     @guw_model = current_module_project.guw_model
-    txt = user_story
+    txt = description
 
     if data_type == "Excel"
-      url = @guw_model.excel_ml_server
+      server_url = @guw_model.excel_ml_server
     elsif data_type == "Redmine"
-      url = @guw_model.redmine_ml_server
+      server_url = @guw_model.redmine_ml_server
     elsif data_type == "Jira"
-      url = @guw_model.jira_ml_server
+      server_url = @guw_model.jira_ml_server
     end
 
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, name: "GDI").first
     if @guw_type.nil?
       @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
     end
@@ -1648,7 +1676,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     unless txt.blank?
 
-      @http = Curl.post("http://#{url}/estimate_data", { txt: txt })
+      @http = Curl.post("http://#{server_url}/estimate_data", { txt: txt })
 
       JSON.parse(@http.body_str).each do |output|
 
@@ -1656,13 +1684,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         attr_array = output.scan(/<attribut=(.*?)>/)
 
         data_array.each do |d|
+
           t = d.first
+
           unless t.nil?
             v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
           end
-          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize,
+
+          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
                                              guw_model_id: @guw_model.id,
-                                             module_project_id: current_module_project.id,).first_or_create(
+                                             module_project_id: current_module_project.id).first_or_create(
                                                                             comments: attr_array.uniq.join(", "),
                                                                             guw_unit_of_work_group_id: @guw_group.id,
                                                                             pbs_project_element_id: current_component.id,
@@ -1670,20 +1701,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                             tracking: nil,
                                                                             quantity: 1,
                                                                             selected: true,
-                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                                                            url: url)
+
+          calculate_attribute(guw_uow)
 
           results << guw_uow
 
           @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
 
-            guowa = Guw::GuwUnitOfWorkAttribute.create(guw_type_id: @guw_type.id,
-                                                       guw_unit_of_work_id: guw_uow.id,
-                                                       guw_attribute_id: gac.id)
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                      guw_unit_of_work_id: guw_uow.id,
+                                                      guw_attribute_id: gac.id).first_or_create
             if gac.name == "DET"
               guowa.low = attr_array.size
               guowa.most_likely = attr_array.size
               guowa.high = attr_array.size
               guowa.comments = attr_array.join(", ")
+            elsif gac.name == "RET"
+              guowa.low = 1
+              guowa.most_likely = 1
+              guowa.high = 1
             else
               guowa.low = 0
               guowa.most_likely = 0
@@ -1693,29 +1731,32 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             guowa.save
 
           end
+
         end
       end
     end
 
-    return results
+    return results.sort! { |a, b|  b.name <=> a.name }
   end
 
-  private def get_trt(user_story, default_group, trt_type)
+  private def get_trt(id, title, description, url, default_group, trt_type)
     @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
 
     if trt_type == "Excel"
-      url = @guw_model.excel_ml_server
+      url_server = @guw_model.excel_ml_server
     elsif trt_type == "Redmine"
-      url = @guw_model.redmine_ml_server
+      url_server = @guw_model.redmine_ml_server
     elsif trt_type == "Jira"
-      url = @guw_model.jira_ml_server
+      url_server = @guw_model.jira_ml_server
     end
 
-    @http = Curl.post("http://#{url}/estimate_trt", { us: user_story } )
+    @http = Curl.post("http://#{url_server}/estimate_trt", { us: description } )
 
-    complete_str = user_story.to_s
-    reduce_str = user_story.to_s.truncate(60)
+    unless id.blank?
+      title = "##{id} - #{title}"
+    end
+
+    description = description.to_s
 
     results = []
 
@@ -1740,17 +1781,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      results << Guw::GuwUnitOfWork.create( name: reduce_str,
-                                            comments: complete_str,
-                                            guw_unit_of_work_group_id: @guw_group.id,
-                                            module_project_id: current_module_project.id,
-                                            pbs_project_element_id: current_component.id,
-                                            guw_model_id: @guw_model.id,
-                                            display_order: nil,
-                                            tracking: complete_str,
-                                            quantity: 1,
-                                            selected: true,
-                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+      results << Guw::GuwUnitOfWork.create(name: title.blank? ? description.truncate(50) : title,
+                                           comments: description,
+                                          guw_unit_of_work_group_id: @guw_group.id,
+                                          module_project_id: current_module_project.id,
+                                          pbs_project_element_id: current_component.id,
+                                          guw_model_id: @guw_model.id,
+                                          display_order: nil,
+                                          tracking: "",
+                                          quantity: 1,
+                                          selected: true,
+                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                          url: url)
 
       results.each do |uo|
         @guw_model.guw_attributes.all.each do |gac|
@@ -1763,13 +1805,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     end
 
-    return results
+    return results.sort! { |a, b|  b.name <=> a.name }
   end
 
-  def ml_data(default_group)
+  def extract_data_from_excel(default_group)
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
-    txt = ""
+    id = ""
+    title = ""
+    description = ""
+    url = ""
 
     if params[:file].present?
       if (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
@@ -1779,17 +1824,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab = worksheet.extract_data
         tab.each_with_index do |row, index|
-          begin
-            txt << row[5]
-          rescue
-            #
-          end
+          title << row[4].to_s
+          description << row[5].to_s
         end
 
-        get_data(txt, default_group, "Excel")
+        get_data(id, title, description, url, default_group, "Excel")
       end
     end
-    redirect_to :back
   end
 
   def deported
@@ -1798,7 +1839,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = current_module_project.guw_model
   end
 
-  private def import_guw(text, default_group, source)
+  private def import_guw(id, title, description, default_group, source, url)
 
     @guw_model = current_module_project.guw_model
     @component = current_component
@@ -1820,9 +1861,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             unless row[4].nil?
               if index > 0
 
-                guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
-                                                              module_project_id: current_module_project.id,
-                                                              pbs_project_element_id: @component.id).first_or_create
+                if default_group.blank?
+                  guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: row[2].nil? ? '-' : row[2],
+                                                                module_project_id: current_module_project.id,
+                                                                pbs_project_element_id: @component.id).first_or_create
+                else
+                  guw_uow_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                                module_project_id: current_module_project.id,
+                                                                pbs_project_element_id: current_component.id).first_or_create
+                end
 
                 tmp_hash_res = Hash.new
                 tmp_hash_ares  = Hash.new
@@ -1847,6 +1894,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   @guw_type = Guw::GuwType.where(name: row[6],
                                                  guw_model_id: @guw_model.id).first
+                  if @guw_type.nil?
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                                   is_default: true).first
+                    if @guw_type.nil?
+                      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                    end
+                  end
 
                   @guw_attributes.size.times do |jj|
 
@@ -2078,14 +2132,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
 
+      unless id.blank?
+        title = "##{id} - #{title}"
+      end
+
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
-                                          name: text,
-                                          comments: text,
+                                          name: title,
+                                          comments: description,
+                                          tracking: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
                                           module_project_id: current_module_project.id,
                                           pbs_project_element_id: @component.id,
                                           guw_model_id: @guw_model.id,
-                                          guw_type_id: @guw_type.id)
+                                          guw_type_id: @guw_type.id,
+                                          url: url)
 
       guw_uow.save(validate: false)
 
@@ -2101,7 +2161,86 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    return results
+    return results.sort! { |a, b|  b.name <=> a.name }
+  end
+
+  def calculate_attribute(guw_uow)
+
+    @guw_type = guw_uow.guw_type
+
+    @lows = Array.new
+    @mls = Array.new
+    @highs = Array.new
+    array_pert = Array.new
+
+    guw_uow.off_line = false
+    guw_uow.off_line_uo = false
+
+    guw_uow.guw_unit_of_work_attributes.each do |guowa|
+      calculate_guowa(guowa, guw_uow, @guw_type)
+    end
+
+    if @lows.empty?
+      guw_uow.guw_complexity_id = nil
+      guw_uow.guw_original_complexity_id = nil
+      guw_uow.result_low = nil
+    else
+      guw_uow.result_low = @lows.sum
+    end
+
+    if @mls.empty?
+      guw_uow.guw_complexity_id = nil
+      guw_uow.guw_original_complexity_id = nil
+      guw_uow.result_most_likely = nil
+    else
+      guw_uow.result_most_likely = @mls.sum
+    end
+
+    if @highs.empty?
+      guw_uow.guw_complexity_id = nil
+      guw_uow.guw_original_complexity_id = nil
+      guw_uow.result_high = nil
+    else
+      guw_uow.result_high = @highs.sum
+    end
+
+    if guw_uow.changed?
+      guw_uow.save
+    end
+
+    unless @guw_type.nil?
+      if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
+        guw_uow.off_line_uo = nil
+      else
+        #Save if uo is simple/ml/high
+        value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
+        if (value_pert < @guw_type.guw_complexities.map(&:bottom_range).min.to_f)
+          guw_uow.off_line_uo = true
+        elsif (value_pert >= @guw_type.guw_complexities.map(&:top_range).max.to_f)
+          guw_uow.off_line_uo = true
+          cplx = @guw_type.guw_complexities.last
+          if cplx.nil?
+            guw_uow.guw_complexity_id = nil
+            guw_uow.guw_original_complexity_id = nil
+          else
+            guw_uow.guw_complexity_id = cplx.id
+            guw_uow.guw_original_complexity_id = cplx.id
+            array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+          end
+        else
+          @guw_type.guw_complexities.each do |guw_c|
+            array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+          end
+        end
+      end
+    end
+
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
+
+    # unless guw_uow.changed?
+    #   guw_uow.save
+    # end
   end
 
   private
@@ -2307,7 +2446,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order asc, updated_at asc").each_with_index do |u, i|
+    group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
       u.display_order = i
       if u.changed?
         u.save
