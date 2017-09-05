@@ -1656,3 +1656,8 @@ en-gb:
   warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
   multiple_delete: "Multiple deletion"
   hide_wbs_header: "Hide WBS header"
+  effort_is_modifiable: "Effort is modifiable"
+  cost_is_modifiable: "Cost is modifiable"
+  phase_short_name: "Phase short name"
+  wbs_calculate_button_is_disabled: "You must add a comment to each modified phase in order to start the calculation"
+  comment_required_if_modifiable: "Comments is required if phase is modifiable"

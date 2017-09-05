@@ -1,11 +1,11 @@
 <div class="accordion" id="accordion">
 
   <div class="accordion-heading" style="padding:5px;">
-    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse_dashbord_ratio_elts" id="accordion_dashbord_ratio_elts">
-      <span style="font-weight: bold; font-size: 20px;" title="">
-        <%#= I18n.t(:ratios_elements) %>
-      </span>
-    </a>
+    <!--<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse_dashbord_ratio_elts" id="accordion_dashbord_ratio_elts">-->
+      <!--<span style="font-weight: bold; font-size: 20px;" title="">-->
+        <!--<%#= I18n.t(:ratios_elements) %>-->
+      <!--</span>-->
+    <!--</a>-->
 
     <h4 class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
       <strong>
@@ -135,6 +135,7 @@
            root_mp_ratio_element = @module_project_ratio_elements.select{ |e| e.wbs_activity_element_id == wbs_activity_elt_root.id }.first
            root_mp_ratio_element_id = root_mp_ratio_element.nil? ? nil : root_mp_ratio_element.id
         %>
+        <%= hidden_field_tag 'comment_required_if_modifiable', @wbs_activity_ratio.comment_required_if_modifiable %>
 
         <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
             <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable==0 || element.retained_effort_most_likely==0 } %>
@@ -163,14 +164,18 @@
 
                 <% if mp_ratio_element.wbs_activity_ratio_element.nil? %>
                     <% allow_modify_retained_effort = true %>
+                    <% allow_modify_retained_cost = true %>
                     <% is_optional = true %>
                 <% else %>
-                    <% allow_modify_retained_effort = mp_ratio_element.wbs_activity_ratio_element.is_modifiable %>
+                    <% allow_modify_retained_effort = mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable %>
+                    <% allow_modify_retained_cost = mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable %>
                     <% is_optional = mp_ratio_element.wbs_activity_ratio_element.is_optional %>
                 <% end %>
 
                 <tr>
-                  <td style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>"></td>
+                  <td class="flagged <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>" style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>">
+                    <span data-mp_ratio_element="<%= mp_ratio_element.id %>" data-comments="<%= mp_ratio_element.comments %>"></span>
+                  </td>
 
                   <td>
                     <%= check_box_tag "selected[]", mp_ratio_element.id, mp_ratio_element.selected, id: "selected_phase_#{mp_ratio_element.id}", class: "selected selected_phase checkbox_#{mp_ratio_element.id}", selected: mp_ratio_element.id,
@@ -231,7 +236,7 @@
                               <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low %>
                           <% else %>
                               <td><%= number_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low, :class => "input-mini",
-                                                       readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
                           <% end %>
                       <% end %>
                   <% else %>
@@ -280,7 +285,7 @@
                           <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely %>
                       <% else %>
                           <td><%= number_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-mini ',
-                                                   readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                                                   readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
                       <% end %>
                   <% end %>
 
@@ -305,7 +310,7 @@
                           <% if @wbs_activity_ratio.do_not_show_cost %>
                               <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, :class => "input-mini",  disabled: true, :step => 0.000001 %></td>
                           <% else %>
-                              <td><%= number_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :class => "input-mini" %></td>
+                              <td><%= number_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, disabled: true, :class => "input-mini" %></td>
                           <% end %>
 
                           <td><%= number_field_tag "retained_effort_high[#{mp_ratio_element.id}]",
@@ -316,7 +321,7 @@
                               <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high %>
                           <% else %>
                               <td><%= number_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "input-mini",
-                                                       readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
                           <% end %>
                       <% end %>
 

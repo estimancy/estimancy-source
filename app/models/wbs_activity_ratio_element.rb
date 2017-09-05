@@ -21,7 +21,7 @@
 
 class WbsActivityRatioElement < ActiveRecord::Base
   attr_accessible :ratio_value,:simple_reference, :multiple_references, :wbs_activity_ratio_id, :wbs_activity_element_id,
-                  :formula, :is_modifiable, :is_optional
+                  :formula, :is_modifiable, :effort_is_modifiable, :cost_is_modifiable, :is_optional
 
   has_ancestry
 

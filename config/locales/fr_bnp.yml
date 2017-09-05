@@ -2068,3 +2068,7 @@ fr_bnp:
 
   display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
   multiple_delete: "Suppression multiple"
+  effort_is_modifiable: "L'Effort est modifiable"
+  cost_is_modifiable: "Le Coût est modifiable"
+  wbs_calculate_button_is_disabled: "Vous devez ajouter un commentaire à chaque phase modifiée pour pouvoir lancer le calcul"
+  comment_required_if_modifiable: "Commentaires requis lorsqu'une phase est modifiable"

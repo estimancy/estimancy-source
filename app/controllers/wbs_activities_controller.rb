@@ -355,7 +355,6 @@ class WbsActivitiesController < ApplicationController
       wai.comment = params[:comment][wai.id.to_s]
       wai.save
     end
-
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
@@ -846,7 +845,7 @@ class WbsActivitiesController < ApplicationController
               effort_total_for_global_ratio = probable_estimation_value[@pbs_project_element.id][root_element.id][:value]
             end
 
-            #=========== Update Module-Project Ratio-Elements Theoretical and Retained PROBABLE-values  ======
+            #=========== Update Module-Project-Ratio-Elements Theoretical and Retained PROBABLE-values  ======
             mp_pbs_probable_value = probable_estimation_value[@pbs_project_element.id]
             @module_project_ratio_elements.each do |mp_ratio_element|
               wbs_probable_value = mp_pbs_probable_value[mp_ratio_element.wbs_activity_element_id]
@@ -868,12 +867,35 @@ class WbsActivitiesController < ApplicationController
               #  mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
               #end
 
-
               # if value is manually updated, update the flagged attribute
               unless just_changed_values.nil?
                 if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
                   mp_ratio_element.flagged = true
                 end
+              end
+
+              if mp_ratio_element.changed?
+                mp_ratio_element.save
+              end
+            end
+
+            # Update flagged Effort or Cost values
+            @module_project_ratio_elements.each do |mp_ratio_element|
+              wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
+              if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
+                theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+                retained_effort = mp_ratio_element.send("retained_effort_most_likely")
+
+                theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+                retained_cost = mp_ratio_element.send("retained_cost_most_likely")
+
+                if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
+                  mp_ratio_element.flagged = true
+                else
+                  mp_ratio_element.flagged = false
+                end
+              else
+                mp_ratio_element.flagged = false
               end
 
               if mp_ratio_element.changed?
@@ -1043,6 +1065,7 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:model_description), @wbs_activity.description ],
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
+                      [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header ? 1 : 0 ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
                       ["#{I18n.t(:profiles_list)} : ", ""]]
@@ -1126,6 +1149,7 @@ class WbsActivitiesController < ApplicationController
         ratios_worksheet.add_cell(0, 1, I18n.t(:description))
         ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
         ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
+        ratios_worksheet.add_cell(0, 4, I18n.t(:comment_required_if_modifiable))
         ratios_worksheet.change_row_bold(0,true)
 
         ratios_worksheet.change_row_horizontal_alignment(0, 'center')
@@ -1134,6 +1158,7 @@ class WbsActivitiesController < ApplicationController
           ratios_worksheet.add_cell(index + 1, 1, ratio.description)
           ratios_worksheet.add_cell(index + 1, 2, ratio.do_not_show_cost ? 1 : 0)
           ratios_worksheet.add_cell(index + 1, 3, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
+          ratios_worksheet.add_cell(index + 1, 4, ratio.comment_required_if_modifiable ? 1 : 0)
 
           if ind < ratio.name.size
             ratios_worksheet.change_column_width(0, ratio.name.size)
@@ -1146,6 +1171,7 @@ class WbsActivitiesController < ApplicationController
 
           ratios_worksheet.change_column_width(2, I18n.t(:do_not_show_cost).size)
           ratios_worksheet.change_column_width(3, I18n.t(:do_not_show_phases_with_zero_value).size)
+          ratios_worksheet.change_column_width(4, I18n.t(:comment_required_if_modifiable).size)
 
           counter_line += 1
 
@@ -1160,7 +1186,7 @@ class WbsActivitiesController < ApplicationController
 
         # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
         # Les attributs de ratio-element
-        ratio_attributes = ["name"] #["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
+        ratio_attributes = ["name"]
         counter_line = 1
         # On cree une feuille par element de ratio
         @wbs_activity_ratios.each_with_index do |ratio, index|
@@ -1170,12 +1196,7 @@ class WbsActivitiesController < ApplicationController
           new_workbook_number += 1
 
           ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
-          #ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
-          #ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
-
           ratio_elements_worksheet.add_cell(0, 1, ratio.name)
-          #ratio_elements_worksheet.add_cell(1, 1, ratio.do_not_show_cost ? 1 : 0)
-          #ratio_elements_worksheet.add_cell(2, 1, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
 
           ratio_elements_worksheet.change_column_bold(0,true)
           ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
@@ -1226,7 +1247,7 @@ class WbsActivitiesController < ApplicationController
           wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
 
           ratio_elements_worksheet.add_cell(counter_line, 0, "Formule de calcul de chaque phase de la WBS")
-          ratio_elements_attributes = ["position", "phase_short_name", "name", "description", "is_optional", "is_modifiable", "formula"]
+          ratio_elements_attributes = ["position", "phase_short_name", "name", "description", "is_optional", "effort_is_modifiable", "cost_is_modifiable", "formula"]
 
           ratio_elements_attributes.each_with_index do |attr, index|
             column_number = index + 1
@@ -1245,7 +1266,7 @@ class WbsActivitiesController < ApplicationController
                   value = nil
                 end
 
-              elsif attr.in?("is_optional", "is_modifiable")
+              elsif attr.in?("is_optional", "effort_is_modifiable", "cost_is_modifiable")
                 val = ratio_element.send(attr)
                 if val == true
                   value = 1
@@ -1261,6 +1282,13 @@ class WbsActivitiesController < ApplicationController
               column_width = ratio_elements_worksheet.get_column_width(column_number)
               if !value.nil? && value.to_s.size > column_width
                 ratio_elements_worksheet.change_column_width(column_number, value.to_s.size)
+              end
+
+              ["bottom", "right"].each do |symbole|
+                begin
+                  ratio_elements_worksheet[line_number][column_number].change_border(symbole.to_sym, 'thin')
+                rescue
+                end
               end
 
               line_number += 1
@@ -1369,7 +1397,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1389,7 +1417,7 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 6
+                      if index <= 7  ### Ligne des profiles
                         attr_name = model_sheet_order["#{index}".to_sym]
                         #begin
                           if attr_name != "wbs_organization_profiles"
@@ -1481,10 +1509,11 @@ class WbsActivitiesController < ApplicationController
 
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
-                    #begin
-                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2], do_not_show_phases_with_zero_value: row[3])
-                    # rescue
-                    # end
+                    begin
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2],
+                                              do_not_show_phases_with_zero_value: row[3], comment_required_if_modifiable: row[4])
+                    rescue
+                    end
                   end
                 end
 
@@ -1523,7 +1552,7 @@ class WbsActivitiesController < ApplicationController
 
                             wbs_activity_element = @wbs_activity_elements.where(name: row[3]).first
                             WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id, wbs_activity_element_id: wbs_activity_element.id,
-                                                            is_optional: row[5], is_modifiable: row[6], formula: row[7])
+                                                            is_optional: row[5], effort_is_modifiable: row[6], cost_is_modifiable: row[7], formula: row[8])
 
                           # Ratio-elements par profile
                           when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size
@@ -1595,285 +1624,6 @@ class WbsActivitiesController < ApplicationController
 
 
 
-  ### To delete ###
- def hello_delete_me
-  if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-    @workbook = RubyXL::Parser.parse(params[:file].path)
-    @workbook.each_with_index do |worksheet, index|
-      tab = worksheet.extract_data
-      if !tab.empty?
-        if index == 0
-          if worksheet.sheet_name != I18n.t(:is_model)
-            route_flag = 5
-            break
-          end
-          if tab[0][1].nil? || tab[0][1].empty?
-            route_flag = 2
-            break
-          end
-          @guw_model = Guw::GuwModel.where(name: tab[0][1],
-                                           organization_id: @current_organization.id).first
-          if @guw_model.nil?
-            @guw_model = Guw::GuwModel.create(name: tab[0][1],
-                                              description: tab[1][1],
-                                              coefficient_label: tab[2][1],
-                                              weightings_label: tab[3][1],
-                                              factors_label: tab[4][1],
-                                              three_points_estimation: tab[5][1].to_i == 1,
-                                              retained_size_unit: tab[6][1],
-                                              hour_coefficient_conversion: tab[7][1],
-                                              organization_id: @current_organization.id)
-            critical_flag = false
-          else
-            route_flag = 1
-            break
-          end
-        elsif index == 1
-          if critical_flag || worksheet.sheet_name != I18n.t(:attribute_description)
-            route_flag = 5
-            break
-          end
-          tab.each_with_index do |row, index|
-            if index != 0 && !row.nil?
-              Guw::GuwAttribute.create(name: row[0],
-                                       description: row[1],
-                                       guw_model_id: @guw_model.id)
-            end
-          end
-        elsif index == 2
-          # if critical_flag || worksheet.sheet_name != @guw_model.coefficient_label
-          #   route_flag = 5
-          #   break
-          # end
-          tab.each_with_index do |row, index|
-            if index != 0 && !row.nil?
-              Guw::GuwWorkUnit.create(name:row[0],
-                                      value: row[1],
-                                      display_order: row[2],
-                                      guw_model_id: @guw_model.id)
-            end
-          end
-        elsif index == 3
-          # if critical_flag || worksheet.sheet_name != @guw_model.weightings_label
-          #   route_flag = 5
-          #   break
-          # end
-          tab.each_with_index do |row, index|
-            if index != 0 && !row.nil?
-              Guw::GuwWeighting.create(name:row[0],
-                                       value: row[1],
-                                       display_order: row[2],
-                                       guw_model_id: @guw_model.id)
-            end
-          end
-        elsif index == 4
-          # if critical_flag || worksheet.sheet_name != @guw_model.factors_label
-          #   route_flag = 5
-          #   break
-          # end
-          tab.each_with_index do |row, index|
-            if index != 0 && !row.nil?
-              Guw::GuwFactor.create(name: row[0],
-                                    value: row[1],
-                                    display_order: row[2],
-                                    guw_model_id: @guw_model.id)
-            end
-          end
-        else
-          if worksheet.sheet_name == "Matrice"
-            begin
-              if !tab[0].nil? && !tab[1].nil? && !tab[2].nil? && !tab[3].nil?
-                [[@guw_model.coefficient_label, "work_unit"], [@guw_model.weightings_label, "weighting"], [@guw_model.factors_label, "factor"]].each_with_index do |ts, i|
-                  ["size", "effort", "cost"].each_with_index do |ta, j|
-                    if tab[j+1][i+1] == 1
-                      gsma = Guw::GuwScaleModuleAttribute.new(guw_model_id: @guw_model.id,
-                                                              type_attribute: ta,
-                                                              type_scale: ts[1])
-                      gsma.save
-                    end
-                  end
-                end
-              else
-                route_flag = 6
-              end
-            rescue
-            end
-          else
-            if worksheet.sheet_name != I18n.t(:is_model) && worksheet.sheet_name != I18n.t(:attribute_description)# && worksheet.sheet_name != I18n.t(:Type_acquisitions)
-              if !tab[0].nil? && !tab[2].nil? && !tab[3].nil? && !tab[1].nil? && !tab[4].nil?
-                @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                                description: tab[0][0],
-                                                allow_quantity: tab[2][1] == 1,
-                                                allow_retained: tab[1][1] == 1,
-                                                allow_complexity: tab[3][1] == 1,
-                                                allow_criteria: tab[4][1] == 1,
-                                                guw_model_id: @guw_model.id)
-
-                if !tab[8].nil? && !tab[9].nil? && tab[8][0] == I18n.t(:threshold) && !tab[6].empty?# && tab[9][0] == I18n.t(:Coefficient_of_acquisiton)
-                  while !tab[6][ind].nil?
-                    @guw_complexity = Guw::GuwComplexity.create(guw_type_id: @guw_type.id,
-                                                                name: tab[6][ind],
-                                                                enable_value: tab[8][ind] == 1,
-                                                                bottom_range: tab[8][ind + 1],
-                                                                top_range: tab[8][ind + 2],
-                                                                weight:  tab[8][ind + 3] ? tab[8][ind + 3] : 1)
-
-                    @guw_model.guw_work_units.each do |wu|
-                      while !tab[ind2].nil? && tab[ind2][0] != wu.name #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-                      if !tab[ind2].nil?# && tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityWorkUnit.create(guw_complexity_id: @guw_complexity.id,
-                                                          guw_work_unit_id: wu.id,
-                                                          value: tab[ind2][ind + 3],
-                                                          guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-                      # elsif tab[ind2].nil?
-                      #   route_flag = 3
-                      #   break
-                      # end
-                      ind2 = 10
-                      action_type_aquisition_flag = true
-                    end
-
-                    @guw_model.guw_weightings.each do |we|
-                      while !tab[ind2].nil? && tab[ind2][0] != we.name# && tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-                      if !tab[ind2].nil? #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityWeighting.create(guw_complexity_id: @guw_complexity.id,
-                                                           guw_weighting_id: we.id,
-                                                           value: tab[ind2][ind + 3],
-                                                           guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-                      # elsif tab[ind2].nil?
-                      #   route_flag = 3
-                      #   break
-                      # end
-                      ind2 = 10
-                      action_type_aquisition_flag = true
-                    end
-
-                    @guw_model.guw_factors.each do |fa|
-                      while !tab[ind2].nil? && tab[ind2][0] != fa.name# && tab[ind2][0] != I18n.t(:organization_technology)
-                        ind2 += 1
-                      end
-                      if !tab[ind2].nil? #&& tab[ind2][0] != I18n.t(:organization_technology)
-                        Guw::GuwComplexityFactor.create(guw_complexity_id: @guw_complexity.id,
-                                                        guw_factor_id: fa.id,
-                                                        value: tab[ind2][ind + 3],
-                                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                      end
-                      # elsif tab[ind2].nil?
-                      #   route_flag = 3
-                      #   break
-                      # end
-                      ind2 = 10
-                      action_type_aquisition_flag = true
-                    end
-
-                    # if tab[ind2].nil? || route_flag == 3
-                    #   route_flag = 3
-                    #   break
-                    # end
-                    while !tab[ind2].nil? && tab[ind2][0] != I18n.t(:organization_technology)
-                      ind2 += 1
-                    end
-                    ind3 = ind2
-                    if !tab[ind2].nil? && tab[ind2][0] == I18n.t(:organization_technology)
-                      @current_organization.organization_technologies.each do |techno|
-                        while !tab[ind2].nil? && tab[ind2][0] != techno.name
-                          ind2 += 1
-                        end
-                        if !tab[ind2].nil?
-                          Guw::GuwComplexityTechnology.create(guw_complexity_id: @guw_complexity.id,
-                                                              organization_technology_id: techno.id,
-                                                              coefficient: tab[ind2][ind + 3],
-                                                              guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
-                        end
-                        ind2 = ind3
-                      end
-                      if save_position == 0
-                        while !tab[ind2].nil?
-                          ind2 += 1
-                        end
-                        save_position = ind2 + 1
-                      end
-                      action_technologie_flag = true
-                    end
-                    ind2 = 10
-                    ind += 4
-                  end
-                  ind = 1
-                end
-                if !tab[save_position].nil?# && tab[save_position][0] == I18n.t(:complexity_threshold) && tab[save_position + 1][0] == I18n.t(:pe_attributes)
-                  ind3 = save_position + 2
-                  ind = 1
-                  while !tab[save_position][ind].nil?
-                    if tab[save_position].nil?
-                      value = nil
-                    else
-                      value = tab[save_position][ind + 1]
-                    end
-                    @guw_att_complexity =  Guw::GuwTypeComplexity.create(guw_type_id: @guw_type.id,
-                                                                         name: tab[save_position][ind],
-                                                                         value: value)
-                    @guw_model.guw_attributes.each do |att|
-                      while !tab[ind3].nil? && tab[ind3][0] != att.name
-                        ind3 += 1
-                      end
-                      if !tab[ind3].nil?
-                        toto = Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                                  guw_attribute_id: att.id,
-                                                                  guw_type_id: @guw_type.id,
-                                                                  enable_value: tab[ind3][ind] == 1,
-                                                                  bottom_range: tab[ind3][ind + 1],
-                                                                  top_range: tab[ind3][ind + 2],
-                                                                  value: tab[ind3][ind + 3] ? tab[ind3][ind + 3] : (tab[ind3][ind + 2] && tab[ind3][ind + 1] ? 1 : nil))
-                      end
-                      ind3 = save_position + 2
-                    end
-                    ind += 4
-                  end
-                  ind3 = 0
-                  ind = 1
-                  action_attribute_flag = true
-                end
-
-                unless action_type_aquisition_flag
-                  tab_error[0].push(@guw_type.name)
-                end
-                unless action_technologie_flag
-                  tab_error[1].push(@guw_type.name)
-                end
-                unless action_attribute_flag
-                  tab_error[2].push(@guw_type.name)
-                end
-                action_attribute_flag = false
-                action_technologie_flag = false
-                action_type_aquisition_flag = false
-              else
-                route_flag = 6
-                sheet_error += 1
-              end
-            else
-              route_flag = 7
-              break
-            end
-          end
-        end
-      else
-        route_flag = 6
-        sheet_error += 1
-      end
-      save_position = 0
-    end
-  else
-    route_flag = 4
-  end
- end
-#
-  ### END to DELETE ###
 
 
   #======================== UPDATE THE RETAINED ATTRIBUTE ESTIMATION VALUES =============================
