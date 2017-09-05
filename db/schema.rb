@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170821101024) do
+ActiveRecord::Schema.define(:version => 20170905133131) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -559,6 +559,7 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
     t.integer  "module_project_id"
+    t.text     "comments"
   end
 
   create_table "guw_guw_coefficient_elements", :force => true do |t|
@@ -574,6 +575,8 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.float    "default_value"
     t.text     "description"
     t.boolean  "default"
+    t.string   "color_code"
+    t.integer  "color_priority"
   end
 
   create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|
@@ -861,6 +864,7 @@ ActiveRecord::Schema.define(:version => 20170821101024) do
     t.float    "factor_value"
     t.float    "intermediate_weight"
     t.float    "intermediate_percent"
+    t.string   "url"
   end
 
   create_table "guw_guw_weightings", :force => true do |t|

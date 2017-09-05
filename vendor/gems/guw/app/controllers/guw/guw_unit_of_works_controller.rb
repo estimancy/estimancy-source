@@ -120,6 +120,42 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to :back
   end
 
+  def load_coefficient_comments
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @guw_coefficient = Guw::GuwCoefficient.find(params[:coeff_id])
+    @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
+    @value = params[:value]
+    @previousValue = params["previousValue"]
+    @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work.id,
+                                                       guw_coefficient_id: @guw_coefficient.id).first
+  end
+
+  def save_coefficient_comments
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
+    @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
+
+
+
+    @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: @guw_coefficient_element.id,
+                                                       guw_coefficient_id: @guw_coefficient.id,
+                                                       guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create!
+
+    @ceuw.comments = (params["comments"].blank? ? nil : '')
+    @ceuw.percent = params["value"]
+    @ceuw.save
+
+    # if @ceuw.percent == @guw_coefficient_element.value
+    #   @guw_unit_of_work.flagged = false
+    # else
+      @guw_unit_of_work.flagged = true
+    # end
+
+    @guw_unit_of_work.save
+
+    redirect_to main_app.dashboard_path(@project)
+  end
+
   def load_cotations
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_model = @guw_unit_of_work.guw_model
@@ -698,21 +734,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #Estimation 3 points
       if params["low"]["#{guw_unit_of_work.id}"].nil?
         low = guowa.low
-        guw_unit_of_work.flagged = true
+        # guw_unit_of_work.flagged = true
       else
         low = params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["most_likely"]["#{guw_unit_of_work.id}"].nil?
         most_likely = guowa.most_likely
-        guw_unit_of_work.flagged = true
+        # guw_unit_of_work.flagged = true
       else
         most_likely = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["high"]["#{guw_unit_of_work.id}"].nil?
         high = guowa.high
-        guw_unit_of_work.flagged = true
+        # guw_unit_of_work.flagged = true
       else
         high = params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
@@ -721,7 +757,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #Estimation 1 point
         if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.map(&:to_f).flatten.sum.blank?
           low = most_likely = high = guowa.most_likely
-          guw_unit_of_work.flagged = true
+          # guw_unit_of_work.flagged = true
         else
           if params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
             low = most_likely = high = nil
@@ -758,7 +794,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             else
               guw_unit_of_work.off_line = true
-              guw_unit_of_work.flagged = true
+              # guw_unit_of_work.flagged = true
             end
           end
           # guw_unit_of_work.missing_value = false
@@ -779,7 +815,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
             guw_unit_of_work.off_line = true
-            guw_unit_of_work.flagged = true
+            # guw_unit_of_work.flagged = true
           end
           # guw_unit_of_work.missing_value = false
         else
@@ -799,7 +835,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
             guw_unit_of_work.off_line = true
-            guw_unit_of_work.flagged = true
+            # guw_unit_of_work.flagged = true
           end
           # guw_unit_of_work.missing_value = false
         else
@@ -1019,10 +1055,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             begin
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             rescue
-              pc = 100
+              pc = guw_coefficient_element.value
             end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+
+              if pc.to_f == guw_coefficient_element.value.to_f
+                guw_unit_of_work.flagged = false
+              else
+                guw_unit_of_work.flagged = true
+              end
+
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
@@ -1059,6 +1102,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+
+              if pc.to_f == guw_coefficient_element.value.to_f
+                guw_unit_of_work.flagged = false
+              else
+                guw_unit_of_work.flagged = true
+              end
 
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: guw_coefficient_element.id,

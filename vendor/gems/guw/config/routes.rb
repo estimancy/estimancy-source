@@ -35,7 +35,11 @@ Guw::Engine.routes.draw do
     post "load_comments"
     post "load_trackings"
     post "load_cotations"
+    post "save_coefficient_comments"
   end
+
+  get "load_coefficient_comments" => "guw_unit_of_works#load_coefficient_comments"
+
   resources :guw_unit_of_work_groups
 
   resources :guw_work_units

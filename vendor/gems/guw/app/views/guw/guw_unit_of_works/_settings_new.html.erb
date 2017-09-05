@@ -39,7 +39,7 @@
       <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
           Total <%= guw_output.name %> retenu :
-          <span class="label label-success ajusted_size">
+          <span class="ajusted_size">
             <%= @group_unit_of_works.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
@@ -52,7 +52,7 @@
       <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
         <span class="label label-success">
           Total <%= guw_output.name %> théorique :
-          <span class="label label-success ajusted_size">
+          <span class="ajusted_size">
             <%= @group_unit_of_works.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
@@ -63,22 +63,22 @@
       <% end %>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw) %> :
-        <span class="label label-info number_of_unit_of_work">
+        <%= I18n.t(:number_of_uw) %> :
+        <span class="number_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_modifies) %>
-        <span class="label label-info modified_of_unit_of_work">
+        <%= I18n.t(:number_of_uw_modifies) %>
+        <span class="modified_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
 
       <span class="label label-info">
-        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_selected) %> :
-        <span class="label label-info selected_of_unit_of_work">
+        <%= I18n.t(:number_of_uw_selected) %> :
+        <span class="selected_of_unit_of_work">
           <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map(&:quantity)}.flatten.compact.sum %>
         </span>
       </span>
@@ -119,7 +119,7 @@
               <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
                 <span class="label label-success">
                   Total <%= guw_output.name %> R. :
-                  <span class="label label-success">
+                  <span>
                     <%= [
                           uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
                             i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
@@ -132,7 +132,7 @@
               <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
                 <span class="label label-success">
                   Total <%= guw_output.name %> T. :
-                  <span class="label label-success">
+                  <span>
                     <%= [
                           uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
                             i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
@@ -169,7 +169,7 @@
         <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
         <div class="accordion-inner">
-          <table class="table table-bordered table-condensed">
+          <table class="table table-bordered table-condensed" id="guw">
             <tr>
               <th></th>
               <th>#</th>
@@ -192,7 +192,7 @@
                       </th>
                     <% end %>
                   <% elsif i[0] == "Critères" %>
-                    <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                    <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
                       <th>
                         <%= I18n.t :criteria %>
                       </th>
@@ -224,9 +224,25 @@
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
               <% end %>
+
               <tr>
 
-                <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>" class="span1">
+                <%
+                   gceuws = guow.guw_coefficient_element_unit_of_works
+                   begin
+                     tmpgce = gceuws.select { |gceuw| (gceuw.comments != nil || !gceuw.comments.blank? ) }.sort! do |a, b|
+                       b.guw_coefficient_element.color_priority.to_i <=> a.guw_coefficient_element.color_priority.to_i
+                     end.first
+                   rescue
+
+                   end
+
+                   unless tmpgce.nil?
+                     gce = tmpgce.guw_coefficient_element
+                   end
+                %>
+
+                <td style="border-left: 6px solid <%= (guow.flagged == true) ? (gce.nil? ? "green" : "##{gce.color_code}") : "green" %>" class="span1">
                   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
                   <%= hidden_field_tag "", uowg.id, class: "#{guow.id}_group" %>
                   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
@@ -385,19 +401,33 @@
 
                         <% results = guw_coefficient.guw_coefficient_elements %>
                         <% default = results.where(default: true).first %>
-                        <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow,
+                        <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                              guw_coefficient_id: guw_coefficient.id).first %>
                         <% if guw_coefficient.deported == false %>
                           <% unless guw_coefficient.guw_coefficient_elements.empty? %>
 
                             <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
                               <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
-
+                                <%
+                                   if ceuw.nil?
+                                     color = ""
+                                   else
+                                     if default.value.to_f == ceuw.percent.to_f
+                                       color = ""
+                                     else
+                                       color = "background-color: ##{default.color_code}"
+                                     end
+                                   end
+                                %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                     style: "width: 43px;",
-                                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                                     style: "width: 43px; #{color};",
+                                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{guw_coefficient.id}_#{results.first.id}",
                                                      readonly: (guw_coefficient.allow_intermediate_value == true),
-                                                     step: 0.001 %>
+                                                     step: 0.001,
+                                                     guw: guow.id,
+                                                     coeff_id: guw_coefficient.nil? ? nil : guw_coefficient.id,
+                                                     coeff_element_id: results.first.id,
+                                                     title: ceuw.nil? ? "" : ceuw.comments %>
 
                                 <% if guw_coefficient.allow_intermediate_value == true %>
                                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
@@ -405,8 +435,27 @@
                                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                        step: 0.001 %>
                                 <% end %>
-
                               </td>
+                                <script>
+                                  $(document).ready(function(){
+                                    var previousValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
+                                    $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
+                                      var currentValue = $(this).val();
+                                      if(currentValue != previousValue) {
+                                        $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("blur", function(){
+                                          $.ajax({
+                                            url: "<%= guw.load_coefficient_comments_path %>",
+                                            data: "coeff_id=" + $(this).attr("coeff_id") +
+                                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                            "&value=" + $(this).val() +
+                                            "&previousValue=" + previousValue
+                                          });
+                                        });
+                                      }
+                                    });
+                                  });
+                                </script>
                             <% else %>
                               <td class="span2">
                                 <% unless @guw_type.nil? %>
@@ -638,6 +687,14 @@
   </div>
 </div>
 
+<div class="modal fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_coefficient_comments_content">
+      :-)
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="modal_trackings" tabindex="-1" role="dialog" aria-labelledby="modal_trackings_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_trackings_content">
@@ -833,6 +890,7 @@
 
       <script>
           $(document).ready(function(){
+
               $("#from").on("change",function(){
                   if (this.value == "") {
                       $("#file-block").hide();

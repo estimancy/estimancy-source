@@ -366,7 +366,7 @@ $(document).ready(function() {
     <div id="tabs-coefficients">
       <% @guw_coefficients.each do |guw_coefficient| %>
         <div class="row-fluid">
-          <div class="span6">
+          <div class="span9">
             <b>
               <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
             </b>
@@ -383,6 +383,8 @@ $(document).ready(function() {
                 <th class="span2">Min</th>
                 <th class="span2">Max</th>
                 <th class="span2">Valeur</th>
+                <th class="span2">Code Couleur</th>
+                <th class="span2">Priorité</th>
                 <th class="span2">Valeur par défaut</th>
                 <th class="span2">Ordre d'affichage</th>
                 <th>Actions</th>
@@ -403,6 +405,12 @@ $(document).ready(function() {
                   </td>
                   <td class="align-center">
                     <%= guw_coefficient_element.value %>
+                  </td>
+                  <td class="align-center" style='width: 10%; background-color: <%= "##{guw_coefficient_element.color_code}" %>'>
+                    <%= guw_coefficient_element.color_code %>
+                  </td>
+                  <td class="align-center">
+                    <%= guw_coefficient_element.color_priority %>
                   </td>
                   <td class="align-center">
                     <%= (guw_coefficient_element.default == true) ? "Oui" : "Non" %>
