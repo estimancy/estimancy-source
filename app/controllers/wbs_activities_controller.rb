@@ -1149,6 +1149,7 @@ class WbsActivitiesController < ApplicationController
         ratios_worksheet.add_cell(0, 1, I18n.t(:description))
         ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
         ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
+        ratios_worksheet.add_cell(0, 4, I18n.t(:comment_required_if_modifiable))
         ratios_worksheet.change_row_bold(0,true)
 
         ratios_worksheet.change_row_horizontal_alignment(0, 'center')
@@ -1157,6 +1158,7 @@ class WbsActivitiesController < ApplicationController
           ratios_worksheet.add_cell(index + 1, 1, ratio.description)
           ratios_worksheet.add_cell(index + 1, 2, ratio.do_not_show_cost ? 1 : 0)
           ratios_worksheet.add_cell(index + 1, 3, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
+          ratios_worksheet.add_cell(index + 1, 4, ratio.comment_required_if_modifiable ? 1 : 0)
 
           if ind < ratio.name.size
             ratios_worksheet.change_column_width(0, ratio.name.size)
@@ -1169,6 +1171,7 @@ class WbsActivitiesController < ApplicationController
 
           ratios_worksheet.change_column_width(2, I18n.t(:do_not_show_cost).size)
           ratios_worksheet.change_column_width(3, I18n.t(:do_not_show_phases_with_zero_value).size)
+          ratios_worksheet.change_column_width(4, I18n.t(:comment_required_if_modifiable).size)
 
           counter_line += 1
 
@@ -1183,7 +1186,7 @@ class WbsActivitiesController < ApplicationController
 
         # WSB ACTIVITY RATIO ELEMENTS - ratio_elements_worksheet
         # Les attributs de ratio-element
-        ratio_attributes = ["name"] #["name", "do_not_show_cost", "do_not_show_phases_with_zero_value"]
+        ratio_attributes = ["name"]
         counter_line = 1
         # On cree une feuille par element de ratio
         @wbs_activity_ratios.each_with_index do |ratio, index|
@@ -1193,12 +1196,7 @@ class WbsActivitiesController < ApplicationController
           new_workbook_number += 1
 
           ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
-          #ratio_elements_worksheet.add_cell(1, 0, I18n.t(:do_not_show_cost))
-          #ratio_elements_worksheet.add_cell(2, 0, I18n.t(:do_not_show_phases_with_zero_value))
-
           ratio_elements_worksheet.add_cell(0, 1, ratio.name)
-          #ratio_elements_worksheet.add_cell(1, 1, ratio.do_not_show_cost ? 1 : 0)
-          #ratio_elements_worksheet.add_cell(2, 1, ratio.do_not_show_phases_with_zero_value ? 1 : 0)
 
           ratio_elements_worksheet.change_column_bold(0,true)
           ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
@@ -1511,10 +1509,11 @@ class WbsActivitiesController < ApplicationController
 
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
-                    #begin
-                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2], do_not_show_phases_with_zero_value: row[3])
-                    # rescue
-                    # end
+                    begin
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2],
+                                              do_not_show_phases_with_zero_value: row[3], comment_required_if_modifiable: row[4])
+                    rescue
+                    end
                   end
                 end
 
