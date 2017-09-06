@@ -350,16 +350,33 @@ class ViewsWidgetsController < ApplicationController
         @show_ratio_name = true
       end
 
-      @module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
-      @module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
+      #@module_project_attributes_input = @module_project.estimation_values.where(in_out: 'input').map{|i| [i, i.id]}
+      #@module_project_attributes_output = @module_project.estimation_values.where(in_out: 'output').map{|i| [i, i.id]}
+
+      # A tester  Get the possible attribute grouped by type (input, output)
+      @module_project_attributes = get_module_project_attributes_input_output(@module_project)
+
+      begin
+       @inputs_array = @module_project_attributes[0].last
+       @module_project_attributes_input = @inputs_array.map{|i| [i, i.id]}
+      rescue
+        @inputs_array = []
+        @module_project_attributes_input = []
+      end
+
+      begin
+       @outputs_array = @module_project_attributes[1].last
+       @module_project_attributes_output = @outputs_array.map{|i| [i, i.id]}
+      rescue
+        @outputs_array = []
+        @module_project_attributes_output = []
+      end
+
 
       @letter = params[:letter]
       if @letter.nil?
         @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE
       end
-
-      # A tester  Get the possible attribute grouped by type (input, output)
-      #@module_project_attributes = get_module_project_attributes_input_output(@module_project)
     end
   end
 
@@ -508,28 +525,7 @@ class ViewsWidgetsController < ApplicationController
 
   # Get the module_project attributes grouped by Input and Ouput
   def get_module_project_attributes_input_output(module_project)
-    ###estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
-
-    if module_project.pemodule.alias == "guw"
-      estimation_values = module_project.estimation_values.where(in_out: 'output').group_by{ |attr| attr.in_out }.sort()
-
-      # if module_project.guw_model.config_type == "new"
-      # else
-      # end
-
-    elsif module_project.pemodule.alias == "ge"
-      if module_project.ge_model.ge_model_instance_mode == "standard"
-        module_project_attributes = module_project.pemodule.pe_attributes
-        standard_effort_ids = module_project_attributes.where(alias: Ge::GeModel::GE_ATTRIBUTES_ALIAS).map(&:id).flatten
-        standard_effort_evs = module_project.estimation_values.where(pe_attribute_id: standard_effort_ids)
-        estimation_values = standard_effort_evs.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-      else
-        estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-      end
-    else
-      estimation_values = module_project.estimation_values.where('in_out IS NOT NULL').group_by{ |attr| attr.in_out }.sort()
-    end
-    estimation_values
+    estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
 end
