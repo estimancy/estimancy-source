@@ -1,0 +1,16 @@
+$("#coefficient_comments").html("<%= j(render 'guw/guw_unit_of_works/coefficient_comments_modal', {
+  guw_unit_of_work: @guw_unit_of_work,
+  guw_coefficient: @guw_coefficient,
+  guw_coefficient_element: @guw_coefficient_element,
+  value: @value})
+%>")
+
+$("#coefficient_comments").modal({
+  keyboard: false,
+  backdrop: "static"
+});
+
+$("#coefficient_comments").on("hidden.bs.modal", function () {
+  console.log(<%= @previousValue %>);
+  $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= @guw_coefficient.id %>").val("<%= @previousValue %>");
+});
