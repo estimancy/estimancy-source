@@ -54,7 +54,7 @@ class ModuleProjectsController < ApplicationController
           @preceding_estimations_values = []
         else
           @preceding_selected_module_project = ModuleProject.find(params['preceding_module_project_id'])
-          @preceding_estimations_values = @preceding_selected_module_project.estimation_values.where(in_out: "output")
+          @preceding_estimations_values = @preceding_selected_module_project.get_module_project_estimation_values.where(in_out: "output")
         end
       rescue
         @preceding_estimations_values = []

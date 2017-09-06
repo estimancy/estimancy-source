@@ -101,7 +101,6 @@
         %>
 
       <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> <br></h5>
-
       <% guw_preceding_module_project = @module_project.preceding.select{ |i| i.pemodule.alias == "guw" }.last %>
       <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(in_out: "output") %>
 
