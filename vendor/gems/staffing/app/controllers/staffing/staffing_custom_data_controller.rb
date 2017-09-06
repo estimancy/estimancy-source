@@ -184,7 +184,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
     mcdonnell_chart_theorical_coordinates = []
     for t in 0..@md_duration
-      t_staffing = 2 * (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
+      t_staffing = 1 * (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
       mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
     end
     @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
@@ -200,7 +200,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     y0 = trapeze_parameter_values[:y0].to_f / 100
     y3 = trapeze_parameter_values[:y3].to_f / 100
 
-    @staffing_trapeze = 2 * ((effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+    @staffing_trapeze = 1 * ((effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
 
     x0D = x0 * @md_duration
     x1D = x1 * @md_duration
