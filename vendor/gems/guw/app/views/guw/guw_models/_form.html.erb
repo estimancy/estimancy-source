@@ -321,13 +321,15 @@ $(document).ready(function() {
 
     <div id="tabs-output">
       <div class="row-fluid">
-        <div class="span6">
+        <div class="span9">
           <table class="table table-bordered">
             <tr>
               <th><%= I18n.t(:name) %></th>
               <th class="span2">Type de sortie</th>
               <th class="span2">Unité de sortie</th>
               <th class="span2">Sous-total</th>
+              <th class="span2">Couleur</th>
+              <th class="span2">Priorité de la couleur</th>
               <th class="span2">Coefficient Standard</th>
               <th class="span2">Ordre de calcul</th>
               <th>Actions</th>
@@ -340,6 +342,10 @@ $(document).ready(function() {
                   <td class="align-center"><%= guw_output.output_type %></td>
                   <td class="align-center"><%= guw_output.unit %></td>
                   <td class="align-center"><%= guw_output.allow_subtotal %></td>
+                  <td class="align-center" style='width: 10%; background-color: <%= "##{guw_output.color_code}" %>'>
+                    <%= guw_output.color_code %>
+                  </td>
+                  <td class="align-center"><%= guw_output.color_priority %></td>
                   <td class="align-center"><%= guw_output.standard_coefficient %></td>
                   <td class="align-center"><%= guw_output.display_order %></td>
                   <td class="center">
@@ -384,7 +390,7 @@ $(document).ready(function() {
                 <th class="span2">Max</th>
                 <th class="span2">Valeur</th>
                 <th class="span2">Code Couleur</th>
-                <th class="span2">Priorité</th>
+                <th class="span2">Priorité de la couleur</th>
                 <th class="span2">Valeur par défaut</th>
                 <th class="span2">Ordre d'affichage</th>
                 <th>Actions</th>

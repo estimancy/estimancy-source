@@ -761,6 +761,8 @@ ActiveRecord::Schema.define(:version => 20170905133131) do
     t.integer  "copy_id"
     t.string   "unit"
     t.integer  "display_order"
+    t.string   "color_code"
+    t.integer  "color_priority"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -1930,6 +1932,8 @@ ActiveRecord::Schema.define(:version => 20170905133131) do
     t.string   "formula"
     t.boolean  "is_modifiable",           :default => false
     t.integer  "copy_id"
+    t.boolean  "effort_is_modifiable"
+    t.boolean  "cost_is_modifiable"
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"
@@ -1975,6 +1979,7 @@ ActiveRecord::Schema.define(:version => 20170905133131) do
     t.boolean  "do_not_show_phases_with_zero_value"
     t.boolean  "allow_modify_ratio_reference"
     t.boolean  "allow_add_new_phase"
+    t.boolean  "comment_required_if_modifiable"
   end
 
   create_table "wbs_project_elements", :force => true do |t|

@@ -366,7 +366,7 @@
                                   x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
                                           y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
                                                   y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
-          var new_staffing_trapeze = 2 * ((new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)));
+          var new_staffing_trapeze = 1 * ((new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)));
 
           $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2) + " pers.");
           $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
@@ -374,7 +374,7 @@
 
           var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
           var t_max_staffing = Math.sqrt(1/(2*form_coef));
-          var new_staffing_rayleigh = 2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1))) / 2
+          var new_staffing_rayleigh = 1 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1))) / 2
           $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2) + " pers.");
           $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2) + " pers.");
 

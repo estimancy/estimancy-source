@@ -19,8 +19,11 @@
         <%= f.input :output_type, as: :select, label: "Type de Sortie", collection: ["Effort", "Taille", "Cout"] %>
         <%= f.input :unit, label: "Unité de sortie" %>
         <%= f.input :allow_subtotal, label: "Calculer les sous-totaux" %>
+        <%= f.input :color_code, input_html: {class: 'color'} %>
+        <%= f.input :color_priority %>
         <%= f.input :standard_coefficient, label: "Coefficient Standard de Conversion (Effort uniquement)" %>
         <%= f.input :display_order, label: "Ordre de calcul" %>
+
       </div>
 
       <div class="actions-tabs">

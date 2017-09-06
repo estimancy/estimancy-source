@@ -4,6 +4,7 @@
   <%= hidden_field_tag "guw_coefficient_id", guw_coefficient.nil? ? nil : guw_coefficient.id %>
   <%= hidden_field_tag "guw_unit_of_work_id", guw_unit_of_work.nil? ? nil : guw_unit_of_work.id %>
   <%= hidden_field_tag "value", @value %>
+  <%= hidden_field_tag "previousValue", @previousValue %>
 
   <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
                                                        guw_coefficient_id: guw_coefficient.id,
@@ -25,7 +26,11 @@
         <%= I18n.t(:comments) %>
       </b>
     </label>
-    <%= text_area_tag "comments", ceuw.nil? ? "" : ceuw.comments, class: "attribute_note_area", rows: 4 %>
+    <% if @value.to_f == guw_coefficient_element.value.to_f %>
+      <%= text_area_tag "comments", "", class: "attribute_note_area", rows: 4 %>
+    <% else %>
+      <%= text_area_tag "comments", ceuw.nil? ? "" : ceuw.comments, class: "attribute_note_area", rows: 4 %>
+    <% end %>
 
   </div>
   <div class="modal-footer">

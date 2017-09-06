@@ -124,7 +124,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_coefficient = Guw::GuwCoefficient.find(params[:coeff_id])
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
-    @value = params[:value]
+    @value = params[:value].blank? ? @guw_coefficient_element.value : params[:value]
     @previousValue = params["previousValue"]
     @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work.id,
                                                        guw_coefficient_id: @guw_coefficient.id).first
@@ -141,16 +141,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                        guw_coefficient_id: @guw_coefficient.id,
                                                        guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create!
 
-    @ceuw.comments = (params["comments"].blank? ? nil : '')
+
     @ceuw.percent = params["value"]
+
+    if @ceuw.percent == @guw_coefficient_element.value
+      @ceuw.comments = nil
+    else
+      @ceuw.comments = (params["comments"].blank? ? nil : params["comments"])
+    end
+
     @ceuw.save
-
-    # if @ceuw.percent == @guw_coefficient_element.value
-    #   @guw_unit_of_work.flagged = false
-    # else
-      @guw_unit_of_work.flagged = true
-    # end
-
     @guw_unit_of_work.save
 
     redirect_to main_app.dashboard_path(@project)
