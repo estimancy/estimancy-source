@@ -3117,7 +3117,7 @@ public
     #       pf.delete
     #     end
     #   end
-    if @project.is_model == false
+    unless @project.is_model == false
       ProjectField.where(project_id: @project.id,
                          value: nil).all.each{ |i| i.delete }
     end
