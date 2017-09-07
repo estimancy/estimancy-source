@@ -32,7 +32,7 @@
       <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#word_trees_modal">-->
         <!--Modèle de données-->
       <!--</button>-->
-      <%= link_to "Modèle de données", guw.guw_model_show_data_model_path(@guw_model), class: "btn btn-primary", target: :_blank %>
+      <%= link_to "Modèle de données", guw.guw_model_show_data_model_path(@guw_model), method: "get", class: "btn btn-primary", target: :_blank %>
 
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
