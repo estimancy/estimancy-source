@@ -32,6 +32,7 @@ module EffortBreakdown
     #module input/output parameters
     attr_accessor :pbs_project_element, :module_project, :input_effort, :project, :ratio, :changed_mp_ratio_element_ids,
                   :changed_retained_effort_values, :changed_retained_cost_values, :module_project_ratio_elements, :initialize_calculation,
+                  :efforts_and_costs_per_phase,
                   :theoretical_effort, :retained_effort, :theoretical_cost, :retained_cost,
                   :theoretical_effort_by_phase_profiles, :retained_effort_by_phase_profiles,
                   :theoretical_cost_by_phase_profiles, :retained_cost_by_phase_profiles
@@ -51,6 +52,9 @@ module EffortBreakdown
       @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@ratio, @pbs_project_element, false)
 
       # Output results
+      @efforts_and_costs_per_phase = HashWithIndifferentAccess.new
+      @efforts_and_costs_per_phase_profiles = HashWithIndifferentAccess.new
+
       @theoretical_effort = HashWithIndifferentAccess.new
       @retained_effort = HashWithIndifferentAccess.new
       @theoretical_cost = HashWithIndifferentAccess.new
