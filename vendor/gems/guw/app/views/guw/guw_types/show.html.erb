@@ -129,7 +129,7 @@
   <h4>
     <b><%= I18n.t :label_complexity_attributes %> <%= @guw_type %> </b>
     <% if can? :manage_modules_instances, ModuleProject %>
-      <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn btn-mini pull-right" %>
+      <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type), class: "btn btn-mini pull-right" %>
     <% end %>
   </h4>
 

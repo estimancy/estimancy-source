@@ -39,7 +39,7 @@
                                view_widget_id: @views_widget.id, letter: letter, class: "inline_attr module_project_variables" %>
               </td>
               <td>
-                <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
+                <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.get_module_project_estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
                                                                selected: @views_widget.equation[letter].nil? ? '' : @views_widget.equation[letter].first), class: "inline_attr" %>
               </td>
             </tr>
