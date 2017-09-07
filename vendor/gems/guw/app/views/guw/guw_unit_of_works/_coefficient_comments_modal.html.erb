@@ -51,9 +51,9 @@
       }
     });
     if (empty) {
-      $(".submit_72").attr('disabled', 'disabled');
+      $(".submit_<%= guw_coefficient_element.id %>").attr('disabled', 'disabled');
     } else {
-      $(".submit_72").removeAttr('disabled');
+      $(".submit_<%= guw_coefficient_element.id %>").removeAttr('disabled');
     }
   });
 </script>

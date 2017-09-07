@@ -1602,7 +1602,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     elsif params[:from] = "Redmine"
 
-      (1..2).each do |i|
+      (1..8).each do |i|
 
         pages = []
 
