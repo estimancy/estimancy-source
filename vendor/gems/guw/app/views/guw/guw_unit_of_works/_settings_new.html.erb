@@ -473,25 +473,6 @@
                                         });
                                       }
                                     });
-
-                                    $(".attribute_note_area").keyup(function(e) {
-                                      console.log('okk');
-                                      var empty = false;
-                                      $(".attribute_note_area").each(function() {
-                                        if ($(this).val().length == 0) {
-                                          console.log("here")
-                                          empty = true;
-                                        }
-                                      });
-                                      if (empty) {
-                                        console.log("disabledede")
-                                        $(".submit_<%= guw_coefficient.id %>").attr('disabled', 'disabled');
-                                      } else {
-                                        console.log("yolo !!")
-                                        $(".submit_<%= guw_coefficient.id %>").removeAttr('disabled');
-                                      }
-                                    });
-
                                   });
                                 </script>
                             <% else %>
