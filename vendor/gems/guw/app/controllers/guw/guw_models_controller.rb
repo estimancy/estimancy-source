@@ -1799,4 +1799,10 @@ class Guw::GuwModelsController < ApplicationController
 
     redirect_to :back
   end
+
+  # Affiche le modele de données
+  def show_data_model
+    @guw_model = current_module_project.guw_model
+    @component = current_component
+  end
 end
