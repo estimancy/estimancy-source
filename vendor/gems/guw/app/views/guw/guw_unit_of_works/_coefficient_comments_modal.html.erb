@@ -31,7 +31,7 @@
 
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
+    <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:cancel) %></button>
     <button type="submit" class="btn btn-default submit_comments" <%= ceuw.comments.nil? ? 'disabled' : '' %>">
       <%= I18n.t(:save) %>
     </button>
@@ -40,7 +40,6 @@
 
 <script>
   $(".attribute_note_area").keyup(function(e) {
-    console.log('okk');
     var empty = false;
     $(".attribute_note_area").each(function() {
       if ($(this).val().length == 0) {
