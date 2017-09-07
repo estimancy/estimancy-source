@@ -82,6 +82,7 @@ Guw::Engine.routes.draw do
 
     get "scale_module_attributes"
     post "save_scale_module_attributes"
+    get "show_data_model"
   end
 
   post "import_old_config" => "guw_models#import_old_config"

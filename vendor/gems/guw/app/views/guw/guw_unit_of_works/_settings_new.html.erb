@@ -28,6 +28,12 @@
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stats_modal">
         Statistiques détaillées
       </button>
+
+      <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#word_trees_modal">-->
+        <!--Modèle de données-->
+      <!--</button>-->
+      <%= link_to "Modèle de données", guw.guw_model_show_data_model_path(@guw_model), class: "btn btn-primary", target: :_blank %>
+
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
   </div>
@@ -767,6 +773,32 @@
     </div>
   </div>
 </div>
+
+<%#= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
+
+<!-- Word Trees modal : Modèle de données -->
+<div class="modal fade" tabindex="-1" role="dialog" id="word_trees_modal" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="width:100%">
+    <div class="modal-content">
+      <div class="modal-header modal-drag">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modèle de données</h4>
+      </div>
+      <div class="modal-body">
+        <% begin %>
+            <%= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
+        <% rescue %>
+            Une erreur est survenue lors de l'affichage du modèle de données
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <div class="modal fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
