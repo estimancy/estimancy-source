@@ -159,7 +159,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         ev = EstimationValue.find(current_ev.estimation_value_id)
       else
         ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                 :module_project_id => @module_project.previous.last, :in_out => "output").first
+                                   :module_project_id => @module_project.previous.last, :in_out => "output").first
       end
     rescue
       ev = nil
@@ -184,7 +184,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     form_coef = -Math.log(1-0.97) / (@md_duration * @md_duration)
     mcdonnell_chart_theorical_coordinates = []
     for t in 0..@md_duration
-      t_staffing = 2 * (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
+      t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
       mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
     end
     @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
@@ -200,7 +200,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     y0 = trapeze_parameter_values[:y0].to_f / 100
     y3 = trapeze_parameter_values[:y3].to_f / 100
 
-    @staffing_trapeze = 2 * ((effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+    @staffing_trapeze = (2 * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
     x0D = x0 * @md_duration
     x1D = x1 * @md_duration
@@ -313,7 +313,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     t_max_staffing = Math.sqrt(1/(2*form_coef))
     @staffing_custom_data.t_max_staffing = t_max_staffing
     for t in 0..@duration
-      t_staffing = 2 * (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
+      t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
       rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
     end
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
@@ -396,7 +396,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       if constraint == "max_staffing_constraint"
         @staffing_trapeze = @staffing_custom_data.max_staffing
 
-        @duration = 1.5 * (effort / @staffing_trapeze) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+        @duration = (2 * effort / @staffing_trapeze) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
         @staffing_custom_data.duration = @duration
 
@@ -404,7 +404,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
         @duration = (@staffing_custom_data.duration == 0) ? (@staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) ** @staffing_model.puissance_n) : @staffing_custom_data.duration
 
-        @staffing_trapeze = 1.5 * (effort / (@duration.nil? ? 1 : @duration)) * ( 1 / (x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+        @staffing_trapeze = (2 * effort / (@duration.nil? ? 1 : @duration)) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
         @staffing_custom_data.max_staffing = @staffing_trapeze
       end
@@ -497,7 +497,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       for t in 0..@duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
-        t_staffing = 2 * effort * form_coef * t * Math.exp(-form_coef*t*t)
+        t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
         rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
         if params[:actuals].present?
           actual_staffing_values << params[:actuals].to_a.map{|i| [i.first.to_f, i.last.to_f]}
@@ -532,7 +532,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       for t in 0..@md_duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
-        t_staffing = 2 * effort * form_coef * t * Math.exp(-form_coef*t*t)
+        t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
         mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
       end
       @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
@@ -610,9 +610,9 @@ class Staffing::StaffingCustomDataController < ApplicationController
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "effort" && ev.in_out == "output"
-              ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
-              ev.save
-              tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "duration"
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
@@ -631,7 +631,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         end
 
         ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-    end
+      end
 
     end
   end
