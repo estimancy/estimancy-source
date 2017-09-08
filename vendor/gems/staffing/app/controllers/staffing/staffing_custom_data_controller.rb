@@ -200,7 +200,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     y0 = trapeze_parameter_values[:y0].to_f / 100
     y3 = trapeze_parameter_values[:y3].to_f / 100
 
-    @staffing_trapeze = (2 * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) * ((x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+    @staffing_trapeze = (2 * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) / @md_duration) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
     x0D = x0 * @md_duration
     x1D = x1 * @md_duration
@@ -396,7 +396,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       if constraint == "max_staffing_constraint"
         @staffing_trapeze = @staffing_custom_data.max_staffing
 
-        @duration = (2 * effort / @staffing_trapeze) * ((x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+        @duration = (2 * effort / @staffing_trapeze) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
         @staffing_custom_data.duration = @duration
 
@@ -404,7 +404,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
         @duration = (@staffing_custom_data.duration == 0) ? (@staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) ** @staffing_model.puissance_n) : @staffing_custom_data.duration
 
-        @staffing_trapeze = (2 * effort / (@duration.nil? ? 1 : @duration)) * ((x3 + x2 - x1 - x0 + y0*(x1 - x2) + y3*(x3 - x2)))
+        @staffing_trapeze = (2 * effort / (@duration.nil? ? 1 : @duration)) / ((x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)))
 
         @staffing_custom_data.max_staffing = @staffing_trapeze
       end
