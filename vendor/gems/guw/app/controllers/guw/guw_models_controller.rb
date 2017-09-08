@@ -1802,7 +1802,46 @@ class Guw::GuwModelsController < ApplicationController
 
   # Affiche le modele de données
   def show_data_model
-    @guw_model = current_module_project.guw_model
-    @component = current_component
+    @module_project = ModuleProject.find(params[:module_project_id])
+    @guw_model = @module_project.guw_model #current_module_project.guw_model
+    component_id = params[:component_id] #current_component
+    module_project_id = params[:module_project_id]
+
+    @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: component_id, module_project_id: module_project_id).all
+
+    # Create and Get data from Guw_unit_work
+    @word_trees_data_model = [['Phrases']]
+    @unit_of_work_groups.each_with_index do |uowg, j|
+      #uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).where("guw_guw_types.name IN (?)", ["ILF", "GDI"]).order("display_order ASC, name ASC").each_with_index do |guow, i|
+      #uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).where(guw_guw_types: { name: ["ILF", "GDI"]}).order("display_order ASC, name ASC").each_with_index do |guow, i|
+      uowg.guw_unit_of_works.includes(:guw_type).where(guw_guw_types: { name: ["ILF", "GDI", "EIF", "GDE"]}).each_with_index do |guow, i|
+        comments = guow.comments.split(",")
+        unless comments.empty?
+          comments.each do |comment|
+            comment = comment.lstrip
+
+            if comment.blank?
+              final_comment = ""
+            else
+              #comment_without_special_char = comment.gsub(/[^0-9a-zA-Z. û ]/,'')
+              #final_comment = comment_without_special_char.blank? ? "" : comment_without_special_char.gsub(' ', '_')
+              #final_comment = ActiveSupport::Inflector.transliterate(comment.downcase.gsub(/[^0-9a-zA-Z. û ]/,'').gsub(/\s/,"_"))
+              final_comment = ActiveSupport::Inflector.transliterate(comment.downcase.gsub(/\s/,"_"))
+            end
+
+            #guow_name = guow.name.blank? ? "" : guow.name.gsub(' ', '_')
+            guow_name = guow.name.blank? ? "" : ActiveSupport::Inflector.transliterate( guow.name.downcase.gsub(/\s/,"_") )
+            if final_comment.blank?
+              @word_trees_data_model << ["Data #{guow.guw_type.name.upcase} #{guow_name}"]
+            else
+              @word_trees_data_model << ["Data #{guow.guw_type.name.upcase} #{guow_name} #{final_comment}"]
+            end
+          end
+
+        end
+      end
+    end
+
+    @word_trees_data_model
   end
 end

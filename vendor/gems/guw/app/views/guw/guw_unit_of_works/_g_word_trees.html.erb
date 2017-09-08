@@ -11,7 +11,9 @@
     google.charts.setOnLoadCallback(drawWordTrees);
 
     function drawWordTrees() {
-        var data = google.visualization.arrayToDataTable(
+        var data_model = <%= @word_trees_data_model.to_json.html_safe %>;
+
+        var data1 = google.visualization.arrayToDataTable(
                 [ ['Phrases'],
                     ['cats are better than dogs'],
                     ['cats eat kibble'],
@@ -34,10 +36,12 @@
                 ]
         );
 
+        var data = google.visualization.arrayToDataTable(data_model);
+
         var options = {
             wordtree: {
                 format: 'implicit',
-                word: 'cats'
+                word: 'Data'
             }
         };
 
