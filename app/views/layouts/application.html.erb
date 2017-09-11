@@ -26,11 +26,9 @@
           <a target="_blank" href="http://www.estimancy.com"><%= image_tag("/assets/Logo 200x75.png") %></a>
         </div>
 
-        <div style="margin: 27px 0 0 250px; font-weight: bold;" >
-          <% as = AdminSetting.where(key: "environnement").first %>
-          <% if !as.nil? %>
-            <%= raw(as.value) %>
-          <% end %>
+        <div class="pull-right" style="margin: 27px 0 0 250px; font-size: large; font-weight: normal;">
+          <% organization_env_title = @current_organization.nil? ? nil : @current_organization.headband_title %>
+            <%= raw(organization_env_title) %>
         </div>
 
         <div class="pull-right" style="margin-top:16px; margin-left: 10px">
