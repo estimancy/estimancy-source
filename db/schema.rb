@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170907084541) do
+ActiveRecord::Schema.define(:version => 20170911083839) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -761,8 +761,6 @@ ActiveRecord::Schema.define(:version => 20170907084541) do
     t.integer  "copy_id"
     t.string   "unit"
     t.integer  "display_order"
-    t.string   "color_code"
-    t.integer  "color_priority"
   end
 
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
@@ -1209,6 +1207,7 @@ ActiveRecord::Schema.define(:version => 20170907084541) do
 
   create_table "organizations", :force => true do |t|
     t.string   "name"
+    t.string   "headband_title"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
