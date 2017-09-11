@@ -275,11 +275,13 @@ class OrganizationsController < ApplicationController
           end
         end
       end
-      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
-    unless tab_error.empty?
+
+    if tab_error.empty?
+      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
+    else
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
     redirect_to :back
