@@ -32,7 +32,8 @@ def estimate_data():
     file_us.write(request.form['txt'])
     file_us.close()
     os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
-    lines = tuple(open('concord-concordances.txt', 'r'))
+    #lines = tuple(open('concord-concordances.txt', 'r'))
+    lines = tuple(open('demo-vision.txt', 'r'))
     return json.dumps(lines)
 
 @app.route("/", methods=['GET', 'POST'])
