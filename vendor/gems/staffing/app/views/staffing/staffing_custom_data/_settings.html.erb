@@ -154,11 +154,9 @@
               </span>
           </td>
           <td>
-              <span class="pull-right gap_date">
-                <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
-                  <%= sign((((@project.start_date + @staffing_custom_data.duration.weeks) - (@project.start_date + @md_duration.weeks)).to_f / 7).round(user_number_precision)) %> sem.
-                <% end %>
-              </span>
+            <span class="pull-right gap_date">
+              -
+            </span>
           </td>
           <td>
               <span class="pull-right">
