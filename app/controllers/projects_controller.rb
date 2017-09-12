@@ -36,10 +36,7 @@ class ProjectsController < ApplicationController
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
   before_filter :check_estimations_counter, :only => [:new, :duplicate, :change_new_estimation_data, :set_checkout_version]   # create, duplicate, checkout
 
-  #protected
-  private
-
-  def check_estimations_counter
+  private def check_estimations_counter
     @organization = @current_organization
     estimations_counter = @organization.estimations_counter
     unless estimations_counter.nil?
@@ -85,8 +82,6 @@ class ProjectsController < ApplicationController
     @project_security_levels = ProjectSecurityLevel.all
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
-
-  public
 
   def dashboard
     if @project.nil?
@@ -1059,15 +1054,15 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def confirm_deletion_multiple
-    set_page_title I18n.t(:confirm_deletion)
-
-    @projects = Project.where(id: params[:deleted_projects]).all
-
-    puts(" ids = #{params[:deleted_projects]}")
-    @projects = Project.find(params[:project_id])
-
-  end
+  # def confirm_deletion_multiple
+  #   set_page_title I18n.t(:confirm_deletion)
+  #
+  #   @projects = Project.where(id: params[:deleted_projects]).all
+  #
+  #   puts(" ids = #{params[:deleted_projects]}")
+  #   @projects = Project.find(params[:project_id])
+  #
+  # end
 
   def select_categories
     #No authorize required
