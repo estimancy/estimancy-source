@@ -154,11 +154,9 @@
               </span>
           </td>
           <td>
-              <span class="pull-right gap_date">
-                <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
-                  <%= sign((((@project.start_date + @staffing_custom_data.duration.weeks) - (@project.start_date + @md_duration.weeks)).to_f / 7).round(user_number_precision)) %> sem.
-                <% end %>
-              </span>
+            <span class="pull-right gap_date">
+              -
+            </span>
           </td>
           <td>
               <span class="pull-right">
@@ -361,16 +359,18 @@
         $(".new_duration").val(new_duration.toFixed(2));
 
         x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-        x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-        x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-        x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-        y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-        y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+                x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                        x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                                x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+
+                                        y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                                                y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
 
         var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
 
         $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2) + " pers.");
         $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
+
 
         var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
         var t_max_staffing = Math.sqrt(1/(2*form_coef));
