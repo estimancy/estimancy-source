@@ -962,56 +962,56 @@
 
               $("#from").on("change",function(){
                   if (this.value == "") {
-                      $("#file-block").hide();
-                      $("#url-block").hide();
-                      $("#groups-block").hide();
-                      $("#type-block").hide();
-                      $("#excel-type-block").hide();
-                      $("#jira-type-block").hide();
-                      $("#redmine-type-block").hide();
+                      $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
                   }
 
                   else if (this.value == "Excel") {
-                      $("#file-block").show();
-                      $("#url-block").hide();
-                      $("#groups-block").show();
-                      $("#excel-type-block").show();
-                      $("#jira-type-block").hide();
-                      $("#redmine-type-block").hide();
+                      $("#file-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#excel-type-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
                     <% if !@guw_model.excel_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   } else if (this.value == "Jira") {
-                    $("#url-block").show();
-                    $("#file-block").hide();
-                    $("#groups-block").show();
-                    $("#excel-type-block").hide();
-                    $("#jira-type-block").show();
-                    $("#redmine-type-block").hide();
+                    $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#jira-type-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
 
                     <% if !@guw_model.jira_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   } else if (this.value == "Redmine") {
 
-                    $("#url-block").show();
-                    $("#file-block").hide();
-                     $("#groups-block").show();
-                    $("#excel-type-block").hide();
-                    $("#jira-type-block").hide();
-                    $("#redmine-type-block").show();
+                    $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#redmine-type-block").show().find('input, textarea, select').prop('disabled', false);
 
                     <% if !@guw_model.redmine_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   }
               })

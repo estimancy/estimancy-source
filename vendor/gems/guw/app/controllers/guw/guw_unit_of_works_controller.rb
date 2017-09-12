@@ -1551,6 +1551,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         extract_data_from_excel("D - #{default_group}")
       elsif params[:kind_excel] == "Aucun"
         import_guw("", "", "", default_group, "Excel", "#")
+      else
+        import_guw("", "", "", default_group, "Excel", "#")
       end
     elsif params[:from] == "Jira"
       (1..5).step(1).each do |i|
