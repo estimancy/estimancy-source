@@ -238,11 +238,13 @@
                    gceuws = guow.guw_coefficient_element_unit_of_works
                    gceuws.each do |gceuw|
                      gce = gceuw.guw_coefficient_element
-                     gce_guw_coefficient = gce.guw_coefficient
-                     unless gce_guw_coefficient.nil?
-                       unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
-                         if (gceuw.percent.to_f != gce.value.to_f)
-                           hash_color_priorities[gce.color_priority.to_i] = gce.color_code
+                     unless gce.nil?
+                       gce_guw_coefficient = gce.guw_coefficient
+                       unless gce_guw_coefficient.nil?
+                         unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
+                           if (gceuw.percent.to_f != gce.value.to_f)
+                             hash_color_priorities[gce.color_priority.to_i] = gce.color_code
+                           end
                          end
                        end
                      end
