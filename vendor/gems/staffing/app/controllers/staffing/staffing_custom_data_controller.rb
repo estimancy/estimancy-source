@@ -506,7 +506,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         if params[:actuals].present?
           actual_staffing_values << params[:actuals].to_a.map{|i| [i.first.to_f, i.last.to_f]}
         else
-          actual_staffing_values << ["#{t}", t_staffing]
+          actual_staffing_values << ["#{t}", 2 * t_staffing]
         end
       end
       @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
@@ -537,7 +537,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       for t in 0..@md_duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
         t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
-        mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
+        mcdonnell_chart_theorical_coordinates << ["#{t}", 2 * t_staffing]
       end
       @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
 
