@@ -502,7 +502,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       for t in 0..@duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
         t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
-        rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
+        rayleigh_chart_theoretical_coordinates << ["#{t}", 2 * t_staffing]
         if params[:actuals].present?
           actual_staffing_values << params[:actuals].to_a.map{|i| [i.first.to_f, i.last.to_f]}
         else
