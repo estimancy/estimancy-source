@@ -185,7 +185,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     mcdonnell_chart_theorical_coordinates = []
     for t in 0..@md_duration
       t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
-      mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
+      mcdonnell_chart_theorical_coordinates << ["#{t}", 2 * t_staffing]
     end
     @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
 
@@ -308,14 +308,18 @@ class Staffing::StaffingCustomDataController < ApplicationController
     ##### Rayleigh
 
     rayleigh_chart_theoretical_coordinates = []
+
     form_coef = -Math.log(1-0.97) / (@duration * @duration)
     @staffing_custom_data.form_coef = form_coef
+
     t_max_staffing = Math.sqrt(1/(2*form_coef))
     @staffing_custom_data.t_max_staffing = t_max_staffing
+
     for t in 0..@duration
       t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
-      rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
+      rayleigh_chart_theoretical_coordinates << ["#{t}", (2 * t_staffing)]
     end
+
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
 
     begin
