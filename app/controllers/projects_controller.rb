@@ -1038,18 +1038,6 @@ class ProjectsController < ApplicationController
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 
-    # if params[:deleted_projects].present?
-    #   @projects = Project.where(id: params[:deleted_projects]).all
-    # else
-    #   @projects = Project.where(id: params[:project_id]).all
-    #   flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
-    #   redirect_to :back
-    # end
-    #
-    # @project_ids = params[:deleted_projects]
-    #
-    #@projects.each do |p|
-
     @project = Project.find(params[:project_id])
     if @project.is_childless?
       authorize! :delete_project, @project
@@ -1067,10 +1055,8 @@ class ProjectsController < ApplicationController
         end
       end
     else
-      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
-
   end
 
   def confirm_deletion_multiple

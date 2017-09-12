@@ -356,9 +356,9 @@ Projestimate::Application.routes.draw do
   match 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
   match 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
-  match 'projects/confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
   match 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
+  get 'projects/confirm_deletion' => 'projects#confirm_deletion'
 
   get 'projects_from' => 'projects#projects_from', :as => 'projects_from'
   post 'load_setting_module/:module_project_id' => 'projects#load_setting_module', :as => 'load_setting_module'
