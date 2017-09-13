@@ -1695,10 +1695,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
   end
 
-  private def get_data(id, title, description, url, default_group, data_type, j = 0)
+  private def get_data(id, title, description, url, default_group, data_type, j)
+
+    results = []
 
     if j == 0
-      results = []
 
       @guw_model = current_module_project.guw_model
       txt = description
@@ -1881,7 +1882,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           description << row[5].to_s
         end
 
-        get_data(id, title, description, url, default_group, "Excel")
+        get_data(id, title, description, url, default_group, "Excel", 0)
       end
     end
   end
