@@ -1562,7 +1562,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         pages << page.search("//@data-issue-key").map(&:value)
       end
 
-      pages.uniq.flatten.take(5).each do |val|
+      pages.uniq.flatten.take(5).each_with_index do |val, j|
         id = val
         title = ""
         description = ""
@@ -1580,12 +1580,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         unless description.blank?
           if params[:kind_jira] == "Données"
-            results = get_data(id, title, description, url, default_group, "Jira")
+            results = get_data(id, title, description, url, default_group, "Jira", j)
           elsif params[:kind_jira] == "Traitements"
             results = get_trt(id, title, description, url, default_group, "Jira")
           elsif params[:kind_jira] == "Données + Traitements"
             a = get_trt(id, title, description, url, "T - #{default_group}", "Jira")
-            b = get_data(id, title, description, url, "D - #{default_group}", "Jira")
+            b = get_data(id, title, description, url, "D - #{default_group}", "Jira", j)
             results = a + b
           else
             results = import_guw(id, title, description, default_group, "Jira", url)
@@ -1613,7 +1613,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           pages << page.search("//tr[@id]").map{|j| j.attributes["id"].value.to_s.gsub("issue-","") }
         end
 
-        pages.uniq.flatten.each do |val|
+        pages.uniq.flatten.each_with_index do |val, j|
           id = val
           agent = Mechanize.new
           url = "http://forge.estimancy.com/issues/#{val}"
@@ -1623,12 +1623,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             unless description.blank?
               if params[:kind_redmine] == "Données"
-                results = get_data(id, title, description, url, default_group, "Redmine")
+                results = get_data(id, title, description, url, default_group, "Redmine", j)
               elsif params[:kind_redmine] == "Traitements"
                 results = get_trt(id, title, description, url, default_group, "Redmine")
               elsif params[:kind_redmine] == "Données + Traitements"
                 a = get_trt(id, title, description, url, "T - #{default_group}", "Redmine")
-                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine")
+                b = get_data(id, title, description, url, "D - #{default_group}", "Redmine", j)
                 results = a + b
               else
                 results = import_guw(id, title, description, default_group, "Redmine", url)
@@ -1695,94 +1695,96 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
   end
 
-  private def get_data(id, title, description, url, default_group, data_type)
+  private def get_data(id, title, description, url, default_group, data_type, j = 0)
 
-    results = []
+    if j == 0
+      results = []
 
-    @guw_model = current_module_project.guw_model
-    txt = description
+      @guw_model = current_module_project.guw_model
+      txt = description
 
-    if data_type == "Excel"
-      server_url = @guw_model.excel_ml_server
-    elsif data_type == "Redmine"
-      server_url = @guw_model.redmine_ml_server
-    elsif data_type == "Jira"
-      server_url = @guw_model.jira_ml_server
-    end
+      if data_type == "Excel"
+        server_url = @guw_model.excel_ml_server
+      elsif data_type == "Redmine"
+        server_url = @guw_model.redmine_ml_server
+      elsif data_type == "Jira"
+        server_url = @guw_model.jira_ml_server
+      end
 
-    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, name: "GDI").first
-    if @guw_type.nil?
-      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-    end
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, name: "GDI").first
+      if @guw_type.nil?
+        @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+      end
 
-    if default_group == ""
-      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
-                                                 module_project_id: current_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create
-    else
-      @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
-                                                 module_project_id: current_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create
-    end
+      if default_group == ""
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: 'Données',
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
+      else
+        @guw_group = Guw::GuwUnitOfWorkGroup.where(name: default_group,
+                                                   module_project_id: current_module_project.id,
+                                                   pbs_project_element_id: current_component.id).first_or_create
+      end
 
-    unless txt.blank?
+      unless txt.blank?
 
-      @http = Curl.post("http://#{server_url}/estimate_data", { txt: txt })
+        @http = Curl.post("http://#{server_url}/estimate_data", { txt: txt })
 
-      JSON.parse(@http.body_str).each do |output|
+        JSON.parse(@http.body_str).each do |output|
 
-        data_array = output.scan(/<data=(.*?)>/)
-        attr_array = output.scan(/<attribut=(.*?)>/)
+          data_array = output.scan(/<data=(.*?)>/)
+          attr_array = output.scan(/<attribut=(.*?)>/)
 
-        data_array.each do |d|
+          data_array.each do |d|
 
-          t = d.first
+            t = d.first
 
-          unless t.nil?
-            v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
-          end
-
-          guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
-                                             guw_model_id: @guw_model.id,
-                                             module_project_id: current_module_project.id).first_or_create(
-                                                                            comments: attr_array.uniq.join(", "),
-                                                                            guw_unit_of_work_group_id: @guw_group.id,
-                                                                            pbs_project_element_id: current_component.id,
-                                                                            display_order: nil,
-                                                                            tracking: nil,
-                                                                            quantity: 1,
-                                                                            selected: true,
-                                                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
-                                                                            url: url)
-
-          calculate_attribute(guw_uow)
-
-          results << guw_uow
-
-          @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
-
-            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                      guw_unit_of_work_id: guw_uow.id,
-                                                      guw_attribute_id: gac.id).first_or_create
-            if gac.name == "DET"
-              guowa.low = attr_array.size
-              guowa.most_likely = attr_array.size
-              guowa.high = attr_array.size
-              guowa.comments = attr_array.join(", ")
-            elsif gac.name == "RET"
-              guowa.low = 1
-              guowa.most_likely = 1
-              guowa.high = 1
-            else
-              guowa.low = 0
-              guowa.most_likely = 0
-              guowa.high = 0
+            unless t.nil?
+              v = d.first.gsub(/#[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøôÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ]+/, '').gsub(' et', '').gsub(',', '').gsub('/', '').gsub('/\"', '').gsub('/\/', '').delete('\\"')
             end
 
-            guowa.save
+            guw_uow = Guw::GuwUnitOfWork.where(name: v.singularize.lstrip,
+                                               guw_model_id: @guw_model.id,
+                                               module_project_id: current_module_project.id).first_or_create(
+                                                                              comments: attr_array.uniq.join(", "),
+                                                                              guw_unit_of_work_group_id: @guw_group.id,
+                                                                              pbs_project_element_id: current_component.id,
+                                                                              display_order: nil,
+                                                                              tracking: nil,
+                                                                              quantity: 1,
+                                                                              selected: true,
+                                                                              guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                                                              url: url)
+
+            calculate_attribute(guw_uow)
+
+            results << guw_uow
+
+            @guw_model.guw_attributes.where(name: ["DET", "RET", "FTR"]).all.each do |gac|
+
+              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                        guw_unit_of_work_id: guw_uow.id,
+                                                        guw_attribute_id: gac.id).first_or_create
+              if gac.name == "DET"
+                guowa.low = attr_array.size
+                guowa.most_likely = attr_array.size
+                guowa.high = attr_array.size
+                guowa.comments = attr_array.join(", ")
+              elsif gac.name == "RET"
+                guowa.low = 1
+                guowa.most_likely = 1
+                guowa.high = 1
+              else
+                guowa.low = 0
+                guowa.most_likely = 0
+                guowa.high = 0
+              end
+
+              guowa.save
+
+            end
 
           end
-
         end
       end
     end
