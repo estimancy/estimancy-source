@@ -1795,6 +1795,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   private def get_trt(id, title, description, url, default_group, trt_type)
     @guw_model = current_module_project.guw_model
+    @guw_model_guw_attributes = @guw_model.guw_attributes
 
     if trt_type == "Excel"
       url_server = @guw_model.excel_ml_server
@@ -1849,11 +1850,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           url: url)
 
       results.each do |uo|
-        @guw_model.guw_attributes.all.each do |gac|
+        @guw_model_guw_attributes.all.each do |gac|
           guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
                                                     guw_unit_of_work_id: uo.id,
                                                     guw_attribute_id: gac.id).first_or_create
-          guowa.save
         end
       end
 
@@ -1928,34 +1928,35 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 tmp_hash_res = Hash.new
                 tmp_hash_ares  = Hash.new
 
-                guw_uow = Guw::GuwUnitOfWork.create(selected: row[3].to_i == 1,
-                                                    name: row[4],
-                                                    comments: row[5],
-                                                    guw_unit_of_work_group_id: guw_uow_group.id,
-                                                    module_project_id: current_module_project.id,
-                                                    pbs_project_element_id: @component.id,
-                                                    guw_model_id: @guw_model.id,
-                                                    tracking: row[12],
-                                                    quantity: row[11].nil? ? 1 : row[11],
-                                                    size: row[14].nil? ? nil : row[14],
-                                                    ajusted_size: row[15].nil? ? nil : row[15],
-                                                    intermediate_percent: row[16].nil? ? nil : row[16],
-                                                    intermediate_weight: row[16].nil? ? nil : row[16])
+                @guw_type = Guw::GuwType.where(name: row[6],
+                                               guw_model_id: @guw_model.id).first
+                if @guw_type.nil?
+                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                                 is_default: true).first
+                  if @guw_type.nil?
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+                  end
+                end
+
+                guw_uow = Guw::GuwUnitOfWork.new( selected: row[3].to_i == 1,
+                                                  name: row[4],
+                                                  comments: row[5],
+                                                  guw_unit_of_work_group_id: guw_uow_group.id,
+                                                  module_project_id: current_module_project.id,
+                                                  pbs_project_element_id: @component.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  tracking: row[12],
+                                                  quantity: row[11].nil? ? 1 : row[11],
+                                                  size: row[14].nil? ? nil : row[14],
+                                                  ajusted_size: row[15].nil? ? nil : row[15],
+                                                  intermediate_percent: row[16].nil? ? nil : row[16],
+                                                  intermediate_weight: row[16].nil? ? nil : row[16],
+                                                  guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
 
+
                 @guw_attributes.each_with_index do |gac, ii|
-
-                  @guw_type = Guw::GuwType.where(name: row[6],
-                                                 guw_model_id: @guw_model.id).first
-                  if @guw_type.nil?
-                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
-                                                   is_default: true).first
-                    if @guw_type.nil?
-                      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
-                    end
-                  end
-
                   @guw_attributes.size.times do |jj|
 
                     ind = 18 + @guw_outputs.size + @guw_coefficients.size + jj
