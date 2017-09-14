@@ -342,10 +342,13 @@ class Guw::GuwModelsController < ApplicationController
           end
         end
       end
-
     end
-    redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
 
+    if @guw_model.nil?
+      redirect_to :back
+    else
+      redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
+    end
   end
 
   def import_old_config
