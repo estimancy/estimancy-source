@@ -465,26 +465,28 @@
                                                        step: 0.001 %>
                                 <% end %>
                               </td>
-                                <script>
-                                  $(document).ready(function(){
-                                    var previousValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
-                                    $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
-                                      var currentValue = $(this).val();
-                                      if(currentValue != previousValue) {
-                                        $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("blur", function(){
-                                          $.ajax({
-                                            url: "<%= guw.load_coefficient_comments_path %>",
-                                            data: "coeff_id=" + $(this).attr("coeff_id") +
-                                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
-                                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
-                                            "&value=" + $(this).val() +
-                                            "&previousValue=" + previousValue
+                              <% if guw_coefficient.allow_comments == true %>
+                                  <script>
+                                    $(document).ready(function(){
+                                      var previousValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
+                                      $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
+                                        var currentValue = $(this).val();
+                                        if(currentValue != previousValue) {
+                                          $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("blur", function(){
+                                            $.ajax({
+                                              url: "<%= guw.load_coefficient_comments_path %>",
+                                              data: "coeff_id=" + $(this).attr("coeff_id") +
+                                              "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                              "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                              "&value=" + $(this).val() +
+                                              "&previousValue=" + previousValue
+                                            });
                                           });
-                                        });
-                                      }
+                                        }
+                                      });
                                     });
-                                  });
-                                </script>
+                                  </script>
+                              <% end %>
                             <% else %>
                               <td class="span2">
                                 <% unless @guw_type.nil? %>

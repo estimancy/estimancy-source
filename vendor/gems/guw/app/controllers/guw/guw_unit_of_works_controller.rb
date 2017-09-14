@@ -1098,7 +1098,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
 
           elsif guw_coefficient.coefficient_type == "Coefficient"
 
@@ -1190,7 +1192,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                          guw_unit_of_work_id: guw_unit_of_work,
                                                                                                                          guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
               rescue
-
               end
 
               unless ceuw.nil?
@@ -1239,7 +1240,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if inter_value == 0
             tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           else
-            tmp = @final_value.to_f * inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+            if @final_value == 0
+              tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+            else
+              tmp = @final_value.to_f * inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+            end
           end
         else
           tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
@@ -2538,12 +2543,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
-      u.display_order = i
-      if u.changed?
-        u.save
-      end
-    end
+    # group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
+    #   u.display_order = i
+    #   if u.changed?
+    #     u.save
+    #   end
+    # end
   end
 
 end
