@@ -1163,19 +1163,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   else
                     ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
                   end
-
-                  if ce.nil?
-                    ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                                                          guw_model_id: @guw_model.id,
-                                                          default: true).first
-                    if ce.nil?
-                      ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                                                            guw_model_id: @guw_model.id).first
-                    end
-                  end
                 rescue
                   ce = nil
                 end
+              end
+            end
+
+            if ce.nil?
+              ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                                                    guw_model_id: @guw_model.id,
+                                                    default: true).first
+              if ce.nil?
+                ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                                                      guw_model_id: @guw_model.id).first
               end
             end
 
@@ -1230,11 +1230,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         inter_value = oa_value.compact.sum.to_f
 
+        #Attention changement, a confirmer
         unless @final_value.nil?
           if inter_value == 0
             tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           else
-            tmp = inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
+            tmp = @final_value.to_f * inter_value * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
         else
           tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
