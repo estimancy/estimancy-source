@@ -1184,10 +1184,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                guw_coefficient_element_id: ce.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
-              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
-                                                                guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
-                                                                                                                       guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                       guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              begin
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
+                                                                  guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
+                                                                                                                         guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                                         guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              rescue
+
+              end
 
               unless ceuw.nil?
                 unless params['deported_guw_coefficient'].nil?
