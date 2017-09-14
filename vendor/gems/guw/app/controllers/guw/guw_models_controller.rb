@@ -202,7 +202,7 @@ class Guw::GuwModelsController < ApplicationController
                                                      unit: row[6])
 
                   attr = PeAttribute.where(name: guw_output.name,
-                                           alias: guw_output.name.underscore.gsub(" ", "_"),
+                                           alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
                                            description: guw_output.name,
                                            guw_model_id: guw_output.guw_model_id).first_or_create!
 
