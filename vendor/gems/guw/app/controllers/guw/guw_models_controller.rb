@@ -192,35 +192,37 @@ class Guw::GuwModelsController < ApplicationController
 
               tab.each_with_index do |row, i|
                 if i >= 1 && !row.nil?
-                  guw_output = Guw::GuwOutput.create(name: row[0],
-                                                     output_type: row[1],
-                                                     guw_model_id: @guw_model.id,
-                                                     allow_intermediate_value: (row[2] == 0) ? false : true,
-                                                     allow_subtotal: (row[3] == 0) ? false : true,
-                                                     standard_coefficient: row[4],
-                                                     display_order: row[5],
-                                                     unit: row[6])
+                  unless row[0].blank?
+                    guw_output = Guw::GuwOutput.create(name: row[0],
+                                                       output_type: row[1],
+                                                       guw_model_id: @guw_model.id,
+                                                       allow_intermediate_value: (row[2] == 0) ? false : true,
+                                                       allow_subtotal: (row[3] == 0) ? false : true,
+                                                       standard_coefficient: row[4],
+                                                       display_order: row[5],
+                                                       unit: row[6])
 
-                  attr = PeAttribute.where(name: guw_output.name,
-                                           alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
-                                           description: guw_output.name,
-                                           guw_model_id: guw_output.guw_model_id).first_or_create!
-
-                  pm = Pemodule.where(alias: "guw").first
-
-                  am = AttributeModule.where(pe_attribute_id: attr.id,
-                                             pemodule_id: pm.id,
-                                             in_out: "both",
+                    attr = PeAttribute.where(name: guw_output.name,
+                                             alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
+                                             description: guw_output.name,
                                              guw_model_id: guw_output.guw_model_id).first_or_create!
 
-                  @guw_model.module_projects.each do |module_project|
-                    ['input', 'output'].each do |in_out|
-                      mpa = EstimationValue.create(pe_attribute_id: attr.id,
-                                                   module_project_id: module_project.id,
-                                                   in_out: in_out,
-                                                   string_data_low: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_most_likely: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_high: { :pe_attribute_name => @guw_output.name })
+                    pm = Pemodule.where(alias: "guw").first
+
+                    am = AttributeModule.where(pe_attribute_id: attr.id,
+                                               pemodule_id: pm.id,
+                                               in_out: "both",
+                                               guw_model_id: guw_output.guw_model_id).first_or_create!
+
+                    @guw_model.module_projects.each do |module_project|
+                      ['input', 'output'].each do |in_out|
+                        mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                                     module_project_id: module_project.id,
+                                                     in_out: in_out,
+                                                     string_data_low: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_high: { :pe_attribute_name => @guw_output.name })
+                      end
                     end
                   end
 
