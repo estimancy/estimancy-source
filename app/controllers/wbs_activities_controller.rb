@@ -477,15 +477,14 @@ class WbsActivitiesController < ApplicationController
       calculator = Dentaku::Calculator.new
 
       #store entries value
-      effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten  #PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+      effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
         effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient
         calculator.store(:"#{ev.pe_attribute.alias.downcase}" => effort_value)
       end
 
-
-      # Calculate the module_project_ratio_variable value_percentage
+      # Calculate the module_project_ratio_variables value_percentage
       #mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio_reference.id)
       mp_ratio_variables = @module_project.get_module_project_ratio_variables(@ratio_reference, @pbs_project_element)
       mp_ratio_variables.each do |mp_var|
@@ -507,10 +506,8 @@ class WbsActivitiesController < ApplicationController
           rescue
             normalized_formula_expression = nil
           end
-
           value_from_percentage = calculator.evaluate("#{normalized_formula_expression}")
         end
-
         mp_var.value_from_percentage = value_from_percentage.to_f
 
         if mp_var.save
@@ -520,14 +517,13 @@ class WbsActivitiesController < ApplicationController
         end
       end
 
-
-      ## Update module_project_ratio_element selected attribute
+      ## Update module_project_ratio_element selected or Optional attribute
       @module_project_ratio_elements.each do |mp_ratio_element|
         selected_elements = params['selected']
         if !selected_elements.nil? && selected_elements.include?(mp_ratio_element.id.to_s)
           mp_ratio_element.selected = true
         else
-          if !mp_ratio_element.wbs_activity_ratio_element.nil? && mp_ratio_element.wbs_activity_ratio_element.is_optional==true ##mp_ratio_element.is_optional == true
+          if !mp_ratio_element.wbs_activity_ratio_element.nil? && mp_ratio_element.wbs_activity_ratio_element.is_optional==true
             mp_ratio_element.selected = false
           else
             mp_ratio_element.selected = true
@@ -538,7 +534,6 @@ class WbsActivitiesController < ApplicationController
           mp_ratio_element.save
         end
       end
-
     end
 
 
@@ -547,11 +542,10 @@ class WbsActivitiesController < ApplicationController
                                                             @ratio_reference, just_changed_values, retained_effort_level["most_likely"],
                                                             retained_cost_level["most_likely"], initialize_calculation)
 
-    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
+    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
 
-
+    # Sauvegarde des informations de sorties
     current_pbs_estimations.each do |est_val|
-
       @tmp_results = Hash.new
 
       unless est_val.pe_attribute.nil?
@@ -559,7 +553,6 @@ class WbsActivitiesController < ApplicationController
           ratio_name = @ratio_reference.name
           est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })
 
-        #elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
         elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
           if (est_val.in_out == 'output') && (est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost"))
 
@@ -594,13 +587,10 @@ class WbsActivitiesController < ApplicationController
                 effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
                                                                         @ratio_reference, just_changed_values, retained_effort_level[level],
                                                                         retained_cost_level[level], initialize_calculation)
-                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
-              else
-                #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
-                ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
+
+                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
               end
 
-              ###@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("get_#{est_val.pe_attribute.alias}") }
               @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
 
               level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
@@ -617,17 +607,13 @@ class WbsActivitiesController < ApplicationController
                 end
                 mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
 
-                # Then update retained values if necessary
-                #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
-                #if element_retained_mp_value.nil?
-                #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
-                #end
-
                 if mp_ratio_element.changed?
                   mp_ratio_element.save
                 end
               end
             end
+
+
             #=========== END Save results in the Module-Project Ratio Elements  ===================
 
             WbsActivityElement.rebuild_depth_cache!
@@ -861,12 +847,6 @@ class WbsActivitiesController < ApplicationController
               # save theoretical values
               mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
-              # get the retained attribute value
-              #mp_retained_alias = "retained_#{mp_ratio_element_attribute_alias}_probable"
-              #if mp_ratio_element.send("#{mp_retained_alias}").nil?
-              #  mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
-              #end
-
               # if value is manually updated, update the flagged attribute
               unless just_changed_values.nil?
                 if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
@@ -903,8 +883,6 @@ class WbsActivitiesController < ApplicationController
               end
             end
 
-          ###elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
-          #elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort", "E1", "E2", "E3", "E4")
           elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("E1", "E2", "E3", "E4")
             in_result = Hash.new
             tmp_prbl = Array.new
@@ -932,7 +910,6 @@ class WbsActivitiesController < ApplicationController
                 else
                   entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]
                 end
-                ###level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
                 if entry_level_value.nil? || entry_level_value.empty?
                   level_estimation_value[@pbs_project_element.id] = nil
                 else
@@ -941,7 +918,6 @@ class WbsActivitiesController < ApplicationController
 
                 in_result["string_data_#{level}"] = level_estimation_value
               end
-
               tmp_prbl << level_estimation_value[@pbs_project_element.id]
             end
 
@@ -949,14 +925,11 @@ class WbsActivitiesController < ApplicationController
             pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
             est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
 
-            #if est_val.pe_attribute.alias == "effort"
-            #  input_effort_for_global_ratio = pbs_input_probable_value
-            #end
           end
         elsif est_val.pe_attribute.alias == "ratio"
           ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
 
-          #nouvelle calcul du ratio
+          #nouveau calcul du ratio
           input_effort = input_effort_for_global_ratio
           effort_total = effort_total_for_global_ratio
           if input_effort.nil? || input_effort == 0
@@ -964,13 +937,10 @@ class WbsActivitiesController < ApplicationController
           else
             new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
           end
-
-          #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
           est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
         end
       end
     end
-
 
     # if Initialize calculation, update the flagged attribute to false
     if initialize_calculation == true
