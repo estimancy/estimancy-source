@@ -402,8 +402,10 @@ module EffortBreakdown
       # Calculate the module_project_ratio_variable value_percentage
       mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
       mp_ratio_variables.each do |mp_var|
-        # Store the ratio_variables value in the calculator
-        calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage)
+        unless mp_var.name.blank?
+          # Store the ratio_variables value in the calculator
+          calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage)
+        end
       end
 
       # get retained values in calculations with wbs_activity_element_id
@@ -689,8 +691,10 @@ module EffortBreakdown
         # Calculate the module_project_ratio_variable value_percentage
         mp_ratio_variables = @module_project.module_project_ratio_variables.where(pbs_project_element_id: @pbs_project_element.id, wbs_activity_ratio_id: @ratio.id)
         mp_ratio_variables.each do |mp_var|
-          # Store the ratio_variables value in the calculator
-          calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage.to_f)
+          unless mp_var.name.blank?
+            # Store the ratio_variables value in the calculator
+            calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage.to_f)
+          end
         end
 
         # need to compute all formula after reordering the dependencies
