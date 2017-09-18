@@ -516,11 +516,18 @@
                   var mp_ratio_element_id = $(this).data('mp_ratio_element');
 
                   if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
-                      // Get the element comments
-                      var comments = $(this).data('comments');
-                      if (comments == ""){
-                          disable_calculate_button = true;
-                          return false;
+                      var theoretical_effort = $('#theoretical_effort_most_likely_'+ mp_ratio_element_id).val();
+                      var retained_effort = $('#retained_effort_most_likely'+ mp_ratio_element_id).val();
+                      var theoretical_cost = $('#theoretical_cost_most_likely_'+ mp_ratio_element_id).val();
+                      var retained_cost = $('#retained_cost_most_likely'+ mp_ratio_element_id).val();
+
+                      if( (theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)){
+                          // Get the element comments
+                          var comments = $(this).data('comments');
+                          if (comments == ""){
+                              disable_calculate_button = true;
+                              return false;
+                          }
                       }
                   }
               });
