@@ -537,12 +537,104 @@ class WbsActivitiesController < ApplicationController
     end
 
 
+    global_results = {low:  HashWithIndifferentAccess.new, most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new}
+
     #===== Appel Effort breakdown avec calcul de toutes des valeurs des attributs (theoretical_effot, retained_effort, theoretical_cost, retained_cost) =====
+    # MOST_LIKELY
     effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values["most_likely"],
                                                             @ratio_reference, just_changed_values, retained_effort_level["most_likely"],
                                                             retained_cost_level["most_likely"], initialize_calculation)
 
-    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
+    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:most_likely] = effort_breakdown.calculate_estimations
+
+    if @wbs_activity.three_points_estimation?
+      # LOW
+      effort_breakdown_low = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values["low"], @ratio_reference, just_changed_values,
+                                                                  retained_effort_level["low"], retained_cost_level["low"], initialize_calculation)
+      theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:low] = effort_breakdown_low.calculate_estimations
+
+      # HIGH
+      effort_breakdown_high = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values["high"], @ratio_reference, just_changed_values,
+                                                                  retained_effort_level["high"], retained_cost_level["high"], initialize_calculation)
+      theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:high] = effort_breakdown_high.calculate_estimations
+    end
+
+
+
+    ###TESTS
+
+    global_results_low = global_results[:low]
+    global_results_most_likely = global_results[:most_likely]
+    global_results_high = global_results[:high]
+    global_results_probable = HashWithIndifferentAccess.new
+
+    #=========== Save results in the Module-Project-Ratio-Elements THEORETICAL and RETAINED values
+    @module_project_ratio_elements.each do |mp_ratio_element|
+      wbs_activity_element_id = mp_ratio_element.wbs_activity_element_id
+
+      low_values = global_results_low[wbs_activity_element_id]
+      most_likely_values = global_results_most_likely[wbs_activity_element_id]
+      high_value = global_results_high[wbs_activity_element_id]
+
+      theoretical_effort_probable = compute_probable_value(low_values[:theoretical_effort], most_likely_values[:theoretical_effort], high_value[:theoretical_effort])
+      retained_effort_probable =  compute_probable_value(low_values[:retained_effort], most_likely_values[:retained_effort], high_value[:retained_effort])
+      theoretical_cost_probable = compute_probable_value(low_values[:theoretical_cost], most_likely_values[:theoretical_cost], high_value[:theoretical_cost])
+      retained_cost_probable = compute_probable_value(low_values[:retained_cost], most_likely_values[:retained_cost], high_value[:retained_cost])
+
+      mp_ratio_element.update_attributes(theoretical_effort_low: low_values[:theoretical_effort],
+                                         theoretical_effort_most_likely: most_likely_values[:theoretical_effort],
+                                         theoretical_effort_high: high_value[:theoretical_effort],
+                                         theoretical_effort_probable: theoretical_effort_probable[:value],
+
+                                         theoretical_cost_low: low_values[:theoretical_cost],
+                                         theoretical_cost_most_likely: most_likely_values[:theoretical_cost],
+                                         theoretical_cost_high: high_value[:theoretical_cost],
+                                         theoretical_cost_probable: theoretical_cost_probable,
+
+                                         retained_effort_low: low_values[:retained_effort],
+                                         retained_effort_most_likely: most_likely_values[:retained_effort],
+                                         retained_effort_high: high_value[:retained_effort],
+                                         retained_effort_probable: retained_effort_probable,
+
+                                         retained_cost_low: low_values[:retained_cost],
+                                         retained_cost_most_likely: most_likely_values[:retained_cost],
+                                         retained_cost_high: high_value[:retained_cost],
+                                         retained_cost_probable: retained_cost_probable )
+
+
+      if mp_ratio_element.changed?
+        mp_ratio_element.save
+      end
+    end
+
+
+
+    ["low", "most_likely", "high"].each do |level|
+
+      #@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
+      #level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
+      #@results["string_data_#{level}"] = level_estimation_value
+
+
+      #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
+      @module_project_ratio_elements.each do |mp_ratio_element|
+        level_result_element = level_result[mp_ratio_element.wbs_activity_element_id]
+        mp_ratio_element.update_attributes(theoretical_effort: level_result_element[:theoretical_effort],
+                                           retained_effort: level_result_element[:theoretical_effort],
+                                           theoretical_cost: level_result_element[:theoretical_cost],
+                                           retained_cost: level_result_element[:retained_cost])
+
+        mp_ratio_element.send("theoretical_effort_#{level}=", element_level_estimation_value)
+
+
+        if mp_ratio_element.changed?
+          mp_ratio_element.save
+        end
+      end
+
+    end
+
+    ###FIN TESTS
 
     # Sauvegarde des informations de sorties
     current_pbs_estimations.each do |est_val|
@@ -581,37 +673,38 @@ class WbsActivitiesController < ApplicationController
 
             #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
-            ["low", "most_likely", "high"].each do |level|
-              if @wbs_activity.three_points_estimation?
-                ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
-                                                                        @ratio_reference, just_changed_values, retained_effort_level[level],
-                                                                        retained_cost_level[level], initialize_calculation)
-
-                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
-              end
-
-              @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
-
-              level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
-              @results["string_data_#{level}"] = level_estimation_value
-
-
-              #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
-              @module_project_ratio_elements.each do |mp_ratio_element|
-                element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
-                if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
-                  element_level_estimation_value = nil
-                else
-                  element_level_estimation_value = element_level_estimation_value
-                end
-                mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
-
-                if mp_ratio_element.changed?
-                  mp_ratio_element.save
-                end
-              end
-            end
+            # ["low", "most_likely", "high"].each do |level|
+            #   if @wbs_activity.three_points_estimation?
+            #     ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
+            #     effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
+            #                                                             @ratio_reference, just_changed_values, retained_effort_level[level],
+            #                                                             retained_cost_level[level], initialize_calculation)
+            #
+            #     theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
+            #   end
+            #
+            #   @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
+            #
+            #   level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
+            #   @results["string_data_#{level}"] = level_estimation_value
+            #
+            #
+            #   #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
+            #   @module_project_ratio_elements.each do |mp_ratio_element|
+            #     element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
+            #
+            #     if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
+            #       element_level_estimation_value = nil
+            #     else
+            #       element_level_estimation_value = element_level_estimation_value
+            #     end
+            #     mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+            #
+            #     if mp_ratio_element.changed?
+            #       mp_ratio_element.save
+            #     end
+            #   end
+            # end
 
 
             #=========== END Save results in the Module-Project Ratio Elements  ===================

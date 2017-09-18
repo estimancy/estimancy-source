@@ -174,13 +174,8 @@ module ModuleProjectsHelper
       end
     end
 
-    unless estimation_value.nil?
-      #computed_probable_value according to the attribute type
-      ###if estimation_value.pe_attribute.attr_type.eql?("integer") && !computed_probable_value.nan?
-      ###if computed_probable_value.is_a?(Integer) || (computed_probable_value.is_a?(Float) && !computed_probable_value.nan?)
-      unless computed_probable_value.nil? || (computed_probable_value.is_a?(Float) && computed_probable_value.nan?)
-        computed_probable_value = computed_probable_value
-      end
+    unless computed_probable_value.nil? || (computed_probable_value.is_a?(Float) && computed_probable_value.nan?)
+      computed_probable_value = computed_probable_value
     end
 
     {:value => computed_probable_value, :is_consistent => consistency}
