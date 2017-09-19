@@ -471,11 +471,11 @@ class OrganizationsController < ApplicationController
 
                     if guw_coefficient.coefficient_type == "Pourcentage"
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value}")
+                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
                       end
                     elsif guw_coefficient.coefficient_type == "Coefficient"
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value}")
+                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
                       end
                     else
                       unless ceuw.nil?
