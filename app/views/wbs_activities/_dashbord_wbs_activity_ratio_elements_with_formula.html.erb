@@ -124,8 +124,8 @@
               <% end %>
           <% end %>
 
-          <th><%= "#{I18n.t(:description)} / #{I18n.t(:comments)}" %></th>
-          <!--<th><%#= I18n.t(:actions) %></th>-->
+          <th><%= "#{I18n.t(:comments)}" %></th>
+          <th><%= I18n.t(:actions) %></th>
         </tr>
 
 
@@ -147,6 +147,7 @@
             <% unless mp_ratio_element.nil? %>
                 <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
                 <%= hidden_field_tag 'wbs_activity_id', mp_ratio_element.wbs_activity_ratio.wbs_activity_id %>
+                <% name_to_show = mp_ratio_element.name_to_show %>
 
                 <% mp_ratio_element_ancestor_ids = [] %>
                 <% if mp_ratio_element.wbs_activity_ratio_element.nil?
@@ -188,17 +189,17 @@
                   </td>
 
                   <td>
-                <span class="badge badge-default">
-                    <%# elt_position =  mp_ratio_element.position %>
-                  <%#= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
-                  <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
-                </span>
+                    <span class="badge badge-default">
+                      <%# elt_position =  mp_ratio_element.position %>
+                      <%#= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+                      <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
+                    </span>
                   </td>
                   <td>
                     <%# padding_left = mp_ratio_element.depth.nil? ? 2 : mp_ratio_element.depth*2 %>
                     <% padding_left = mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>
-                    <span class="pull-left" style="padding-left:<%=gap+padding_left%>em">
-                        <%= mp_ratio_element.name %> <%#= wbs_activity_elt.name %>
+                    <span class="pull-left" title="<%= wbs_activity_elt.description %>" style="padding-left:<%=gap+padding_left%>em">
+                        <%= name_to_show %> <%#= wbs_activity_elt.name %>
                     </span>
                   </td>
 
@@ -333,10 +334,13 @@
                   <% end %>
 
                   <td class="text_field_text_overflow">
-                  <span class="pull-left">
-                    <%= link_to (mp_ratio_element.description.blank? && mp_ratio_element.comments.blank?) ? '-' : "#{mp_ratio_element.description}  / #{mp_ratio_element.comments} ",
-                                module_project_ratio_element_load_comments_path(mp_ratio_element), title: mp_ratio_element.name, method: "post", remote: true %>
-                  </span>
+                    <span class="pull-left">
+                      <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
+                                module_project_ratio_element_load_comments_path(mp_ratio_element), title: "#{name_to_show}", method: "post", remote: true %>
+                    </span>
+                  </td>
+                  <td>
+                    <%= link_to "", module_project_ratio_element_load_comments_path(mp_ratio_element), title: "#{I18n.t('edit')} #{name_to_show}", method: "post", remote: true, class: "fa fa-pencil" %>
                   </td>
 
                   <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
