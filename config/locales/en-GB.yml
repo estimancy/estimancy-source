@@ -1661,3 +1661,4 @@ en-gb:
   phase_short_name: "Phase short name"
   wbs_calculate_button_is_disabled: "You must add a comment to each modified phase in order to start the calculation"
   comment_required_if_modifiable: "Comments is required if phase is modifiable"
+  comment_required_on_phase: "Please enter a comment for modified values ​​for each phase"
