@@ -72,39 +72,31 @@
               <% end %>
 
               <td>
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini", default_value: gat.default_value, readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
                 <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
               </td>
 
               <script>
-                $(document).ready(function(){
-
-                  $("input").keyup(function(e) {
-                    var empty = false;
-                    $("#comments_<%= guow.id %>_<%= uowa.id %>").each(function() {
-                      if ($(this).val().length == 0) {
-                        empty = true;
-                      } else {
-                        empty = false;
-                      }
-                    });
-
-                    val = $(this).val();
-                    dv = $(this).attr("default_value");
-
-                    if (dv != val){
-                      if (empty) {
-                        $(".submit_cotation").attr('disabled', 'disabled');
-                      } else {
-                        $(".submit_cotation").removeAttr('disabled');
-                      }
+                $(".ml").on('focus', function(e) {
+                  $(".submit_cotation").attr('disabled', 'disabled');
+                  $(".comments").keyup(function(e) {
+                    if ($(this).val().length == 0) {
+                      $(".submit_cotation").attr('disabled', 'disabled');
                     } else {
                       $(".submit_cotation").removeAttr('disabled');
                     }
+                  });
+                });
 
-                  })
+                $(".ml").on('blur', function(k) {
+                  var val = $(this).closest('td').next().find('input').val();
+                  if (val.length == 0) {
+                    $(".submit_cotation").attr('disabled', 'disabled');
+                  } else {
+                    $(".submit_cotation").removeAttr('disabled');
+                  }
                 });
               </script>
 
