@@ -504,36 +504,185 @@
         }
     }
 
-    // Disable the Calculate button if at least one element is flagged and
-    // if comment_required_if_modifiable is true
-      var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
-      if(comment_required_if_modifiable == "true"){
-          var nb_flagged = $("td.flagged.red").length;
-          var disable_calculate_button = false;
 
-          if (nb_flagged >= 1){
-              $("td.flagged.red").find('span').each(function(){
-                  var mp_ratio_element_id = $(this).data('mp_ratio_element');
+  $(function() {
+      $("#save_effort_breakdown_form").on("submit",function(e) {
+          var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
 
-                  if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
-                      // Get the element comments
-                      var comments = $(this).data('comments');
-                      if (comments == ""){
-                          disable_calculate_button = true;
-                          return false;
+          if(comment_required_if_modifiable == "true"){
+              //alert("common var = "+ comment_required_if_modifiable);
+
+              var disable_calculate_button = false;
+
+              //$("td.flagged").find('span').each(function(i, td_object){
+              $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function(i, td_object){
+
+                  var mp_ratio_element_id =  $(td_object).data('mp_ratio_element');
+                  //alert("mp_ratio_element_id = " + mp_ratio_element_id);
+                  var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
+                  var cost_is_modifiable =   $(td_object).data('cost_is_modifiable');
+                  //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+
+                  if((effort_is_modifiable == true) || (cost_is_modifiable == true)){
+                      if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
+
+                          //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+                          $('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+                              //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
+
+                              var retained_value = $(retained_elt).val();
+                              //alert("Retained value = "+ retained_value);
+                              var element_id = $(retained_elt).attr('id');
+                              var element_name = $(retained_elt).attr('name');
+
+                              var theoretical_effort = $('#theoretical_effort_most_likely_'+ mp_ratio_element_id).val();
+                              var retained_effort = $('#retained_effort_most_likely_'+ mp_ratio_element_id).val();
+                              var theoretical_cost = $('#theoretical_cost_most_likely_'+ mp_ratio_element_id).val();
+                              var retained_cost = $('#retained_cost_most_likely_'+ mp_ratio_element_id).val();
+                              //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+
+                              if( (theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
+                                  // Get the element comments
+                                  var comments = $(td_object).data('comments');
+                                  if (comments == ""){
+                                      disable_calculate_button = true;
+
+                                      if (theoretical_effort != retained_effort)
+                                          $('#retained_effort_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+
+                                      if (theoretical_cost != retained_cost)
+                                          $('#retained_cost_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+
+                                      //return false; //pour arreter la boucle
+                                  }
+                              }
+                          });
                       }
                   }
               });
-          }
 
-          if (disable_calculate_button == true){
-              $("#wbs_calculate_button").attr('disabled', 'disabled');
-              $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
-          }else{
-              $("#wbs_calculate_button").removeAttr('disabled');
-              $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+              if (disable_calculate_button == true){
+                  $("#warning_add_comments").show();
+                  $("#warning_add_comments").css('display', 'block');
+
+                  alert("Veuillez renseigner un commentaire pour valeurs modifiées de chacune des phases");
+                  //$("#wbs_calculate_button").attr('disabled', 'disabled');
+                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
+
+                  return false; // cancel submit
+              }else{
+                  //alert("not need comment" + " " + disable_calculate_button);
+                  //$("#wbs_calculate_button").removeAttr('disabled');
+                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+                  return true; // allow submit
+              }
           }
-      }
+      });
+  });
+
+
+      // Disable the Calculate button if at least one element is flagged and
+//      var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
+//      //alert("common var = "+ comment_required_if_modifiable);
+//      if(comment_required_if_modifiable == "true"){
+//          var disable_calculate_button = false;
+//
+//          //$("td.flagged").find('span').each(function(i, td_object){
+//          $('td.flagged[data-effort_is_modifiable1="true"], td.flagged[data-cost_is_modifiable1="true"]').each(function(i, td_object){
+//
+//              var mp_ratio_element_id =  $(td_object).data('mp_ratio_element');
+//              alert("mp_ratio_element_id = " + mp_ratio_element_id);
+//              var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
+//              var cost_is_modifiable =   $(td_object).data('cost_is_modifiable');
+//
+//              alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+//              alert( effort_is_modifiable == true );
+//              if((effort_is_modifiable == true) || (cost_is_modifiable == true)){
+//                  if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
+//
+//                      //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+//                      $('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+//                      //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
+//
+//                          var retained_value = $(retained_elt).val();
+//                          alert("Retained value = "+ retained_value);
+//
+//                          var element_id = $(retained_elt).attr('id');
+//                          var element_name = $(retained_elt).attr('name');
+//                          var common_string = element_id.replace(new RegExp("_"+mp_ratio_element_id), "");
+//
+//                          var theoretical_effort = $('#theoretical_effort_most_likely_'+ mp_ratio_element_id).val();
+//                          var retained_effort = $('#retained_effort_most_likely_'+ mp_ratio_element_id).val();
+//                          var theoretical_cost = $('#theoretical_cost_most_likely_'+ mp_ratio_element_id).val();
+//                          var retained_cost = $('#retained_cost_most_likely_'+ mp_ratio_element_id).val();
+//
+//                          alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+//
+//                          if( (theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
+//                              // Get the element comments
+//                              var comments = $(td_object).data('comments');
+//                              if (comments == ""){
+//                                  disable_calculate_button = true;
+//
+//                                  if (theoretical_effort != retained_effort)
+//                                      $('#retained_effort_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+//
+//                                  if (theoretical_cost != retained_cost)
+//                                      $('#retained_cost_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+//
+//                                  $("#warning_add_comments").show();
+//                                  $("#warning_add_comments").css('display', 'block');
+//
+//                                  //return false;
+//                              }
+//                          }
+//                      });
+//                  }
+//              }
+//          });
+//
+//          if (disable_calculate_button == true){
+//              //alert("Commentaire obligatoire"+ " " +disable_calculate_button);
+//              //$("#wbs_calculate_button").attr('disabled', 'disabled');
+//              $("#wbs_calculate_button").attr('title','<%#= I18n.t(:wbs_calculate_button_is_disabled) %>');
+//          }else{
+//              //alert("not need comment" + " " + disable_calculate_button);
+//              //$("#wbs_calculate_button").removeAttr('disabled');
+//              $("#wbs_calculate_button").attr('title','<%#= I18n.t(:calculate) %>');
+//          }
+//      }
+
+//FIN FONCTION
+
+
+
+      // TEST
+
+//                          if ( $(retained_elt).hasClass('retained_effort')){
+//                              var common_level = common_string.replace(new RegExp("retained_effort_"), "");
+//                              var theoretical_value = $('#theoretical_effort_'+common_level+'_'+mp_ratio_element_id).val();
+//                              alert("Theo effort = "+ ' ' + theoretical_value);
+//                          }
+//                          else{
+//                              if ( $(retained_elt).hasClass('retained_cost')){
+//                                  var common_level = common_string.replace(new RegExp("retained_cost_"), "");
+//                                  var theoretical_value = $('#theoretical_cost_'+common_level+'_'+mp_ratio_element_id).val();
+//                                  alert("Theo cost = " + ' ' + theoretical_value);
+//                              }
+//                          }
+//
+//                          if(theoretical_value != retained_value){
+//                              // Get the element comments
+//                              var comments = $(this).data('comments');
+//                              if (comments == ""){
+//                                  $(retained_elt).css('color', 'red');
+//                                  $("#warning_add_comments").show();
+//                                  $("#warning_add_comments").css('display', 'block');
+//                                  disable_calculate_button = true;
+//                                  return false;
+//                              }
+//                          }
+      // FIN TEST
 
   })
 </script>

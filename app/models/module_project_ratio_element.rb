@@ -12,4 +12,16 @@ class ModuleProjectRatioElement < ActiveRecord::Base
   belongs_to :wbs_activity_ratio_element
   belongs_to :wbs_activity_element
 
+  def name_to_show
+    if self.name_is_modified == true
+      self.name
+    else
+      begin
+        self.wbs_activity_element.name
+      rescue
+        self.name
+      end
+    end
+  end
+
 end

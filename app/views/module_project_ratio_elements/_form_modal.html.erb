@@ -14,7 +14,7 @@
       <%= hidden_field_tag 'wbs_activity_ratio_id', params[:wbs_activity_ratio_id] %>
       <%= hidden_field_tag 'pbs_project_element_id', params[:pbs_project_element_id] %>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge'} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => { value: @module_project_ratio_element.name_to_show, :class => 'input-xlarge'} %>
       <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :label => 'Parent element', :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'} %>
       <%= hidden_field_tag :selected_parent_id, params[:selected_parent_id] %>
 
