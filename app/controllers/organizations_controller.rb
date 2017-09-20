@@ -397,6 +397,7 @@ class OrganizationsController < ApplicationController
       worksheet.sheet_name = 'Liste des Estimations + Dénombrement'
 
       @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+      @guw_model_guw_attributes = @guw_model.guw_attributes
 
       workbook = RubyXL::Workbook.new
       worksheet = workbook.worksheets[0]
@@ -420,6 +421,8 @@ class OrganizationsController < ApplicationController
         worksheet.add_cell(0, index, val)
       end
 
+      ind = 1
+
       @projects.each do |project|
 
         project.module_projects.each do |mp|
@@ -428,7 +431,7 @@ class OrganizationsController < ApplicationController
 
           @guw_unit_of_works.each_with_index do |guow, i|
 
-            ind = i + 1
+            ind += 1
 
             if guow.off_line
               cplx = "HSAT"
@@ -441,11 +444,8 @@ class OrganizationsController < ApplicationController
             end
 
             worksheet.add_cell(ind, 0, mp.project.title)
-
             worksheet.add_cell(ind, 1, mp.project.version_number)
             worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
-
-
             worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
             worksheet.add_cell(ind, 4, guow.name)
             worksheet.add_cell(ind, 5, guow.comments)
@@ -470,11 +470,17 @@ class OrganizationsController < ApplicationController
                                                                       module_project_id: guow.module_project_id).first
 
                     if guw_coefficient.coefficient_type == "Pourcentage"
-                      worksheet.add_cell(ind, 16+j, (ceuw.nil? ? "-" : ceuw.percent.to_f.round(2)).to_s)
+                      unless ceuw.nil?
+                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
+                      end
                     elsif guw_coefficient.coefficient_type == "Coefficient"
-                      worksheet.add_cell(ind, 16+j, (ceuw.nil? ? "-" : ceuw.percent.to_f.round(2)).to_s)
+                      unless ceuw.nil?
+                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
+                      end
                     else
-                      worksheet.add_cell(ind, 16+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                      unless ceuw.nil?
+                        worksheet.add_cell(ind, 16+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                      end
                     end
                     gap += 1
                   end
@@ -500,7 +506,7 @@ class OrganizationsController < ApplicationController
             end
           end
 
-          @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+          @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
             worksheet.add_cell(0, 15 + @guw_model.orders.size + i, guw_attribute.name)
           end
         end
