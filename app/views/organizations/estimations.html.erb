@@ -6,7 +6,7 @@
 
   <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
     <%# form_tag confirm_deletion_path, method: "post" do %>
-    <%# form_tag search_path, method: "GET", remote: true do %>
+    <%= form_tag search_path, method: "GET", remote: true do %>
       <table>
         <tr>
           <td>
@@ -37,6 +37,6 @@
       <div id="organization_projects">
         <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
       </div>
-    <%# end %>
+    <% end %>
   </div>
 </div>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170919082636) do
+ActiveRecord::Schema.define(:version => 20170920133140) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -804,6 +804,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "is_default"
     t.string   "color_code"
     t.integer  "color_priority"
+    t.boolean  "allow_line_color"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|

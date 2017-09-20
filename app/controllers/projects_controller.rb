@@ -2395,9 +2395,9 @@ public
       case k
         when "title"
           if val.blank?
-            results = Project.where("title liKE ?", "%#{val}%").all
+            results = @organization.projects
           else
-            results = Project.all #A changer
+            results = Project.where("title liKE ?", "%#{val}%").all
           end
         when "creator"
           results = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
