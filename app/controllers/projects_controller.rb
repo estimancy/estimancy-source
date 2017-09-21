@@ -2441,9 +2441,9 @@ public
       end
     end
 
-    if @projects.nil?
+    # if @projects.nil?
       @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
-    end
+    # end
 
     @object_per_page = (current_user.object_per_page || 10)
 
