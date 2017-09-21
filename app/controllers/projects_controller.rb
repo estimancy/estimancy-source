@@ -2392,7 +2392,7 @@ public
     params.delete_if { |k, v| v.nil? || v.blank? }
 
     if params.blank?
-      @projects = @organization.projects
+      @projects = @organization.projects.order("created_at ASC")
     else
       params.each do |k,v|
         val = params[k]
@@ -2426,6 +2426,9 @@ public
           when "acquisition_category"
             ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
             results = Project.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "original_model"
+            ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
           else
             options[k] = v
         end
@@ -2439,11 +2442,10 @@ public
           final_results << a & b
         end
       end
-    end
 
-    # if @projects.nil?
       @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
-    # end
+
+    end
 
     @object_per_page = (current_user.object_per_page || 10)
 
