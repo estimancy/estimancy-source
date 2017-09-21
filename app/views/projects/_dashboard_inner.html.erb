@@ -35,7 +35,7 @@
             <%= @project.title %>
           </h5>
           <p>
-            <%= @project.description.to_s.truncate(300) %>
+            <%= raw(@project.description.to_s.truncate(300)) %>
           </p>
         </div>
       </div>

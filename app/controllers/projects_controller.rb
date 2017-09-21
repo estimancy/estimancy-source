@@ -2382,6 +2382,7 @@ public
     @organization = @current_organization
     options = {}
     results = []
+    final_results = []
 
     params.delete("utf8")
     params.delete("commit")
@@ -2390,23 +2391,59 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    params.each do |k,v|
-      val = params[k]
-      case k
-        when "title"
-          if val.blank?
-            results = Project.where("title liKE ?", "%#{val}%").all
+    if params.blank?
+      @projects = @organization.projects
+    else
+      params.each do |k,v|
+        val = params[k]
+        case k
+          when "title"
+            results = Project.where("title liKE ?", "%#{val}%").all.map(&:id)
+          when "creator"
+            creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+            creator_id = creator.nil? ? nil : creator.id
+            results = Project.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
+          when "version_number"
+            results = Project.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "application"
+            ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(application_id: ids).all.map(&:id)
+          when "description"
+            results = Project.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "status_name"
+            results = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:projects).flatten
+          when "start_date"
+            results = Project.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "project_area"
+            ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "project_category"
+            ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "platform_category"
+            ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "acquisition_category"
+            ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = Project.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
           else
-            results = Project.all #A changer
-          end
-        when "creator"
-          results = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+            options[k] = v
+        end
+
+        a = results.flatten
+        b = final_results.flatten
+
+        if b.empty?
+          final_results << a
         else
-          options[k] = v
+          final_results << a & b
+        end
       end
     end
 
-    @projects = results
+    # if @projects.nil?
+      @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
+    # end
 
     @object_per_page = (current_user.object_per_page || 10)
 
