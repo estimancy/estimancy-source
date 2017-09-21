@@ -81,7 +81,7 @@ class ModuleProjectRatioElementsController < ApplicationController
 
       @module_project_ratio_element.save
     end
-    redirect_to main_app.dashboard_path(@project)
+    #redirect_to main_app.dashboard_path(@project)
   end
 
 

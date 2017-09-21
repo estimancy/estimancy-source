@@ -508,8 +508,7 @@
   $(function() {
       var clkBtn = "";
       $('input[type="submit"]').click(function(evt) {
-          clkBtn = evt.target.name; // evt.target.id;
-          alert("click = " + clkBtn);
+          clkBtn = evt.target.name;
       });
 
       $("#save_effort_breakdown_form").on("submit",function(e) {
