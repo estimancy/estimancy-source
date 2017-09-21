@@ -549,8 +549,10 @@
 
                                   if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
                                       // Get the element comments
-                                      var comments = $(td_object).data('comments');
-                                      if (comments == "") {
+                                      //var comments = $(td_object).data('comments');
+                                      var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).html();
+
+                                      if((comments == "") || (comments == "-") || (comments == "_")){
                                           disable_calculate_button = true;
 
                                           if (theoretical_effort != retained_effort)
