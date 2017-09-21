@@ -506,61 +506,68 @@
 
 
   $(function() {
+      var clkBtn = "";
+      $('input[type="submit"]').click(function(evt) {
+          clkBtn = evt.target.name; // evt.target.id;
+          alert("click = " + clkBtn);
+      });
+
       $("#save_effort_breakdown_form").on("submit",function(e) {
+
+          var clicked_button = clkBtn;
           var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
 
           if(comment_required_if_modifiable == "true"){
-              //alert("common var = "+ comment_required_if_modifiable);
-
               var disable_calculate_button = false;
 
               //$("td.flagged").find('span').each(function(i, td_object){
-              $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function(i, td_object){
+              if(clicked_button == "update_calculation") {
+                  $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
 
-                  var mp_ratio_element_id =  $(td_object).data('mp_ratio_element');
-                  //alert("mp_ratio_element_id = " + mp_ratio_element_id);
-                  var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
-                  var cost_is_modifiable =   $(td_object).data('cost_is_modifiable');
-                  //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+                      var mp_ratio_element_id = $(td_object).data('mp_ratio_element');
+                      //alert("mp_ratio_element_id = " + mp_ratio_element_id);
+                      var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
+                      var cost_is_modifiable = $(td_object).data('cost_is_modifiable');
+                      //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
 
-                  if((effort_is_modifiable == true) || (cost_is_modifiable == true)){
-                      if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
+                      if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
+                          if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
 
-                          //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
-                          $('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
-                              //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
+                              //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+                              $('input.retained_effort[data-mp_ratio_element_id="' + mp_ratio_element_id + '"]').each(function (j, retained_elt) {
+                                  //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
 
-                              var retained_value = $(retained_elt).val();
-                              //alert("Retained value = "+ retained_value);
-                              var element_id = $(retained_elt).attr('id');
-                              var element_name = $(retained_elt).attr('name');
+                                  var retained_value = $(retained_elt).val();
+                                  //alert("Retained value = "+ retained_value);
+                                  var element_id = $(retained_elt).attr('id');
+                                  var element_name = $(retained_elt).attr('name');
 
-                              var theoretical_effort = $('#theoretical_effort_most_likely_'+ mp_ratio_element_id).val();
-                              var retained_effort = $('#retained_effort_most_likely_'+ mp_ratio_element_id).val();
-                              var theoretical_cost = $('#theoretical_cost_most_likely_'+ mp_ratio_element_id).val();
-                              var retained_cost = $('#retained_cost_most_likely_'+ mp_ratio_element_id).val();
-                              //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                  var theoretical_effort = $('#theoretical_effort_most_likely_' + mp_ratio_element_id).val();
+                                  var retained_effort = $('#retained_effort_most_likely_' + mp_ratio_element_id).val();
+                                  var theoretical_cost = $('#theoretical_cost_most_likely_' + mp_ratio_element_id).val();
+                                  var retained_cost = $('#retained_cost_most_likely_' + mp_ratio_element_id).val();
+                                  //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
-                              if( (theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
-                                  // Get the element comments
-                                  var comments = $(td_object).data('comments');
-                                  if (comments == ""){
-                                      disable_calculate_button = true;
+                                  if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
+                                      // Get the element comments
+                                      var comments = $(td_object).data('comments');
+                                      if (comments == "") {
+                                          disable_calculate_button = true;
 
-                                      if (theoretical_effort != retained_effort)
-                                          $('#retained_effort_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+                                          if (theoretical_effort != retained_effort)
+                                              $('#retained_effort_most_likely_' + mp_ratio_element_id).css('color', 'red');
 
-                                      if (theoretical_cost != retained_cost)
-                                          $('#retained_cost_most_likely_'+ mp_ratio_element_id).css('color', 'red');
+                                          if (theoretical_cost != retained_cost)
+                                              $('#retained_cost_most_likely_' + mp_ratio_element_id).css('color', 'red');
 
-                                      //return false; //pour arreter la boucle
+                                          //return false; //pour arreter la boucle
+                                      }
                                   }
-                              }
-                          });
+                              });
+                          }
                       }
-                  }
-              });
-
+                  });
+              }
               if (disable_calculate_button == true){
                   $("#warning_add_comments").show();
                   $("#warning_add_comments").css('display', 'block');
