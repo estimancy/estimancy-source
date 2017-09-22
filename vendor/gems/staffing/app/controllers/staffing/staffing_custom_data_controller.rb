@@ -159,7 +159,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         ev = EstimationValue.find(current_ev.estimation_value_id)
       else
         ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                 :module_project_id => @module_project.previous.last, :in_out => "output").first
+                                   :module_project_id => @module_project.previous.last, :in_out => "output").first
       end
     rescue
       ev = nil
@@ -614,9 +614,9 @@ class Staffing::StaffingCustomDataController < ApplicationController
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "effort" && ev.in_out == "output"
-              ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
-              ev.save
-              tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "duration"
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
@@ -635,7 +635,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         end
 
         ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-    end
+      end
 
     end
   end

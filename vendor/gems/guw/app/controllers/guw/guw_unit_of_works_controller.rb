@@ -1996,6 +1996,55 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
+              if !row[7].nil?
+                @guw_model.guw_work_units.each do |wu|
+                  if wu.name == row[7]
+                    guw_uow.guw_work_unit_id = wu.id
+                    break
+                  end
+                end
+              else
+                first_work_unit = @guw_model.guw_work_units.order("display_order ASC").first
+                unless first_work_unit.nil?
+                  guw_uow.guw_work_unit_id = @guw_model.guw_work_units.order("display_order ASC").first.id
+                else
+                  guw_uow.guw_work_unit_id = nil
+                end
+              end
+
+              if !row[8].nil?
+                @guw_model.guw_weightings.each do |wu|
+                  if wu.name == row[8]
+                    guw_uow.guw_weighting_id = wu.id
+                    break
+                  end
+                end
+              else
+                first_weighting = @guw_model.guw_weightings.order("display_order ASC").first
+                unless first_weighting.nil?
+                  guw_uow.guw_weighting_id = @guw_model.guw_weightings.order("display_order ASC").first.id
+                else
+                  guw_uow.guw_weighting_id = nil
+                end
+              end
+
+              if !row[9].nil?
+                @guw_model.guw_factors.each do |wu|
+                  if wu.name == row[9]
+                    guw_uow.guw_factor_id = wu.id
+                    break
+                  end
+                end
+              else
+                first_factor = @guw_model.guw_factors.order("display_order ASC").first
+                unless first_factor.nil?
+                  guw_uow.guw_factor_id = @guw_model.guw_factors.order("display_order ASC").first.id
+                else
+                  guw_uow.guw_factor_id = nil
+                end
+              end
+
+              guw_uow.save(validate: false)
 
 
                 @guw_attributes.each_with_index do |gac, ii|
