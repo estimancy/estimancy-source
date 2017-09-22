@@ -2385,9 +2385,9 @@ public
 
     case k
       when "title"
-        @projects = @projects.order("title #{s}").all
+        @projects = @projects.unscoped.order("title #{s}").all
       when "project_area"
-        @projects = Project
+        @projects = Project.unscoped
                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
                         .where(organization_id: @organization.id)
                         .order("project_areas.name #{s}").all
