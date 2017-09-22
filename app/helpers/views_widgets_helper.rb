@@ -524,8 +524,8 @@ module ViewsWidgetsHelper
                 max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                 min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
               else
-                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_precision)}"
+                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_precision)}"
               end
             rescue
               max_value_text = "Max: #{data_high.nil? ? '-' : data_high}"

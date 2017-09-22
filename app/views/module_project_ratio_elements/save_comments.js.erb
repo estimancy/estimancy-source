@@ -1,4 +1,4 @@
 var comment_id = '<%= "mp_ratio_element_comment_#{@module_project_ratio_element.id}" %>';
 
 $('#modal_comments').modal('toggle');
-$('#'+comment_id).html("<%= @module_project_ratio_element.comments %>");
+$('#'+comment_id).text('<%= @module_project_ratio_element.comments.blank? ? "-" : @module_project_ratio_element.comments %>');

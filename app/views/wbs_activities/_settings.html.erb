@@ -537,7 +537,6 @@
                                   //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
 
                                   var retained_value = $(retained_elt).val();
-                                  //alert("Retained value = "+ retained_value);
                                   var element_id = $(retained_elt).attr('id');
                                   var element_name = $(retained_elt).attr('name');
 
@@ -550,9 +549,11 @@
                                   if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
                                       // Get the element comments
                                       //var comments = $(td_object).data('comments');
-                                      var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).html();
+                                      var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).text();
+                                      //alert(" Comments = " + comments);
+                                      //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
 
-                                      if((comments == "") || (comments == "-") || (comments == "_")){
+                                      if((comments === "") || (comments === "-") || (comments === "_")){
                                           disable_calculate_button = true;
 
                                           if (theoretical_effort != retained_effort)
