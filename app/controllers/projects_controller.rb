@@ -2377,6 +2377,26 @@ public
     end
   end
 
+  def sort
+    @organization = @current_organization
+    @projects = @organization.projects
+    k = params[:f]
+    s = params[:s]
+
+    case k
+      when "title"
+        @projects = @projects.order("title #{s}").all
+      when "project_area"
+        @projects = Project
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_areas.name #{s}").all
+      else
+    end
+
+    build_footer
+  end
+
   def search
 
     @organization = @current_organization
@@ -2447,6 +2467,10 @@ public
 
     end
 
+    build_footer
+  end
+
+  private def build_footer
     @object_per_page = (current_user.object_per_page || 10)
 
     if params[:min].present? && params[:max].present?

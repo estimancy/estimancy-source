@@ -18,10 +18,10 @@
 
   <tr style="background-color: #eeeeee;">
     <td></td>
-      <% selected_inline_columns.each do |column| %>
-        <td>
-          <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
-        </td>
+    <% selected_inline_columns.each do |column| %>
+      <td>
+        <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
+      </td>
       <% end %>
     <td></td>
   </tr>

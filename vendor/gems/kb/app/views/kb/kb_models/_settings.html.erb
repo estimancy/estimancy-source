@@ -288,7 +288,7 @@
 <script>
   $(document).ready(function(){
     $(function() {
-      $('#scatter_chart').highcharts({
+      chart = $('#scatter_chart').highcharts({
         chart: {
           zoomType: 'xy'
         },
@@ -369,14 +369,11 @@
         }]
       });
     });
-
-
     /**
      * Sand-Signika theme for Highcharts JS
      * @author Torstein Honsi
      */
 
-// Load the fonts
     Highcharts.createElement('link', {
       href: '//fonts.googleapis.com/css?family=Signika:400,700',
       rel: 'stylesheet',
