@@ -447,7 +447,7 @@ module EffortBreakdown
       mp_ratio_variables.each do |mp_var|
         unless mp_var.name.blank?
           # Store the ratio_variables value in the calculator
-          calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage)
+          calculator.store(:"#{mp_var.name.downcase}" => mp_var.value_from_percentage.to_f)
         end
       end
 
