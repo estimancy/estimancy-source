@@ -233,7 +233,7 @@ module EffortBreakdown
 
           if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable ###&& @changed_retained_cost_values[element.id].to_f != 0
             if @changed_retained_cost_values[element.id].blank?
-              output_cost[element.id] = @theoretical_cost[element.id].round(@number_precision)
+              output_cost[element.id] = @theoretical_cost[element.id].nil? ? nil : @theoretical_cost[element.id].round(@number_precision)
             else
               output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f.round(@number_precision)
             end
@@ -241,7 +241,7 @@ module EffortBreakdown
             if element.is_childless? || element.has_new_complement_child?
               # Calculate cost for each profile
               tjm = @tjm_per_phase[element.id]
-              output_cost[key] = tjm.nil? ? nil : (tjm * value).round(@number_precision)
+              output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value).round(@number_precision)
 
               #### TEST ###
               # tmp = Hash.new
@@ -268,7 +268,8 @@ module EffortBreakdown
               #### FIN TEST ###
 
             else
-              output_cost[key] = compact_array_and_compute_node_value(element, output_cost).round(@number_precision)
+              elt_value = compact_array_and_compute_node_value(element, output_cost)
+              output_cost[key] = elt_value.nil? ? nil : elt_value.round(@number_precision)
             end
           end
 
@@ -276,7 +277,8 @@ module EffortBreakdown
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost).round(@number_precision)
+      root_value = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
+      output_cost[wbs_activity_root.id] = root_value.nil? ? nil : root_value.round(@number_precision)
 
       output_cost
     end
@@ -306,7 +308,7 @@ module EffortBreakdown
           if element.is_childless? || element.has_new_complement_child?
             # Calculate cost for each profile
             tjm = @tjm_per_phase[element.id]
-            output_cost[key] = tjm.nil? ? nil : (tjm * value).round(@number_precision)
+            output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value).round(@number_precision)
 
             # tmp = Hash.new
             # wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
@@ -331,14 +333,16 @@ module EffortBreakdown
             # end
 
           else
-            output_cost[key] = compact_array_and_compute_node_value(element, output_cost).round(@number_precision)
+            elt_value = compact_array_and_compute_node_value(element, output_cost)
+            output_cost[key] = elt_value.nil? ? nil : elt_value.round(@number_precision)
           end
 
         end
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost).round(@number_precision)
+      root_value = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
+      output_cost[wbs_activity_root.id] = root_value.nil? ? nil : root_value.round(@number_precision)
 
       output_cost
     end
@@ -589,7 +593,12 @@ module EffortBreakdown
                   output_effort[element.id] = 0.0
                 end
               else
-                output_effort[element.id] = @changed_retained_effort_values[element.id].to_f.round(@number_precision)
+                begin
+                  output_effort[element.id] = @changed_retained_effort_values[element.id].to_f.round(@number_precision)
+                rescue
+                  output_effort[element.id] = nil
+                end
+
               end
             else
               # Element effort is really computed only on leaf element
@@ -601,7 +610,12 @@ module EffortBreakdown
                   output_effort[element.id] = 0.0 ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
                 end
               else
-                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort).round(@number_precision)
+                begin
+                  output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort).round(@number_precision)
+                rescue
+                  output_effort[element.id] = nil
+                end
+
               end
             end
           end
@@ -610,7 +624,12 @@ module EffortBreakdown
 
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort).round(@number_precision)
+      begin
+        output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort).round(@number_precision)
+      rescue
+        output_effort[wbs_activity_root.id] = nil
+      end
+
 
       # Global output efforts
       # if @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
@@ -852,14 +871,23 @@ module EffortBreakdown
                 end
 
               else
-                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort).round(@number_precision)
+                begin
+                  output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort).round(@number_precision)
+                rescue
+                  output_effort[element.id] = nil
+                end
+
               end
             end
           end
         end
 
         # After treating all leaf and node elements, the root element is going to compute by aggregation
-        output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort).round(@number_precision)
+        begin
+          output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort).round(@number_precision)
+        rescue
+          output_effort[wbs_activity_root.id] = nil
+        end
 
 
         # Global output efforts
