@@ -282,7 +282,7 @@
       <input type="text" name='percents' id='percent' class="factor-slider" value="<%= @staffing_custom_data.percent %>" />
 
       <% if can? :execute_estimation_plan, @project %>
-        <button name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
+        <button id="submit_staffing" name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
           <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
@@ -328,6 +328,15 @@
 
         onChange: function (data) {
           set_staffing_values(data);
+        },
+
+        change: function(event, ui) {
+          // Do your stuff in here.
+
+          // You can trigger an event on anything you want:
+          $(selector).trigger(theEvent);
+
+          // Or you can do whatever else/
         }
 
       });
@@ -411,6 +420,10 @@
 <% end %>
 
 <script>
+
+  $("#submit_staffing").on("click", function(){
+    set_staffing_values({from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>})
+  });
 
   refresh_chart();
 
