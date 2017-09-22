@@ -83,6 +83,8 @@ Projestimate::Application.routes.draw do
   get 'awaiting_confirmation' => 'registrations#awaiting_confirmation', :as => 'awaiting_confirmation'
 #=====================
 
+  get 'sort' => 'projects#sort', :as => 'sort'
+
   resources :users
 
   get 'dashboard' => 'users#show', :as => 'dashboard'

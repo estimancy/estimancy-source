@@ -66,21 +66,21 @@ module OrganizationsHelper
   end
 
   def column_header(column)
-    #content_tag('th', h(column.caption))
+    lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
     case column.name
       when :title
-        content_tag('th class="text_left"', I18n.t(column.caption))
+        content_tag('th class="text_left"', lk)
       when :description
-        content_tag('th class="text_left"', I18n.t(column.caption))
+        content_tag('th class="text_left"', lk)
       when :version_number
-        content_tag('th class="center"', I18n.t(column.caption))
+        content_tag('th class="center"', lk)
       when :status_name
-        content_tag('th id="toto" style="width: 50px"', I18n.t(column.caption))
+        content_tag('th id="toto" style="width: 50px"', lk)
       else
         if column.field_id
           content_tag('th class="project_field_text_overflow"', column.caption)
         else
-          content_tag('th', I18n.t(column.caption))
+          content_tag('th', lk)
         end
     end
   end
