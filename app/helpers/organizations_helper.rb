@@ -73,9 +73,9 @@ module OrganizationsHelper
       when :description
         content_tag('th class="text_left"', lk)
       when :version_number
-        content_tag('th class="center"', I18n.t(column.caption))
+        content_tag('th class="center"', lk)
       when :status_name
-        content_tag('th id="toto" style="width: 50px"', I18n.t(column.caption))
+        content_tag('th id="toto" style="width: 50px"', lk)
       else
         if column.field_id
           content_tag('th class="project_field_text_overflow"', column.caption)

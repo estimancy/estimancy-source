@@ -2386,11 +2386,44 @@ public
     case k
       when "title"
         @projects = @projects.unscoped.order("title #{s}").all
+      when "description"
+        @projects = @projects.unscoped.order("description #{s}").all
       when "project_area"
         @projects = Project.unscoped
                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
                         .where(organization_id: @organization.id)
                         .order("project_areas.name #{s}").all
+      when "project_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_categories.name #{s}").all
+      when "platform_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("platform_categories.name #{s}").all
+      when "acquisition_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("acquisition_categories.name #{s}").all
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}").all
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}").all
+      when "start_date"
+        @projects = @projects.unscoped.order("start_date #{s}").all
+      when "updated_at"
+        @projects = @projects.unscoped.order("updated_at #{s}").all
+      when "created_at"
+        @projects = @projects.unscoped.order("created_at #{s}").all
       else
     end
 
