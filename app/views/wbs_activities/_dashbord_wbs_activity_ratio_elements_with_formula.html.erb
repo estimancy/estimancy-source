@@ -24,8 +24,6 @@
       <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
       <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
 
-      <div id="warning_add_comments" style="display: none; font-size: large; color: red; text-align: center"> <%= I18n.t(:comment_required_on_phase) %> </div>
-
       <table class="table-condensed <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
         <%# @wbs_activity_ratio.module_project_ratio_variables.each do |mp_ratio_variable| %>
         <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
@@ -58,6 +56,8 @@
         <% end %>
       </table>
     </div>
+
+    <div id="warning_add_comments" style="display: none; font-size: large; color: red; text-align: center"> <%= I18n.t(:comment_required_on_phase) %> </div>
 
     <br >
       <h4>
@@ -339,7 +339,7 @@
                   <td class="text_field_text_overflow">
                     <span class="pull-left">
                       <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
-                                module_project_ratio_element_load_comments_path(mp_ratio_element), title: "#{name_to_show}", method: "post", remote: true %>
+                            module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: "#{name_to_show}", method: "post", remote: true %>
                     </span>
                   </td>
                   <td>
