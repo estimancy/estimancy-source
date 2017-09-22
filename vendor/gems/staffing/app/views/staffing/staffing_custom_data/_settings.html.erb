@@ -319,6 +319,10 @@
         set_staffing_values(data_staff_from);
       }
 
+      $("#submit_staffing").on("click", function(){
+        set_staffing_values({from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>})
+      });
+
       $('#percent').ionRangeSlider({
         min: 70,
         max: 150,
@@ -328,18 +332,10 @@
 
         onChange: function (data) {
           set_staffing_values(data);
-        },
-
-        change: function(event, ui) {
-          // Do your stuff in here.
-
-          // You can trigger an event on anything you want:
-          $(selector).trigger(theEvent);
-
-          // Or you can do whatever else/
+          $("#submit_staffing").off("click");
         }
-
       });
+
 
       function sign(value){
         if (value > 0) {
@@ -420,10 +416,6 @@
 <% end %>
 
 <script>
-
-  $("#submit_staffing").on("click", function(){
-    set_staffing_values({from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>})
-  });
 
   refresh_chart();
 
