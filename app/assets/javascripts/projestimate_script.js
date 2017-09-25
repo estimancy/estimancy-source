@@ -1077,9 +1077,9 @@ function update_mp_ratio_element_retained_effort_and_cost_value(){
 function update_mp_ratio_element_retained_effort_and_cost_values(){
 
     // Mise à jour de la valeur booleenne de "is_just_changed" lorsque la valeur de l'effort retenu change
-    $('.retained_effort').change(function(){
+    $('.retained_effort, .retained_cost').change(function(){
         var ap_id = $(this).attr('id');
-        var ap_value = $('#'+ap_id).val();
+        var ap_value = $(this).val();
         //ap_value = parseFloat(ap_value.replace("," , "."));
 
         var mp_ratio_element_id = $(this).data("mp_ratio_element_id");

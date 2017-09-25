@@ -96,6 +96,25 @@ module ProjectsHelper
     end
   end
 
+  def convert_wbs_activity_value_without_round(v, effort_unit_coefficient)
+    if v.nil?
+      nil
+    else
+      unless v.class == Hash
+        begin
+          value = v.to_f
+          (value / effort_unit_coefficient.to_f)
+        rescue
+          0
+        end
+      else
+        0
+      end
+    end
+  end
+
+
+
   #Conversion en fonction des seuils et de la précision de l'utilisateur #> 12.12300 (si precision = 5)
   def convert(v, organization)
     unless v.class == Hash
