@@ -486,10 +486,14 @@
           }
       }
       else{
-        $("#retained_effort_most_likely_" + val).val("");
-        $("#retained_cost_most_likely_" + val).val("");
+          $("#retained_effort_most_likely_" + val).val("");
+          $("#retained_cost_most_likely_" + val).val("");
+
+          $("#retained_effort_most_likely_visible_" + val).val("");
+          $("#retained_cost_most_likely_visible_" + val).val("");
       }
     });
+
 
     //Tester si toutes les phases modifiées ont des commentaires
     //Hide WBS dashboard header if hide_wbs_header is true
@@ -567,6 +571,8 @@
                                       //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
 
                                       if((comments === "") || (comments === "-") || (comments === "_")){
+                                          //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+
                                           disable_calculate_button = true;
 
                                           if (theoretical_effort != retained_effort)

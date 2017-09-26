@@ -159,7 +159,7 @@ module EffortBreakdown
       # end
 
       # Return all results
-      theoretical_effort, theoretical_cost, retained_effort,retained_effort = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost]
+      theoretical_effort, theoretical_cost, retained_effort,retained_effort, tjm_per_phase = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost, @tjm_per_phase]
     end
 
 

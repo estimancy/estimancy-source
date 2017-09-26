@@ -76,6 +76,9 @@
           </th>
           <th class=""><%= I18n.t(:alias) %></th>
           <th><%= I18n.t(:name) %></th>
+          <% unless @wbs_activity_ratio.do_not_show_cost %>
+            <th>TJM</th>
+          <% end %>
 
 
           <% if @wbs_activity_ratio.wbs_activity.three_points_estimation? %>
@@ -126,7 +129,6 @@
           <% end %>
 
           <th><%= "#{I18n.t(:comments)}" %></th>
-          <th><%= I18n.t(:actions) %></th>
         </tr>
 
 
@@ -208,6 +210,9 @@
                         <%= name_to_show %> <%#= wbs_activity_elt.name %>
                     </span>
                   </td>
+                  <% unless @wbs_activity_ratio.do_not_show_cost %>
+                    <td><%= mp_ratio_element.tjm.blank? ? "-" : mp_ratio_element.tjm %></td>
+                  <% end %>
 
                   <% phase_formula = "" %>
                   <% unless mp_ratio_element.wbs_activity_ratio_element.nil? %>
@@ -432,9 +437,6 @@
                       <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
                             module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: "#{name_to_show}", method: "post", remote: true %>
                     </span>
-                  </td>
-                  <td>
-                    <%= link_to "", module_project_ratio_element_load_comments_path(mp_ratio_element), title: "#{I18n.t('edit')} #{name_to_show}", method: "post", remote: true, class: "fa fa-pencil" %>
                   </td>
 
                   <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
