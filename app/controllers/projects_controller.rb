@@ -2464,7 +2464,8 @@ public
           when "description"
             results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
           when "status_name"
-            results = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:projects).flatten
+            ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
           when "start_date"
             results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
           when "project_area"
