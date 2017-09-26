@@ -619,7 +619,8 @@ class WbsActivitiesController < ApplicationController
                 mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
 
                 # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
-                mp_ratio_element.send("tjm=", tjm_per_phase[mp_ratio_element.wbs_activity_element_id])
+                elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
+                mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
                 if initialize_calculation == true
                   mp_ratio_element.send("comments=", nil)
                 end
