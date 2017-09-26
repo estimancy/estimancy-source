@@ -341,6 +341,7 @@ class WbsActivitiesController < ApplicationController
     @module_project = current_module_project
     @wbs_activity = @module_project.wbs_activity
     module_project_attributes = @module_project.pemodule.pe_attributes
+    number_precision = user_number_precision
 
     # Get selected Ratio
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
@@ -547,7 +548,7 @@ class WbsActivitiesController < ApplicationController
                                                             @ratio_reference, just_changed_values, retained_effort_level["most_likely"],
                                                             retained_cost_level["most_likely"], initialize_calculation)
 
-    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
+    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
 
 
     current_pbs_estimations.each do |est_val|
@@ -594,7 +595,7 @@ class WbsActivitiesController < ApplicationController
                 effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
                                                                         @ratio_reference, just_changed_values, retained_effort_level[level],
                                                                         retained_cost_level[level], initialize_calculation)
-                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
+                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
               else
                 #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
                 ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
@@ -616,6 +617,13 @@ class WbsActivitiesController < ApplicationController
                   element_level_estimation_value = element_level_estimation_value
                 end
                 mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+
+                # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
+                elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
+                mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
+                if initialize_calculation == true
+                  mp_ratio_element.send("comments=", nil)
+                end
 
                 # Then update retained values if necessary
                 #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")

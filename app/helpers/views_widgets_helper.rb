@@ -524,8 +524,8 @@ module ViewsWidgetsHelper
                 max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                 min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
               else
-                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_precision)}"
+                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_precision)}"
               end
             rescue
               max_value_text = "Max: #{data_high.nil? ? '-' : data_high}"
@@ -685,14 +685,12 @@ module ViewsWidgetsHelper
               rescue
                 bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
               end
-
             end
 
             # bar_chart_level_values << [I18n.t(:value_low), 0]
             # bar_chart_level_values << [I18n.t(:value_most_likely), 0]
             # bar_chart_level_values << [I18n.t(:value_high), 0]
             # bar_chart_level_values << [I18n.t(:value_probable), 0]
-
 
             # Divise par le coeff
             bar_chart_level_values
@@ -996,7 +994,11 @@ module ViewsWidgetsHelper
 
       if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
                                       "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
-        module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL AND retained_effort_probable <> ? AND retained_effort_most_likely <> ?", 0, 0)
+        module_project_ratio_elements = module_project_ratio_elements.where(
+            "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL OR
+             retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL AND
+             retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
+             retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
       end
     end
 

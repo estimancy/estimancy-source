@@ -138,6 +138,7 @@ class OrganizationsController < ApplicationController
     p "rentre"
     @organization = Organization.find(params[:organization_id])
     tab_error = []
+    tab_warning_messages = ""
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       p "aaa"
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -145,11 +146,17 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2],organization_id: @organization.id)
-          p "bb"
-          unless new_profile.save
-            tab_error << index + 1
-            p "cc"
+
+          new_profile = OrganizationProfile.where(name: row[0], organization_id: @organization.id).first
+          if new_profile
+            tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
+          else
+            new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2], organization_id: @organization.id)
+            p "bb"
+            unless new_profile.save
+              tab_error << index + 1
+              p "cc"
+            end
           end
         elsif row[0].nil?
           tab_error << index + 1
@@ -162,6 +169,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
+    flash[:warning] = tab_warning_messages
     redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile")
   end
 
