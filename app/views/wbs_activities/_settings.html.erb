@@ -511,6 +511,14 @@
 
   $(function() {
 
+      $("form").bind("keypress", function (e) {
+          if (e.keyCode == 13) {
+              event.preventDefault();
+              //alert('Un ENTER ne suffit pas.\nCliquez sur le bouton Soumettre.'+ event.keyCode);
+              return false;
+          }
+      });
+
       $('input.retained_effort_visible, input.retained_cost_visible').change(function() {
           var new_value = $(this).val();  //parseFloat($(this).val().replace("," , "."));
           console.log("Nouvelle valeur = "+ new_value);

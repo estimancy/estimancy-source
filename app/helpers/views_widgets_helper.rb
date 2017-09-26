@@ -995,9 +995,9 @@ module ViewsWidgetsHelper
       if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
                                       "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
         module_project_ratio_elements = module_project_ratio_elements.where(
-            "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL AND
+            "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL OR
              retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL AND
-             retained_effort_probable <> ? AND retained_effort_most_likely <> ? AND
+             retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
              retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
       end
     end
