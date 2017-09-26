@@ -2444,44 +2444,44 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    if params.blank?
-      @projects = @organization.projects.order("created_at ASC")
-    else
+    @projects = @organization.organization_estimations.order("created_at ASC")
+
+    unless params.blank?
       params.each do |k,v|
         val = params[k]
         case k
           when "title"
-            results = Project.where("title liKE ?", "%#{val}%").all.map(&:id)
+            results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
           when "creator"
             creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
             creator_id = creator.nil? ? nil : creator.id
-            results = Project.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
+            results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
           when "version_number"
-            results = Project.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
           when "application"
             ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(application_id: ids).all.map(&:id)
+            results = @projects.where(application_id: ids).all.map(&:id)
           when "description"
-            results = Project.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
           when "status_name"
             results = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:projects).flatten
           when "start_date"
-            results = Project.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
           when "project_area"
             ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
+            results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
           when "project_category"
             ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
+            results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
           when "platform_category"
             ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
+            results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
           when "acquisition_category"
             ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
+            results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
           when "original_model"
             ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = Project.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
+            results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
           else
             options[k] = v
         end
