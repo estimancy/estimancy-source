@@ -477,28 +477,34 @@
                               </td>
                               <% if guw_coefficient.allow_comments == true %>
                                   <script>
-                                      var previousValue = <%= guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
+                                    $(document).ready(function(){
+                                      var defaultValue = <%= guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
+                                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
                                       var currentValue ;
 
-                                      $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
+                                      $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
+
                                         currentValue = $(this).val();
+
+                                        if(parseFloat(currentValue) != parseFloat(defaultValue)) {
+
+                                          console.log(parseFloat(currentValue));
+                                          console.log(parseFloat(defaultValue));
+                                          console.log(parseFloat(previousSavedValue));
+
+                                          $("#guw_form").bind("submit");
+
+                                            $.ajax({
+                                              url: "<%= guw.load_coefficient_comments_path %>",
+                                              data: "coeff_id=" + $(this).attr("coeff_id") +
+                                              "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                              "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                              "&value=" + $(this).val() +
+                                              "&previousValue=" + parseFloat(previousSavedValue)
+                                            });
+                                        }
                                       });
-
-                                      if(currentValue != previousValue) {
-
-                                        $("#guw_form").bind("submit");
-
-                                        $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
-                                          $.ajax({
-                                            url: "<%= guw.load_coefficient_comments_path %>",
-                                            data: "coeff_id=" + $(this).attr("coeff_id") +
-                                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
-                                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
-                                            "&value=" + $(this).val() +
-                                            "&previousValue=" + previousValue
-                                          });
-                                        });
-                                      }
+                                    });
                                   </script>
                               <% end %>
                             <% else %>
