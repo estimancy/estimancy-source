@@ -470,16 +470,18 @@
 </div>
 
 <script type="text/javascript">
+    $('.input-small').css('text-align', 'right');
     //$.number(1999.955, 2, ',', ' ')
 
+    var numbers_precision = <%= user_number_precision %>;
     $('.input-small').each(function(){
-        $(this).css('text-align', 'right');
+        //$(this).css('text-align', 'right');
         //$(this).val(parseFloat($(this).val()).toFixed(<%#= user_number_precision %>));
         var element_value = $(this).val();
         if ((element_value != "") && (element_value != undefined)) {
             var js_element_value = element_value.replace(new RegExp(","), ".");
-            $(this).val($.number(element_value, <%= user_number_precision %>, ',', ' '));
+            $(this).val($.number(element_value, numbers_precision , ',', ' '));
         }
     });
-    $('input.input-small').number(true, <%= user_number_precision %>, ',', ' ');
+    $('input.input-small').number(true, numbers_precision, ',', ' ');
 </script>
