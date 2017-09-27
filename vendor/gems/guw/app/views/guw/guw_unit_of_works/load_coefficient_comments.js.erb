@@ -11,6 +11,6 @@ $("#coefficient_comments").modal({
 });
 
 $("#coefficient_comments").on("hidden.bs.modal", function () {
-  console.log(<%= @previousValue %>);
   $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= @guw_coefficient.id %>").val("<%= @previousValue %>");
+  $("#guw_form").unbind('submit');
 });
