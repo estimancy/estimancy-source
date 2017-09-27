@@ -2045,3 +2045,4 @@ en:
   comment_required_if_modifiable: "Comments is required if phase is modifiable"
   comment_required_on_phase: "Please enter a comment for modified values ​​for each phase"
   warning_already_exist: "already exists"
+  average_rate_wording: "'Average rate' column name (TJM, THM, ...)"

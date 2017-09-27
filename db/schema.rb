@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170925152704) do
+ActiveRecord::Schema.define(:version => 20170927100444) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1797,6 +1797,7 @@ ActiveRecord::Schema.define(:version => 20170925152704) do
     t.boolean  "enabled_input"
     t.integer  "phases_short_name_number", :default => 0
     t.boolean  "hide_wbs_header"
+    t.string   "average_rate_wording"
   end
 
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"

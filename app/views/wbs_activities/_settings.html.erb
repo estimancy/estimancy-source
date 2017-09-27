@@ -527,7 +527,8 @@
           var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
           var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
 
-          $('#'+corresponding_element_id).val(new_value);
+          //$('#'+corresponding_element_id).val(new_value);
+          $('#'+corresponding_element_id).val(new_value.replace(/\s/g, ''));
       });
 
 
