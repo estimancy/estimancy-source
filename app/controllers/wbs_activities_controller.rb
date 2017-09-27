@@ -1074,6 +1074,7 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header ? 1 : 0 ],
+                      [I18n.t(:average_rate_wording), @wbs_activity.average_rate_wording ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
                       ["#{I18n.t(:profiles_list)} : ", ""]]
@@ -1405,7 +1406,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1425,7 +1426,7 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 7  ### Ligne des profiles
+                      if index <= 8  ### Ligne des profiles
                         attr_name = model_sheet_order["#{index}".to_sym]
                         #begin
                           if attr_name != "wbs_organization_profiles"

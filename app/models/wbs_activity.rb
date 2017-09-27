@@ -22,7 +22,7 @@
 class WbsActivity < ActiveRecord::Base
   attr_accessible :name, :description, :state, :organization_id, :parent_id,
                   :cost_unit, :cost_unit_coefficient, :effort_unit, :effort_unit_coefficient, :three_points_estimation, :enabled_input,
-                  :organization_profile_ids, :phases_short_name_number, :hide_wbs_header
+                  :organization_profile_ids, :phases_short_name_number, :hide_wbs_header, :average_rate_wording
 
   INPUT_EFFORTS_ALIAS = ["E1", "E2", "E3", "E4"]   ###["effort_1", "effort_2", "effort_3", "effort_4"]
 
