@@ -409,7 +409,7 @@ class OrganizationsController < ApplicationController
 
       workbook = RubyXL::Workbook.new
       worksheet = workbook.worksheets[0]
-
+      indice = 0
       ([I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
@@ -425,12 +425,23 @@ class OrganizationsController < ApplicationController
         I18n.t(:tracability),
         I18n.t(:results),
         I18n.t(:retained_result)] +
-          @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
-        worksheet.add_cell(0, index, val)
-      end
+          @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val|
+            if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
+              guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
+              unless guw_coefficient.nil?
+                if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
+                  worksheet.add_cell(0, indice, val)
+                  indice += 1
+                  worksheet.add_cell(0, indice, "#{val} (par défaut)")
+                end
+              end
+            else
+              worksheet.add_cell(0, indice, val)
+            end
+            indice += 1
+          end
 
-      ind = 1
-
+      ind = 0
       @projects.each do |project|
 
         project.module_projects.each do |mp|
@@ -468,29 +479,30 @@ class OrganizationsController < ApplicationController
             worksheet.add_cell(ind, 14, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
             worksheet.add_cell(ind, 15, guow.intermediate_weight)
 
-            @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
-              if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+            gap = @guw_model.guw_coefficients.where(coefficient_type: ["Pourcentage", "Coefficient"]).all.size
+
+            indice = 0
+            @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }.each_with_index do |val|
+              if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
+                guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
                     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                       guw_coefficient_id: guw_coefficient.id,
                                                                       module_project_id: guow.module_project_id).first
 
-                    if guw_coefficient.coefficient_type == "Pourcentage"
+                    if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
-                      end
-                    elsif guw_coefficient.coefficient_type == "Coefficient"
-                      unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+j, "#{ceuw.percent.to_f.round(2)} (#{ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.value})")
+                        worksheet.add_cell(ind, 16+indice, "#{ceuw.percent.to_f.round(2)}")
+                        indice += 1
+                        worksheet.add_cell(ind, 16+indice, "888")
                       end
                     else
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                        worksheet.add_cell(ind, 16+indice, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
                       end
+                      indice += 1
                     end
-                    gap += 1
                   end
                 end
 
@@ -498,25 +510,28 @@ class OrganizationsController < ApplicationController
                 guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
                 unless guw_output.nil?
                   unless guow.guw_type.nil?
-                    worksheet.add_cell(ind, 16 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
+                    worksheet.add_cell(ind, 16 + indice, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
                   end
                 end
+                indice += 1
               elsif i[0] == "Coeff. de Complexité"
-                worksheet.add_cell(ind, 16 + j, cplx)
+                worksheet.add_cell(ind, 16 + indice, cplx)
+                indice += 1
               end
+
             end
 
-            @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
-              unless guowa.nil?
-                worksheet.add_cell(ind, 15 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
-              end
-            end
+            # @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+            #   guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
+            #   unless guowa.nil?
+            #     worksheet.add_cell(ind, 15 + @guw_model.orders.size + i + gap, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+            #   end
+            # end
           end
 
-          @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
-            worksheet.add_cell(0, 15 + @guw_model.orders.size + i, guw_attribute.name)
-          end
+          # @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
+          #   worksheet.add_cell(0, 15 + @guw_model.orders.size + i + gap, guw_attribute.name)
+          # end
         end
       end
 

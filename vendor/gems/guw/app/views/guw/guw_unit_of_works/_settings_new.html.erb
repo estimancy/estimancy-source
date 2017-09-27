@@ -1,4 +1,4 @@
-<%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path do %>
+<%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form" do %>
 
   <div class="modal fade" id="modal_deported" tabindex="-1" role="dialog" aria-labelledby="modal_deported_label" aria-hidden="true" backdrop="static">
     <div class="modal-dialog">
@@ -477,24 +477,28 @@
                               </td>
                               <% if guw_coefficient.allow_comments == true %>
                                   <script>
-                                    $(document).ready(function(){
-                                      var previousValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
+                                      var previousValue = <%= guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
+                                      var currentValue ;
+
                                       $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
-                                        var currentValue = $(this).val();
-                                        if(currentValue != previousValue) {
-                                          $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("blur", function(){
-                                            $.ajax({
-                                              url: "<%= guw.load_coefficient_comments_path %>",
-                                              data: "coeff_id=" + $(this).attr("coeff_id") +
-                                              "&guw_unit_of_work_id=" + $(this).attr("guw") +
-                                              "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
-                                              "&value=" + $(this).val() +
-                                              "&previousValue=" + previousValue
-                                            });
-                                          });
-                                        }
+                                        currentValue = $(this).val();
                                       });
-                                    });
+
+                                      if(currentValue != previousValue) {
+
+                                        $("#guw_form").bind("submit");
+
+                                        $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
+                                          $.ajax({
+                                            url: "<%= guw.load_coefficient_comments_path %>",
+                                            data: "coeff_id=" + $(this).attr("coeff_id") +
+                                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                            "&value=" + $(this).val() +
+                                            "&previousValue=" + previousValue
+                                          });
+                                        });
+                                      }
                                   </script>
                               <% end %>
                             <% else %>
@@ -624,7 +628,7 @@
           <% if can? :execute_estimation_plan, @project %>
             <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
             <% unless @unit_of_work_groups.empty? %>
-              <%= link_to I18n.t('new_unit_of_work'), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+              <%= link_to I18n.t('new_unitf_of_work'), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
             <% end %>
             <button type="submit" class="btn btn-primary pull-right"><%= I18n.t(:calculate) %></button>
             <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained button_margin_right pull-right", onclick: "raz(#{uowg.id})" %>
