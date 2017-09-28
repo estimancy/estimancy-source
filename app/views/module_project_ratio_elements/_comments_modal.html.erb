@@ -21,11 +21,14 @@
     </label>
     <%= text_area_tag "description[#{mp_ratio_element.id}]", mp_ratio_element.description, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
+    <br>
     <label>
       <b>
         <%= I18n.t(:comments) %>
       </b>
     </label>
+
+    <%#= tinymce %>
     <%= text_area_tag "comments[#{mp_ratio_element.id}]", mp_ratio_element.comments, class: "attribute_note_area", rows: 6, readonly: !can?(:execute_estimation_plan, @project) %>
 
   </div>
