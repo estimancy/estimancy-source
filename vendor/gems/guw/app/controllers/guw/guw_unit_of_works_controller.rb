@@ -120,6 +120,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     redirect_to :back
   end
 
+  def load_cplx_comments
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @previousValue = params["previousValue"]
+    @value = params["value"]
+  end
+
+  def save_cplx_comments
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @value = params[:value].blank? ? @guw_unit_of_work.intermediate_weight : params[:value]
+
+    @guw_unit_of_work.cplx_comments = params[:cplx_comments]
+    @guw_unit_of_work.intermediate_weight = @value.to_f
+    @guw_unit_of_work.save
+
+    redirect_to main_app.dashboard_path(@project)
+  end
+
   def load_coefficient_comments
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_coefficient = Guw::GuwCoefficient.find(params[:coeff_id])

@@ -417,12 +417,39 @@
                                   <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
                                                        style: "width: 43px;",
                                                        class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                                       guw: guow.id,
                                                        readonly: true %>
                                   <% if @guw_type.allow_complexity %>
                                     <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
                                                          style: "width: 43px; background-color: ##{color};",
                                                          class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
+                                                         guw: guow.id,
+                                                         title: guow.cplx_comments,
                                                          step: 0.001 %>
+                                    <script>
+                                      $(document).ready(function(){
+                                        var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
+
+                                        $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
+
+                                          var currentValue = $(this).val();
+
+                                          if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
+
+                                            $("#guw_form").bind("submit");
+                                            $(".guw_submit").prop("disabled", true);
+
+                                            $.ajax({
+                                              url: "<%= guw.load_cplx_comments_path %>",
+                                              data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                                              "&value=" + currentValue +
+                                              "&previousValue=" + parseFloat(previousSavedValue)
+                                            });
+                                          }
+                                        });
+                                      });
+                                    </script>
+
                                   <% end %>
                                 <% end %>
                               <% end %>
@@ -761,6 +788,14 @@
 <div class="modal fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_coefficient_comments_content">
+      :-)
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cplx_comments" tabindex="-1" role="dialog" aria-labelledby="modal_cplx_comments_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_cplx_comments_content">
       :-)
     </div>
   </div>
