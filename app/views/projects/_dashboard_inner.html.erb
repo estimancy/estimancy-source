@@ -10,13 +10,13 @@
         <!--</a>-->
         <h5><%= I18n.t(:wbs_product) %>
           <span class="component_name">
-            <%= current_component %>
+            <%# current_component %>
           </span>
           </h5>
       </div>
       <div class="collapse in" id="collapseProduct">
         <div class="widget-content resizableProduct">
-          <%= render :partial => 'pe_wbs', :object => @project_default_ratio %>
+          <%# render :partial => 'pe_wbs', :object => @project_default_ratio %>
         </div>
       </div>
     </div>
@@ -31,12 +31,12 @@
       </div>
       <div class="collapse in" id="collapseProduct">
         <div class="widget-content resizableProduct">
-
-          <%= @project.description%>
-          <%= @project.title%>
-          <h5>test</h5>
-
-
+          <h5>
+            <%= @project.title %>
+          </h5>
+          <p>
+            <%= raw(@project.description.to_s.truncate(400)) %>
+          </p>
         </div>
       </div>
     </div>

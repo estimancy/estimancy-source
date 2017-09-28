@@ -24,7 +24,6 @@
       <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
       <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
 
-
       <table class="table-condensed <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
         <%# @wbs_activity_ratio.module_project_ratio_variables.each do |mp_ratio_variable| %>
         <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
@@ -58,6 +57,8 @@
       </table>
     </div>
 
+    <div id="warning_add_comments" style="display: none; font-size: large; color: red; text-align: center"> <%= I18n.t(:comment_required_on_phase) %> </div>
+
     <br >
       <h4>
         <strong>
@@ -75,6 +76,9 @@
           </th>
           <th class=""><%= I18n.t(:alias) %></th>
           <th><%= I18n.t(:name) %></th>
+          <% unless @wbs_activity_ratio.do_not_show_cost %>
+            <th><%= @wbs_activity.average_rate_wording.blank? ? "Taux moyen" : @wbs_activity.average_rate_wording %></th>
+          <% end %>
 
 
           <% if @wbs_activity_ratio.wbs_activity.three_points_estimation? %>
@@ -124,8 +128,7 @@
               <% end %>
           <% end %>
 
-          <th><%= "#{I18n.t(:description)} / #{I18n.t(:comments)}" %></th>
-          <!--<th><%#= I18n.t(:actions) %></th>-->
+          <th><%= "#{I18n.t(:comments)}" %></th>
         </tr>
 
 
@@ -138,7 +141,11 @@
         <%= hidden_field_tag 'comment_required_if_modifiable', @wbs_activity_ratio.comment_required_if_modifiable %>
 
         <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
-            <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element| element.retained_effort_probable==0 || element.retained_effort_most_likely==0 } %>
+            <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element|
+              (element.retained_effort_probable==0 || element.retained_effort_most_likely==0) &&
+              (element.retained_cost_probable==0 || element.retained_cost_most_likely==0)
+            }
+            %>
         <% end %>
 
         <% @project_wbs_activity_elements.each do |wbs_activity_elt| %>
@@ -147,6 +154,7 @@
             <% unless mp_ratio_element.nil? %>
                 <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
                 <%= hidden_field_tag 'wbs_activity_id', mp_ratio_element.wbs_activity_ratio.wbs_activity_id %>
+                <% name_to_show = mp_ratio_element.name_to_show %>
 
                 <% mp_ratio_element_ancestor_ids = [] %>
                 <% if mp_ratio_element.wbs_activity_ratio_element.nil?
@@ -173,8 +181,10 @@
                 <% end %>
 
                 <tr>
-                  <td class="flagged <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>" style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>">
-                    <span data-mp_ratio_element="<%= mp_ratio_element.id %>" data-comments="<%= mp_ratio_element.comments %>"></span>
+                  <td class="flagged <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>" data-mp_ratio_element="<%= mp_ratio_element.id %>"
+                      data-effort_is_modifiable="<%= allow_modify_retained_effort %>" data-cost_is_modifiable="<%= allow_modify_retained_cost %>"
+                      style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>">
+                    <span ></span>
                   </td>
 
                   <td>
@@ -184,23 +194,26 @@
                     <%= hidden_field_tag "", mp_ratio_element.id, class: "#{mp_ratio_element.id}" %>
 
                     <%= check_box_tag "is_just_changed[]", mp_ratio_element.id, false, id: "is_just_changed_#{mp_ratio_element.id}", class: "is_just_changed", :style => "display: none;" %>
-                    <%#= check_box_tag "is_just_changed[]", mp_ratio_element.id, false, id: "is_just_changed_#{mp_ratio_element.id}", class: "is_just_changed" %>
                   </td>
 
                   <td>
-                <span class="badge badge-default">
-                    <%# elt_position =  mp_ratio_element.position %>
-                  <%#= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
-                  <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
-                </span>
+                    <span class="badge badge-default">
+                      <%# elt_position =  mp_ratio_element.position %>
+                      <%#= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
+                      <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
+                    </span>
                   </td>
                   <td>
                     <%# padding_left = mp_ratio_element.depth.nil? ? 2 : mp_ratio_element.depth*2 %>
                     <% padding_left = mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>
-                    <span class="pull-left" style="padding-left:<%=gap+padding_left%>em">
-                  <%= wbs_activity_elt.name %>
-                </span>
+                    <span class="pull-left" title="<%= wbs_activity_elt.description %>" style="padding-left:<%=gap+padding_left%>em">
+                        <%= name_to_show %> <%#= wbs_activity_elt.name %>
+                    </span>
                   </td>
+                  <% unless @wbs_activity_ratio.do_not_show_cost %>
+                    <% element_tjm = mp_ratio_element.tjm %>
+                    <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+                  <% end %>
 
                   <% phase_formula = "" %>
                   <% unless mp_ratio_element.wbs_activity_ratio_element.nil? %>
@@ -215,38 +228,64 @@
                           <td style="text-align: center"> - </td>
                           <%= hidden_field_tag "theoretical_effort_low[#{mp_ratio_element.id}]", nil %>
                           <%= hidden_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", nil %>
-                          <td><%= number_field_tag "retained_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value((retained_effort_low.nil? ? mp_ratio_element.theoretical_effort_low : retained_effort_low), effort_unit_coeff), :class => "input-mini retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "low",  :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "retained_effort_low_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value((retained_effort_low.nil? ? mp_ratio_element.theoretical_effort_low : retained_effort_low), effort_unit_coeff), :class => "input-small retained_effort_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "low",  :step => 0.000001 %>
+                            <%= hidden_field_tag "retained_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round((retained_effort_low.nil? ? mp_ratio_element.theoretical_effort_low : retained_effort_low), effort_unit_coeff), :class => "retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "low",  :step => 0.000001 %>
+                          </td>
+
                           <% if @wbs_activity_ratio.do_not_show_cost %>
-                              <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low :  mp_ratio_element.retained_cost_low, :class => "input-mini retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
-                              <td><%= number_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low :  mp_ratio_element.retained_cost_low, :class => "input-mini retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,  :step => 0.000001 %></td>
+                              <td>
+                                <%= text_field_tag "retained_cost_low_visible[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low :  mp_ratio_element.retained_cost_low, :class => "input-small retained_cost_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,  :step => 0.000001 %>
+                                <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low :  mp_ratio_element.retained_cost_low, :class => "retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
+                              </td>
                           <% end %>
                       <% else %>
-                          <td><%= number_field_tag "theoretical_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_low, effort_unit_coeff), :class => "input-mini",  disabled: true %></td>
+                          <td>
+                            <%= text_field_tag "theoretical_effort_low_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_low, effort_unit_coeff), :class => "input-small",  disabled: true %>
+                            <%= hidden_field_tag "theoretical_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.theoretical_effort_low, effort_unit_coeff) %>
+                          </td>
+
                           <% if @wbs_activity_ratio.do_not_show_cost %>
                               <%= hidden_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low %>
                           <% else %>
-                              <td><%= number_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low, :class => "input-mini", disabled: true %></td>
+                              <td>
+                                <%= text_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low, :class => "input-small", disabled: true %>
+                                <%= hidden_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low %>
+                              </td>
                           <% end %>
 
-                          <td><%= number_field_tag "retained_effort_low[#{mp_ratio_element.id}]",
+                          <td>
+                            <%= text_field_tag "retained_effort_low_visible[#{mp_ratio_element.id}]",
                                                    convert_wbs_activity_value((retained_effort_low.nil? ? mp_ratio_element.theoretical_effort_low : retained_effort_low), effort_unit_coeff),
                                                    'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
-                                                   :class => "input-mini retained_effort", readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                                                   :class => "input-small retained_effort_visible", readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                            <%= hidden_field_tag "retained_effort_low[#{mp_ratio_element.id}]",
+                                                 convert_wbs_activity_value_without_round((retained_effort_low.nil? ? mp_ratio_element.theoretical_effort_low : retained_effort_low), effort_unit_coeff),
+                                                 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "low", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
+                                                 :class => "retained_effort", readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+                          </td>
+
                           <% if @wbs_activity_ratio.do_not_show_cost %>
                               <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low %>
                           <% else %>
-                              <td><%= number_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low, :class => "input-mini",
-                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                              <td>
+                                <%= text_field_tag "retained_cost_low_visible[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low, :class => "input-small retained_cost_visible",
+                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                                <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low.nil? ?  mp_ratio_element.theoretical_cost_low : mp_ratio_element.retained_cost_low, :class => "retained_cost",
+                                                     readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+                              </td>
                           <% end %>
                       <% end %>
                   <% else %>
                       <% hidden_retained_effort_low =  mp_ratio_element.retained_effort_low %>
                       <% hidden_retained_cost_low =  mp_ratio_element.retained_cost_low %>
 
-                      <%= hidden_field_tag "theoretical_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_low, effort_unit_coeff), disabled: true  %>
-                      <%= hidden_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low, disabled: true %>
+                      <%= hidden_field_tag "theoretical_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.theoretical_effort_low, effort_unit_coeff), readonly: true  %>
+                      <%= hidden_field_tag "theoretical_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_low, readonly: true %>
 
-                      <%= hidden_field_tag "retained_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.retained_effort_low, effort_unit_coeff) %>
+                      <%= hidden_field_tag "retained_effort_low[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.retained_effort_low, effort_unit_coeff) %>
                       <%= hidden_field_tag "retained_cost_low[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_low %></td>
                   <% end %>
 
@@ -259,33 +298,60 @@
                       <td style="text-align: center"> - </td>
                       <%= hidden_field_tag "theoretical_effort_most_likely[#{mp_ratio_element.id}]", nil %>
                       <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", nil %>
-                      <td><%= number_field_tag "retained_effort_most_likely[#{mp_ratio_element.id}]",
+
+                      <td>
+                        <%= text_field_tag "retained_effort_most_likely_visible[#{mp_ratio_element.id}]",
                                                convert_wbs_activity_value((retained_effort_most_likely.nil? ? mp_ratio_element.theoretical_effort_most_likely : retained_effort_most_likely), effort_unit_coeff),
-                                               :class => "input-mini retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "most_likely", :tabindex => i , :step => 0.000001 %></td>
+                                               :class => "input-small retained_effort_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "most_likely", :tabindex => i , :step => 0.000001 %>
+
+                        <%= hidden_field_tag "retained_effort_most_likely[#{mp_ratio_element.id}]",
+                                             convert_wbs_activity_value_without_round((retained_effort_most_likely.nil? ? mp_ratio_element.theoretical_effort_most_likely : retained_effort_most_likely), effort_unit_coeff),
+                                             :class => "retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "most_likely", :tabindex => i , :step => 0.000001 %>
+                      </td>
+
                       <% if @wbs_activity_ratio.do_not_show_cost %>
                           <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
                       <% else %>
-                          <td><%= number_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-mini retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-small retained_cost_visible', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001 %>
+                            <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001 %>
+                          </td>
                       <% end %>
                   <% else %>
-                      <td><%= number_field_tag "theoretical_effort_most_likely[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_most_likely, effort_unit_coeff), :class => 'input-mini', :title => "#{phase_formula}", disabled: true, :step => 0.000001 %></td>
+                      <td>
+                        <%= text_field_tag "theoretical_effort_most_likely_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_most_likely, effort_unit_coeff), :class => 'input-small', :title => "#{phase_formula}", disabled: true, :step => 0.000001 %>
+                        <%= hidden_field_tag "theoretical_effort_most_likely[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.theoretical_effort_most_likely, effort_unit_coeff), :class => '', :title => "#{phase_formula}", readonly: true, :step => 0.000001 %>
+                      </td>
 
                       <% if @wbs_activity_ratio.do_not_show_cost %>
                           <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely %></td>
                       <% else %>
-                          <td><%= number_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely, :class => 'input-mini',  disabled: true, :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "theoretical_cost_most_likely_visible[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely, :class => 'input-small',  disabled: true, :step => 0.000001 %>
+                            <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely, :class => '',  readonly: true, :step => 0.000001 %>
+                          </td>
                       <% end %>
                       <td>
-                        <%= number_field_tag "retained_effort_most_likely[#{mp_ratio_element.id}]",
+                        <%= text_field_tag "retained_effort_most_likely_visible[#{mp_ratio_element.id}]",
                                              convert_wbs_activity_value((retained_effort_most_likely.nil? ? mp_ratio_element.theoretical_effort_most_likely : retained_effort_most_likely), effort_unit_coeff),
                                              'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
-                                             :class => "input-mini retained_effort",   readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+                                             :class => "input-small retained_effort_visible",   readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                        <%= hidden_field_tag "retained_effort_most_likely[#{mp_ratio_element.id}]",
+                                             convert_wbs_activity_value_without_round((retained_effort_most_likely.nil? ? mp_ratio_element.theoretical_effort_most_likely : retained_effort_most_likely), effort_unit_coeff),
+                                             'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
+                                             :class => "retained_effort", readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
                       </td>
                       <% if @wbs_activity_ratio.do_not_show_cost %>
                           <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely %>
                       <% else %>
-                          <td><%= number_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-mini ',
-                                                   readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'input-small retained_cost_visible',
+                                                   readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                            <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely.nil? ? mp_ratio_element.theoretical_cost_most_likely : retained_cost_most_likely, :class => 'retained_cost',
+                                                 readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+                          </td>
                       <% end %>
                   <% end %>
 
@@ -298,44 +364,80 @@
                           <%= hidden_field_tag "theoretical_effort_high[#{mp_ratio_element.id}]", nil %>
                           <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", nil %>
                           <td style="text-align: center"> - </td>
-                          <td><%= number_field_tag "retained_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value((retained_effort_high.nil? ? mp_ratio_element.theoretical_effort_high : retained_effort_high), effort_unit_coeff),
-                                                   :class => "input-mini retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "high",  :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "retained_effort_high_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value((retained_effort_high.nil? ? mp_ratio_element.theoretical_effort_high : retained_effort_high), effort_unit_coeff),
+                                                   :class => "input-small retained_effort_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "high",  :step => 0.000001 %>
+
+                            <%= hidden_field_tag "retained_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round((retained_effort_high.nil? ? mp_ratio_element.theoretical_effort_high : retained_effort_high), effort_unit_coeff),
+                                                 :class => "retained_effort", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, "data-level" => "high",  :step => 0.000001 %>
+                          </td>
                           <% if @wbs_activity_ratio.do_not_show_cost %>
+                              <%#= hidden_field_tag "retained_cost_high_visible[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "retained_cost_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
                               <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
                           <% else %>
-                              <td><%= number_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "input-mini retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,  :step => 0.000001 %></td>
+                              <td>
+                                <%= text_field_tag "retained_cost_high_visible[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "input-small retained_cost_visible", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,  :step => 0.000001 %>
+                                <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "retained_cost", 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,  :step => 0.000001 %>
+                              </td>
                           <% end %>
                       <% else %>
-                          <td><%= number_field_tag "theoretical_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_high, effort_unit_coeff), :class => "input-mini",  disabled: true, :step => 0.000001 %></td>
+                          <td>
+                            <%= text_field_tag "theoretical_effort_high_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_high, effort_unit_coeff), :class => "input-small",  disabled: true, :step => 0.000001 %>
+                            <%= hidden_field_tag "theoretical_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.theoretical_effort_high, effort_unit_coeff), :class => "", readonly: true, :step => 0.000001 %>
+                          </td>
                           <% if @wbs_activity_ratio.do_not_show_cost %>
-                              <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, :class => "input-mini",  disabled: true, :step => 0.000001 %></td>
+                              <%= hidden_field_tag "theoretical_cost_high_visible[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, :class => "input-small",  disabled: true, :step => 0.000001 %></td>
+                              <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, :class => "",  readonly: true, :step => 0.000001 %></td>
                           <% else %>
-                              <td><%= number_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, disabled: true, :class => "input-mini" %></td>
+                              <td>
+                                <%= text_field_tag "theoretical_cost_high_visible[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, disabled: true, :class => "input-small" %>
+                                <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high, readonly: true, :class => "" %>
+                              </td>
                           <% end %>
 
-                          <td><%= number_field_tag "retained_effort_high[#{mp_ratio_element.id}]",
+                          <td>
+                            <%= text_field_tag "retained_effort_high_visible[#{mp_ratio_element.id}]",
                                                    convert_wbs_activity_value((retained_effort_high.nil? ? mp_ratio_element.theoretical_effort_high : retained_effort_high), effort_unit_coeff),
                                                    'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
-                                                   :class => "input-mini retained_effort",  readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                                                   :class => "input-small retained_effort_visible",  readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                            <%= hidden_field_tag "retained_effort_high[#{mp_ratio_element.id}]",
+                                                 convert_wbs_activity_value_without_round((retained_effort_high.nil? ? mp_ratio_element.theoretical_effort_high : retained_effort_high), effort_unit_coeff),
+                                                 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "high", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids,
+                                                 :class => "retained_effort",  readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                          </td>
                           <% if @wbs_activity_ratio.do_not_show_cost %>
                               <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high %>
                           <% else %>
-                              <td><%= number_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "input-mini",
-                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %></td>
+                              <td>
+                                <%= text_field_tag "retained_cost_high_visible[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "input-small retained_cost_visible",
+                                                       readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                                <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high.nil? ? mp_ratio_element.theoretical_cost_high : mp_ratio_element.retained_cost_high, :class => "retained_cost",
+                                                     readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
+
+                              </td>
                           <% end %>
                       <% end %>
 
                   <% else %>
-                      <%= hidden_field_tag "theoretical_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_high, effort_unit_coeff) %>
+                      <%= hidden_field_tag "theoretical_effort_high_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.theoretical_effort_high, effort_unit_coeff) %>
+                      <%= hidden_field_tag "theoretical_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.theoretical_effort_high, effort_unit_coeff) %>
+
                       <%= hidden_field_tag "theoretical_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_high %>
-                      <%= hidden_field_tag "retained_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.retained_effort_high, effort_unit_coeff) %>
+
+                      <%= hidden_field_tag "retained_effort_high_visible[#{mp_ratio_element.id}]", convert_wbs_activity_value(mp_ratio_element.retained_effort_high, effort_unit_coeff) %>
+                      <%= hidden_field_tag "retained_effort_high[#{mp_ratio_element.id}]", convert_wbs_activity_value_without_round(mp_ratio_element.retained_effort_high, effort_unit_coeff) %>
+
                       <%= hidden_field_tag "retained_cost_high[#{mp_ratio_element.id}]", mp_ratio_element.retained_cost_high %>
                   <% end %>
 
                   <td class="text_field_text_overflow">
-                  <span class="pull-left">
-                    <%= link_to (mp_ratio_element.description.nil? || mp_ratio_element.description.blank?) ? '-' : mp_ratio_element.description, module_project_ratio_element_load_comments_path(mp_ratio_element), title: mp_ratio_element.name, method: "post", remote: true %>
-                  </span>
+                    <span class="pull-left">
+                      <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
+                            module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: "#{name_to_show}", method: "post", remote: true %>
+                    </span>
                   </td>
 
                   <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
@@ -367,9 +469,18 @@
 
 </div>
 
-<script>
-    $('.input-mini').each(function(){
-        $(this).css('text-align', 'right');
-        $(this).val(parseFloat($(this).val()).toFixed(<%= user_number_precision %>));
+<script type="text/javascript">
+    $('.input-small').css('text-align', 'right');
+
+    var wbs_numbers_precision = parseInt('<%= user_number_precision %>');
+    $('.input-small').each(function(){
+        //$(this).css('text-align', 'right');
+        //$(this).val(parseFloat($(this).val()).toFixed(<%#= user_number_precision %>));
+        var element_value = $(this).val();
+        if ((element_value != "") && (element_value != undefined)) {
+            var js_element_value = element_value.replace(new RegExp(","), ".");
+            $(this).val($.number(js_element_value, wbs_numbers_precision , ',', ' '));
+        }
     });
+   //$('input.input-small').number(true, 2, ',', ' ');
 </script>

@@ -36,10 +36,7 @@ class ProjectsController < ApplicationController
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
   before_filter :check_estimations_counter, :only => [:new, :duplicate, :change_new_estimation_data, :set_checkout_version]   # create, duplicate, checkout
 
-  #protected
-  private
-
-  def check_estimations_counter
+  private def check_estimations_counter
     @organization = @current_organization
     estimations_counter = @organization.estimations_counter
     unless estimations_counter.nil?
@@ -85,8 +82,6 @@ class ProjectsController < ApplicationController
     @project_security_levels = ProjectSecurityLevel.all
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
-
-  public
 
   def dashboard
     if @project.nil?
@@ -581,8 +576,8 @@ class ProjectsController < ApplicationController
     @guw_modules = @guw_module.nil? ? [] : @project.organization.guw_models.map{|i| [i, "#{i.id},#{@guw_module.id}"] }
     @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
     @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
-    @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
-    @skb_models = @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
+    @kb_models = @kb_module.nil? ? [] : @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+    @skb_models = @skb_module.nil? ? [] : @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
     @staffing_modules = @staffing_module.nil? ? [] : @project.organization.staffing_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
     @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
     @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
@@ -1038,18 +1033,6 @@ class ProjectsController < ApplicationController
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 
-    # if params[:deleted_projects].present?
-    #   @projects = Project.where(id: params[:deleted_projects]).all
-    # else
-    #   @projects = Project.where(id: params[:project_id]).all
-    #   flash[:warning] = "#{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
-    #   redirect_to :back
-    # end
-    #
-    # @project_ids = params[:deleted_projects]
-    #
-    #@projects.each do |p|
-
     @project = Project.find(params[:project_id])
     if @project.is_childless?
       authorize! :delete_project, @project
@@ -1067,21 +1050,19 @@ class ProjectsController < ApplicationController
         end
       end
     else
-      flash[:warning] = "#{I18n.t(:warning_project_cannot_be_deleted)}. #{I18n.t(:warning_intermediate_project_version_cannot_be_deleted)}"
       redirect_to :back
     end
-
   end
 
-  def confirm_deletion_multiple
-    set_page_title I18n.t(:confirm_deletion)
-
-    @projects = Project.where(id: params[:deleted_projects]).all
-
-    puts(" ids = #{params[:deleted_projects]}")
-    @projects = Project.find(params[:project_id])
-
-  end
+  # def confirm_deletion_multiple
+  #   set_page_title I18n.t(:confirm_deletion)
+  #
+  #   @projects = Project.where(id: params[:deleted_projects]).all
+  #
+  #   puts(" ids = #{params[:deleted_projects]}")
+  #   @projects = Project.find(params[:project_id])
+  #
+  # end
 
   def select_categories
     #No authorize required
@@ -2396,11 +2377,65 @@ public
     end
   end
 
+  def sort
+    @organization = @current_organization
+    @projects = @organization.projects
+    k = params[:f]
+    s = params[:s]
+
+    case k
+      when "title"
+        @projects = @projects.unscoped.order("title #{s}").all
+      when "description"
+        @projects = @projects.unscoped.order("description #{s}").all
+      when "project_area"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_areas.name #{s}").all
+      when "project_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_categories.name #{s}").all
+      when "platform_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("platform_categories.name #{s}").all
+      when "acquisition_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("acquisition_categories.name #{s}").all
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}").all
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}").all
+      when "start_date"
+        @projects = @projects.unscoped.order("start_date #{s}").all
+      when "updated_at"
+        @projects = @projects.unscoped.order("updated_at #{s}").all
+      when "created_at"
+        @projects = @projects.unscoped.order("created_at #{s}").all
+      else
+    end
+
+    build_footer
+  end
+
   def search
 
     @organization = @current_organization
     options = {}
     results = []
+    final_results = []
 
     params.delete("utf8")
     params.delete("commit")
@@ -2409,24 +2444,67 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    params.each do |k,v|
-      val = params[k]
-      case k
-        when "title"
-          if val.blank?
-            results = Project.where("title liKE ?", "%#{val}%").all
+    @projects = @organization.organization_estimations.order("created_at ASC")
+
+    unless params.blank?
+      params.each do |k,v|
+        val = params[k]
+        case k
+          when "title"
+            results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
+          when "creator"
+            creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+            creator_id = creator.nil? ? nil : creator.id
+            results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
+          when "version_number"
+            results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "application"
+            ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(application_id: ids).all.map(&:id)
+          when "description"
+            results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "status_name"
+            ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "start_date"
+            results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
+          when "project_area"
+            ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "project_category"
+            ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "platform_category"
+            ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "acquisition_category"
+            ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "original_model"
+            ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
+            results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
           else
-            results = Project.all #A changer
-          end
-        when "creator"
-          results = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+            options[k] = v
+        end
+
+        a = results.flatten
+        b = final_results.flatten
+
+        if b.empty?
+          final_results << a
         else
-          options[k] = v
+          final_results << a & b
+        end
       end
+
+      @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
+
     end
 
-    @projects = results
+    build_footer
+  end
 
+  private def build_footer
     @object_per_page = (current_user.object_per_page || 10)
 
     if params[:min].present? && params[:max].present?
@@ -3198,7 +3276,7 @@ public
     #       pf.delete
     #     end
     #   end
-    if @project.is_model == false
+    unless @project.is_model == false
       ProjectField.where(project_id: @project.id,
                          value: nil).all.each{ |i| i.delete }
     end

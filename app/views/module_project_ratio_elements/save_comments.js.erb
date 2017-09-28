@@ -1,0 +1,6 @@
+$('#comments_'+'<%= @module_project_ratio_element.id %>').css('white-space', 'pre');
+
+var comment_id = '<%= "mp_ratio_element_comment_#{@module_project_ratio_element.id}" %>';
+$('#'+comment_id).html("<%=raw (@module_project_ratio_element.comments.blank? ? "-" : @module_project_ratio_element.comments.html_safe) %>");
+
+$('#modal_comments').modal('toggle');

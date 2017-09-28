@@ -524,8 +524,8 @@ module ViewsWidgetsHelper
                 max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                 min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
               else
-                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_number_precision)}"
-                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_number_precision)}"
+                max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_precision)}"
+                min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_precision)}"
               end
             rescue
               max_value_text = "Max: #{data_high.nil? ? '-' : data_high}"
@@ -685,14 +685,12 @@ module ViewsWidgetsHelper
               rescue
                 bar_chart_level_values << [I18n.t(:value_probable), chart_probable]
               end
-
             end
 
             # bar_chart_level_values << [I18n.t(:value_low), 0]
             # bar_chart_level_values << [I18n.t(:value_most_likely), 0]
             # bar_chart_level_values << [I18n.t(:value_high), 0]
             # bar_chart_level_values << [I18n.t(:value_probable), 0]
-
 
             # Divise par le coeff
             bar_chart_level_values
@@ -996,12 +994,14 @@ module ViewsWidgetsHelper
 
       if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
                                       "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
-        module_project_ratio_elements = module_project_ratio_elements.where("retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL AND retained_effort_probable <> ? AND retained_effort_most_likely <> ?", 0, 0)
+        module_project_ratio_elements = module_project_ratio_elements.where(
+            "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL OR
+             retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL AND
+             retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
+             retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
       end
     end
 
-
-    ### TEST
     # Get min value and organization effort unit coeff
     if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
       if view_widget.use_organization_effort_unit == true
@@ -1011,8 +1011,6 @@ module ViewsWidgetsHelper
         wbs_unit = organization_effort_unit
       end
     end
-    ### FIN TEST
-
 
     case view_widget.widget_type
 
@@ -1105,9 +1103,11 @@ module ViewsWidgetsHelper
 
           #Update chart data
           wbs_activity_elements.each do |wbs_activity_elt|
+            mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
+
             if !wbs_activity_elt.is_root?
               activity_profiles = Array.new
-              activity_profiles << wbs_activity_elt.name
+              activity_profiles << mp_ratio_element.name_to_show #wbs_activity_elt.name
               root_wbs_profiles_value = 0
 
               wbs_probable_value = pbs_probable_est_value[wbs_activity_elt.id]
@@ -1166,7 +1166,9 @@ module ViewsWidgetsHelper
           end
 
           # For the root element
-          root_value_per_profile = [wbs_activity_elements_root.name]
+          mp_ratio_element_root = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elements_root.id).first
+          root_value_per_profile = [mp_ratio_element_root.name_to_show] #[wbs_activity_elements_root.name]
+
           project_organization_profiles.each do |profile|
             root_value_per_profile << root_profiles_wbs_data["profile_id_#{profile.id}"]
           end
@@ -1196,8 +1198,16 @@ module ViewsWidgetsHelper
 
     #  # get all project's wbs-project_elements
     wbs_activity_elements = wbs_activity.wbs_activity_elements
+    module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
+
     wbs_activity_elements.each do |wbs_activity_elt|
-      effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+      mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
+      begin
+        effort_breakdown_stacked_bar_dataset["#{mp_ratio_element.name_to_show.parameterize.underscore}"] = Array.new
+      rescue
+        effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+      end
+
     end
 
 
@@ -1209,6 +1219,8 @@ module ViewsWidgetsHelper
 
       #Update chart data
       wbs_activity_elements.each do |wbs_activity_elt|
+        mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
+
         wbs_probable_value = pbs_probable_est_value[wbs_activity_elt.id]
         unless wbs_probable_value.nil?
           wbs_estimation_profiles_values = wbs_probable_value["profiles"]
@@ -1221,10 +1233,18 @@ module ViewsWidgetsHelper
             end
             if !wbs_activity_elt.is_root?
               if wbs_profiles_value.nil?
-                profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = 0
+                begin
+                  profiles_wbs_data["profile_id_#{profile.id}"]["#{mp_ratio_element.name_to_show}"] = 0
+                rescue
+                  profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = 0
+                end
               else
                 value = number_with_delimiter(wbs_profiles_value.round(estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision))
-                profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = value
+                begin
+                  profiles_wbs_data["profile_id_#{profile.id}"]["#{mp_ratio_element.name_to_show}"] = value
+                rescue
+                  profiles_wbs_data["profile_id_#{profile.id}"]["#{wbs_activity_elt.name}"] = value
+                end
               end
             end
           end
@@ -1261,7 +1281,11 @@ module ViewsWidgetsHelper
       #  # get all project's wbs-project_elements
       wbs_activity_elements = wbs_activity.wbs_activity_elements
       wbs_activity_elements.each do |wbs_activity_elt|
-        effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+        mp_ratio_element = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id,
+                                                                              pbs_project_element_id: pbs_project_element.id, selected: true,
+                                                                              wbs_activity_element_id: wbs_activity_elt.id).first
+        #effort_breakdown_stacked_bar_dataset["#{wbs_activity_elt.name.parameterize.underscore}"] = Array.new
+        effort_breakdown_stacked_bar_dataset["#{mp_ratio_element.name_to_show.parameterize.underscore}"] = Array.new
       end
     else
       probable_est_value = estimation_value.send("string_data_probable")
@@ -1280,18 +1304,15 @@ module ViewsWidgetsHelper
 
       wbs_activity.wbs_activity_elements.each do |wbs_activity_elt|
         if wbs_activity_elt.is_childless? #!= wbs_activity_root
-          #mp_ratio_element = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id)
+          mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
 
           activity_value = 0
           level_estimation_values = probable_est_value
           if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
-            activity_value = 0 #chart_data << ["#{wbs_activity_elt.name}", 0]
+            activity_value = 0
           else
             wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
             if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
-
-              #chart_data << ["#{wbs_activity_elt.name}", convert(wbs_value.to_f, @current_organization)]
-              ###activity_value = convert(wbs_value.to_f, @current_organization)
 
               if view_widget.use_organization_effort_unit == true
                 # use the organization effort unit
@@ -1301,12 +1322,12 @@ module ViewsWidgetsHelper
                 activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
               end
             else
-              #chart_data << ["#{wbs_activity_elt.name}", convert_with_precision(wbs_value.to_f, user_number_precision, true)]
               activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
             end
           end
 
-          chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
+          #chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
+          chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '.').to_f]
 
         end
       end
@@ -1383,15 +1404,17 @@ module ViewsWidgetsHelper
       end
     end
 
-    ###module_project.wbs_activity.wbs_activity_elements.each do |wbs_activity_elt|
     current_wbs_activity_elements = module_project.wbs_activity.wbs_activity_elements.arrange(:order => :position)
+    module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
     WbsActivityElement.sort_by_ancestry(current_wbs_activity_elements).each do |wbs_activity_elt|
+      mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
+
       #For wbs-activity-completion node consistency
       completion_consistency = ""
       title = ""
       res << "<tr>
                 <td>
-                  <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> <strong>#{wbs_activity_elt.name}</strong></span>
+                  <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> <strong>#{mp_ratio_element.name_to_show}</strong></span>
                 </td>"
 
       levels.each do |level|

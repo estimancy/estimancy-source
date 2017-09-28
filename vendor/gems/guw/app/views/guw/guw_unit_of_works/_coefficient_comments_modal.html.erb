@@ -12,7 +12,7 @@
 
   <div class="modal-header modal-drag">
     <h4 class="modal-title">
-      Commentaire du coefficient <%= guw_coefficient.name%> obligatoire
+      Commentaire du coefficient <%= guw_coefficient.name %> obligatoire
     </h4>
   </div>
   <div class="modal-body">
@@ -26,17 +26,30 @@
         <%= I18n.t(:comments) %>
       </b>
     </label>
-    <% if @value.to_f == guw_coefficient_element.value.to_f %>
-      <%= text_area_tag "comments", "", class: "attribute_note_area", rows: 4 %>
-    <% else %>
-      <%= text_area_tag "comments", ceuw.nil? ? "" : ceuw.comments, class: "attribute_note_area", rows: 4 %>
-    <% end %>
+
+    <%= text_area_tag "comments", ceuw.nil? ? "" : ceuw.comments, class: "attribute_note_area", rows: 4  %>
 
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
-    <button type="submit" class="btn btn-default">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:cancel) %></button>
+    <button type="submit" class="btn btn-default submit_comments" <%= ceuw.nil? ? 'disabled' : (ceuw.comments.blank? ? 'disabled' : '') %>>
       <%= I18n.t(:save) %>
     </button>
   </div>
 <% end %>
+
+<script>
+  $(".attribute_note_area").keyup(function(e) {
+    var empty = false;
+    $(".attribute_note_area").each(function() {
+      if ($(this).val().length == 0) {
+        empty = true;
+      }
+    });
+    if (empty) {
+      $(".submit_comments").attr('disabled', 'disabled');
+    } else {
+      $(".submit_comments").removeAttr('disabled');
+    }
+  });
+</script>

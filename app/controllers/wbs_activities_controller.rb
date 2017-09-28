@@ -341,6 +341,7 @@ class WbsActivitiesController < ApplicationController
     @module_project = current_module_project
     @wbs_activity = @module_project.wbs_activity
     module_project_attributes = @module_project.pemodule.pe_attributes
+    number_precision = user_number_precision
 
     # Get selected Ratio
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
@@ -673,40 +674,53 @@ class WbsActivitiesController < ApplicationController
 
             #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
-            # ["low", "most_likely", "high"].each do |level|
-            #   if @wbs_activity.three_points_estimation?
-            #     ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-            #     effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
-            #                                                             @ratio_reference, just_changed_values, retained_effort_level[level],
-            #                                                             retained_cost_level[level], initialize_calculation)
-            #
-            #     theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results = effort_breakdown.calculate_estimations
-            #   end
-            #
-            #   @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
-            #
-            #   level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
-            #   @results["string_data_#{level}"] = level_estimation_value
-            #
-            #
-            #   #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
-            #   @module_project_ratio_elements.each do |mp_ratio_element|
-            #     element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
-            #
-            #     if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
-            #       element_level_estimation_value = nil
-            #     else
-            #       element_level_estimation_value = element_level_estimation_value
-            #     end
-            #     mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
-            #
-            #     if mp_ratio_element.changed?
-            #       mp_ratio_element.save
-            #     end
-            #   end
-            # end
+            ["low", "most_likely", "high"].each do |level|
+              if @wbs_activity.three_points_estimation?
+                ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
+                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
+                                                                        @ratio_reference, just_changed_values, retained_effort_level[level],
+                                                                        retained_cost_level[level], initialize_calculation)
+                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
+              else
+                #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
+                ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
+              end
+
+              ###@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("get_#{est_val.pe_attribute.alias}") }
+              @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
+
+              level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
+              @results["string_data_#{level}"] = level_estimation_value
 
 
+              #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
+              @module_project_ratio_elements.each do |mp_ratio_element|
+                element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
+                if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
+                  element_level_estimation_value = nil
+                else
+                  element_level_estimation_value = element_level_estimation_value
+                end
+                mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+
+                # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
+                elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
+                mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
+                if initialize_calculation == true
+                  mp_ratio_element.send("comments=", nil)
+                end
+
+                # Then update retained values if necessary
+                #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
+                #if element_retained_mp_value.nil?
+                #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
+                #end
+
+                if mp_ratio_element.changed?
+                  mp_ratio_element.save
+                end
+              end
+            end
             #=========== END Save results in the Module-Project Ratio Elements  ===================
 
             WbsActivityElement.rebuild_depth_cache!
@@ -1129,6 +1143,7 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header ? 1 : 0 ],
+                      [I18n.t(:average_rate_wording), @wbs_activity.average_rate_wording ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
                       ["#{I18n.t(:profiles_list)} : ", ""]]
@@ -1460,7 +1475,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1480,7 +1495,7 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 7  ### Ligne des profiles
+                      if index <= 8  ### Ligne des profiles
                         attr_name = model_sheet_order["#{index}".to_sym]
                         #begin
                           if attr_name != "wbs_organization_profiles"

@@ -1,0 +1,2 @@
+$("#organization_projects").html("");
+$("#organization_projects").html("<%= j(render :partial => 'organizations/organization_projects', object: [@organization, @projects]) %>");

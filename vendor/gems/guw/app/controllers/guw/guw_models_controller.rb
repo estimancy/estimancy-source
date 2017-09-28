@@ -192,35 +192,37 @@ class Guw::GuwModelsController < ApplicationController
 
               tab.each_with_index do |row, i|
                 if i >= 1 && !row.nil?
-                  guw_output = Guw::GuwOutput.create(name: row[0],
-                                                     output_type: row[1],
-                                                     guw_model_id: @guw_model.id,
-                                                     allow_intermediate_value: (row[2] == 0) ? false : true,
-                                                     allow_subtotal: (row[3] == 0) ? false : true,
-                                                     standard_coefficient: row[4],
-                                                     display_order: row[5],
-                                                     unit: row[6])
+                  unless row[0].blank?
+                    guw_output = Guw::GuwOutput.create(name: row[0],
+                                                       output_type: row[1],
+                                                       guw_model_id: @guw_model.id,
+                                                       allow_intermediate_value: (row[2] == 0) ? false : true,
+                                                       allow_subtotal: (row[3] == 0) ? false : true,
+                                                       standard_coefficient: row[4],
+                                                       display_order: row[5],
+                                                       unit: row[6])
 
-                  attr = PeAttribute.where(name: guw_output.name,
-                                           alias: guw_output.name.underscore.gsub(" ", "_"),
-                                           description: guw_output.name,
-                                           guw_model_id: guw_output.guw_model_id).first_or_create!
-
-                  pm = Pemodule.where(alias: "guw").first
-
-                  am = AttributeModule.where(pe_attribute_id: attr.id,
-                                             pemodule_id: pm.id,
-                                             in_out: "both",
+                    attr = PeAttribute.where(name: guw_output.name,
+                                             alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
+                                             description: guw_output.name,
                                              guw_model_id: guw_output.guw_model_id).first_or_create!
 
-                  @guw_model.module_projects.each do |module_project|
-                    ['input', 'output'].each do |in_out|
-                      mpa = EstimationValue.create(pe_attribute_id: attr.id,
-                                                   module_project_id: module_project.id,
-                                                   in_out: in_out,
-                                                   string_data_low: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_most_likely: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_high: { :pe_attribute_name => @guw_output.name })
+                    pm = Pemodule.where(alias: "guw").first
+
+                    am = AttributeModule.where(pe_attribute_id: attr.id,
+                                               pemodule_id: pm.id,
+                                               in_out: "both",
+                                               guw_model_id: guw_output.guw_model_id).first_or_create!
+
+                    @guw_model.module_projects.each do |module_project|
+                      ['input', 'output'].each do |in_out|
+                        mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                                     module_project_id: module_project.id,
+                                                     in_out: in_out,
+                                                     string_data_low: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_high: { :pe_attribute_name => @guw_output.name })
+                      end
                     end
                   end
 
@@ -342,10 +344,13 @@ class Guw::GuwModelsController < ApplicationController
           end
         end
       end
-
     end
-    redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
 
+    if @guw_model.nil?
+      redirect_to :back
+    else
+      redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
+    end
   end
 
   def import_old_config
@@ -1798,5 +1803,50 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     redirect_to :back
+  end
+
+  # Affiche le modele de données
+  def show_data_model
+    @module_project = ModuleProject.find(params[:module_project_id])
+    @guw_model = @module_project.guw_model #current_module_project.guw_model
+    component_id = params[:component_id] #current_component
+    module_project_id = params[:module_project_id]
+
+    @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: component_id, module_project_id: module_project_id).all
+
+    # Create and Get data from Guw_unit_work
+    @word_trees_data_model = [['Phrases']]
+    @unit_of_work_groups.each_with_index do |uowg, j|
+      #uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).where("guw_guw_types.name IN (?)", ["ILF", "GDI"]).order("display_order ASC, name ASC").each_with_index do |guow, i|
+      #uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).where(guw_guw_types: { name: ["ILF", "GDI"]}).order("display_order ASC, name ASC").each_with_index do |guow, i|
+      uowg.guw_unit_of_works.includes(:guw_type).where(guw_guw_types: { name: ["ILF", "GDI", "EIF", "GDE"]}).each_with_index do |guow, i|
+        comments = guow.comments.split(",")
+        unless comments.empty?
+          comments.each do |comment|
+            comment = comment.lstrip
+
+            if comment.blank?
+              final_comment = ""
+            else
+              #comment_without_special_char = comment.gsub(/[^0-9a-zA-Z. û ]/,'')
+              #final_comment = comment_without_special_char.blank? ? "" : comment_without_special_char.gsub(' ', '_')
+              #final_comment = ActiveSupport::Inflector.transliterate(comment.downcase.gsub(/[^0-9a-zA-Z. û ]/,'').gsub(/\s/,"_"))
+              final_comment = ActiveSupport::Inflector.transliterate(comment.downcase.gsub(/\s/,"_"))
+            end
+
+            #guow_name = guow.name.blank? ? "" : guow.name.gsub(' ', '_')
+            guow_name = guow.name.blank? ? "" : ActiveSupport::Inflector.transliterate( guow.name.downcase.gsub(/\s/,"_") )
+            if final_comment.blank?
+              @word_trees_data_model << ["Data #{guow.guw_type.name.upcase} #{guow_name}"]
+            else
+              @word_trees_data_model << ["Data #{guow.guw_type.name.upcase} #{guow_name} #{final_comment}"]
+            end
+          end
+
+        end
+      end
+    end
+
+    @word_trees_data_model
   end
 end

@@ -96,6 +96,25 @@ module ProjectsHelper
     end
   end
 
+  def convert_wbs_activity_value_without_round(v, effort_unit_coefficient)
+    if v.nil?
+      nil
+    else
+      unless v.class == Hash
+        begin
+          value = v.to_f
+          (value / effort_unit_coefficient.to_f)
+        rescue
+          0
+        end
+      else
+        0
+      end
+    end
+  end
+
+
+
   #Conversion en fonction des seuils et de la précision de l'utilisateur #> 12.12300 (si precision = 5)
   def convert(v, organization)
     unless v.class == Hash
@@ -1193,11 +1212,11 @@ module ProjectsHelper
     #elsif est_val_pe_attribute.alias == "cost"
     elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
       unless value.class == Hash
-        "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
+        "#{convert_with_precision(value, precision, true)} #{get_attribute_unit(est_val_pe_attribute)}"
         end
     elsif est_val_pe_attribute.alias == "remaining_defects" || est_val_pe_attribute.alias == "introduced_defects"
       unless value.class == Hash
-        "#{convert_with_precision(value, 2, true)}"
+        "#{convert_with_precision(value, precision, true)}"
       end
     elsif est_val_pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
       ge_model = module_project.ge_model

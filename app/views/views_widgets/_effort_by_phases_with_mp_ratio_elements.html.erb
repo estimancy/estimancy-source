@@ -37,6 +37,7 @@
     </th>
   </tr>
 
+  <% number_precision = user_number_precision %>
   <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
     <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
     <% if mp_ratio_element %>
@@ -46,7 +47,7 @@
       <tr>
         <td>
         <span class='tree_element_in_out' title='<%= title %>' style='margin-left:<%= mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>em;'>
-          <%= wbs_activity_elt.name %>
+           <%= mp_ratio_element.name_to_show %> <%#= wbs_activity_elt.name %>
         </span>
         </td>
         <% levels.each do |level| %>
@@ -57,16 +58,16 @@
             <%=
                 if mp_ratio_element.selected
                     if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
-                        level_value.nil? ? "-" : "#{convert_with_precision(level_value, user_number_precision, true)} #{wbs_unit}"
+                        level_value.nil? ? "-" : "#{convert_with_precision(level_value, number_precision, true)} #{wbs_unit}"
                     else
                       # for Effort attribute
                       if view_widget.use_organization_effort_unit == true
                         # use organization effort unit
-                        # "#{convert_with_precision(convert(level_value, @project.organization), user_number_precision, true)} #{@wbs_unit}"
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}"
+                        # "#{convert_with_precision(convert(level_value, @project.organization), number_precision, true)} #{@wbs_unit}"
+                        level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
                       else
                         # use module instance effort unit
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}"
+                        level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), number_precision, true)} #{wbs_unit}"
                       end
                     end
                 else

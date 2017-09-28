@@ -18,10 +18,10 @@
 
   <tr style="background-color: #eeeeee;">
     <td></td>
-      <% selected_inline_columns.each do |column| %>
-        <td>
-          <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
-        </td>
+    <% selected_inline_columns.each do |column| %>
+      <td>
+        <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
+      </td>
       <% end %>
     <td></td>
   </tr>
@@ -66,7 +66,7 @@
 
           <% if (can? :delete_project, project) || (can? :manage, project) %>
             <% if can_delete_estimation?(project) %>
-              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete'), method: "POST") %>
+              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
             <% end %>
           <% end %>
         </td>

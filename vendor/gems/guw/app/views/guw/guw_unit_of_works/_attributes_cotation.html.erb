@@ -62,7 +62,7 @@
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td>
-                <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value  %>
+                <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
               </td>
 
               <% if @guw_model.three_points_estimation == true %>
@@ -72,11 +72,43 @@
               <% end %>
 
               <td>
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
+                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
               </td>
+
+              <script>
+                $(".ml").on('focus', function(e) {
+                  $(".submit_cotation").attr('disabled', 'disabled');
+                  $(".comments").keyup(function(e) {
+                    if ($(this).val().length == 0) {
+                      $(".submit_cotation").attr('disabled', 'disabled');
+                    } else {
+                      $(".submit_cotation").removeAttr('disabled');
+                    }
+                  });
+                });
+
+                $(".ml").on('blur', function(k) {
+                  var val = $(this).closest('td').next().find('input').val();
+                  if (val.length == 0) {
+                    $(".submit_cotation").attr('disabled', 'disabled');
+                  } else {
+                    $(".submit_cotation").removeAttr('disabled');
+                  }
+
+                  valu = $(this).val();
+                  dv = $(this).attr("default_value");
+
+                  console.log(valu);
+                  console.log(dv);
+                  if(valu == dv){
+                    $(".submit_cotation").removeAttr('disabled');
+                  }
+
+                });
+              </script>
 
               <% if @guw_model.three_points_estimation == true %>
                 <td>
@@ -95,18 +127,8 @@
         <%= I18n.t(:close_without_calculate) %>
     </button>
     <% if can? :execute_estimation_plan, @project %>
-      <button type="submit" class="btn btn-default"> <%= I18n.t(:calculate) %></button>
+      <button type="submit" class="btn btn-default submit_cotation"> <%= I18n.t(:calculate) %></button>
     <% end %>
   </div>
 
 <% end %>
-
-<script>
-  $(document).ready(function(){
-    $("#cotation input").on("blur", function(){
-      $('#cotation > tbody  > tr').each(function() {
-//
-      });
-    });
-  });
-</script>

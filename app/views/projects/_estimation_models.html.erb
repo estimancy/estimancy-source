@@ -64,7 +64,7 @@
               <% end %>
 
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to('', confirm_deletion_path(project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
+                <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
               <% end %>
             </td>
           </tr>

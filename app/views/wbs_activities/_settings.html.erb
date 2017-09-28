@@ -486,10 +486,14 @@
           }
       }
       else{
-        $("#retained_effort_most_likely_" + val).val("");
-        $("#retained_cost_most_likely_" + val).val("");
+          $("#retained_effort_most_likely_" + val).val("");
+          $("#retained_cost_most_likely_" + val).val("");
+
+          $("#retained_effort_most_likely_visible_" + val).val("");
+          $("#retained_cost_most_likely_visible_" + val).val("");
       }
     });
+
 
     //Tester si toutes les phases modifiées ont des commentaires
     //Hide WBS dashboard header if hide_wbs_header is true
@@ -504,36 +508,115 @@
         }
     }
 
-    // Disable the Calculate button if at least one element is flagged and
-    // if comment_required_if_modifiable is true
-      var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
-      if(comment_required_if_modifiable == "true"){
-          var nb_flagged = $("td.flagged.red").length;
-          var disable_calculate_button = false;
 
-          if (nb_flagged >= 1){
-              $("td.flagged.red").find('span').each(function(){
-                  var mp_ratio_element_id = $(this).data('mp_ratio_element');
+  $(function() {
 
-                  if((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)){
-                      // Get the element comments
-                      var comments = $(this).data('comments');
-                      if (comments == ""){
-                          disable_calculate_button = true;
-                          return false;
+      $("form").bind("keypress", function (e) {
+          if (e.keyCode == 13) {
+              event.preventDefault();
+              //alert('Un ENTER ne suffit pas.\nCliquez sur le bouton Soumettre.'+ event.keyCode);
+              return false;
+          }
+      });
+
+      $('input.retained_effort_visible, input.retained_cost_visible').change(function() {
+          var new_value = $(this).val();  //parseFloat($(this).val().replace("," , "."));
+          console.log("Nouvelle valeur = "+ new_value);
+
+          var element_id = $(this).attr('id');
+          var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
+          var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
+
+          //$('#'+corresponding_element_id).val(new_value);
+          $('#'+corresponding_element_id).val(new_value.replace(/\s/g, ''));
+      });
+
+
+      var clkBtn = "";
+      $('input[type="submit"]').click(function(evt) {
+          clkBtn = evt.target.name;
+      });
+
+      $("#save_effort_breakdown_form").on("submit",function(e) {
+
+          var clicked_button = clkBtn;
+          var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
+
+          if(comment_required_if_modifiable == "true"){
+              var disable_calculate_button = false;
+
+              //$("td.flagged").find('span').each(function(i, td_object){
+              if(clicked_button == "update_calculation") {
+                  $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
+
+                      var mp_ratio_element_id = $(td_object).data('mp_ratio_element');
+                      //alert("mp_ratio_element_id = " + mp_ratio_element_id);
+                      var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
+                      var cost_is_modifiable = $(td_object).data('cost_is_modifiable');
+                      //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+
+                      if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
+                          if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
+
+                              //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+                              $('input.retained_effort[data-mp_ratio_element_id="' + mp_ratio_element_id + '"]').each(function (j, retained_elt) {
+                                  //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
+
+                                  var retained_value = $(retained_elt).val();
+                                  var element_id = $(retained_elt).attr('id');
+                                  var element_name = $(retained_elt).attr('name');
+
+                                  var theoretical_effort = $('#theoretical_effort_most_likely_' + mp_ratio_element_id).val();
+                                  var retained_effort = $('#retained_effort_most_likely_' + mp_ratio_element_id).val();
+                                  var theoretical_cost = $('#theoretical_cost_most_likely_' + mp_ratio_element_id).val();
+                                  var retained_cost = $('#retained_cost_most_likely_' + mp_ratio_element_id).val();
+                                  //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+
+                                  if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
+                                      // Get the element comments
+                                      //var comments = $(td_object).data('comments');
+                                      var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).text();
+                                      //alert(" Comments = " + comments);
+                                      //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
+
+                                      if((comments === "") || (comments === "-") || (comments === "_")){
+                                          //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+
+                                          disable_calculate_button = true;
+
+                                          if (theoretical_effort != retained_effort)
+                                              $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+
+                                          if (theoretical_cost != retained_cost)
+                                              $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+
+                                          //return false; //pour arreter la boucle
+                                      }
+                                  }
+                              });
+                          }
                       }
-                  }
-              });
-          }
+                  });
+              }
+              if (disable_calculate_button == true){
+                  $("#warning_add_comments").show();
+                  $("#warning_add_comments").css('display', 'block');
 
-          if (disable_calculate_button == true){
-              $("#wbs_calculate_button").attr('disabled', 'disabled');
-              $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
-          }else{
-              $("#wbs_calculate_button").removeAttr('disabled');
-              $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+                  alert("Veuillez renseigner un commentaire pour valeurs modifiées de chacune des phases");
+                  //$("#wbs_calculate_button").attr('disabled', 'disabled');
+                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
+
+                  return false; // cancel submit
+              }else{
+                  //alert("not need comment" + " " + disable_calculate_button);
+                  //$("#wbs_calculate_button").removeAttr('disabled');
+                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+                  return true; // allow submit
+              }
           }
-      }
+      });
+  });
+
 
   })
 </script>
