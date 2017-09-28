@@ -21,9 +21,7 @@
   </tr>
 
   <% @projects.each_with_index do |project, index| %>
-    <%# if can_see_estimation?(project) %>
       <tr>
-
         <% selected_inline_columns.each do |column| %>
           <%= column_content(@pfs, column, project, @fields_coefficients) %>
         <% end %>
@@ -60,27 +58,16 @@
         </td>
       </tr>
     <% end %>
-  <%# end %>
-
-  <!--<tr>-->
-    <!--<th colspan="100" class="pager form-horizontal">-->
-      <!--<%# will_paginate @projects, page_links: false %>-->
-    <!--</th>-->
-  <!--</tr>-->
 
   <tr>
     <th colspan="100" class="pager form-horizontal">
       <% if @min == 0 %>
-          <%= I18n.t(:previous) %>  -
+        <%= I18n.t(:previous) %>  -
       <% else %>
         <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
       <% end %>
 
-      <%# if @projects.size < @object_per_page %>
-        <%#= I18n.t(:next) %>
-      <%# else %>
-        <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
-      <%# end %>
+      <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
     </th>
   </tr>
 
