@@ -1,4 +1,3 @@
-<%#= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
 <div class="tabs">
   <ul>
     <li><a href="#tabs-group"><%= I18n.t(:estimation_setting) %></a></li>
@@ -27,9 +26,6 @@
               <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
             <% end %>
 
-            <% if can? :create_project_from_scratch, Project %>
-                <%= submit_tag I18n.t('multiple_delete'), :class => 'btn' %>
-            <% end %>
           </td>
         </tr>
       </table>
