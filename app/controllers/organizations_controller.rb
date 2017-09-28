@@ -409,14 +409,14 @@ class OrganizationsController < ApplicationController
 
       workbook = RubyXL::Workbook.new
       worksheet = workbook.worksheets[0]
-      indice = 0
+      indice = -1
       ([I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
         I18n.t(:selected),
         I18n.t(:name),
         I18n.t(:description),
-        "Type",
+        "Type d'UO",
         "Facteur sans nom 1",
         "Facteur sans nom 2",
         "Facteur sans nom 3",
@@ -425,20 +425,22 @@ class OrganizationsController < ApplicationController
         I18n.t(:tracability),
         I18n.t(:results),
         I18n.t(:retained_result)] +
-          @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val|
+          @guw_model.orders.delete_if{|k,v| v.blank? }.map{|j| j.first }).each_with_index do |val|
+            indice += 1
             if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
               guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
               unless guw_coefficient.nil?
                 if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
                   worksheet.add_cell(0, indice, val)
+                  worksheet.add_cell(0, indice+1, "#{val} (par défaut)")
                   indice += 1
-                  worksheet.add_cell(0, indice, "#{val} (par défaut)")
+                else
+                  worksheet.add_cell(0, indice, val)
                 end
               end
             else
               worksheet.add_cell(0, indice, val)
             end
-            indice += 1
           end
 
       ind = 0
@@ -477,12 +479,10 @@ class OrganizationsController < ApplicationController
             worksheet.add_cell(ind, 12, guow.tracking)
             worksheet.add_cell(ind, 13, (guow.size.is_a?(Hash) ? '' : guow.size))
             worksheet.add_cell(ind, 14, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
-            worksheet.add_cell(ind, 15, guow.intermediate_weight)
 
-            gap = @guw_model.guw_coefficients.where(coefficient_type: ["Pourcentage", "Coefficient"]).all.size
-
-            indice = 0
-            @guw_model.orders.sort_by { |k, v| v.to_f }.map{|i| i.first }.each_with_index do |val|
+            indice = -1
+            @guw_model.orders.delete_if{|k,v| v.blank? }.map{|j| j.first }.each_with_index do |val|
+              indice += 1
               if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
                 guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
                 unless guw_coefficient.nil?
@@ -493,30 +493,30 @@ class OrganizationsController < ApplicationController
 
                     if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+indice, "#{ceuw.percent.to_f.round(2)}")
+                        worksheet.add_cell(ind, 15+indice, "#{ceuw.percent.to_f.round(2)}")
                         indice += 1
-                        worksheet.add_cell(ind, 16+indice, "888")
+                        gce = guw_coefficient.guw_coefficient_elements.first
+                        worksheet.add_cell(ind, 15+indice, gce.nil? ? '-' : gce.value.to_f)
                       end
                     else
                       unless ceuw.nil?
-                        worksheet.add_cell(ind, 16+indice, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                        worksheet.add_cell(ind, 15+indice, ceuw.nil? ? '-' : ceuw.guw_coefficient_element.nil? ? '-' : ceuw.guw_coefficient_element.name)
                       end
-                      indice += 1
                     end
                   end
                 end
 
-              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-                guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
+              elsif Guw::GuwOutput.where(name: val).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(name: val, guw_model_id: @guw_model.id).first
                 unless guw_output.nil?
-                  unless guow.guw_type.nil?
-                    worksheet.add_cell(ind, 16 + indice, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
-                  end
+                  worksheet.add_cell(ind, 15 + indice, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
                 end
-                indice += 1
-              elsif i[0] == "Coeff. de Complexité"
-                worksheet.add_cell(ind, 16 + indice, cplx)
-                indice += 1
+              elsif val == "Coeff. de Complexité"
+                worksheet.add_cell(ind, 15 + indice, cplx)
+              elsif val == "Critère"
+                worksheet.add_cell(ind, 15 + indice, "-")
+              else
+                worksheet.add_cell(ind, 15 + indice, "-")
               end
 
             end
