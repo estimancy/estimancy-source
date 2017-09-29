@@ -2198,10 +2198,6 @@ public
     set_page_title I18n.t(:project_global_parameters)
   end
 
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
-  end
-
   def default_work_element_type
     wet = @current_organization.work_element_types.first_or_create(name: "Default", alias: "default")
   end
@@ -2381,7 +2377,7 @@ public
 
   def sort
     @organization = @current_organization
-    @projects = @organization.projects
+    @projects = @organization.organization_estimations
     k = params[:f]
     s = params[:s]
 
@@ -2429,6 +2425,14 @@ public
       else
     end
 
+    res = []
+    @projects.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[0..50].nil? ? [] : res[0..50]
+
     build_footer
   end
 
@@ -2446,7 +2450,7 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    @projects = @organization.organization_estimations.order("created_at ASC")
+    @organization_estimations = @organization.organization_estimations.order("created_at ASC")
 
     unless params.blank?
       params.each do |k,v|
@@ -2499,19 +2503,27 @@ public
         end
       end
 
-      @projects = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC")
+      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
 
     end
 
-    @projects = build_footer
+    res = []
+    @organization_estimations.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[0..50].nil? ? [] : res[0..50]
+
+    build_footer
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)
 
      if start_number == 0
-       projects = organization_estimations.limit(desired_size)
+       projects = organization_estimations.take(desired_size)
      else
-       project = organization_estimations.all[start_number-1] #|| organization_estimations.last
+       project = organization_estimations[start_number-1] #|| organization_estimations.last
        begin
          projects = project.next_ones_by_date(desired_size)
        rescue
@@ -2590,11 +2602,6 @@ public
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
-
-    projects = check_for_projects(@min, @object_per_page, @projects)
-
-    return projects.reverse
-
   end
 
   #Checkout the project : create a new version of the project

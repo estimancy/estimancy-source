@@ -36,19 +36,19 @@ class Ability
       can :manage_master_data, :all
     end
 
-    if projects.nil?
-      organization_projects = []
-    else
-      if estimation_view == true
-        if projects.empty?
-          organization_projects = []
-        else
-          organization_projects = projects
-        end
-      else
-        organization_projects = projects
-      end
-    end
+    # if projects.nil?
+    #   organization_projects = []
+    # else
+    #   if estimation_view == true
+    #     if projects.empty?
+    #       organization_projects = []
+    #     else
+          organization_projects = organization.organization_estimations
+    #     end
+    #   else
+    #     organization_projects = projects
+    #   end
+    # end
 
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups
@@ -236,7 +236,8 @@ class Ability
             prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
 
             prj_scrt_project_security_level_permissions.each do |permission|
-              organization_projects.each do |project|
+              organization_projects.each do |op|
+                project = op.project
                 if permission.alias == "manage" and permission.category == "Project"
                   can :manage, project, estimation_status_id: esgr_estimation_status_id
                 else
