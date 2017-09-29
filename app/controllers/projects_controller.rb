@@ -2536,9 +2536,10 @@ public
          if organization_project.nil?
            break
          else
-           if can?(:see_project, organization_project.project, estimation_status_id: organization_project.estimation_status_id)
-             result << organization_project
-             last_project = organization_project
+           project = organization_project.project
+           if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
+             result << project
+             last_project = project
            end
            i += 1
          end
