@@ -36,7 +36,20 @@ class Ability
       can :manage_master_data, :all
     end
 
-    organization_projects = organization.projects
+    if projects.nil?
+      organization_projects = []
+    else
+      if estimation_view == true
+        if projects.empty?
+          organization_projects = []
+        else
+          organization_projects = projects
+        end
+      else
+        organization_projects = projects
+      end
+    end
+
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups
 
