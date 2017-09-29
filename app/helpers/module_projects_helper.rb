@@ -30,9 +30,9 @@ module ModuleProjectsHelper
     maximum = nil #0.0
     attribute_alias = estimation_value.pe_attribute.alias.to_sym
     #puts "RESULT_FOR_PROBABLE = #{results}"
-    min_estimation_value = results[:low]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym]
-    most_likely_estimation_value = results[:most_likely]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym]
-    high_estimation_value = results[:high]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym]
+    min_estimation_value = results[:low]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym] rescue nil
+    most_likely_estimation_value = results[:most_likely]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym] rescue nil
+    high_estimation_value = results[:high]["#{estimation_value.pe_attribute.alias}_#{estimation_value.module_project_id.to_s}".to_sym] rescue nil
 
     # Get the current estimation Module
     estimation_pemodule = estimation_value.module_project.pemodule

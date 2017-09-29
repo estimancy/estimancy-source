@@ -121,7 +121,9 @@ module EffortBreakdown
                           element_tjm += warp.organization_profile.cost_per_hour.to_f * warp.ratio_value.to_f / 100
                         end
                     end
-                    tjm_per_phase[element.id] = (tjm_is_nil == true) ? nil : element_tjm
+                    tjm_value = (tjm_is_nil == true) ? nil : element_tjm
+                    tjm_per_phase[element.id] =
+                    @efforts_tjm_costs_per_phase_profiles[element.id][:tjm] = tjm_value
                 end
             end
         end
@@ -163,16 +165,25 @@ module EffortBreakdown
     end
 
     def calculate_estimations
-      @theoretical_effort = get_theoretical_effort
-      @theoretical_cost = get_theoretical_cost
-
-      if @initialize_calculation == true
-        @retained_effort = @theoretical_effort
-        @retained_cost = @theoretical_cost
-      else
+      get_theoretical_effort
+      if @initialize_calculation != true
         @retained_effort = get_effort
-        @retained_cost = get_cost
+        #@retained_cost = get_cost
       end
+
+      #29092017
+      # @theoretical_effort = get_theoretical_effort
+      # @theoretical_cost = get_theoretical_cost
+      #
+      # if @initialize_calculation == true
+      #   @retained_effort = @theoretical_effort
+      #   @retained_cost = @theoretical_cost
+      # else
+      #   @retained_effort = get_effort
+      #   @retained_cost = get_cost
+      # end
+
+
 
       # Calculate the Efforts and Costs per Phases Profiles
       # @theoretical_effort_by_phase_profiles = get_efforts_by_phase_profiles(@theoretical_effort)
@@ -186,10 +197,15 @@ module EffortBreakdown
       #   @retained_cost_by_phase_profiles = get_costs_by_phase_profiles(@retained_cost)
       # end
 
-      global_results = @efforts_tjm_costs_per_phase_profiles
+      ###global_results = @efforts_tjm_costs_per_phase_profiles
 
       # Return all results
-      theoretical_effort, theoretical_cost, retained_effort,retained_effort, global_results = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost, @efforts_tjm_costs_per_phase_profiles]
+      #theoretical_effort, theoretical_cost, retained_effort,retained_cost, global_results, tjm_per_phase = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost, @efforts_tjm_costs_per_phase_profiles, @tjm_per_phase]
+      { theoretical_effort: @theoretical_effort, theoretical_cost: @theoretical_cost,
+        retained_effort: @retained_effort, retained_cost: @retained_cost,
+        global_results: @efforts_tjm_costs_per_phase_profiles,
+        tjm_per_phase: @tjm_per_phase
+      }
     end
 
 
@@ -240,15 +256,12 @@ module EffortBreakdown
       cost = Hash.new {|h,k| h[k]=[]}
       output_cost = Hash.new
 
-      wbs_activity = @module_project.wbs_activity
-      wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
-
       efforts_man_month = @retained_effort
       if efforts_man_month.empty?
         efforts_man_month = get_effort
       end
 
-      wbs_activity_root.children.each do |node|
+      @wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
         sorted_node_elements = node.subtree.order('ancestry_depth desc')
 
@@ -258,7 +271,7 @@ module EffortBreakdown
 
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
-          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable ###&& @changed_retained_cost_values[element.id].to_f != 0
+          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable
             if @changed_retained_cost_values[element.id].blank?
               output_cost[element.id] = @theoretical_cost[element.id]
             else
@@ -269,31 +282,6 @@ module EffortBreakdown
               # Calculate cost for each profile
               tjm = @tjm_per_phase[element.id]
               output_cost[key] = tjm.nil? ? nil : (tjm * value)
-
-              #### TEST ###
-              # tmp = Hash.new
-              # wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
-              # unless wbs_activity_ratio_element.nil?
-              #   wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-              #     if value.nil? || warp.ratio_value.nil?
-              #       tmp[warp.organization_profile.id] = nil
-              #     else
-              #       tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
-              #     end
-              #   end
-              # end
-              #
-              # tmp.each do |k, v|
-              #   cost[key] << tmp[k]
-              # end
-              #
-              # if cost[key].empty?
-              #   output_cost[key] = nil
-              # else
-              #   output_cost[key] = cost[key].compact.sum
-              # end
-              #### FIN TEST ###
-
             else
               output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
             end
@@ -303,7 +291,7 @@ module EffortBreakdown
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
+      output_cost[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_cost)
 
       output_cost
     end
@@ -313,16 +301,12 @@ module EffortBreakdown
       cost = Hash.new {|h,k| h[k]=[]}
       output_cost = Hash.new
 
-      wbs_activity = @module_project.wbs_activity
-
-      wbs_activity_root = wbs_activity.wbs_activity_elements.first.root
-
       efforts_man_month = @theoretical_effort
       if efforts_man_month.empty?
         efforts_man_month = get_theoretical_effort
       end
 
-      wbs_activity_root.children.each do |node|
+      @wbs_activity_root.children.each do |node|
         # Sort node subtree by ancestry_depth
         sorted_node_elements = node.subtree.order('ancestry_depth desc')
 
@@ -365,7 +349,7 @@ module EffortBreakdown
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_cost[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_cost)
+      output_cost[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_cost)
 
       output_cost
     end
@@ -380,15 +364,18 @@ module EffortBreakdown
 
 
     # Debut fonction recursive pour calcul de l'effort
-    def get_effort_and_cost_per_phase_as_subtree(element, output_effort_from_formula, theoretical_or_retained)
+    def get_effort_and_cost_per_phase_as_subtree_SAVE(element, output_effort_from_formula, theoretical_or_retained)
 
       efforts_tjm_costs = @efforts_tjm_costs_per_phase_profiles
 
       if element.is_childless?
         begin
+          #effort
           effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
           effort = effort_value.nil? ? nil : effort_value.to_f
-          cost = effort.nil? ? nil : (effort.to_f * efforts_tjm_costs[element.id][:tjm].to_f)
+          #cost
+          tjm = efforts_tjm_costs[element.id][:tjm]
+          cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
         rescue
           effort = 0
           cost = 0
@@ -404,8 +391,8 @@ module EffortBreakdown
           if (mp_ratio_element && mp_ratio_element.selected==true)
             child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
 
-            effort += child_effort
-            cost += child_cost
+            effort += child_effort unless child_effort.nil?
+            cost += child_cost unless child_cost.nil?
           end
         end
       end
@@ -421,6 +408,92 @@ module EffortBreakdown
       [effort, cost]
     end
 
+    # get retained efforts and costs
+    def get_effort_and_cost_per_phase_as_subtree(element, output_effort_from_formula, theoretical_or_retained)
+      efforts_tjm_costs = @efforts_tjm_costs_per_phase_profiles
+      mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+      tjm = efforts_tjm_costs[element.id][:tjm]
+
+      # effort value
+      if mp_ratio_element.selected == true
+        effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
+      else
+        effort_value = output_effort_from_formula[:"#{element.id}"]
+      end
+
+      # get the retained values
+      if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
+
+        changed_retained_effort_value = @changed_retained_effort_values[element.id]
+        if changed_retained_effort_value.blank?
+          begin
+            effort = effort_value.nil? ? nil : effort_value.to_f
+          rescue
+            effort = 0.0
+          end
+        else
+          effort = changed_retained_effort_value.to_f
+        end
+
+        #cost
+        if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
+          changed_retained_cost_value =  @changed_retained_cost_values[element.id]
+          if changed_retained_cost_value.blank?
+            cost = @theoretical_cost[element.id]
+          else
+            cost = changed_retained_cost_value.to_f
+          end
+        else
+          cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
+        end
+
+      elsif element.is_childless?
+        begin
+          #effort
+          effort = effort_value.nil? ? nil : effort_value.to_f
+
+          #cost
+          if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
+            changed_retained_cost_value =  @changed_retained_cost_values[element.id]
+            if changed_retained_cost_value.blank?
+              cost = @theoretical_cost[element.id]
+            else
+              cost = changed_retained_cost_value.to_f
+            end
+          else
+            cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
+          end
+
+        rescue
+          effort = 0
+          cost = 0
+        end
+
+      else
+        effort = 0.0
+        cost = 0.0
+        element.children.each do |node|
+          # Test if node is selected or not ( it will be taken in account only if the node is selected)
+          #mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
+          if (mp_ratio_element && mp_ratio_element.selected==true)
+            child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
+
+            effort += child_effort unless child_effort.nil?
+            cost += child_cost unless child_cost.nil?
+          end
+        end
+      end
+
+      efforts_tjm_costs[element.id]["#{theoretical_or_retained}_effort".to_sym] = effort
+      efforts_tjm_costs[element.id]["#{theoretical_or_retained}_cost".to_sym] = cost
+
+      if theoretical_or_retained == "theoretical"
+        efforts_tjm_costs[element.id][:retained_effort] = effort
+        efforts_tjm_costs[element.id][:retained_cost] = cost
+      end
+
+      [effort, cost]
+    end
 
 
     # Use the changed retained effort values before reexcuting
@@ -497,7 +570,7 @@ module EffortBreakdown
 
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
-                  if formula.blank? ###if current_output_effort.nil? || formula.blank?
+                  if formula.blank?
                     output_effort[element.id] = nil
                   else
                     formula_expression = "#{formula.downcase}"
@@ -506,10 +579,6 @@ module EffortBreakdown
                     rescue
                       normalized_formula_expression = nil
                     end
-
-                    ####element_effort = calculator.evaluate(normalized_formula_expression)
-                    ####output_effort[element.id] = element_effort
-                    ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
 
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name.downcase
@@ -560,64 +629,72 @@ module EffortBreakdown
         end
       end
 
+      #29092017
       # Utiliser la recursivite pour optimiser les acces et recuperer les valeurs de l'effort
-      @wbs_activity_root.children.each do |node|
-        # Sort node subtree by ancestry_depth
-        sorted_node_elements = node.subtree.order('ancestry_depth desc')
-        sorted_node_elements.each do |element|
-          if output_effort[element.id].nil?
-            mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
-            current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
-            if !mp_ratio_element.selected == true
-              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
-            end
-
-            if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable
-              if @changed_retained_effort_values[element.id].blank? #|| @changed_retained_effort_values[element.id].to_f == 0
-                begin
-                  output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
-                rescue
-                  output_effort[element.id] = 0.0
-                end
-              else
-                output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
-              end
-            else
-              # Element effort is really computed only on leaf element
-              if element.is_childless? || element.has_new_complement_child?
-                #output_effort[element.id] = current_effort_with_dependencies ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
-                begin
-                  output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
-                rescue
-                  output_effort[element.id] = 0.0 ###output_effort_with_dependencies[:"#{element.phase_short_name}"]
-                end
-              else
-                output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
-              end
-            end
-          end
-
-          #calculate output_cost
-          @efforts_tjm_costs_per_phase_profiles[element.id][:retained_effort] = output_effort[element.id]
-        end
-      end
-
-      # After treating all leaf and node elements, the root element is going to compute by aggregation
-      output_effort[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_effort)
-
-      @efforts_tjm_costs_per_phase_profiles[@wbs_activity_root.id][:retained_effort] = output_effort[@wbs_activity_root.id]
-
-      # Global output efforts
-      # if @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
-      #   output_effort = calculate_formula_expression(current_output_effort, wbs_activity_root, @ratio, @changed_mp_ratio_element_ids, calculator)
-      # else
-      #   output_effort = calculate_formula_expression(current_output_effort, wbs_activity_root, @ratio, @changed_mp_ratio_element_ids, calculator, output_effort)
+      # @wbs_activity_root.children.each do |node|
+      #   # Sort node subtree by ancestry_depth
+      #   sorted_node_elements = node.subtree.order('ancestry_depth desc')
+      #
+      #   sorted_node_elements.each do |element|
+      #     if output_effort[element.id].nil?
+      #       mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+      #
+      #       current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
+      #       if !mp_ratio_element.selected == true
+      #         current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
+      #       end
+      #
+      #       if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable
+      #         if @changed_retained_effort_values[element.id].blank?
+      #           begin
+      #             output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f
+      #           rescue
+      #             output_effort[element.id] = 0.0
+      #           end
+      #         else
+      #           output_effort[element.id] = @changed_retained_effort_values[element.id].to_f
+      #         end
+      #       else
+      #         # Element effort is really computed only on leaf element
+      #         if element.is_childless? || element.has_new_complement_child?
+      #           begin
+      #             output_effort[element.id] = current_effort_with_dependencies.nil? ? nil : current_effort_with_dependencies.to_f
+      #           rescue
+      #             output_effort[element.id] = 0.0
+      #           end
+      #         else
+      #           output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
+      #         end
+      #       end
+      #     end
+      #
+      #     #calculate output_cost
+      #     @efforts_tjm_costs_per_phase_profiles[element.id][:retained_effort] = output_effort[element.id]
+      #   end
       # end
 
-      output_effort
+      #29092017
+      # After treating all leaf and node elements, the root element is going to compute by aggregation
+      # output_effort[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_effort)
+      # @efforts_tjm_costs_per_phase_profiles[@wbs_activity_root.id][:retained_effort] = output_effort[@wbs_activity_root.id]
+
+
+      # calculate theoretical and retained effort value
+      get_effort_and_cost_per_phase_as_subtree(@wbs_activity_root, output_effort_with_dependencies, "retained")
+
+      @wbs_activity_root.subtree.each do |element|
+        if output_effort[element.id].nil?
+          output_effort[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:retained_effort]
+        else
+          @efforts_tjm_costs_per_phase_profiles[element.id][:retained_effort] = output_effort[element.id]
+        end
+
+        @retained_cost[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:retained_cost]
+      end
+
+      @retained_effort = output_effort
 
     end
-
 
 
 
@@ -753,7 +830,6 @@ module EffortBreakdown
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name.downcase
                     unless element_phase_short_name.nil?
-                      ####calculator.store(:"#{element_phase_short_name}" => element_effort)
                       if mp_ratio_element.selected == true
                         all_formula_to_compute[:"#{element_phase_short_name.downcase}"] = normalized_formula_expression
                       else
@@ -764,7 +840,6 @@ module EffortBreakdown
                   end
                 end
               else
-
                 parent_element_formula = ""
                 element.children.each do |child|
                   child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
@@ -804,6 +879,7 @@ module EffortBreakdown
         #
         #     if output_effort[element.id].nil?
         #       mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+
         #       current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
         #       if !mp_ratio_element.selected == true
         #         current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
@@ -824,17 +900,24 @@ module EffortBreakdown
         #   end
         # end
 
-
+         # calculate theoretical and retained effort value
          get_effort_and_cost_per_phase_as_subtree(@wbs_activity_root, output_effort_with_dependencies, "theoretical")
+
         @wbs_activity_root.subtree.each do |element|
           if output_effort[element.id].nil?
             output_effort[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_effort]
           else
             @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_effort] = output_effort[element.id]
           end
+
+          #update theoretical_effort and retained_effort
+          ###@theoretical_effort[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_effort]
+          @retained_effort[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:retained_effort]
+          @theoretical_cost[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_cost]
+          @retained_cost[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:retained_cost]
         end
 
-        output_effort
+        @theoretical_effort = output_effort
     end
 
 

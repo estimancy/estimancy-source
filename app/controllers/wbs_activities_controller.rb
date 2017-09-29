@@ -538,7 +538,16 @@ class WbsActivitiesController < ApplicationController
     end
 
 
-    global_results = {low:  HashWithIndifferentAccess.new, most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new}
+    wbs_effort_breakdown_results = HashWithIndifferentAccess.new
+    global_results = { low:  HashWithIndifferentAccess.new, most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new }
+    theoretical_efforts = { low:  HashWithIndifferentAccess.new, most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new }
+    theoretical_costs = { low:  HashWithIndifferentAccess.new,   most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new }
+    retained_efforts = { low:  HashWithIndifferentAccess.new, most_likely:  HashWithIndifferentAccess.new, high: HashWithIndifferentAccess.new }
+    retained_costs = { low:  HashWithIndifferentAccess.new,   most_likely:  HashWithIndifferentAccess.new, high:  HashWithIndifferentAccess.new }
+
+    #@tmp_results = HashWithIndifferentAccess.new
+    #@results = HashWithIndifferentAccess.new
+    #level_estimation_value = HashWithIndifferentAccess.new
 
     #===== Appel Effort breakdown avec calcul de toutes des valeurs des attributs (theoretical_effot, retained_effort, theoretical_cost, retained_cost) =====
     # MOST_LIKELY
@@ -546,23 +555,39 @@ class WbsActivitiesController < ApplicationController
                                                             @ratio_reference, just_changed_values, retained_effort_level["most_likely"],
                                                             retained_cost_level["most_likely"], initialize_calculation)
 
-    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:most_likely] = effort_breakdown.calculate_estimations
+    #theoretical_efforts[:most_likely], theoretical_costs[:most_likely], retained_efforts[:most_likely], retained_costs[:most_likely], global_results[:most_likely], tjm_per_phase = effort_breakdown.calculate_estimations
+    wbs_effort_breakdown_results[:most_likely] = effort_breakdown.calculate_estimations
+    tjm_per_phase = wbs_effort_breakdown_results[:most_likely][:tjm_per_phase]
 
     if @wbs_activity.three_points_estimation?
       # LOW
       effort_breakdown_low = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values["low"], @ratio_reference, just_changed_values,
                                                                   retained_effort_level["low"], retained_cost_level["low"], initialize_calculation)
-      theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:low] = effort_breakdown_low.calculate_estimations
+      #theoretical_efforts[:low], theoretical_costs[:low], retained_efforts[:low], retained_costs[:low], global_results[:low], tjm_per_phase = effort_breakdown_low.calculate_estimations
+      wbs_effort_breakdown_results[:low] = effort_breakdown_low.calculate_estimations
 
       # HIGH
       effort_breakdown_high = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values["high"], @ratio_reference, just_changed_values,
                                                                   retained_effort_level["high"], retained_cost_level["high"], initialize_calculation)
-      theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, global_results[:high] = effort_breakdown_high.calculate_estimations
+      #theoretical_efforts[:high], theoretical_costs[:high], retained_efforts[:high], retained_costs[:high], global_results[:high], tjm_per_phase = effort_breakdown_high.calculate_estimations
+      wbs_effort_breakdown_results[:high] = effort_breakdown_high.calculate_estimations
+    else
+      #global_results[:low] = global_results[:most_likely]
+      #global_results[:high] = global_results[:most_likely]
+
+      wbs_effort_breakdown_results[:low] = wbs_effort_breakdown_results[:most_likely]
+      wbs_effort_breakdown_results[:high] = wbs_effort_breakdown_results[:most_likely]
     end
 
-
-
     ###TESTS
+
+    ["low", "most_likely", "high"].each do |level|
+      theoretical_efforts[level.to_sym] = wbs_effort_breakdown_results[level.to_sym][:theoretical_efforts]
+      theoretical_costs[level.to_sym] =   wbs_effort_breakdown_results[level.to_sym][:theoretical_costs]
+      retained_efforts[level.to_sym] = wbs_effort_breakdown_results[level.to_sym][:retained_efforts]
+      retained_costs[level.to_sym] = wbs_effort_breakdown_results[level.to_sym][:retained_costs]
+      global_results[level.to_sym] = wbs_effort_breakdown_results[level.to_sym][:global_results]
+    end
 
     global_results_low = global_results[:low]
     global_results_most_likely = global_results[:most_likely]
@@ -571,6 +596,8 @@ class WbsActivitiesController < ApplicationController
 
     #=========== Save results in the Module-Project-Ratio-Elements THEORETICAL and RETAINED values
     @module_project_ratio_elements.each do |mp_ratio_element|
+
+      wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
       wbs_activity_element_id = mp_ratio_element.wbs_activity_element_id
 
       low_values = global_results_low[wbs_activity_element_id]
@@ -581,6 +608,39 @@ class WbsActivitiesController < ApplicationController
       retained_effort_probable =  compute_probable_value(low_values[:retained_effort], most_likely_values[:retained_effort], high_value[:retained_effort])
       theoretical_cost_probable = compute_probable_value(low_values[:theoretical_cost], most_likely_values[:theoretical_cost], high_value[:theoretical_cost])
       retained_cost_probable = compute_probable_value(low_values[:retained_cost], most_likely_values[:retained_cost], high_value[:retained_cost])
+
+      # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
+      elt_tjm = tjm_per_phase[wbs_activity_element_id]
+      tjm = elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient)
+      comments = mp_ratio_element.comments
+      if initialize_calculation == true
+        comments = nil
+      end
+
+      # if value is manually updated, update the flagged attribute
+      flagged = mp_ratio_element.flagged
+      unless just_changed_values.nil?
+        if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
+          flagged = true
+        end
+      end
+
+      if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
+        theoretical_effort = most_likely_values[:theoretical_effort]
+        retained_effort = most_likely_values[:retained_effort]
+
+        theoretical_cost = most_likely_values[:theoretical_cost]
+        retained_cost = most_likely_values[:retained_cost]
+
+        if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
+          flagged = true
+        else
+          flagged = false
+        end
+      else
+        flagged = false
+      end
+
 
       mp_ratio_element.update_attributes(theoretical_effort_low: low_values[:theoretical_effort],
                                          theoretical_effort_most_likely: most_likely_values[:theoretical_effort],
@@ -600,40 +660,19 @@ class WbsActivitiesController < ApplicationController
                                          retained_cost_low: low_values[:retained_cost],
                                          retained_cost_most_likely: most_likely_values[:retained_cost],
                                          retained_cost_high: high_value[:retained_cost],
-                                         retained_cost_probable: retained_cost_probable )
+                                         retained_cost_probable: retained_cost_probable,
+
+                                         tjm: tjm,
+                                         comments: comments,
+                                         flagged: flagged
+      )
 
 
-      if mp_ratio_element.changed?
-        mp_ratio_element.save
-      end
+      # if mp_ratio_element.changed?
+      #   mp_ratio_element.save
+      # end
     end
 
-
-
-    ["low", "most_likely", "high"].each do |level|
-
-      #@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
-      #level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
-      #@results["string_data_#{level}"] = level_estimation_value
-
-
-      #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
-      @module_project_ratio_elements.each do |mp_ratio_element|
-        level_result_element = level_result[mp_ratio_element.wbs_activity_element_id]
-        mp_ratio_element.update_attributes(theoretical_effort: level_result_element[:theoretical_effort],
-                                           retained_effort: level_result_element[:theoretical_effort],
-                                           theoretical_cost: level_result_element[:theoretical_cost],
-                                           retained_cost: level_result_element[:retained_cost])
-
-        mp_ratio_element.send("theoretical_effort_#{level}=", element_level_estimation_value)
-
-
-        if mp_ratio_element.changed?
-          mp_ratio_element.save
-        end
-      end
-
-    end
 
     ###FIN TESTS
 
@@ -654,7 +693,6 @@ class WbsActivitiesController < ApplicationController
 
             # The "Cost" attribute = "retained_cost" and the "effort" attribute is "retained_effort"
             pe_attribute_alias = est_val.pe_attribute.alias
-
             mp_pe_attribute_alias = pe_attribute_alias
             if pe_attribute_alias.in?("effort", "cost")
               mp_pe_attribute_alias = "retained_#{pe_attribute_alias}"
@@ -675,52 +713,49 @@ class WbsActivitiesController < ApplicationController
             #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
             ["low", "most_likely", "high"].each do |level|
-              if @wbs_activity.three_points_estimation?
-                ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
-                effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
-                                                                        @ratio_reference, just_changed_values, retained_effort_level[level],
-                                                                        retained_cost_level[level], initialize_calculation)
-                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
-              else
-                #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
-                ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
-              end
+              #28092017
+              # if @wbs_activity.three_points_estimation?
+              #   ###eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values][level].to_f * effort_unit_coefficient, @ratio_reference)
+              #   effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
+              #                                                           @ratio_reference, just_changed_values, retained_effort_level[level],
+              #                                                           retained_cost_level[level], initialize_calculation)
+              #   theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
+              # else
+              #   #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
+              #   ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
+              # end
 
-              ###@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("get_#{est_val.pe_attribute.alias}") }
-              @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{current_module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
-
-              level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{current_module_project.id.to_s}".to_sym]
+              #28092017
+              #@tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{@module_project.id}".to_sym => effort_breakdown.send("#{mp_pe_attribute_alias}") }
+              @tmp_results[level.to_sym] = { "#{est_val.pe_attribute.alias}_#{@module_project.id}".to_sym => wbs_effort_breakdown_results[level.to_sym]["#{mp_pe_attribute_alias}".to_sym] }
+              level_estimation_value[@pbs_project_element.id] = @tmp_results[level.to_sym]["#{est_val.pe_attribute.alias}_#{@module_project.id.to_s}".to_sym]
               @results["string_data_#{level}"] = level_estimation_value
 
 
               #=========== Save results in the Module-Project Ratio Elements THEORETICAL (and RETAINED VALUE if necessary) ===============
-              @module_project_ratio_elements.each do |mp_ratio_element|
-                element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
-                if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
-                  element_level_estimation_value = nil
-                else
-                  element_level_estimation_value = element_level_estimation_value
-                end
-                mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+              # @module_project_ratio_elements.each do |mp_ratio_element|
+              #   element_level_estimation_value = level_estimation_value[@pbs_project_element.id][mp_ratio_element.wbs_activity_element_id]
+              #   if element_level_estimation_value.is_a?(Float) && element_level_estimation_value.nan?
+              #     element_level_estimation_value = nil
+              #   else
+              #     element_level_estimation_value = element_level_estimation_value
+              #   end
+              #   mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+              #
+              #   # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
+              #   elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
+              #   mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
+              #   if initialize_calculation == true
+              #     mp_ratio_element.send("comments=", nil)
+              #   end
+              #
+              #   if mp_ratio_element.changed?
+              #     mp_ratio_element.save
+              #   end
+              # end
 
-                # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
-                elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
-                mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
-                if initialize_calculation == true
-                  mp_ratio_element.send("comments=", nil)
-                end
-
-                # Then update retained values if necessary
-                #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
-                #if element_retained_mp_value.nil?
-                #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
-                #end
-
-                if mp_ratio_element.changed?
-                  mp_ratio_element.save
-                end
-              end
             end
+
             #=========== END Save results in the Module-Project Ratio Elements  ===================
 
             WbsActivityElement.rebuild_depth_cache!
@@ -786,9 +821,6 @@ class WbsActivitiesController < ApplicationController
 
                     #if est_val.pe_attribute.alias == "cost" or "theoretical_cost"
                     if est_val.pe_attribute.alias.in?("theoretical_cost", "cost")
-                      ####eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
-                      ####efforts_man_month = eb.get_effort  ### efforts_man_month = eb.get_theoretical_effort
-
                       effort_man_month_attribute = "retained_effort"
                       if est_val.pe_attribute.alias == "theoretical_cost"
                         effort_man_month_attribute = "theoretical_effort"
@@ -805,10 +837,11 @@ class WbsActivitiesController < ApplicationController
                             if efforts_man_month[key].nil?
                               tmp[warp.organization_profile.id] = nil
                             else
-                              tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)
+                              tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * effort_unit_coefficient) * (warp.ratio_value.to_f / 100)
                             end
                           end
                         end
+
                         res[key] = tmp
 
                         current_activity_element = WbsActivityElement.find(key)
@@ -955,40 +988,42 @@ class WbsActivitiesController < ApplicationController
               mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
               # if value is manually updated, update the flagged attribute
-              unless just_changed_values.nil?
-                if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
-                  mp_ratio_element.flagged = true
-                end
-              end
+              #28092017
+              # unless just_changed_values.nil?
+              #   if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
+              #     mp_ratio_element.flagged = true
+              #   end
+              # end
 
               if mp_ratio_element.changed?
                 mp_ratio_element.save
               end
             end
 
-            # Update flagged Effort or Cost values
-            @module_project_ratio_elements.each do |mp_ratio_element|
-              wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
-              if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
-                theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
-                retained_effort = mp_ratio_element.send("retained_effort_most_likely")
-
-                theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
-                retained_cost = mp_ratio_element.send("retained_cost_most_likely")
-
-                if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
-                  mp_ratio_element.flagged = true
-                else
-                  mp_ratio_element.flagged = false
-                end
-              else
-                mp_ratio_element.flagged = false
-              end
-
-              if mp_ratio_element.changed?
-                mp_ratio_element.save
-              end
-            end
+            # 28092017
+            # # Update flagged Effort or Cost values
+            # @module_project_ratio_elements.each do |mp_ratio_element|
+            #   wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
+            #   if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
+            #     theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+            #     retained_effort = mp_ratio_element.send("retained_effort_most_likely")
+            #
+            #     theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+            #     retained_cost = mp_ratio_element.send("retained_cost_most_likely")
+            #
+            #     if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
+            #       mp_ratio_element.flagged = true
+            #     else
+            #       mp_ratio_element.flagged = false
+            #     end
+            #   else
+            #     mp_ratio_element.flagged = false
+            #   end
+            #
+            #   if mp_ratio_element.changed?
+            #     mp_ratio_element.save
+            #   end
+            # end
 
           elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("E1", "E2", "E3", "E4")
             in_result = Hash.new

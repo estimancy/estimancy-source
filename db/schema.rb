@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170927100444) do
+ActiveRecord::Schema.define(:version => 20170929094130) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -265,6 +265,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   create_table "estimation_values", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "module_project_id"
     t.integer  "pe_attribute_id"
     t.text     "string_data_low"
@@ -287,6 +288,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
+  add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], :name => "organization_estimation_values"
 
   create_table "expert_judgement_instance_estimates", :force => true do |t|
     t.integer "pbs_project_element_id"
@@ -840,6 +842,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.float    "intermediate_weight"
     t.float    "intermediate_percent"
     t.string   "url"
+    t.text     "cplx_comments"
   end
 
   create_table "guw_guw_weightings", :force => true do |t|
@@ -934,8 +937,10 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "pbs_project_element_id"
     t.integer  "module_project_id"
+    t.integer  "wbs_activity_id"
     t.integer  "wbs_activity_ratio_id"
     t.integer  "wbs_activity_ratio_element_id"
     t.integer  "wbs_activity_element_id"
@@ -975,8 +980,11 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
+  add_index "module_project_ratio_elements", ["organization_id", "module_project_id", "pbs_project_element_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_module_project_ratio_elements"
 
   create_table "module_project_ratio_variables", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.integer  "module_project_id"
     t.integer  "pbs_project_element_id"
     t.integer  "wbs_activity_ratio_id"
@@ -991,7 +999,10 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.boolean  "is_used_in_ratio_calculation"
   end
 
+  add_index "module_project_ratio_variables", ["organization_id", "module_project_id", "pbs_project_element_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_ratio_variable_id"], :name => "organization_module_project_ratio_variables"
+
   create_table "module_projects", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "pemodule_id"
     t.integer  "project_id"
     t.integer  "position_x"
@@ -1017,6 +1028,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.integer  "operation_model_id"
     t.integer  "skb_model_id"
   end
+
+  add_index "module_projects", ["organization_id", "pemodule_id", "project_id"], :name => "organization_module_projects"
 
   create_table "module_projects_pbs_project_elements", :id => false, :force => true do |t|
     t.integer "module_project_id"
@@ -1100,6 +1113,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.integer  "copy_id"
   end
 
+  add_index "organization_profiles", ["organization_id"], :name => "index_organization_profiles_on_organization_id"
+
   create_table "organization_profiles_wbs_activities", :id => false, :force => true do |t|
     t.integer  "organization_profile_id"
     t.integer  "wbs_activity_id"
@@ -1108,6 +1123,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], :name => "wbs_activity_profiles_index", :unique => true
+  add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], :name => "wbs_activity_organization_profiles"
 
   create_table "organization_technologies", :force => true do |t|
     t.integer  "organization_id"
@@ -1228,6 +1244,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.integer  "operation_model_id"
     t.integer  "operation_input_id"
   end
+
+  add_index "pe_attributes", ["alias"], :name => "index_pe_attributes_on_alias"
 
   create_table "pe_wbs_projects", :force => true do |t|
     t.string   "name"
@@ -1427,6 +1445,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
 
   create_table "projects_users", :id => false, :force => true do |t|
     t.integer  "project_id"
@@ -1800,9 +1819,11 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.string   "average_rate_wording"
   end
 
+  add_index "wbs_activities", ["organization_id"], :name => "organization_wbs_activities"
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"
 
   create_table "wbs_activity_elements", :force => true do |t|
+    t.integer  "organization_id"
     t.string   "uuid"
     t.integer  "wbs_activity_id"
     t.string   "name"
@@ -1825,6 +1846,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
+  add_index "wbs_activity_elements", ["wbs_activity_id", "ancestry"], :name => "organization_wbs_activity_elements"
   add_index "wbs_activity_elements", ["wbs_activity_id"], :name => "index_wbs_activity_elements_on_wbs_activity_id"
 
   create_table "wbs_activity_inputs", :force => true do |t|
@@ -1836,6 +1858,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   create_table "wbs_activity_ratio_elements", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.string   "uuid"
     t.integer  "wbs_activity_ratio_id"
     t.integer  "wbs_activity_element_id"
@@ -1859,6 +1883,7 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"
+  add_index "wbs_activity_ratio_elements", ["wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_wbs_activity_ratio_elements"
 
   create_table "wbs_activity_ratio_profiles", :force => true do |t|
     t.integer  "wbs_activity_ratio_element_id"
@@ -1872,6 +1897,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
   add_index "wbs_activity_ratio_profiles", ["ancestry"], :name => "index_wbs_activity_ratio_profiles_on_ancestry"
 
   create_table "wbs_activity_ratio_variables", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.integer  "wbs_activity_ratio_id"
     t.string   "name"
     t.text     "description"
@@ -1882,7 +1909,10 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.boolean  "is_used_in_ratio_calculation"
   end
 
+  add_index "wbs_activity_ratio_variables", ["wbs_activity_ratio_id"], :name => "organization_wbs_activity_ratio_variables"
+
   create_table "wbs_activity_ratios", :force => true do |t|
+    t.integer  "organization_id"
     t.string   "uuid"
     t.string   "name"
     t.text     "description"
@@ -1903,6 +1933,8 @@ ActiveRecord::Schema.define(:version => 20170927100444) do
     t.boolean  "allow_add_new_phase"
     t.boolean  "comment_required_if_modifiable"
   end
+
+  add_index "wbs_activity_ratios", ["organization_id", "wbs_activity_id"], :name => "organization_wbs_activity_ratios"
 
   create_table "wbs_project_elements", :force => true do |t|
     t.integer  "pe_wbs_project_id"
