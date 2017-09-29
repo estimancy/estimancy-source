@@ -2365,6 +2365,8 @@ public
     @organization = Organization.find(params[:organization_id])
     @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
 
+    @current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
+
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
 
