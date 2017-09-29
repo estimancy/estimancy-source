@@ -24,7 +24,7 @@ class Ability
   include CanCan::Ability
 
   #Initialize Ability then load permissions
-  def initialize(user, organization, projects, nb_project = 1, estimation_view = false)
+  def initialize(user, organization, projects, nb_project = 1, estimation_view = true)
 
     #Uncomment in order to authorize everybody to manage all the app
     if Rails.env == "test" || user.super_admin == true
@@ -40,11 +40,11 @@ class Ability
     #   organization_projects = []
     # else
     #   if estimation_view == true
-    #     if projects.empty?
-    #       organization_projects = []
-    #     else
+        if estimation_view == false
+          organization_projects = projects
+        else
           organization_projects = organization.organization_estimations
-    #     end
+        end
     #   else
     #     organization_projects = projects
     #   end
@@ -237,7 +237,7 @@ class Ability
 
             prj_scrt_project_security_level_permissions.each do |permission|
               organization_projects.each do |op|
-                project = op.project
+                project = op.is_a?(Project) ? op : op.project
                 if permission.alias == "manage" and permission.category == "Project"
                   can :manage, project, estimation_status_id: esgr_estimation_status_id
                 else
