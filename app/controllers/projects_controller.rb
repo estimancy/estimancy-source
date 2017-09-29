@@ -2497,12 +2497,72 @@ public
         end
       end
 
-      @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
+      @projects = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC")
 
     end
 
-    build_footer
+    @projects = build_footer
   end
+
+  private def check_for_projects(start_number, desired_size, organization_estimations)
+
+     if start_number == 0
+       projects = organization_estimations.limit(desired_size)
+     else
+       project = organization_estimations.all[start_number-1] #|| organization_estimations.last
+       begin
+         projects = project.next_ones_by_date(desired_size)
+       rescue
+         projects = []
+       end
+     end
+
+     # Ability.new(user, organization, project, nb_project = 1, estimation_view = false, first_iteration=false)
+     @current_ability = Ability.new(current_user, @current_organization, projects, desired_size, true)
+
+     last_project = projects.last
+     result = []
+     i = 0
+     # nb_total = 0
+
+     estimations_abilities = lambda do |projects|
+       i = 0
+       while result.size < desired_size && !projects.empty? do
+         organization_project = projects[i]
+         # nb_total += 1
+
+         if organization_project.nil?
+           break
+         else
+           if can?(:see_project, organization_project.project, estimation_status_id: organization_project.estimation_status_id)
+             result << organization_project
+             last_project = organization_project
+           end
+           i += 1
+         end
+       end
+
+       # if nb_total >= 12100
+       #   puts "Test"
+       #   puts "nb_total = #{nb_total}"
+       # end
+
+       if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
+         return result
+       else
+         next_projects = last_project.next_ones_by_date(desired_size)
+         unless next_projects.all.empty?
+           @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
+           i = 0
+           estimations_abilities.call(next_projects)
+         end
+       end
+     end
+
+     estimations_abilities.call(projects)
+
+     result
+   end
 
   private def build_footer
     @object_per_page = (current_user.object_per_page || 10)
@@ -2520,13 +2580,18 @@ public
 
     fields = @organization.fields
 
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:project_id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
       @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
     end
 
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+
+    projects = check_for_projects(@min, @object_per_page, @projects)
+
+    return projects.reverse
+
   end
 
   #Checkout the project : create a new version of the project

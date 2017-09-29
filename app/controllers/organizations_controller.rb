@@ -521,17 +521,17 @@ class OrganizationsController < ApplicationController
 
             end
 
-            @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
-              unless guowa.nil?
-                worksheet.add_cell(ind, 15 + @guw_model.orders.size + i + gap, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
-              end
-            end
+            # @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+            #   guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
+            #   unless guowa.nil?
+            #     worksheet.add_cell(ind, 15 + @guw_model.orders.size + i + gap, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+            #   end
+            # end
           end
 
-          @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
-            worksheet.add_cell(0, 15 + @guw_model.orders.size + i + gap, guw_attribute.name)
-          end
+          # @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
+          #   worksheet.add_cell(0, 15 + @guw_model.orders.size + i + gap, guw_attribute.name)
+          # end
         end
       end
 
