@@ -2583,7 +2583,7 @@ public
 
     fields = @organization.fields
 
-    ProjectField.where(project_id: @projects.map(&:project_id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
       @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
     end
 
