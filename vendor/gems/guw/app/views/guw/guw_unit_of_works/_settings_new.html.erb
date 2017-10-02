@@ -344,12 +344,11 @@
                         %>
 
                         <td class="span2">
-                          <% if has_element == true %>
+                          <%# if has_element == true %>
                             <% v = elmnts.flatten.compact.inject(&:*) %>
                             <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-                          <% else %>
-                            -
-                          <% end %>
+                          <%# else %>
+                          <%# end %>
                         </td>
 
                       <% end %>
