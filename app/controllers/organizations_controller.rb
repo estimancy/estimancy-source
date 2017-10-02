@@ -730,8 +730,16 @@ class OrganizationsController < ApplicationController
     @pfs = {}
 
     fields = @organization.fields
+    views_widgets = []
+    @projects.map(&:module_projects).each do |module_projects|
+      module_projects.each do |mp|
+        views_widgets << mp.views_widgets
+      end
+    end
 
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq,
+                       field_id: fields.map(&:id).uniq,
+                       views_widget_id: views_widgets.flatten.map(&:id).uniq).each do |pf|
       @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
     end
 
