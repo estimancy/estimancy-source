@@ -1174,8 +1174,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.save
           else
 
-            unless params['guw_coefficient'].nil?
-              unless params['guw_coefficient']["#{guw_unit_of_work.id}"].nil?
+            # unless params['guw_coefficient'].nil?
+            #   unless params['guw_coefficients']["#{guw_unit_of_work.id}"].nil?
                 begin
                   unless params['deported_guw_coefficient'].nil?
                     ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
@@ -1185,8 +1185,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 rescue
                   ce = nil
                 end
-              end
-            end
+              # end
+            # end
 
             if ce.nil?
               ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
@@ -1203,18 +1203,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                guw_coefficient_element_id: ce.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
-              begin
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
-                                                                  guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
-                                                                                                                         guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                         guw_coefficient_id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-              rescue
-              end
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
+                                                                guw_unit_of_work_id: guw_unit_of_work).first_or_create(guw_coefficient_id: guw_coefficient,
+                                                                                                                       guw_unit_of_work_id: guw_unit_of_work)
 
               unless ceuw.nil?
                 unless params['deported_guw_coefficient'].nil?
-                  v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                  unless params['deported_guw_coefficient']["#{guw_unit_of_work.id}"].nil?
+                    v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                    ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                  end
                 else
                   v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
                   ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i

@@ -329,7 +329,6 @@
                         <%
                            elmnts = []
                            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
-
                              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                                guw_coefficient_id: guw_coefficient.id).first
                              unless ceuw.nil?
