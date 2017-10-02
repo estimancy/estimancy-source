@@ -166,9 +166,9 @@ module EffortBreakdown
 
     def calculate_estimations
       get_theoretical_effort
+
       if @initialize_calculation != true
-        @retained_effort = get_effort
-        #@retained_cost = get_cost
+        get_effort
       end
 
       #29092017
@@ -236,7 +236,6 @@ module EffortBreakdown
       efforts_man_month
     end
 
-
     # Proc that calculate each profile cost
     calculate_warp_profile_cost = Proc.new do |element|
       tmp = Hash.new
@@ -286,13 +285,11 @@ module EffortBreakdown
               output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
             end
           end
-
         end
       end
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
       output_cost[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_cost)
-
       output_cost
     end
 
@@ -318,29 +315,6 @@ module EffortBreakdown
             # Calculate cost for each profile
             tjm = @tjm_per_phase[element.id]
             output_cost[key] = tjm.nil? ? nil : (tjm * value)
-
-            # tmp = Hash.new
-            # wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
-            # unless wbs_activity_ratio_element.nil?
-            #   wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-            #     if efforts_man_month[key].nil? || warp.ratio_value.nil?
-            #       tmp[warp.organization_profile.id] = nil
-            #     else
-            #       tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
-            #     end
-            #   end
-            # end
-            #
-            # tmp.each do |k, v|
-            #   cost[key] << tmp[k]
-            # end
-            #
-            # if cost[key].empty?
-            #   output_cost[key] = nil
-            # else
-            #   output_cost[key] = cost[key].compact.sum
-            # end
-
           else
             output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
@@ -350,7 +324,6 @@ module EffortBreakdown
 
       # After treating all leaf and node elements, the root element is going to compute by aggregation
       output_cost[@wbs_activity_root.id] = compact_array_and_compute_node_value(@wbs_activity_root, output_cost)
-
       output_cost
     end
 
@@ -556,7 +529,7 @@ module EffortBreakdown
         sorted_node_elements.each do |element|
 
           # A Wbs_project_element is only computed is this module if it has a corresponding Ratio table
-          unless element.nil? ####|| element.id.in?(referenced_ratio_activity_element_ids)
+          unless element.nil? 
 
             # Sauf si la valeur de l'élément n'est pas pas encore enregistrée ou que les valeurs retenues ne sont pas à prendre en compte
             if output_effort[element.id].nil?
