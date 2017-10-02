@@ -342,7 +342,7 @@
 
                         <td class="span2">
                           <% v = elmnts.flatten.compact.inject(&:*) %>
-                          <%= link_to v.nil? ? '...' : v.to_f.round(user_number_precision), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                          <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
                         </td>
 
                       <% end %>
