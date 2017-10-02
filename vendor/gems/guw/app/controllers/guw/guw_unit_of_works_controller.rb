@@ -1212,14 +1212,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   unless params['deported_guw_coefficient'].nil?
                     unless params['deported_guw_coefficient']["#{guw_unit_of_work.id}"].nil?
                       v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-                      ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                      unless v.nil?
+                        ceuw.guw_coefficient_element_id = v.to_i
+                      end
                     end
                   else
                     v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-                    ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                    unless v.nil?
+                      ceuw.guw_coefficient_element_id = v.to_i
+                    end
                   end
                 rescue
-                  ceuw.guw_coefficient_element_id = nil
+                  # Ne rien faire
                 end
 
                 ceuw.guw_coefficient_id = guw_coefficient.id

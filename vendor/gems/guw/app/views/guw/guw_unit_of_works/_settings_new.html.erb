@@ -328,12 +328,15 @@
                       <% unless @guw_coefficients.where(deported: true).map(&:id).empty? %>
                         <%
                            elmnts = []
+                           has_element = false
                            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
                              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                                guw_coefficient_id: guw_coefficient.id).first
                              unless ceuw.nil?
                                elm = ceuw.guw_coefficient_element
+                               has_element = false
                                unless elm.nil?
+                                 has_element = true
                                  elmnts << elm.value
                                end
                              end
@@ -341,8 +344,12 @@
                         %>
 
                         <td class="span2">
-                          <% v = elmnts.flatten.compact.inject(&:*) %>
-                          <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                          <% if has_element == true %>
+                            <% v = elmnts.flatten.compact.inject(&:*) %>
+                            <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                          <% else %>
+                            -
+                          <% end %>
                         </td>
 
                       <% end %>
