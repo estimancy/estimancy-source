@@ -54,8 +54,8 @@
       </tr>
 
       <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
-          <% gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
-                                                guw_attribute_id: uowa.guw_attribute.id).first_or_create %>
+        <% gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
+                                              guw_attribute_id: uowa.guw_attribute_id).first_or_create %>
           <tr>
             <% unless guw_type.nil? %>
               <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>

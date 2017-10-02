@@ -1208,15 +1208,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                        guw_unit_of_work_id: guw_unit_of_work)
 
               unless ceuw.nil?
-                unless params['deported_guw_coefficient'].nil?
-                  unless params['deported_guw_coefficient']["#{guw_unit_of_work.id}"].nil?
-                    v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                begin
+                  unless params['deported_guw_coefficient'].nil?
+                    unless params['deported_guw_coefficient']["#{guw_unit_of_work.id}"].nil?
+                      v = params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                      ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                    end
+                  else
+                    v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
                     ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
                   end
-                else
-                  v = params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-                  ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+                rescue
+                  ceuw.guw_coefficient_element_id = nil
                 end
+
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = current_module_project.id
