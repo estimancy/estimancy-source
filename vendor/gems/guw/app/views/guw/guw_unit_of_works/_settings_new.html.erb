@@ -491,7 +491,8 @@
                                      end
                                    end
                                 %>
-                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
+                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]",
+                                                     ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                      style: "width: 45%; #{color}; text-align: right;",
                                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{guw_coefficient.id}_#{results.first.id}",
                                                      readonly: (guw_coefficient.allow_intermediate_value == true),
