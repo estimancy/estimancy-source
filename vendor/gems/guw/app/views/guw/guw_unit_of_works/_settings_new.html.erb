@@ -347,7 +347,7 @@
                           <%# if has_element == true %>
                             <% v = elmnts.flatten.compact.inject(&:*) %>
                             <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-                          <%# else %>                           
+                          <%# else %>
                           <%# end %>
                         </td>
 
@@ -492,7 +492,7 @@
                                    end
                                 %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                     style: "width: 80%; #{color}; text-align: right;",
+                                                     style: "width: 45%; #{color}; text-align: right;",
                                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{guw_coefficient.id}_#{results.first.id}",
                                                      readonly: (guw_coefficient.allow_intermediate_value == true),
                                                      step: 0.001,
@@ -503,7 +503,7 @@
 
                                 <% if guw_coefficient.allow_intermediate_value == true %>
                                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                       style: "width: 80%; text-align: right;",
+                                                       style: "width: 45%; text-align: right;",
                                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                        step: 0.001 %>
                                 <% end %>
