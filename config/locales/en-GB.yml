@@ -1664,3 +1664,4 @@ en-gb:
   comment_required_on_phase: "Please enter a comment for modified values ​​for each phase"
   warning_already_exist: "already exists"
   average_rate_wording: "'Average rate' wording (TJM, THM, ...)"
+  identical_project_field_exists: "An identical favorite field already exists for this project"

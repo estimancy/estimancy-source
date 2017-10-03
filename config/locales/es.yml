@@ -1967,4 +1967,5 @@ es:
   comment_required_on_phase: "Please enter a comment for modified values ​​for each phase"
   warning_already_exist: "already exists"
   average_rate_wording: "'Average rate' column name (TJM, THM, ...)"
+  identical_project_field_exists: "An identical favorite field already exists for this project"
 

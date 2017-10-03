@@ -787,8 +787,18 @@ class OrganizationsController < ApplicationController
 
     fields = @organization.fields
 
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+      ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      begin
+        if pf.project && pf.views_widget
+          if pf.project_id == pf.views_widget.module_project.project_id
+            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
     end
 
     fields.each do |f|
