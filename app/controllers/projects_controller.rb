@@ -2198,10 +2198,6 @@ public
     set_page_title I18n.t(:project_global_parameters)
   end
 
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
-  end
-
   def default_work_element_type
     wet = @current_organization.work_element_types.first_or_create(name: "Default", alias: "default")
   end
@@ -2365,6 +2361,8 @@ public
     @organization = Organization.find(params[:organization_id])
     @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
 
+    @current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
+
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
 
@@ -2379,7 +2377,7 @@ public
 
   def sort
     @organization = @current_organization
-    @projects = @organization.projects
+    @projects = @organization.organization_estimations
     k = params[:f]
     s = params[:s]
 
@@ -2427,6 +2425,14 @@ public
       else
     end
 
+    res = []
+    @projects.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[0..50].nil? ? [] : res[0..50]
+
     build_footer
   end
 
@@ -2444,7 +2450,7 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    @projects = @organization.organization_estimations.order("created_at ASC")
+    @organization_estimations = @organization.organization_estimations.order("created_at ASC")
 
     unless params.blank?
       params.each do |k,v|
@@ -2497,12 +2503,81 @@ public
         end
       end
 
-      @projects = Project.where(id: final_results.inject(&:&)).order("created_at ASC").all
+      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
 
     end
 
+    res = []
+    @organization_estimations.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[0..50].nil? ? [] : res[0..50]
+
     build_footer
   end
+
+  private def check_for_projects(start_number, desired_size, organization_estimations)
+
+     if start_number == 0
+       projects = organization_estimations.take(desired_size)
+     else
+       project = organization_estimations[start_number-1] #|| organization_estimations.last
+       begin
+         projects = project.next_ones_by_date(desired_size)
+       rescue
+         projects = []
+       end
+     end
+
+     # Ability.new(user, organization, project, nb_project = 1, estimation_view = false, first_iteration=false)
+     @current_ability = Ability.new(current_user, @current_organization, projects, desired_size, true)
+
+     last_project = projects.last
+     result = []
+     i = 0
+     # nb_total = 0
+
+     estimations_abilities = lambda do |projects|
+       i = 0
+       while result.size < desired_size && !projects.empty? do
+         organization_project = projects[i]
+         # nb_total += 1
+
+         if organization_project.nil?
+           break
+         else
+           project = organization_project.project
+           if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
+             result << project
+             last_project = project
+           end
+           i += 1
+         end
+       end
+
+       # if nb_total >= 12100
+       #   puts "Test"
+       #   puts "nb_total = #{nb_total}"
+       # end
+
+       if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
+         return result
+       else
+         next_projects = last_project.next_ones_by_date(desired_size)
+         unless next_projects.all.empty?
+           @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
+           i = 0
+           estimations_abilities.call(next_projects)
+         end
+       end
+     end
+
+     estimations_abilities.call(projects)
+
+     result
+   end
 
   private def build_footer
     @object_per_page = (current_user.object_per_page || 10)
