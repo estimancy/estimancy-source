@@ -263,15 +263,17 @@
                    end
 
                    h = Hash[hash_color_priorities.sort.reverse].first
-                   if @guw_type.allow_line_color == true
-                     unless h.nil?
-                       c = h.last
-                       border_color = "6px solid ##{c};"
+                   if @guw_type.nil?
+                     if @guw_type.allow_line_color == true
+                       unless h.nil?
+                         c = h.last
+                         border_color = "6px solid ##{c};"
+                       else
+                         border_color = "6px solid aeaeae;"
+                       end
                      else
                        border_color = "6px solid aeaeae;"
                      end
-                   else
-                     border_color = "6px solid aeaeae;"
                    end
                 %>
 

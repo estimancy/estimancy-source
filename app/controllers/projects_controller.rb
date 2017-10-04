@@ -2377,7 +2377,8 @@ public
 
   def sort
     @organization = @current_organization
-    @projects = @organization.organization_estimations
+    # @projects = @organization.organization_estimations
+    @projects = @organization.projects
     k = params[:f]
     s = params[:s]
 
@@ -2450,7 +2451,8 @@ public
     params.delete("filter_organization_projects_version")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    @projects = @organization.projects.order("created_at ASC")
 
     unless params.blank?
       params.each do |k,v|
