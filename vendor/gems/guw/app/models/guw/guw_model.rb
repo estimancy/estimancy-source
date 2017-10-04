@@ -302,13 +302,13 @@ module Guw
       end
 
       if pe_attribute.alias == "effort" && guw_model.config_type == "old"
-        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f), delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision, locale: user.language.locale)} #{guw_model.effort_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: user.language.locale)} #{guw_model.effort_unit}"
       elsif pe_attribute.alias == "cost" && guw_model.config_type == "old"
-        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision, locale: user.language.locale)} #{guw_model.cost_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: user.language.locale)} #{guw_model.cost_unit}"
       elsif pe_attribute.alias == "retained_size" && guw_model.config_type == "old"
-        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision, locale: user.language.locale)} #{guw_model.retained_size_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: user.language.locale)} #{guw_model.retained_size_unit}"
       else
-        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision, locale: user.language.locale)} #{unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: user.language.locale)} #{unit}"
       end
 
       return res
