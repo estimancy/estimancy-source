@@ -1,42 +1,40 @@
-<%#= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-group"><%= I18n.t(:estimation_setting) %></a></li>
-  </ul>
+<%= form_tag search_path, method: "GET", remote: true do %>
+  <div class="tabs">
+    <ul>
+      <li><a href="#tabs-group"><%= I18n.t(:estimation_setting) %></a></li>
+    </ul>
 
-  <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <%# form_tag confirm_deletion_path, method: "post" do %>
-    <%= form_tag search_path, method: "GET", remote: true do %>
-      <table>
-        <tr>
-          <td>
-            <%= I18n.t(:label_filter_on_projects_version) %>
-            <%= select_tag 'filter_organization_projects_version', options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
-                                                                                       [I18n.t(:label_filter_on_project_version_1),1],
-                                                                                       [I18n.t(:label_filter_on_project_version_3),3],
-                                                                                       [I18n.t(:label_filter_on_project_version_4),4]], :selected => 4),
-                           'data-organization_id' => @organization.id, include_blank: false %>
-          </td>
+    <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+        <table>
+          <tr>
+            <td>
+              <%= I18n.t(:label_filter_on_projects_version) %>
+              <%= select_tag 'filter_organization_projects_version', options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
+                                                                                         [I18n.t(:label_filter_on_project_version_1),1],
+                                                                                         [I18n.t(:label_filter_on_project_version_3),3],
+                                                                                         [I18n.t(:label_filter_on_project_version_4),4]], :selected => 4),
+                             'data-organization_id' => @organization.id, include_blank: false %>
+            </td>
 
-          <td colspan=2 style="text-align:right;">
-            <% if can? :create_project_from_template, Project %>
-              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-            <% end %>
+            <td colspan=2 style="text-align:right;">
+              <% if can? :create_project_from_template, Project %>
+                <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+              <% end %>
 
-            <% if can? :create_project_from_scratch, Project %>
-              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-            <% end %>
+              <% if can? :create_project_from_scratch, Project %>
+                <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
+              <% end %>
 
-            <% if can? :create_project_from_scratch, Project %>
-                <%= submit_tag I18n.t('multiple_delete'), :class => 'btn' %>
-            <% end %>
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+        </table>
 
-      <div id="organization_projects">
-        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-      </div>
-    <% end %>
+        <div id="organization_projects">
+          <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+        </div>
+    </div>
   </div>
-</div>
+
+  <%= submit_tag "recherchez", class: "hide" %>
+
+<% end %>

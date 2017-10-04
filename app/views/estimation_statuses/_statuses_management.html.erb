@@ -36,7 +36,6 @@
           </tr>
       <% end %>
     </tbody>
-    <%= render :partial => 'layouts/footer_table' %>
   </table>
 </div><br>
 
@@ -75,8 +74,8 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
     </div><br>

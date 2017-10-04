@@ -250,7 +250,7 @@ frsncf:
 
   label_menu_organization: "Organisations"
   project_global_setting: "Paramètres projets"
-  estimation_setting: "Estimation"
+  estimation_setting: "Liste des devis"
   organization_setting: "Toutes les organisations"
   wbs_activities: "WBS-Activitiés"
   template: "Modèle"
@@ -2064,4 +2064,5 @@ frsncf:
   comment_required_on_phase: "Veuillez renseigner un commentaire pour les valeurs modifiées de chacune des phases"
   warning_already_exist: "existe déjà"
   average_rate_wording: "Libellé du 'Taux moyen' (TJM, THM, ...)"
+  identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"
 

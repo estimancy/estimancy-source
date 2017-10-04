@@ -698,73 +698,6 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    # options = {}
-    # params.delete("action")
-    # params.delete("controller")
-    # params.each do |k,v|
-    #   options[k] = v
-    # end
-    #
-    # Méthode 1
-    # projects = @organization.projects.order("created_at DESC").take(25)
-    # projects = []
-    # (0..projects.size).each do |i|
-    #   #faire un modulo pour "faire des trous"
-    #   prj = projects[i]
-    #   unless prj.nil?
-    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-    #       projects << prj
-    #     end
-    #   end
-    #
-    #   if projects.size == (10)
-    #     break
-    #   end
-    # end
-    #
-    #Methode 1bis
-    # projects = @organization.projects.limit(25)
-    # projects = []
-    # (0..projects.size).each do |i|
-    #   prj = projects[i]
-    #   unless prj.nil?
-    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-    #       projects << prj
-    #     end
-    #   end
-    #
-    #   if projects.size == (25)
-    #     break
-    #   else
-    #   end
-    # end
-    #
-    # Methode 2 (avec n fois la meme requete jusqu'à n valeurs)
-    # projects = []
-    # (0..25).each do |i|
-    #   projects << Project.where(organization_id: @organization.id).first
-    # end
-
-    ############ NRE avec Cache  ############
-    # key = "not_archived_#{@organization.id}"
-    # archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
-    #
-    # projects = Rails.cache.read(key)
-    # project_ids = Rails.cache.read(key)
-    #
-    # if project_ids.nil?
-    #   project_ids = Rails.cache.fetch(key, force: true) do
-    #     Project.get_unarchived_project_ids(archived_status, @organization.id)
-    #   end
-    # end
-    # projects = Project.where(id: project_ids)
-    #
-
-    # projects = nil
-    # projects = @organization.projects
-
-    #############   SGA avec SQl View   ############
-
     @object_per_page = (current_user.object_per_page || 10)
 
     if params[:min].present? && params[:max].present?
@@ -777,18 +710,39 @@ class OrganizationsController < ApplicationController
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
-    # @projects = @organization.organization_estimations#.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
+    # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-    #@projects = check_for_projects(@min, @max)
-    @projects = check_for_projects(@min, @object_per_page)
+    organization_estimations = @organization.organization_estimations
+    # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+
+    res = []
+    organization_estimations.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max]
+
+    # @projects = check_for_projects(@min, @max)
+    # @projects = check_for_projects(@min, @object_per_page)
 
     @fields_coefficients = {}
     @pfs = {}
 
     fields = @organization.fields
 
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+      ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+      begin
+        if pf.project && pf.views_widget
+          if pf.project_id == pf.views_widget.module_project.project_id
+            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
     end
 
     fields.each do |f|
@@ -829,8 +783,9 @@ class OrganizationsController < ApplicationController
         if organization_project.nil?
           break
         else
-          if can?(:see_project, organization_project.project, estimation_status_id: organization_project.estimation_status_id)
-            result << organization_project
+          project = organization_project.project
+          if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
+            result << organization_project.project
             last_project = organization_project
           end
           i += 1

@@ -24,7 +24,7 @@ class Ability
   include CanCan::Ability
 
   #Initialize Ability then load permissions
-  def initialize(user, organization, projects, nb_project = 1, estimation_view = false)
+  def initialize(user, organization, projects, nb_project = 1, estimation_view = true)
 
     #Uncomment in order to authorize everybody to manage all the app
     if Rails.env == "test" || user.super_admin == true
@@ -36,20 +36,19 @@ class Ability
       can :manage_master_data, :all
     end
 
-    if projects.nil?
-      organization_projects = []
-    else
-      if estimation_view == true
-        if projects.empty?
-          organization_projects = []
-        else
+    # if projects.nil?
+    #   organization_projects = []
+    # else
+    #   if estimation_view == true
+        if estimation_view == false
           organization_projects = projects
+        else
+          organization_projects = organization.organization_estimations
         end
-      else
-        organization_projects = projects
-      end
-    end
-
+    #   else
+    #     organization_projects = projects
+    #   end
+    # end
 
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups
@@ -237,7 +236,8 @@ class Ability
             prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
 
             prj_scrt_project_security_level_permissions.each do |permission|
-              organization_projects.each do |project|
+              organization_projects.each do |op|
+                project = op.is_a?(Project) ? op : op.project
                 if permission.alias == "manage" and permission.category == "Project"
                   can :manage, project, estimation_status_id: esgr_estimation_status_id
                 else
@@ -284,22 +284,4 @@ class Ability
 
     end
   end
-
-  def check_for_projects(start_number, desired_size)
-    projects = @organization.organization_estimations
-    result = []
-    i = start_number
-    while result.size < desired_size do
-      if projects[i].nil?
-        break
-      else
-        result << projects[i] if can?(:see_project, projects[i], estimation_status_id: projects[i].estimation_status_id)
-        i += 1
-      end
-    end
-    result
-  end
 end
-
-
-

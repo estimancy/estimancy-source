@@ -2044,3 +2044,4 @@ frsncf_amoa_infra:
   comment_required_on_phase: "Veuillez renseigner un commentaire pour les valeurs modifiées de chacune des phases"
   warning_already_exist: "existe déjà"
   average_rate_wording: "Libellé du 'Taux moyen' (TJM, THM, ...)"
+  identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"

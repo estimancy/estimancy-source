@@ -69,9 +69,9 @@ module OrganizationsHelper
     lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
     case column.name
       when :title
-        content_tag('th class="text_left"', lk)
+        content_tag('th class="center"', lk)
       when :description
-        content_tag('th class="text_left"', lk)
+        content_tag('th class="center"', lk)
       when :version_number
         content_tag('th class="center"', lk)
       when :status_name
