@@ -22,8 +22,6 @@
 module Guw
   class GuwModel < ActiveRecord::Base
 
-    # include ActionView::Helpers
-
     has_many :guw_types, dependent: :destroy
     has_many :guw_unit_of_works, dependent: :destroy
     has_many :guw_attributes, dependent: :destroy
@@ -276,7 +274,7 @@ module Guw
 
     end
 
-    def self.display_value(data_probable, estimation_value, vw)
+    def self.display_value(data_probable, estimation_value, vw, user)
 
       module_project = estimation_value.module_project
       guw_model = module_project.guw_model
@@ -304,13 +302,13 @@ module Guw
       end
 
       if pe_attribute.alias == "effort" && guw_model.config_type == "old"
-        res = "#{(data_probable.to_f.round(2) / guw_model.hour_coefficient_conversion.to_f).round(2).to_f} #{guw_model.effort_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f), precision: user.number_precision, locale: user.language.locale)} #{guw_model.effort_unit}"
       elsif pe_attribute.alias == "cost" && guw_model.config_type == "old"
-        res = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.cost_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), precision: user.number_precision, locale: user.language.locale)} #{guw_model.cost_unit}"
       elsif pe_attribute.alias == "retained_size" && guw_model.config_type == "old"
-        res = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.retained_size_unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), precision: user.number_precision, locale: user.language.locale)} #{guw_model.retained_size_unit}"
       else
-        res = "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{unit}"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)), precision: user.number_precision, locale: user.language.locale)} #{unit}"
       end
 
       return res

@@ -533,30 +533,30 @@ module ViewsWidgetsHelper
             end
           end
         elsif estimation_value.module_project.pemodule.alias == "guw"
-          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' :  Guw::GuwModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' :  Guw::GuwModel.display_value(data_low, estimation_value, view_widget)}"
+          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget, current_user)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Guw::GuwModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Guw::GuwModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif estimation_value.module_project.pemodule.alias == "operation"
-          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' :  Operation::OperationModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' :  Operation::OperationModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Operation::OperationModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Operation::OperationModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "ge" && estimation_value.pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
           ge_model = module_project.ge_model
-          #probable_value_text = "#{convert_ge_model_value_with_precision(ge_model, estimation_value, data_probable, user_number_precision)} #{attribute_unit_label}"
-          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Ge::GeModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Ge::GeModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Ge::GeModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Ge::GeModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "kb"
-          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Kb::KbModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Kb::KbModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "skb"
           probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget)

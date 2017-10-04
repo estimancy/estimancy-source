@@ -77,7 +77,7 @@ module Kb
     end
 
     # Display Value and unit
-    def self.display_value(data_probable, estimation_value, view_widget)
+    def self.display_value(data_probable, estimation_value, view_widget, user)
       module_project = estimation_value.module_project
       kb_model = module_project.kb_model
       value = data_probable.to_f
@@ -119,7 +119,7 @@ module Kb
         result_value = nil
       end
 
-      return "#{result_value} #{unit}"
+        return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision, locale: user.language.locale)} #{unit}"
     end
 
   end
