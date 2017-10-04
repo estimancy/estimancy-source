@@ -121,13 +121,13 @@ module Operation
         if data_probable.nil?
           result_value = nil
         else
-          result_value = (data_probable.to_f / unit_coefficient).round(2)
+          result_value = (data_probable.to_f / unit_coefficient)
         end
       rescue
         result_value = nil
       end
 
-      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: user.language.locale)} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: user.language.locale)} #{unit}"
     end
 
 

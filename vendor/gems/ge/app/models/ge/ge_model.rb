@@ -164,13 +164,13 @@ module Ge
         if value.nil?
           result_value = nil
         else
-          result_value = (value / unit_coefficient.to_f).round(2)
+          result_value = (value / unit_coefficient.to_f)
         end
       rescue
         result_value = nil
       end
 
-      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: user.language.locale)} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: user.language.locale)} #{unit}"
     end
 
 
