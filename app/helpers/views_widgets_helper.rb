@@ -559,10 +559,10 @@ module ViewsWidgetsHelper
           min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "skb"
-          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Skb::SkbModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Skb::SkbModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Skb::SkbModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Skb::SkbModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         else
           if data_probable.nil?

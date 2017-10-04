@@ -119,7 +119,7 @@ module Kb
         result_value = nil
       end
 
-        return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision, locale: user.language.locale)} #{unit}"
+        return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: user.language.locale)} #{unit}"
     end
 
   end
