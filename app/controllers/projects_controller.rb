@@ -2510,12 +2510,16 @@ public
     end
 
     res = []
-    @organization_estimations.each do |p|
-      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-        res << p.project
+    unless @organization_estimations.nil?
+      @organization_estimations.each do |p|
+        if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+          res << p.project
+        end
       end
+      @projects = res[0..50].nil? ? [] : res[0..50]
+    else
+      @projects = @organization.projects.order("created_at ASC")
     end
-    @projects = res[0..50].nil? ? [] : res[0..50]
 
     build_footer
   end
