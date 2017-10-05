@@ -2429,7 +2429,7 @@ public
     res = []
     @projects.each do |p|
       if can?(:see_project, p.id, estimation_status_id: p.estimation_status_id)
-        res << p.project
+        res << p.id
       end
     end
     @projects = res[0..50].nil? ? [] : res[0..50]
