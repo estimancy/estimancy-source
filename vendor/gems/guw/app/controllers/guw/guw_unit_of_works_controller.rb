@@ -2094,6 +2094,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
               end
 
+              unless row[13].blank?
+                unless @guw_type.nil?
+                  guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                            name: row[13]).first
+                end
+              end
+
+              guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+
               guw_uow.save(validate: false)
 
 
@@ -2170,7 +2179,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     unless row[13].blank?
                       unless @guw_type.nil?
                         guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
-                                                                name: row[13]).first
+                                                                  name: row[13]).first
                       end
                     end
 
