@@ -2645,8 +2645,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def update_view_widgets_and_project_fields
-    @module_project.views_widgets.each do |vw|
-      ViewsWidget::update_field(vw, @current_organization, @module_project.project, current_component)
+    ViewsWidget::update_field(@module_project, @current_organization, @module_project.project, current_component)
+
+    @module_project.nexts.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @module_project.project, current_component, true)
     end
   end
 

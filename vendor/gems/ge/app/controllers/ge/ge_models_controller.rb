@@ -1148,12 +1148,13 @@ class Ge::GeModelsController < ApplicationController
       end
     end
 
-    #@current_organization.fields.each do |field|
-    current_module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+    @module_project = current_module_project
+    @project = @module_project.project
+
+    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+    @module_project.nexts.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
-    #end
 
     redirect_to main_app.dashboard_path(@project)
   end

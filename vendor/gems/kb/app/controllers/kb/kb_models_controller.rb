@@ -458,9 +458,11 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, module_project.project, cpt)
+
+    @project = module_project.project
+    ViewsWidget::update_field(module_project, @current_organization, @project, current_component)
+    module_project.nexts.each do |mp|
+      ViewsWidget::update_field(mp, @current_organization, @project, current_component, true)
     end
 
     size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
