@@ -67,7 +67,11 @@
         <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
       <% end %>
 
-      <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
+      <% if @max <= @organization.organization_estimations.size.to_f %>
+        <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
+      <% else %>
+        <%= link_to I18n.t(:next), "#" %>
+      <% end %>
     </th>
   </tr>
 

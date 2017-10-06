@@ -785,7 +785,7 @@ class OrganizationsController < ApplicationController
         else
           project = organization_project.project
           if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
-            result << organization_project.project
+            result << project
             last_project = organization_project
           end
           i += 1
