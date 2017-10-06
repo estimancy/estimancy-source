@@ -32,6 +32,7 @@ class ProjectsController < ApplicationController
 
   helper_method :sort_direction, :is_collapsible?, :set_attribute_unit
   helper_method :show_status_change_comments
+  helper_method :dashboard_none_displayed
 
   before_filter :load_data, :only => [:update, :edit, :new, :create, :show]
   before_filter :check_estimations_counter, :only => [:new, :duplicate, :change_new_estimation_data, :set_checkout_version]   # create, duplicate, checkout
@@ -127,10 +128,10 @@ class ProjectsController < ApplicationController
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 
     if @module_project.pemodule.alias == "expert_judgement"
-      if current_module_project.expert_judgement_instance.nil?
+      if @module_project.expert_judgement_instance.nil?
         @expert_judgement_instance = ExpertJudgement::Instance.first
       else
-        @expert_judgement_instance = current_module_project.expert_judgement_instance
+        @expert_judgement_instance = @module_project.expert_judgement_instance
       end
 
       array_attributes = Array.new
@@ -158,26 +159,26 @@ class ProjectsController < ApplicationController
       array_attributes.each do |a|
         ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                       module_project_id: current_module_project.id,
+                                                       module_project_id: @module_project.id,
                                                        pbs_project_element_id: current_component.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
-      @kb_model = current_module_project.kb_model
+      @kb_model = @module_project.kb_model
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
-      @skb_model = current_module_project.skb_model
+      @skb_model = @module_project.skb_model
       @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
                                       organization_id: @project_organization.id,
                                       skb_model_id: @skb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
-      @ge_model = current_module_project.ge_model
+      @ge_model = @module_project.ge_model
       @ge_input = Ge::GeInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     ge_model_id: @ge_model.id).first_or_create
@@ -227,19 +228,19 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "operation"
-      @operation_model = current_module_project.operation_model
+      @operation_model = @module_project.operation_model
     elsif @module_project.pemodule.alias == "guw"
 
-      #if current_module_project.guw_model.nil?
+      #if @module_project.guw_model.nil?
       #  @guw_model = Guw::GuwModel.first
       #else
-        @guw_model = current_module_project.guw_model
-      # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(current_module_project)
+        @guw_model = @module_project.guw_model
+      # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: @module_project.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
-      @staffing_model = current_module_project.staffing_model
+      @staffing_model = @module_project.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
       @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
       if @staffing_custom_data.nil?
@@ -252,15 +253,10 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
       @pbs_project_element = current_component
-      @wbs_activity = current_module_project.wbs_activity
+      @wbs_activity = @module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      # if params[:ratio].nil?
-      #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      # else
-      #   @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
-      # end
-      @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
+      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(current_component.id)
       if @wbs_activity_ratio.nil?
         unless params[:ratio].nil?
           @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
@@ -281,6 +277,199 @@ class ProjectsController < ApplicationController
       # other
     end
   end
+
+
+  def dashboard_none_displayed(none_displayed_module_project)
+    results_to_return = {}
+
+    if @project.nil?
+      flash[:error] = I18n.t(:project_not_found)
+      redirect_to organization_estimations_path(@current_organization) and return
+    end
+
+    @current_organization = @project.organization
+
+    # return if user doesn't have the rigth to consult the estimation
+    if !can_show_estimation?(@project)
+      redirect_to(organization_estimations_path(@current_organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+    end
+
+    if @current_organization.is_image_organization == true
+      redirect_to(root_url, flash: { error: "Vous ne pouvez pas accéder à une organization image"}) and return
+    end
+
+    set_page_title I18n.t(:spec_estimations, parameter: @current_organization)
+
+    @user = current_user
+    @pemodules ||= Pemodule.all
+    @module_project = none_displayed_module_project #current_module_project
+    @show_hidden = 'true'
+
+    status_comment_link = ""
+    if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
+      status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
+    end
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+
+    @project_organization = @project.organization
+    @module_projects = @project.module_projects
+    #Get the initialization module_project
+    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+
+    if @module_project.pemodule.alias == "expert_judgement"
+      if none_displayed_module_project.expert_judgement_instance.nil?
+        @expert_judgement_instance = ExpertJudgement::Instance.first
+      else
+        @expert_judgement_instance = none_displayed_module_project.expert_judgement_instance
+      end
+
+      array_attributes = Array.new
+
+      if @expert_judgement_instance.enabled_size?
+        array_attributes << "retained_size"
+      end
+
+      if @expert_judgement_instance.enabled_effort?
+        array_attributes << "effort"
+      end
+
+      if @expert_judgement_instance.enabled_cost?
+        array_attributes << "cost"
+      end
+
+      #@expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
+      expert_judgment_module = Pemodule.where(alias: "expert_judgement").first
+      if expert_judgment_module
+        @expert_judgement_attributes = expert_judgment_module.pe_attributes.where(alias: array_attributes)
+      else
+        @expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
+      end
+
+      array_attributes.each do |a|
+        ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                       expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                       module_project_id: none_displayed_module_project.id,
+                                                       pbs_project_element_id: current_component.id).first_or_create!
+      end
+
+    elsif @module_project.pemodule.alias == "kb"
+      @kb_model = none_displayed_module_project.kb_model
+      @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
+                                    organization_id: @project_organization.id,
+                                    kb_model_id: @kb_model.id).first_or_create
+      @project_list = []
+
+    elsif @module_project.pemodule.alias == "skb"
+      @skb_model = none_displayed_module_project.skb_model
+      @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
+                                       organization_id: @project_organization.id,
+                                       skb_model_id: @skb_model.id).first_or_create
+      @project_list = []
+
+    elsif @module_project.pemodule.alias == "ge"
+      @ge_model = none_displayed_module_project.ge_model
+      @ge_input = Ge::GeInput.where(module_project_id: @module_project.id,
+                                    organization_id: @project_organization.id,
+                                    ge_model_id: @ge_model.id).first_or_create
+      @ge_input_values = @ge_input.values
+      @ge_factors = @ge_model.ge_factors
+      @all_factors_values_hash = Hash.new #hash that contained factor values
+
+      @ge_factors_values = @ge_model.ge_factor_values
+      if @ge_factors_values.length > 0
+        @ge_factors_groups = @ge_factors_values.group_by(&:factor_scale_prod) #@ge_factors_values.group_by { |f| f.factor_scale_prod }
+        @ge_scale_factors = @ge_factors_groups['S']
+        @ge_prod_factors = @ge_factors_groups['P']
+        @ge_conversion_factors = @ge_factors_groups['C']
+
+        #@ge_factor_values_per_type = @ge_factors_values.group_by(&:factor_type)
+
+        @ge_scale_factors_per_type =  @ge_scale_factors.nil? ? {} : @ge_scale_factors.group_by(&:factor_type)
+        @ge_prod_factors_per_type = @ge_prod_factors.nil? ? {} : @ge_prod_factors.group_by(&:factor_type)
+        @ge_conversion_factors_per_type = @ge_conversion_factors.nil? ? {} : @ge_conversion_factors.group_by(&:factor_type)
+
+        @all_factors_values_hash["S"] = Hash.new
+        @all_factors_values_hash["P"] = Hash.new
+        @all_factors_values_hash["C"] = Hash.new
+
+        @ge_type_factors_per_scale_prod = Hash.new
+        @ge_type_factors_per_scale_prod["S"] = @ge_scale_factors_per_type
+        @ge_type_factors_per_scale_prod["P"] = @ge_prod_factors_per_type
+        @ge_type_factors_per_scale_prod["C"] = @ge_conversion_factors_per_type
+
+        @ge_type_factors_per_scale_prod.each do |scale_prod, factors_per_type|
+          factors_per_type.each do |type, factor_values_array|
+            @type_factors_values_hash = Hash.new
+            @ge_model.ge_factors.where(scale_prod: "#{scale_prod}").each do |f|
+              if f.factor_type == type
+                factors_array = Array.new
+                factor_values_array.each do |factor_value|
+                  if factor_value.factor_alias == f.alias
+                    factors_array << factor_value  #[factor_value.value_text, factor_value.id]
+                  end
+                end
+                @type_factors_values_hash["#{f.alias}"] = factors_array
+              end
+            end
+            @all_factors_values_hash["#{scale_prod}"]["#{type}"] = @type_factors_values_hash
+          end
+        end
+      end
+
+    elsif @module_project.pemodule.alias == "operation"
+      @operation_model = none_displayed_module_project.operation_model
+    elsif @module_project.pemodule.alias == "guw"
+      @guw_model = none_displayed_module_project.guw_model
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: none_displayed_module_project.id).all
+
+    elsif @module_project.pemodule.alias == "staffing"
+      @staffing_model = none_displayed_module_project.staffing_model
+      trapeze_default_values = @staffing_model.trapeze_default_values
+      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
+      if @staffing_custom_data.nil?
+        @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id,
+                                                                     staffing_method: 'trapeze',
+                                                                     period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
+                                                                     trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
+                                                                     trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
+      end
+
+    elsif @module_project.pemodule.alias == "effort_breakdown"
+      @pbs_project_element = current_component
+      @wbs_activity = none_displayed_module_project.wbs_activity
+      @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
+
+      @wbs_activity_ratio = none_displayed_module_project.get_wbs_activity_ratio(current_component.id)
+      if @wbs_activity_ratio.nil?
+        unless params[:ratio].nil?
+          @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+        end
+      end
+
+      unless @wbs_activity_ratio.nil?
+        ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+        @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+        # Module_project Ratio elements
+        @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+
+        # Module Project Ratio Variables
+        @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+      end
+
+      { wbs_activity_ratio_elements: @wbs_activity_ratio_elements,
+        module_project_ratio_elements: @module_project_ratio_elements,
+        module_project_ratio_variables: @module_project_ratio_variables,
+        project_wbs_activity_elements: @project_wbs_activity_elements
+      }
+    else
+      # others
+    end
+  end
+
 
   def index
     #No authorize required since everyone can access the list (permission will be managed project per project)

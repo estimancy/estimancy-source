@@ -5,11 +5,16 @@
 </h4>
 
 <!-- Params -->
-<% component_id = current_component.id %>
 <% pbs_project_element = current_component %>
+<% component_id = pbs_project_element.id %>
 <% organization = @project.organization %>
 
-<% module_project = current_module_project %>
+<% begin
+    module_project = none_displayed_module_project.nil? ? current_module_project : none_displayed_module_project
+   rescue
+    module_project = current_module_project
+   end
+%>
 <% wbs_activity = module_project.wbs_activity %>
 
 <!--Attributes-->

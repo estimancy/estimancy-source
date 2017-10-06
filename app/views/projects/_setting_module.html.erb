@@ -1,32 +1,32 @@
 <div id="estimation_graph_box">
   <% if current_module_project.pemodule.alias == "guw" %>
-    <% if @guw_model.config_type == "old" %>
-      <%= render partial: "guw/guw_unit_of_works/settings_old" %>
-    <% else %>
-      <%= render partial: "guw/guw_unit_of_works/settings_new" %>
-    <% end %>
+      <% if @guw_model.config_type == "old" %>
+          <%= render partial: "guw/guw_unit_of_works/settings_old" %>
+      <% else %>
+          <%= render partial: "guw/guw_unit_of_works/settings_new" %>
+      <% end %>
   <% elsif current_module_project.pemodule.alias == "kb" %>
-    <%= render partial: "kb/kb_models/settings" %>
+      <%= render partial: "kb/kb_models/settings" %>
   <% elsif current_module_project.pemodule.alias == "skb" %>
-    <%= render partial: "skb/skb_models/settings" %>
+      <%= render partial: "skb/skb_models/settings" %>
   <% elsif current_module_project.pemodule.alias == "ge" %>
-    <%= render partial: "ge/ge_models/settings" %>
+      <%= render partial: "ge/ge_models/settings" %>
   <% elsif current_module_project.pemodule.alias == "operation" %>
-    <%#= render partial: "operation/operation_models/settings" %>
-    <%= render partial: "operation/operation_models/settings_new" %>
+      <%#= render partial: "operation/operation_models/settings" %>
+      <%= render partial: "operation/operation_models/settings_new" %>
   <% elsif current_module_project.pemodule.alias == "expert_judgement" %>
-    <%= render partial: "expert_judgement/instances/settings" %>
+      <%= render partial: "expert_judgement/instances/settings" %>
   <% elsif current_module_project.pemodule.alias == "cocomo_advanced" %>
-    <%= render partial: "cocomo_advanced/input_cocomo/settings" %>
+      <%= render partial: "cocomo_advanced/input_cocomo/settings" %>
   <% elsif current_module_project.pemodule.alias == "cocomo_expert" %>
-    <%= render partial: "cocomo_expert/input_cocomo/settings" %>
+      <%= render partial: "cocomo_expert/input_cocomo/settings" %>
   <% elsif current_module_project.pemodule.alias == "effort_breakdown" %>
-    <%= render partial: "wbs_activities/settings", object: @wbs_activity_ratio %>
+      <%= render partial: "wbs_activities/settings", object: @wbs_activity_ratio %>
   <% elsif current_module_project.pemodule.alias == "staffing" %>
-    <% if @staffing_model.config_type == "old" %>
-      <%= render partial: "staffing/staffing_custom_data/settings_old" %>
-    <% else %>
-      <%= render partial: "staffing/staffing_custom_data/settings" %>
-    <% end %>
+      <% if @staffing_model.config_type == "old" %>
+          <%= render partial: "staffing/staffing_custom_data/settings_old" %>
+      <% else %>
+          <%= render partial: "staffing/staffing_custom_data/settings" %>
+      <% end %>
   <% end %>
 </div>

@@ -101,12 +101,30 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       ratio_elt.save
     end
 
-
     #=== OrganizationProfiles
     add_index :organization_profiles, [:organization_id]
 
     #=== OrganizationProfiles_WbsActivities
     add_index :organization_profiles_wbs_activities, [:wbs_activity_id, :organization_profile_id], name: "wbs_activity_organization_profiles"
+
+
+
+    #=====   Pour changement d'organisation impromptu   ==========
+
+    #=== ViewWidgets
+    # add_column :views_widgets, :organization_id, :integer, after: :id
+    # add_column :views_widgets, :project_id, :integer, after: :organization_id
+    #
+    # add_index :views_widgets, [:organization_id, :project_id, :module_project_id, :pe_attribute_id, :estimation_value_id], name: "project_views_widgets"
+    #
+    # ViewsWidget.all.each do |vw|
+    #   vw.organization_id = vw.module_project.organization_id
+    #   vw.project_id = vw.module_project.project_id
+    #   vw.save
+    # end
+
+
+    #=====   FIN Pour changement d'organisation impromptu ========
   end
 
 
