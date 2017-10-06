@@ -1963,7 +1963,7 @@ fr:
   retained_effort: "Effort retenu"
   retained_cost: "Coût retenu"
 
-  move_your_cursor:  "Placer votre curseur sur le graphique et cliquer afin de situer votre projet actuel"
+  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel. Vous pouvez également dessiner votre zone de zoom."
   total_size: "Taille totale"
   number_of_processing: "Nombre de traitements"
   number_of_data: "Nombre de données"

@@ -1958,7 +1958,7 @@ fr_bnp:
   show_results_global_view: "Afficher la vue globale"
   save_modifications: "Sauvegarder les modifications"
 
-  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
+  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel. Vous pouvez également dessiner votre zone de zoom."
   theoretical_effort: "Effort calculé"
   theoretical_cost: "Coût calculé"
   retained_effort: "Effort retenu"
