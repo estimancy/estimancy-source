@@ -127,10 +127,10 @@ class ProjectsController < ApplicationController
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 
     if @module_project.pemodule.alias == "expert_judgement"
-      if current_module_project.expert_judgement_instance.nil?
+      if @module_project.expert_judgement_instance.nil?
         @expert_judgement_instance = ExpertJudgement::Instance.first
       else
-        @expert_judgement_instance = current_module_project.expert_judgement_instance
+        @expert_judgement_instance = @module_project.expert_judgement_instance
       end
 
       array_attributes = Array.new
@@ -158,26 +158,26 @@ class ProjectsController < ApplicationController
       array_attributes.each do |a|
         ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                       module_project_id: current_module_project.id,
+                                                       module_project_id: @module_project.id,
                                                        pbs_project_element_id: current_component.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
-      @kb_model = current_module_project.kb_model
+      @kb_model = @module_project.kb_model
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
-      @skb_model = current_module_project.skb_model
+      @skb_model = @module_project.skb_model
       @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
                                       organization_id: @project_organization.id,
                                       skb_model_id: @skb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
-      @ge_model = current_module_project.ge_model
+      @ge_model = @module_project.ge_model
       @ge_input = Ge::GeInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     ge_model_id: @ge_model.id).first_or_create
@@ -227,19 +227,19 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "operation"
-      @operation_model = current_module_project.operation_model
+      @operation_model = @module_project.operation_model
     elsif @module_project.pemodule.alias == "guw"
 
-      #if current_module_project.guw_model.nil?
+      #if @module_project.guw_model.nil?
       #  @guw_model = Guw::GuwModel.first
       #else
-        @guw_model = current_module_project.guw_model
-      # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(current_module_project)
+        @guw_model = @module_project.guw_model
+      # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: @module_project.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
-      @staffing_model = current_module_project.staffing_model
+      @staffing_model = @module_project.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
       @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
       if @staffing_custom_data.nil?
@@ -252,15 +252,10 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
       @pbs_project_element = current_component
-      @wbs_activity = current_module_project.wbs_activity
+      @wbs_activity = @module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      # if params[:ratio].nil?
-      #   @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      # else
-      #   @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
-      # end
-      @wbs_activity_ratio = current_module_project.get_wbs_activity_ratio(current_component.id)
+      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(current_component.id)
       if @wbs_activity_ratio.nil?
         unless params[:ratio].nil?
           @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])

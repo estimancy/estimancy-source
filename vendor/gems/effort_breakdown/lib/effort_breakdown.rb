@@ -228,47 +228,25 @@ module EffortBreakdown
 
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
-          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable ###&& @changed_retained_cost_values[element.id].to_f != 0
-            if @changed_retained_cost_values[element.id].blank?
-              output_cost[element.id] = @theoretical_cost[element.id]
-            else
-              output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f
-            end
+          if mp_ratio_element.selected != true
+            output_cost[key] = nil
           else
-            if element.is_childless? || element.has_new_complement_child?
-              # Calculate cost for each profile
-              tjm = @tjm_per_phase[element.id]
-              output_cost[key] = tjm.nil? ? nil : (tjm * value)
-
-              #### TEST ###
-              # tmp = Hash.new
-              # wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
-              # unless wbs_activity_ratio_element.nil?
-              #   wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-              #     if value.nil? || warp.ratio_value.nil?
-              #       tmp[warp.organization_profile.id] = nil
-              #     else
-              #       tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
-              #     end
-              #   end
-              # end
-              #
-              # tmp.each do |k, v|
-              #   cost[key] << tmp[k]
-              # end
-              #
-              # if cost[key].empty?
-              #   output_cost[key] = nil
-              # else
-              #   output_cost[key] = cost[key].compact.sum
-              # end
-              #### FIN TEST ###
-
+            if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable
+              if @changed_retained_cost_values[element.id].blank?
+                output_cost[element.id] = @theoretical_cost[element.id]
+              else
+                output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f
+              end
             else
-              output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
+              if element.is_childless? || element.has_new_complement_child?
+                # Calculate cost for each profile
+                tjm = @tjm_per_phase[element.id]
+                output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value)
+              else
+                output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
+              end
             end
           end
-
         end
       end
 
@@ -304,29 +282,6 @@ module EffortBreakdown
             # Calculate cost for each profile
             tjm = @tjm_per_phase[element.id]
             output_cost[key] = tjm.nil? ? nil : (tjm * value)
-
-            # tmp = Hash.new
-            # wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio.id, wbs_activity_element_id: key).first
-            # unless wbs_activity_ratio_element.nil?
-            #   wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-            #     if efforts_man_month[key].nil? || warp.ratio_value.nil?
-            #       tmp[warp.organization_profile.id] = nil
-            #     else
-            #       tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * value * warp.ratio_value.to_f / 100
-            #     end
-            #   end
-            # end
-            #
-            # tmp.each do |k, v|
-            #   cost[key] << tmp[k]
-            # end
-            #
-            # if cost[key].empty?
-            #   output_cost[key] = nil
-            # else
-            #   output_cost[key] = cost[key].compact.sum
-            # end
-
           else
             output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
@@ -540,10 +495,6 @@ module EffortBreakdown
                   end
                 end
                 all_formula_to_compute[:"#{element.phase_short_name.downcase}"] = parent_element_formula
-
-                ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
-                #### add element ID in the parents elements to compute
-                ###parents_to_compute_after << element.id
               end
 
             end
@@ -575,7 +526,7 @@ module EffortBreakdown
             mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
             current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
             if !mp_ratio_element.selected == true
-              current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
+              current_effort_with_dependencies = nil ###output_effort_with_dependencies[:"#{element.id}"]
             end
 
             if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable
@@ -605,23 +556,11 @@ module EffortBreakdown
         end
       end
 
-
       # After treating all leaf and node elements, the root element is going to compute by aggregation
       output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort)
 
-      # Global output efforts
-      # if @changed_mp_ratio_element_ids.nil? || @changed_mp_ratio_element_ids.empty?
-      #   output_effort = calculate_formula_expression(current_output_effort, wbs_activity_root, @ratio, @changed_mp_ratio_element_ids, calculator)
-      # else
-      #   output_effort = calculate_formula_expression(current_output_effort, wbs_activity_root, @ratio, @changed_mp_ratio_element_ids, calculator, output_effort)
-      # end
-
-
       output_effort
-
     end
-
-
 
 
     def calculate_formula_expression(current_input_effort, wbs_activity_root, ratio, changed_mp_ratio_element_ids, calculator, output_effort={} )

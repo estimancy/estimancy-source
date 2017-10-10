@@ -481,6 +481,10 @@
 
       if ($(this).is(':checked') ) {
           if ($("#retained_effort_most_likely_" + val).val() == "") {
+
+            $("#retained_effort_most_likely_visible_" + val).val($("#theoretical_effort_most_likely_visible_" + val).val());
+            $("#retained_cost_most_likely_visible_" + val).val($("#theoretical_cost_most_likely_visible_" + val).val());
+
             $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
             $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
           }
