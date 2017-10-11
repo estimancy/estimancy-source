@@ -60,15 +60,26 @@
     <% end %>
 
   <tr>
+    <% sort_column = sort_column.blank? ? params[:sort_column] : sort_column %>
+    <% sort_order = sort_order.blank? ? params[:sort_order] : sort_order %>
+
     <th colspan="100" class="pager form-horizontal">
       <% if @min == 0 %>
         <%= I18n.t(:previous) %>  -
       <% else %>
-        <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
+        <% if params[:sort_action] == "true"  || params[:action] == "sort" %>
+            <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page), max: (@max.to_i - @object_per_page), previous_next_action: true), remote: true %> -
+        <% else %>
+            <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page), max: (@max.to_i - @object_per_page), get_projects_sorted_list: true) %> -
+        <% end %>
       <% end %>
 
       <% if @max <= @organization.organization_estimations.size.to_f %>
-        <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
+          <% if params[:sort_action] == "true" || params[:action] == "sort" %>
+              <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page), max: (@max.to_i + @object_per_page), previous_next_action: true), remote: true %>
+          <% else %>
+              <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: (@min.to_i + @object_per_page), max: (@max.to_i + @object_per_page), get_projects_sorted_list: true) %>
+          <% end %>
       <% else %>
         <%= link_to I18n.t(:next), "#" %>
       <% end %>

@@ -1324,3 +1324,9 @@ td.float_left {
     border-top: 0px;
 }
 
+.chevron_up_down {
+    content: " ";
+    display: block;
+    color: #0088cc;
+    margin-left: 5px;
+}

@@ -66,7 +66,66 @@ module OrganizationsHelper
   end
 
   def column_header(column)
-    lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
+
+    # lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
+
+    column_chevron_icon = ""
+    column_sort_order = ""
+
+    sort_column = params[:f] || params[:sort_column]
+    sort_order = params[:s] || params[:sort_order]
+
+    case column.name
+      when :start_date
+        column_sort_order = "asc"
+        if column.name.to_s != params[:f]
+          sort_order = "desc"
+        end
+      when :title
+        column_sort_order = "desc"
+      when :description
+        column_sort_order = "asc"
+      when :version_number
+        column_sort_order = "asc"
+      when :status_name
+        column_sort_order = "asc"
+      else
+        if column.field_id
+        else
+          column_sort_order = "asc"
+        end
+    end
+
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date")
+      column_chevron_icon = ""
+      case sort_order
+        when "desc"
+          lk_text = content_tag(:span, I18n.t(column.caption))
+          lk_text << content_tag(:i, nil, class: 'icon-chevron-down chevron_up_down')
+          lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
+
+        when "asc"
+          lk_text = content_tag(:span, I18n.t(column.caption))
+          lk_text << content_tag(:i, nil, class: 'icon-chevron-up chevron_up_down')
+          lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
+
+        else
+          lk_text = content_tag(:span, I18n.t(column.caption))
+          lk_text << content_tag(:i, nil, class: 'fa fa-chevron-up chevron_up_down')
+          lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
+
+          #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "desc"), class: 'fa fa-chevron-down', remote: true)
+          # lk = link_to sort_path(f: column.name, s: "desc"), id: "to_down" do
+          #   I18n.t(column.caption)
+          #   content_tag :i, I18n.t(column.caption), class: 'icon-chevron-down'
+          # end
+      end
+
+    else
+      lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
+    end
+
+
     case column.name
       when :title
         content_tag('th class="center"', lk)

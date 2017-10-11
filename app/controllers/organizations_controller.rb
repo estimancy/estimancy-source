@@ -712,16 +712,20 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
+    # if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
+    #   redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max), format: 'js') and return
+    # end
+
     organization_estimations = @organization.organization_estimations
     # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
-
     res = []
     organization_estimations.each do |p|
       if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
         res << p.project
       end
     end
-    @projects = res[@min..@max].nil? ? [] : res[@min..@max]
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)
@@ -731,7 +735,7 @@ class OrganizationsController < ApplicationController
 
     fields = @organization.fields
 
-      ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
       begin
         if pf.project && pf.views_widget
           if pf.project_id == pf.views_widget.module_project.project_id
