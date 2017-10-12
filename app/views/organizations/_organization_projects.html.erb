@@ -76,7 +76,7 @@
             <%= link_to "", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true), remote: true, class: "btn btn-md fa fa-fast-backward prev_next" %>
             <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page), max: (@max.to_i - @object_per_page), previous_next_action: true), remote: true, class: "btn btn-mini prev_next" %>
         <% else %>
-            <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-mini fa-fast-backward prev_next" %>
+            <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-md fa-fast-backward prev_next" %>
             <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page), max: (@max.to_i - @object_per_page), get_projects_sorted_list: true), class: "btn btn-mini prev_next" %>
         <% end %>
       <% end %>
