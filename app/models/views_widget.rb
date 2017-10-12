@@ -23,7 +23,7 @@ class ViewsWidget < ActiveRecord::Base
   attr_accessible :color, :icon_class, :module_project_id, :name, :pbs_project_element_id, :estimation_value_id, :pe_attribute_id,
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
-                  :is_kpi_widget, :use_organization_effort_unit
+                  :is_kpi_widget, :use_organization_effort_unit, :equation
 
   serialize :equation, Hash
 
@@ -61,8 +61,21 @@ class ViewsWidget < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
-  def self.update_field(module_project, organization, project, component, set_to_nil = false)
 
+  def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
+    module_project.nexts.each do |mp|
+      mp.estimation_values.where(in_out: "output").each do |ev|
+        ["low", "most_likely", "high"].each do |level|
+          ev.send(:"string_data_#{level}=", { pbs_project_element.id => nil } )
+        end
+        ev.send(:"string_data_probable=", { pbs_project_element_id => nil } )
+        ev.save
+      end
+    end
+  end
+
+
+  def self.update_field(module_project, organization, project, component, set_to_nil = false)
     module_project.views_widgets.each do |view_widget|
       organization.fields.each do |field|
 

@@ -1370,10 +1370,16 @@ class ProjectsController < ApplicationController
             in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
             estimation_value = my_module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
             estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
-            widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id, estimation_value_id: estimation_value_id, name: view_widget.name,
-                                          show_name: view_widget.show_name, icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
-                                          width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
-                                          position_x: view_widget.position_x, position_y: view_widget.position_y)
+            widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id,
+                                          estimation_value_id: estimation_value_id,
+                                          name: view_widget.name, show_name: view_widget.show_name,
+                                          equation: view_widget.equation,
+                                          comment: view_widget.comment,
+                                          is_kpi_widget: view_widget.is_kpi_widget,
+                                          kpi_unit: view_widget.kpi_unit,
+                                          icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
+                                          width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type,
+                                          position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
             #Save and copy project_fields
             if widget_copy.save
               unless view_widget.project_fields.empty?
@@ -1830,7 +1836,35 @@ public
                                                 position: old_view_widget.position,
                                                 position_x: old_view_widget.position_x,
                                                 position_y: old_view_widget.position_y)
-              new_view_widget.save
+
+                #Update KPI Widget aquation
+                ["A", "B", "C", "D", "E"].each do |letter|
+                  unless old_view_widget.equation[letter].nil?
+
+                    new_array = []
+                    est_val_id = old_view_widget.equation[letter].first
+                    mp_id = old_view_widget.equation[letter].last
+
+                    begin
+                      new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                      new_mpr_id = new_mpr.id
+                      begin
+                        new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                      rescue
+                        new_est_val_id = nil
+                      end
+                    rescue
+                      new_mpr_id = nil
+                    end
+
+                    new_array << new_est_val_id
+                    new_array << new_mpr_id
+
+                    new_view_widget.equation[letter] = new_array
+                  end
+                end
+
+                new_view_widget.save
             else
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
@@ -1845,6 +1879,10 @@ public
                                                   show_name: old_view_widget.show_name,
                                                   show_wbs_activity_ratio: old_view_widget.show_wbs_activity_ratio,
                                                   is_label_widget: old_view_widget.is_label_widget,
+                                                  comment: old_view_widget.comment,
+                                                  is_kpi_widget: old_view_widget.is_kpi_widget,
+                                                  kpi_unit: old_view_widget.kpi_unit,
+                                                  equation: old_view_widget.equation,
                                                   icon_class: old_view_widget.icon_class,
                                                   color: old_view_widget.color,
                                                   show_min_max: old_view_widget.show_min_max,
@@ -1855,7 +1893,6 @@ public
                                                   position: old_view_widget.position,
                                                   position_x: old_view_widget.position_x,
                                                   position_y: old_view_widget.position_y)
-
                 if new_view_widget.save
                   #Update the copied project_fields
                   pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
@@ -1866,6 +1903,7 @@ public
                 end
               end
             end
+
           end
           #update the new module_project view
           new_mp.update_attribute(:view_id, new_view.id)
