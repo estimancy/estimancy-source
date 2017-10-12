@@ -1328,5 +1328,12 @@ td.float_left {
     content: " ";
     display: block;
     color: #0088cc;
-    margin-left: 5px;
+    margin-left: 10px;
+}
+
+.prev_next{
+    margin: 10px;
+    font-size: 14px;
+    font-weight: 300;
+
 }

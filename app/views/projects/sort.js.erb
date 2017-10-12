@@ -1,8 +1,8 @@
 $("#organization_projects").html("");
-$("#organization_projects").html("<%= j(render :partial => 'organizations/organization_projects', object: [@organization, @projects], locals: {sort_action: true, sort_column: @sort_column, sort_order: @sort_order }) %>");
+$("#organization_projects").html("<%= j(render :partial => 'organizations/organization_projects', object: [@organization, @projects], locals: {sort_action: true, sort_column: @sort_column, sort_order: @sort_order, is_last_page: @is_last_page }) %>");
 
 //Mettre à jour l'url sans recharger la page
 if (history.pushState) {
-    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?min=<%= @min %>&max=<%= @max %>&sort_column=<%= @sort_column %>&sort_order=<%= @sort_order %>&sort_action=true';
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?min=<%= @min %>&max=<%= @max %>&sort_column=<%= @sort_column %>&sort_order=<%= @sort_order %>&sort_action=true&is_last_page=<%= @is_last_page %>';
     window.history.pushState({path:newurl},'',newurl);
 }

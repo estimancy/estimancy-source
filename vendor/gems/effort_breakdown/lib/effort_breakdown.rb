@@ -159,7 +159,7 @@ module EffortBreakdown
       # end
 
       # Return all results
-      theoretical_effort, theoretical_cost, retained_effort,retained_effort, tjm_per_phase = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost, @tjm_per_phase]
+      theoretical_effort, theoretical_cost, retained_effort, retained_cost, tjm_per_phase = [@theoretical_effort, @theoretical_cost, @retained_effort, @retained_cost, @tjm_per_phase]
     end
 
 
@@ -281,7 +281,7 @@ module EffortBreakdown
           if element.is_childless? || element.has_new_complement_child?
             # Calculate cost for each profile
             tjm = @tjm_per_phase[element.id]
-            output_cost[key] = tjm.nil? ? nil : (tjm * value)
+            output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value)
           else
             output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
@@ -709,15 +709,9 @@ module EffortBreakdown
                       normalized_formula_expression = nil
                     end
 
-                    ####element_effort = calculator.evaluate(normalized_formula_expression)
-                    ####output_effort[element.id] = element_effort
-
-                    ####all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
-
                     # Add element short_name in calculator
                     element_phase_short_name = element.phase_short_name.downcase
                     unless element_phase_short_name.nil?
-                      ####calculator.store(:"#{element_phase_short_name}" => element_effort)
                       if mp_ratio_element.selected == true
                         all_formula_to_compute[:"#{element_phase_short_name.downcase}"] = normalized_formula_expression
                       else
@@ -741,12 +735,6 @@ module EffortBreakdown
                   end
                 end
                 all_formula_to_compute[:"#{element.phase_short_name.downcase}"] = parent_element_formula
-
-                ####output_effort[element.id] = compact_array_and_compute_node_value(element, output_effort)
-
-                #### add element ID in the parents elements to compute
-
-                ###parents_to_compute_after << element.id
               end
             end
           end
@@ -775,6 +763,7 @@ module EffortBreakdown
             if output_effort[element.id].nil?
               mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
               current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.phase_short_name.downcase}"]
+
               if !mp_ratio_element.selected == true
                 current_effort_with_dependencies = output_effort_with_dependencies[:"#{element.id}"]
               end
@@ -796,10 +785,6 @@ module EffortBreakdown
 
         # After treating all leaf and node elements, the root element is going to compute by aggregation
         output_effort[wbs_activity_root.id] = compact_array_and_compute_node_value(wbs_activity_root, output_effort)
-
-
-        # Global output efforts
-        ###output_effort = calculate_formula_expression(current_output_effort, wbs_activity_root, @ratio, @changed_mp_ratio_element_ids, calculator)
 
         output_effort
     end
@@ -1017,7 +1002,7 @@ module EffortBreakdown
           # Test if node is selected or not ( it will be taken in account only if the node is selected)
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
 
-          if (mp_ratio_element && mp_ratio_element.selected==true) ###|| mp_ratio_element.nil?
+          if mp_ratio_element && mp_ratio_element.selected==true
             if value.is_a?(Integer) || value.is_a?(Float) || value.class.superclass == Integer || value.class.superclass == Numeric  ###if value.is_a?(Integer) || value.is_a?(Float)
               tab << value
             end

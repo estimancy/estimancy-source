@@ -101,17 +101,17 @@ module OrganizationsHelper
       case sort_order
         when "desc"
           lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'icon-chevron-down chevron_up_down')
+          lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-down chevron_up_down')
           lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
 
         when "asc"
           lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'icon-chevron-up chevron_up_down')
+          lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-up chevron_up_down')
           lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
 
         else
           lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'fa fa-chevron-up chevron_up_down')
+          lk_text << content_tag(:i, nil, class: 'btn btn-mini fa fa-chevron-up chevron_up_down')
           lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
 
           #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "desc"), class: 'fa fa-chevron-down', remote: true)

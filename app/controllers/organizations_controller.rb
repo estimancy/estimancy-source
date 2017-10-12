@@ -712,8 +712,14 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
+
+    # Pour garder le tri même lorsqu'on raffraichie la page
     # if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
-    #   redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max), format: 'js') and return
+    #   #redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max), format: 'js') and return
+    #   respond_to do |format|
+    #     #format.js { render js: "window.location='#{url.to_s}'" }
+    #     format.js { redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max)) and return }
+    #   end
     # end
 
     organization_estimations = @organization.organization_estimations
@@ -726,6 +732,17 @@ class OrganizationsController < ApplicationController
     end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
 
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)

@@ -590,9 +590,11 @@
 
                                           if (theoretical_effort != retained_effort)
                                               $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+                                              $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
 
                                           if (theoretical_cost != retained_cost)
                                               $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+                                              $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
 
                                           //return false; //pour arreter la boucle
                                       }
