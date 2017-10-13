@@ -1476,7 +1476,7 @@ es:
   unit_sloc: "Lines of code"
   title_input_data_factors: "%{module_name} : input data factors"
   effort_person_hour: "Effort man/hours"
-  effort: "Effort man/months"
+  effort: "Effort" #"Effort man/months"
   effort_person_week: "Effort man/weeks"
   sloc: "KSlOC"
   sloc: "SLOC"
