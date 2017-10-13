@@ -1325,10 +1325,9 @@ td.float_left {
 }
 
 .chevron_up_down {
-    content: " ";
-    display: block;
-    color: #0088cc;
-    margin-left: 10px;
+    content: "";
+    float: right;
+    padding: 3px;
 }
 
 .prev_next{

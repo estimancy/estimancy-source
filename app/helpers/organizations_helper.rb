@@ -76,11 +76,13 @@ module OrganizationsHelper
     sort_order = params[:s] || params[:sort_order]
 
     case column.name
+
       when :start_date
         column_sort_order = "asc"
         if column.name.to_s != params[:f]
           sort_order = "desc"
         end
+
       when :title
         column_sort_order = "desc"
       when :description
@@ -96,33 +98,40 @@ module OrganizationsHelper
         end
     end
 
-    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date")
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank?)
       column_chevron_icon = ""
       case sort_order
         when "desc"
-          lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-down chevron_up_down')
-          lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-down chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
+
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "asc"), class: 'btn btn-mini fa fa-sort-down fa-lg chevron_up_down', remote: true)
 
         when "asc"
-          lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-up chevron_up_down')
-          lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-up chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
+
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
 
         else
-          lk_text = content_tag(:span, I18n.t(column.caption))
-          lk_text << content_tag(:i, nil, class: 'btn btn-mini fa fa-chevron-up chevron_up_down')
-          lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini fa fa-chevron-up chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
 
-          #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "desc"), class: 'fa fa-chevron-down', remote: true)
-          # lk = link_to sort_path(f: column.name, s: "desc"), id: "to_down" do
-          #   I18n.t(column.caption)
-          #   content_tag :i, I18n.t(column.caption), class: 'icon-chevron-down'
-          # end
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+
       end
 
     else
-      lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
+      #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
+
+      lk = content_tag(:span, I18n.t(column.caption))
+      lk << link_to("", sort_path(f: column.name, s: column_sort_order), class: 'btn btn-mini fa fa-unsorted fa-lg chevron_up_down', remote: true)
     end
 
 
