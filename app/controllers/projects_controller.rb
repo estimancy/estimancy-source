@@ -2412,7 +2412,7 @@ public
   def sort
     @organization = @current_organization
     # @projects = @organization.organization_estimations
-    @projects = @organization.projects
+    @projects = @organization.projects.where('is_model IS NOT TRUE')
 
     k = params[:f]
     s = params[:s]

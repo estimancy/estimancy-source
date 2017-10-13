@@ -76,13 +76,11 @@ module OrganizationsHelper
     sort_order = params[:s] || params[:sort_order]
 
     case column.name
-
       when :start_date
         column_sort_order = "asc"
         if column.name.to_s != params[:f]
           sort_order = "desc"
         end
-
       when :title
         column_sort_order = "desc"
       when :description
