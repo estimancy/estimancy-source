@@ -1336,3 +1336,13 @@ td.float_left {
     font-weight: 300;
 
 }
+
+.invisible_button {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    /*cursor:pointer;*/
+    cursor: auto;
+    overflow: hidden;
+    outline:none;
+}
