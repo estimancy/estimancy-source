@@ -491,8 +491,15 @@ class ApplicationController < ActionController::Base
     case k
       when "title"
         @projects = @projects.unscoped.order("title #{s}")
+      when "version_number"
+        @projects = @projects.unscoped.order("version_number #{s}")
       when "description"
         @projects = @projects.unscoped.order("description #{s}")
+      when "application"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                        .where(organization_id: @organization.id)
+                        .order("applications.name #{s}")
       when "project_area"
         @projects = Project.unscoped
                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
