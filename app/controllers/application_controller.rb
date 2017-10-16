@@ -495,11 +495,25 @@ class ApplicationController < ActionController::Base
         @projects = @projects.unscoped.order("version_number #{s}")
       when "description"
         @projects = @projects.unscoped.order("description #{s}")
+      when "private"
+        @projects = @projects.unscoped.order("private #{s}")
+
       when "application"
         @projects = Project.unscoped
                         .joins("LEFT JOIN applications ON projects.application_id = applications.id")
                         .where(organization_id: @organization.id)
                         .order("applications.name #{s}")
+
+
+      when "original_model"
+        #@projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+        #@projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+        # @projects = Project.unscoped
+        #                 .includes(:original_model)
+        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+        #                 .where(organization_id: @organization.id)
+        #                 .order("original_model.title #{s}")
+
       when "project_area"
         @projects = Project.unscoped
                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
@@ -549,6 +563,7 @@ class ApplicationController < ActionController::Base
     end
 
     res
+
   end
 
 end
