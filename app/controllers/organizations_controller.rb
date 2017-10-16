@@ -705,7 +705,7 @@ class OrganizationsController < ApplicationController
       @max = params[:max].to_i
     else
       @min = 0
-      @max = (current_user.object_per_page || @object_per_page)
+      @max = @object_per_page
     end
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
@@ -714,20 +714,16 @@ class OrganizationsController < ApplicationController
 
 
     # Pour garder le tri même lorsqu'on raffraichie la page
-    # if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
-    #   #redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max), format: 'js') and return
-    #   respond_to do |format|
-    #     #format.js { render js: "window.location='#{url.to_s}'" }
-    #     format.js { redirect_to(sort_path(f: params[:sort_column], s: params[:sort_order], min: @min, max: @max)) and return }
-    #   end
-    # end
-
-    organization_estimations = @organization.organization_estimations
-    # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
-    res = []
-    organization_estimations.each do |p|
-      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-        res << p.project
+    if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
+      res = get_sorted_estimations(params[:sort_column], params[:sort_order])
+    else
+      organization_estimations = @organization.organization_estimations
+      # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+      res = []
+      organization_estimations.each do |p|
+        if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+          res << p.project
+        end
       end
     end
 
@@ -1085,9 +1081,49 @@ class OrganizationsController < ApplicationController
               unless new_view_widget_mp.nil?
                 new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
-                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id, name: view_widget.name, show_name: view_widget.show_name,
-                                                 icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
-                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
+                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
+                                                 name: view_widget.name, show_name: view_widget.show_name,
+                                                 equation: view_widget.equation,
+                                                 comment: view_widget.comment,
+                                                 is_kpi_widget: view_widget.is_kpi_widget,
+                                                 kpi_unit: view_widget.kpi_unit,
+                                                 icon_class: view_widget.icon_class, color: view_widget.color,
+                                                 show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
+                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position,
+                                                 position_x: view_widget.position_x, position_y: view_widget.position_y)
+                #===
+
+                # #Update KPI Widget aquation
+                unless view_widget.equation.empty?
+                  ["A", "B", "C", "D", "E"].each do |letter|
+                    unless view_widget.equation[letter].nil?
+
+                      new_array = []
+                      est_val_id = view_widget.equation[letter].first
+                      mp_id = view_widget.equation[letter].last
+
+                      begin
+                        new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                        new_mpr_id = new_mpr.id
+                        begin
+                          new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                        rescue
+                          new_est_val_id = nil
+                        end
+                      rescue
+                        new_mpr_id = nil
+                      end
+
+                      new_array << new_est_val_id
+                      new_array << new_mpr_id
+
+                      widget_copy.equation[letter] = new_array
+                    end
+                  end
+                  widget_copy.save
+                end
+
+                #===
 
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: view_widget.id).first
                 unless pf.nil?

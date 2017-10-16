@@ -2412,7 +2412,49 @@ public
   def sort
     @organization = @current_organization
     # @projects = @organization.organization_estimations
-    @projects = @organization.projects#.where('is_model IS NOT TRUE')
+    @projects = @organization.projects
+
+    k = params[:f]
+    s = params[:s]
+
+    @sort_column = k
+    @sort_order = s
+
+   res = get_sorted_estimations(k, s)
+
+    @object_per_page = (current_user.object_per_page || 10)
+    if params['previous_next_action'] == "true"
+      @min = params['min'].to_i
+      @max = params['max'].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+    @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
+
+      @min = (last_page.to_i-1) * @object_per_page
+      @max = @min + @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    build_footer
+  end
+
+
+  def sort_SAVE
+    @organization = @current_organization
+    # @projects = @organization.organization_estimations
+    @projects = @organization.projects
 
     k = params[:f]
     s = params[:s]
@@ -2427,45 +2469,45 @@ public
 
     case k
       when "title"
-        @projects = @projects.unscoped.order("title #{s}")#.all
+        @projects = @projects.unscoped.order("title #{s}")
       when "description"
-        @projects = @projects.unscoped.order("description #{s}")#.all
+        @projects = @projects.unscoped.order("description #{s}")
       when "project_area"
         @projects = Project.unscoped
                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
                         .where(organization_id: @organization.id)
-                        .order("project_areas.name #{s}")#.all
+                        .order("project_areas.name #{s}")
       when "project_category"
         @projects = Project.unscoped
                         .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
                         .where(organization_id: @organization.id)
-                        .order("project_categories.name #{s}")#.all
+                        .order("project_categories.name #{s}")
       when "platform_category"
         @projects = Project.unscoped
                         .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
                         .where(organization_id: @organization.id)
-                        .order("platform_categories.name #{s}")#.all
+                        .order("platform_categories.name #{s}")
       when "acquisition_category"
         @projects = Project.unscoped
                         .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
                         .where(organization_id: @organization.id)
-                        .order("acquisition_categories.name #{s}")#.all
+                        .order("acquisition_categories.name #{s}")
       when "status_name"
         @projects = Project.unscoped
                         .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
                         .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}")#.all
+                        .order("estimation_statuses.name #{s}")
       when "status_name"
         @projects = Project.unscoped
                         .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
                         .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}")#.all
+                        .order("estimation_statuses.name #{s}")
       when "start_date"
-        @projects = @projects.unscoped.order("start_date #{s}")#.all
+        @projects = @projects.unscoped.order("start_date #{s}")
       when "updated_at"
-        @projects = @projects.unscoped.order("updated_at #{s}")#.all
+        @projects = @projects.unscoped.order("updated_at #{s}")
       when "created_at"
-        @projects = @projects.unscoped.order("created_at #{s}")#.all
+        @projects = @projects.unscoped.order("created_at #{s}")
       else
     end
 
@@ -2516,11 +2558,33 @@ public
     results = []
     final_results = []
 
+    @object_per_page = (current_user.object_per_page || 10)
+    if params[:min].present? && params[:max].present?
+      @min = params[:min].to_i
+      @max = params[:max].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+
+    # if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
+    #   @projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
+    # else
+    #   @projects = @organization.projects.order("created_at ASC")
+    # end
+
     params.delete("utf8")
     params.delete("commit")
     params.delete("action")
     params.delete("controller")
     params.delete("filter_organization_projects_version")
+    params.delete("sort_action")
+    params.delete("sort_column")
+    params.delete("sort_order")
+    params.delete("min")
+    params.delete("max")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
     # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
@@ -2578,7 +2642,7 @@ public
       end
 
       @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
-
+      #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).all
     end
 
     res = []
@@ -2588,7 +2652,7 @@ public
           res << p.project
         end
       end
-      @projects = res[0..50].nil? ? [] : res[0..50]
+      @projects = res[@min..@max].nil? ? [] : res[@min..@max-1] #res[0..50].nil? ? [] : res[0..50]
     else
       @projects = @organization.projects.order("created_at ASC")
     end

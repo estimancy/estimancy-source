@@ -11,6 +11,10 @@
     </th>
   </tr>
 
+  <% ["sort_action", "sort_column", "sort_order", "min", "max"].each do |sort_param| %>
+    <%= hidden_field_tag sort_param, params[sort_param]  %>
+  <% end %>
+
   <tr style="background-color: #eeeeee;">
     <% selected_inline_columns.each do |column| %>
       <td>

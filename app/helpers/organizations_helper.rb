@@ -89,6 +89,8 @@ module OrganizationsHelper
         column_sort_order = "asc"
       when :status_name
         column_sort_order = "asc"
+      when :creator
+        column_sort_order = "asc"
       else
         if column.field_id
         else
@@ -96,7 +98,7 @@ module OrganizationsHelper
         end
     end
 
-    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank?)
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
       column_chevron_icon = ""
       case sort_order
         when "desc"
