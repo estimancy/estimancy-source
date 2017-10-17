@@ -25,7 +25,7 @@
             <% search_value = params[column.name] %>
         <% end %>
 
-        <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;", disabled: !column.field_id.nil? %>
+        <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;", disabled: (!column.field_id.nil? || column.name.to_s=="description") %>
       </td>
       <% end %>
     <td></td>

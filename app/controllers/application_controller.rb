@@ -490,44 +490,39 @@ class ApplicationController < ActionController::Base
     else
       case k
         when "title"
-          results = projects.where("title liKE ?", "%#{val}%")
+          results = projects.where("title LIKE ?", "%#{val}%")
         when "creator"
-          # creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{val}%", "%#{val}%").first
-          # creator_id = creator.nil? ? nil : creator.id
-          # results = projects.where("creator_id liKE ?", "%#{creator_id}%")
-
           creator_ids = User.where("first_name LIKE ? OR last_name liKE ?", "%#{val}%", "%#{val}%").map(&:id)
           results = projects.where(creator_id: creator_ids)
-
         when "version_number"
-          results = projects.where("version_number liKE ?", "%#{val}%")
+          results = projects.where("version_number LIKE ?", "%#{val}%")
         when "application"
-          ids = Application.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = Application.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(application_id: ids)
         when "description"
-          results = projects.where("description liKE ?", "%#{val}%")
+          results = projects.where("description LIKE ?", "%#{val}%")
         when "status_name"
-          ids = EstimationStatus.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = EstimationStatus.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(estimation_status_id: ids, organization_id: organization_id)
         when "start_date"
-          results = projects.where("start_date liKE ?", "%#{val}%")
+          results = projects.where("start_date LIKE ?", "%#{val}%")
         when "project_area"
-          ids = ProjectArea.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = ProjectArea.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(project_area_id: ids, organization_id: organization_id)
         when "project_category"
-          ids = ProjectCategory.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = ProjectCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(project_category_id: ids, organization_id: organization_id)
         when "platform_category"
-          ids = PlatformCategory.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = PlatformCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(platform_category_id: ids, organization_id: organization_id)
         when "acquisition_category"
-          ids = AcquisitionCategory.where("name liKE ?", "%#{val}%").all.map(&:id)
+          ids = AcquisitionCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(acquisition_category_id: ids, organization_id: organization_id)
         when "original_model"
-          ids = Project.where("title liKE ?", "%#{val}%").all.map(&:id)
+          ids = Project.where("title LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(original_model_id: ids, organization_id: organization_id)
         when "private"
-          results = projects.where("private liKE ?", "%#{val}%")
+          results = projects.where("private LIKE ?", "%#{val}%")
         else
           #options[k] = v
           results = projects
