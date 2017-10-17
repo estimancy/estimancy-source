@@ -2420,7 +2420,11 @@ public
     @sort_column = k
     @sort_order = s
 
-    organization_projects = get_sorted_estimations(k, s)
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+
+    organization_projects = get_sorted_estimations(@sort_column, @sort_order, @search_column, @search_value)
+
     res = []
     organization_projects.each do |p|
       if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
@@ -2454,9 +2458,15 @@ public
       @is_last_page = "false"
     end
 
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = true
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+
     build_footer
   end
-
 
   def sort_SAVE
     @organization = @current_organization
@@ -2571,6 +2581,7 @@ public
     @sort_column = params[:sort_column]
     @sort_order = params[:sort_order]
     @sort_action = params[:sort_action]
+
     @search_column = ""
     @search_value = ""
 
@@ -2602,45 +2613,47 @@ public
         @search_column = k
         @search_value = val
 
-        case k
-          when "title"
-            results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
-          when "creator"
-            creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
-            creator_id = creator.nil? ? nil : creator.id
-            results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
-          when "version_number"
-            results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "application"
-            ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(application_id: ids).all.map(&:id)
-          when "description"
-            results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "status_name"
-            ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "start_date"
-            results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "project_area"
-            ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "project_category"
-            ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "platform_category"
-            ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "acquisition_category"
-            ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "original_model"
-            ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "private"
-            results = @projects.where("private liKE ?", "%#{val}%").all.map(&:id)
-          else
-            options[k] = v
-        end
+        # case k
+        #   when "title"
+        #     results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
+        #   when "creator"
+        #     creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+        #     creator_id = creator.nil? ? nil : creator.id
+        #     results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
+        #   when "version_number"
+        #     results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "application"
+        #     ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(application_id: ids).all.map(&:id)
+        #   when "description"
+        #     results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "status_name"
+        #     ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "start_date"
+        #     results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "project_area"
+        #     ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "project_category"
+        #     ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "platform_category"
+        #     ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "acquisition_category"
+        #     ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "original_model"
+        #     ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "private"
+        #     results = @projects.where("private liKE ?", "%#{val}%").all.map(&:id)
+        #   else
+        #     options[k] = v
+        # end
+
+        results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
 
         a = results.flatten
         b = final_results.flatten
@@ -2673,6 +2686,13 @@ public
     else
       @is_last_page = "false"
     end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
 
     build_footer
   end

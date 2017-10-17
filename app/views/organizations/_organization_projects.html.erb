@@ -18,7 +18,14 @@
   <tr style="background-color: #eeeeee;">
     <% selected_inline_columns.each do |column| %>
       <td>
-        <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
+        <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) %>
+            <% search_value = params[column.name] || params['search_value'] %>
+            <% search_value = search_value.blank? ? session['search_value'] : search_value %>
+        <% else %>
+            <% search_value = params[column.name] %>
+        <% end %>
+
+        <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;" %>
       </td>
       <% end %>
     <td></td>

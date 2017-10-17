@@ -712,9 +712,17 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-    # Pour garder le tri même lorsqu'on raffraichie la page
-    if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
-      organization_projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
+    @sort_action = params[:sort_action] || session[:sort_action]
+    @sort_column = params[:sort_column] || session[:sort_column]
+    @sort_order = params[:sort_order] || session[:sort_order]
+
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+
+    #organization_projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
+    # Pour garder le tri même lors du raffraichissement de la page
+    if (@sort_action == "true" && @sort_column != "" && @sort_order != "")
+      organization_projects = get_sorted_estimations(@sort_column, @sort_order, @search_column, @search_value)
 
       res = []
       organization_projects.each do |p|
@@ -723,14 +731,26 @@ class OrganizationsController < ApplicationController
         end
       end
     else
-      organization_estimations = @organization.organization_estimations
-      # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
-      res = []
-      organization_estimations.each do |p|
-        if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-          res << p.project
+      if !@search_column.blank? && !@search_value.blank?
+        projects = @organization.projects.where(:is_model => [nil, false])
+        organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
+        res = []
+        organization_projects.each do |p|
+          if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+            res << p
+          end
+        end
+      else
+        organization_estimations = @organization.organization_estimations
+        # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+        res = []
+        organization_estimations.each do |p|
+          if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+            res << p.project
+          end
         end
       end
+
     end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
@@ -745,6 +765,12 @@ class OrganizationsController < ApplicationController
       @is_last_page = "false"
     end
 
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
 
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)

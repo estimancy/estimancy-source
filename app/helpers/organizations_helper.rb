@@ -75,10 +75,18 @@ module OrganizationsHelper
     sort_column = params[:f] || params[:sort_column]
     sort_order = params[:s] || params[:sort_order]
 
+    if sort_column.blank? || sort_order.blank?
+      sort_column = session[:sort_column]
+      sort_order = session[:sort_order]
+    end
+
+    search_column = session[:search_column]
+    search_order = session[:search_order]
+
     case column.name
       when :start_date
         column_sort_order = "asc"
-        if column.name.to_s != params[:f]
+        if column.name.to_s != sort_column
           sort_order = "desc"
         end
       when :title
@@ -98,7 +106,8 @@ module OrganizationsHelper
         end
     end
 
-    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
+    #if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && sort_column.blank?)
       column_chevron_icon = ""
       case sort_order
         when "desc"

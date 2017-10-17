@@ -480,7 +480,61 @@ class ApplicationController < ActionController::Base
   end
 
 
-  def get_sorted_estimations(sort_column, sort_order)
+  def get_search_results(organization_id, projects, search_column, search_value)
+
+    k = search_column
+    val = search_value
+
+    if search_column.blank? || search_value.blank?
+      results = projects
+    else
+      case k
+        when "title"
+          results = projects.where("title liKE ?", "%#{val}%")
+        when "creator"
+          creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+          creator_id = creator.nil? ? nil : creator.id
+          results = projects.where("creator_id liKE ?", "%#{creator_id}%")
+        when "version_number"
+          results = projects.where("version_number liKE ?", "%#{params[k]}%")
+        when "application"
+          ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(application_id: ids)
+        when "description"
+          results = projects.where("description liKE ?", "%#{params[k]}%")
+        when "status_name"
+          ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(estimation_status_id: ids, organization_id: organization_id)
+        when "start_date"
+          results = projects.where("start_date liKE ?", "%#{params[k]}%")
+        when "project_area"
+          ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(project_area_id: ids, organization_id: organization_id)
+        when "project_category"
+          ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(project_category_id: ids, organization_id: organization_id)
+        when "platform_category"
+          ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(platform_category_id: ids, organization_id: organization_id)
+        when "acquisition_category"
+          ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(acquisition_category_id: ids, organization_id: organization_id)
+        when "original_model"
+          ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
+          results = projects.where(original_model_id: ids, organization_id: organization_id)
+        when "private"
+          results = projects.where("private liKE ?", "%#{val}%")
+        else
+          #options[k] = v
+          results = projects
+      end
+    end
+
+    results
+  end
+
+
+  def get_sorted_estimations(sort_column, sort_order, search_column="", search_value="")
     @organization = @current_organization
     # @projects = @organization.organization_estimations
     @projects = @organization.projects
@@ -554,6 +608,12 @@ class ApplicationController < ActionController::Base
     end
 
     @projects = @projects.where(:is_model => [nil, false])
+
+    unless search_column.blank? || search_value.blank?
+      @projects = get_search_results(@organization.id, @projects, search_column, search_value)
+    end
+
+    @projects
 
     # res = []
     # @projects.each do |p|
