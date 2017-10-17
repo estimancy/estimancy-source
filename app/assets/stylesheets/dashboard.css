@@ -1345,4 +1345,6 @@ td.float_left {
     cursor: auto;
     overflow: hidden;
     outline:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
 }

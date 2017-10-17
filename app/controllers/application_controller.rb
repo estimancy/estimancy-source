@@ -553,17 +553,15 @@ class ApplicationController < ActionController::Base
       else
     end
 
-    @projects = @projects.where(:is_model => [nil, false]).all
+    @projects = @projects.where(:is_model => [nil, false])
 
-    res = []
-    @projects.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-        res << p
-      end
-    end
-
-    res
-
+    # res = []
+    # @projects.each do |p|
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #     res << p
+    #   end
+    # end
+    # res
   end
 
 end

@@ -2420,7 +2420,13 @@ public
     @sort_column = k
     @sort_order = s
 
-   res = get_sorted_estimations(k, s)
+    organization_projects = get_sorted_estimations(k, s)
+    res = []
+    organization_projects.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+      end
+    end
 
     @object_per_page = (current_user.object_per_page || 10)
     if params['previous_next_action'] == "true"
@@ -2430,6 +2436,7 @@ public
       @min = 0
       @max = @object_per_page
     end
+
     @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
 
     last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
@@ -2559,21 +2566,21 @@ public
     final_results = []
 
     @object_per_page = (current_user.object_per_page || 10)
-    if params[:min].present? && params[:max].present?
-      @min = params[:min].to_i
-      @max = params[:max].to_i
-    else
-      @min = 0
-      @max = @object_per_page
-    end
+    @min = 0
+    @max = @object_per_page
+    @sort_column = params[:sort_column]
+    @sort_order = params[:sort_order]
+    @sort_action = params[:sort_action]
+    @search_column = ""
+    @search_value = ""
 
     # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
 
-    # if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
-    #   @projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
-    # else
-    #   @projects = @organization.projects.order("created_at ASC")
-    # end
+    if @sort_action == "true" && @sort_column != "" && @sort_order != ""
+      @projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
+    else
+      @projects = @organization.projects.order("start_date desc")###.order("created_at ASC")
+    end
 
     params.delete("utf8")
     params.delete("commit")
@@ -2587,12 +2594,14 @@ public
     params.delete("max")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
-    @projects = @organization.projects.order("created_at ASC")
 
     unless params.blank?
       params.each do |k,v|
         val = params[k]
+
+        @search_column = k
+        @search_value = val
+
         case k
           when "title"
             results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
@@ -2627,6 +2636,8 @@ public
           when "original_model"
             ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
             results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
+          when "private"
+            results = @projects.where("private liKE ?", "%#{val}%").all.map(&:id)
           else
             options[k] = v
         end
@@ -2641,20 +2652,26 @@ public
         end
       end
 
-      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
-      #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).all
+      #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
+      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).all
     end
 
     res = []
-    unless @organization_estimations.nil?
+    if @organization_estimations.nil?
+      @projects = @organization.organization_estimations #@organization.projects.order("created_at ASC")
+    else
       @organization_estimations.each do |p|
         if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
           res << p.project
         end
       end
-      @projects = res[@min..@max].nil? ? [] : res[@min..@max-1] #res[0..50].nil? ? [] : res[0..50]
+      @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    end
+
+    if @projects.length <= @object_per_page
+      @is_last_page = "true"
     else
-      @projects = @organization.projects.order("created_at ASC")
+      @is_last_page = "false"
     end
 
     build_footer

@@ -712,10 +712,16 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-
     # Pour garder le tri même lorsqu'on raffraichie la page
     if params[:sort_action] == "true" && params[:sort_column] != "" && params[:sort_order] != ""
-      res = get_sorted_estimations(params[:sort_column], params[:sort_order])
+      organization_projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
+
+      res = []
+      organization_projects.each do |p|
+        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+          res << p
+        end
+      end
     else
       organization_estimations = @organization.organization_estimations
       # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
