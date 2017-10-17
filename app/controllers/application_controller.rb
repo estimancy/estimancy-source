@@ -492,9 +492,13 @@ class ApplicationController < ActionController::Base
         when "title"
           results = projects.where("title liKE ?", "%#{val}%")
         when "creator"
-          creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{val}%", "%#{val}%" ).first
-          creator_id = creator.nil? ? nil : creator.id
-          results = projects.where("creator_id liKE ?", "%#{creator_id}%")
+          # creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{val}%", "%#{val}%").first
+          # creator_id = creator.nil? ? nil : creator.id
+          # results = projects.where("creator_id liKE ?", "%#{creator_id}%")
+
+          creator_ids = User.where("first_name LIKE ? OR last_name liKE ?", "%#{val}%", "%#{val}%").map(&:id)
+          results = projects.where(creator_id: creator_ids)
+
         when "version_number"
           results = projects.where("version_number liKE ?", "%#{val}%")
         when "application"
