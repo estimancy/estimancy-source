@@ -148,7 +148,8 @@ module OrganizationsHelper
       when :title
         content_tag('th class="center"', lk)
       when :description
-        content_tag('th class="center"', lk)
+        #content_tag('th class="center"', lk)
+        content_tag('th class="center"', I18n.t(column.caption))
       when :version_number
         content_tag('th class="center"', lk)
       when :status_name
