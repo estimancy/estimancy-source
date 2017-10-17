@@ -1,7 +1,7 @@
 <ul class="nav">
 
   <li class="dropdown">
-    <a href="<%= main_app.organization_estimations_path(@current_organization, sort_column: session[:sort_column], sort_order: session[:sort_order], sort_action: session[:sort_action], search_column: session[:search_column], search_value: session[:search_value]) %>" title="<%= I18n.t(:liste_des_estimations) %>">
+    <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
       <i class="fa fa-list-ul fa-lg pull-left"></i>&nbsp;
     </a>
   </li>
@@ -13,7 +13,7 @@
           <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
         </a>
       <% else %>
-        <a href="<%= main_app.organization_estimations_path(@current_organization, sort_column: session[:sort_column], sort_order: session[:sort_order], sort_action: session[:sort_action], search_column: session[:search_column], search_value: session[:search_value] ) %>">
+        <a href="<%= main_app.organization_estimations_path(@current_organization) %>">
           <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
         </a>
       <% end %>

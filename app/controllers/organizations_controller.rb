@@ -712,9 +712,9 @@ class OrganizationsController < ApplicationController
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-    @sort_action = params[:sort_action] || session[:sort_action]
-    @sort_column = params[:sort_column] || session[:sort_column]
-    @sort_order = params[:sort_order] || session[:sort_order]
+    @sort_action = params[:sort_action] #|| session[:sort_action]
+    @sort_column = params[:sort_column] #|| session[:sort_column]
+    @sort_order = params[:sort_order] #|| session[:sort_order]
 
     @search_column = session[:search_column]
     @search_value = session[:search_value]
