@@ -2669,17 +2669,17 @@ public
       @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).all
     end
 
-    res = []
     if @organization_estimations.nil?
-      @projects = @organization.organization_estimations #@organization.projects.order("created_at ASC")
-    else
-      @organization_estimations.each do |p|
-        if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-          res << p.project
-        end
-      end
-      @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+      @organization_estimations = OrganizationEstimation.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
     end
+
+    res = []
+    @organization_estimations.each do |p|
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+        res << p.project
+      end
+    end
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
     if @projects.length <= @object_per_page
       @is_last_page = "true"
