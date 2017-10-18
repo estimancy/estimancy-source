@@ -25,7 +25,8 @@ module ExpertJudgement
     belongs_to :organization
     has_many :instance_estimates, foreign_key: "expert_judgement_instance_id"
 
-    validates_presence_of :name###, :organization_id
+    ###validates_presence_of :organization_id
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
     INPUT_ATTRIBUTES_ALIAS = ["retained_size", "effort", "cost"]
 

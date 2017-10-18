@@ -528,7 +528,7 @@ class ProjectsController < ApplicationController
         if can_show_estimation?(@project)
           redirect_to(:action => 'show') and return
         else
-          redirect_to(organization_setting_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
       end
 

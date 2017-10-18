@@ -41,6 +41,8 @@ module Guw
 
     serialize :orders, Hash
 
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
+
     #Search fields
     scoped_search :on => [:name]
 

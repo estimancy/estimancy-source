@@ -464,7 +464,11 @@
   </div>
 
   <div id="tabs-estimation-models">
-    <%= render partial: "projects/estimation_models", object: @estimation_models %>
+    <% if can? :manage_estimation_models, Project %>
+        <%= render partial: "projects/estimation_models", object: @estimation_models %>
+    <% else %>
+        <div class="red_color"><%= I18n.t(:notice_cannot_view_estimation_models) %></div>
+    <% end %>
   </div>
 
   <% if current_user.super_admin == true %>

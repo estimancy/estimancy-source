@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171006074746) do
+ActiveRecord::Schema.define(:version => 20171018071713) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -321,6 +321,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.integer "copy_id"
   end
 
+  add_index "expert_judgement_instances", ["organization_id", "name"], :name => "index_expert_judgement_instances_on_organization_id_and_name", :unique => true
+
   create_table "factors", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -452,6 +454,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.boolean  "sort3_is_modifiable"
     t.boolean  "sort4_is_modifiable"
   end
+
+  add_index "ge_ge_models", ["organization_id", "name"], :name => "index_ge_ge_models_on_organization_id_and_name", :unique => true
 
   create_table "groups", :force => true do |t|
     t.integer  "organization_id"
@@ -686,6 +690,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.boolean  "view_data"
   end
 
+  add_index "guw_guw_models", ["organization_id", "name"], :name => "index_guw_guw_models_on_organization_id_and_name", :unique => true
+
   create_table "guw_guw_output_associations", :force => true do |t|
     t.integer  "guw_output_id"
     t.integer  "guw_output_associated_id"
@@ -917,6 +923,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.string   "filter_d"
   end
 
+  add_index "kb_kb_models", ["organization_id", "name"], :name => "index_kb_kb_models_on_organization_id_and_name", :unique => true
+
   create_table "labor_categories_project_areas", :id => false, :force => true do |t|
     t.integer  "labor_category_id"
     t.integer  "project_area_id"
@@ -1052,6 +1060,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.datetime "updated_at"
     t.boolean  "modify_output"
   end
+
+  add_index "operation_operation_models", ["organization_id", "name"], :name => "index_operation_operation_models_on_organization_id_and_name", :unique => true
 
   create_table "organization_estimations", :id => false, :force => true do |t|
     t.integer  "current_organization_id",               :default => 0,     :null => false
@@ -1532,6 +1542,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.integer  "n_max"
   end
 
+  add_index "skb_skb_models", ["organization_id", "name"], :name => "index_skb_skb_models_on_organization_id_and_name", :unique => true
+
   create_table "staffing_staffing_custom_data", :force => true do |t|
     t.integer  "staffing_model_id"
     t.integer  "module_project_id"
@@ -1591,6 +1603,8 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.integer  "effort_week_unit"
     t.string   "config_type"
   end
+
+  add_index "staffing_staffing_models", ["organization_id", "name"], :name => "index_staffing_staffing_models_on_organization_id_and_name", :unique => true
 
   create_table "status_transitions", :force => true do |t|
     t.integer  "from_transition_status_id"
@@ -1802,6 +1816,7 @@ ActiveRecord::Schema.define(:version => 20171006074746) do
     t.string   "average_rate_wording"
   end
 
+  add_index "wbs_activities", ["organization_id", "name"], :name => "index_wbs_activities_on_organization_id_and_name", :unique => true
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"
 
   create_table "wbs_activity_elements", :force => true do |t|
