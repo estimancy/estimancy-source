@@ -146,7 +146,7 @@ $(function table_sorter_filter() {
 
         // initialize the pager plugin
         // ****************************
-        .tablesorterPager(pagerOptions);
+        //.tablesorterPager(pagerOptions);   // line commenté pour corriger les pager au niveau des onglets
 
     //Update the current TAB footer
     var current_tab_index = $(".tabs").tabs('option', 'selected');
