@@ -43,7 +43,7 @@ module Staffing
                 })
     end
 
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
     validates :mc_donell_coef, :puissance_n, :organization_id, presence: true
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true

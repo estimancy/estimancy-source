@@ -37,8 +37,8 @@ module Ge
 
     CORRESPONDING_INPUTS_WITH_OUTPUTS = {"sort1" => "ent1", "sort2" => "ent2", "sort3" => "ent3", "sort4" => "ent4"}
 
-    #validates_presence_of :name####, :organization_id
-    validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
+    #validates_presence_of :organization_id
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
     validates :ge_model_instance_mode, :presence => true
     validates :coeff_a, :coeff_b, :numericality => {:allow_nil => true}
 

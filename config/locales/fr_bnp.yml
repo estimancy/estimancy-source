@@ -2076,3 +2076,5 @@ fr_bnp:
   warning_already_exist: "existe déjà"
   average_rate_wording: "Libellé du 'Taux moyen' (TJM, THM, ...)"
   identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"
+  already_exists: "Existe déjà"
+  module_instance_name_already_exists: "Une instance avec le même nom existe déjà"

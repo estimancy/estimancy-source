@@ -54,7 +54,7 @@ class WbsActivity < ActiveRecord::Base
   has_many :wbs_activity_ratio_variables, through: :wbs_activity_ratios
 
   ###validates :organization_id, :presence => true
-  validates :name, :presence => true, :uniqueness => { :scope => :organization_id }
+  validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
   #Enable the amoeba gem for deep copy/clone (dup with associations)
   amoeba do

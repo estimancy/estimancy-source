@@ -1665,3 +1665,5 @@ en-gb:
   warning_already_exist: "already exists"
   average_rate_wording: "'Average rate' wording (TJM, THM, ...)"
   identical_project_field_exists: "An identical favorite field already exists for this project"
+  already_exists: "Already exists"
+  module_instance_name_already_exists: "An instance with the same name already exists"

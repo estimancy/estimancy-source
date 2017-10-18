@@ -25,7 +25,7 @@ module Operation
     DEFAULT_INPUT_ATTRIBUTES_ALIAS = ["ent1_operation", "ent2_operation", "ent3_operation", "ent4_operation"]
     OUTPUT_ATTRIBUTES_ALIAS = ["sortie_operation"]
 
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
     #validates :standard_unit_coefficient, :output_unit, :presence => true
     validates :operation_type, :presence => true
 
