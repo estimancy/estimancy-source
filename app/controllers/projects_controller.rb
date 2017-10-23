@@ -2412,7 +2412,7 @@ public
   def sort
     @organization = @current_organization
     # @projects = @organization.organization_estimations
-    @projects = @organization.projects
+    @projects = @organization.projects.where(:is_model => [nil, false])
 
     k = params[:f]
     s = params[:s]
@@ -2423,7 +2423,7 @@ public
     @search_column = session[:search_column]
     @search_value = session[:search_value]
 
-    organization_projects = get_sorted_estimations(@sort_column, @sort_order, @search_column, @search_value)
+    organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_column, @search_value)
 
     res = []
     organization_projects.each do |p|
@@ -2569,7 +2569,6 @@ public
 
 
   def search
-
     @organization = @current_organization
     options = {}
     results = []
@@ -2586,11 +2585,10 @@ public
     @search_value = ""
 
     # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
 
     if @sort_action == "true" && @sort_column != "" && @sort_order != ""
-      @projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
-    else
-      @projects = @organization.projects.order("start_date desc")###.order("created_at ASC")
+      @projects = get_sorted_estimations(@organization.id, @projects, params[:sort_column], params[:sort_order])
     end
 
     params.delete("utf8")
@@ -2666,11 +2664,11 @@ public
       end
 
       #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
-      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).all
+      @organization_estimations = @organization.organization_estimations.where(project_id: final_results.inject(&:&)).all
     end
 
     if @organization_estimations.nil?
-      @organization_estimations = OrganizationEstimation.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
+      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
     end
 
     res = []
@@ -2679,6 +2677,7 @@ public
         res << p.project
       end
     end
+
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
     if @projects.length <= @object_per_page

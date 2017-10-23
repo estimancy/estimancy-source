@@ -98,10 +98,10 @@
           <%= link_to "", "#", class: "fa fa-fast-forward btn btn-md disabled prev_next" %>
       <% else %>
           <% if params[:sort_action] == "true" || params[:action] == "sort" %>
-              <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page), max: (@max.to_i + @object_per_page), previous_next_action: true, is_last_page: is_last_page), remote: true, class: "btn btn-mini prev_next" %>
+              <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page), remote: true, class: "btn btn-mini prev_next" %>
               <%= link_to "", sort_path(f: sort_column, s: sort_order, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true), remote: true, class: "btn btn-md fa fa-fast-forward prev_next is_last_page" %>
           <% else %>
-              <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: (@min.to_i + @object_per_page), max: (@max.to_i + @object_per_page), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-mini prev_next" %>
+              <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-mini prev_next" %>
               <%= link_to "", organization_estimations_path(@organization.id, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-md fa fa-fast-forward prev_next is_last_page" %>
           <% end %>
       <% end %>

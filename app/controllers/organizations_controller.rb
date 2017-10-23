@@ -719,10 +719,10 @@ class OrganizationsController < ApplicationController
     @search_column = session[:search_column]
     @search_value = session[:search_value]
 
-    #organization_projects = get_sorted_estimations(params[:sort_column], params[:sort_order])
     # Pour garder le tri même lors du raffraichissement de la page
     if (@sort_action == "true" && @sort_column != "" && @sort_order != "")
-      organization_projects = get_sorted_estimations(@sort_column, @sort_order, @search_column, @search_value)
+      projects = @organization.projects.where(:is_model => [nil, false])
+      organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_column, @search_value)
 
       res = []
       organization_projects.each do |p|
@@ -1327,7 +1327,7 @@ class OrganizationsController < ApplicationController
                                   profiles_hash = values_hash['profiles']
                                   temp_values[new_component.id][new_element.id]['profiles'] = Hash.new
 
-                                  unless profiles_hash.nil? && profiles_hash.empty?
+                                  unless profiles_hash.blank? #profiles_hash.nil? && profiles_hash.empty?
 
                                     profiles_hash.each do |key, profile_values|
                                       old_profile_id = key.gsub('profile_id_', '')
@@ -1527,6 +1527,7 @@ class OrganizationsController < ApplicationController
                   begin
                     group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
                   rescue
+                    ###puts "erreur"
                   end
                 end
               end
@@ -1575,7 +1576,9 @@ class OrganizationsController < ApplicationController
                   new_wbs_profiles = []
                   OrganizationProfilesWbsActivity.where(wbs_activity_id: new_wbs_activity.id).all.each do |wbs_profile|
                     new_organization_profile = new_organization.organization_profiles.where(copy_id: wbs_profile.organization_profile_id).last
-                    new_wbs_profiles << new_organization_profile.id
+                    unless new_organization_profile.nil?
+                      new_wbs_profiles << new_organization_profile.id
+                    end
                   end
                   new_wbs_activity.organization_profile_ids = new_wbs_profiles
                   new_wbs_activity.save
