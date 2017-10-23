@@ -1624,7 +1624,7 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:results),
      I18n.t(:retained_result),
       "COEF"] +
-        hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
+      hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 

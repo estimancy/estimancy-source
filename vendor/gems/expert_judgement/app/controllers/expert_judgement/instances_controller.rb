@@ -193,17 +193,20 @@ class ExpertJudgement::InstancesController < ApplicationController
       end
     end
 
-    current_module_project.next.each do |n|
-      ModuleProject::common_attributes(current_module_project, n).each do |ca|
-        ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-        end
-      end
-    end
+    # current_module_project.next.each do |n|
+    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    #     ["low", "most_likely", "high"].each do |level|
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
+    #     end
+    #   end
+    # end
 
     ViewsWidget::update_field(current_module_project, @current_organization, @project, current_component)
-    current_module_project.nexts.each do |module_project|
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(current_module_project, current_component)
+    current_module_project.all_nexts_mp_with_links.each do |module_project|
       ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 

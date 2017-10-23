@@ -99,6 +99,20 @@ class ModuleProject < ActiveRecord::Base
     self.inverse_associated_module_projects
   end
 
+
+  def all_nexts_mp_with_links(all_nexts_mp=[])
+    current_nexts = self.inverse_associated_module_projects.uniq
+    all_nexts_mp << current_nexts
+
+    unless current_nexts.blank?
+      current_nexts.each do |next_mp|
+        current_mp_link = next_mp.all_nexts_mp_with_links(all_nexts_mp)
+      end
+    end
+
+    all_nexts_mp.flatten.uniq.compact
+  end
+
   #Return the inputs attributes of a module_projects
   def input_attributes
     res = Array.new

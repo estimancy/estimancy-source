@@ -138,7 +138,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @project = @module_project.project
 
       ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
-      @module_project.nexts.each do |module_project|
+
+      # Reset all view_widget results
+      ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+      @module_project.all_nexts_mp_with_links.each do |module_project|
         ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
       end
       redirect_to :back and return
@@ -335,7 +338,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @project = @module_project.project
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
-    @module_project.nexts.each do |module_project|
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+    @module_project.all_nexts_mp_with_links.each do |module_project|
       ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 
@@ -575,7 +581,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @project = @module_project.project
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
-    @module_project.nexts.each do |module_project|
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+    @module_project.all_nexts_mp_with_links.each do |module_project|
       ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 

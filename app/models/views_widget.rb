@@ -63,15 +63,26 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
-    module_project.nexts.each do |mp|
+    module_project.all_nexts_mp_with_links.each do |mp|
       mp.estimation_values.where(in_out: "output").each do |ev|
         ["low", "most_likely", "high"].each do |level|
-          ev.send(:"string_data_#{level}=", { pbs_project_element.id => nil } )
+          ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
         end
-        ev.send(:"string_data_probable=", { pbs_project_element_id => nil } )
+        ev.send("string_data_probable=", { pbs_project_element.id => nil })
         ev.save
       end
     end
+
+    # Cette methode remplace le code ci-dessous dans chaque methode de sauvegarde des estimations ==> A supprimer apres validation des tests
+    # current_module_project.nexts.each do |n|
+    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    #     ["low", "most_likely", "high"].each do |level|
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
+    #     end
+    #   end
+    # end
+
   end
 
 

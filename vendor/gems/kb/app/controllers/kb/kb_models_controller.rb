@@ -449,19 +449,12 @@ class Kb::KbModelsController < ApplicationController
       end
     end
 
-    module_project.nexts.each do |n|
-      ModuleProject::common_attributes(module_project, n).each do |ca|
-        ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-        end
-      end
-    end
-
-
     @project = module_project.project
     ViewsWidget::update_field(module_project, @current_organization, @project, current_component)
-    module_project.nexts.each do |mp|
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(current_module_project, current_component)
+    module_project.all_nexts_mp_with_links.each do |mp|
       ViewsWidget::update_field(mp, @current_organization, @project, current_component, true)
     end
 
