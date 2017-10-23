@@ -153,6 +153,8 @@ $(function table_sorter_filter() {
     var current_tab_name = current_tab_index+1;
     if($("#table_list_"+current_tab_name).length){
         //$("#table_list_"+current_tab_name).tablesorterPager(pagerOptions);  // line commenté pour corriger les pager au niveau des onglets
+        if($.inArray( $(this).attr('id'), ["table_list_1", "table_list_2"]))
+            $("#table_list_"+current_tab_name).tablesorterPager(pagerOptions);
     }
 
     // Get the current tab
@@ -223,6 +225,7 @@ $(function table_sorter_filter() {
     });
 
 });
+
 
 
 // ################################# TABLE SORTER #################################
