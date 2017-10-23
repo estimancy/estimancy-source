@@ -338,7 +338,10 @@ class WbsActivitiesController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @pbs_project_element = current_component
+    current_component_id = @pbs_project_element.id
+
     @module_project = current_module_project
+    @project = @module_project.project
     @wbs_activity = @module_project.wbs_activity
     module_project_attributes = @module_project.pemodule.pe_attributes
     number_precision = user_number_precision
@@ -521,7 +524,6 @@ class WbsActivitiesController < ApplicationController
         end
       end
 
-
       ## Update module_project_ratio_element selected attribute
       @module_project_ratio_elements.each do |mp_ratio_element|
         selected_elements = params['selected']
@@ -558,7 +560,7 @@ class WbsActivitiesController < ApplicationController
       unless est_val.pe_attribute.nil?
         if est_val.pe_attribute.alias == "ratio_name"
           ratio_name = @ratio_reference.name
-          est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })
+          est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_name })
 
         #elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
         elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
@@ -955,7 +957,7 @@ class WbsActivitiesController < ApplicationController
 
             est_val.update_attributes(in_result)
             pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
-            est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
+            est_val.update_attribute(:"string_data_probable", { current_component_id => pbs_input_probable_value } )
 
             #if est_val.pe_attribute.alias == "effort"
             #  input_effort_for_global_ratio = pbs_input_probable_value
@@ -973,8 +975,8 @@ class WbsActivitiesController < ApplicationController
             new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
           end
 
-          #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
-          est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
+          #est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_global })
+          est_val.update_attribute(:"string_data_probable", { current_component_id => new_ratio_global })
         end
       end
     end
@@ -989,22 +991,22 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
+    # current_module_project.nexts.each do |n|
+    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    #     ["low", "most_likely", "high"].each do |level|
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component_id => nil } )
+    #     end
+    #     EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component_id => nil } )
+    #   end
+    # end
 
-    current_module_project.nexts.each do |n|
-      ModuleProject::common_attributes(current_module_project, n).each do |ca|
-        ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-        end
-      end
-    end
+    ViewsWidget::update_field(@module_project, @current_organization, @project, @pbs_project_element)
 
-    @module_project = current_module_project
-    @project = @module_project.project
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, @pbs_project_element)
 
-    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
-    @module_project.nexts.each do |module_project|
-      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+    @module_project.all_nexts_mp_with_links.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, @pbs_project_element, true)
     end
 
 
@@ -1806,11 +1808,11 @@ class WbsActivitiesController < ApplicationController
                 end
 
               end
-              ev.send("string_data_#{level}")[current_component.id] = psb_level_estimation_value
+              ev.send("string_data_#{level}")[current_component_id] = psb_level_estimation_value
               ev.save
 
             elsif pe_attribute_alias == "ratio"
-              ev.send("string_data_#{level}")[current_component.id] = new_global_ratio_value
+              ev.send("string_data_#{level}")[current_component_id] = new_global_ratio_value
               ev.save
             end
 
@@ -1994,11 +1996,11 @@ class WbsActivitiesController < ApplicationController
                 end
 
               end
-              ev.send("string_data_#{level}")[current_component.id] = psb_level_estimation_value
+              ev.send("string_data_#{level}")[current_component_id] = psb_level_estimation_value
               ev.save
 
             elsif pe_attribute_alias == "ratio"
-              ev.send("string_data_#{level}")[current_component.id] = new_global_ratio_value
+              ev.send("string_data_#{level}")[current_component_id] = new_global_ratio_value
               ev.save
             end
 
