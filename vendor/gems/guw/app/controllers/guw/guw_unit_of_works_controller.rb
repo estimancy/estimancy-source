@@ -152,12 +152,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
 
-
-
-    @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: @guw_coefficient_element.id,
+    @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: nil,
                                                        guw_coefficient_id: @guw_coefficient.id,
                                                        guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create!
-
 
     @ceuw.percent = params["value"].to_f
 
@@ -1066,8 +1063,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if guw_coefficient.coefficient_type == "Pourcentage"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                              guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                      guw_coefficient_id: guw_coefficient.id)
+                                                              guw_coefficient_id: guw_coefficient.id,
+                                                              guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                               guw_coefficient_id: guw_coefficient.id,
+                                                                                                               guw_coefficient_element_id: nil)
 
             begin
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
@@ -1076,11 +1075,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                       guw_model_id: @guw_model.id,
                                                       default: true).first
-               if ce.nil?
-                 ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                                                       guw_model_id: @guw_model.id).first
-               end
-               pc = ce.value
+                if ce.nil?
+                   ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                                                         guw_model_id: @guw_model.id).first
+                end
+                pc = ce.value
               else
                 pc = ceuw.percent.to_f
               end
@@ -1115,16 +1114,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = current_module_project.id
 
-            # if ceuw.changed?
-              ceuw.save
-            # end
+            ceuw.save
 
           elsif guw_coefficient.coefficient_type == "Coefficient"
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                              guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                                      guw_coefficient_id: guw_coefficient.id)
-
+                                                              guw_coefficient_id: guw_coefficient.id,
+                                                              guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                                                               guw_coefficient_id: guw_coefficient.id,
+                                                                                                               guw_coefficient_element_id: nil)
             begin
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             rescue
@@ -1176,15 +1174,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             # unless params['guw_coefficient'].nil?
             #   unless params['guw_coefficients']["#{guw_unit_of_work.id}"].nil?
-                begin
-                  unless params['deported_guw_coefficient'].nil?
-                    ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-                  else
-                    ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-                  end
-                rescue
-                  ce = nil
-                end
+            begin
+              unless params['deported_guw_coefficient'].nil?
+                ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              else
+                ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
+              end
+            rescue
+              ce = nil
+            end
               # end
             # end
 
