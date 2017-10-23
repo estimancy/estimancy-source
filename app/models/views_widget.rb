@@ -64,6 +64,7 @@ class ViewsWidget < ActiveRecord::Base
 
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
     module_project.all_nexts_mp_with_links.each do |mp|
+
       mp.estimation_values.where(in_out: "output").each do |ev|
         ["low", "most_likely", "high"].each do |level|
           ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
@@ -71,7 +72,20 @@ class ViewsWidget < ActiveRecord::Base
         ev.send("string_data_probable=", { pbs_project_element.id => nil })
         ev.save
       end
+
+      # reset module_project_ratio_elements for EffortBreakdown module
+      if mp.pemodule.alias == "effort_breakdown"
+        mp.module_project_ratio_elements.each do |mp_ratio_elt|
+          ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
+            ["low", "most_likely", "high", "probable"].each do |level|
+              mp_ratio_elt.send("#{attribute}_#{level}=", nil)
+            end
+          end
+          mp_ratio_elt.save
+        end
+      end
     end
+
 
     # Cette methode remplace le code ci-dessous dans chaque methode de sauvegarde des estimations ==> A supprimer apres validation des tests
     # current_module_project.nexts.each do |n|
