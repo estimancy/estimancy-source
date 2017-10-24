@@ -290,17 +290,21 @@ module Guw
         conv = 1
       end
 
-      value = data_probable.to_f.round(2)
+      begin
+        value = data_probable.to_f.round(2)
 
-      if vw.use_organization_effort_unit == true
-        tab = Organization.get_organization_unit(value, guw_model.organization)
-        unit = tab.last
-      else
-        unless guw_output.nil?
-          unit = guw_output.unit
+        if vw.use_organization_effort_unit == true
+          tab = Organization.get_organization_unit(value, guw_model.organization)
+          unit = tab.last
         else
-          unit = ''
+          unless guw_output.nil?
+            unit = guw_output.unit
+          else
+            unit = ''
+          end
         end
+      rescue
+        unit = ''
       end
 
       if pe_attribute.alias == "effort" && guw_model.config_type == "old"
