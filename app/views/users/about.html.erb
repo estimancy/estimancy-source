@@ -24,7 +24,7 @@
       <dd><span class="label label-info"><%=`git rev-parse --abbrev-ref HEAD`%>rev. <%= update_date_timestamp %></span>
 
       <dt>Derniers commits</dt>
-      <dd><%= raw(`git log --oneline --reverse --pretty="format:<message>%s</message><br>" | tail -n 5`) %>
+      <dd><%= raw(`git log --oneline --reverse --pretty="format:<message>%s</message><br>" | tail -r -n 5`) %>
 
       <dt><%= I18n.t(:last_update) %></dt>
       <dd><span class="label label-info"><%= update_date %></span>
