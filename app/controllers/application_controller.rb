@@ -392,7 +392,7 @@ class ApplicationController < ActionController::Base
   end
 
   def update_date_timestamp
-    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i - 1508770000
+    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i.to_s(36)
   end
 
   def ruby_version
