@@ -1472,6 +1472,14 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model = Guw::GuwModel.new(params[:guw_model])
     @guw_model.organization_id = params[:guw_model][:organization_id].to_i
 
+    @guw_types = @guw_model.guw_types
+    @guw_attributes = @guw_model.guw_attributes.order("name ASC")
+    @guw_work_units = @guw_model.guw_work_units
+    @guw_weightings = @guw_model.guw_weightings
+    @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
+
     if @guw_model.save
 
       if @guw_model.config_type == "new"
@@ -1505,6 +1513,15 @@ class Guw::GuwModelsController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @guw_model = Guw::GuwModel.find(params[:id])
+
+    @guw_types = @guw_model.guw_types
+    @guw_attributes = @guw_model.guw_attributes.order("name ASC")
+    @guw_work_units = @guw_model.guw_work_units
+    @guw_weightings = @guw_model.guw_weightings
+    @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
+
     @organization = @guw_model.organization
 
     if @guw_model.update_attributes(params[:guw_model])
