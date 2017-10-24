@@ -60,6 +60,7 @@ class ApplicationController < ActionController::Base
   helper_method :server_name
   helper_method :projestimate_version
   helper_method :update_date
+  helper_method :update_date_timestamp
   helper_method :ruby_version
   helper_method :rails_version
   helper_method :environment
@@ -388,6 +389,10 @@ class ApplicationController < ActionController::Base
 
   def update_date
     Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
+  end
+
+  def update_date_timestamp
+    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i - 1508770000
   end
 
   def ruby_version
