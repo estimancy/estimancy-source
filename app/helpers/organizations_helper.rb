@@ -66,21 +66,98 @@ module OrganizationsHelper
   end
 
   def column_header(column)
-    #content_tag('th', h(column.caption))
+
+    # lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
+
+    column_chevron_icon = ""
+    column_sort_order = ""
+
+    sort_column = params[:f] || params[:sort_column]
+    sort_order = params[:s] || params[:sort_order]
+
+    # if sort_column.blank? || sort_order.blank?
+    #   sort_column = session[:sort_column]
+    #   sort_order = session[:sort_order]
+    # end
+
+    search_column = session[:search_column]
+    search_order = session[:search_order]
+
+    case column.name
+      when :start_date
+        column_sort_order = "asc"
+        if column.name.to_s != sort_column  #params[:f]
+          sort_order = "desc"
+        end
+      when :title
+        column_sort_order = "desc"
+      when :description
+        column_sort_order = "asc"
+      when :version_number
+        column_sort_order = "asc"
+      when :status_name
+        column_sort_order = "asc"
+      when :creator
+        column_sort_order = "asc"
+      else
+        if column.field_id
+        else
+          column_sort_order = "asc"
+        end
+    end
+
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
+    ###if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && sort_column.blank?)
+      column_chevron_icon = ""
+      case sort_order
+        when "desc"
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-down chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
+
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "asc"), class: 'btn btn-mini fa fa-sort-down fa-lg chevron_up_down', remote: true)
+
+        when "asc"
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-up chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
+
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+
+        else
+          # lk_text = content_tag(:span, I18n.t(column.caption))
+          # lk_text << content_tag(:i, nil, class: 'btn btn-mini fa fa-chevron-up chevron_up_down')
+          # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
+
+          lk = content_tag(:span, I18n.t(column.caption))
+          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+
+      end
+
+    else
+      #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
+
+      lk = content_tag(:span, I18n.t(column.caption))
+      lk << link_to("", sort_path(f: column.name, s: column_sort_order), class: 'btn btn-mini fa fa-unsorted fa-lg chevron_up_down', remote: true)
+    end
+
+
     case column.name
       when :title
-        content_tag('th class="text_left"', I18n.t(column.caption))
+        content_tag('th class="center"', lk)
       when :description
-        content_tag('th class="text_left"', I18n.t(column.caption))
-      when :version_number
         content_tag('th class="center"', I18n.t(column.caption))
+      when :version_number
+        content_tag('th class="center"', lk)
       when :status_name
-        content_tag('th id="toto" style="width: 50px"', I18n.t(column.caption))
+        content_tag('th id="toto" style="width: 50px"', lk)
       else
         if column.field_id
           content_tag('th class="project_field_text_overflow"', column.caption)
         else
-          content_tag('th', I18n.t(column.caption))
+          content_tag('th', lk)
         end
     end
   end
@@ -119,10 +196,14 @@ module OrganizationsHelper
       when :title
         content_tag('td', can_show_estimation?(project) ? link_to(value, dashboard_path(project), :class => 'button_attribute_tooltip pull-left') : value)
       when :original_model
-        if project.original_model
-          content_tag('td', can_show_estimation?(project.original_model) ? link_to(value, dashboard_path(project.original_model), :class => 'button_attribute_tooltip pull-left') : value)
-        else
-          content_tag('td', value)
+        begin
+          if project.original_model
+            content_tag('td', can_show_estimation?(project.original_model) ? link_to(value, dashboard_path(project.original_model), :class => 'button_attribute_tooltip pull-left') : value)
+          else
+            content_tag('td', value)
+          end
+        rescue
+          content_tag('td', '-')
         end
       when :version_number
         content_tag("td class='center'", value)

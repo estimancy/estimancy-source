@@ -22,8 +22,6 @@
 module Guw
   class GuwModel < ActiveRecord::Base
 
-    # include ActionView::Helpers
-
     has_many :guw_types, dependent: :destroy
     has_many :guw_unit_of_works, dependent: :destroy
     has_many :guw_attributes, dependent: :destroy
@@ -42,6 +40,8 @@ module Guw
     belongs_to :organization
 
     serialize :orders, Hash
+
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
     #Search fields
     scoped_search :on => [:name]
@@ -276,7 +276,7 @@ module Guw
 
     end
 
-    def self.display_value(data_probable, estimation_value, vw)
+    def self.display_value(data_probable, estimation_value, vw, user)
 
       module_project = estimation_value.module_project
       guw_model = module_project.guw_model
@@ -290,20 +290,35 @@ module Guw
         conv = 1
       end
 
-      value = data_probable.to_f.round(2)
+      begin
+        value = data_probable.to_f.round(2)
 
-      if vw.use_organization_effort_unit == true
-        tab = Organization.get_organization_unit(value, guw_model.organization)
-        unit = tab.last
-      else
-        unless guw_output.nil?
-          unit = guw_output.unit
+        if vw.use_organization_effort_unit == true
+          tab = Organization.get_organization_unit(value, guw_model.organization)
+          unit = tab.last
         else
-          unit = ''
+          unless guw_output.nil?
+            unit = guw_output.unit
+          else
+            unit = ''
+          end
         end
+      rescue
+        unit = ''
       end
 
-      return "#{data_probable.to_f.round(2) / (conv.nil? ? 1 : conv.to_f)} #{unit}"
+      if pe_attribute.alias == "effort" && guw_model.config_type == "old"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{guw_model.effort_unit}"
+      elsif pe_attribute.alias == "cost" && guw_model.config_type == "old"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{guw_model.cost_unit}"
+      elsif pe_attribute.alias == "retained_size" && guw_model.config_type == "old"
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{guw_model.retained_size_unit}"
+      else
+        res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{unit}"
+      end
+
+      return res
+
     end
 
   end

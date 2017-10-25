@@ -7,7 +7,7 @@
   </div>
 <% end %>
 
-<table id="table_list_1" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+<table id="table_list_10" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
   <thead>
     <tr>
       <th class="text_left"><%= I18n.t(:label_model_name) %></th>
@@ -64,14 +64,11 @@
               <% end %>
 
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to('', confirm_deletion_path(project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
+                <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
               <% end %>
             </td>
           </tr>
       <% end %>
     <% end %>
   </tbody>
-  <tfoot>
-    <%= render :partial => 'layouts/footer_table' %>
-  </tfoot>
 </table>

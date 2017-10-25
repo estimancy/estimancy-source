@@ -338,9 +338,13 @@ class WbsActivitiesController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @pbs_project_element = current_component
+    current_component_id = @pbs_project_element.id
+
     @module_project = current_module_project
+    @project = @module_project.project
     @wbs_activity = @module_project.wbs_activity
     module_project_attributes = @module_project.pemodule.pe_attributes
+    number_precision = user_number_precision
 
     # Get selected Ratio
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
@@ -520,7 +524,6 @@ class WbsActivitiesController < ApplicationController
         end
       end
 
-
       ## Update module_project_ratio_element selected attribute
       @module_project_ratio_elements.each do |mp_ratio_element|
         selected_elements = params['selected']
@@ -547,7 +550,7 @@ class WbsActivitiesController < ApplicationController
                                                             @ratio_reference, just_changed_values, retained_effort_level["most_likely"],
                                                             retained_cost_level["most_likely"], initialize_calculation)
 
-    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
+    theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
 
 
     current_pbs_estimations.each do |est_val|
@@ -557,7 +560,7 @@ class WbsActivitiesController < ApplicationController
       unless est_val.pe_attribute.nil?
         if est_val.pe_attribute.alias == "ratio_name"
           ratio_name = @ratio_reference.name
-          est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_name })
+          est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_name })
 
         #elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
         elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
@@ -594,7 +597,7 @@ class WbsActivitiesController < ApplicationController
                 effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, input_effort_values[level],
                                                                         @ratio_reference, just_changed_values, retained_effort_level[level],
                                                                         retained_cost_level[level], initialize_calculation)
-                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs = effort_breakdown.calculate_estimations
+                theoretical_efforts, theoretical_cost, retained_efforts, retained_costs, tjm_per_phase = effort_breakdown.calculate_estimations
               else
                 #eb = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference)
                 ###effort_breakdown = EffortBreakdown::EffortBreakdown.new(current_component, current_module_project, params[:values]["most_likely"].to_f * effort_unit_coefficient, @ratio_reference, just_changed_values, retained_effort_level["most_likely"], retained_cost_level["most_likely"], initialize_calculation)
@@ -616,6 +619,13 @@ class WbsActivitiesController < ApplicationController
                   element_level_estimation_value = element_level_estimation_value
                 end
                 mp_ratio_element.send("#{mp_pe_attribute_alias}_#{level}=", element_level_estimation_value)
+
+                # Mettre à jour le TJM et puis mettre le commentaire à vide lorsqu'on initialise le calcul
+                elt_tjm = tjm_per_phase[mp_ratio_element.wbs_activity_element_id]
+                mp_ratio_element.send("tjm=", elt_tjm.nil? ? nil : (elt_tjm.to_f * effort_unit_coefficient))
+                if initialize_calculation == true
+                  mp_ratio_element.send("comments=", nil)
+                end
 
                 # Then update retained values if necessary
                 #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
@@ -947,7 +957,7 @@ class WbsActivitiesController < ApplicationController
 
             est_val.update_attributes(in_result)
             pbs_input_probable_value = ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6)
-            est_val.update_attribute(:"string_data_probable", { current_component.id => pbs_input_probable_value } )
+            est_val.update_attribute(:"string_data_probable", { current_component_id => pbs_input_probable_value } )
 
             #if est_val.pe_attribute.alias == "effort"
             #  input_effort_for_global_ratio = pbs_input_probable_value
@@ -965,8 +975,8 @@ class WbsActivitiesController < ApplicationController
             new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
           end
 
-          #est_val.update_attribute(:"string_data_probable", { current_component.id => ratio_global })
-          est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
+          #est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_global })
+          est_val.update_attribute(:"string_data_probable", { current_component_id => new_ratio_global })
         end
       end
     end
@@ -981,19 +991,22 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
+    # current_module_project.nexts.each do |n|
+    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    #     ["low", "most_likely", "high"].each do |level|
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component_id => nil } )
+    #     end
+    #     EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component_id => nil } )
+    #   end
+    # end
 
-    current_module_project.nexts.each do |n|
-      ModuleProject::common_attributes(current_module_project, n).each do |ca|
-        ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-        end
-      end
-    end
+    ViewsWidget::update_field(@module_project, @current_organization, @project, @pbs_project_element)
 
-    current_module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, @pbs_project_element)
+
+    @module_project.all_nexts_mp_with_links.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, @pbs_project_element, true)
     end
 
 
@@ -1066,6 +1079,7 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header ? 1 : 0 ],
+                      [I18n.t(:average_rate_wording), @wbs_activity.average_rate_wording ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],
                       ["#{I18n.t(:profiles_list)} : ", ""]]
@@ -1397,7 +1411,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1417,7 +1431,7 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 7  ### Ligne des profiles
+                      if index <= 8  ### Ligne des profiles
                         attr_name = model_sheet_order["#{index}".to_sym]
                         #begin
                           if attr_name != "wbs_organization_profiles"
@@ -1794,11 +1808,11 @@ class WbsActivitiesController < ApplicationController
                 end
 
               end
-              ev.send("string_data_#{level}")[current_component.id] = psb_level_estimation_value
+              ev.send("string_data_#{level}")[current_component_id] = psb_level_estimation_value
               ev.save
 
             elsif pe_attribute_alias == "ratio"
-              ev.send("string_data_#{level}")[current_component.id] = new_global_ratio_value
+              ev.send("string_data_#{level}")[current_component_id] = new_global_ratio_value
               ev.save
             end
 
@@ -1982,11 +1996,11 @@ class WbsActivitiesController < ApplicationController
                 end
 
               end
-              ev.send("string_data_#{level}")[current_component.id] = psb_level_estimation_value
+              ev.send("string_data_#{level}")[current_component_id] = psb_level_estimation_value
               ev.save
 
             elsif pe_attribute_alias == "ratio"
-              ev.send("string_data_#{level}")[current_component.id] = new_global_ratio_value
+              ev.send("string_data_#{level}")[current_component_id] = new_global_ratio_value
               ev.save
             end
 

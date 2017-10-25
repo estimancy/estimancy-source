@@ -11,7 +11,7 @@
     <%= simple_form_for(@instance) do |f| %>
       <%= f.error_notification %>
 
-      <%= f.input :organization_id, as: :hidden, input_html: { value: params[:organization_id] } %>
+      <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
 
       <div class="form-inputs">
         <%= f.input :name %>

@@ -59,20 +59,27 @@
             <p>
               <% arr = ["a", "b", "c", "d"] %>
               <% @kb_model.kb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
+
+                <% begin %>
+                  <% filter = @kb_model.send("filter_#{arr[i]}") %>
+                <% rescue %>
+                  <% filter = "-" %>
+                <% end %>
+
                 <div class="input string required project_title">
                   <label class="string required control-label">
                     <strong>
-                      <%= @kb_model.send("filter_#{arr[i]}") %>
+                      <%= filter %>
                     </strong>
                   </label>
                   <%= select_tag "filters[#{key}]",
                                  options_for_select(@kb_model.kb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
-                                                    selected: @filters.nil? ? convert_project_category(@project, @kb_model.send("filter_#{arr[i]}")) : @filters[key]),
+                                                    selected: @filters.nil? ? convert_project_category(@project, filter) : @filters[key]),
                                  class: "string required input-xlarge filters",
                                  prompt: I18n.t(:Indifferent),
                                  disabled: !@kb_model.enabled_input %>
 
-                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, @kb_model.send("filter_#{arr[i]}")) : @filters[key] %>" />
+                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, filter) : @filters[key] %>" />
                 </div>
               <% end %>
             </p>
@@ -288,7 +295,7 @@
 <script>
   $(document).ready(function(){
     $(function() {
-      $('#scatter_chart').highcharts({
+      chart = $('#scatter_chart').highcharts({
         chart: {
           zoomType: 'xy'
         },
@@ -369,14 +376,11 @@
         }]
       });
     });
-
-
     /**
      * Sand-Signika theme for Highcharts JS
      * @author Torstein Honsi
      */
 
-// Load the fonts
     Highcharts.createElement('link', {
       href: '//fonts.googleapis.com/css?family=Signika:400,700',
       rel: 'stylesheet',

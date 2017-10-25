@@ -106,10 +106,10 @@ class ViewsWidgetsController < ApplicationController
       current_view_widgets = current_view.views_widgets
       y_positions = current_view.views_widgets.map(&:position_y).map(&:to_i)
       y_max = y_positions.max
-      widgets_on_ymax = current_view_widgets.where(position_y: y_max)
+      widgets_on_ymax = current_view_widgets.where(position_y: y_max.to_s)
       x_positions = widgets_on_ymax.map(&:position_x).map(&:to_i)
       x_max = x_positions.max
-      view_widget_max_position = widgets_on_ymax.where(position_x: x_max).first
+      view_widget_max_position = widgets_on_ymax.where(position_x: x_max.to_s).first
 
       position_x = view_widget_max_position.position_x.to_i+view_widget_max_position.width.to_i+1
       position_y = y_max ###view_widget_max_position.position_y.to_i+view_widget_max_position.height.to_i+1
@@ -223,42 +223,6 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.is_kpi_widget = true
     end
 
-    if params["field"].blank?
-      pfs = @views_widget.project_fields
-      pfs.destroy_all
-    else
-      pf = ProjectField.where(views_widget_id: @views_widget.id).last
-
-      unless @views_widget.estimation_value.nil?
-        if @views_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
-          begin
-            @value = @views_widget.estimation_value.string_data_probable[current_component.id][@views_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-          rescue
-            begin
-              @value = @views_widget.estimation_value.string_data_probable[current_component.id]
-            rescue
-              @value = 0
-            end
-          end
-        else
-          @value = @views_widget.estimation_value.string_data_probable[current_component.id]
-        end
-      end
-
-      if pf.nil?
-        ProjectField.create(project_id: project.id,
-                            field_id: params["field"].to_i,
-                            views_widget_id: @views_widget.id,
-                            value: @value)
-      else
-        pf.value = get_kpi_value_without_unit(@views_widget)
-        pf.views_widget_id = @views_widget.id
-        pf.field_id = params["field"].to_i
-        pf.project_id = project.id
-        pf.save
-      end
-    end
-
     respond_to do |format|
 
       if @views_widget.update_attributes(params[:views_widget])
@@ -269,10 +233,52 @@ class ViewsWidgetsController < ApplicationController
         #  @views_widget.update_attribute(:pe_attribute_id, widget_attribute_id)
         #end
 
+        if params["field"].blank?
+          pfs = @views_widget.project_fields
+          pfs.destroy_all
+        else
+          #pf = ProjectField.where(views_widget_id: @views_widget.id).last
+          pf = ProjectField.where(project_id: project.id, field_id: params["field"].to_i).last
+
+          if params[:views_widget][:is_kpi_widget].present?
+            @value = get_kpi_value_without_unit(@views_widget)
+          else
+            unless @views_widget.estimation_value.nil?
+              if @views_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+                begin
+                  @value = @views_widget.estimation_value.string_data_probable[current_component.id][@views_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                rescue
+                  begin
+                    @value = @views_widget.estimation_value.string_data_probable[current_component.id]
+                  rescue
+                    @value = 0
+                  end
+                end
+              else
+                @value = @views_widget.estimation_value.string_data_probable[current_component.id]
+              end
+            end
+          end
+
+          if pf.nil?
+            pf = ProjectField.new(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+            if !pf.save
+              flash[:error] = "Erreur lors de la mise à jour du champs personnalisé"
+            end
+          elsif pf.views_widget_id == @views_widget.id
+              pf.value = @value
+              pf.save
+          else
+            flash[:error] = I18n.t(:identical_project_field_exists)
+          end
+        end
+
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
         format.html { redirect_to dashboard_path(@project) and return }
+
       else
         flash[:error] = "Erreur lors de la mise à jour du Widget dans la vue"
+
         @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x
         @position_y = (@views_widget.position_y.nil? || @views_widget.position_y.downcase.eql?("nan")) ? 1 : @views_widget.position_y
 

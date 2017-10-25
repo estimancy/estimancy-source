@@ -1,6 +1,6 @@
 <div>
   <!--<h5 class="blue"><%#= I18n.t(:estimations_statuses) %></h5>-->
-  <table class="table tablesorterPager table-striped table-bordered table-condensed">
+  <table id="table_list_15" class="table tablesorterPager table-striped table-bordered table-condensed">
     <thead>
       <tr>
         <th><%= I18n.t(:status_number) %></th>
@@ -36,7 +36,6 @@
           </tr>
       <% end %>
     </tbody>
-    <%= render :partial => 'layouts/footer_table' %>
   </table>
 </div><br>
 
@@ -75,8 +74,8 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
           <% end %>
       <% end %>
     </div><br>

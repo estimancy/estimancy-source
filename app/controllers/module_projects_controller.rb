@@ -381,8 +381,13 @@ class ModuleProjectsController < ApplicationController
                   in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
                   estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
                   estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
-                  widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: @module_project.id, estimation_value_id: estimation_value_id, name: view_widget.name,
-                                                show_name: view_widget.show_name, icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
+                  widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: @module_project.id, estimation_value_id: estimation_value_id,
+                                                name: view_widget.name, show_name: view_widget.show_name,
+                                                equation: view_widget.equation,
+                                                comment: view_widget.comment,
+                                                is_kpi_widget: view_widget.is_kpi_widget,
+                                                kpi_unit: view_widget.kpi_unit,
+                                                icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
                                                 width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
                                                 position_x: view_widget.position_x, position_y: view_widget.position_y)
                   #Save and copy project_fields
@@ -446,9 +451,16 @@ class ModuleProjectsController < ApplicationController
                 in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
                 estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
                 estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
-                widget_copy = ViewsWidget.new(view_id: new_view_saved_as.id, module_project_id: @module_project.id, estimation_value_id: view_widget.estimation_value_id, name: view_widget.name,
-                                              show_name: view_widget.show_name, icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
-                                              width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
+                widget_copy = ViewsWidget.new(view_id: new_view_saved_as.id, module_project_id: @module_project.id, estimation_value_id: view_widget.estimation_value_id,
+                                              name: view_widget.name, show_name: view_widget.show_name,
+                                              equation: view_widget.equation,
+                                              comment: view_widget.comment,
+                                              is_kpi_widget: view_widget.is_kpi_widget,
+                                              kpi_unit: view_widget.kpi_unit,
+                                              icon_class: view_widget.icon_class, color: view_widget.color,
+                                              show_min_max: view_widget.show_min_max,
+                                              width: view_widget.width, height: view_widget.height,
+                                              widget_type: view_widget.widget_type, position: view_widget.position,
                                               position_x: view_widget.position_x, position_y: view_widget.position_y)
                 #Save and copy project_fields
                 if widget_copy.save

@@ -23,7 +23,7 @@ class ViewsWidget < ActiveRecord::Base
   attr_accessible :color, :icon_class, :module_project_id, :name, :pbs_project_element_id, :estimation_value_id, :pe_attribute_id,
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
-                  :is_kpi_widget, :use_organization_effort_unit
+                  :is_kpi_widget, :use_organization_effort_unit, :equation
 
   serialize :equation, Hash
 
@@ -61,35 +61,78 @@ class ViewsWidget < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
-  def self.update_field(view_widget, organization, project, component)
 
-    organization.fields.each do |field|
+  def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
+    module_project.all_nexts_mp_with_links.each do |mp|
 
-      pf = ProjectField.where(field_id: field.id,
-                              project_id: project.id,
-                              views_widget_id: view_widget.id).first
-
-      unless view_widget.estimation_value.nil?
-        if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
-          begin
-            @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-          rescue
-            @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
-          end
-          else
-          @value = view_widget.estimation_value.string_data_probable[component.id]
+      mp.estimation_values.where(in_out: "output").each do |ev|
+        ["low", "most_likely", "high"].each do |level|
+          ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
         end
+        ev.send("string_data_probable=", { pbs_project_element.id => nil })
+        ev.save
+      end
 
-        unless pf.nil?
-          pf.value = @value
-          pf.views_widget_id = view_widget.id
-          pf.field_id = field.id
-          pf.project_id = project.id
+      # reset module_project_ratio_elements for EffortBreakdown module
+      if mp.pemodule.alias == "effort_breakdown"
+        mp.module_project_ratio_elements.each do |mp_ratio_elt|
+          ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
+            ["low", "most_likely", "high", "probable"].each do |level|
+              mp_ratio_elt.send("#{attribute}_#{level}=", nil)
+            end
+          end
+          mp_ratio_elt.save
+        end
+      end
+    end
 
-          if pf.changed?
-            pf.save
+
+    # Cette methode remplace le code ci-dessous dans chaque methode de sauvegarde des estimations ==> A supprimer apres validation des tests
+    # current_module_project.nexts.each do |n|
+    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
+    #     ["low", "most_likely", "high"].each do |level|
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
+    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
+    #     end
+    #   end
+    # end
+
+  end
+
+
+  def self.update_field(module_project, organization, project, component, set_to_nil = false)
+    module_project.views_widgets.each do |view_widget|
+      organization.fields.each do |field|
+
+        pf = ProjectField.where(field_id: field.id,
+                                project_id: project.id,
+                                views_widget_id: view_widget.id).first
+
+        unless view_widget.estimation_value.nil?
+          if set_to_nil == true
+            @value = nil
+          else
+            if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+              begin
+                @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+              rescue
+                @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
+              end
+            else
+              @value = view_widget.estimation_value.string_data_probable[component.id]
+            end
           end
 
+          unless pf.nil?
+            pf.value = @value
+            pf.views_widget_id = view_widget.id
+            pf.field_id = field.id
+            pf.project_id = project.id
+
+            # if pf.changed?
+            pf.save
+            # end
+          end
         end
       end
     end

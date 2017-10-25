@@ -24,7 +24,9 @@ class ProjectField < ActiveRecord::Base
 
   belongs_to :field
   belongs_to :project
-  belongs_to :view_widget
+  belongs_to :views_widget
+
+  validates :field_id, :presence => true, :uniqueness => {  :scope => :project_id, :message => I18n.t(:identical_project_field_exists)}
 
   #Search fields
   scoped_search :in => :field, :on => :name

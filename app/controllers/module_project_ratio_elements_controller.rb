@@ -68,11 +68,20 @@ class ModuleProjectRatioElementsController < ApplicationController
 
   def save_comments
     @module_project_ratio_element = ModuleProjectRatioElement.find(params[:comments].keys.first)
-    @module_project_ratio_element.name = params[:name].values.first
-    @module_project_ratio_element.description = params[:description].values.first
-    @module_project_ratio_element.comments = params[:comments].values.first
-    @module_project_ratio_element.save
-    redirect_to main_app.dashboard_path(@project)
+    if @module_project_ratio_element
+      old_name = @module_project_ratio_element.name
+      new_name = params[:name].values.first
+
+      @module_project_ratio_element.name = new_name.to_s
+      @module_project_ratio_element.description = params[:description].values.first
+      @module_project_ratio_element.comments = params[:comments].values.first
+      if old_name.to_s != new_name
+        @module_project_ratio_element.name_is_modified = true
+      end
+
+      @module_project_ratio_element.save
+    end
+    #redirect_to main_app.dashboard_path(@project)
   end
 
 

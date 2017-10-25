@@ -36,9 +36,11 @@ Guw::Engine.routes.draw do
     post "load_trackings"
     post "load_cotations"
     post "save_coefficient_comments"
+    post "save_cplx_comments"
   end
 
   get "load_coefficient_comments" => "guw_unit_of_works#load_coefficient_comments"
+  get "load_cplx_comments" => "guw_unit_of_works#load_cplx_comments"
 
   resources :guw_unit_of_work_groups
 

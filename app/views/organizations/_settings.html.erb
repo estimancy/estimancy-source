@@ -70,7 +70,6 @@
             </td>
           </tr>
         <% end %>
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -132,7 +131,6 @@
             </td>
           </tr>
         <% end %>
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -195,8 +193,6 @@
             </td>
           </tr>
         <% end %>
-
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -257,7 +253,6 @@
             </td>
           </tr>
         <% end %>
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -298,7 +293,6 @@
           </tr>
         <% end %>
         </tbody>
-        <%= render :partial => 'layouts/footer_table' %>
       </table>
     <% else %>
       <div class="red_color"><%= I18n.t(:notice_cannot_view_work_element_types) %></div>
@@ -358,7 +352,6 @@
             </td>
           </tr>
         <% end %>
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -408,8 +401,6 @@
           </td>
           </tr>
         <% end %>
-
-        <%= render :partial => 'layouts/footer_table' %>
         </tbody>
       </table>
     <% else %>
@@ -425,7 +416,7 @@
             </div>
         <% end %>
 
-        <table class="table tablesorter table-striped table-bordered table-condensed">
+        <table id="table_list_61" class="table tablesorter table-striped table-bordered table-condensed">
           <tr>
             <th><%= I18n.t(:name) %></th>
             <th><%= I18n.t(:coefficient) %></th>
@@ -473,7 +464,11 @@
   </div>
 
   <div id="tabs-estimation-models">
-    <%= render partial: "projects/estimation_models", object: @estimation_models %>
+    <% if can? :manage_estimation_models, Project %>
+        <%= render partial: "projects/estimation_models", object: @estimation_models %>
+    <% else %>
+        <div class="red_color"><%= I18n.t(:notice_cannot_view_estimation_models) %></div>
+    <% end %>
   </div>
 
   <% if current_user.super_admin == true %>

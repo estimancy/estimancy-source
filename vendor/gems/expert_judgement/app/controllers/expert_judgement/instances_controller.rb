@@ -33,7 +33,7 @@ class ExpertJudgement::InstancesController < ApplicationController
     @organization = @instance.organization
 
     set_page_title @instance.name
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(@organization, anchor: "expert"), @instance.name => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @instance.name => ""
   end
 
   def new
@@ -43,7 +43,7 @@ class ExpertJudgement::InstancesController < ApplicationController
     @organization = Organization.find(params['organization_id'])
 
     set_page_title I18n.t(:New_model_of_Judgment_Expert)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "expert"), I18n.t(:new) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "effort"), I18n.t(:new) => ""
   end
 
   def edit
@@ -52,7 +52,7 @@ class ExpertJudgement::InstancesController < ApplicationController
     @organization = @instance.organization
 
     set_page_title I18n.t(:Edit_model_of_Judgment_Expert)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",  @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(@organization, anchor: "expert"), @instance.name => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",  @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:expert_judgement_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @instance.name => ""
   end
 
   def create
@@ -60,17 +60,26 @@ class ExpertJudgement::InstancesController < ApplicationController
 
     @instance = ExpertJudgement::Instance.new(params[:instance])
     @instance.organization_id = params[:instance][:organization_id].to_i
-    @instance.save
-    redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "expert")
+    @organization = Organization.find(params[:instance][:organization_id])
+
+    if @instance.save
+      redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "effort")
+    else
+      render action: :new
+    end
   end
 
   def update
     authorize! :manage_modules_instances, ModuleProject
 
     @instance = ExpertJudgement::Instance.find(params[:id])
-    @instance.update_attributes(params[:instance])
+    @organization = @instance.organization
 
-    redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "expert")
+    if @instance.update_attributes(params[:instance])
+      redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "effort")
+    else
+      render action: :edit
+    end
   end
 
   def destroy
@@ -84,7 +93,7 @@ class ExpertJudgement::InstancesController < ApplicationController
     end
 
     @instance.delete
-    redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "expert")
+    redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "effort")
   end
 
   def save_efforts
@@ -193,18 +202,12 @@ class ExpertJudgement::InstancesController < ApplicationController
       end
     end
 
-    current_module_project.next.each do |n|
-      ModuleProject::common_attributes(current_module_project, n).each do |ca|
-        ["low", "most_likely", "high"].each do |level|
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-          EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-        end
-      end
-    end
+    ViewsWidget::update_field(current_module_project, @current_organization, @project, current_component)
 
-    current_module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(current_module_project, current_component)
+    current_module_project.all_nexts_mp_with_links.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 
     redirect_to main_app.dashboard_path(@project)

@@ -17,15 +17,16 @@
           <%# I18n.t(:effort_per_phase) %>
         </th>
         <% if project_organization_profiles.length > 0 %>
+          <% mp_profiles_length = project_organization_profiles.length+1 %>
           <% project_organization_profiles.each do |profile| %>
             <th><%= profile.name %></th>
           <% end %>
         <% else %>
+            <% mp_profiles_length = 2 %>
             <th><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></th>
         <% end %>
       </tr>
 
-        <%# unless estimation_pbs_probable_results.nil? || ratio_reference.nil? %>
         <% if estimation_pbs_probable_results.nil? || ratio_reference.nil? %>
           <%# added_module_project_ratio_elements.each do |added_phase| %>
               <!--<tr>-->
@@ -37,6 +38,24 @@
                 <!--</td>-->
               <!--</tr>-->
           <%# end %>
+
+          <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
+              <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
+              <% if mp_ratio_element %>
+                  <% unless view_widget_type.to_s=="effort_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
+                      <tr>
+                        <td>
+                          <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
+                            <%= mp_ratio_element.name_to_show %>
+                          </span>
+                        </td>
+                        <% mp_profiles_length.times do |i| %>
+                            <td>-</td>
+                        <% end %>
+                      </tr>
+                  <% end %>
+              <% end %>
+          <% end %>
 
         <% else %>
           <% referenced_wbs_activity_ratio_profiles = ratio_reference.wbs_activity_ratio_profiles %>
@@ -78,7 +97,7 @@
                             <% if mp_ratio_element.nil? %>
                               -
                             <% else %>
-                              <%= wbs_activity_elt.name %>
+                              <%= mp_ratio_element.name_to_show %> <%#= wbs_activity_elt.name %>
                             <% end %>
                           </span>
                         </td>
@@ -175,10 +194,11 @@
           <tr>
             <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
               <% if wbs_activity_elt.is_root? %>
+                <% mp_ratio_element_root = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
                 <% root_effort_per_phase = nil %>
                 <td style="text-align: left">
                   <br />
-                  <strong><%= wbs_activity_elt.name %></strong>
+                  <strong><%= mp_ratio_element_root.name_to_show %><%#= wbs_activity_elt.name %></strong>
                 </td>
                 <% if project_organization_profiles.length > 0 %>
                     <% project_organization_profiles.each do |profile| %>

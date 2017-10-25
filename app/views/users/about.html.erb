@@ -19,11 +19,17 @@
 
     <hr class="bs-docs-separator">
     <dl class="dl-horizontal">
+
       <dt>Estimancy</dt>
-      <dd><span class="label label-info"><%= @functional_version_number %></span>
+      <dd><span class="label label-info"><%=`git rev-parse --abbrev-ref HEAD`%>rev. <%= update_date_timestamp %></span>
+
+      <dt>Dernier commit : </dt>
+      <dd><%= `git log --oneline --reverse --pretty="format:%s" | tail -n 1` %>
+
       <dt><%= I18n.t(:last_update) %></dt>
       <dd><span class="label label-info"><%= update_date %></span>
       </dd>
+
       <dt>Ruby</dt>
       <dd><span class="label label-info"><%= ruby_version %> </span></dd>
       <dt>Rails</dt>

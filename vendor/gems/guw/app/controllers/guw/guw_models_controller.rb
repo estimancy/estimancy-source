@@ -192,35 +192,37 @@ class Guw::GuwModelsController < ApplicationController
 
               tab.each_with_index do |row, i|
                 if i >= 1 && !row.nil?
-                  guw_output = Guw::GuwOutput.create(name: row[0],
-                                                     output_type: row[1],
-                                                     guw_model_id: @guw_model.id,
-                                                     allow_intermediate_value: (row[2] == 0) ? false : true,
-                                                     allow_subtotal: (row[3] == 0) ? false : true,
-                                                     standard_coefficient: row[4],
-                                                     display_order: row[5],
-                                                     unit: row[6])
+                  unless row[0].blank?
+                    guw_output = Guw::GuwOutput.create(name: row[0],
+                                                       output_type: row[1],
+                                                       guw_model_id: @guw_model.id,
+                                                       allow_intermediate_value: (row[2] == 0) ? false : true,
+                                                       allow_subtotal: (row[3] == 0) ? false : true,
+                                                       standard_coefficient: row[4],
+                                                       display_order: row[5],
+                                                       unit: row[6])
 
-                  attr = PeAttribute.where(name: guw_output.name,
-                                           alias: guw_output.name.underscore.gsub(" ", "_"),
-                                           description: guw_output.name,
-                                           guw_model_id: guw_output.guw_model_id).first_or_create!
-
-                  pm = Pemodule.where(alias: "guw").first
-
-                  am = AttributeModule.where(pe_attribute_id: attr.id,
-                                             pemodule_id: pm.id,
-                                             in_out: "both",
+                    attr = PeAttribute.where(name: guw_output.name,
+                                             alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
+                                             description: guw_output.name,
                                              guw_model_id: guw_output.guw_model_id).first_or_create!
 
-                  @guw_model.module_projects.each do |module_project|
-                    ['input', 'output'].each do |in_out|
-                      mpa = EstimationValue.create(pe_attribute_id: attr.id,
-                                                   module_project_id: module_project.id,
-                                                   in_out: in_out,
-                                                   string_data_low: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_most_likely: { :pe_attribute_name => @guw_output.name },
-                                                   string_data_high: { :pe_attribute_name => @guw_output.name })
+                    pm = Pemodule.where(alias: "guw").first
+
+                    am = AttributeModule.where(pe_attribute_id: attr.id,
+                                               pemodule_id: pm.id,
+                                               in_out: "both",
+                                               guw_model_id: guw_output.guw_model_id).first_or_create!
+
+                    @guw_model.module_projects.each do |module_project|
+                      ['input', 'output'].each do |in_out|
+                        mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                                                     module_project_id: module_project.id,
+                                                     in_out: in_out,
+                                                     string_data_low: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_most_likely: { :pe_attribute_name => @guw_output.name },
+                                                     string_data_high: { :pe_attribute_name => @guw_output.name })
+                      end
                     end
                   end
 
@@ -342,10 +344,13 @@ class Guw::GuwModelsController < ApplicationController
           end
         end
       end
-
     end
-    redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
 
+    if @guw_model.nil?
+      redirect_to :back
+    else
+      redirect_to main_app.organization_module_estimation_path(@guw_model.organization_id, anchor: "taille")
+    end
   end
 
   def import_old_config
@@ -1467,6 +1472,14 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model = Guw::GuwModel.new(params[:guw_model])
     @guw_model.organization_id = params[:guw_model][:organization_id].to_i
 
+    @guw_types = @guw_model.guw_types
+    @guw_attributes = @guw_model.guw_attributes.order("name ASC")
+    @guw_work_units = @guw_model.guw_work_units
+    @guw_weightings = @guw_model.guw_weightings
+    @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
+
     if @guw_model.save
 
       if @guw_model.config_type == "new"
@@ -1500,6 +1513,15 @@ class Guw::GuwModelsController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @guw_model = Guw::GuwModel.find(params[:id])
+
+    @guw_types = @guw_model.guw_types
+    @guw_attributes = @guw_model.guw_attributes.order("name ASC")
+    @guw_work_units = @guw_model.guw_work_units
+    @guw_weightings = @guw_model.guw_weightings
+    @guw_factors = @guw_model.guw_factors
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_coefficients = @guw_model.guw_coefficients
+
     @organization = @guw_model.organization
 
     if @guw_model.update_attributes(params[:guw_model])
@@ -1619,7 +1641,7 @@ class Guw::GuwModelsController < ApplicationController
      I18n.t(:results),
      I18n.t(:retained_result),
       "COEF"] +
-        hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
+      hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 

@@ -37,8 +37,8 @@ module Ge
 
     CORRESPONDING_INPUTS_WITH_OUTPUTS = {"sort1" => "ent1", "sort2" => "ent2", "sort3" => "ent3", "sort4" => "ent4"}
 
-    #validates_presence_of :name####, :organization_id
-    validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false }
+    #validates_presence_of :organization_id
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
     validates :ge_model_instance_mode, :presence => true
     validates :coeff_a, :coeff_b, :numericality => {:allow_nil => true}
 
@@ -131,7 +131,7 @@ module Ge
     end
 
 
-    def self.display_value(data_probable, estimation_value, view_widget)
+    def self.display_value(data_probable, estimation_value, view_widget, user)
 
       module_project = estimation_value.module_project
       ge_model = module_project.ge_model
@@ -164,13 +164,13 @@ module Ge
         if value.nil?
           result_value = nil
         else
-          result_value = (value / unit_coefficient.to_f).round(2)
+          result_value = (value / unit_coefficient.to_f)
         end
       rescue
         result_value = nil
       end
 
-      return "#{result_value} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: (user.language.locale rescue "fr"))} #{unit}"
     end
 
 

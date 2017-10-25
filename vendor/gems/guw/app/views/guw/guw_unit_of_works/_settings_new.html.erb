@@ -1,4 +1,4 @@
-<%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path do %>
+<%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form" do %>
 
   <div class="modal fade" id="modal_deported" tabindex="-1" role="dialog" aria-labelledby="modal_deported_label" aria-hidden="true" backdrop="static">
     <div class="modal-dialog">
@@ -32,7 +32,9 @@
       <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#word_trees_modal">-->
         <!--Modèle de données-->
       <!--</button>-->
-      <%= link_to "Modèle de données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+      <% if @guw_model.view_data == true %>
+        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+      <% end %>
 
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
@@ -238,11 +240,13 @@
                    gceuws = guow.guw_coefficient_element_unit_of_works
                    gceuws.each do |gceuw|
                      gce = gceuw.guw_coefficient_element
-                     gce_guw_coefficient = gce.guw_coefficient
-                     unless gce_guw_coefficient.nil?
-                       unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
-                         if (gceuw.percent.to_f != gce.value.to_f)
-                           hash_color_priorities[gce.color_priority.to_i] = gce.color_code
+                     unless gce.nil?
+                       gce_guw_coefficient = gce.guw_coefficient
+                       unless gce_guw_coefficient.nil?
+                         unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
+                           if (gceuw.percent.to_f != gce.value.to_f)
+                             hash_color_priorities[gce.color_priority.to_i] = gce.color_code
+                           end
                          end
                        end
                      end
@@ -255,14 +259,23 @@
                          hash_color_priorities[o.color_priority.to_i] = o.color_code
                        end
                      end
+                     if guow.intermediate_percent != guow.intermediate_weight
+                       hash_color_priorities[@guw_type.color_priority.to_i] = @guw_type.color_code
+                     end
                    end
 
-                   h = Hash[hash_color_priorities.sort].first
-                   unless h.nil?
-                     c = h.last
-                     border_color = "6px solid ##{c};"
-                   else
-                     border_color = "6px solid aeaeae;"
+                   h = Hash[hash_color_priorities.sort.reverse].first
+                   unless @guw_type.nil?
+                     if @guw_type.allow_line_color == true
+                       unless h.nil?
+                         c = h.last
+                         border_color = "6px solid ##{c};"
+                       else
+                         border_color = "6px solid aeaeae;"
+                       end
+                     else
+                       border_color = "6px solid aeaeae;"
+                     end
                    end
                 %>
 
@@ -274,7 +287,7 @@
 
                 <td class="span1">
                   <span class="badge badge-default">
-                    <%= j %><%= guow.display_order %>
+                    #<%= guow.id %>
                   </span>
                 </td>
 
@@ -292,13 +305,13 @@
                                                                               end,
                                                                               selected: @guw_type.id),
                                    class: "guw_type",
-                                   style: "width: 130px;",
+                                   style: "width: 80%",
                                    prompt: "",
                                    guw: guow.id %>
                   <% else %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    class: "guw_type",
-                                   style: "width: 130px;",
+                                   style: "width: 80%;",
                                    prompt: "",
                                    guw: guow.id %>
                   <% end %>
@@ -319,13 +332,15 @@
                       <% unless @guw_coefficients.where(deported: true).map(&:id).empty? %>
                         <%
                            elmnts = []
+                           has_element = false
                            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
-
                              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                                guw_coefficient_id: guw_coefficient.id).first
                              unless ceuw.nil?
                                elm = ceuw.guw_coefficient_element
+                               has_element = false
                                unless elm.nil?
+                                 has_element = true
                                  elmnts << elm.value
                                end
                              end
@@ -333,8 +348,11 @@
                         %>
 
                         <td class="span2">
-                          <% v = elmnts.flatten.compact.inject(&:*) %>
-                          <%= link_to v.nil? ? '...' : v.to_f.round(user_number_precision), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                          <%# if has_element == true %>
+                            <% v = elmnts.flatten.compact.inject(&:*) %>
+                            <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+                          <%# else %>
+                          <%# end %>
                         </td>
 
                       <% end %>
@@ -365,33 +383,33 @@
                           <% unless @guw_type.nil? %>
                             <% if @guw_type.display_threshold == true %>
                               <% if guow.off_line == true %>
-                                <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                <% @default_complexity = @guw_complexities.where(default_value: true).first %>
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                                guw: guow.id,
                                                class: "guw_complexity",
                                                prompt: "HSAT",
                                                readonly: !@guw_type.allow_complexity,
-                                               style: "width: 70px;" %>
+                                               style: "width: 80%;" %>
                               <% elsif guow.off_line_uo == true %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                                guw: guow.id,
                                                class: "guw_complexity",
                                                prompt: "HSUO",
                                                readonly: !@guw_type.allow_complexity,
-                                               style: "width: 70px;" %>
+                                               style: "width: 80%;" %>
                               <% elsif guow.guw_complexity.nil? %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_type.guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
                                                guw: guow.id,
                                                class: "guw_complexity",
                                                include_blank: false,
                                                readonly: !@guw_type.allow_complexity,
-                                               style: "width: 70px;" %>
+                                               style: "width: 80%;" %>
                               <% else %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                                class: "guw_complexity",
                                                include_blank: false,
                                                readonly: !@guw_type.allow_complexity,
-                                               style: "width: 70px;" %>
+                                               style: "width: 80%;" %>
                               <% end %>
                             <% else %>
                               <% if guow.off_line == true %>
@@ -402,15 +420,45 @@
                                 <% if guow.guw_complexity.nil? %>
                                   -
                                 <% else %>
+                                  <% if guow.intermediate_percent != guow.intermediate_weight %>
+                                    <% color = @guw_type.color_code %>
+                                  <% end %>
                                   <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
-                                                       style: "width: 43px;",
+                                                       style: "width: 80%; text-align: right;",
                                                        class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                                       guw: guow.id,
                                                        readonly: true %>
-                                      <% if @guw_type.allow_complexity %>
+                                  <% if @guw_type.allow_complexity %>
                                     <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
-                                                         style: "width: 43px;",
+                                                         style: "width: 80%; background-color: ##{color}; text-align: right;",
                                                          class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
+                                                         guw: guow.id,
+                                                         title: guow.cplx_comments,
                                                          step: 0.001 %>
+                                    <script>
+                                      $(document).ready(function(){
+                                        var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
+
+                                        $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
+
+                                          var currentValue = $(this).val();
+
+                                          if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
+
+                                            $("#guw_form").bind("submit");
+                                            $(".guw_submit").prop("disabled", true);
+
+                                            $.ajax({
+                                              url: "<%= guw.load_cplx_comments_path %>",
+                                              data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                                              "&value=" + currentValue +
+                                              "&previousValue=" + parseFloat(previousSavedValue)
+                                            });
+                                          }
+                                        });
+                                      });
+                                    </script>
+
                                   <% end %>
                                 <% end %>
                               <% end %>
@@ -423,14 +471,26 @@
                                                                      guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
 
-                        <% results = guw_coefficient.guw_coefficient_elements %>
-                        <% default = results.where(default: true).first %>
-                        <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                             guw_coefficient_id: guw_coefficient.id).first %>
+                        <% unless @guw_type.nil? %>
+                          <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                        <% else %>
+                          <% results = [] %>
+                        <% end %>
+                        <% default = guw_coefficient.guw_coefficient_elements.where(default: true).first %>
+                        <% if default.nil? %>
+                          <% default = results.first %>
+                        <% end %>
+
                         <% if guw_coefficient.deported == false %>
-                          <% unless guw_coefficient.guw_coefficient_elements.empty? %>
+
+                          <% unless results.empty? %>
 
                             <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+
+                              <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                                   guw_coefficient_id: guw_coefficient.id,
+                                                                                   guw_coefficient_element_id: nil).last %>
+
                               <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
                                 <%
                                    if ceuw.nil?
@@ -443,8 +503,9 @@
                                      end
                                    end
                                 %>
-                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                     style: "width: 43px; #{color};",
+                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]",
+                                                     ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
+                                                     style: "width: 45%; #{color}; text-align: right;",
                                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{guw_coefficient.id}_#{results.first.id}",
                                                      readonly: (guw_coefficient.allow_intermediate_value == true),
                                                      step: 0.001,
@@ -455,32 +516,47 @@
 
                                 <% if guw_coefficient.allow_intermediate_value == true %>
                                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                       style: "width: 43px;",
+                                                       style: "width: 45%; text-align: right;",
                                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                        step: 0.001 %>
                                 <% end %>
                               </td>
-                                <script>
-                                  $(document).ready(function(){
-                                    var previousValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
-                                    $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").keyup(function(e) {
-                                      var currentValue = $(this).val();
-                                      if(currentValue != previousValue) {
-                                        $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("blur", function(){
-                                          $.ajax({
-                                            url: "<%= guw.load_coefficient_comments_path %>",
-                                            data: "coeff_id=" + $(this).attr("coeff_id") +
-                                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
-                                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
-                                            "&value=" + $(this).val() +
-                                            "&previousValue=" + previousValue
-                                          });
-                                        });
-                                      }
+                              <% if guw_coefficient.allow_comments == true %>
+                                  <script>
+                                    $(document).ready(function(){
+                                      var defaultValue = <%= guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
+                                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
+                                      var currentValue ;
+
+                                      $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
+
+                                        currentValue = $(this).val();
+
+                                        if(parseFloat(currentValue) != parseFloat(defaultValue)) {
+
+                                          console.log(parseFloat(currentValue));
+                                          console.log(parseFloat(defaultValue));
+                                          console.log(parseFloat(previousSavedValue));
+
+                                          $("#guw_form").bind("submit");
+                                          $(".guw_submit").prop("disabled", true);
+
+                                            $.ajax({
+                                              url: "<%= guw.load_coefficient_comments_path %>",
+                                              data: "coeff_id=" + $(this).attr("coeff_id") +
+                                              "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                              "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                              "&value=" + $(this).val() +
+                                              "&previousValue=" + parseFloat(previousSavedValue)
+                                            });
+                                        }
+                                      });
                                     });
-                                  });
-                                </script>
+                                  </script>
+                              <% end %>
                             <% else %>
+                              <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                                   guw_coefficient_id: guw_coefficient.id).last %>
                               <td class="span2">
                                 <% unless @guw_type.nil? %>
                                   <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
@@ -490,7 +566,7 @@
                                                    class: "guw_coefficient guw-#{guow.id}",
                                                    guw: guow.id,
                                                    readonly: !can?(:execute_estimation_plan, @project),
-                                                   style: "width: 70px;" %>
+                                                   style: "width: 80%;" %>
                                   <% end %>
                                 <% end %>
                               </td>
@@ -521,7 +597,7 @@
                                                      step: 0.001,
                                                      readonly: true,
                                                      class: "guw-#{guow.id} guw_number_field_tag retained",
-                                                     style: "width: 43px;" %>
+                                                     style: "width: 80%; text-align: right;" %>
                               </span>
                             <% elsif got.display_type == "modif" %>
 
@@ -537,7 +613,7 @@
                                 <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
                                                      class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                     style: "width: 43px; #{color}" %>
+                                                     style: "width: 80%; #{color} text-align: right;" %>
                               </span>
                             <% elsif got.display_type == nil %>
                               <span class="ajusted_size_<%= guow.id %>">
@@ -559,14 +635,14 @@
                                 <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
                                                      class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
                                                      readonly: true,
-                                                     style: "width: 43px;",
+                                                     style: "width: 80%; text-align: right;",
                                                      step: 0.001 %>
                               </span>
                               <span class="ajusted_size_<%= guow.id %>">
                                 <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
-                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                     style: "width: 43px; #{color}"
+                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained",
+                                                     style: "width: 80%; #{color} text-align: right;"
                                 %>
                               </span>
                             <% end %>
@@ -577,7 +653,7 @@
                               <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
                                                    step: 0.001,
                                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                   style: "width: 43px; background-color: ##{guw_output.color_code};" %>
+                                                   style: "width: 80%; background-color: ##{guw_output.color_code}; text-align: right;" %>
                             </span>
                           </td>
                         <% end %>
@@ -609,7 +685,7 @@
             <% unless @unit_of_work_groups.empty? %>
               <%= link_to I18n.t('new_unit_of_work'), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
             <% end %>
-            <button type="submit" class="btn btn-primary pull-right"><%= I18n.t(:calculate) %></button>
+            <button type="submit" class="btn btn-primary pull-right guw_submit"><%= I18n.t(:calculate) %></button>
             <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained button_margin_right pull-right", onclick: "raz(#{uowg.id})" %>
           <% end %>
         </div>
@@ -733,6 +809,14 @@
 <div class="modal fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_coefficient_comments_content">
+      :-)
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cplx_comments" tabindex="-1" role="dialog" aria-labelledby="modal_cplx_comments_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_cplx_comments_content">
       :-)
     </div>
   </div>
@@ -962,56 +1046,56 @@
 
               $("#from").on("change",function(){
                   if (this.value == "") {
-                      $("#file-block").hide();
-                      $("#url-block").hide();
-                      $("#groups-block").hide();
-                      $("#type-block").hide();
-                      $("#excel-type-block").hide();
-                      $("#jira-type-block").hide();
-                      $("#redmine-type-block").hide();
+                      $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
                   }
 
                   else if (this.value == "Excel") {
-                      $("#file-block").show();
-                      $("#url-block").hide();
-                      $("#groups-block").show();
-                      $("#excel-type-block").show();
-                      $("#jira-type-block").hide();
-                      $("#redmine-type-block").hide();
+                      $("#file-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#excel-type-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
                     <% if !@guw_model.excel_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   } else if (this.value == "Jira") {
-                    $("#url-block").show();
-                    $("#file-block").hide();
-                    $("#groups-block").show();
-                    $("#excel-type-block").hide();
-                    $("#jira-type-block").show();
-                    $("#redmine-type-block").hide();
+                    $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#jira-type-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
 
                     <% if !@guw_model.jira_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   } else if (this.value == "Redmine") {
 
-                    $("#url-block").show();
-                    $("#file-block").hide();
-                     $("#groups-block").show();
-                    $("#excel-type-block").hide();
-                    $("#jira-type-block").hide();
-                    $("#redmine-type-block").show();
+                    $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                    $("#redmine-type-block").show().find('input, textarea, select').prop('disabled', false);
 
                     <% if !@guw_model.redmine_ml_server.blank? %>
-                      $("#type-block").show();
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
                     <% else %>
-                      $("#type-block").hide();
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
                     <% end %>
                   }
               })

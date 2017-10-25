@@ -1160,7 +1160,7 @@ fr1:
   unit_sloc: "Lignes de code (kilo)"
   unit_sloc: "Lignes de code"
   title_input_data_factors: "%{module_name} : facteurs des données en entrée"
-  effort: "Effort (mois-homme)"
+  effort: "Effort" #"Effort (mois-homme)"
   sloc: "sloc (Taille en Kilo Lignes de Code)"
   sloc: "SLOC (Taille en nombre de lignes de code"
   size: "taille"
@@ -1703,6 +1703,12 @@ fr1:
   phase_short_name: "Nom court de la phase"
   wbs_calculate_button_is_disabled: "Vous devez ajouter un commentaire à chaque phase modifiée pour pouvoir lancer le calcul"
   comment_required_if_modifiable: "Commentaires requis lorsqu'une phase est modifiable"
+  comment_required_on_phase: "Veuillez renseigner un commentaire pour les valeurs modifiées de chacune des phases"
+  warning_already_exist: "existe déjà"
+  average_rate_wording: "Libellé du 'Taux moyen' (TJM, THM, ...)"
+  identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"
+  already_exists: "Existe déjà"
+  module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
   headband_title: "Titre à afficher en haut du bandeau"
 
 

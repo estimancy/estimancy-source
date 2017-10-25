@@ -138,6 +138,7 @@ class OrganizationsController < ApplicationController
     p "rentre"
     @organization = Organization.find(params[:organization_id])
     tab_error = []
+    tab_warning_messages = ""
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       p "aaa"
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -145,11 +146,17 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2],organization_id: @organization.id)
-          p "bb"
-          unless new_profile.save
-            tab_error << index + 1
-            p "cc"
+
+          new_profile = OrganizationProfile.where(name: row[0], organization_id: @organization.id).first
+          if new_profile
+            tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
+          else
+            new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2], organization_id: @organization.id)
+            p "bb"
+            unless new_profile.save
+              tab_error << index + 1
+              p "cc"
+            end
           end
         elsif row[0].nil?
           tab_error << index + 1
@@ -162,6 +169,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
+    flash[:warning] = tab_warning_messages
     redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile")
   end
 
@@ -374,8 +382,8 @@ class OrganizationsController < ApplicationController
     @organization = @current_organization
     check_if_organization_is_image(@organization)
 
-    ###current_organization_projects = @organization.projects   #NRE
-    current_organization_projects = @organization.organization_estimations  # SGA
+    current_organization_projects = @organization.projects   #NRE
+    # current_organization_projects = @organization.organization_estimations  # SGA
 
 
     tmp1 = current_organization_projects.where(creator_id: current_user.id,
@@ -389,6 +397,7 @@ class OrganizationsController < ApplicationController
     end
 
     @projects = (tmp1 + tmp2).uniq
+    gap = 0
 
     if params[:detail] == "checked"
 
@@ -398,28 +407,45 @@ class OrganizationsController < ApplicationController
       worksheet.sheet_name = 'Liste des Estimations + Dénombrement'
 
       @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+      @guw_model_guw_attributes = @guw_model.guw_attributes
 
       workbook = RubyXL::Workbook.new
       worksheet = workbook.worksheets[0]
-
+      indice = -1
       ([I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
         I18n.t(:selected),
         I18n.t(:name),
         I18n.t(:description),
-        "Type",
+        "Type d'UO",
+        "Facteur sans nom 1",
+        "Facteur sans nom 2",
+        "Facteur sans nom 3",
         I18n.t(:organization_technology),
         I18n.t(:quantity),
         I18n.t(:tracability),
-        I18n.t(:cotation),
         I18n.t(:results),
-        I18n.t(:retained_result),
-        "COEF"] +
-          @guw_model.orders.sort_by { |k, v| v }.map{|i| i.first }).each_with_index do |val, index|
-        worksheet.add_cell(0, index, val)
-      end
+        I18n.t(:retained_result)] +
+          @guw_model.orders.delete_if{|k,v| v.blank? }.map{|j| j.first }).each_with_index do |val|
+            indice += 1
+            if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
+              guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
+              unless guw_coefficient.nil?
+                if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
+                  worksheet.add_cell(0, indice, val)
+                  worksheet.add_cell(0, indice+1, "#{val} (par défaut)")
+                  indice += 1
+                else
+                  worksheet.add_cell(0, indice, val)
+                end
+              end
+            else
+              worksheet.add_cell(0, indice, val)
+            end
+          end
 
+      ind = 0
       @projects.each do |project|
 
         project.module_projects.each do |mp|
@@ -428,7 +454,7 @@ class OrganizationsController < ApplicationController
 
           @guw_unit_of_works.each_with_index do |guow, i|
 
-            ind = i + 1
+            ind += 1
 
             if guow.off_line
               cplx = "HSAT"
@@ -441,71 +467,73 @@ class OrganizationsController < ApplicationController
             end
 
             worksheet.add_cell(ind, 0, mp.project.title)
-
             worksheet.add_cell(ind, 1, mp.project.version_number)
             worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
-
-
             worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
             worksheet.add_cell(ind, 4, guow.name)
-
-            worksheet.add_cell(ind, 6, guow.guw_type.name)
-
             worksheet.add_cell(ind, 5, guow.comments)
+            worksheet.add_cell(ind, 6, guow.guw_type.nil? ? '' : guow.guw_type.name)
             worksheet.add_cell(ind, 7, guow.guw_work_unit)
             worksheet.add_cell(ind, 8, guow.guw_weighting)
             worksheet.add_cell(ind, 9, guow.guw_factor)
             worksheet.add_cell(ind, 10, guow.organization_technology)
-
             worksheet.add_cell(ind, 11, guow.quantity)
             worksheet.add_cell(ind, 12, guow.tracking)
-            worksheet.add_cell(ind, 13, cplx)
+            worksheet.add_cell(ind, 13, (guow.size.is_a?(Hash) ? '' : guow.size))
+            worksheet.add_cell(ind, 14, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
 
-            worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
-            worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
-
-            worksheet.add_cell(ind, 16, guow.intermediate_weight)
-
-            @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
-              if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+            indice = -1
+            @guw_model.orders.delete_if{|k,v| v.blank? }.map{|j| j.first }.each_with_index do |val|
+              indice += 1
+              if Guw::GuwCoefficient.where(name: val).first.class == Guw::GuwCoefficient
+                guw_coefficient = Guw::GuwCoefficient.where(name: val, guw_model_id: @guw_model.id).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
                     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                       guw_coefficient_id: guw_coefficient.id,
                                                                       module_project_id: guow.module_project_id).first
 
-                    if guw_coefficient.coefficient_type == "Pourcentage"
-                      worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                    elsif guw_coefficient.coefficient_type == "Coefficient"
-                      worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                    if guw_coefficient.coefficient_type == "Pourcentage" or guw_coefficient.coefficient_type == "Coefficient"
+                      unless ceuw.nil?
+                        worksheet.add_cell(ind, 15+indice, "#{ceuw.percent.to_f.round(2)}")
+                        indice += 1
+                        gce = guw_coefficient.guw_coefficient_elements.first
+                        worksheet.add_cell(ind, 15+indice, gce.nil? ? '-' : gce.value.to_f)
+                      end
                     else
-                      worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name)
+                      unless ceuw.nil?
+                        worksheet.add_cell(ind, 15+indice, ceuw.nil? ? '-' : ceuw.guw_coefficient_element.nil? ? '-' : ceuw.guw_coefficient_element.name)
+                      end
                     end
                   end
                 end
 
-              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-                guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first
+              elsif Guw::GuwOutput.where(name: val).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(name: val, guw_model_id: @guw_model.id).first
                 unless guw_output.nil?
-                  unless guow.guw_type.nil?
-                    worksheet.add_cell(ind, 17 + j, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
-                  end
+                  worksheet.add_cell(ind, 15 + indice, (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2))).to_s)
                 end
+              elsif val == "Coeff. de Complexité"
+                worksheet.add_cell(ind, 15 + indice, cplx)
+              elsif val == "Critère"
+                worksheet.add_cell(ind, 15 + indice, "-")
+              else
+                worksheet.add_cell(ind, 15 + indice, "-")
               end
+
             end
 
-            @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
-              unless guowa.nil?
-                worksheet.add_cell(ind, 16 + @guw_model.orders.size + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
-              end
-            end
+            # @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+            #   guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id, guw_attribute_id: guw_attribute.id, guw_type_id: guow.guw_type.id).first
+            #   unless guowa.nil?
+            #     worksheet.add_cell(ind, 15 + @guw_model.orders.size + i + gap, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+            #   end
+            # end
           end
 
-          @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-            worksheet.add_cell(0, 16 + @guw_model.orders.size + i, guw_attribute.name)
-          end
+          # @guw_model_guw_attributes.each_with_index do |guw_attribute, i|
+          #   worksheet.add_cell(0, 15 + @guw_model.orders.size + i + gap, guw_attribute.name)
+          # end
         end
       end
 
@@ -672,73 +700,6 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    # options = {}
-    # params.delete("action")
-    # params.delete("controller")
-    # params.each do |k,v|
-    #   options[k] = v
-    # end
-    #
-    # Méthode 1
-    # projects = @organization.projects.order("created_at DESC").take(25)
-    # projects = []
-    # (0..projects.size).each do |i|
-    #   #faire un modulo pour "faire des trous"
-    #   prj = projects[i]
-    #   unless prj.nil?
-    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-    #       projects << prj
-    #     end
-    #   end
-    #
-    #   if projects.size == (10)
-    #     break
-    #   end
-    # end
-    #
-    #Methode 1bis
-    # projects = @organization.projects.limit(25)
-    # projects = []
-    # (0..projects.size).each do |i|
-    #   prj = projects[i]
-    #   unless prj.nil?
-    #     if can?(:see_project, prj, estimation_status_id: prj.estimation_status_id)
-    #       projects << prj
-    #     end
-    #   end
-    #
-    #   if projects.size == (25)
-    #     break
-    #   else
-    #   end
-    # end
-    #
-    # Methode 2 (avec n fois la meme requete jusqu'à n valeurs)
-    # projects = []
-    # (0..25).each do |i|
-    #   projects << Project.where(organization_id: @organization.id).first
-    # end
-
-    ############ NRE avec Cache  ############
-    # key = "not_archived_#{@organization.id}"
-    # archived_status = EstimationStatus.where(is_archive_status: true, organization_id: @organization_id).first
-    #
-    # projects = Rails.cache.read(key)
-    # project_ids = Rails.cache.read(key)
-    #
-    # if project_ids.nil?
-    #   project_ids = Rails.cache.fetch(key, force: true) do
-    #     Project.get_unarchived_project_ids(archived_status, @organization.id)
-    #   end
-    # end
-    # projects = Project.where(id: project_ids)
-    #
-
-    # projects = nil
-    # projects = @organization.projects
-
-    #############   SGA avec SQl View   ############
-
     @object_per_page = (current_user.object_per_page || 10)
 
     if params[:min].present? && params[:max].present?
@@ -746,15 +707,75 @@ class OrganizationsController < ApplicationController
       @max = params[:max].to_i
     else
       @min = 0
-      @max = (current_user.object_per_page || @object_per_page)
+      @max = @object_per_page
     end
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
-    # @projects = @organization.organization_estimations#.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
+    # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-    #@projects = check_for_projects(@min, @max)
-    @projects = check_for_projects(@min, @object_per_page)
+    @sort_action = params[:sort_action] #|| session[:sort_action]
+    @sort_column = params[:sort_column] #|| session[:sort_column]
+    @sort_order = params[:sort_order] #|| session[:sort_order]
+
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+
+    # Pour garder le tri même lors du raffraichissement de la page
+    if (@sort_action == "true" && @sort_column != "" && @sort_order != "")
+      projects = @organization.projects.where(:is_model => [nil, false])
+      organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_column, @search_value)
+
+      res = []
+      organization_projects.each do |p|
+        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+          res << p
+        end
+      end
+    else
+      if !@search_column.blank? && !@search_value.blank?
+        projects = @organization.projects.where(:is_model => [nil, false])
+        organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
+        res = []
+        organization_projects.each do |p|
+          if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+            res << p
+          end
+        end
+      else
+        organization_estimations = @organization.organization_estimations
+        # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+        res = []
+        organization_estimations.each do |p|
+          if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+            res << p.project
+          end
+        end
+      end
+
+    end
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+
+    # @projects = check_for_projects(@min, @max)
+    # @projects = check_for_projects(@min, @object_per_page)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -762,7 +783,17 @@ class OrganizationsController < ApplicationController
     fields = @organization.fields
 
     ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+      begin
+        if pf.project && pf.views_widget
+          if pf.project_id == pf.views_widget.module_project.project_id
+            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
     end
 
     fields.each do |f|
@@ -803,8 +834,9 @@ class OrganizationsController < ApplicationController
         if organization_project.nil?
           break
         else
-          if can?(:see_project, organization_project.project, estimation_status_id: organization_project.estimation_status_id)
-            result << organization_project
+          project = organization_project.project
+          if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
+            result << project
             last_project = organization_project
           end
           i += 1
@@ -1083,9 +1115,49 @@ class OrganizationsController < ApplicationController
               unless new_view_widget_mp.nil?
                 new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
-                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id, name: view_widget.name, show_name: view_widget.show_name,
-                                                 icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
-                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
+                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
+                                                 name: view_widget.name, show_name: view_widget.show_name,
+                                                 equation: view_widget.equation,
+                                                 comment: view_widget.comment,
+                                                 is_kpi_widget: view_widget.is_kpi_widget,
+                                                 kpi_unit: view_widget.kpi_unit,
+                                                 icon_class: view_widget.icon_class, color: view_widget.color,
+                                                 show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
+                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position,
+                                                 position_x: view_widget.position_x, position_y: view_widget.position_y)
+                #===
+
+                # #Update KPI Widget aquation
+                unless view_widget.equation.empty?
+                  ["A", "B", "C", "D", "E"].each do |letter|
+                    unless view_widget.equation[letter].nil?
+
+                      new_array = []
+                      est_val_id = view_widget.equation[letter].first
+                      mp_id = view_widget.equation[letter].last
+
+                      begin
+                        new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                        new_mpr_id = new_mpr.id
+                        begin
+                          new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                        rescue
+                          new_est_val_id = nil
+                        end
+                      rescue
+                        new_mpr_id = nil
+                      end
+
+                      new_array << new_est_val_id
+                      new_array << new_mpr_id
+
+                      widget_copy.equation[letter] = new_array
+                    end
+                  end
+                  widget_copy.save
+                end
+
+                #===
 
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: view_widget.id).first
                 unless pf.nil?
@@ -1257,7 +1329,7 @@ class OrganizationsController < ApplicationController
                                   profiles_hash = values_hash['profiles']
                                   temp_values[new_component.id][new_element.id]['profiles'] = Hash.new
 
-                                  unless profiles_hash.nil? && profiles_hash.empty?
+                                  unless profiles_hash.blank? #profiles_hash.nil? && profiles_hash.empty?
 
                                     profiles_hash.each do |key, profile_values|
                                       old_profile_id = key.gsub('profile_id_', '')
@@ -1457,6 +1529,7 @@ class OrganizationsController < ApplicationController
                   begin
                     group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
                   rescue
+                    ###puts "erreur"
                   end
                 end
               end
@@ -1505,7 +1578,9 @@ class OrganizationsController < ApplicationController
                   new_wbs_profiles = []
                   OrganizationProfilesWbsActivity.where(wbs_activity_id: new_wbs_activity.id).all.each do |wbs_profile|
                     new_organization_profile = new_organization.organization_profiles.where(copy_id: wbs_profile.organization_profile_id).last
-                    new_wbs_profiles << new_organization_profile.id
+                    unless new_organization_profile.nil?
+                      new_wbs_profiles << new_organization_profile.id
+                    end
                   end
                   new_wbs_activity.organization_profile_ids = new_wbs_profiles
                   new_wbs_activity.save

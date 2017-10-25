@@ -43,7 +43,7 @@ module Staffing
                 })
     end
 
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false}
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
     validates :mc_donell_coef, :puissance_n, :organization_id, presence: true
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
@@ -103,7 +103,7 @@ module Staffing
 
 
     # Display Value and unit
-    def self.display_value(data_probable, estimation_value, view_widget)
+    def self.display_value(data_probable, estimation_value, view_widget, user)
       module_project = estimation_value.module_project
       staffing_model = module_project.staffing_model
       value = data_probable.to_f
@@ -139,13 +139,13 @@ module Staffing
         if value.nil?
           result_value = nil
         else
-          result_value = (value / unit_coefficient.to_f).round(2)
+          result_value = (value / unit_coefficient.to_f)
         end
       rescue
         result_value = nil
       end
 
-      return "#{result_value} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: (user.language.locale rescue "fr"))} #{unit}"
     end
 
 

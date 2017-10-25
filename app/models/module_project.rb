@@ -28,6 +28,7 @@ class ModuleProject < ActiveRecord::Base
 
   belongs_to :pemodule
   belongs_to :project, :touch => true
+  belongs_to :organization_estimation, class_name: "OrganizationEstimation", :foreign_key => 'project_id'
   belongs_to :view, dependent: :destroy    # the current selected view
 
   belongs_to :guw_model, class_name: "Guw::GuwModel"
@@ -96,6 +97,20 @@ class ModuleProject < ActiveRecord::Base
   def nexts
     #ModuleProject.where("position_y > #{self.position_y.to_i} AND position_x = #{self.position_x.to_i} AND project_id = #{self.project.id}").all.select{|i| i.id != self.id }
     self.inverse_associated_module_projects
+  end
+
+
+  def all_nexts_mp_with_links(all_nexts_mp=[])
+    current_nexts = self.inverse_associated_module_projects.uniq
+    all_nexts_mp << current_nexts
+
+    unless current_nexts.blank?
+      current_nexts.each do |next_mp|
+        current_mp_link = next_mp.all_nexts_mp_with_links(all_nexts_mp)
+      end
+    end
+
+    all_nexts_mp.flatten.uniq.compact
   end
 
   #Return the inputs attributes of a module_projects
@@ -330,21 +345,23 @@ class ModuleProject < ActiveRecord::Base
     else
       wbs_activity_ratio_variables.each do |ratio_variable|
 
-        case ratio_variable.name.downcase
-          when "rtu"
-            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
-               !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+        unless ratio_variable.name.blank?
+          case ratio_variable.name.downcase
+            when "rtu"
+              if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+                 !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
 
-              ratio_variable.percentage_of_input = "E1"
-              ratio_variable.save
-            end
-          when "test"
-            if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
-                !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
+                ratio_variable.percentage_of_input = "E1"
+                ratio_variable.save
+              end
+            when "test"
+              if !ratio_variable.percentage_of_input.nil? && !ratio_variable.percentage_of_input.include?("E1") && !ratio_variable.percentage_of_input.include?("E2") &&
+                  !ratio_variable.percentage_of_input.include?("E3") && !ratio_variable.percentage_of_input.include?("E4")
 
-              ratio_variable.percentage_of_input = "E2"
-              ratio_variable.save
-            end
+                ratio_variable.percentage_of_input = "E2"
+                ratio_variable.save
+              end
+          end
         end
 
         mp_ratio_variable = module_project_ratio_variables.where(wbs_activity_ratio_variable_id: ratio_variable.id).first

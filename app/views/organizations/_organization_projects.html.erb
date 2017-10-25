@@ -1,11 +1,6 @@
 <table class="table table-striped table-bordered table-condensed">
-  <tr>
-    <th class="action" style="width: 25px;">
-      <%= link_to "", "#!",
-                  onclick: "toggle_group();",
-                  class: "fa fa-check-square-o" %>
-    </th>
 
+  <tr>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <% selected_inline_columns.each do |column| %>
       <%= column_header(column) %>
@@ -16,26 +11,28 @@
     </th>
   </tr>
 
+  <% ["sort_action", "sort_column", "sort_order", "min", "max"].each do |sort_param| %>
+    <%= hidden_field_tag sort_param, params[sort_param]  %>
+  <% end %>
+
   <tr style="background-color: #eeeeee;">
-    <td></td>
-      <% selected_inline_columns.each do |column| %>
-        <td>
-          <%= text_field_tag column.name, params[column.name], style: "width: 85%; height: 13px;" %>
-        </td>
+    <% selected_inline_columns.each do |column| %>
+      <td>
+        <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) %>
+            <% search_value = params[column.name] || params['search_value'] %>
+            <% search_value = search_value.blank? ? session['search_value'] : search_value %>
+        <% else %>
+            <% search_value = params[column.name] %>
+        <% end %>
+
+        <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;", disabled: (!column.field_id.nil? || column.name.to_s=="description") %>
+      </td>
       <% end %>
     <td></td>
   </tr>
 
   <% @projects.each_with_index do |project, index| %>
-    <%# if can_see_estimation?(project) %>
       <tr>
-
-        <td>
-          <span>
-            <input name="deleted_projects[]" type="checkbox" value="<%= project.id %>"  class="myCHECK" id="<%= project.id %>">
-          </span>
-        </td>
-
         <% selected_inline_columns.each do |column| %>
           <%= column_content(@pfs, column, project, @fields_coefficients) %>
         <% end %>
@@ -66,39 +63,57 @@
 
           <% if (can? :delete_project, project) || (can? :manage, project) %>
             <% if can_delete_estimation?(project) %>
-              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete'), method: "POST") %>
+              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
             <% end %>
           <% end %>
         </td>
       </tr>
     <% end %>
-  <%# end %>
-
-  <!--<tr>-->
-    <!--<th colspan="100" class="pager form-horizontal">-->
-      <!--<%# will_paginate @projects, page_links: false %>-->
-    <!--</th>-->
-  <!--</tr>-->
 
   <tr>
+    <% sort_column = sort_column.blank? ? params[:sort_column] : sort_column %>
+    <% sort_order = sort_order.blank? ? params[:sort_order] : sort_order %>
+    <% is_last_page = is_last_page.blank? ? params[:is_last_page] : is_last_page %>
+    <% if is_last_page != "true" %>
+        <% is_last_page = @is_last_page rescue false %>
+    <% end %>
+
     <th colspan="100" class="pager form-horizontal">
       <% if @min == 0 %>
-          <%= I18n.t(:previous) %>  -
+        <%= link_to "", "#", class: "btn btn-md fa fa-fast-backward disabled prev_next" %>
+        <%= link_to(I18n.t(:previous), "#", class: "btn btn-mini disabled prev_next") %>
       <% else %>
-        <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: @min - @object_per_page, max: @max - @object_per_page) %> -
+        <% if params[:sort_action] == "true"  || params[:action] == "sort" %>
+            <%= link_to "", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true), remote: true, class: "btn btn-md fa fa-fast-backward prev_next" %>
+            <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true), remote: true, class: "btn btn-mini prev_next" %>
+        <% else %>
+            <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-md fa fa-fast-backward prev_next" %>
+            <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-mini prev_next" %>
+        <% end %>
       <% end %>
 
-      <%# if @projects.size < @object_per_page %>
-        <%#= I18n.t(:next) %>
-      <%# else %>
-        <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: @min + @object_per_page, max: @max + @object_per_page) %>
-      <%# end %>
+      <%# if @max <= @organization.organization_estimations.size.to_f %>
+      <% if is_last_page == "true" || params[:is_last_page] == "true" %>
+          <%= link_to I18n.t(:next), "#", class: "btn btn-mini disabled prev_next" %>
+          <%= link_to "", "#", class: "fa fa-fast-forward btn btn-md disabled prev_next" %>
+      <% else %>
+          <% if params[:sort_action] == "true" || params[:action] == "sort" %>
+              <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page), remote: true, class: "btn btn-mini prev_next" %>
+              <%= link_to "", sort_path(f: sort_column, s: sort_order, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true), remote: true, class: "btn btn-md fa fa-fast-forward prev_next is_last_page" %>
+          <% else %>
+              <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-mini prev_next" %>
+              <%= link_to "", organization_estimations_path(@organization.id, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-md fa fa-fast-forward prev_next is_last_page" %>
+          <% end %>
+      <% end %>
     </th>
   </tr>
 
 </table>
 
 <script>
+
+    $(".table th").css("font-weight", "300");
+    $(".table th").css("font-size", "14px");
 
     function toggle_group(){
         var number_of_checked = 0;

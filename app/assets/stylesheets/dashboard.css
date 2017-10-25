@@ -543,8 +543,8 @@ ul{
 }
 
 .module_project_min{
-    border: 1px solid #ddd;
-    padding: 2px;
+    border: 2px solid #ddd;
+    padding: 5px;
     display: block;
     color: #646464;
     text-shadow: 0 1px 1px #fff;
@@ -556,6 +556,7 @@ ul{
     border-radius: 5px;
     z-index: 20;
     width: 140px;
+    background-color: white;
     /*min-width: 120px;*/
     /*max-width: 150px;*/
     margin-left:auto;
@@ -1324,3 +1325,27 @@ td.float_left {
     border-top: 0px;
 }
 
+.chevron_up_down {
+    content: "";
+    float: right;
+    padding: 3px;
+}
+
+.prev_next{
+    margin: 10px;
+    font-size: 14px;
+    font-weight: 300;
+
+}
+
+.invisible_button {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    /*cursor:pointer;*/
+    cursor: auto;
+    overflow: hidden;
+    outline:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}

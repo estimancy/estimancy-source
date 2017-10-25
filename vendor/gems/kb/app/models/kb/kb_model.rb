@@ -21,7 +21,7 @@
 
 module Kb
   class KbModel < ActiveRecord::Base
-    validates :name, :presence => true, uniqueness: { :scope => :organization_id, :case_sensitive => false, message: "Une instance du module base de connaissance du même nom existe déjà" }
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
     validates :standard_unit_coefficient, :presence => true
     validates :effort_unit, :presence => true
@@ -77,15 +77,14 @@ module Kb
     end
 
     # Display Value and unit
-    def self.display_value(data_probable, estimation_value, view_widget)
+    def self.display_value(data_probable, estimation_value, view_widget, user)
       module_project = estimation_value.module_project
       kb_model = module_project.kb_model
-      value = data_probable.to_f
+      value = data_probable
       unit_coefficient = 1
 
       case estimation_value.pe_attribute.alias
         when "effort"
-
           if view_widget.use_organization_effort_unit == true
             tab = Organization.get_organization_unit(value, kb_model.organization)
             unit_coefficient = tab.first
@@ -108,18 +107,16 @@ module Kb
           unit = "%"
       end
 
-
       begin
         if value.nil?
           result_value = nil
         else
-          result_value = (value / unit_coefficient.to_f).round(2)
+          result_value = (value.to_f / unit_coefficient.to_f)
         end
       rescue
         result_value = nil
       end
-
-      return "#{result_value} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.t('number.format.delimiter'), locale: (user.language.locale rescue "fr"))} #{unit}"
     end
 
   end

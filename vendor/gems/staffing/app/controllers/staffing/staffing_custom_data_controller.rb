@@ -134,11 +134,16 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       update_staffing_estimation_values
 
-      current_module_project.views_widgets.each do |vw|
-        cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-        ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
-      end
+      @module_project = current_module_project
+      @project = @module_project.project
 
+      ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+
+      # Reset all view_widget results
+      ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+      @module_project.all_nexts_mp_with_links.each do |module_project|
+        ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+      end
       redirect_to :back and return
     end
 
@@ -159,7 +164,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         ev = EstimationValue.find(current_ev.estimation_value_id)
       else
         ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                 :module_project_id => @module_project.previous.last, :in_out => "output").first
+                                   :module_project_id => @module_project.previous.last, :in_out => "output").first
       end
     rescue
       ev = nil
@@ -185,7 +190,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     mcdonnell_chart_theorical_coordinates = []
     for t in 0..@md_duration
       t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
-      mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
+      mcdonnell_chart_theorical_coordinates << ["#{t}", 2 * t_staffing]
     end
     @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
 
@@ -308,14 +313,18 @@ class Staffing::StaffingCustomDataController < ApplicationController
     ##### Rayleigh
 
     rayleigh_chart_theoretical_coordinates = []
+
     form_coef = -Math.log(1-0.97) / (@duration * @duration)
     @staffing_custom_data.form_coef = form_coef
+
     t_max_staffing = Math.sqrt(1/(2*form_coef))
     @staffing_custom_data.t_max_staffing = t_max_staffing
+
     for t in 0..@duration
       t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
-      rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
+      rayleigh_chart_theoretical_coordinates << ["#{t}", (2 * t_staffing)]
     end
+
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
 
     begin
@@ -325,9 +334,15 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
     update_staffing_estimation_values
 
-    current_module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+    @module_project = current_module_project
+    @project = @module_project.project
+
+    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+    @module_project.all_nexts_mp_with_links.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 
     redirect_to :back
@@ -498,11 +513,11 @@ class Staffing::StaffingCustomDataController < ApplicationController
       for t in 0..@duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
         t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
-        rayleigh_chart_theoretical_coordinates << ["#{t}", t_staffing]
+        rayleigh_chart_theoretical_coordinates << ["#{t}", 2 * t_staffing]
         if params[:actuals].present?
           actual_staffing_values << params[:actuals].to_a.map{|i| [i.first.to_f, i.last.to_f]}
         else
-          actual_staffing_values << ["#{t}", t_staffing]
+          actual_staffing_values << ["#{t}", 2 * t_staffing]
         end
       end
       @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
@@ -533,7 +548,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       for t in 0..@md_duration
         # E(t) = 2 * K * a * t * e(-a*t*t)
         t_staffing = 1 * effort * form_coef * t * Math.exp(-form_coef*t*t)
-        mcdonnell_chart_theorical_coordinates << ["#{t}", t_staffing]
+        mcdonnell_chart_theorical_coordinates << ["#{t}", 2 * t_staffing]
       end
       @staffing_custom_data.mcdonnell_chart_theorical_coordinates = mcdonnell_chart_theorical_coordinates
 
@@ -562,9 +577,15 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
     update_staffing_estimation_values
 
-    current_module_project.views_widgets.each do |vw|
-      cpt = vw.pbs_project_element.nil? ? current_component : vw.pbs_project_element
-      ViewsWidget::update_field(vw, @current_organization, current_module_project.project, cpt)
+    @module_project = current_module_project
+    @project = @module_project.project
+
+    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+
+    # Reset all view_widget results
+    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+    @module_project.all_nexts_mp_with_links.each do |module_project|
+      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
     end
 
     redirect_to :back
@@ -610,9 +631,9 @@ class Staffing::StaffingCustomDataController < ApplicationController
             tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "effort" && ev.in_out == "output"
-              ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
-              ev.save
-              tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+            ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
 
           elsif am.pe_attribute.alias == "duration"
             ev.send("string_data_#{level}")[current_component.id] = @staffing_custom_data.duration
@@ -631,7 +652,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
         end
 
         ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-    end
+      end
 
     end
   end

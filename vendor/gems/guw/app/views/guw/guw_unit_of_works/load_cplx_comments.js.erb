@@ -1,0 +1,17 @@
+$("#cplx_comments").html("<%= j(render 'guw/guw_unit_of_works/cplx_comments_modal', {
+  guw_unit_of_work: @guw_unit_of_work,
+  value: @value})
+%>")
+
+$("#cplx_comments").modal({
+  keyboard: false,
+  backdrop: "static"
+});
+
+$("#cplx_comments").on("hidden.bs.modal", function () {
+  $(".retained-guw-" + <%= @guw_unit_of_work.id %>).val("<%= @previousValue %>");
+  $("#guw_form").unbind('submit');
+  $(".guw_submit").prop("disabled", false);
+});
+
+$(".guw_submit").prop("disabled", false);
