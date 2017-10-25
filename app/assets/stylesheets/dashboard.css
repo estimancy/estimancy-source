@@ -543,8 +543,8 @@ ul{
 }
 
 .module_project_min{
-    border: 1px solid #ddd;
-    padding: 2px;
+    border: 2px solid #ddd;
+    padding: 5px;
     display: block;
     color: #646464;
     text-shadow: 0 1px 1px #fff;
@@ -556,6 +556,7 @@ ul{
     border-radius: 5px;
     z-index: 20;
     width: 140px;
+    background-color: white;
     /*min-width: 120px;*/
     /*max-width: 150px;*/
     margin-left:auto;
