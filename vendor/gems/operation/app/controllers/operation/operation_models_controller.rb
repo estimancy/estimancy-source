@@ -74,6 +74,7 @@ class Operation::OperationModelsController < ApplicationController
 
     @operation_model = Operation::OperationModel.find(params[:id])
     @organization = @operation_model.organization
+    @operation_inputs = @operation_model.operation_inputs
 
     if @operation_model.update_attributes(params[:operation_model])
       #redirect_to main_app.organization_module_estimation_path(@operation_model.organization_id, anchor: "effort")
