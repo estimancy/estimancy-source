@@ -1716,7 +1716,7 @@ class Guw::GuwModelsController < ApplicationController
               elsif guw_coefficient.coefficient_type == "Coefficient"
                 worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+;                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -1733,11 +1733,16 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+        guw_type = guow.guw_type
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
                                                   guw_attribute_id: guw_attribute.id,
-                                                  guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
+                                                  guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+
+        gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                          guw_attribute_id: guowa.guw_attribute_id).first
+
         unless guowa.nil?
-          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
         else
           p "GUOWA is nil"
         end
