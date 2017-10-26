@@ -1664,7 +1664,7 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.title)
-      
+
       tab_size[0]= tab_size[0] < current_module_project.project.title.length ? current_module_project.project.title.length : tab_size[0]
       # worksheet.change_column_width(0, tab_size[0])
       worksheet.add_cell(ind, 1, current_module_project.project.version_number)
@@ -1681,12 +1681,12 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.change_column_width(4, tab_size[4])
       worksheet.add_cell(ind, 6, type_name)
 
-      tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
+      # tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
       worksheet.change_column_width(6, tab_size[6])
-      worksheet.add_cell(ind, 5, guow.comments)
-      worksheet.add_cell(ind, 7, guow.guw_work_unit)
-      worksheet.add_cell(ind, 8, guow.guw_weighting)
-      worksheet.add_cell(ind, 9, guow.guw_factor)
+      worksheet.add_cell(ind, 5, guow.comments.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 7, guow.guw_work_unit.nil? ? '' : guow.guw_work_unit.name)
+      worksheet.add_cell(ind, 8, guow.guw_weighting.nil? ? '' : guow.guw_weighting.name)
+      worksheet.add_cell(ind, 9, guow.guw_factor.nil? ? '' : guow.guw_factor.name)
       worksheet.add_cell(ind, 10, guow.organization_technology)
 
       tab_size[10] = tab_size[10] < guow.organization_technology.to_s.length ? guow.organization_technology.to_s.length : tab_size[10]
@@ -1694,7 +1694,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(ind, 11, guow.quantity)
       worksheet.add_cell(ind, 12, guow.tracking)
       worksheet.add_cell(ind, 13, cplx)
-      
+
       tab_size[13] = tab_size[13] < cplx.length ? cplx.length : tab_size[13]
       worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
       worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
