@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170919082636) do
+ActiveRecord::Schema.define(:version => 20171018071713) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -27,12 +27,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "acquisition_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -44,15 +44,24 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.datetime "updated_at"
   end
 
+  create_table "activity_profiles", :force => true do |t|
+    t.integer  "project_id"
+    t.integer  "wbs_project_element_id"
+    t.integer  "organization_profile_id"
+    t.float    "ratio_percentage"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
   create_table "admin_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description"
     t.string   "category"
   end
@@ -152,6 +161,8 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "attribute_modules", :force => true do |t|
     t.integer  "pe_attribute_id"
     t.integer  "pemodule_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_mandatory",        :default => false
     t.string   "in_out"
     t.text     "description"
@@ -165,8 +176,6 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "display_order"
     t.integer  "guw_model_id"
     t.integer  "operation_model_id"
@@ -207,12 +216,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "port"
     t.string   "base_dn"
     t.string   "user_name_attribute"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
     t.boolean  "on_the_fly_user_creation",     :default => false
     t.string   "ldap_bind_dn"
     t.string   "ldap_bind_encrypted_password"
@@ -229,16 +238,16 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "name"
     t.string   "alias"
     t.text     "description"
-    t.string   "custom_value"
-    t.integer  "owner_id"
-    t.text     "change_comment"
-    t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "iso_code"
     t.string   "iso_code_number"
     t.string   "sign"
     t.float    "conversion_rate"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.string   "reference_uuid"
   end
 
   create_table "estimation_status_group_roles", :force => true do |t|
@@ -256,15 +265,16 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "status_alias"
     t.string   "name"
     t.string   "status_color"
+    t.boolean  "is_archive_status"
     t.text     "description"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.integer  "copy_id"
-    t.boolean  "is_archive_status"
     t.boolean  "is_new_status"
   end
 
   create_table "estimation_values", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "module_project_id"
     t.integer  "pe_attribute_id"
     t.text     "string_data_low"
@@ -287,6 +297,18 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
+  add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], :name => "organization_estimation_values"
+
+  create_table "events", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "event_type_id"
+    t.integer  "project_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "expert_judgement_instance_estimates", :force => true do |t|
     t.integer "pbs_project_element_id"
@@ -321,6 +343,19 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer "copy_id"
   end
 
+  add_index "expert_judgement_instances", ["organization_id", "name"], :name => "index_expert_judgement_instances_on_organization_id_and_name", :unique => true
+
+  create_table "factor_translations", :force => true do |t|
+    t.integer  "factor_id"
+    t.string   "locale",     :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.text     "helps"
+  end
+
+  add_index "factor_translations", ["factor_id"], :name => "index_factor_translations_on_factor_id"
+  add_index "factor_translations", ["locale"], :name => "index_factor_translations_on_locale"
+
   create_table "factors", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -354,13 +389,13 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "factor_alias"
     t.string   "value_text"
     t.float    "value_number"
+    t.string   "default"
     t.string   "factor_scale_prod"
     t.string   "factor_type"
     t.integer  "ge_factor_id"
     t.integer  "ge_model_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
-    t.string   "default"
   end
 
   create_table "ge_ge_factors", :force => true do |t|
@@ -381,51 +416,49 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "formula"
     t.float    "s_factors_value"
     t.float    "p_factors_value"
+    t.float    "c_factors_value"
     t.text     "values"
     t.integer  "ge_model_id"
     t.integer  "module_project_id"
     t.integer  "organization_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
-    t.float    "c_factors_value"
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer  "ge_model_id"
-    t.integer  "ge_factor_id"
-    t.string   "factor_alias"
-    t.text     "description"
-    t.integer  "organization_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-    t.integer  "project_id"
-    t.integer  "module_project_id"
+    t.integer "ge_model_id"
+    t.integer "ge_factor_id"
+    t.string  "factor_alias"
+    t.text    "description"
+    t.integer "organization_id"
+    t.integer "project_id"
+    t.integer "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
     t.string   "name"
+    t.text     "description"
     t.float    "coeff_a"
     t.float    "coeff_b"
     t.integer  "organization_id"
+    t.string   "input_size_unit"
+    t.string   "output_size_unit"
+    t.string   "input_effort_unit"
     t.string   "output_effort_unit"
     t.boolean  "three_points_estimation"
     t.float    "output_effort_standard_unit_coefficient"
-    t.string   "input_size_unit"
+    t.float    "input_effort_standard_unit_coefficient"
     t.boolean  "enabled_input"
+    t.boolean  "modify_theorical_effort"
     t.integer  "copy_id"
     t.integer  "copy_number",                             :default => 0
-    t.boolean  "modify_theorical_effort"
-    t.text     "description"
     t.string   "p_calculation_method"
     t.string   "s_calculation_method"
     t.string   "c_calculation_method"
-    t.integer  "input_pe_attribute_id"
-    t.integer  "output_pe_attribute_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "output_size_unit"
-    t.string   "input_effort_unit"
-    t.float    "input_effort_standard_unit_coefficient"
+    t.integer  "input_pe_attribute_id"
+    t.integer  "output_pe_attribute_id"
     t.string   "ent1_unit"
     t.float    "ent1_unit_coefficient",                   :default => 1.0
     t.string   "ent2_unit"
@@ -453,19 +486,21 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "sort4_is_modifiable"
   end
 
+  add_index "ge_ge_models", ["organization_id", "name"], :name => "index_ge_ge_models_on_organization_id_and_name", :unique => true
+
   create_table "groups", :force => true do |t|
+    t.integer  "organization_id"
     t.string   "name"
     t.text     "description"
     t.string   "code_group"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "for_global_permission"
     t.boolean  "for_project_security"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "organization_id"
     t.integer  "copy_id"
   end
 
@@ -683,7 +718,10 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "allow_ml_excel"
     t.boolean  "allow_ml_jira"
     t.boolean  "allow_ml_redmine"
+    t.boolean  "view_data"
   end
+
+  add_index "guw_guw_models", ["organization_id", "name"], :name => "index_guw_guw_models_on_organization_id_and_name", :unique => true
 
   create_table "guw_guw_output_associations", :force => true do |t|
     t.integer  "guw_output_id"
@@ -773,6 +811,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "is_default"
     t.string   "color_code"
     t.integer  "color_priority"
+    t.boolean  "allow_line_color"
   end
 
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
@@ -839,6 +878,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.float    "intermediate_weight"
     t.float    "intermediate_percent"
     t.string   "url"
+    t.text     "cplx_comments"
   end
 
   create_table "guw_guw_weightings", :force => true do |t|
@@ -914,6 +954,26 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "filter_d"
   end
 
+  add_index "kb_kb_models", ["organization_id", "name"], :name => "index_kb_kb_models_on_organization_id_and_name", :unique => true
+
+  create_table "labor_categories", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+  end
+
+  add_index "labor_categories", ["record_status_id"], :name => "index_labor_categories_on_record_status_id"
+  add_index "labor_categories", ["reference_id"], :name => "index_labor_categories_on_parent_id"
+  add_index "labor_categories", ["uuid"], :name => "index_labor_categories_on_uuid", :unique => true
+
   create_table "labor_categories_project_areas", :id => false, :force => true do |t|
     t.integer  "labor_category_id"
     t.integer  "project_area_id"
@@ -924,24 +984,28 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "languages", :force => true do |t|
     t.string   "name"
     t.string   "locale"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "pbs_project_element_id"
     t.integer  "module_project_id"
+    t.integer  "wbs_activity_id"
     t.integer  "wbs_activity_ratio_id"
     t.integer  "wbs_activity_ratio_element_id"
     t.integer  "wbs_activity_element_id"
     t.boolean  "multiple_references"
     t.string   "name"
+    t.boolean  "name_is_modified"
     t.text     "description"
     t.float    "ratio_value"
+    t.float    "tjm"
     t.decimal  "theoretical_effort_probable",    :precision => 15, :scale => 5
     t.decimal  "theoretical_cost_probable",      :precision => 20, :scale => 6
     t.decimal  "retained_effort_probable",       :precision => 15, :scale => 5
@@ -969,12 +1033,14 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "ancestry"
     t.string   "phase_short_name"
     t.boolean  "is_just_changed"
-    t.boolean  "name_is_modified"
   end
 
   add_index "module_project_ratio_elements", ["ancestry"], :name => "index_module_project_ratio_elements_on_ancestry"
+  add_index "module_project_ratio_elements", ["organization_id", "module_project_id", "pbs_project_element_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_module_project_ratio_elements"
 
   create_table "module_project_ratio_variables", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.integer  "module_project_id"
     t.integer  "pbs_project_element_id"
     t.integer  "wbs_activity_ratio_id"
@@ -989,32 +1055,37 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "is_used_in_ratio_calculation"
   end
 
+  add_index "module_project_ratio_variables", ["organization_id", "module_project_id", "pbs_project_element_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_ratio_variable_id"], :name => "organization_module_project_ratio_variables"
+
   create_table "module_projects", :force => true do |t|
+    t.integer  "organization_id"
     t.integer  "pemodule_id"
     t.integer  "project_id"
     t.integer  "position_x"
     t.integer  "position_y"
+    t.float    "top_position"
+    t.float    "left_position"
+    t.integer  "creation_order"
     t.integer  "nb_input_attr"
     t.integer  "nb_output_attr"
     t.integer  "copy_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "guw_model_id"
     t.integer  "view_id"
     t.boolean  "show_results_view",            :default => true
     t.string   "color"
-    t.integer  "guw_model_id"
     t.integer  "ge_model_id"
     t.integer  "expert_judgement_instance_id"
     t.integer  "wbs_activity_id"
+    t.integer  "wbs_activity_ratio_id"
     t.integer  "staffing_model_id"
     t.integer  "kb_model_id"
     t.integer  "operation_model_id"
     t.integer  "skb_model_id"
-    t.float    "top_position"
-    t.float    "left_position"
-    t.integer  "creation_order"
-    t.integer  "wbs_activity_ratio_id"
   end
+
+  add_index "module_projects", ["organization_id", "pemodule_id", "project_id"], :name => "organization_module_projects"
 
   create_table "module_projects_pbs_project_elements", :id => false, :force => true do |t|
     t.integer "module_project_id"
@@ -1049,6 +1120,62 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "modify_output"
   end
 
+  add_index "operation_operation_models", ["organization_id", "name"], :name => "index_operation_operation_models_on_organization_id_and_name", :unique => true
+
+  create_table "organization_estimations", :id => false, :force => true do |t|
+    t.integer  "current_organization_id",               :default => 0,     :null => false
+    t.string   "organization_name"
+    t.datetime "project_created_date"
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
+    t.string   "title"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
+    t.string   "state"
+    t.date     "start_date"
+    t.integer  "organization_id"
+    t.integer  "original_model_id"
+    t.integer  "project_area_id"
+    t.integer  "project_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "acquisition_category_id"
+    t.boolean  "is_model"
+    t.integer  "master_anscestry"
+    t.integer  "creator_id"
+    t.text     "purpose"
+    t.text     "level_of_detail"
+    t.text     "scope"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.text     "included_wbs_activities"
+    t.boolean  "is_locked"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "status_comment"
+    t.integer  "application_id"
+    t.string   "application_name"
+    t.boolean  "private",                               :default => false
+    t.boolean  "is_historicized"
+  end
+
+  create_table "organization_labor_categories", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "labor_category_id"
+    t.string   "level"
+    t.string   "name"
+    t.text     "description"
+    t.float    "cost_per_hour"
+    t.integer  "base_year"
+    t.integer  "currency_id"
+    t.float    "hour_per_day"
+    t.integer  "days_per_year"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "organization_profiles", :force => true do |t|
     t.integer  "organization_id"
     t.string   "name"
@@ -1059,6 +1186,8 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "copy_id"
   end
 
+  add_index "organization_profiles", ["organization_id"], :name => "index_organization_profiles_on_organization_id"
+
   create_table "organization_profiles_wbs_activities", :id => false, :force => true do |t|
     t.integer  "organization_profile_id"
     t.integer  "wbs_activity_id"
@@ -1067,6 +1196,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], :name => "wbs_activity_profiles_index", :unique => true
+  add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], :name => "wbs_activity_organization_profiles"
 
   create_table "organization_technologies", :force => true do |t|
     t.integer  "organization_id"
@@ -1111,13 +1241,14 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
 
   create_table "organizations", :force => true do |t|
     t.string   "name"
+    t.string   "headband_title"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "number_hours_per_day"
     t.float    "number_hours_per_month"
-    t.float    "cost_per_hour"
     t.integer  "currency_id"
+    t.float    "cost_per_hour"
     t.float    "inflation_rate"
     t.integer  "limit1"
     t.integer  "limit2"
@@ -1174,19 +1305,21 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "attr_type"
     t.text     "options"
     t.text     "aggregation"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
     t.integer  "precision"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "attribute_category_id"
     t.boolean  "single_entry_attribute"
     t.integer  "guw_model_id"
     t.integer  "operation_model_id"
     t.integer  "operation_input_id"
   end
+
+  add_index "pe_attributes", ["alias"], :name => "index_pe_attributes_on_alias"
 
   create_table "pe_wbs_projects", :force => true do |t|
     t.string   "name"
@@ -1202,27 +1335,27 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.text     "description"
     t.string   "with_activities",          :default => "0"
     t.integer  "type_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "compliant_component_type"
     t.boolean  "is_typed"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "permissions", :force => true do |t|
     t.string   "object_associated"
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_permission_project"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "alias"
     t.boolean  "is_master_permission"
     t.string   "category",              :default => "Admin"
@@ -1246,12 +1379,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "platform_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1261,6 +1394,21 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "project_area_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "profile_categories", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "profiles", :force => true do |t|
@@ -1278,12 +1426,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "project_areas", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1305,12 +1453,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   create_table "project_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1333,19 +1481,19 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "user_id"
     t.integer  "project_security_level_id"
     t.integer  "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.boolean  "is_model_permission"
     t.boolean  "is_estimation_permission"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "project_security_levels", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description"
     t.integer  "organization_id"
     t.integer  "copy_id"
@@ -1353,32 +1501,32 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
 
   create_table "projects", :force => true do |t|
     t.string   "title"
-    t.text     "description"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
     t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
     t.string   "state"
     t.date     "start_date"
     t.integer  "organization_id"
+    t.integer  "original_model_id"
     t.integer  "project_area_id"
     t.integer  "project_category_id"
     t.integer  "platform_category_id"
     t.integer  "acquisition_category_id"
     t.boolean  "is_model"
-    t.string   "version_number",          :limit => 64, :default => "1.0"
-    t.string   "ancestry"
     t.integer  "master_anscestry"
     t.integer  "creator_id"
     t.text     "purpose"
     t.text     "level_of_detail"
     t.text     "scope"
     t.integer  "copy_number"
+    t.integer  "copy_id"
     t.text     "included_wbs_activities"
     t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "estimation_status_id"
     t.text     "status_comment"
-    t.integer  "original_model_id"
-    t.integer  "copy_id"
     t.integer  "application_id"
     t.string   "application_name"
     t.boolean  "private",                               :default => false
@@ -1386,6 +1534,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
 
   create_table "projects_users", :id => false, :force => true do |t|
     t.integer  "project_id"
@@ -1489,12 +1638,15 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "n_max"
   end
 
+  add_index "skb_skb_models", ["organization_id", "name"], :name => "index_skb_skb_models_on_organization_id_and_name", :unique => true
+
   create_table "staffing_staffing_custom_data", :force => true do |t|
     t.integer  "staffing_model_id"
     t.integer  "module_project_id"
     t.integer  "pbs_project_element_id"
     t.string   "staffing_method"
     t.string   "period_unit"
+    t.decimal  "standard_effort",                        :precision => 20, :scale => 6
     t.string   "global_effort_type"
     t.decimal  "global_effort_value",                    :precision => 20, :scale => 6
     t.string   "staffing_constraint"
@@ -1526,7 +1678,6 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.text     "mcdonnell_chart_theorical_coordinates"
     t.float    "max_staffing_rayleigh"
     t.float    "percent"
-    t.decimal  "standard_effort",                        :precision => 20, :scale => 6
   end
 
   create_table "staffing_staffing_models", :force => true do |t|
@@ -1548,6 +1699,8 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "effort_week_unit"
     t.string   "config_type"
   end
+
+  add_index "staffing_staffing_models", ["organization_id", "name"], :name => "index_staffing_staffing_models_on_organization_id_and_name", :unique => true
 
   create_table "status_transitions", :force => true do |t|
     t.integer  "from_transition_status_id"
@@ -1632,9 +1785,11 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",                    :null => false
+    t.string   "email",                  :default => "",    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "login_name"
     t.string   "first_name"
     t.string   "last_name"
@@ -1649,14 +1804,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "auth_type"
     t.text     "ten_latest_projects"
     t.integer  "organization_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",     :default => "",                    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0,                     :null => false
+    t.integer  "sign_in_count",          :default => 0,     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -1664,7 +1817,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        :default => 0,                     :null => false
+    t.integer  "failed_attempts",        :default => 0,     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
@@ -1674,7 +1827,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
-    t.datetime "subscription_end_date",  :default => '2017-02-08 11:25:43'
+    t.datetime "subscription_end_date"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1694,12 +1847,12 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "name"
     t.text     "description"
     t.integer  "organization_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
     t.integer  "pemodule_id"
+    t.boolean  "is_reference_view"
     t.boolean  "is_default_view"
     t.integer  "initial_view_id"
-    t.boolean  "is_reference_view"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
   create_table "views_widgets", :force => true do |t|
@@ -1707,6 +1860,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "widget_id"
     t.string   "name"
     t.integer  "module_project_id"
+    t.integer  "estimation_value_id"
     t.integer  "pe_attribute_id"
     t.integer  "pbs_project_element_id"
     t.string   "icon_class"
@@ -1721,7 +1875,6 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.datetime "updated_at",                   :null => false
     t.integer  "position"
     t.boolean  "show_name"
-    t.integer  "estimation_value_id"
     t.boolean  "show_wbs_activity_ratio"
     t.boolean  "from_initial_view"
     t.boolean  "is_label_widget"
@@ -1738,6 +1891,8 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "state"
     t.text     "description"
     t.integer  "organization_id"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
@@ -1745,39 +1900,41 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "copy_number",              :default => 0
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
+    t.integer  "copy_id"
     t.boolean  "three_points_estimation"
     t.string   "cost_unit"
     t.float    "cost_unit_coefficient"
     t.string   "effort_unit"
     t.float    "effort_unit_coefficient"
     t.boolean  "enabled_input"
-    t.integer  "copy_id"
     t.integer  "phases_short_name_number", :default => 0
     t.boolean  "hide_wbs_header"
+    t.string   "average_rate_wording"
   end
 
+  add_index "wbs_activities", ["organization_id", "name"], :name => "index_wbs_activities_on_organization_id_and_name", :unique => true
+  add_index "wbs_activities", ["organization_id"], :name => "organization_wbs_activities"
   add_index "wbs_activities", ["owner_id"], :name => "index_wbs_activities_on_owner_id"
 
   create_table "wbs_activity_elements", :force => true do |t|
+    t.integer  "organization_id"
     t.string   "uuid"
     t.integer  "wbs_activity_id"
     t.string   "name"
     t.text     "description"
     t.string   "ancestry"
+    t.integer  "ancestry_depth",     :default => 0
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_id"
     t.string   "dotted_id"
+    t.integer  "copy_id"
     t.boolean  "is_root"
     t.string   "master_ancestry"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.integer  "ancestry_depth",     :default => 0
     t.float    "position"
     t.string   "phase_short_name"
     t.boolean  "allow_modif_effort"
@@ -1785,6 +1942,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
+  add_index "wbs_activity_elements", ["wbs_activity_id", "ancestry"], :name => "organization_wbs_activity_elements"
   add_index "wbs_activity_elements", ["wbs_activity_id"], :name => "index_wbs_activity_elements_on_wbs_activity_id"
 
   create_table "wbs_activity_inputs", :force => true do |t|
@@ -1796,19 +1954,21 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   create_table "wbs_activity_ratio_elements", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.string   "uuid"
     t.integer  "wbs_activity_ratio_id"
     t.integer  "wbs_activity_element_id"
     t.float    "ratio_value"
     t.boolean  "simple_reference"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.boolean  "multiple_references"
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
     t.string   "ancestry"
     t.boolean  "is_optional"
     t.string   "formula"
@@ -1819,6 +1979,7 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"
+  add_index "wbs_activity_ratio_elements", ["wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_wbs_activity_ratio_elements"
 
   create_table "wbs_activity_ratio_profiles", :force => true do |t|
     t.integer  "wbs_activity_ratio_element_id"
@@ -1832,6 +1993,8 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
   add_index "wbs_activity_ratio_profiles", ["ancestry"], :name => "index_wbs_activity_ratio_profiles_on_ancestry"
 
   create_table "wbs_activity_ratio_variables", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "wbs_activity_id"
     t.integer  "wbs_activity_ratio_id"
     t.string   "name"
     t.text     "description"
@@ -1842,27 +2005,32 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.boolean  "is_used_in_ratio_calculation"
   end
 
+  add_index "wbs_activity_ratio_variables", ["wbs_activity_ratio_id"], :name => "organization_wbs_activity_ratio_variables"
+
   create_table "wbs_activity_ratios", :force => true do |t|
+    t.integer  "organization_id"
     t.string   "uuid"
     t.string   "name"
     t.text     "description"
     t.integer  "wbs_activity_id"
+    t.boolean  "do_not_show_cost"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "copy_number",                        :default => 0
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
     t.integer  "copy_id"
-    t.boolean  "do_not_show_cost"
     t.boolean  "allow_modify_retained_effort"
     t.boolean  "do_not_show_phases_with_zero_value"
     t.boolean  "allow_modify_ratio_reference"
     t.boolean  "allow_add_new_phase"
     t.boolean  "comment_required_if_modifiable"
   end
+
+  add_index "wbs_activity_ratios", ["organization_id", "wbs_activity_id"], :name => "organization_wbs_activity_ratios"
 
   create_table "wbs_project_elements", :force => true do |t|
     t.integer  "pe_wbs_project_id"
@@ -1902,13 +2070,13 @@ ActiveRecord::Schema.define(:version => 20170919082636) do
     t.string   "alias"
     t.text     "description"
     t.integer  "project_area_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "peicon_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
   end
 

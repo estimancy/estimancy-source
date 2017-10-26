@@ -1089,7 +1089,7 @@ class WbsActivitiesController < ApplicationController
           else
             new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
           end
-          est_val.update_attribute(:"string_data_probable", { current_component.id => new_ratio_global })
+          est_val.update_attribute(:"string_data_probable", { current_component_id => new_ratio_global })
         end
       end
     end

@@ -122,7 +122,7 @@ module EffortBreakdown
                         end
                     end
                     tjm_value = (tjm_is_nil == true) ? nil : element_tjm
-                    tjm_per_phase[element.id] =
+                    tjm_per_phase[element.id] = tjm_value
                     @efforts_tjm_costs_per_phase_profiles[element.id][:tjm] = tjm_value
                 end
             end
@@ -267,22 +267,25 @@ module EffortBreakdown
         sorted_node_elements.each do |element|
           key = element.id   # wbs_activity_element_id
           value = efforts_man_month[key]
-
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
 
-          if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable
-            if @changed_retained_cost_values[element.id].blank?
-              output_cost[element.id] = @theoretical_cost[element.id]
-            else
-              output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f
-            end
+          if mp_ratio_element.selected != true
+            output_cost[key] = nil
           else
-            if element.is_childless? || element.has_new_complement_child?
-              # Calculate cost for each profile
-              tjm = @tjm_per_phase[element.id]
-              output_cost[key] = tjm.nil? ? nil : (tjm * value)
+            if mp_ratio_element && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable
+              if @changed_retained_cost_values[element.id].blank?
+                output_cost[element.id] = @theoretical_cost[element.id]
+              else
+                output_cost[element.id] = @changed_retained_cost_values[element.id].blank? ? nil : @changed_retained_cost_values[element.id].to_f
+              end
             else
-              output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
+              if element.is_childless? || element.has_new_complement_child?
+                # Calculate cost for each profile
+                tjm = @tjm_per_phase[element.id]
+                output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value)
+              else
+                output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
+              end
             end
           end
         end
@@ -314,7 +317,7 @@ module EffortBreakdown
           if element.is_childless? || element.has_new_complement_child?
             # Calculate cost for each profile
             tjm = @tjm_per_phase[element.id]
-            output_cost[key] = tjm.nil? ? nil : (tjm * value)
+            output_cost[key] = (tjm.nil? || value.nil?) ? nil : (tjm * value)
           else
             output_cost[key] = compact_array_and_compute_node_value(element, output_cost)
           end
@@ -391,13 +394,18 @@ module EffortBreakdown
       if mp_ratio_element.selected == true
         effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
       else
-        effort_value = output_effort_from_formula[:"#{element.id}"]
+        if theoretical_or_retained == "retained"
+          effort_value = nil
+        else
+          effort_value = output_effort_from_formula[:"#{element.id}"]
+        end
       end
 
       # get the retained values
       if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
-
         changed_retained_effort_value = @changed_retained_effort_values[element.id]
+
+        #effort
         if changed_retained_effort_value.blank?
           begin
             effort = effort_value.nil? ? nil : effort_value.to_f
@@ -412,7 +420,11 @@ module EffortBreakdown
         if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
           changed_retained_cost_value =  @changed_retained_cost_values[element.id]
           if changed_retained_cost_value.blank?
-            cost = @theoretical_cost[element.id]
+            if mp_ratio_element.selected == true
+              cost = @theoretical_cost[element.id]
+            else
+              cost = nil
+            end
           else
             cost = changed_retained_cost_value.to_f
           end
@@ -429,7 +441,11 @@ module EffortBreakdown
           if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
             changed_retained_cost_value =  @changed_retained_cost_values[element.id]
             if changed_retained_cost_value.blank?
-              cost = @theoretical_cost[element.id]
+              if mp_ratio_element.selected == true
+                cost = @theoretical_cost[element.id]
+              else
+                cost = nil
+              end
             else
               cost = changed_retained_cost_value.to_f
             end
