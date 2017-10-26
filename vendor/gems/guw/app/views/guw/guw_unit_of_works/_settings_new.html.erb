@@ -32,7 +32,9 @@
       <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#word_trees_modal">-->
         <!--Modèle de données-->
       <!--</button>-->
-      <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+      <% if @guw_model.view_data == true %>
+        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+      <% end %>
 
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
@@ -263,15 +265,17 @@
                    end
 
                    h = Hash[hash_color_priorities.sort.reverse].first
-                   if @guw_type.allow_line_color == true
-                     unless h.nil?
-                       c = h.last
-                       border_color = "6px solid ##{c};"
+                   unless @guw_type.nil?
+                     if @guw_type.allow_line_color == true
+                       unless h.nil?
+                         c = h.last
+                         border_color = "6px solid ##{c};"
+                       else
+                         border_color = "6px solid aeaeae;"
+                       end
                      else
                        border_color = "6px solid aeaeae;"
                      end
-                   else
-                     border_color = "6px solid aeaeae;"
                    end
                 %>
 
@@ -467,18 +471,26 @@
                                                                      guw_model_id: @guw_model.id).first %>
                       <% unless guw_coefficient.nil? %>
 
-                        <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                        <% unless @guw_type.nil? %>
+                          <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                        <% else %>
+                          <% results = [] %>
+                        <% end %>
                         <% default = guw_coefficient.guw_coefficient_elements.where(default: true).first %>
                         <% if default.nil? %>
                           <% default = results.first %>
                         <% end %>
-                        <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                             guw_coefficient_id: guw_coefficient.id).last %>
+
                         <% if guw_coefficient.deported == false %>
 
                           <% unless results.empty? %>
 
                             <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+
+                              <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                                   guw_coefficient_id: guw_coefficient.id,
+                                                                                   guw_coefficient_element_id: nil).last %>
+
                               <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
                                 <%
                                    if ceuw.nil?
@@ -543,6 +555,8 @@
                                   </script>
                               <% end %>
                             <% else %>
+                              <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                                   guw_coefficient_id: guw_coefficient.id).last %>
                               <td class="span2">
                                 <% unless @guw_type.nil? %>
                                   <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
@@ -984,13 +998,13 @@
             </div>
 
             <div class="hide" id="type-block">
-              <h5>Types d'UO à identifier</h5>
+              <h5>Types de composant à identifier par l'IA</h5>
                     
               <div id="excel-type-block">
                 <% if @guw_model.allow_ml_excel == false %>
                   <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Aucun"]), class: "span8" %>
+                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
                 <% end %>
               </div>
 
@@ -998,7 +1012,7 @@
                 <% if @guw_model.allow_ml_jira == false %>
                   <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
+                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
                 <% end %>
               </div>
 
@@ -1006,7 +1020,7 @@
                 <% if @guw_model.allow_ml_redmine == false %>
                   <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
                 <% else %>
-                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Sans IA"]), class: "span8" %>
+                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
                 <% end %>
               </div>   
 

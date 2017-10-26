@@ -1476,7 +1476,7 @@ es:
   unit_sloc: "Lines of code"
   title_input_data_factors: "%{module_name} : input data factors"
   effort_person_hour: "Effort man/hours"
-  effort: "Effort man/months"
+  effort: "Effort" #"Effort man/months"
   effort_person_week: "Effort man/weeks"
   sloc: "KSlOC"
   sloc: "SLOC"
@@ -1968,4 +1968,7 @@ es:
   warning_already_exist: "already exists"
   average_rate_wording: "'Average rate' column name (TJM, THM, ...)"
   identical_project_field_exists: "An identical favorite field already exists for this project"
+  already_exists: "Already exists"
+  module_instance_name_already_exists: "An instance with the same name already exists"
+  headband_title: "Headband title"
 

@@ -1161,7 +1161,7 @@ frsncf:
   unit_sloc: "Lignes de code (kilo)"
   unit_sloc: "Lignes de code"
   title_input_data_factors: "%{module_name} : facteurs des données en entrée"
-  effort: "Effort (mois-homme)"
+  effort: "Effort" #"Effort (mois-homme)"
   sloc: "sloc (Taille en Kilo Lignes de Code)"
   sloc: "SLOC (Taille en nombre de lignes de code"
   size: "Taille"
@@ -1370,7 +1370,7 @@ frsncf:
   label_Subcontractor: "Sous-traitant"
   label_Guw_model: "Module d'unité d'oeuvres génériques"
 
-  cotation: "Cotation"
+  cotation: "Complexité"
   technology: "Technologie"
   tracability: "Tracabilité"
   results: "Calculé"
@@ -1947,7 +1947,7 @@ frsncf:
   retained_effort: "Effort retenu"
   retained_cost: "Coût retenu"
 
-  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel"
+  move_your_cursor:  "Placer votre curseur sur la graphique et cliquer afin de situer votre projet actuel. Vous pouvez également dessiner votre zone de zoom."
   total_size: "Taille totale"
   number_of_processing: "Nombre de traitements"
   number_of_data: "Nombre de données"
@@ -2065,4 +2065,7 @@ frsncf:
   warning_already_exist: "existe déjà"
   average_rate_wording: "Libellé du 'Taux moyen' (TJM, THM, ...)"
   identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"
+  already_exists: "Existe déjà"
+  module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
+  headband_title: "Titre à afficher en haut du bandeau"
 

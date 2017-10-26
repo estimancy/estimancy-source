@@ -120,27 +120,24 @@ module ViewsWidgetsHelper
           ev = current_ev
         end
 
-        val = ev.string_data_probable[current_component_id]
+        ###val = ev.string_data_probable[current_component_id]
+        begin
+          if ev.module_project.pemodule.alias == "effort_breakdown"
+            wbs_activity = ev.module_project.wbs_activity
+            val = ev.send("string_data_probable")[current_component_id][wbs_activity.root_element.id][:value].to_f
+          else
+            val = ev.send("string_data_probable")[current_component_id].to_f
+          end
+        rescue
+          val = 0
+        end
+
         if val.is_a?(Hash)
-          val = compute_value(val, ev, current_component_id)
+          val = compute_value(val, ev, ev.module_project_id, view_widget.use_organization_effort_unit)
           val.to_s
         else
           val.to_s
         end
-
-        #====
-        # begin
-        #   if ev.module_project.pemodule.alias == "effort_breakdown"
-        #     val = ev.send("string_data_probable")[current_component_id][view_widget.module_project.wbs_activity.root_element.id][:value].to_f
-        #   else
-        #     val = ev.send("string_data_probable")[current_component_id].to_f
-        #   end
-        # rescue
-        #   val = 0
-        # end
-
-        #====
-
       else
         nil
       end
@@ -191,8 +188,122 @@ module ViewsWidgetsHelper
     $stderr.reopen(stderr)
   end
 
-  #Work In Progress
-  private def compute_value(value, est_val, mp_id)
+  # Final founction : A voir si c'est utile ou pas ... in progress
+  private def compute_value(value, est_val, mp_id, use_organization_effort_unit=false)
+    module_project = ModuleProject.find(mp_id)
+    est_val_pe_attribute = est_val.pe_attribute
+    precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
+
+    if est_val_pe_attribute.alias == "retained_size" || est_val_pe_attribute.alias == "theorical_size"
+      if module_project.pemodule.alias == "ge"
+        ge_model = module_project.ge_model
+        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+        #size_unit = ge_model.output_size_unit
+        if est_val.in_out == "input"
+          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+          #size_unit = ge_model.input_size_unit
+        end
+        "#{convert_with_standard_unit_coefficient(est_val, value.to_f, effort_standard_unit_coefficient, precision)}"
+
+      elsif module_project.pemodule.alias == "skb"
+        skb_model = module_project.skb_model
+        #size_unit = skb_model.size_unit
+        "#{value.to_f}"
+      else
+        "#{convert_with_precision(value.to_f, precision, true)} #{module_project.size}"
+      end
+
+    elsif est_val_pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)  ### ("effort", "theoretical_effort", ...)
+      if module_project.pemodule.alias == "ge"
+        ge_model = module_project.ge_model
+        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+        #effort_unit = ge_model.output_effort_unit
+
+        if est_val.in_out == "input"
+          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+          #effort_unit = ge_model.input_effort_unit
+        end
+
+        "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
+
+      elsif module_project.pemodule.alias == "effort_breakdown"
+        wbs_activity = module_project.wbs_activity
+        if wbs_activity
+          effort_unit_coefficient = wbs_activity.effort_unit_coefficient
+
+          # By default use module instance effort unit
+          if use_organization_effort_unit == true
+            # Use orgnization effort unit
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+            "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)}"
+          else
+            # Use orgnization effort unit
+            "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)}"
+          end
+        else
+          "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
+        end
+      elsif module_project.pemodule.alias == "staffing"
+        staffing_model = module_project.staffing_model
+        effort_standard_unit_coefficient = staffing_model.standard_unit_coefficient.nil? ? 1 : staffing_model.standard_unit_coefficient.to_f
+        effort_unit = staffing_model.effort_unit
+        if use_organization_effort_unit == true
+          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+          "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)}"
+        else
+          "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
+        end
+
+      else
+        "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
+      end
+
+    elsif est_val_pe_attribute.alias == "ratio"
+      "#{value.to_f.round(user_number_precision)}"
+    elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
+      "#{convert_with_precision(value, precision, true)}"
+      #elsif est_val_pe_attribute.alias == "cost"
+    elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
+      unless value.class == Hash
+        "#{convert_with_precision(value, precision, true)}"
+      end
+    elsif est_val_pe_attribute.alias == "remaining_defects" || est_val_pe_attribute.alias == "introduced_defects"
+      unless value.class == Hash
+        "#{convert_with_precision(value, precision, true)}"
+      end
+    elsif est_val_pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
+      ge_model = module_project.ge_model
+      "#{convert_ge_model_value_with_precision(ge_model, est_val, value, precision)}"
+    else
+      case est_val_pe_attribute
+        when 'date'
+          display_date(value)
+        when 'float'
+          "#{ convert_with_precision(convert(value, @project.organization), precision, true) }"
+        when 'integer'
+          "#{convert(value, @project.organization).round(precision)}"
+        else
+          # guw_model = module_project.guw_model
+          # conv = guw_model.hour_coefficient_conversion
+          #
+          # begin
+          #   "#{value.to_f.round(user_number_precision) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.effort_unit}"
+          # rescue
+          #   if module_project.pemodule.alias == "guw"
+          #     "#{value.to_f / conv} #{guw_model.effort_unit}"
+          #   else
+          #     value.to_f
+          #   end
+          # end
+
+          value.to_f
+      end
+    end
+  end
+
+
+  #Work In Progress avant correction KPI
+  private def compute_value_SAVE(value, est_val, mp_id)
     module_project = ModuleProject.find(mp_id)
     est_val_pe_attribute = est_val.pe_attribute
     precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
@@ -533,36 +644,36 @@ module ViewsWidgetsHelper
             end
           end
         elsif estimation_value.module_project.pemodule.alias == "guw"
-          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' :  Guw::GuwModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' :  Guw::GuwModel.display_value(data_low, estimation_value, view_widget)}"
+          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget, current_user)
+
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Guw::GuwModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Guw::GuwModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif estimation_value.module_project.pemodule.alias == "operation"
-          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' :  Operation::OperationModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' :  Operation::OperationModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' :  Operation::OperationModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' :  Operation::OperationModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "ge" && estimation_value.pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
           ge_model = module_project.ge_model
-          #probable_value_text = "#{convert_ge_model_value_with_precision(ge_model, estimation_value, data_probable, user_number_precision)} #{attribute_unit_label}"
-          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Ge::GeModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Ge::GeModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Ge::GeModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Ge::GeModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "kb"
-          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Kb::KbModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Kb::KbModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Kb::KbModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         elsif  estimation_value.module_project.pemodule.alias == "skb"
-          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget)
+          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget, current_user)
 
-          max_value_text = "Max. #{data_high.nil? ? '-' : Skb::SkbModel.display_value(data_high, estimation_value, view_widget)}"
-          min_value_text = "Min. #{data_low.nil? ? '-' : Skb::SkbModel.display_value(data_low, estimation_value, view_widget)}"
+          max_value_text = "Max. #{data_high.nil? ? '-' : Skb::SkbModel.display_value(data_high, estimation_value, view_widget, current_user)}"
+          min_value_text = "Min. #{data_low.nil? ? '-' : Skb::SkbModel.display_value(data_low, estimation_value, view_widget, current_user)}"
 
         else
           if data_probable.nil?

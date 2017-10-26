@@ -22,15 +22,12 @@
 class Organization < ActiveRecord::Base
 
   attr_accessible :name, :description, :is_image_organization, :number_hours_per_day, :number_hours_per_month, :cost_per_hour, :currency_id, :inflation_rate,
-                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history,
+                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
                   :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit
 
 
   serialize :project_selected_columns, Array
-
-  # View
-  has_many :organization_estimations
 
   #has_and_belongs_to_many :users
   #Groups created on local, will be attached to an organization
@@ -50,6 +47,9 @@ class Organization < ActiveRecord::Base
   has_many :organization_technologies, :dependent => :destroy
   has_many :projects, :dependent => :destroy
   has_many :module_projects, through: :projects
+
+  # View
+  has_many :organization_estimations
 
   has_many :organization_profiles, :dependent => :destroy
 
@@ -117,7 +117,7 @@ class Organization < ActiveRecord::Base
     #                      :estimation_statuses, :guw_models, :operation_models, :kb_models, :ge_models,
     #                      :staffing_models, :expert_judgement_instances]
 
-    exclude_association [:organizations_users, :users, :wbs_activities, :pe_attributes, :projects,
+    exclude_association [:organizations_users, :users, :wbs_activities, :pe_attributes, :projects, :organization_estimations,
                          :module_projects, :status_transitions, :estimation_status_group_roles, :views]
 
     customize(lambda { |original_organization, new_organization|

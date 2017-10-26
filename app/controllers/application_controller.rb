@@ -60,6 +60,7 @@ class ApplicationController < ActionController::Base
   helper_method :server_name
   helper_method :projestimate_version
   helper_method :update_date
+  helper_method :update_date_timestamp
   helper_method :ruby_version
   helper_method :rails_version
   helper_method :environment
@@ -390,6 +391,10 @@ class ApplicationController < ActionController::Base
     Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
   end
 
+  def update_date_timestamp
+    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i.to_s(36)
+  end
+
   def ruby_version
     @ruby_version="#{RUBY_ENGINE} #{RUBY_VERSION} #{RUBY_PATCHLEVEL} [#{RUBY_PLATFORM}]"
   end
@@ -477,6 +482,149 @@ class ApplicationController < ActionController::Base
         # Excluding ".pdf" extension.
       end
     end
+  end
+
+
+  def get_search_results(organization_id, projects, search_column, search_value)
+
+    k = search_column
+    val = search_value
+
+    if search_column.blank? || search_value.blank?
+      results = projects
+    else
+      case k
+        when "title"
+          results = projects.where("title LIKE ?", "%#{val}%")
+        when "creator"
+          creator_ids = User.where("first_name LIKE ? OR last_name liKE ?", "%#{val}%", "%#{val}%").map(&:id)
+          results = projects.where(creator_id: creator_ids)
+        when "version_number"
+          results = projects.where("version_number LIKE ?", "%#{val}%")
+        when "application"
+          ids = Application.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(application_id: ids)
+        when "description"
+          results = projects.where("description LIKE ?", "%#{val}%")
+        when "status_name"
+          ids = EstimationStatus.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(estimation_status_id: ids, organization_id: organization_id)
+        when "start_date"
+          results = projects.where("start_date LIKE ?", "%#{val}%")
+        when "created_at"
+          results = projects.where("created_at LIKE ?", "%#{val}%")
+        when "updated_at"
+          results = projects.where("updated_at LIKE ?", "%#{val}%")
+        when "project_area"
+          ids = ProjectArea.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(project_area_id: ids, organization_id: organization_id)
+        when "project_category"
+          ids = ProjectCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(project_category_id: ids, organization_id: organization_id)
+        when "platform_category"
+          ids = PlatformCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(platform_category_id: ids, organization_id: organization_id)
+        when "acquisition_category"
+          ids = AcquisitionCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(acquisition_category_id: ids, organization_id: organization_id)
+        when "original_model"
+          ids = Project.where("title LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(original_model_id: ids, organization_id: organization_id)
+        when "private"
+          results = projects.where("private LIKE ?", "%#{val}%")
+        else
+          #options[k] = v
+          results = projects
+      end
+    end
+
+    results
+  end
+
+
+  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_column="", search_value="")
+    # @projects = @organization.organization_estimations
+
+    k = sort_column #params[:f]
+    s = sort_order  #params[:s]
+
+    case k
+      when "title"
+        projects = projects.order("title #{s}")
+      when "version_number"
+        projects = projects.order("version_number #{s}")
+      when "description"
+        projects = projects.order("description #{s}")
+      when "private"
+        projects = projects.order("private #{s}")
+      when "start_date"
+        projects = projects.order("start_date #{s}")
+      when "updated_at"
+        projects = projects.order("updated_at #{s}")
+      when "created_at"
+        projects = projects.order("created_at #{s}")
+      when "application"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                        .where(organization_id: organization_id)
+                        .order("applications.name #{s}")
+
+      when "original_model"
+        #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+        #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+        #projects = Project.unscoped
+        #                 .includes(:original_model)
+        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+        #                 .where(organization_id: organization_id)
+        #                 .order("original_model.title #{s}")
+      when "project_area"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: organization_id)
+                        .order("project_areas.name #{s}")
+      when "project_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("project_categories.name #{s}")
+      when "platform_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("platform_categories.name #{s}")
+      when "acquisition_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("acquisition_categories.name #{s}")
+      when "status_name"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}")
+      when "creator"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                        .where(organization_id: organization_id)
+                        .order("users.first_name #{s}, users.last_name #{s}")
+      else
+    end
+
+    projects = projects.where(:is_model => [nil, false])
+
+    unless search_column.blank? || search_value.blank?
+      projects = get_search_results(organization_id, projects, search_column, search_value)
+    end
+
+    projects
+
+    # res = []
+    # projects.each do |p|
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #     res << p
+    #   end
+    # end
+    # res
   end
 
 end

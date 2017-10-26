@@ -1106,7 +1106,7 @@ module EffortBreakdown
           # Test if node is selected or not ( it will be taken in account only if the node is selected)
           mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
 
-          if (mp_ratio_element && mp_ratio_element.selected==true) ###|| mp_ratio_element.nil?
+          if mp_ratio_element && mp_ratio_element.selected==true
             if value.is_a?(Integer) || value.is_a?(Float) || value.class.superclass == Integer || value.class.superclass == Numeric  ###if value.is_a?(Integer) || value.is_a?(Float)
               tab << value
             end
@@ -1121,7 +1121,6 @@ module EffortBreakdown
 
       estimation_value
     end
-
 
   end
 end

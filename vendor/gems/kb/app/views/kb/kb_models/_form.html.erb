@@ -127,9 +127,14 @@
                   <th></th>
                   <% arr = ["a", "b", "c", "d"] %>
                   <% @kb_model.kb_datas.first.custom_attributes.keys.each_with_index do |j, i| %>
+                    <% begin %>
+                      <% filter = @kb_model.send("filter_#{arr[i]}") %>
+                    <% rescue %>
+                      <% filter = "-" %>
+                    <% end %>
                     <th>
                       <%= select_tag "filter_#{arr[i]}",
-                                     options_for_select([I18n.t(:project_area), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category)], @kb_model.send("filter_#{arr[i]}")),
+                                     options_for_select([I18n.t(:project_area), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category)], filter),
                                      style: "margin-top: -3px;",
                                      class: "span12" %>
                     </th>

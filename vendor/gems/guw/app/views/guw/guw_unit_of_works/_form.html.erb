@@ -29,7 +29,7 @@
                         as: :select,
                         collection: @guw_model.guw_types.map{|i| [i.name, i.id]},
                         label: I18n.t(:work_unit_type),
-                        include_blank: true,
+                        include_blank: false,
                         input_html: { class: "input-xxlarge" } %>
 
             <% if @guw_model.config_type == "old" %>

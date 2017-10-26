@@ -283,11 +283,13 @@ class OrganizationsController < ApplicationController
           end
         end
       end
-      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
     else
       flash[:error] = I18n.t(:route_flag_error_4)
     end
-    unless tab_error.empty?
+
+    if tab_error.empty?
+      flash[:notice] = I18n.t(:notice_wbs_activity_element_import_successful)
+    else
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
     redirect_to :back
@@ -705,23 +707,72 @@ class OrganizationsController < ApplicationController
       @max = params[:max].to_i
     else
       @min = 0
-      @max = (current_user.object_per_page || @object_per_page)
+      @max = @object_per_page
     end
 
     # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
     # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
-    organization_estimations = @organization.organization_estimations
-    # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+    @sort_action = params[:sort_action] #|| session[:sort_action]
+    @sort_column = params[:sort_column] #|| session[:sort_column]
+    @sort_order = params[:sort_order] #|| session[:sort_order]
 
-    res = []
-    organization_estimations.each do |p|
-      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-        res << p.project
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+
+    # Pour garder le tri même lors du raffraichissement de la page
+    if (@sort_action == "true" && @sort_column != "" && @sort_order != "")
+      projects = @organization.projects.where(:is_model => [nil, false])
+      organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_column, @search_value)
+
+      res = []
+      organization_projects.each do |p|
+        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+          res << p
+        end
       end
+    else
+      if !@search_column.blank? && !@search_value.blank?
+        projects = @organization.projects.where(:is_model => [nil, false])
+        organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
+        res = []
+        organization_projects.each do |p|
+          if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+            res << p
+          end
+        end
+      else
+        organization_estimations = @organization.organization_estimations
+        # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+        res = []
+        organization_estimations.each do |p|
+          if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+            res << p.project
+          end
+        end
+      end
+
     end
-    @projects = res[@min..@max].nil? ? [] : res[@min..@max]
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
 
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)
@@ -731,7 +782,7 @@ class OrganizationsController < ApplicationController
 
     fields = @organization.fields
 
-      ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
       begin
         if pf.project && pf.views_widget
           if pf.project_id == pf.views_widget.module_project.project_id
@@ -785,7 +836,7 @@ class OrganizationsController < ApplicationController
         else
           project = organization_project.project
           if can?(:see_project, project, estimation_status_id: organization_project.estimation_status_id)
-            result << organization_project.project
+            result << project
             last_project = organization_project
           end
           i += 1
@@ -1064,9 +1115,49 @@ class OrganizationsController < ApplicationController
               unless new_view_widget_mp.nil?
                 new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
-                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id, name: view_widget.name, show_name: view_widget.show_name,
-                                                 icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
-                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
+                widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
+                                                 name: view_widget.name, show_name: view_widget.show_name,
+                                                 equation: view_widget.equation,
+                                                 comment: view_widget.comment,
+                                                 is_kpi_widget: view_widget.is_kpi_widget,
+                                                 kpi_unit: view_widget.kpi_unit,
+                                                 icon_class: view_widget.icon_class, color: view_widget.color,
+                                                 show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
+                                                 width: view_widget.width, height: view_widget.height, position: view_widget.position,
+                                                 position_x: view_widget.position_x, position_y: view_widget.position_y)
+                #===
+
+                # #Update KPI Widget aquation
+                unless view_widget.equation.empty?
+                  ["A", "B", "C", "D", "E"].each do |letter|
+                    unless view_widget.equation[letter].nil?
+
+                      new_array = []
+                      est_val_id = view_widget.equation[letter].first
+                      mp_id = view_widget.equation[letter].last
+
+                      begin
+                        new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                        new_mpr_id = new_mpr.id
+                        begin
+                          new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                        rescue
+                          new_est_val_id = nil
+                        end
+                      rescue
+                        new_mpr_id = nil
+                      end
+
+                      new_array << new_est_val_id
+                      new_array << new_mpr_id
+
+                      widget_copy.equation[letter] = new_array
+                    end
+                  end
+                  widget_copy.save
+                end
+
+                #===
 
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: view_widget.id).first
                 unless pf.nil?
@@ -1238,7 +1329,7 @@ class OrganizationsController < ApplicationController
                                   profiles_hash = values_hash['profiles']
                                   temp_values[new_component.id][new_element.id]['profiles'] = Hash.new
 
-                                  unless profiles_hash.nil? && profiles_hash.empty?
+                                  unless profiles_hash.blank? #profiles_hash.nil? && profiles_hash.empty?
 
                                     profiles_hash.each do |key, profile_values|
                                       old_profile_id = key.gsub('profile_id_', '')
@@ -1438,6 +1529,7 @@ class OrganizationsController < ApplicationController
                   begin
                     group_role.update_attributes(organization_id: new_organization.id, estimation_status_id: estimation_status.id, group_id: new_group.id)
                   rescue
+                    ###puts "erreur"
                   end
                 end
               end
@@ -1486,7 +1578,9 @@ class OrganizationsController < ApplicationController
                   new_wbs_profiles = []
                   OrganizationProfilesWbsActivity.where(wbs_activity_id: new_wbs_activity.id).all.each do |wbs_profile|
                     new_organization_profile = new_organization.organization_profiles.where(copy_id: wbs_profile.organization_profile_id).last
-                    new_wbs_profiles << new_organization_profile.id
+                    unless new_organization_profile.nil?
+                      new_wbs_profiles << new_organization_profile.id
+                    end
                   end
                   new_wbs_activity.organization_profile_ids = new_wbs_profiles
                   new_wbs_activity.save

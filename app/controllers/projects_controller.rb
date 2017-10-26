@@ -722,7 +722,7 @@ class ProjectsController < ApplicationController
         if can_show_estimation?(@project)
           redirect_to(:action => 'show') and return
         else
-          redirect_to(organization_setting_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
       end
 
@@ -1564,10 +1564,16 @@ class ProjectsController < ApplicationController
             in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
             estimation_value = my_module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
             estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
-            widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id, estimation_value_id: estimation_value_id, name: view_widget.name,
-                                          show_name: view_widget.show_name, icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
-                                          width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
-                                          position_x: view_widget.position_x, position_y: view_widget.position_y)
+            widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id,
+                                          estimation_value_id: estimation_value_id,
+                                          name: view_widget.name, show_name: view_widget.show_name,
+                                          equation: view_widget.equation,
+                                          comment: view_widget.comment,
+                                          is_kpi_widget: view_widget.is_kpi_widget,
+                                          kpi_unit: view_widget.kpi_unit,
+                                          icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
+                                          width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type,
+                                          position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
             #Save and copy project_fields
             if widget_copy.save
               unless view_widget.project_fields.empty?
@@ -2024,7 +2030,35 @@ public
                                                 position: old_view_widget.position,
                                                 position_x: old_view_widget.position_x,
                                                 position_y: old_view_widget.position_y)
-              new_view_widget.save
+
+                #Update KPI Widget aquation
+                ["A", "B", "C", "D", "E"].each do |letter|
+                  unless old_view_widget.equation[letter].nil?
+
+                    new_array = []
+                    est_val_id = old_view_widget.equation[letter].first
+                    mp_id = old_view_widget.equation[letter].last
+
+                    begin
+                      new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                      new_mpr_id = new_mpr.id
+                      begin
+                        new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                      rescue
+                        new_est_val_id = nil
+                      end
+                    rescue
+                      new_mpr_id = nil
+                    end
+
+                    new_array << new_est_val_id
+                    new_array << new_mpr_id
+
+                    new_view_widget.equation[letter] = new_array
+                  end
+                end
+
+                new_view_widget.save
             else
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
@@ -2039,6 +2073,10 @@ public
                                                   show_name: old_view_widget.show_name,
                                                   show_wbs_activity_ratio: old_view_widget.show_wbs_activity_ratio,
                                                   is_label_widget: old_view_widget.is_label_widget,
+                                                  comment: old_view_widget.comment,
+                                                  is_kpi_widget: old_view_widget.is_kpi_widget,
+                                                  kpi_unit: old_view_widget.kpi_unit,
+                                                  equation: old_view_widget.equation,
                                                   icon_class: old_view_widget.icon_class,
                                                   color: old_view_widget.color,
                                                   show_min_max: old_view_widget.show_min_max,
@@ -2049,7 +2087,6 @@ public
                                                   position: old_view_widget.position,
                                                   position_x: old_view_widget.position_x,
                                                   position_y: old_view_widget.position_y)
-
                 if new_view_widget.save
                   #Update the copied project_fields
                   pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
@@ -2060,6 +2097,7 @@ public
                 end
               end
             end
+
           end
           #update the new module_project view
           new_mp.update_attribute(:view_id, new_view.id)
@@ -2564,123 +2602,250 @@ public
     end
   end
 
+
   def sort
     @organization = @current_organization
-    @projects = @organization.organization_estimations
+    # @projects = @organization.organization_estimations
+    @projects = @organization.projects.where(:is_model => [nil, false])
+
     k = params[:f]
     s = params[:s]
 
-    case k
-      when "title"
-        @projects = @projects.unscoped.order("title #{s}").all
-      when "description"
-        @projects = @projects.unscoped.order("description #{s}").all
-      when "project_area"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                        .where(organization_id: @organization.id)
-                        .order("project_areas.name #{s}").all
-      when "project_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("project_categories.name #{s}").all
-      when "platform_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("platform_categories.name #{s}").all
-      when "acquisition_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("acquisition_categories.name #{s}").all
-      when "status_name"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}").all
-      when "status_name"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}").all
-      when "start_date"
-        @projects = @projects.unscoped.order("start_date #{s}").all
-      when "updated_at"
-        @projects = @projects.unscoped.order("updated_at #{s}").all
-      when "created_at"
-        @projects = @projects.unscoped.order("created_at #{s}").all
-      else
-    end
+    @sort_column = k
+    @sort_order = s
+
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+
+    organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_column, @search_value)
 
     res = []
-    @projects.each do |p|
-      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-        res << p.project
+    organization_projects.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
       end
     end
-    @projects = res[0..50].nil? ? [] : res[0..50]
+
+    @object_per_page = (current_user.object_per_page || 10)
+    if params['previous_next_action'] == "true"
+      @min = params['min'].to_i
+      @max = params['max'].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
+
+      @min = (last_page.to_i-1) * @object_per_page
+      @max = @min + @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = true
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
 
     build_footer
   end
 
-  def search
+  def sort_SAVE
+    @organization = @current_organization
+    # @projects = @organization.organization_estimations
+    @projects = @organization.projects
 
+    k = params[:f]
+    s = params[:s]
+
+    @sort_column = k
+    @sort_order = s
+
+    ### Les tris par défaut ( date descendant et title ascendant)
+    # if k != "start_date"
+    #   @projects = @projects.unscoped.order("start_date desc")
+    # end
+
+    case k
+      when "title"
+        @projects = @projects.unscoped.order("title #{s}")
+      when "description"
+        @projects = @projects.unscoped.order("description #{s}")
+      when "project_area"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_areas.name #{s}")
+      when "project_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("project_categories.name #{s}")
+      when "platform_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("platform_categories.name #{s}")
+      when "acquisition_category"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: @organization.id)
+                        .order("acquisition_categories.name #{s}")
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}")
+      when "status_name"
+        @projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}")
+      when "start_date"
+        @projects = @projects.unscoped.order("start_date #{s}")
+      when "updated_at"
+        @projects = @projects.unscoped.order("updated_at #{s}")
+      when "created_at"
+        @projects = @projects.unscoped.order("created_at #{s}")
+      else
+    end
+
+
+    @projects = @projects.where(:is_model => [nil, false]).all
+
+    res = []
+    @projects.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+      end
+    end
+
+    ###@projects = res[0..50].nil? ? [] : res[0..50]
+    @object_per_page = (current_user.object_per_page || 10)
+    if params['previous_next_action'] == "true"
+      @min = params['min'].to_i
+      @max = params['max'].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+    @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
+
+      @min = (last_page.to_i-1) * @object_per_page
+      @max = @min + @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    build_footer
+  end
+
+
+  def search
     @organization = @current_organization
     options = {}
     results = []
     final_results = []
+
+    @object_per_page = (current_user.object_per_page || 10)
+    @min = 0
+    @max = @object_per_page
+    @sort_column = params[:sort_column]
+    @sort_order = params[:sort_order]
+    @sort_action = params[:sort_action]
+
+    @search_column = ""
+    @search_value = ""
+
+    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
+
+    if @sort_action == "true" && @sort_column != "" && @sort_order != ""
+      @projects = get_sorted_estimations(@organization.id, @projects, params[:sort_column], params[:sort_order])
+    end
 
     params.delete("utf8")
     params.delete("commit")
     params.delete("action")
     params.delete("controller")
     params.delete("filter_organization_projects_version")
+    params.delete("sort_action")
+    params.delete("sort_column")
+    params.delete("sort_order")
+    params.delete("min")
+    params.delete("max")
     params.delete_if { |k, v| v.nil? || v.blank? }
 
-    @organization_estimations = @organization.organization_estimations.order("created_at ASC")
 
     unless params.blank?
       params.each do |k,v|
         val = params[k]
-        case k
-          when "title"
-            results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
-          when "creator"
-            creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
-            creator_id = creator.nil? ? nil : creator.id
-            results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
-          when "version_number"
-            results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "application"
-            ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(application_id: ids).all.map(&:id)
-          when "description"
-            results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "status_name"
-            ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "start_date"
-            results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
-          when "project_area"
-            ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "project_category"
-            ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "platform_category"
-            ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "acquisition_category"
-            ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
-          when "original_model"
-            ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
-            results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
-          else
-            options[k] = v
-        end
+
+        @search_column = k
+        @search_value = val
+
+        # case k
+        #   when "title"
+        #     results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
+        #   when "creator"
+        #     creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
+        #     creator_id = creator.nil? ? nil : creator.id
+        #     results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
+        #   when "version_number"
+        #     results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "application"
+        #     ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(application_id: ids).all.map(&:id)
+        #   when "description"
+        #     results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "status_name"
+        #     ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "start_date"
+        #     results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
+        #   when "project_area"
+        #     ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "project_category"
+        #     ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "platform_category"
+        #     ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "acquisition_category"
+        #     ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "original_model"
+        #     ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
+        #     results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
+        #   when "private"
+        #     results = @projects.where("private liKE ?", "%#{val}%").all.map(&:id)
+        #   else
+        #     options[k] = v
+        # end
+
+        results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
 
         a = results.flatten
         b = final_results.flatten
@@ -2692,8 +2857,12 @@ public
         end
       end
 
-      @organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
+      #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
+      @organization_estimations = @organization.organization_estimations.where(project_id: final_results.inject(&:&)).all
+    end
 
+    if @organization_estimations.nil?
+      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
     end
 
     res = []
@@ -2702,7 +2871,21 @@ public
         res << p.project
       end
     end
-    @projects = res[0..50].nil? ? [] : res[0..50]
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    if @projects.length <= @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
 
     build_footer
   end
@@ -2784,9 +2967,25 @@ public
 
     fields = @organization.fields
 
+    # ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    #   @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    # end
+
+    # Correction concernant les valeurs des champs personnalisés qui ne remontent pas
     ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+      begin
+        if pf.project && pf.views_widget
+          if pf.project_id == pf.views_widget.module_project.project_id
+            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
     end
+
 
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
@@ -3153,8 +3352,23 @@ public
 
     fields = @organization.fields
 
+    # ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    #   @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    # end
+
+    # Correction concernant les valeurs des champs personnalisés qui ne remontent pas
     ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+      begin
+        if pf.project && pf.views_widget
+          if pf.project_id == pf.views_widget.module_project.project_id
+            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
     end
 
     fields.each do |f|

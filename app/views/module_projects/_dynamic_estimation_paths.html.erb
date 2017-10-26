@@ -37,7 +37,7 @@
                     [0, 0.4, -1, 0]
                 ],
 
-                exampleColor = '#ffa500' //'#00f',
+                exampleColor = '#3498db', //'#ffa500' //'#00f',
 
                 exampleDropOptions = {
                     tolerance: 'touch',
@@ -52,14 +52,14 @@
                 connectorStyle = {
                     gradient: {stops: [
                         [0, exampleColor],
-                        [0.5, '#ffa500'],   //[0.5, '#09098e'],  //#ffa500 pour avoir la couleur orange partout (ou orange/bleu)
+                        [0.5, '#3498db'],   //[0.5, '#ffa500'],  //#ffa500 pour avoir la couleur orange partout (ou orange/bleu)
                         [1, exampleColor]
                     ]},
                     lineWidth: 1, //5,
                     strokeStyle: exampleColor
                 },
                 hoverStyle = {
-                    strokeStyle: "#ffa500" //"#449999"
+                    strokeStyle: "#3498db" //"#ffa500"
                 },
                 overlays = [
                     ["Diamond", { fillStyle: "#09098e", width: 7, length: 7 } ]  //["Diamond", { fillStyle: "#09098e", width: 15, length: 15 } ]
@@ -84,7 +84,7 @@
                 anEndpoint = {
                     endpoint: endpoint,
                     paintStyle: endpointStyle,
-                    hoverPaintStyle: { fillStyle: "#ffa500" },  //hoverPaintStyle: { fillStyle: "#449999" },
+                    hoverPaintStyle: { fillStyle: "#3498db" },  //hoverPaintStyle: { fillStyle: "#ffa500" },
                     //isSource: true,  isTarget: true,
                     maxConnections: -1,
                     connector: connector,
@@ -134,10 +134,14 @@
                     var id = instance.getId(divsWithWindowClass[i]);
                     endpoints[id] = [
                         // note the three-arg version of addEndpoint; lets you re-use some common settings easily.
-                        instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
-                        instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false})
                         //instance.addEndpoint(id, anEndpoint, {anchor: sourceAnchors}),
                         //instance.addEndpoint(id, anEndpoint, {anchor: targetAnchors})
+
+                        //instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
+                        //instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false})
+
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["BottomCenter", "RightMiddle"], isTarget: false, isSource: true}),
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["TopCenter", "LeftMiddle"], isTarget: true, isSource: false})
                     ];
                 }
 
