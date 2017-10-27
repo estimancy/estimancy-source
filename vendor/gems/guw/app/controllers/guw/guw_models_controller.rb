@@ -1566,6 +1566,7 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_model = Guw::GuwModel.find(params[:id])
     organization_id = @guw_model.organization_id
+
     @guw_model.module_projects.each do |mp|
       mp.destroy
     end
