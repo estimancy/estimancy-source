@@ -1664,7 +1664,7 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.title)
-      
+
       tab_size[0]= tab_size[0] < current_module_project.project.title.length ? current_module_project.project.title.length : tab_size[0]
       # worksheet.change_column_width(0, tab_size[0])
       worksheet.add_cell(ind, 1, current_module_project.project.version_number)
@@ -1681,12 +1681,12 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.change_column_width(4, tab_size[4])
       worksheet.add_cell(ind, 6, type_name)
 
-      tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
+      # tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
       worksheet.change_column_width(6, tab_size[6])
-      worksheet.add_cell(ind, 5, guow.comments)
-      worksheet.add_cell(ind, 7, guow.guw_work_unit)
-      worksheet.add_cell(ind, 8, guow.guw_weighting)
-      worksheet.add_cell(ind, 9, guow.guw_factor)
+      worksheet.add_cell(ind, 5, guow.comments.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 7, guow.guw_work_unit.nil? ? '' : guow.guw_work_unit.name)
+      worksheet.add_cell(ind, 8, guow.guw_weighting.nil? ? '' : guow.guw_weighting.name)
+      worksheet.add_cell(ind, 9, guow.guw_factor.nil? ? '' : guow.guw_factor.name)
       worksheet.add_cell(ind, 10, guow.organization_technology)
 
       tab_size[10] = tab_size[10] < guow.organization_technology.to_s.length ? guow.organization_technology.to_s.length : tab_size[10]
@@ -1694,7 +1694,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(ind, 11, guow.quantity)
       worksheet.add_cell(ind, 12, guow.tracking)
       worksheet.add_cell(ind, 13, cplx)
-      
+
       tab_size[13] = tab_size[13] < cplx.length ? cplx.length : tab_size[13]
       worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
       worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
@@ -1716,7 +1716,7 @@ class Guw::GuwModelsController < ApplicationController
               elsif guw_coefficient.coefficient_type == "Coefficient"
                 worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? '' : ceuw.guw_coefficient_element.name)
+;                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -1733,11 +1733,16 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+        guw_type = guow.guw_type
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
                                                   guw_attribute_id: guw_attribute.id,
-                                                  guw_type_id: guow.guw_type.nil? ? nil : guow.guw_type.id).first
+                                                  guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+
+        gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                          guw_attribute_id: guowa.guw_attribute_id).first
+
         unless guowa.nil?
-          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? "N/A" : guowa.most_likely)
+          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
         else
           p "GUOWA is nil"
         end
