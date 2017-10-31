@@ -1683,7 +1683,7 @@ class Guw::GuwModelsController < ApplicationController
 
       # tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
       worksheet.change_column_width(6, tab_size[6])
-      worksheet.add_cell(ind, 5, guow.comments.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 5, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
       worksheet.add_cell(ind, 7, guow.guw_work_unit.nil? ? '' : guow.guw_work_unit.name)
       worksheet.add_cell(ind, 8, guow.guw_weighting.nil? ? '' : guow.guw_weighting.name)
       worksheet.add_cell(ind, 9, guow.guw_factor.nil? ? '' : guow.guw_factor.name)
