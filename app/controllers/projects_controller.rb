@@ -89,11 +89,6 @@ class ProjectsController < ApplicationController
       redirect_to organization_estimations_path(@current_organization) and return
     end
 
-    # begin
-    #   clean_view_widget
-    # rescue
-    # end
-
     @current_organization = @project.organization
 
     # return if user doesn't have the rigth to consult the estimation
@@ -524,13 +519,13 @@ class ProjectsController < ApplicationController
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
-      if cannot?(:manage_estimation_models, Project)    # No write access to project
-        if can_show_estimation?(@project)
-          redirect_to(:action => 'show') and return
-        else
-          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
-        end
-      end
+      # if cannot?(:manage_estimation_models, Project)    # No write access to project
+      #   if can_show_estimation?(@project)
+      redirect_to(:action => 'show') and return
+        # else
+        #   redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+        # end
+      # end
 
     else
 
@@ -2393,6 +2388,26 @@ public
 
     @organization = Organization.find(params[:organization_id])
     @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
+
+    fields = @organization.fields
+    #ProjectField.where(project_id: @estimation_models.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id != pf.views_widget.module_project.project_id
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
+    end
 
     @current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
 

@@ -428,7 +428,7 @@
 
 
 <div id="import_guw" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <%= form_tag guw.import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+  <%= form_tag guw.old_import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
     <div class="modal-header modal-drag">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
