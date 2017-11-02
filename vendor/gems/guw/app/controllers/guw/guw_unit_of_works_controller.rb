@@ -2392,65 +2392,68 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
-              if !row[7].nil?
-                @guw_model.guw_work_units.each do |wu|
-                  if wu.name == row[7]
-                    guw_uow.guw_work_unit_id = wu.id
-                    break
+
+                if !row[7].nil?
+                  @guw_model.guw_work_units.each do |wu|
+                    if wu.name == row[7]
+                      guw_uow.guw_work_unit_id = wu.id
+                      break
+                    end
+                  end
+                else
+                  first_work_unit = @guw_model.guw_work_units.order("display_order ASC").first
+                  unless first_work_unit.nil?
+                    guw_uow.guw_work_unit_id = @guw_model.guw_work_units.order("display_order ASC").first.id
+                  else
+                    guw_uow.guw_work_unit_id = nil
                   end
                 end
-              else
-                first_work_unit = @guw_model.guw_work_units.order("display_order ASC").first
-                unless first_work_unit.nil?
-                  guw_uow.guw_work_unit_id = @guw_model.guw_work_units.order("display_order ASC").first.id
-                else
-                  guw_uow.guw_work_unit_id = nil
-                end
-              end
 
-              if !row[8].nil?
-                @guw_model.guw_weightings.each do |wu|
-                  if wu.name == row[8]
-                    guw_uow.guw_weighting_id = wu.id
-                    break
+                if !row[8].nil?
+                  @guw_model.guw_weightings.each do |wu|
+                    if wu.name == row[8]
+                      guw_uow.guw_weighting_id = wu.id
+                      break
+                    end
+                  end
+                else
+                  first_weighting = @guw_model.guw_weightings.order("display_order ASC").first
+                  unless first_weighting.nil?
+                    guw_uow.guw_weighting_id = @guw_model.guw_weightings.order("display_order ASC").first.id
+                  else
+                    guw_uow.guw_weighting_id = nil
                   end
                 end
-              else
-                first_weighting = @guw_model.guw_weightings.order("display_order ASC").first
-                unless first_weighting.nil?
-                  guw_uow.guw_weighting_id = @guw_model.guw_weightings.order("display_order ASC").first.id
-                else
-                  guw_uow.guw_weighting_id = nil
-                end
-              end
 
-              if !row[9].nil?
-                @guw_model.guw_factors.each do |wu|
-                  if wu.name == row[9]
-                    guw_uow.guw_factor_id = wu.id
-                    break
+                if !row[9].nil?
+                  @guw_model.guw_factors.each do |wu|
+                    if wu.name == row[9]
+                      guw_uow.guw_factor_id = wu.id
+                      break
+                    end
+                  end
+                else
+                  first_factor = @guw_model.guw_factors.order("display_order ASC").first
+                  unless first_factor.nil?
+                    guw_uow.guw_factor_id = @guw_model.guw_factors.order("display_order ASC").first.id
+                  else
+                    guw_uow.guw_factor_id = nil
                   end
                 end
-              else
-                first_factor = @guw_model.guw_factors.order("display_order ASC").first
-                unless first_factor.nil?
-                  guw_uow.guw_factor_id = @guw_model.guw_factors.order("display_order ASC").first.id
-                else
-                  guw_uow.guw_factor_id = nil
+
+                unless row[13].blank?
+                  unless @guw_type.nil?
+                    guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                              name: row[13]).first
+                  end
                 end
-              end
 
-              unless row[13].blank?
-                unless @guw_type.nil?
-                  guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
-                                                            name: row[13]).first
-                end
-              end
+                guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
 
-              guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                guw_uow.save(validate: false)
 
-              guw_uow.save(validate: false)
-
+                update_estimation_values
+                update_view_widgets_and_project_fields
 
                 @guw_attributes.each_with_index do |gac, ii|
                   @guw_attributes.size.times do |jj|
@@ -2486,9 +2489,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.off_line = false
                 guw_uow.off_line_uo = false
 
-                # guw_uow.guw_unit_of_work_attributes.each do |guowa|
-                #   calculate_guowa(guowa, guw_uow, @guw_type)
-                # end
+                guw_uow.guw_unit_of_work_attributes.each do |guowa|
+                  calculate_guowa(guowa, guw_uow, @guw_type)
+                end
 
                 if @lows.empty?
                   guw_uow.guw_complexity_id = nil
@@ -2569,18 +2572,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         else
                           guw_uow.guw_complexity_id = cplx.id
                           guw_uow.guw_original_complexity_id = cplx.id
-                          array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+                          # array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
                         end
                       else
                         @guw_type.guw_complexities.each do |guw_c|
-                          array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                          # array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
                         end
                       end
                     end
                   end
                 end
 
-                #gestion des valeurs intermédiaires
+                # gestion des valeurs intermédiaires
                 @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
 
                 guw_uow.quantity = 1
@@ -2601,48 +2604,51 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
 
-                  guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                                              name: i[0]).first
+                  guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
+                  guw_output = Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: i[0]).first
 
-                  guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements
-                  default_guw_coefficient_guw_coefficient_element = guw_coefficient_guw_coefficient_elements.where(default: true).first
+                  unless guw_coefficient.nil?
+                    if guw_coefficient.class == Guw::GuwCoefficient
 
-                  if guw_coefficient.class == Guw::GuwCoefficient
+                      guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements
+                      default_guw_coefficient_guw_coefficient_element = guw_coefficient_guw_coefficient_elements.where(default: true).first
 
-                    (16..60).to_a.each do |k|
-                      if guw_coefficient.name == tab[0][k]
+                      (16..60).to_a.each do |k|
+                        if guw_coefficient.name == tab[0][k]
 
-                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
-                                                                          guw_coefficient_id: guw_coefficient.id).first_or_create
+                          ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
+                                                                            guw_coefficient_id: guw_coefficient.id).first_or_create
 
 
-                        if row[k].blank?
-                          ce = default_guw_coefficient_guw_coefficient_element
-                        else
-                          ce = guw_coefficient_guw_coefficient_elements.where(name: row[k]).first
-                        end
+                          if row[k].blank?
+                            ce = default_guw_coefficient_guw_coefficient_element
+                          else
+                            ce = guw_coefficient_guw_coefficient_elements.where(name: row[k]).first
+                          end
 
-                        unless ce.nil?
-                          ceuw.guw_coefficient_element_id = ce.id
-                        else
-                          ceuw.percent = row[k].to_f
-                        end
+                          unless ce.nil?
+                            ceuw.guw_coefficient_element_id = ce.id
+                          else
+                            ceuw.percent = row[k].to_f
+                          end
 
-                        unless guw_uow.changed?
-                          ceuw.save
+                          unless guw_uow.changed?
+                            ceuw.save
+                          end
                         end
                       end
                     end
-                  elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+                  end
 
-                    guw_output = Guw::GuwOutput.where(guw_model_id: @guw_model.id,
-                                                      name: i[0]).first
+                  unless guw_output.nil?
+                    if guw_output.class == Guw::GuwOutput
 
-                    unless guw_output.nil?
-                      (16..60).to_a.each do |k|
-                        if guw_output.name == tab[0][k]
-                          # tmp_hash_res["#{guw_output.id}"] = row[k]
-                          tmp_hash_ares["#{guw_output.id}"] = row[k]
+                      unless guw_output.nil?
+                        (16..60).to_a.each do |k|
+                          if guw_output.name == tab[0][k]
+                            # tmp_hash_res["#{guw_output.id}"] = row[k]
+                            tmp_hash_ares["#{guw_output.id}"] = row[k]
+                          end
                         end
                       end
                     end
