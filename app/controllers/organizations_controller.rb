@@ -2057,8 +2057,8 @@ class OrganizationsController < ApplicationController
 
         tab.each_with_index do |line, index_line|
         if index_line > 0
-          user = User.find_by_login_name(line[4])
-          if  !line.empty? && !line.nil?
+          if !line.blank?
+            user = User.find_by_login_name(line[4])
             if user.nil?
               password = SecureRandom.hex(8)
               if line[0] && line[1] && line[4] && line[3]
@@ -2090,7 +2090,7 @@ class OrganizationsController < ApplicationController
                                 auth_type: auth_method,
                                 locked_at: line[8] ==  0 ? nil : Time.now,
                                 number_precision: 2,
-                                subcription_end_date: Time.now + 1.year)
+                                subscription_end_date: Time.now + 1.year)
 
                 if line[5].upcase == "SAML"
                   user.skip_confirmation_notification!
