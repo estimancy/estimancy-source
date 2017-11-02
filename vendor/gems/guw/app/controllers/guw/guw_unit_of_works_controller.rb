@@ -1766,11 +1766,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 results.each do |guw_uow|
                   @guw_model.guw_attributes.each_with_index do |gac, jj|
-                    tmp_val = row[15 + @guw_model.orders.size + jj]
+                    jj_size =  @guw_model.orders.size + jj
+                    tmp_val = row[15 + jj_size]
                     unless tmp_val.nil?
-                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + @guw_model.orders.size + jj]
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + jj_size]
 
-                      if gac.name == tab[0][15 + @guw_model.orders.size + jj]
+                      if gac.name == tab[0][15 + jj_size]
                         unless @guw_type.nil?
                           guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_uow.guw_type_id,
                                                                     guw_attribute_id: gac.id,
