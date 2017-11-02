@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171027100650) do
+ActiveRecord::Schema.define(:version => 20171018071713) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1017,6 +1017,12 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
+  end
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
