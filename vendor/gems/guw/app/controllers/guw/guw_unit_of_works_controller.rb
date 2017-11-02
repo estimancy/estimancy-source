@@ -2573,11 +2573,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         else
                           guw_uow.guw_complexity_id = cplx.id
                           guw_uow.guw_original_complexity_id = cplx.id
-                          # array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
+                          array_pert << calculate_seuil(guw_uow, @guw_type.guw_complexities.last, value_pert)
                         end
                       else
                         @guw_type.guw_complexities.each do |guw_c|
-                          # array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                          array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
                         end
                       end
                     end
@@ -2796,12 +2796,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    # update_estimation_values
-    # update_view_widgets_and_project_fields
+    update_estimation_values
+    update_view_widgets_and_project_fields
 
-    # unless guw_uow.changed?
-    #   guw_uow.save
-    # end
+    unless guw_uow.changed?
+      guw_uow.save
+    end
   end
 
   private
