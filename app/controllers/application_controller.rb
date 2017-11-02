@@ -388,7 +388,11 @@ class ApplicationController < ActionController::Base
   end
 
   def update_date
-    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
+    begin
+      Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
+    rescue
+      "-"
+    end
   end
 
   def update_date_timestamp
