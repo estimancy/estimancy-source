@@ -2502,7 +2502,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                if @guw_type.allow_complexity.blank?
+                if @guw_type.allow_complexity == false
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
@@ -2563,14 +2563,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 unless @guw_type.nil?
                   if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
-
                     if guw_uow.guw_complexity.nil?
                       array_pert << 0
                     else
                       array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
-                    end
-                    if guw_uow.changed?
-                      guw_uow.save
                     end
                   else
                     if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
@@ -2611,9 +2607,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_uow.changed?
                   guw_uow.save
                 end
-
-                update_estimation_values
-                update_view_widgets_and_project_fields
 
                 @guw_model.orders.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
 
