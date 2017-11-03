@@ -2500,43 +2500,43 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                @lows = Array.new
-                @mls = Array.new
-                @highs = Array.new
-                array_pert = Array.new
+                if @guw_type.allow_complexity.blank?
+                  @lows = Array.new
+                  @mls = Array.new
+                  @highs = Array.new
+                  array_pert = Array.new
 
-                guw_uow.off_line = false
-                guw_uow.off_line_uo = false
+                  guw_uow.off_line = false
+                  guw_uow.off_line_uo = false
 
-                guw_uow.guw_unit_of_work_attributes.each do |guowa|
-                  calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                  guw_uow.guw_unit_of_work_attributes.each do |guowa|
+                    calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                  end
+
+                  if @lows.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_low = nil
+                  else
+                    guw_uow.result_low = @lows.sum
+                  end
+
+                  if @mls.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_most_likely = nil
+                  else
+                    guw_uow.result_most_likely = @mls.sum
+                  end
+
+                  if @highs.empty?
+                    guw_uow.guw_complexity_id = nil
+                    guw_uow.guw_original_complexity_id = nil
+                    guw_uow.result_high = nil
+                  else
+                    guw_uow.result_high = @highs.sum
+                  end
                 end
-
-                if @lows.empty?
-                  guw_uow.guw_complexity_id = nil
-                  guw_uow.guw_original_complexity_id = nil
-                  guw_uow.result_low = nil
-                else
-                  guw_uow.result_low = @lows.sum
-                end
-
-                if @mls.empty?
-                  guw_uow.guw_complexity_id = nil
-                  guw_uow.guw_original_complexity_id = nil
-                  guw_uow.result_most_likely = nil
-                else
-                  guw_uow.result_most_likely = @mls.sum
-                end
-
-                if @highs.empty?
-                  guw_uow.guw_complexity_id = nil
-                  guw_uow.guw_original_complexity_id = nil
-                  guw_uow.result_high = nil
-                else
-                  guw_uow.result_high = @highs.sum
-                end
-
-                guw_uow.guw_type_id ||= (@guw_type.nil? ? nil : @guw_type.id)
 
                 begin
                   unless params["guw_complexity_#{guw_uow.id}"].nil?
@@ -2562,9 +2562,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 unless @guw_type.nil?
                   if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
-
-                    # tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
-                    #                                            organization_technology_id: guw_uow.organization_technology_id).first
 
                     if guw_uow.guw_complexity.nil?
                       array_pert << 0
@@ -2607,11 +2604,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
 
                 guw_uow.quantity = 1
-
-                if guw_uow.changed?
-                  guw_uow.save
-                end
-
                 guw_uow.ajusted_size = nil
                 guw_uow.size = nil
 
