@@ -535,8 +535,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.float    "value_b"
   end
 
-  add_index "guw_guw_attribute_complexities", ["guw_type_id", "guw_attribute_id"], :name => "guw_attribute_complexities"
-
   create_table "guw_guw_attribute_types", :force => true do |t|
     t.integer  "guw_type_id"
     t.integer  "guw_attribute_id"
@@ -566,8 +564,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.text     "comments"
   end
 
-  add_index "guw_guw_coefficient_element_unit_of_works", ["guw_unit_of_work_id", "guw_coefficient_id", "guw_coefficient_element_id"], :name => "guw_unit_of_work_guw_coefficient_elements"
-
   create_table "guw_guw_coefficient_elements", :force => true do |t|
     t.string   "name"
     t.integer  "guw_coefficient_id"
@@ -584,8 +580,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.string   "color_code"
     t.integer  "color_priority"
   end
-
-  add_index "guw_guw_coefficient_elements", ["guw_model_id", "guw_coefficient_id", "default"], :name => "guw_coefficient_elements"
 
   create_table "guw_guw_coefficient_elements_outputs", :force => true do |t|
     t.integer  "guw_coefficient_id"
@@ -607,8 +601,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.boolean  "allow_comments"
   end
 
-  add_index "guw_guw_coefficients", ["guw_model_id", "name"], :name => "guw_model_guw_coefficients"
-
   create_table "guw_guw_complexities", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -625,8 +617,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.float    "weight_b"
   end
 
-  add_index "guw_guw_complexities", ["guw_type_id", "name"], :name => "guw_type_complexities"
-
   create_table "guw_guw_complexity_coefficient_elements", :force => true do |t|
     t.integer  "guw_complexity_id"
     t.integer  "guw_coefficient_element_id"
@@ -636,8 +626,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
   end
-
-  add_index "guw_guw_complexity_coefficient_elements", ["guw_complexity_id", "guw_coefficient_element_id", "guw_output_id"], :name => "guw_complexity_coefficient_elements"
 
   create_table "guw_guw_complexity_factors", :force => true do |t|
     t.integer  "guw_complexity_id"
@@ -750,8 +738,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.datetime "updated_at",        :null => false
   end
 
-  add_index "guw_guw_output_complexities", ["guw_complexity_id", "guw_output_id"], :name => "guw_output_complexities"
-
   create_table "guw_guw_output_complexity_initializations", :force => true do |t|
     t.integer  "guw_output_id"
     t.integer  "guw_complexity_id"
@@ -759,8 +745,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
-
-  add_index "guw_guw_output_complexity_initializations", ["guw_complexity_id", "guw_output_id"], :name => "guw_output_complexity_initializations"
 
   create_table "guw_guw_output_types", :force => true do |t|
     t.integer  "guw_model_id"
@@ -787,8 +771,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.integer  "color_priority"
   end
 
-  add_index "guw_guw_outputs", ["guw_model_id", "name"], :name => "guw_model_guw_outputs"
-
   create_table "guw_guw_scale_module_attributes", :force => true do |t|
     t.integer  "guw_model_id"
     t.string   "type_attribute"
@@ -798,8 +780,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.integer  "guw_output_id"
     t.integer  "guw_coefficient_id"
   end
-
-  add_index "guw_guw_scale_module_attributes", ["guw_model_id", "type_attribute"], :name => "guw_scale_module_attributes"
 
   create_table "guw_guw_type_complexities", :force => true do |t|
     t.string   "name"
@@ -832,9 +812,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.boolean  "allow_line_color"
   end
 
-  add_index "guw_guw_types", ["guw_model_id", "is_default"], :name => "guw_model_default_guw_types"
-  add_index "guw_guw_types", ["guw_model_id", "name"], :name => "guw_model_guw_types"
-
   create_table "guw_guw_unit_of_work_attributes", :force => true do |t|
     t.integer  "low"
     t.integer  "most_likely"
@@ -848,8 +825,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.text     "comments"
   end
 
-  add_index "guw_guw_unit_of_work_attributes", ["guw_type_id", "guw_attribute_id", "guw_unit_of_work_id"], :name => "guw_unit_of_work_attributes"
-
   create_table "guw_guw_unit_of_work_groups", :force => true do |t|
     t.string   "name"
     t.text     "comments"
@@ -860,8 +835,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.string   "notes"
     t.integer  "organization_technology_id"
   end
-
-  add_index "guw_guw_unit_of_work_groups", ["module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
 
   create_table "guw_guw_unit_of_works", :force => true do |t|
     t.string   "name"
@@ -905,8 +878,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.string   "url"
     t.text     "cplx_comments"
   end
-
-  add_index "guw_guw_unit_of_works", ["guw_model_id", "module_project_id", "pbs_project_element_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], :name => "module_project_guw_unit_of_works"
 
   create_table "guw_guw_weightings", :force => true do |t|
     t.integer  "guw_model_id"
@@ -1017,12 +988,6 @@ ActiveRecord::Schema.define(:version => 20171018071713) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-  end
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|

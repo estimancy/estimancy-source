@@ -1,5 +1,5 @@
 class AddIndexesToGuwModels < ActiveRecord::Migration
-  def change
+  def up
     #Guw::GuwUnitOfWorkGroup
     add_index :guw_guw_unit_of_work_groups, [:module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups unless index_exists?(:guw_guw_unit_of_work_groups, [:module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
 
@@ -58,6 +58,54 @@ class AddIndexesToGuwModels < ActiveRecord::Migration
     #
     # #Guw::GuwComplexityFactor
     # add_index :guw_guw_complexity_factors, [:guw_complexity_id, :guw_factor_id], name: :guw_complexity_factors unless index_exists?(:guw_guw_complexity_factors, [:guw_complexity_id, :guw_factor_id], name: :guw_complexity_factors)
+
+  end
+
+
+
+  def down
+    #Guw::GuwUnitOfWorkGroup
+    remove_index :guw_guw_unit_of_work_groups, name: :module_project_guw_groups
+
+    #Guw::GuwType
+    remove_index :guw_guw_types, name: :guw_model_guw_types
+    remove_index :guw_guw_types,  name: :guw_model_default_guw_types
+
+    #Guw::GuwUnitOfWork
+    remove_index :guw_guw_unit_of_works, name: :module_project_guw_unit_of_works
+
+    #Guw::GuwComplexity
+    remove_index :guw_guw_complexities, name: :guw_type_complexities
+
+    #Guw::GuwCoefficient
+    remove_index :guw_guw_coefficients, name: :guw_model_guw_coefficients
+
+    #Guw::GuwOutput
+    remove_index :guw_guw_outputs, name: :guw_model_guw_outputs
+
+    #Guw::GuwUnitOfWorkAttribute index important car plusieurs requetes
+    remove_index :guw_guw_unit_of_work_attributes, name: :guw_unit_of_work_attributes
+
+    #Guw::GuwCoefficientElementUnitOfWork
+    remove_index :guw_guw_coefficient_element_unit_of_works, name: :guw_unit_of_work_guw_coefficient_elements
+
+    #Guw::GuwOutputComplexity
+    remove_index :guw_guw_output_complexities, name: :guw_output_complexities
+
+    #Guw::GuwOutputComplexityInitialization
+    remove_index :guw_guw_output_complexity_initializations, name: :guw_output_complexity_initializations
+
+    #Guw::GuwScaleModuleAttribute
+    remove_index :guw_guw_scale_module_attributes, name: :guw_scale_module_attributes
+
+    #Guw::GuwAttributeComplexity
+    remove_index :guw_guw_attribute_complexities, name: :guw_attribute_complexities
+
+    #Guw::GuwCoefficientElement
+    remove_index :guw_guw_coefficient_elements, name: :guw_coefficient_elements
+
+    #Guw::GuwComplexityCoefficientElement
+    remove_index :guw_guw_complexity_coefficient_elements, name: :guw_complexity_coefficient_elements
 
   end
 end
