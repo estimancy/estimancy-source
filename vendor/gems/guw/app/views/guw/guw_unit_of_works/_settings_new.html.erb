@@ -29,9 +29,6 @@
         Statistiques détaillées
       </button>
 
-      <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#word_trees_modal">-->
-        <!--Modèle de données-->
-      <!--</button>-->
       <% if @guw_model.view_data == true %>
         <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
       <% end %>
@@ -107,6 +104,9 @@
     <% end %>
 
     <% @unit_of_work_groups.each_with_index do |uowg, j| %>
+
+      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+
       <div class="accordion-heading" style="padding:5px;">
         <div class="row-fluid">
           <div class="span3">
@@ -129,7 +129,7 @@
                   Total <%= guw_output.name %> R. :
                   <span>
                     <%= [
-                          uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                          uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
                             i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
                           end
                         ].flatten.compact.sum.to_f.round(3) %>
@@ -142,7 +142,7 @@
                   Total <%= guw_output.name %> T. :
                   <span>
                     <%= [
-                          uowg.guw_unit_of_works.where(selected: true).flatten.map do |i|
+                          uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
                             i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
                           end
                         ].flatten.compact.sum.to_f.round(3) %>
@@ -153,19 +153,19 @@
               <span class="label label-info">
                  <%= I18n.t(:number_of_uw) %> :
                 <span class="<%= uowg.id %>_number">
-                  <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
+                  <%= uowg_guw_unit_of_works.map(&:quantity).compact.sum %>
                 </span>
               </span>
               <span class="label label-info">
                 <%= I18n.t(:number_of_uw_modifies) %> :
                 <span class="<%= uowg.id %>_flagged">
-                  <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
+                  <%= uowg_guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
                 </span>
               </span>
               <span class="label label-info">
                 <%= I18n.t(:number_of_uw_selected) %> :
                 <span class="<%= uowg.id %>_selected">
-                  <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                  <%= uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
                 </span>
               </span>
             </div>
@@ -227,7 +227,7 @@
               <th class=""><%= I18n.t :actions %></th>
             </tr>
 
-           <% uowg.guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
+           <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
@@ -317,6 +317,8 @@
                   <% end %>
                 </td>
 
+                <% @deported_guw_coefficients = @guw_coefficients.where(deported: true, guw_model_id: @guw_model.id) %>
+                <% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id) %>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
                     <% if i[0] == "Coeff. de Complexité" %>
@@ -328,12 +330,15 @@
                       <% end %>
                     <% end %>
                   <% else %>
+
+                    <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% @guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <% if i[0] == "Coefficient" %>
-                      <% unless @guw_coefficients.where(deported: true).map(&:id).empty? %>
+                      <% unless @deported_guw_coefficients.map(&:id).empty? %>
                         <%
                            elmnts = []
                            has_element = false
-                           Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, deported: true).each do |guw_coefficient|
+                           @deported_guw_coefficients.each do |guw_coefficient|
                              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                                guw_coefficient_id: guw_coefficient.id).first
                              unless ceuw.nil?
@@ -362,7 +367,7 @@
                           <% unless @guw_type.nil? %>
                             <% if @guw_type.allow_criteria == true %>
                               <span class="text-center criteria_label_<%= guow.id %>">
-                                <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id).map(&:most_likely).compact %>
+                                <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
                                 <% if counting.empty? %>
                                   <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                                 <% else %>
@@ -398,7 +403,7 @@
                                                readonly: !@guw_type.allow_complexity,
                                                style: "width: 80%;" %>
                               <% elsif guow.guw_complexity.nil? %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @guw_complexities.where(default_value: true).first.nil? ? guow.guw_complexity_id : @guw_type.guw_complexities.where(default_value: true).first.id),
+                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
                                                guw: guow.id,
                                                class: "guw_complexity",
                                                include_blank: false,
@@ -417,7 +422,7 @@
                               <% elsif  guow.off_line_uo == true %>
                                 HSUO
                               <% else %>
-                                <% if guow.guw_complexity.nil? %>
+                                <% if guow.guw_complexity_id == nil %>
                                   -
                                 <% else %>
                                   <% if guow.intermediate_percent != guow.intermediate_weight %>
@@ -466,32 +471,31 @@
                           <% end %>
                         </span>
                       </td>
-                    <% elsif Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                      <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0],
-                                                                     guw_model_id: @guw_model.id).first %>
-                      <% unless guw_coefficient.nil? %>
+                    <% elsif @guw_coefficient.class == Guw::GuwCoefficient %>
+
+                      <% unless @guw_coefficient.nil? %>
 
                         <% unless @guw_type.nil? %>
-                          <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                          <% results = @guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                         <% else %>
                           <% results = [] %>
                         <% end %>
-                        <% default = guw_coefficient.guw_coefficient_elements.where(default: true).first %>
+                        <% default = @guw_coefficient.guw_coefficient_elements.where(default: true).first %>
                         <% if default.nil? %>
                           <% default = results.first %>
                         <% end %>
 
-                        <% if guw_coefficient.deported == false %>
+                        <% if @guw_coefficient.deported == false %>
 
                           <% unless results.empty? %>
 
-                            <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+                            <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
                               <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                                   guw_coefficient_id: guw_coefficient.id,
+                                                                                   guw_coefficient_id: @guw_coefficient.id,
                                                                                    guw_coefficient_element_id: nil).last %>
 
-                              <td class="span2 <%= guw_coefficient.id %>_<%= guow.id %>">
+                              <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
                                 <%
                                    if ceuw.nil?
                                      color = ""
@@ -503,32 +507,32 @@
                                      end
                                    end
                                 %>
-                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]",
+                                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                                      ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                      style: "width: 45%; #{color}; text-align: right;",
-                                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{guw_coefficient.id}_#{results.first.id}",
-                                                     readonly: (guw_coefficient.allow_intermediate_value == true),
+                                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
+                                                     readonly: (@guw_coefficient.allow_intermediate_value == true),
                                                      step: 0.001,
                                                      guw: guow.id,
-                                                     coeff_id: guw_coefficient.nil? ? nil : guw_coefficient.id,
+                                                     coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                                      coeff_element_id: results.first.id,
                                                      title: ceuw.nil? ? "" : ceuw.comments %>
 
-                                <% if guw_coefficient.allow_intermediate_value == true %>
-                                  <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
+                                <% if @guw_coefficient.allow_intermediate_value == true %>
+                                  <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
                                                        style: "width: 45%; text-align: right;",
                                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                        step: 0.001 %>
                                 <% end %>
                               </td>
-                              <% if guw_coefficient.allow_comments == true %>
+                              <% if @guw_coefficient.allow_comments == true %>
                                   <script>
                                     $(document).ready(function(){
-                                      var defaultValue = <%= guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
-                                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= guw_coefficient.id %>).val();
+                                      var defaultValue = <%= @guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
+                                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
                                       var currentValue ;
 
-                                      $("#guw input.coeff_<%= guow.id %>_<%= guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
+                                      $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
 
                                         currentValue = $(this).val();
 
@@ -556,12 +560,12 @@
                               <% end %>
                             <% else %>
                               <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                                   guw_coefficient_id: guw_coefficient.id).last %>
+                                                                                   guw_coefficient_id: @guw_coefficient.id).last %>
                               <td class="span2">
                                 <% unless @guw_type.nil? %>
-                                  <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                                  <% results = @guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                                   <% unless results.empty? %>
-                                    <%= select_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                    <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                                             selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
                                                    class: "guw_coefficient guw-#{guow.id}",
                                                    guw: guow.id,
@@ -577,23 +581,22 @@
                           </td>
                         <% end %>
                       <% else %>
-                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.id) : default.id) : (ceuw.guw_coefficient_element.nil? ? results.first.id : ceuw.guw_coefficient_element_id)) %>
+                        <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.id) : default.id) : (ceuw.guw_coefficient_element.nil? ? results.first.id : ceuw.guw_coefficient_element_id)) %>
                       <% end %>
                     <% end %>
-                    <% elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput %>
-                      <% guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
 
-                      <% unless guw_output.nil? || @guw_type.nil? %>
+                    <% elsif @guw_output.class == Guw::GuwOutput %>
+                      <% unless @guw_output.nil? || @guw_type.nil? %>
 
                         <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
-                                                          guw_output_id: guw_output.id,
+                                                          guw_output_id: @guw_output.id,
                                                           guw_type_id: @guw_type.id).first %>
 
                         <% unless got.nil? %>
                           <td class="span2">
                             <% if got.display_type == "display" %>
                               <span class="ajusted_size_<%= guow.id %>">
-                                <%= number_field_tag "display_ajusted_size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
+                                <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
                                                      readonly: true,
                                                      class: "guw-#{guow.id} guw_number_field_tag retained",
@@ -602,15 +605,15 @@
                             <% elsif got.display_type == "modif" %>
 
                               <%
-                                 if guow.size["#{guw_output.id}"] != guow.ajusted_size["#{guw_output.id}"]
-                                   color = "background-color: ##{guw_output.color_code};"
+                                 if guow.size["#{@guw_output.id}"] != guow.ajusted_size["#{@guw_output.id}"]
+                                   color = "background-color: ##{@guw_output.color_code};"
                                  else
                                    color = "background-color: transparent;"
                                  end
                               %>
 
                               <span class="ajusted_size_<%= guow.id %>">
-                                <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                                <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
                                                      class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
                                                      style: "width: 80%; #{color} text-align: right;" %>
@@ -625,21 +628,21 @@
 
                               <%
                                  if guow.size != guow.ajusted_size
-                                   color = "background-color: ##{guw_output.color_code};"
+                                   color = "background-color: ##{@guw_output.color_code};"
                                  else
                                    color = "background-color: transparent;"
                                  end
                               %>
 
                               <span class=" size_label_<%= guow.id %>">
-                                <%= number_field_tag "size[#{guow.id}][#{guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{guw_output.id}"].nil? ? '' : guow.size["#{guw_output.id}"].to_f.round(2))),
+                                <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                                      class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
                                                      readonly: true,
                                                      style: "width: 80%; text-align: right;",
                                                      step: 0.001 %>
                               </span>
                               <span class="ajusted_size_<%= guow.id %>">
-                                <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                                <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
                                                      class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained",
                                                      style: "width: 80%; #{color} text-align: right;"
@@ -650,10 +653,10 @@
                         <% else %>
                           <td class="span2">
                             <span class="ajusted_size_<%= guow.id %>">
-                              <%= number_field_tag "ajusted_size[#{guow.id}][#{guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{guw_output.id}"].nil? ? '' : guow.ajusted_size["#{guw_output.id}"].to_f.round(2))),
+                              <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                                    step: 0.001,
                                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                   style: "width: 80%; background-color: ##{guw_output.color_code}; text-align: right;" %>
+                                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;" %>
                             </span>
                           </td>
                         <% end %>
