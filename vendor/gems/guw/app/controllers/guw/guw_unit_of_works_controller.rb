@@ -2500,11 +2500,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
+                array_pert = Array.new
+
                 if @guw_type.allow_complexity.blank?
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
-                  array_pert = Array.new
 
                   guw_uow.off_line = false
                   guw_uow.off_line_uo = false
