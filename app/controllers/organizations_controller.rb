@@ -1200,7 +1200,8 @@ class OrganizationsController < ApplicationController
           new_technology = new_organization.organization_technologies.where(copy_id: guw_group.organization_technology_id).first
           new_technology_id = new_technology.nil? ? nil : new_technology.id
 
-          guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, organization_technology_id: new_technology_id)
+          guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, organization_technology_id: new_technology_id,
+                                      project_id: new_prj.id, organization_id: new_organization_id)
 
           # Update the group unit of works and attributes
           guw_group.guw_unit_of_works.each do |guw_uow|
@@ -1244,7 +1245,8 @@ class OrganizationsController < ApplicationController
 
             guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id, guw_model_id: new_guw_model_id,
                                       guw_type_id: new_guw_type_id, guw_work_unit_id: new_guw_work_unit_id, guw_complexity_id: new_complexity_id,
-                                      organization_technology_id: uow_new_technology_id)
+                                      organization_technology_id: uow_new_technology_id,
+                                      project_id: new_prj.id, organization_id: new_organization_id)
           end
         end
 

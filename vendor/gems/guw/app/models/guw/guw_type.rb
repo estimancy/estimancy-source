@@ -31,6 +31,9 @@ module Guw
     has_many :guw_complexity_technologies, dependent: :destroy
     has_many :guw_complexity_coefficient_elements, dependent: :destroy
 
+    # la Vue
+    has_many :module_project_guw_unit_of_works, class_name: 'ModuleProjectGuwUnitOfWork'
+
     validates_presence_of :name
 
     amoeba do

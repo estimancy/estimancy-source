@@ -2078,3 +2078,7 @@ fr_bnp:
   identical_project_field_exists: "Un champs favori identique existe déjà pour ce projet"
   already_exists: "Existe déjà"
   module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
+
+  number_of_uw_lines: "Nombre de lignes de Transac."
+  number_of_uw_modifies_lines: "Nombre de lignes de Transac. Modif."
+  number_of_uw_selected_lines: "Nombre de lignes de Transac. Sélect."

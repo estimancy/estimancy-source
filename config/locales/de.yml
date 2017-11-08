@@ -1624,3 +1624,7 @@ de:
   identical_project_field_exists: "An identical favorite field already exists for this project"
   already_exists: "Already exists"
   module_instance_name_already_exists: "An instance with the same name already exists"
+
+  number_of_uw_lines: "Number lines of UO."
+  number_of_uw_modifies_lines: "Number lines of UO. Modif."
+  number_of_uw_selected_lines: "Number lines of UO. Sélect."
