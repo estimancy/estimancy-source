@@ -336,6 +336,9 @@ class Guw::GuwModelsController < ApplicationController
                                                        value: tab[row_number + j + 2][column_index + 3],
                                                        value_b: tab[row_number + j + 2][column_index + 4])
 
+                    Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
+                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16])
+
                   end
                   row_number += 1
                 end
@@ -1395,7 +1398,7 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
         scn += 5
 
-        ["Prod","[","[","A","B"].each_with_index do |val, index|
+        ["Prod","[","[","A","B", "Valeur par defaut de l'attribut"].each_with_index do |val, index|
           worksheet.add_cell(aln1, an + index, val).change_font_bold(true)
         end
         an += 5
@@ -1405,7 +1408,12 @@ class Guw::GuwModelsController < ApplicationController
 
           att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
           unless att_val.nil?
-            [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b].each_with_index do |val, j|
+
+            @guw_model = Guw::GuwModel.where(id: params[:guw_model_id]).first
+
+            guw_attribute_type = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: attribute.id).first
+
+            [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value)].each_with_index do |val, j|
               worksheet.add_cell(aln2 + index, an2 + j, val)
             end
           end

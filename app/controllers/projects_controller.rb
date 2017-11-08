@@ -519,13 +519,13 @@ class ProjectsController < ApplicationController
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
-      # if cannot?(:manage_estimation_models, Project)    # No write access to project
-      #   if can_show_estimation?(@project)
-      redirect_to(:action => 'show') and return
-        # else
-        #   redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
-        # end
-      # end
+      if cannot?(:manage_estimation_models, Project)    # No write access to project
+        if can_show_estimation?(@project)
+          redirect_to(:action => 'show') and return
+        else
+          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+        end
+      end
 
     else
 
