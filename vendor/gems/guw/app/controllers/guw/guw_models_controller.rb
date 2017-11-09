@@ -182,7 +182,9 @@ class Guw::GuwModelsController < ApplicationController
                                                          display_order: row[4],
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
-                                                         default_value: row[5])
+                                                         default_value: row[5],
+                                                         color_code: row[6],
+                                                         color_priority: row[7])
                     gce.save(validate: false)
                   end
                 end
@@ -1115,7 +1117,7 @@ class Guw::GuwModelsController < ApplicationController
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value", "color_code", "color_priority"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1411,11 +1413,16 @@ class Guw::GuwModelsController < ApplicationController
 
             @guw_model = Guw::GuwModel.where(id: params[:guw_model_id]).first
 
-            guw_attribute_type = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: attribute.id).first
-
-            [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value)].each_with_index do |val, j|
+            [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b].each_with_index do |val, j|
               worksheet.add_cell(aln2 + index, an2 + j, val)
             end
+
+            begin
+              guw_attribute_type = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: attribute.id).first
+              worksheet.add_cell(aln2 + index, 16, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value))
+            rescue
+            end
+
           end
         end
         an2 += 5
