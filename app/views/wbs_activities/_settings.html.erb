@@ -529,11 +529,22 @@
           var element_id = $(this).attr('id');
           var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
           var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
+          var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
+          var theoretical_value = parseFloat($('#'+theoretical_value_id).val());
+
+          var js_number_precision = parseFloat("<%= user_number_precision %>");
+          console.log("Precision = "+ js_number_precision);
 
           //console.log("Nouvelle valeur = "+ $(this).val());
           var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
-          $('#'+corresponding_element_id).val(new_value);
-          //console.log("Nouvelle valeur Modifiee = "+ $('#'+corresponding_element_id).val());
+          if( theoretical_value.toFixed(js_number_precision) == new_value){
+              $('#'+corresponding_element_id).val(theoretical_value);
+              console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
+          }
+          else{
+              $('#'+corresponding_element_id).val(new_value);
+              console.log("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
+          }
       });
 
       var clkBtn = "";
