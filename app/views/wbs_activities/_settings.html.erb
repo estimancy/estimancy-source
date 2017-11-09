@@ -526,15 +526,14 @@
       });
 
       $('input.retained_effort_visible, input.retained_cost_visible').change(function() {
-          var new_value = $(this).val();  //parseFloat($(this).val().replace("," , "."));
-          console.log("Nouvelle valeur = "+ new_value);
-
           var element_id = $(this).attr('id');
           var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
           var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
 
-          //$('#'+corresponding_element_id).val(new_value);
-          $('#'+corresponding_element_id).val(new_value.replace(/\s/g, ''));
+          //console.log("Nouvelle valeur = "+ $(this).val());
+          var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
+          $('#'+corresponding_element_id).val(new_value);
+          //console.log("Nouvelle valeur Modifiee = "+ $('#'+corresponding_element_id).val());
       });
 
 
