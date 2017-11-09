@@ -952,7 +952,7 @@ class WbsActivitiesController < ApplicationController
           theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
           retained_cost = mp_ratio_element.send("retained_cost_most_likely")
 
-          if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f.round(number_precision)) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f.round(number_precision))
+          if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f)
             mp_ratio_element.flagged = true
           else
             mp_ratio_element.flagged = false
