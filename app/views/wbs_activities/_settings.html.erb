@@ -479,6 +479,8 @@
     $(".selected_phase").change(function(){
       var val = this.value;
 
+      //alert("value = "+ val);
+
       if ($(this).is(':checked') ) {
           if ($("#retained_effort_most_likely_" + val).val() == "") {
 
@@ -546,8 +548,13 @@
           var clicked_button = clkBtn;
           var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
 
+          //console.log("debut ");
+          //console.log("comment_required_if_modifiable ="+ comment_required_if_modifiable);
+
           if(comment_required_if_modifiable == "true"){
               var disable_calculate_button = false;
+
+              //console.log("clicked_button = " + clicked_button);
 
               //$("td.flagged").find('span').each(function(i, td_object){
               if(clicked_button == "update_calculation") {
@@ -558,8 +565,11 @@
                       var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
                       var cost_is_modifiable = $(td_object).data('cost_is_modifiable');
                       //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+                      //console.log("effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+                      //console.log("is checked = " + $("selected_phase_"+mp_ratio_element_id).is(':checked'));
 
-                      if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
+                      if($("#selected_phase_"+mp_ratio_element_id).is(':checked')){
+                        if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
                           if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
 
                               //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
@@ -575,6 +585,7 @@
                                   var theoretical_cost = $('#theoretical_cost_most_likely_' + mp_ratio_element_id).val();
                                   var retained_cost = $('#retained_cost_most_likely_' + mp_ratio_element_id).val();
                                   //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                  //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
                                   if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
                                       // Get the element comments
@@ -585,6 +596,7 @@
 
                                       if((comments === "") || (comments === "-") || (comments === "_")){
                                           //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                          //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
                                           disable_calculate_button = true;
 
@@ -602,8 +614,10 @@
                               });
                           }
                       }
+                      }
                   });
               }
+
               if (disable_calculate_button == true){
                   $("#warning_add_comments").show();
                   $("#warning_add_comments").css('display', 'block');
