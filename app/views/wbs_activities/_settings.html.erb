@@ -539,13 +539,13 @@
           var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
           if( theoretical_value.toFixed(js_number_precision) == new_value){
               $('#'+corresponding_element_id).val(theoretical_value);
-              console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
-              alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
+              //console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
+              //alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
           }
           else{
               $('#'+corresponding_element_id).val(new_value);
-              console.log("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
-              alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
+              //console.log("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
+              //alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
           }
       });
 
