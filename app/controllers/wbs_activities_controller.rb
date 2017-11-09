@@ -866,9 +866,10 @@ class WbsActivitiesController < ApplicationController
               mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
               if value is manually updated, update the flagged attribute
-              unless just_changed_values.nil?
-                if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
-                  mp_ratio_element.flagged = true
+                unless just_changed_values.nil?
+                  if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
+                    mp_ratio_element.flagged = true
+                  end
                 end
               end
 
