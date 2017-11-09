@@ -865,15 +865,6 @@ class WbsActivitiesController < ApplicationController
               # save theoretical values
               mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
-              #if value is manually updated, update the flagged attribute
-              # unless just_changed_values.nil?
-              #   if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
-              #     mp_ratio_element.flagged = true
-              #   else
-              #     mp_ratio_element.flagged = false
-              #   end
-              # end
-
               if mp_ratio_element.changed?
                 mp_ratio_element.save
               end
@@ -956,11 +947,11 @@ class WbsActivitiesController < ApplicationController
         wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
         if (mp_ratio_element.selected = true) && (wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true)
 
-          theoretical_effort = mp_ratio_element.send("theoretical_effort_probable")
-          retained_effort = mp_ratio_element.send("retained_effort_probable")
+          theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+          retained_effort = mp_ratio_element.send("retained_effort_most_likely")
 
-          theoretical_cost = mp_ratio_element.send("theoretical_cost_probable")
-          retained_cost = mp_ratio_element.send("retained_cost_probable")
+          theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+          retained_cost = mp_ratio_element.send("retained_cost_most_likely")
 
           if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
             mp_ratio_element.flagged = true
@@ -976,8 +967,6 @@ class WbsActivitiesController < ApplicationController
         end
       end
     end
-
-
 
     # current_module_project.nexts.each do |n|
     #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
