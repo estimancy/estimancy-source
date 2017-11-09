@@ -945,7 +945,7 @@ class WbsActivitiesController < ApplicationController
       # Update flagged Effort or Cost values
       @module_project_ratio_elements.each do |mp_ratio_element|
         wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
-        if (mp_ratio_element.selected = true) && (wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true)
+        if (mp_ratio_element.selected == true) && (wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true)
 
           theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
           retained_effort = mp_ratio_element.send("retained_effort_most_likely")
