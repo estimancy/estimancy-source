@@ -2801,8 +2801,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    update_estimation_values
-    update_view_widgets_and_project_fields
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
 
     unless guw_uow.changed?
       guw_uow.save
