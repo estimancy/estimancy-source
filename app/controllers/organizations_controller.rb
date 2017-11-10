@@ -665,7 +665,6 @@ class OrganizationsController < ApplicationController
     @organization_group = @organization.groups
     @estimation_models = @organization.projects.where(:is_model => true)
 
-    #ProjectField.where(project_id: @estimation_models.map(&:id).uniq, field_id: @fields.map(&:id).uniq).each do |pf|
     ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(@fields.map(&:id))
@@ -796,15 +795,22 @@ class OrganizationsController < ApplicationController
     @pfs = {}
 
     fields = @organization.fields
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
-        if pf.project && pf.views_widget
-          if pf.project_id == pf.views_widget.module_project.project_id
-            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
           end
         else
           pf.delete
         end
+
       rescue
         #puts "erreur"
       end
