@@ -543,14 +543,14 @@
               //console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
               //alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
               alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
-              alert("theoretical_value = "+ theoretical_value + "new_value = "+ new_value);
+              alert("theoretical_value = "+ theoretical_value + " " + "theoretical_value fixed = " + theoretical_value.toFixed(js_number_precision) + " " + "new_value = "+ new_value);
           }
           else{
               $('#'+corresponding_element_id).val(new_value);
               //console.log("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
               //alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
               alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
-              alert("theoretical_value = "+ theoretical_value + "new_value = "+ new_value);
+              alert("theoretical_value = "+ theoretical_value + " " + "theoretical_value fixed = " + theoretical_value.toFixed(js_number_precision) + " " + "new_value = "+ new_value);
           }
       });
 
