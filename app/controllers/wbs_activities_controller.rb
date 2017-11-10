@@ -952,8 +952,8 @@ class WbsActivitiesController < ApplicationController
           theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
           retained_cost = mp_ratio_element.send("retained_cost_most_likely")
 
-          #if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
-          if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f.round(number_precision)) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f.round(number_precision))
+          #if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f.round(number_precision)) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f.round(number_precision))
+          if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
             mp_ratio_element.flagged = true
           else
             mp_ratio_element.flagged = false
@@ -991,6 +991,18 @@ class WbsActivitiesController < ApplicationController
     redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
   end
 
+
+  def update_mp_ratio_element_changed_value
+    @corresponding_element_id = params['corresponding_element_id']
+    @theoretical_value = params['theoretical_value'].to_f
+    @new_value =  params['new_value'].to_f
+    @value_to_set = @new_value
+
+    number_precision = user_number_precision
+    if @theoretical_value.round(number_precision) == @new_value
+      @value_to_set = @theoretical_value
+    end
+  end
 
 
   def the_most_largest(my_string)
