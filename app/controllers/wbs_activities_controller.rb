@@ -947,18 +947,17 @@ class WbsActivitiesController < ApplicationController
         wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
         if (mp_ratio_element.selected == true) && (wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true)
 
-          # theoretical_effort = mp_ratio_element.send("theoretical_effort_probable")
-          # retained_effort = mp_ratio_element.send("retained_effort_probable")
-          # theoretical_cost = mp_ratio_element.send("theoretical_cost_probable")
-          # retained_cost = mp_ratio_element.send("retained_cost_probable")
+          # theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+          # retained_effort = mp_ratio_element.send("retained_effort_most_likely")
+          # theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+          # retained_cost = mp_ratio_element.send("retained_cost_most_likely")
 
-          theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
-          retained_effort = mp_ratio_element.send("retained_effort_most_likely")
-          theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
-          retained_cost = mp_ratio_element.send("retained_cost_most_likely")
+          theoretical_effort = mp_ratio_element.send("theoretical_effort_probable")
+          retained_effort = mp_ratio_element.send("retained_effort_probable")
+          theoretical_cost = mp_ratio_element.send("theoretical_cost_probable")
+          retained_cost = mp_ratio_element.send("retained_cost_probable")
 
           if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f.round(number_precision)) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f.round(number_precision))
-          #if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
             mp_ratio_element.flagged = true
           else
             mp_ratio_element.flagged = false
