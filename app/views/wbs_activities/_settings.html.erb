@@ -533,12 +533,13 @@
           var theoretical_value = parseFloat($('#'+theoretical_value_id).val());
 
           var js_number_precision = parseFloat("<%= user_number_precision %>");
-          console.log("Precision = "+ js_number_precision);
+          var precison_pow = Math.pow(10, js_number_precision);
+          console.log("Precision = "+ js_number_precision + " " +"Pow = "+ precison_pow);
 
-          //console.log("Nouvelle valeur = "+ $(this).val());
           var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
 
-          if( theoretical_value.toFixed(js_number_precision) == new_value){
+          //if( theoretical_value.toFixed(js_number_precision) == new_value){
+          if( (Math.round(theoretical_value * precison_pow)/precison_pow) == new_value){
               $('#'+corresponding_element_id).val(theoretical_value);
               //console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
               //alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
