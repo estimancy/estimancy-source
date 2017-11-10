@@ -542,11 +542,15 @@
               $('#'+corresponding_element_id).val(theoretical_value);
               //console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
               //alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
+              alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
+              alert("theoretical_value = "+ theoretical_value + "new_value = "+ new_value);
           }
           else{
               $('#'+corresponding_element_id).val(new_value);
               //console.log("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
               //alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
+              alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
+              alert("theoretical_value = "+ theoretical_value + "new_value = "+ new_value);
           }
       });
 
