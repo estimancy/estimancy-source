@@ -993,7 +993,7 @@ class WbsActivitiesController < ApplicationController
 
 
   def update_mp_ratio_element_changed_value
-    @corresponding_element_id = params['corresponding_element_id'].to_f
+    @corresponding_element_id = params['corresponding_element_id']
     @theoretical_value = params['theoretical_value'].to_f
     @new_value =  params['new_value'].to_f
     @value_to_set = @new_value
