@@ -54,7 +54,12 @@ module ViewsWidgetsHelper
 
     begin
       if correct_syntax?(formula)
-        eval(formula).round(current_user.number_precision).to_s + " #{view_widget.kpi_unit.to_s}"
+        result_value = eval(formula).round(current_user.number_precision)
+        if result_value.nan?
+          '-'
+        else
+          result_value.to_s + " #{view_widget.kpi_unit.to_s}"
+        end
       else
         '-'
       end
