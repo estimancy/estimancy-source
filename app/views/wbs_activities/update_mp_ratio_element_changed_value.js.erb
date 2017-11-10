@@ -1,0 +1,4 @@
+$('#'+<%= @corresponding_element_id %>).val(<%= @value_to_set %>);
+
+alert("Nouvelle valeur Modifiee egal = "+ $('#'+<%= @corresponding_element_id %>).val());
+alert("theoretical_value = "+ <%= @theoretical_value %> + " " + "theoretical_value fixed = " + <%= @theoretical_value.round(user_number_precision) %> + " " + "new_value = "+ <%= @new_value %>);

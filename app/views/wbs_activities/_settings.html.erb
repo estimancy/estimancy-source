@@ -531,26 +531,17 @@
           var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
           var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
           var theoretical_value = parseFloat($('#'+theoretical_value_id).val());
-
-          var js_number_precision = parseFloat("<%= user_number_precision %>");
-          var precison_pow = Math.pow(10, js_number_precision);
-          console.log("Precision = "+ js_number_precision + " " +"Pow = "+ precison_pow);
-
           var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
 
-          //if( theoretical_value.toFixed(js_number_precision) == new_value){
-          if( (Math.round(theoretical_value * precison_pow)/precison_pow) == new_value){
-              $('#'+corresponding_element_id).val(theoretical_value);
-              //console.log("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
-              alert("Nouvelle valeur Modifiee egal = "+ $('#'+corresponding_element_id).val());
-              alert("theoretical_value = "+ theoretical_value + " " + "theoretical_value fixed = " + (Math.round(theoretical_value * precison_pow)/precison_pow) + " " + "new_value = "+ new_value);
-          }
-          else{
-              $('#'+corresponding_element_id).val(new_value);
-              //alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
-              alert("Nouvelle valeur Modifiee non egal = "+ $('#'+corresponding_element_id).val());
-              alert("theoretical_value = "+ theoretical_value + " " + "theoretical_value fixed = " + (Math.round(theoretical_value * precison_pow)/precison_pow) + " " + "new_value = "+ new_value);
-          }
+          $.ajax({
+              url: "/update_mp_ratio_element_changed_value",
+              method: "get",
+              data: {
+                  corresponding_element_id: corresponding_element_id,
+                  theoretical_value: theoretical_value,
+                  new_value: new_value
+              }
+          });
       });
 
       var clkBtn = "";
