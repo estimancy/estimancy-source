@@ -666,7 +666,7 @@ class OrganizationsController < ApplicationController
     @organization_profiles = @organization.organization_profiles
 
     @organization_group = @organization.groups
-    @estimation_models = @organization.projects.where(:is_model => true)
+    @estimation_models = Project.where(organization_id: @organization.id, :is_model => true) #@organization.projects.where(:is_model => true)
 
     #ProjectField.where(project_id: @estimation_models.map(&:id).uniq, field_id: @fields.map(&:id).uniq).each do |pf|
     ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|

@@ -2390,7 +2390,8 @@ public
     authorize! :create_project_from_template, Project
 
     @organization = Organization.find(params[:organization_id])
-    @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
+    #@estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
+    @estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @organization.id, :is_model => true)
 
     fields = @organization.fields
     #ProjectField.where(project_id: @estimation_models.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
