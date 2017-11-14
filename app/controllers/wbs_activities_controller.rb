@@ -342,6 +342,7 @@ class WbsActivitiesController < ApplicationController
 
     @module_project = current_module_project
     @project = @module_project.project
+    @organization = @project.organization
     @wbs_activity = @module_project.wbs_activity
     module_project_attributes = @module_project.pemodule.pe_attributes
     number_precision = user_number_precision
@@ -392,9 +393,9 @@ class WbsActivitiesController < ApplicationController
         ["input", "output"].each do |in_out|
           unless in_out == "input" && theoretical_attribute.alias == "theoretical_cost"
 
-            theoretical_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out).first
+            theoretical_est_val = EstimationValue.where(:organization_id => @organization.id, :module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out).first
             if theoretical_est_val.nil?
-              theoretical_est_val = EstimationValue.create(:module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out)
+              theoretical_est_val = EstimationValue.create(:organization_id => @organization.id, :module_project_id => @module_project.id, :pe_attribute_id => theoretical_attribute.id, :in_out => in_out)
 
               case theoretical_attribute.alias
                 when "theoretical_effort"

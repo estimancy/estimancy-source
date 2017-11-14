@@ -652,7 +652,7 @@ class ProjectsController < ApplicationController
           #When creating project, we need to create module_projects for created initialization
           unless @initialization_module.nil?
             # Create the project's Initialization module
-            cap_module_project = ModuleProject.new(:project_id => @project.id, :pemodule_id => @initialization_module.id, :position_x => 0, :position_y => 0, show_results_view: true)
+            cap_module_project = ModuleProject.new(:project_id => @project.id, :organization_id => @organization.id, :pemodule_id => @initialization_module.id, :position_x => 0, :position_y => 0, show_results_view: true)
             # Create the Initialization module view
             ###cap_module_project.build_view(name: "#{cap_module_project.to_s} - Module project View", pemodule_id: cap_module_project.pemodule_id, organization_id: @project.organization_id)
 
@@ -662,6 +662,7 @@ class ProjectsController < ApplicationController
                 @project.organization.attribute_organizations.each do |am|
                   ['input', 'output'].each do |in_out|
                     mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                                 :organization_id => @organization.id,
                                                  :module_project_id => cap_module_project.id,
                                                  :in_out => in_out,
                                                  :is_mandatory => am.is_mandatory,
@@ -969,7 +970,7 @@ class ProjectsController < ApplicationController
             unless @project.organization.attribute_organizations.nil?
               @project.organization.attribute_organizations.each do |am|
                 ['input', 'output'].each do |in_out|
-                  mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id, :module_project_id => cap_module_project.id, :in_out => in_out,
+                  mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id, :organization_id => @organization.id, :module_project_id => cap_module_project.id, :in_out => in_out,
                                                :is_mandatory => am.is_mandatory, :description => am.pe_attribute.description, :display_order => nil,
                                                :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
                                                :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
@@ -994,6 +995,7 @@ class ProjectsController < ApplicationController
               @project.organization.attribute_organizations.each do |am|
                 ['input', 'output'].each do |in_out|
                   mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                               :organization_id => @organization.id,
                                                :module_project_id => cap_module_project.id,
                                                :in_out => in_out, :is_mandatory => am.is_mandatory,
                                                :description => am.pe_attribute.description, :display_order => nil,
@@ -1330,6 +1332,7 @@ class ProjectsController < ApplicationController
   #Allow o add or append a pemodule to a estimation process
   def append_pemodule
     @project = Project.find(params[:project_id])
+    @organization = @project.organization
     @pemodule = Pemodule.find(params[:module_selected].split(',').last.to_i)
 
     authorize! :alter_estimation_plan, @project
@@ -1354,7 +1357,8 @@ class ProjectsController < ApplicationController
       mp_creation_order = @project.module_projects.where(pemodule_id: @pemodule.id).all.map(&:creation_order).max
 
       #When adding a module in the "timeline", it creates an entry in the table ModuleProject for the current project, at position 2 (the one being reserved for the input module).
-      my_module_project = ModuleProject.new(:project_id => @project.id, :pemodule_id => @pemodule.id, :position_y => 1, :position_x => @module_positions_x.to_i + 1,
+      my_module_project = ModuleProject.new(:project_id => @project.id, :organization_id => @organization.id, :pemodule_id => @pemodule.id,
+                                            :position_y => 1, :position_x => @module_positions_x.to_i + 1,
                                             :top_position => 100, :left_position => 600, :creation_order => mp_creation_order.to_i+1)
       my_module_project.save
 
@@ -1482,6 +1486,7 @@ class ProjectsController < ApplicationController
             if am.in_out == 'both'
               ['input', 'output'].each do |in_out|
                 mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                             :organization_id => @organization.id,
                                              :module_project_id => my_module_project.id,
                                              :in_out => in_out,
                                              :is_mandatory => am.is_mandatory,
@@ -1496,6 +1501,7 @@ class ProjectsController < ApplicationController
               end
             elsif am.in_out != nil
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                           :organization_id => @organization.id,
                                            :module_project_id => my_module_project.id,
                                            :in_out => am.in_out,
                                            :is_mandatory => am.is_mandatory,
@@ -1518,6 +1524,7 @@ class ProjectsController < ApplicationController
             if am.in_out == 'both'
               ['input', 'output'].each do |in_out|
                 mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                             :organization_id => @organization.id,
                                              :module_project_id => my_module_project.id,
                                              :in_out => in_out,
                                              :is_mandatory => am.is_mandatory,
@@ -1531,6 +1538,7 @@ class ProjectsController < ApplicationController
               end
             else
               mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                           :organization_id => @organization.id,
                                            :module_project_id => my_module_project.id,
                                            :in_out => am.in_out,
                                            :is_mandatory => am.is_mandatory,

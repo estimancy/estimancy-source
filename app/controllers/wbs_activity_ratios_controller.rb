@@ -32,8 +32,10 @@ class WbsActivityRatiosController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
 
     @wbs_activity_ratio = WbsActivityRatio.find(params[:wbs_activity_ratio_id])
+    @organization = @wbs_activity_ratio.organization
+
     begin
-      error_count = WbsActivityRatio::import(params[:file], params[:separator], params[:encoding])
+      error_count = WbsActivityRatio::import(params[:file], params[:separator], params[:encoding], @organization.id, @wbs_activity_ratio.wbs_activity_id, @wbs_activity_ratio.id )
     rescue
       flash[:error] = I18n.t (:error_wbs_activity_failed_import)
       redirect_to edit_wbs_activity_path(@wbs_activity_ratio.wbs_activity, :anchor => 'tabs-3') and return
@@ -59,13 +61,16 @@ class WbsActivityRatiosController < ApplicationController
     @activity_id = params[:activity_id]
     @wbs_activity_ratio = WbsActivityRatio.find(params[:id])
     @wbs_activity=@wbs_activity_ratio.wbs_activity
+    @organization = @wbs_activity.organization
+
   end
 
 
   def update
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_ratio = WbsActivityRatio.find(params[:id])
-    @wbs_activity=@wbs_activity_ratio.wbs_activity
+    @wbs_activity = @wbs_activity_ratio.wbs_activity
+    @organization = @wbs_activity.organization
 
     if @wbs_activity_ratio.update_attributes(params[:wbs_activity_ratio])
       redirect_to redirect_apply(edit_wbs_activity_ratio_path(@wbs_activity_ratio,
@@ -83,16 +88,22 @@ class WbsActivityRatiosController < ApplicationController
     authorize! :manage_modules_instances, ModuleProject
     set_page_title I18n.t(:new_wbs_activity_ratio)
     @activity_id = params[:activity_id]
+    @wbs_activity = WbsActivity.find(@activity_id)
+    @organization = @wbs_activity.organization
     @wbs_activity_ratio = WbsActivityRatio.new
   end
 
   def create
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_ratio = WbsActivityRatio.new(params[:wbs_activity_ratio])
+    @wbs_activity = WbsActivity.find(params[:wbs_activity_ratio][:wbs_activity_id])
+    @organization = @wbs_activity.organization
 
     if @wbs_activity_ratio.save
       @wbs_activity_ratio.wbs_activity.wbs_activity_elements.each do |wbs_activity_element|
         ware = WbsActivityRatioElement.new(:ratio_value => nil,
+                                           :organization_id => @organization.id,
+                                           :wbs_activity_id => @wbs_activity.id,
                                            :wbs_activity_ratio_id => @wbs_activity_ratio.id,
                                            :wbs_activity_element_id => wbs_activity_element.id)
 
@@ -113,11 +124,12 @@ class WbsActivityRatiosController < ApplicationController
   def destroy
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_ratio = WbsActivityRatio.find(params[:id])
+    wbs_activity = @wbs_activity_ratio.wbs_activity
 
     @wbs_activity_ratio.destroy
 
-    flash[:notice] = I18n.t (:notice_wbs_activity_successful_deleted)
-    redirect_to redirect(edit_wbs_activity_path(@wbs_activity_ratio.wbs_activity, :anchor => 'tabs-3'))
+    flash[:notice] = I18n.t(:notice_wbs_activity_successful_deleted)
+    redirect_to redirect(edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-3'))
   end
 
 

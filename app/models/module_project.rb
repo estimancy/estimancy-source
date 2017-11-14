@@ -24,10 +24,11 @@ class ModuleProject < ActiveRecord::Base
 
   attr_accessible :project_id, :pemodule_id, :pemodule, :position_x, :position_y,
                   :top_position, :left_position, :creation_order, :nb_input_attr,
-                  :nb_output_attr, :view_id, :color
+                  :nb_output_attr, :view_id, :color, :organization_id
 
   belongs_to :pemodule
   belongs_to :project, :touch => true
+  belongs_to :organization
   belongs_to :organization_estimation, class_name: "OrganizationEstimation", :foreign_key => 'project_id'
   belongs_to :view, dependent: :destroy    # the current selected view
 

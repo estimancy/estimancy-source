@@ -109,6 +109,7 @@ class ModuleProjectsController < ApplicationController
   def edit
     @module_project = ModuleProject.find(params[:id])
     @project = @module_project.project
+    @organization = @module_project.organization
 
     authorize! :alter_estimation_plan, @project
 
@@ -126,6 +127,7 @@ class ModuleProjectsController < ApplicationController
   def update
     @module_project = ModuleProject.find(params[:id])
     @project = @module_project.project
+    @organization = @module_project.organization
 
     authorize! :alter_estimation_plan, @project
 
@@ -216,6 +218,7 @@ class ModuleProjectsController < ApplicationController
   def destroy
     @module_project = ModuleProject.find(params[:id])
     @project = @module_project.project
+    @organization = @module_project.organization
 
     authorize! :alter_estimation_plan, @project
 
@@ -246,6 +249,7 @@ class ModuleProjectsController < ApplicationController
   def associate_module_project_to_ratios
     @module_project = ModuleProject.find(params[:module_project_id])
     @project = Project.find(params[:project_id])
+    @organization = @project.organization
 
     authorize! :alter_estimation_plan, @project
 

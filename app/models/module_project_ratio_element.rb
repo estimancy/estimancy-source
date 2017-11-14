@@ -6,6 +6,9 @@ class ModuleProjectRatioElement < ActiveRecord::Base
   #validates :name, :presence => true###, :uniqueness => {:scope => [:pbs_project_element_id, :module_project_id, :wbs_activity_ratio_id, :ancestry], :case_sensitive => false}
   #validates :module_project_id, :wbs_activity_ratio_id, :pbs_project_element_id, :presence => true
 
+  belongs_to :organization
+  belongs_to :wbs_activity
+
   belongs_to :pbs_project_element
   belongs_to :module_project
   belongs_to :wbs_activity_ratio

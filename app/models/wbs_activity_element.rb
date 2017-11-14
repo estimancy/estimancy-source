@@ -20,10 +20,12 @@
 #############################################################################
 
 class WbsActivityElement < ActiveRecord::Base
-  attr_accessible :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name
+  attr_accessible :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name,
+                  :organization_id
 
   has_ancestry :cache_depth => true
 
+  belongs_to :organization
   belongs_to :wbs_activity
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
 

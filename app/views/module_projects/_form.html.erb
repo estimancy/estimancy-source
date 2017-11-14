@@ -27,6 +27,7 @@
       <div id="current_mp">
         <%= form_tag(module_projects_reassign_path) do |f| %>
 
+          <%= hidden_field_tag 'organization_id', @organization.id %>
           <%= hidden_field_tag 'current_mp', @module_project.id %>
 
           <% if @module_project.guw_model_id != nil %>

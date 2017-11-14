@@ -6,6 +6,8 @@
   <div id="tabs-1">
     <%= simple_form_for(@wbs_activity_ratio) do |f| %>
       <%= f.error_notification %>
+
+      <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
       <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
       <%= f.input :wbs_activity_id, :label => 'WBS Activity', :as => :hidden, :input_html => {:class => 'input-xxlarge', :rows => 5, :value => @activity_id} %>

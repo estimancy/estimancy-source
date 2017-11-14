@@ -21,7 +21,7 @@
 
 class WbsActivityRatio < ActiveRecord::Base
   attr_accessible :name, :description, :wbs_activity_id, :allow_modify_retained_effort, :do_not_show_cost, :do_not_show_phases_with_zero_value,
-                  :comment_required_if_modifiable
+                  :comment_required_if_modifiable, :organization_id
 
   has_many :pbs_project_elements
   has_many :wbs_activity_ratio_elements, :dependent => :destroy
@@ -32,8 +32,9 @@ class WbsActivityRatio < ActiveRecord::Base
   has_many :module_project_ratio_variables, dependent: :destroy
 
   belongs_to :wbs_activity
+  belongs_to :organization
 
-  validates :name, :presence => true, :uniqueness => {:scope => :wbs_activity_id, :case_sensitive => false}
+  validates :name, :presence => true, :uniqueness => { :scope => :wbs_activity_id, :case_sensitive => false }
 
   #Enable the amoeba gem for deep copy/clone (dup with associations)
   amoeba do
@@ -52,31 +53,43 @@ class WbsActivityRatio < ActiveRecord::Base
   def self.export(activity_ratio_id)
     activity_ratio = WbsActivityRatio.find(activity_ratio_id)
     csv_string = CSV.generate(:col_sep => I18n.t(:general_csv_separator)) do |csv|
-      csv << ['id', 'Ratio Name', 'Outline', 'Element Name', 'Element Description', 'Ratio Value', 'Simple Reference', 'Multiple References']
+      csv << ['id', 'Ratio Name', 'Position', 'Element Name', 'Element Description', 'Formula', 'Is optionel', 'Effort is modifiable', "Cost is modifiable"]
       activity_ratio.wbs_activity_ratio_elements.each do |element|
-        csv << [element.id, "#{activity_ratio.name}", "#{element.wbs_activity_element.dotted_id}", "#{element.wbs_activity_element.name}", "#{element.wbs_activity_element.description}", element.ratio_value, element.simple_reference, element.multiple_references]
+        csv << [element.id, "#{activity_ratio.name}", "#{element.wbs_activity_element.position}", "#{element.wbs_activity_element.name}", "#{element.wbs_activity_element.description}", element.formula, element.is_optional, element.effort_is_modifiable, element.cost_is_modifiable]
       end
     end
     csv_string.encode(I18n.t(:general_csv_encoding))
   end
 
-  def self.import(file, sep, encoding)
+  def self.import(file, sep, encoding, organization_id, wbs_activity_id, wbs_activity_ratio_id)
     sep = "#{sep.blank? ? I18n.t(:general_csv_separator) : sep}"
     error_count = 0
     CSV.open(file.path, 'r', :quote_char => "\"", :row_sep => :auto, :col_sep => sep, :encoding => "#{encoding}:utf-8") do |csv|
       csv.each_with_index do |row, i|
         unless row.empty? or i == 0
           begin
-            @ware = WbsActivityRatioElement.find(row[0])
-            if @ware.nil?
-              WbsActivityRatioElement.create(ratio_value: row[5],
-                                             simple_reference: row[6],
-                                             multiple_references: row[7])
-            else
-              @ware.wbs_activity_element.has_children?
-              @ware.update_attribute('ratio_value', row[5])
-              @ware.update_attribute('simple_reference', row[6])
-              @ware.update_attribute('multiple_references', row[7])
+            wbs_activity_element = WbsActivityElement.where(organization_id: organization_id,
+                                                            wbs_activity_id: wbs_activity_id,
+                                                            name: row[3]).first
+            if wbs_activity_element
+              @ware = WbsActivityRatioElement.where(organization_id: organization_id,
+                                                    wbs_activity_id: wbs_activity_id,
+                                                    wbs_activity_ratio_id: wbs_activity_ratio_id,
+                                                    wbs_activity_element_id: wbs_activity_element.id).first #WbsActivityRatioElement.find(row[0])
+              if @ware.nil?
+                WbsActivityRatioElement.create(organization_id: organization_id,
+                                               wbs_activity_id: wbs_activity_id,
+                                               wbs_activity_ratio_id: wbs_activity_ratio_id,
+                                               wbs_activity_element_id: wbs_activity_element.id,
+                                               description: row[4],
+                                               formula: row[5],
+                                               is_optional: row[6],
+                                               effort_is_modifiable: row[7],
+                                               cost_is_modifiable: row[8])
+              else
+                #@ware.wbs_activity_element.has_children?
+                @ware.update_attributes(formula: row[5], is_optional: row[6], effort_is_modifiable: row[7], cost_is_modifiable: row[8])
+              end
             end
           rescue
             error_count = error_count + 1

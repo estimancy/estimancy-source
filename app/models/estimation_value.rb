@@ -23,8 +23,9 @@
 class EstimationValue < ActiveRecord::Base
   attr_accessible :string_data_low, :string_data_most_likely, :string_data_high, :string_data_probable,:pe_attribute_id, :pe_attribute,
                   :module_project_id,:in_out, :is_mandatory, :description, :display_order, :custom_attribute, :project_value, :notes,
-                  :estimation_value_id, :copy_id
+                  :estimation_value_id, :copy_id, :organization_id
 
+  belongs_to :organization
   belongs_to :pe_attribute
   belongs_to :module_project
   belongs_to :pbs_project_element

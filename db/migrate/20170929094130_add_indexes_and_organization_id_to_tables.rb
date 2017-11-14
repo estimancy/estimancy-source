@@ -9,7 +9,6 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
 
     #===== ModuleProjects
     add_column :module_projects, :organization_id, :integer, :after => :id
-    add_index :module_projects, [:organization_id, :pemodule_id, :project_id], name: "organization_module_projects"
 
     ModuleProject.all.each do |mp|
       begin
@@ -19,31 +18,31 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       rescue
       end
     end
+    add_index :module_projects, [:organization_id, :pemodule_id, :project_id], name: "organization_module_projects"
 
     #==== EstimationValues
     add_column :estimation_values, :organization_id, :integer, after: :id
-    add_index :estimation_values, [:organization_id, :module_project_id, :pe_attribute_id, :in_out], name: "organization_estimation_values"
 
     EstimationValue.all.each do |ev|
       ev.organization_id = ev.module_project.organization_id
       ev.save
     end
+    add_index :estimation_values, [:organization_id, :module_project_id, :pe_attribute_id, :in_out], name: "organization_estimation_values"
 
     #==== WbsActivity
     add_index :wbs_activities, [:organization_id], name: "organization_wbs_activities"
 
     #==== WbsActivityRatios
     add_column :wbs_activity_ratios, :organization_id, :integer, after: :id
-    add_index :wbs_activity_ratios, [:organization_id, :wbs_activity_id], name: "organization_wbs_activity_ratios"
 
     WbsActivityRatio.all.each do |ratio|
       ratio.organization_id = ratio.wbs_activity.organization_id
       ratio.save
     end
+    add_index :wbs_activity_ratios, [:organization_id, :wbs_activity_id], name: "organization_wbs_activity_ratios"
 
     #=== WbsActivityElements
     add_column :wbs_activity_elements, :organization_id, :integer, after: :id
-    add_index :wbs_activity_elements, [:wbs_activity_id, :ancestry], name: "organization_wbs_activity_elements"  ### ancestry ???
 
     WbsActivityElement.all.each do |element|
       begin
@@ -52,54 +51,56 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       rescue
       end
     end
+    add_index :wbs_activity_elements, [:organization_id, :wbs_activity_id, :ancestry], name: "organization_wbs_activity_elements"  ### ancestry ???
 
     #WbsActivityRatioElements
     add_column :wbs_activity_ratio_elements, :organization_id, :integer, after: :id
     add_column :wbs_activity_ratio_elements, :wbs_activity_id, :integer, after: :organization_id
-    add_index :wbs_activity_ratio_elements, [:wbs_activity_ratio_id, :wbs_activity_element_id], name: "organization_wbs_activity_ratio_elements"
 
     WbsActivityRatioElement.all.each do |element|
       element.organization_id = element.wbs_activity_ratio.organization_id rescue nil
       element.wbs_activity_id = element.wbs_activity_ratio.wbs_activity_id rescue nil
       element.save
     end
+    add_index :wbs_activity_ratio_elements, [:organization_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id], name: "organization_wbs_activity_ratio_elements"
 
     #WbsprojectElement ???
 
     #=== WbsActivityRatioVariables
     add_column :wbs_activity_ratio_variables, :organization_id, :integer, after: :id
     add_column :wbs_activity_ratio_variables, :wbs_activity_id, :integer, after: :organization_id
-    add_index :wbs_activity_ratio_variables, [:wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
 
     WbsActivityRatioVariable.all.each do |ratio_variable|
       ratio_variable.organization_id = ratio_variable.wbs_activity_ratio.organization_id rescue nil
       ratio_variable.wbs_activity_id = ratio_variable.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_variable.save
     end
+    add_index :wbs_activity_ratio_variables, [organization_id, :wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
+
 
     #=== ModuleProjectRatioVariables
     add_column :module_project_ratio_variables, :organization_id, :integer, after: :id
     add_column :module_project_ratio_variables, :wbs_activity_id, :integer, after: :organization_id
-    add_index :module_project_ratio_variables, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_ratio_variable_id],
-              name: "organization_module_project_ratio_variables"
 
     ModuleProjectRatioVariable.all.each do |ratio_variable|
       ratio_variable.organization_id = ratio_variable.wbs_activity_ratio.organization_id rescue nil
       ratio_variable.wbs_activity_id = ratio_variable.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_variable.save
     end
+    add_index :module_project_ratio_variables, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_ratio_variable_id],
+              name: "organization_module_project_ratio_variables"
 
     #== ModuleProjectRatioElements
     add_column :module_project_ratio_elements, :organization_id, :integer, after: :id
     add_column :module_project_ratio_elements, :wbs_activity_id, :integer, after: :module_project_id
-    add_index :module_project_ratio_elements, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id],
-              name: "organization_module_project_ratio_elements"
 
     ModuleProjectRatioElement.all.each do |ratio_elt|
       ratio_elt.organization_id = ratio_elt.wbs_activity_ratio.organization_id rescue nil
       ratio_elt.wbs_activity_id = ratio_elt.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_elt.save
     end
+    add_index :module_project_ratio_elements, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id],
+              name: "organization_module_project_ratio_elements"
 
     #=== OrganizationProfiles
     add_index :organization_profiles, [:organization_id]
