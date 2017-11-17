@@ -184,7 +184,7 @@ group :development do
   # gem 'localtower'
 
   # Generates diagrams using Graphviz
-  #gem "rails-erd"
+  #gem 'rails-erd', require: false, group: :development
 end
 
 group :test do

@@ -758,7 +758,7 @@ class OrganizationsController < ApplicationController
         end
       else
         organization_estimations = @organization.organization_estimations
-        # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+        # @current_ability =  Ability.new(current_user, @current_organization, organization_estimations, 1, true)
         res = []
         organization_estimations.each do |p|
           if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)

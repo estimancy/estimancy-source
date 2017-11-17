@@ -523,7 +523,8 @@ class ProjectsController < ApplicationController
         if can_show_estimation?(@project)
           redirect_to(:action => 'show') and return
         else
-          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
         end
       end
 
@@ -875,8 +876,10 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
-
     @organization = @project.organization
+
+    authorize! :show_project, @project
+    set_page_title I18n.t(:estimation)
 
     #set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     if @project.is_model
@@ -890,12 +893,9 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
 
-    authorize! :show_project, @project
-    set_page_title I18n.t(:estimation)
-
     # We need to verify user's groups rights on estimation according to the current estimation status
     if !can_show_estimation?(@project)
-      redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)})
+      redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
     end
 
     @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
@@ -2408,7 +2408,7 @@ public
       end
     end
 
-    @current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
+    ###@current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
