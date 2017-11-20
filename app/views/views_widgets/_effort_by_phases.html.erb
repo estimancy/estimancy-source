@@ -35,7 +35,7 @@
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
     <th colspan=<%= colspan %>>
-      <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
+      <span>
         <%= estimation_value.pe_attribute.name %> <%= estimation_value.pe_attribute.alias == "cost" ? "(#{@project.organization.currency})" : '' %>
       </span>
     </th>

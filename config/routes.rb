@@ -85,6 +85,9 @@ Projestimate::Application.routes.draw do
 
   get 'sort' => 'projects#sort', :as => 'sort'
 
+  get 'build_rapport' => 'projects#build_rapport', :as => 'build_rapport'
+  get 'rapport' => 'projects#rapport', :as => 'rapport'
+
   resources :users
 
   get 'dashboard' => 'users#show', :as => 'dashboard'

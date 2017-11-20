@@ -950,8 +950,11 @@
 
             <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
+            <h5>Type d'import</h5>
+            <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
+
             <h5>Type de source</h5>
-            
+
             <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
               <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
             <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
@@ -975,6 +978,8 @@
                 Importer un fichier Excel (xlsx uniquement)
               </h5>
               <%= file_field_tag :file %>
+
+              <%= select_tag "S", "efef" %>
             </div >
 
             <div class="hide" id="url-block">

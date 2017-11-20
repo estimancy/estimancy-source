@@ -83,6 +83,21 @@ class ProjectsController < ApplicationController
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
 
+  def rapport
+    @project
+    @current_organization = @project.organization
+    render :layout => false
+  end
+
+  def build_rapport
+    pdf = WickedPdf.new.pdf_from_url(rapport_url)
+    save_path = Rails.root.join('pdfs','filename.pdf')
+    File.open(save_path, 'wb') do |file|
+      file << pdf
+    end
+    redirect_to organization_estimations_path(@current_organization) and return
+  end
+
   def dashboard
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)

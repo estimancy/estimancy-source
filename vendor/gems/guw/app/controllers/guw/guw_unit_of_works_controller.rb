@@ -2500,6 +2500,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     results = []
 
+    if params[:import_type] == "Remplacer"
+      Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
+    end
+
     if source == "Excel"
       if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
         workbook = RubyXL::Parser.parse(params[:file].path)
