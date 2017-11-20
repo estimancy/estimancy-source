@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
           redirect_to root_path
         end
       elsif exception.class == Curl::Err::ConnectionFailedError
+      elsif exception.class == Curl::Err::ConnectionFailedError
         flash[:error] = "Le serveur IA n'est pas démarré. Veuillez contactez un administrateur Estimancy."
         redirect_to :back and return
       elsif exception.class == ActiveRecord::RecordNotFound
