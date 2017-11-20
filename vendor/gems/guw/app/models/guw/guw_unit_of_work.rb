@@ -30,6 +30,7 @@ module Guw
     belongs_to :guw_work_unit
     belongs_to :guw_weighting
     belongs_to :guw_factor
+    belongs_to :module_project
 
     has_many :guw_unit_of_work_attributes, dependent: :destroy
     has_many :guw_coefficient_element_unit_of_works, dependent: :destroy

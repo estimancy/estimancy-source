@@ -2102,3 +2102,7 @@ fr:
   already_exists: "Existe déjà"
   module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
   headband_title: "Titre à afficher en haut du bandeau"
+
+  number_of_uw_lines: "Nombre de lignes de UO."
+  number_of_uw_modifies_lines: "Nombre de lignes de UO. Modif."
+  number_of_uw_selected_lines: "Nombre de lignes de UO. Sélect."

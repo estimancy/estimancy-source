@@ -36,19 +36,14 @@ class Ability
       can :manage_master_data, :all
     end
 
-    # if projects.nil?
-    #   organization_projects = []
+    # if estimation_view == false
+    #   organization_projects = projects
     # else
-    #   if estimation_view == true
-        if estimation_view == false
-          organization_projects = projects
-        else
-          organization_projects = organization.organization_estimations
-        end
-    #   else
-    #     organization_projects = projects
-    #   end
+    #   organization_projects = organization.organization_estimations
     # end
+
+    #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
+    organization_projects = projects
 
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups

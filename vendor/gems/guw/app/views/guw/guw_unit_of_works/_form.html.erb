@@ -21,13 +21,16 @@
         <div class="span5">
           <div class="form-inputs">
 
+            <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id]} %>
+            <%= f.input :project_id, :as => :hidden, :input_html => { :value => @project.id || params[:project_id]} %>
+
             <%= hidden_field_tag :position, params[:position] %>
 
             <%= f.input :name, label: I18n.t(:uw_name), input_html: { class: "input-xxlarge" } %>
             <%= f.input :comments, input_html: { rows: "5" }, label: I18n.t(:description), input_html: { class: "input-xxlarge" }  %>
             <%= f.input :guw_type_id,
                         as: :select,
-                        collection: @guw_model.guw_types.map{|i| [i.name, i.id]},
+                        collection: @guw_model.guw_types.map{|i| [i.name, i.id]}.to_a.sort,
                         label: I18n.t(:work_unit_type),
                         include_blank: false,
                         input_html: { class: "input-xxlarge" } %>

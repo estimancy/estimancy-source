@@ -27,20 +27,34 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
   end
 
   def new
+    module_project = current_module_project
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.new
-    @guw_model = current_module_project.guw_model
+    @guw_model = module_project.guw_model
+
+    @organization = @guw_model.organization
+    @project = module_project.project
+
     set_page_title I18n.t(:new_group)
   end
 
   def edit
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.find(params[:id])
-    @guw_model = current_module_project.guw_model
+    module_project = current_module_project
+    @guw_model = module_project.guw_model
+
+    @organization = @guw_unit_of_work_group.organization rescue @guw_model.organization
+    @project = @guw_unit_of_work_group.project rescue module_project.project
+
     set_page_title I18n.t(:edit_group, value: @guw_unit_of_work_group.name)
   end
 
   def create
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.new(params[:guw_unit_of_work_group])
-    @guw_unit_of_work_group.module_project_id = current_module_project.id
+
+    module_project = current_module_project
+    @organization = @project.organization
+
+    @guw_unit_of_work_group.module_project_id = module_project.id
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
     @guw_unit_of_work_group.save
 
@@ -51,6 +65,7 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.find(params[:id])
+    @organization = @guw_unit_of_work_group.organization
 
     if @guw_unit_of_work_group.update_attributes(params[:guw_unit_of_work_group])
       redirect_to main_app.dashboard_path(@project) and return

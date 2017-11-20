@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
           redirect_to root_path
         end
       elsif exception.class == Curl::Err::ConnectionFailedError
+      elsif exception.class == Curl::Err::ConnectionFailedError
         flash[:error] = "Le serveur IA n'est pas démarré. Veuillez contactez un administrateur Estimancy."
         redirect_to :back and return
       elsif exception.class == ActiveRecord::RecordNotFound
@@ -132,8 +133,18 @@ class ApplicationController < ActionController::Base
         @current_organization = @project.organization
       end
     end
+    #@current_ability ||= Ability.new(current_user, @current_organization, [@project])
 
-    @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+    # Le code qui suit remplace les lignes du dessus
+    case params[:action]
+      when "estimations", "sort", "search"
+        @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.organization_estimations)
+      when "projects_from"
+        estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
+        @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
+      else
+        @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+    end
   end
 
   def update_activity_time
@@ -388,11 +399,19 @@ class ApplicationController < ActionController::Base
   end
 
   def update_date
-    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
+    begin
+      Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M")
+    rescue
+      "-"
+    end
   end
 
   def update_date_timestamp
-    Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i.to_s(36)
+    begin
+      Time.parse(COMMIT_DATE).strftime("%d/%m/%Y à %H:%M").to_time.to_i.to_s(36)
+    rescue
+      "-"
+    end
   end
 
   def ruby_version

@@ -198,12 +198,18 @@
       <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_categories, @project) ) %>
 
       <div class="actions-tabs">
-        <% if can_alter_estimation?(@project) %>
-          <%= submit_tag I18n.t('save'), :class => 'btn submit_project' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn submit_project' %>
+
+        <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary submit_project' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
         <% end %>
+
         <% if @project.is_model %>
-            <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+            <% if params[:action] == "show" %>
+                <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
+            <% else %>
+                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+            <% end %>
         <% else %>
             <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
         <% end %>
@@ -232,7 +238,8 @@
                                                                               "Modules Activités / Profils" => @wbs_instances,
                                                                               "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
                                                                               "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
-                                                                              "Module d'Effort Génériques (ax^b)" => @ge_models}), :prompt => '' %>
+                                                                              "Module d'Effort Génériques (ax^b)" => @ge_models}),
+                                                                               prompt: '', disabled: true %>
                 </div>
               </div>
 
@@ -301,11 +308,21 @@
                   <%= render :partial => 'layouts/footer_table' %>
                 </table>
 
-                <% if can_alter_estimation?(@project) && can?(:manage_project_security, @project) %>
+                <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
                   <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn' %>
                   <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn', :anchor_value => params[:anchor_value] %>
                 <% end %>
-                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+
+                <%#= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                <% if @project.is_model %>
+                    <% if params[:action] == "show" %>
+                        <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
+                    <% else %>
+                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                    <% end %>
+                <% else %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <% end %>
               </div>
             </div>
           </div>
@@ -381,11 +398,22 @@
                     </tbody>
                   <% end %>
                   </table>
-                  <% if can_alter_estimation?(@project) && can?(:manage_project_security, @project) %>
+
+                  <%# if can_alter_estimation?(@project) && can?(:manage_project_security, @project) %>
+                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
                     <%= submit_tag I18n.t('save'), :class => 'btn' %>
                     <%= submit_tag I18n.t('apply'), :class => 'btn', :anchor_value => params[:anchor_value] %>
                   <% end %>
-                <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <%#= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <% if @project.is_model %>
+                    <% if params[:action] == "show" %>
+                        <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
+                    <% else %>
+                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                    <% end %>
+                <% else %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <% end %>
               </div>
             </div>
           </div>
@@ -432,11 +460,22 @@
                     <% end %>
                     </table>
 
-                  <% if can_alter_estimation?(@project) && can?(:manage_project_security, @project) %>
+                  <%# if can_alter_estimation?(@project) && can?(:manage_project_security, @project) %>
+                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
                     <%= submit_tag I18n.t('save'), :class => 'btn' %>
                     <%= submit_tag I18n.t('apply'), :class => 'btn', :anchor_value => params[:anchor_value] %>
                   <% end %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+
+                  <%#= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  <% if @project.is_model %>
+                      <% if params[:action] == "show" %>
+                          <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
+                      <% else %>
+                          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                      <% end %>
+                  <% else %>
+                      <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  <% end %>
                 </div>
               </div>
             </div>
