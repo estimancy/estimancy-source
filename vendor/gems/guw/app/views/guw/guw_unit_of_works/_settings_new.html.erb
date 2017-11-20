@@ -156,7 +156,7 @@
         </div>
       </div>
 
-      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in">
+      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll;">
         <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
         <div class="accordion-inner">
@@ -493,7 +493,7 @@
                                 %>
                                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                                      ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                     style: "width: 45%; #{color}; text-align: right;",
+                                                     style: "width: 60%; #{color}; text-align: right;",
                                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
                                                      step: 0.001,
@@ -504,7 +504,7 @@
 
                                 <% if @guw_coefficient.allow_intermediate_value == true %>
                                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]", ceuw.nil? ? results.first.value : ceuw.percent.to_f.round(2),
-                                                       style: "width: 45%; text-align: right;",
+                                                       style: "width: 60%; text-align: right;",
                                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                                        step: 0.001 %>
                                 <% end %>

@@ -182,7 +182,9 @@ class Guw::GuwModelsController < ApplicationController
                                                          display_order: row[4],
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
-                                                         default_value: row[5])
+                                                         default_value: row[5],
+                                                         color_code: row[6],
+                                                         color_priority: row[7])
                     gce.save(validate: false)
                   end
                 end
@@ -335,6 +337,9 @@ class Guw::GuwModelsController < ApplicationController
                                                        top_range: tab[row_number + j + 2][column_index + 2],
                                                        value: tab[row_number + j + 2][column_index + 3],
                                                        value_b: tab[row_number + j + 2][column_index + 4])
+
+                    Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
+                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16])
 
                   end
                   row_number += 1
@@ -1112,7 +1117,7 @@ class Guw::GuwModelsController < ApplicationController
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value", "color_code", "color_priority"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1395,7 +1400,7 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
         scn += 5
 
-        ["Prod","[","[","A","B"].each_with_index do |val, index|
+        ["Prod","[","[","A","B", "Valeur par defaut de l'attribut"].each_with_index do |val, index|
           worksheet.add_cell(aln1, an + index, val).change_font_bold(true)
         end
         an += 5
@@ -1405,9 +1410,19 @@ class Guw::GuwModelsController < ApplicationController
 
           att_val = Guw::GuwAttributeComplexity.where(guw_type_complexity_id: type_attribute_complexity.id, guw_attribute_id: attribute.id).first
           unless att_val.nil?
+
+            @guw_model = Guw::GuwModel.where(id: params[:guw_model_id]).first
+
             [att_val.enable_value ? 1 : 0, att_val.bottom_range, att_val.top_range, att_val.value, att_val.value_b].each_with_index do |val, j|
               worksheet.add_cell(aln2 + index, an2 + j, val)
             end
+
+            begin
+              guw_attribute_type = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: attribute.id).first
+              worksheet.add_cell(aln2 + index, 16, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value))
+            rescue
+            end
+
           end
         end
         an2 += 5

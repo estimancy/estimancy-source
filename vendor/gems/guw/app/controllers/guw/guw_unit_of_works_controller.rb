@@ -1606,8 +1606,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                              guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
             unless cce.nil?
               unless cce.value.blank?
-                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                percents << (pc.to_f / 100)
+                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                percents << (pc.blank? ? 1.0 : (pc.to_f / 100))
                 percents << cce.value.to_f
 
                 v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
@@ -1640,8 +1640,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                              guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
             unless cce.nil?
               unless cce.value.blank?
-                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
-                coeffs << pc.to_f
+                pc = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                coeffs << (pc.blank? ? 1 : pc.to_f)
 
                 v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
                 selected_coefficient_values["#{guw_output.id}"] << v
@@ -2966,8 +2966,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    update_estimation_values
-    update_view_widgets_and_project_fields
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
 
     unless guw_uow.changed?
       guw_uow.save

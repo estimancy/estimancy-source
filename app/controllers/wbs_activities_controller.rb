@@ -627,12 +627,6 @@ class WbsActivitiesController < ApplicationController
                   mp_ratio_element.send("comments=", nil)
                 end
 
-                # Then update retained values if necessary
-                #element_retained_mp_value = mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}")
-                #if element_retained_mp_value.nil?
-                #  mp_ratio_element.send("retained_#{mp_ratio_element_attribute_alias}_#{level}=", element_level_estimation_value)
-                #end
-
                 if mp_ratio_element.changed?
                   mp_ratio_element.save
                 end
@@ -871,43 +865,6 @@ class WbsActivitiesController < ApplicationController
               # save theoretical values
               mp_ratio_element.send("#{mp_pe_attribute_alias}_probable=", wbs_probable_value)
 
-              # get the retained attribute value
-              #mp_retained_alias = "retained_#{mp_ratio_element_attribute_alias}_probable"
-              #if mp_ratio_element.send("#{mp_retained_alias}").nil?
-              #  mp_ratio_element.send("#{mp_retained_alias}=", wbs_probable_value)
-              #end
-
-              # if value is manually updated, update the flagged attribute
-              unless just_changed_values.nil?
-                if !just_changed_values.empty? && just_changed_values.include?("#{mp_ratio_element.id}")
-                  mp_ratio_element.flagged = true
-                end
-              end
-
-              if mp_ratio_element.changed?
-                mp_ratio_element.save
-              end
-            end
-
-            # Update flagged Effort or Cost values
-            @module_project_ratio_elements.each do |mp_ratio_element|
-              wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
-              if wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true
-                theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
-                retained_effort = mp_ratio_element.send("retained_effort_most_likely")
-
-                theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
-                retained_cost = mp_ratio_element.send("retained_cost_most_likely")
-
-                if (theoretical_effort.to_f != retained_effort.to_f) || (theoretical_cost.to_f != retained_cost.to_f)
-                  mp_ratio_element.flagged = true
-                else
-                  mp_ratio_element.flagged = false
-                end
-              else
-                mp_ratio_element.flagged = false
-              end
-
               if mp_ratio_element.changed?
                 mp_ratio_element.save
               end
@@ -981,13 +938,37 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
-
     # if Initialize calculation, update the flagged attribute to false
     if initialize_calculation == true
-      ## Update selected attribute
+      @module_project_ratio_elements.update_all(flagged: false)
+    else
+      # Update flagged Effort or Cost values
       @module_project_ratio_elements.each do |mp_ratio_element|
-        mp_ratio_element.flagged = false
-        mp_ratio_element.save
+        wbs_activity_ratio_elt = mp_ratio_element.wbs_activity_ratio_element
+        if (mp_ratio_element.selected == true) && (wbs_activity_ratio_elt.effort_is_modifiable == true || wbs_activity_ratio_elt.cost_is_modifiable == true)
+
+          # theoretical_effort = mp_ratio_element.send("theoretical_effort_most_likely")
+          # retained_effort = mp_ratio_element.send("retained_effort_most_likely")
+          # theoretical_cost = mp_ratio_element.send("theoretical_cost_most_likely")
+          # retained_cost = mp_ratio_element.send("retained_cost_most_likely")
+
+          theoretical_effort = mp_ratio_element.send("theoretical_effort_probable")
+          retained_effort = mp_ratio_element.send("retained_effort_probable")
+          theoretical_cost = mp_ratio_element.send("theoretical_cost_probable")
+          retained_cost = mp_ratio_element.send("retained_cost_probable")
+
+          if (theoretical_effort.to_f.round(number_precision) != retained_effort.to_f.round(number_precision)) || (theoretical_cost.to_f.round(number_precision) != retained_cost.to_f.round(number_precision))
+            mp_ratio_element.flagged = true
+          else
+            mp_ratio_element.flagged = false
+          end
+        else
+          mp_ratio_element.flagged = false
+        end
+
+        if mp_ratio_element.changed?
+          mp_ratio_element.save
+        end
       end
     end
 
@@ -1014,6 +995,18 @@ class WbsActivitiesController < ApplicationController
     redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
   end
 
+
+  def update_mp_ratio_element_changed_value
+    @corresponding_element_id = params['corresponding_element_id']
+    @theoretical_value = params['theoretical_value'].to_f
+    @new_value =  params['new_value'].to_f
+    @value_to_set = @new_value
+
+    number_precision = user_number_precision
+    if @theoretical_value.round(number_precision) == @new_value
+      @value_to_set = @theoretical_value
+    end
+  end
 
 
   def the_most_largest(my_string)

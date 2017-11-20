@@ -469,7 +469,7 @@ class OrganizationsController < ApplicationController
             worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
             worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
             worksheet.add_cell(ind, 4, guow.name)
-            worksheet.add_cell(ind, 5, guow.comments)
+            worksheet.add_cell(ind, 5, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
             worksheet.add_cell(ind, 6, guow.guw_type.nil? ? '' : guow.guw_type.name)
             worksheet.add_cell(ind, 7, guow.guw_work_unit)
             worksheet.add_cell(ind, 8, guow.guw_weighting)
@@ -543,25 +543,19 @@ class OrganizationsController < ApplicationController
 
       tmp = Array.new
       tmp << [
-          I18n.t(:project),
+          I18n.t(:estimation),
           I18n.t(:label_project_version),
           I18n.t(:label_product_name),
           I18n.t(:description),
           I18n.t(:start_date),
           I18n.t(:applied_model),
           I18n.t(:project_area),
+          I18n.t(:project_category),
+          I18n.t(:acquisition_category),
+          I18n.t(:platform_category),
           I18n.t(:state),
           I18n.t(:creator),
-      ] + @organization.fields.map(&:name) + [  I18n.t(:selected),
-                                                I18n.t(:name),
-                                                'Type',
-                                                I18n.t(:description),
-                                                I18n.t(:organization_technology),
-                                                I18n.t(:quantity),
-                                                I18n.t(:tracability),
-                                                I18n.t(:cotation),
-                                                I18n.t(:results),
-                                                I18n.t(:retained_result)]
+      ] + @organization.fields.map(&:name)
 
       @projects.each do |project|
         array_project = Array.new
@@ -572,10 +566,13 @@ class OrganizationsController < ApplicationController
               project.title,
               project.version_number,
               (project.application.nil? ? project.application_name : project.application.name),
-              "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text}",
+              "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, '')}",
               I18n.l(project.start_date),
               project.original_model,
               project.project_area,
+              project.project_category,
+              project.acquisition_category,
+              project.platform_category,
               project.estimation_status,
               project.creator
           ]
@@ -668,7 +665,6 @@ class OrganizationsController < ApplicationController
     @organization_group = @organization.groups
     @estimation_models = Project.where(organization_id: @organization.id, :is_model => true) #@organization.projects.where(:is_model => true)
 
-    #ProjectField.where(project_id: @estimation_models.map(&:id).uniq, field_id: @fields.map(&:id).uniq).each do |pf|
     ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(@fields.map(&:id))
@@ -762,7 +758,7 @@ class OrganizationsController < ApplicationController
         end
       else
         organization_estimations = @organization.organization_estimations
-        # @current_ability = Ability.new(current_user, @current_organization, organization_estimations, 1, true)
+        # @current_ability =  Ability.new(current_user, @current_organization, organization_estimations, 1, true)
         res = []
         organization_estimations.each do |p|
           if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
@@ -799,15 +795,22 @@ class OrganizationsController < ApplicationController
     @pfs = {}
 
     fields = @organization.fields
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
-        if pf.project && pf.views_widget
-          if pf.project_id == pf.views_widget.module_project.project_id
-            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
           end
         else
           pf.delete
         end
+
       rescue
         #puts "erreur"
       end
