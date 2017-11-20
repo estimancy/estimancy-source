@@ -7,7 +7,10 @@
     </div>
   </div>
 
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+  <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
+  <%# @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id, project_id: @project.id,
+                                                                  module_project_id: current_module_project.id, pbs_project_element_id: current_component.id) %>
   <% @guw_coefficients = @guw_model.guw_coefficients %>
 
   <div class="row-fluid">
@@ -45,8 +48,10 @@
         <span class="label label-success">
           Total <%= guw_output.name %> retenu :
           <span class="ajusted_size">
-            <%= @group_unit_of_works.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <!-- Vue  ModuleProjectGuwUnitOfWork -->
+            <%= @unit_of_work_groups.map do |i|
+              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+              i.module_project_guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
@@ -58,8 +63,10 @@
         <span class="label label-success">
           Total <%= guw_output.name %> théorique :
           <span class="ajusted_size">
-            <%= @group_unit_of_works.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <!-- Vue  ModuleProjectGuwUnitOfWork -->
+            <%= @unit_of_work_groups.map do |i|
+              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+              i.module_project_guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
@@ -67,27 +74,13 @@
         </span>
       <% end %>
 
+      <!-- Vue  ModuleProjectGuwUnitOfWork et ModuleProjectGuwUnitOfWorkGoup -->
       <span class="label label-info">
-        <%= I18n.t(:number_of_uw) %> :
-        <span class="number_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.map(&:quantity)}.flatten.compact.sum %>
-        </span>
-      </span>
-
-      <span class="label label-info">
-        <%= I18n.t(:number_of_uw_modifies) %>
-        <span class="modified_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true).map(&:quantity)}.flatten.compact.sum %>
-        </span>
-      </span>
-
-      <span class="label label-info">
-        <%= I18n.t(:number_of_uw_selected) %> :
+        <%= I18n.t(:number_of_uw_selected_lines) %> :
         <span class="selected_of_unit_of_work">
-          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map(&:quantity)}.flatten.compact.sum %>
+          <%= "#{@unit_of_work_groups.map(&:number_of_uow_selected_lines).sum} / #{@unit_of_work_groups.map(&:number_of_uow_lines).sum}" %>
         </span>
       </span>
-
     </div>
   </div>
 
@@ -105,7 +98,8 @@
 
     <% @unit_of_work_groups.each_with_index do |uowg, j| %>
 
-      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+      <%# uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+      <% uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
 
       <div class="accordion-heading" style="padding:5px;">
         <div class="row-fluid">
@@ -151,21 +145,10 @@
               <% end %>
 
               <span class="label label-info">
-                 <%= I18n.t(:number_of_uw) %> :
-                <span class="<%= uowg.id %>_number">
-                  <%= uowg_guw_unit_of_works.map(&:quantity).compact.sum %>
-                </span>
-              </span>
-              <span class="label label-info">
-                <%= I18n.t(:number_of_uw_modifies) %> :
-                <span class="<%= uowg.id %>_flagged">
-                  <%= uowg_guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
-                </span>
-              </span>
-              <span class="label label-info">
                 <%= I18n.t(:number_of_uw_selected) %> :
                 <span class="<%= uowg.id %>_selected">
-                  <%= uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                  <%#= uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                  <%= "#{uowg.number_of_uow_selected_lines} / #{uowg.number_of_uow_lines}" %>
                 </span>
               </span>
             </div>
@@ -227,7 +210,8 @@
               <th class=""><%= I18n.t :actions %></th>
             </tr>
 
-           <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
+           <%# uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
+           <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>

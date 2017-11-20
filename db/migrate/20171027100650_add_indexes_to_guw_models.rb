@@ -1,14 +1,14 @@
 class AddIndexesToGuwModels < ActiveRecord::Migration
   def up
     #Guw::GuwUnitOfWorkGroup
-    add_index :guw_guw_unit_of_work_groups, [:module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups unless index_exists?(:guw_guw_unit_of_work_groups, [:module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
+    add_index :guw_guw_unit_of_work_groups, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups unless index_exists?(:guw_guw_unit_of_work_groups, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
+
+    #Guw::GuwUnitOfWork
+    add_index :guw_guw_unit_of_works, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :guw_model_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works unless index_exists?(:guw_guw_unit_of_works, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :guw_model_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works)
 
     #Guw::GuwType
     add_index :guw_guw_types, [:guw_model_id, :name], name: :guw_model_guw_types unless index_exists?(:guw_guw_types, [:guw_model_id, :name], name: :guw_model_guw_types)
     add_index :guw_guw_types, [:guw_model_id, :is_default], name: :guw_model_default_guw_types unless index_exists?(:guw_guw_types, [:guw_model_id, :is_default], name: :guw_model_default_guw_types)
-
-    #Guw::GuwUnitOfWork
-    add_index :guw_guw_unit_of_works, [:guw_model_id, :module_project_id, :pbs_project_element_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works unless index_exists?(:guw_guw_unit_of_works, [:guw_model_id, :module_project_id, :pbs_project_element_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works)
 
     #Guw::GuwComplexity
     add_index :guw_guw_complexities, [:guw_type_id, :name], name: :guw_type_complexities unless index_exists?(:guw_guw_complexities, [:guw_type_id, :name], name: :guw_type_complexities)
@@ -65,14 +65,14 @@ class AddIndexesToGuwModels < ActiveRecord::Migration
 
   def down
     #Guw::GuwUnitOfWorkGroup
-    remove_index :guw_guw_unit_of_work_groups, name: :module_project_guw_groups if index_exists?(:guw_guw_unit_of_work_groups, [:module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
+    remove_index :guw_guw_unit_of_work_groups, name: :module_project_guw_groups if index_exists?(:guw_guw_unit_of_work_groups, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
+
+    #Guw::GuwUnitOfWork
+    remove_index :guw_guw_unit_of_works, name: :module_project_guw_unit_of_works if index_exists?(:guw_guw_unit_of_works, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :guw_model_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works)
 
     #Guw::GuwType
     remove_index :guw_guw_types, name: :guw_model_guw_types if index_exists?(:guw_guw_types, [:guw_model_id, :name], name: :guw_model_guw_types)
     remove_index :guw_guw_types,  name: :guw_model_default_guw_types if index_exists?(:guw_guw_types, [:guw_model_id, :is_default], name: :guw_model_default_guw_types)
-
-    #Guw::GuwUnitOfWork
-    remove_index :guw_guw_unit_of_works, name: :module_project_guw_unit_of_works if index_exists?(:guw_guw_unit_of_works, [:guw_model_id, :module_project_id, :pbs_project_element_id, :guw_unit_of_work_group_id, :guw_type_id, :selected], name: :module_project_guw_unit_of_works)
 
     #Guw::GuwComplexity
     remove_index :guw_guw_complexities, name: :guw_type_complexities if index_exists?(:guw_guw_complexities, [:guw_type_id, :name], name: :guw_type_complexities)

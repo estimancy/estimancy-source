@@ -105,6 +105,7 @@ class ProjectsController < ApplicationController
     end
 
     @current_organization = @project.organization
+    @pbs_project_element = current_component
 
     # return if user doesn't have the rigth to consult the estimation
     if !can_show_estimation?(@project)
@@ -169,7 +170,7 @@ class ProjectsController < ApplicationController
         ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
                                                        module_project_id: @module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create!
+                                                       pbs_project_element_id: @pbs_project_element.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -246,14 +247,17 @@ class ProjectsController < ApplicationController
         @guw_model = @module_project.guw_model
       # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: @module_project.id).all
+      # Uitilisation de la vue ModuleProjectGuwUnitOfWorkGroup
+      #@unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).all
+      @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @current_organization.id, project_id: @project.id,
+                                                                   module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
       @staffing_model = @module_project.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
-      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
+      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).first
       if @staffing_custom_data.nil?
-        @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id,
+        @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
                                 staffing_method: 'trapeze',
                                 period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
                                 trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
@@ -261,11 +265,10 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
-      @pbs_project_element = current_component
       @wbs_activity = @module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(current_component.id)
+      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(@pbs_project_element.id)
       if @wbs_activity_ratio.nil?
         unless params[:ratio].nil?
           @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
@@ -2103,7 +2106,7 @@ public
           new_mp.guw_unit_of_work_groups.each do |guw_group|
             new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
             new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-            guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
+            guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, project_id: new_prj.id)
 
             # Update the group unit of works and attributes
             guw_group.guw_unit_of_works.each do |guw_uow|
@@ -2112,7 +2115,7 @@ public
 
               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
               new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-              guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
+              guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id, project_id: new_prj.id)
             end
           end
 

@@ -21,6 +21,9 @@
         <div class="span5">
           <div class="form-inputs">
 
+            <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id]} %>
+            <%= f.input :project_id, :as => :hidden, :input_html => { :value => @project.id || params[:project_id]} %>
+
             <%= hidden_field_tag :position, params[:position] %>
 
             <%= f.input :name, label: I18n.t(:uw_name), input_html: { class: "input-xxlarge" } %>

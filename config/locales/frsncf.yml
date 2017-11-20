@@ -2068,3 +2068,7 @@ frsncf:
   already_exists: "Existe déjà"
   module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
 
+  number_of_uw_lines: "Nombre de lignes de Composants Fonctionnels"
+  number_of_uw_modifies_lines: "Nombre de lignes de Composants Fonctionnels Modif."
+  number_of_uw_selected: "Nombre de lignes de Composants Fonctionnels Sélect."
+

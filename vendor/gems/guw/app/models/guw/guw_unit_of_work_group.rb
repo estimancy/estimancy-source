@@ -23,6 +23,8 @@ module Guw
   class GuwUnitOfWorkGroup < ActiveRecord::Base
 
     has_many :guw_unit_of_works, dependent: :destroy
+    # la Vue
+    has_many :module_project_guw_unit_of_works, class_name: 'ModuleProjectGuwUnitOfWork'
 
     belongs_to :module_project
     belongs_to :pbs_project_element
