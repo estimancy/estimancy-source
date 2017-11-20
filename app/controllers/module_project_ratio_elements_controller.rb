@@ -123,6 +123,7 @@ class ModuleProjectRatioElementsController < ApplicationController
       # create the module_project_ratio_variable
       @wbs_activity_ratio_variables.each do |ratio_variable|
         mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id,
+                                                           organization_id: @organization.id, wbs_activity_id: @wbs_activity.id,
                                                            wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id, name: ratio_variable.name, description: ratio_variable.description,
                                                            percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable)
         mp_ratio_variable.save

@@ -7,6 +7,7 @@
     <%= simple_form_for(@wbs_activity_element) do |f| %>
       <%= f.error_notification %>
 
+      <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 
       <%= f.input :wbs_activity_id, :as => :hidden, :label => 'WBS-Activity', :input_html => {:value => @wbs_activity.id, :class => 'input-xxlarge'} %>

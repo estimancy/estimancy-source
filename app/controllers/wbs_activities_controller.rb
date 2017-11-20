@@ -62,10 +62,10 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
-    @total = @wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
+    @total = @wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.r
+
+atio_value.blank? }.compact.sum(&:ratio_value)
   end
-
-
   def index
     #No authorize required since everyone can access the list of ABS
     set_page_title I18n.t(:WBS_activities)
@@ -1585,7 +1585,8 @@ class WbsActivitiesController < ApplicationController
 
                 elements_worksheet_tab.each_with_index do | row, index |
                   if index != 0 && !row.nil?
-                    activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, position: row[0].to_f, phase_short_name: row[1],
+                    activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id,
+                                                                 position: row[0].to_f, phase_short_name: row[1],
                                                                  name: row[2], description: row[3], is_root: row[4])
                     elements_parents["#{activity_element.id}"] = row[5]
                   end
@@ -1630,8 +1631,8 @@ class WbsActivitiesController < ApplicationController
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
                     begin
-                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, name: row[0], description: row[1], do_not_show_cost: row[2],
-                                              do_not_show_phases_with_zero_value: row[3], comment_required_if_modifiable: row[4])
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id, name: row[0], description: row[1],
+                                              do_not_show_cost: row[2], do_not_show_phases_with_zero_value: row[3], comment_required_if_modifiable: row[4])
                     rescue
                     end
                   end
@@ -1665,14 +1666,16 @@ class WbsActivitiesController < ApplicationController
                           when ratio_variables_line+1..ratio_variables_line+4
 
                             WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id, name: row[1], percentage_of_input: row[2],
-                                               is_modifiable: row[3], is_used_in_ratio_calculation: row[4], description: row[5])
+                                                            is_modifiable: row[3], is_used_in_ratio_calculation: row[4], description: row[5],
+                                                            organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
 
                           # Elements formulas
                           when formulas_line+1..formulas_line+@wbs_activity_elements.size
 
                             wbs_activity_element = @wbs_activity_elements.where(name: row[3]).first
                             WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id, wbs_activity_element_id: wbs_activity_element.id,
-                                                            is_optional: row[5], effort_is_modifiable: row[6], cost_is_modifiable: row[7], formula: row[8])
+                                                           is_optional: row[5], effort_is_modifiable: row[6], cost_is_modifiable: row[7], formula: row[8],
+                                                           organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
 
                           # Ratio-elements par profile
                           when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size

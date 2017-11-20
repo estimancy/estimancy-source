@@ -29,7 +29,10 @@ class WbsActivityElementsController < ApplicationController
     @wbs_activity_element = WbsActivityElement.new
     if params[:activity_id]
       @wbs_activity = WbsActivity.find(params[:activity_id])
+      @organization = @wbs_activity.organization
       @potential_parents = @wbs_activity.wbs_activity_elements
+    else
+      @organization = @current_organization
     end
 
     @selected_parent ||= WbsActivityElement.find(params[:selected_parent_id])
@@ -40,6 +43,8 @@ class WbsActivityElementsController < ApplicationController
 
     set_page_title I18n.t(:wbs_activity_elements)
     @wbs_activity_element = WbsActivityElement.find(params[:id])
+    @organization = @wbs_activity_element.organization
+
     if params[:activity_id]
       @wbs_activity = WbsActivity.find(params[:activity_id])
       if @wbs_activity_element.ancestry.nil?
@@ -59,6 +64,7 @@ class WbsActivityElementsController < ApplicationController
     @selected_parent ||= WbsActivityElement.find(params[:wbs_activity_element][:parent_id])
     @wbs_activity = @wbs_activity_element.wbs_activity
     @potential_parents = @wbs_activity.wbs_activity_elements
+    @organization = @wbs_activity.organization
 
     #update phase short name
     phases_short_name_number = @wbs_activity.phases_short_name_number+1
@@ -74,7 +80,8 @@ class WbsActivityElementsController < ApplicationController
       @wbs_activity.wbs_activity_ratios.each do |wbs_activity_ratio|
         @wbs_activity_ratio_element = WbsActivityRatioElement.new(:ratio_value => nil,
                                                                   :wbs_activity_ratio_id => wbs_activity_ratio.id,
-                                                                  :wbs_activity_element_id => @wbs_activity_element.id)
+                                                                  :wbs_activity_element_id => @wbs_activity_element.id,
+                                                                  :organization_id => @organization.id, wbs_activity_id: @wbs_activity.id)
                                                                   ###:dotted_id => @wbs_activity_element.dotted_id)
         @wbs_activity_ratio_element.save(:validate => false)
       end
@@ -88,6 +95,7 @@ class WbsActivityElementsController < ApplicationController
   def update
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_element = WbsActivityElement.find(params[:id])
+    @organization = @wbs_activity_element.organization
 
     @wbs_activity ||= WbsActivity.find_by_id(params[:wbs_activity_element][:wbs_activity_id])
     @potential_parents = @wbs_activity.wbs_activity_elements if @wbs_activity
@@ -127,6 +135,7 @@ class WbsActivityElementsController < ApplicationController
   def show
     #No authorize required since everyone can access the list of ABS
     @wbs_activity_element = WbsActivityElement.find(params[:id])
+    @organization = @wbs_activity_element.organization
 
     respond_to do |format|
       format.html # show.html.erb

@@ -107,7 +107,8 @@ class WbsActivityRatio < ActiveRecord::Base
   # Create the ratio wbs_activity_ratio_variables
   def create_wbs_activity_ratio_variables
     [["RTU", ""], ["TEST", ""], ["", ""], ["", ""]].each do |var|
-      variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
+      variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id,
+                                              organization_id: self.organization_id, :wbs_activity_id => self.wbs_activity_id)
       variable.save
     end
 
@@ -121,7 +122,8 @@ class WbsActivityRatio < ActiveRecord::Base
 
     if  nb_ratio_variables <= 0
       [["RTU", ""], ["TEST", ""], ["", ""], ["", ""]].each do |var|
-        variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id)
+        variable = WbsActivityRatioVariable.new(name: var[0],  percentage_of_input: var[1], wbs_activity_ratio_id: self.id,
+                                                organization_id: self.organization_id, :wbs_activity_id => self.wbs_activity_id)
         variable.save
       end
     elsif nb_ratio_variables < 4
@@ -147,7 +149,8 @@ class WbsActivityRatio < ActiveRecord::Base
       end
 
       begin
-        variable = WbsActivityRatioVariable.new(name: "",  percentage_of_input: "", wbs_activity_ratio_id: self.id)
+        variable = WbsActivityRatioVariable.new(name: "",  percentage_of_input: "", wbs_activity_ratio_id: self.id,
+                                                organization_id: self.organization_id, :wbs_activity_id => self.wbs_activity_id)
         if variable.save
           nb_ratio_variables += 1
         end
