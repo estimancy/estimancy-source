@@ -70,7 +70,7 @@ module Skb
     def self.display_value(data_probable, estimation_value, view_widget, user)
       module_project = estimation_value.module_project
       skb_model = module_project.skb_model
-      value = data_probable.to_f
+      value = data_probable
       unit_coefficient = 1
 
       case estimation_value.pe_attribute.alias

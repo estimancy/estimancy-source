@@ -7,7 +7,7 @@
         <th rowspan="2">
           <%= I18n.t(:total_per_phase) %><br>
           <%#= get_attribute_human_name(estimation_value.pe_attribute) %>
-          <span class='attribute_tooltip' title='<%= "#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}" %>'>
+          <span>
             <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= "(#{wbs_unit})" %>
           </span>
         </th>

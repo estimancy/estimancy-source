@@ -84,18 +84,29 @@ class ProjectsController < ApplicationController
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
 
+  def rapport
+    @project
+    @current_organization = @project.organization
+    render :layout => false
+  end
+
+  def build_rapport
+    pdf = WickedPdf.new.pdf_from_url(rapport_url)
+    save_path = Rails.root.join('pdfs','filename.pdf')
+    File.open(save_path, 'wb') do |file|
+      file << pdf
+    end
+    redirect_to organization_estimations_path(@current_organization) and return
+  end
+
   def dashboard
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
     end
 
-    # begin
-    #   clean_view_widget
-    # rescue
-    # end
-
     @current_organization = @project.organization
+    @pbs_project_element = current_component
 
     # return if user doesn't have the rigth to consult the estimation
     if !can_show_estimation?(@project)
@@ -160,7 +171,7 @@ class ProjectsController < ApplicationController
         ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
                                                        expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
                                                        module_project_id: @module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create!
+                                                       pbs_project_element_id: @pbs_project_element.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -237,14 +248,17 @@ class ProjectsController < ApplicationController
         @guw_model = @module_project.guw_model
       # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: @module_project.id).all
+      # Uitilisation de la vue ModuleProjectGuwUnitOfWorkGroup
+      #@unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).all
+      @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @current_organization.id, project_id: @project.id,
+                                                                   module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
       @staffing_model = @module_project.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
-      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
+      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).first
       if @staffing_custom_data.nil?
-        @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id,
+        @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
                                 staffing_method: 'trapeze',
                                 period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
                                 trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
@@ -252,11 +266,10 @@ class ProjectsController < ApplicationController
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
-      @pbs_project_element = current_component
       @wbs_activity = @module_project.wbs_activity
       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
 
-      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(current_component.id)
+      @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(@pbs_project_element.id)
       if @wbs_activity_ratio.nil?
         unless params[:ratio].nil?
           @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
@@ -723,7 +736,8 @@ class ProjectsController < ApplicationController
         if can_show_estimation?(@project)
           redirect_to(:action => 'show') and return
         else
-          redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
         end
       end
 
@@ -1076,8 +1090,10 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
-
     @organization = @project.organization
+
+    authorize! :show_project, @project
+    set_page_title I18n.t(:estimation)
 
     #set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     if @project.is_model
@@ -1091,12 +1107,9 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
 
-    authorize! :show_project, @project
-    set_page_title I18n.t(:estimation)
-
     # We need to verify user's groups rights on estimation according to the current estimation status
     if !can_show_estimation?(@project)
-      redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)})
+      redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
     end
 
     @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
@@ -2298,7 +2311,7 @@ public
           new_mp.guw_unit_of_work_groups.each do |guw_group|
             new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
             new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-            guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
+            guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, project_id: new_prj.id)
 
             # Update the group unit of works and attributes
             guw_group.guw_unit_of_works.each do |guw_uow|
@@ -2307,7 +2320,7 @@ public
 
               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
               new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-              guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
+              guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id, project_id: new_prj.id)
             end
           end
 
@@ -2597,9 +2610,29 @@ public
     authorize! :create_project_from_template, Project
 
     @organization = Organization.find(params[:organization_id])
-    @estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
+    #@estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
+    @estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @organization.id, :is_model => true)
 
-    @current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
+    fields = @organization.fields
+    ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id != pf.views_widget.module_project.project_id
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    ###@current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
@@ -2983,11 +3016,18 @@ public
     # end
 
     # Correction concernant les valeurs des champs personnalisés qui ne remontent pas
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    #ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
-        if pf.project && pf.views_widget
-          if pf.project_id == pf.views_widget.module_project.project_id
-            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
           end
         else
           pf.delete
@@ -2996,7 +3036,6 @@ public
         #puts "erreur"
       end
     end
-
 
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
@@ -3368,11 +3407,17 @@ public
     # end
 
     # Correction concernant les valeurs des champs personnalisés qui ne remontent pas
-    ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
-        if pf.project && pf.views_widget
-          if pf.project_id == pf.views_widget.module_project.project_id
-            @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
           end
         else
           pf.delete

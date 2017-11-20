@@ -1973,3 +1973,7 @@ es:
   comment_required_if_modifiable: "Comments is required if phase is modifiable"
   headband_title: "Headband title"
 
+  number_of_uw_lines: "Number lines of UO."
+  number_of_uw_modifies_lines: "Number lines of UO. Modif."
+  number_of_uw_selected_lines: "Number lines of UO. Sélect."
+

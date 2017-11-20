@@ -14,7 +14,7 @@
           </a>
         </li>
       <% else %>
-        <% @guw_model.guw_types.each do |guw_type| %>
+        <% @guw_model.guw_types.to_a.sort.each do |guw_type| %>
           <li>
             <a href="#tabs-<%= guw_type.name.gsub(" ", "-") %>">
               <%= guw_type %> (<%= guw_type.is_default == true ? "(par défaut)" : "efef" %>)

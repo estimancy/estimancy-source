@@ -2050,3 +2050,7 @@ en:
   already_exists: "Already exists"
   module_instance_name_already_exists: "An instance with the same name already exists"
   headband_title: "Headband title"
+
+  number_of_uw_lines: "Number lines of UO."
+  number_of_uw_modifies_lines: "Number lines of UO. Modif."
+  number_of_uw_selected_lines: "Number lines of UO. Sélect."

@@ -16,7 +16,7 @@ class CreateOrganizationEstimationsView < ActiveRecord::Migration
 
 
   def down
-    execute "DROP VIEW organization_estimations"
+    execute "DROP VIEW IF EXISTS organization_estimations"
   end
 
 end

@@ -157,7 +157,7 @@
   </p>
 
   <p>
-    <%= I18n.t :move_your_cursor %>
+    <%= I18n.t :move_your_cursor %>. You can also <a id="button2" href="#!">reset zoom</a>
   </p>
 
   <div class="row-fluid">
@@ -166,18 +166,29 @@
       <hr>
       <% if can? :execute_estimation_plan, @project %>
         <button type="submit" class="btn btn-default btn-primary pull-right">
-          <%= I18n.t(:calculate_button)%>
+          <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
       <%= link_to "RAZ", skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
 
       <script>
+
+        $('#button2').click(function() {
+          $('.highcharts-button').click();
+        });
+
         $('#yolo').highcharts({
           chart: {
             type: 'bubble',
             plotBorderWidth: 1,
             zoomType: 'xy',
             events: {
+              load: function() {
+                $('.highcharts-scrollbar').hide();
+              },
+              afterSetExtremes: function() {
+                $('.highcharts-button').hide();
+              },
               click: function (e) {
                 // find the clicked values and the series
                 var x = Math.round(e.xAxis[0].value);
