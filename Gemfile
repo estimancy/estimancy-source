@@ -235,6 +235,3 @@ gem 'prawn-table', '~> 0.1.0'
 gem 'rack-reverse-proxy', :require => 'rack/reverse_proxy'
 
 gem 'grit'
-
-
-
