@@ -75,7 +75,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       ratio_variable.wbs_activity_id = ratio_variable.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_variable.save
     end
-    add_index :wbs_activity_ratio_variables, [organization_id, :wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
+    add_index :wbs_activity_ratio_variables, [:organization_id, :wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
 
 
     #=== ModuleProjectRatioVariables
