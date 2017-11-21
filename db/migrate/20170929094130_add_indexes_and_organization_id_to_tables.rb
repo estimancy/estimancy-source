@@ -75,7 +75,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       ratio_variable.wbs_activity_id = ratio_variable.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_variable.save
     end
-    add_index :wbs_activity_ratio_variables, [organization_id, :wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
+    add_index :wbs_activity_ratio_variables, [:organization_id, :wbs_activity_ratio_id], name: "organization_wbs_activity_ratio_variables"
 
 
     #=== ModuleProjectRatioVariables
@@ -109,23 +109,9 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
     add_index :organization_profiles_wbs_activities, [:wbs_activity_id, :organization_profile_id], name: "wbs_activity_organization_profiles"
 
 
-
-    #=====   Pour changement d'organisation impromptu   ==========
-
     #=== ViewWidgets
-    # add_column :views_widgets, :organization_id, :integer, after: :id
-    # add_column :views_widgets, :project_id, :integer, after: :organization_id
-    #
-    # add_index :views_widgets, [:organization_id, :project_id, :module_project_id, :pe_attribute_id, :estimation_value_id], name: "project_views_widgets"
-    #
-    # ViewsWidget.all.each do |vw|
-    #   vw.organization_id = vw.module_project.organization_id
-    #   vw.project_id = vw.module_project.project_id
-    #   vw.save
-    # end
+    add_index :views_widgets, [:module_project_id, :pe_attribute_id, :estimation_value_id], name: "module_project_views_widgets"
 
-
-    #=====   FIN Pour changement d'organisation impromptu ========
   end
 
 
@@ -186,6 +172,8 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
     #=== OrganizationProfiles_WbsActivities
     remove_index :organization_profiles_wbs_activities, name: "wbs_activity_organization_profiles" #[:wbs_activity_id, :organization_profile_id]
 
+    #=== ViewsWidget
+    remove_index :views_widgets, name: "module_project_views_widgets"
   end
 
 end
