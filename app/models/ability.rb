@@ -43,7 +43,7 @@ class Ability
     # end
 
     #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
-    organization_projects = projects
+    organization_projects = projects.compact
 
     organization_estimation_statuses = organization.estimation_statuses
     user_groups = user.groups
