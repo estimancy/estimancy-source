@@ -1456,18 +1456,14 @@ class WbsActivitiesController < ApplicationController
                 ######## WBS-Activity_elements worksheet  ######
                 activity_elements_sheet_order_attributes = [ "position", "phase_short_name", "name", "description", "is_root", "parent"]
                 elements_parents = Hash.new
-                # activity_elements_sheet_order = Hash.new
-                # activity_elements_sheet_order_attributes.each_with_index do |attr_name, index|
-                #   activity_elements_sheet_order["#{index}".to_sym] = attr_name
-                # end
-
-                elements_worksheet = workbook[I18n.t(:wbs_elements)]
+                elements_worksheet = workbook[1] ###workbook[I18n.t(:wbs_elements)]
 
                 begin
                   elements_worksheet_tab = elements_worksheet.extract_data
                 rescue
                   flash[:error] = "La feuille des éléments de la WBS n'existe pas"
-                  redirect_to request.referer + "#tabs-1" and return
+                  redirect_to request.referer + "#tabs-1" #and return
+                  raise ActiveRecord::Rollback and return
                 end
 
                 elements_worksheet_tab.each_with_index do | row, index |
@@ -1511,7 +1507,8 @@ class WbsActivitiesController < ApplicationController
                   ratios_worksheet_tab = ratios_worksheet.extract_data
                 rescue
                   flash[:error] = "La feuille contenant la liste des Ratios n'existe pas"
-                  redirect_to request.referer + "#tabs-1" and return
+                  redirect_to request.referer + "#tabs-1" #and return
+                  raise ActiveRecord::Rollback and return
                 end
 
                 ratios_worksheet_tab.each_with_index do | row, index |
@@ -1541,7 +1538,8 @@ class WbsActivitiesController < ApplicationController
                     ratio_elements_worksheet_tab = ratio_elements_worksheet.extract_data
                   rescue
                     flash[:error] = "La feuille des éléments du ratio '#{ratio.name}' n'existe pas"
-                    redirect_to request.referer + "#tabs-1" and return
+                    redirect_to request.referer + "#tabs-1" #and return
+                    raise ActiveRecord::Rollback and return
                   end
 
                   ratio_elements_worksheet_tab.each_with_index do | row, index |
