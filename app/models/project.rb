@@ -64,7 +64,8 @@ class Project < ActiveRecord::Base
   serialize :included_wbs_activities, Array
 
   validates_presence_of :organization_id, :estimation_status_id, :creator_id
-  validates :title, :presence => true, :uniqueness => {  :scope => [:version_number,:organization_id], case_sensitive: false, :message => I18n.t(:error_validation_project) }
+  validates :title, :presence => true, :uniqueness => {  :scope => [:version_number, :is_model, :organization_id], case_sensitive: false,
+                                                         :message => "  #{I18n.t(:error_validation_project)} \n\n  #{I18n.t(:project_already_exist, %{value})}" }
 
   #Search fields
   scoped_search :on => [:title, :alias, :description, :start_date, :created_at, :updated_at]

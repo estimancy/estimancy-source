@@ -558,11 +558,6 @@ class ProjectsController < ApplicationController
     @project.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_by, username: current_user.name)} \r\n"
     @organization = Organization.find(params[:project][:organization_id])
 
-    if @organization.projects.map(&:title).include?(params['project']['title'])
-      flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-      redirect_to organization_estimations_path(@organization) and return
-    end
-
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.platform_categories
@@ -852,14 +847,6 @@ class ProjectsController < ApplicationController
             @project.application_name = params[:project][:application_name]
           end
         rescue
-
-        end
-      end
-
-      unless params['project'].nil?
-        if (@organization.projects.map(&:title) - [@project.title]).include?(params['project']['title'])
-          flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-          redirect_to edit_project_path and return
         end
       end
 
@@ -1031,9 +1018,9 @@ class ProjectsController < ApplicationController
           redirect_to redirect_apply(edit_project_path(@project, :anchor => session[:anchor]), nil, organization_estimations_path(@project.organization)) and return
         end
       else
-
         @guw_module = Pemodule.where(alias: "guw").first
-        @kb_module = Pemodule.where(alias: "skb").first
+        @kb_module = Pemodule.where(alias: "kb").first
+        @skb_module = Pemodule.where(alias: "skb").first
         @ge_module = Pemodule.where(alias: "ge").first
         @operation_module = Pemodule.where(alias: "operation").first
         @staffing_module = Pemodule.where(alias: "staffing").first
@@ -1043,7 +1030,8 @@ class ProjectsController < ApplicationController
         @guw_modules = @guw_module.nil? ? [] : @project.organization.guw_models.map{|i| [i, "#{i.id},#{@guw_module.id}"] }
         @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
         @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
-        @kb_models = @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+        @kb_models = @kb_module.nil? ? [] : @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+        @skb_models = @skb_module.nil? ? [] : @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
         @staffing_modules = @staffing_module.nil? ? [] : @project.organization.staffing_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
         @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
         @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] }
