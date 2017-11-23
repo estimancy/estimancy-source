@@ -976,7 +976,7 @@ it:
   error_send_feedback_empty: "Per favore riempia tutti i campi della forma"
   notice_send_feedback_success: "La vosta richiesta è stata considerata"
   error_send_feedback_failed: "Accadde un errore mentre spediva la vostra richiesta"
-  error_validation_project: "i paia 'name/version' e 'alias/version' deve essere unico"
+  error_validation_project: "i paia 'name/version' e 'alias/version' deve essere unico."
   tooltip_state: "Definito i record sono esposti in nero, la Cambiale nell arancia, Pensionato in rosso"
   warning_project_state_to_rejected: "se Lei continua questa versione di progetto diverrà non modificabile (%{il value_b}) e non derivabile."
   warning_project_state_to_released: "se Lei continua questa versione di progetto diverrà non modificabile (%{value_b})."

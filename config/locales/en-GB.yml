@@ -1063,7 +1063,7 @@ en-gb:
   error_send_feedback_empty: "Please fill out all fields of the form"
   notice_send_feedback_success: "Your request has been considered"
   error_send_feedback_failed: "An error occurred while sending your request"
-  error_validation_project: "the pairs 'name/version' and 'alias/version' must be unique"
+  error_validation_project: "the pairs 'name/version' and 'alias/version' must be unique."
   tooltip_state: "\"Defined\" records are displayed in black, \"Draft\" in orange, \"Retired\" in red"
   warning_project_state_to_rejected: "if you continue this project version will become non modifiable (%{value_b}) and non derivable."
   warning_project_state_to_released: "if you continue this project version will become non modifiable (%{value_b})."

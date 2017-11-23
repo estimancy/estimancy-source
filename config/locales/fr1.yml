@@ -1067,7 +1067,7 @@ fr1:
   error_send_feedback_empty: "Merci de bien vouloir renseigner tous les champs du formulaire"
   notice_send_feedback_success: "Votre demande a bien été prise en compte"
   error_send_feedback_failed: "Une erreur s'est produite lors de l'envoi de votre demande"
-  error_validation_project: "les paires 'nom/version' et 'alias/version' doivent être unique"
+  error_validation_project: "les paires 'nom/version' et 'alias/version' doivent être unique."
   tooltip_state: "Les enregistrements \"Définie (Defined)\" sont affichés en noir, \"Brouillon (Draft)\" en orange, \"Retiré (Retired)\" en rouge"
   warning_project_state_to_rejected: "si vous continuez cette version du projet sera non modifiable (%{value_b}) et non dérivable (check-out)."
   warning_project_state_to_released: "si vous continuez cette version du projet sera non modifiable (%{value_b})."
