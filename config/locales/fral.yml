@@ -2032,3 +2032,4 @@ fral:
   number_of_uw_lines: "Nombre de lignes de UO."
   number_of_uw_modifies_lines: "Nombre de lignes de UO. Modif."
   number_of_uw_selected_lines: "Nombre de lignes de UO. Sélect."
+  value_not_taken_in_account: "Valeur non prise en compte"

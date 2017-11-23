@@ -2072,4 +2072,5 @@ frsncf:
   number_of_uw_lines: "Nombre de lignes de Composants Fonctionnels"
   number_of_uw_modifies_lines: "Nombre de lignes de Composants Fonctionnels Modif."
   number_of_uw_selected: "Nombre de lignes de Composants Fonctionnels Sélect."
+  value_not_taken_in_account: "Valeur non prise en compte"
 
