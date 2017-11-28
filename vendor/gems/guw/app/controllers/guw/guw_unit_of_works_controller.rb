@@ -2503,6 +2503,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     if params[:import_type] == "Remplacer"
       Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
+      Guw::GuwUnitOfWorkGroup.where(module_project_id: module_project.id).delete_all
     end
 
     if source == "Excel"
