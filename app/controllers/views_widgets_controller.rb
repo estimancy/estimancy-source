@@ -161,6 +161,7 @@ class ViewsWidgetsController < ApplicationController
       begin
         @views_widget.module_project_id = @module_project.id
       rescue
+        # ignored
       end
     end
 

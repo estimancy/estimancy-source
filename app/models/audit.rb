@@ -33,6 +33,8 @@ class Audit < ActiveRecord::Base
           audit_action = "Modification"
         when "delete"
           audit_action = "Suppression"
+        else
+          # type code here
       end
     end
     return audit_action
@@ -51,6 +53,8 @@ class Audit < ActiveRecord::Base
           changes = "Modification de la valeur du champ '#{audited_changes.keys.first}' de '#{changed_attribute.first}' à '#{changed_attribute.last}' "
         when "delete"
           changes = "Suppression"
+        else
+          # type code here
       end
     end
     return changes

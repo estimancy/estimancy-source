@@ -361,7 +361,7 @@ class ApplicationController < ActionController::Base
 
   def set_breadcrumbs(*args)
     if args.empty?
-      @breacrumbs = { "Estimates" => main_app.root_url, "#{action_name.humanize} #{controller_name.humanize}" => request.original_url }
+      @breacrumbs = { :"Estimates" => main_app.root_url, :"#{action_name.humanize} #{controller_name.humanize}" => request.original_url }
     else
       @breacrumbs = args.first
     end
@@ -443,15 +443,11 @@ class ApplicationController < ActionController::Base
   end
 
   def platform
-    string = request.env['HTTP_USER_AGENT']
-    user_agent = UserAgent.parse(string)
-    platform=user_agent.platform
+    request.env['HTTP_USER_AGENT']
   end
 
   def os
-    string = request.env['HTTP_USER_AGENT']
-    user_agent = UserAgent.parse(string)
-    os=user_agent.os
+    request.env['HTTP_USER_AGENT']
   end
 
   def server_name

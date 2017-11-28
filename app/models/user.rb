@@ -169,7 +169,8 @@ class User < ActiveRecord::Base
   #without case_sensitive = false
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
-    if login = conditions.delete(:id_connexion)
+    login = conditions.delete(:id_connexion)
+    if login
       where(conditions).where(conditions).where(["login_name = :value", { :value => login }]).first
     else
       where(conditions).first
@@ -179,7 +180,8 @@ class User < ActiveRecord::Base
   # GOOGLE AUTHENTICATION FROM DEVISE
   ####def self.from_omniauth(auth)
   def self.find_for_google_oauth2(auth, signed_in_resource=nil)
-    if user = User.find_by_email(auth.info.email)
+    user = User.find_by_email(auth.info.email)
+    if user
       user.provider = auth.provider
       user.uid = auth.uid
       user
@@ -198,7 +200,8 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_saml_oauth(attributes)
-    if user = User.find_by_login_name(attributes["cn"])
+    user = User.find_by_login_name(attributes["cn"])
+    if user
       user.provider = "SAML"
       user
     else

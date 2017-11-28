@@ -152,7 +152,7 @@ class PemodulesController < ApplicationController
     @pemodule = Pemodule.find(params[:module_id])
 
     selected_attributes = params[:attributes]
-    selected_attributes.each_with_index do |attr, i|
+    selected_attributes.each_with_index do |attr|
       conditions = {:pe_attribute_id => attr.to_i, :pemodule_id => params[:module_id]}
       attribute_module = AttributeModule.first(:conditions => conditions)
 
@@ -285,7 +285,6 @@ class PemodulesController < ApplicationController
   def pemodules_right
     @project_module = ModuleProject.find(params[:module_id])
     @project = @project_module.project
-    last_position_x = nil
 
     authorize! :alter_estimation_plan, @project
 
@@ -306,8 +305,6 @@ class PemodulesController < ApplicationController
   def find_use_pemodule
     #TODO Authorize #saly
     authorize! :manage_master_data, :all
-
-    pemodule_id = params[:pemodule_id].nil? ? params[:pemodule_instance_id] : params[:pemodule_id]
 
     if params[:pemodule_id]
       @pemodule = Pemodule.find(params[:pemodule_id])
@@ -330,6 +327,9 @@ class PemodulesController < ApplicationController
             @instance_model = WbsActivity.find(params[:instance_model_id])
           when "expert_judgement_instance_id"
             @instance_model = ExpertJudgement::Instance.find(params[:instance_model_id])
+          else
+            # ignored
+            # type code here
         end
 
         unless @instance_model

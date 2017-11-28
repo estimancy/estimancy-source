@@ -81,7 +81,7 @@ class GroupsController < ApplicationController
     end
 
     user_ids.each do |u|
-      gu = GroupsUsers.create(:group_id => @group.id, :user_id => u)
+      GroupsUsers.create(:group_id => @group.id, :user_id => u)
     end
 
     @group.projects(force_reload = true)
@@ -147,7 +147,7 @@ class GroupsController < ApplicationController
   def destroy
     authorize! :manage, Group
 
-    group = Group.find(params[:id])
+    @group = Group.find(params[:id])
     @organization = @group.organization
 
     GroupsUsers.delete_all(group_id: @group.id)

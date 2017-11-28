@@ -27,7 +27,7 @@
             <%= hidden_field_tag :position, params[:position] %>
 
             <%= f.input :name, label: I18n.t(:uw_name), input_html: { class: "input-xxlarge" } %>
-            <%= f.input :comments, input_html: { rows: "5" }, label: I18n.t(:description), input_html: { class: "input-xxlarge" }  %>
+            <%= f.input :comments, input_html: { rows: "5", class: "input-xxlarge" }, label: I18n.t(:description) %>
             <%= f.input :guw_type_id,
                         as: :select,
                         collection: @guw_model.guw_types.map{|i| [i.name, i.id]}.to_a.sort,

@@ -2220,6 +2220,9 @@ class OrganizationsController < ApplicationController
           @current_organization.project_selected_columns = selected_columns
         when "Organization"
           @current_organization.organization_selected_columns = selected_columns
+        else
+          # ignored
+          # type code here
       end
       @current_organization.save
     end

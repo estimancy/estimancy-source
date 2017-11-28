@@ -181,8 +181,6 @@ class PermissionsController < ApplicationController
   end
 
   def import_permissions
-    tab_error = []
-    del_array = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
       tab = workbook[0].extract_data
@@ -191,12 +189,12 @@ class PermissionsController < ApplicationController
         if index > 0 && !row[0].nil?
           permission = Permission.where(alias: row[2]).first
           if permission.nil?
-            permission = Permission.create( name: row[0],
-                                            description: row[1],
-                                            alias: row[2],
-                                            object_type: row[3],
-                                            category: row[4],
-                                            object_associated: row[7])
+            Permission.create( name: row[0],
+                               description: row[1],
+                               alias: row[2],
+                               object_type: row[3],
+                               category: row[4],
+                               object_associated: row[7])
           end
         end
       end

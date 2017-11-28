@@ -11,6 +11,7 @@ class AddFields2ToSkbModels < ActiveRecord::Migration
 
       add_column :skb_skb_inputs, :filters, :text
     rescue
+      # ignored
     end
   end
 end

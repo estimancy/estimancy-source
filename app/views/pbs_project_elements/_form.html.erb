@@ -2,7 +2,7 @@
     <%= f.error_notification %>
     <%= hidden_field_tag :project_id, @project.id %>
 
-    <%= f.input :ancestry, :label => I18n.t('ancestry'), :as => :select, :collection => @components, :label => 'Parent', :selected => @parent.id unless @parent.nil? %>
+    <%= f.input :ancestry, :label => I18n.t('ancestry'), :as => :select, :collection => @components, :selected => @parent.id unless @parent.nil? %>
     <%# if @pbs_project_element.link? %>
       <%# f.input :project_link, :label => I18n.t('project_link'), :input_html => {:class => 'input-xlarge'}, :as => :select, :collection => Project.all.map { |i| [i.title, i.id] } %>
     <%# else %>

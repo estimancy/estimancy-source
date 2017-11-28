@@ -168,10 +168,10 @@ class ProjectsController < ApplicationController
       end
 
       array_attributes.each do |a|
-        ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                       expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                       module_project_id: @module_project.id,
-                                                       pbs_project_element_id: @pbs_project_element.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 module_project_id: @module_project.id,
+                                                 pbs_project_element_id: @pbs_project_element.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -293,7 +293,6 @@ class ProjectsController < ApplicationController
 
 
   def dashboard_none_displayed(none_displayed_module_project)
-    results_to_return = {}
 
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
@@ -362,10 +361,10 @@ class ProjectsController < ApplicationController
       end
 
       array_attributes.each do |a|
-        ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                       expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                       module_project_id: none_displayed_module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 module_project_id: none_displayed_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -600,7 +599,6 @@ class ProjectsController < ApplicationController
     current_user_ps.save
 
     #For group
-    defaut_psl = AdminSetting.where(key: "Secure Level Creator").first.value
     defaut_group = AdminSetting.where(key: "Groupe using estimatiodef editn").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
     defaut_group_ps.group_id = Group.where(name: defaut_group.value,
@@ -674,16 +672,16 @@ class ProjectsController < ApplicationController
               unless @project.organization.nil? || @project.organization.attribute_organizations.nil?
                 @project.organization.attribute_organizations.each do |am|
                   ['input', 'output'].each do |in_out|
-                    mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                                 :organization_id => @organization.id,
-                                                 :module_project_id => cap_module_project.id,
-                                                 :in_out => in_out,
-                                                 :is_mandatory => am.is_mandatory,
-                                                 :description => am.pe_attribute.description,
-                                                 :display_order => nil,
-                                                 :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
-                                                 :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
-                                                 :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
+                    EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                           :organization_id => @organization.id,
+                                           :module_project_id => cap_module_project.id,
+                                           :in_out => in_out,
+                                           :is_mandatory => am.is_mandatory,
+                                           :description => am.pe_attribute.description,
+                                           :display_order => nil,
+                                           :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
+                                           :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
+                                           :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
                   end
                 end
               end
@@ -707,6 +705,7 @@ class ProjectsController < ApplicationController
 
         #raise ActiveRecord::Rollback
       rescue ActiveRecord::UnknownAttributeError, ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => error
+        p error
         flash[:error] = "#{I18n.t (:error_project_creation_failed)} #{@project.errors.full_messages.to_sentence}"
         redirect_to (@project.is_model ? organization_setting_path(@organization, anchor: "tabs-estimation-models") : organization_estimations_path(@organization))
       end
@@ -853,6 +852,7 @@ class ProjectsController < ApplicationController
           end
         rescue
 
+          # ignored
         end
       end
 
@@ -883,11 +883,6 @@ class ProjectsController < ApplicationController
 
       # we can update group securities levels on edit or on show with some restrictions
       if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
-        is_model_permission = nil
-        # if this is a model permission, is_model_permission should be true
-        if !params[:model_group_security_levels].nil?
-          is_model_permission = true
-        end
 
         @project.project_securities.delete_all
         unless params["group_securities"].nil?
@@ -929,6 +924,7 @@ class ProjectsController < ApplicationController
         unless params["user_securities_from_model"].nil?
           params["user_securities_from_model"].each do |psl|
             params["user_securities_from_model"][psl.first].each do |user|
+              # TODO : vérifier cette boucle
               owner_key = AdminSetting.find_by_key("Estimation Owner")
               owner = User.where(initials: owner_key.value).first
               ProjectSecurity.create(user_id: owner.id.to_i,
@@ -984,11 +980,11 @@ class ProjectsController < ApplicationController
             unless @project.organization.attribute_organizations.nil?
               @project.organization.attribute_organizations.each do |am|
                 ['input', 'output'].each do |in_out|
-                  mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id, :organization_id => @organization.id, :module_project_id => cap_module_project.id, :in_out => in_out,
-                                               :is_mandatory => am.is_mandatory, :description => am.pe_attribute.description, :display_order => nil,
-                                               :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
-                                               :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
-                                               :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
+                  EstimationValue.create(:pe_attribute_id => am.pe_attribute.id, :organization_id => @organization.id, :module_project_id => cap_module_project.id, :in_out => in_out,
+                                         :is_mandatory => am.is_mandatory, :description => am.pe_attribute.description, :display_order => nil,
+                                         :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
+                                         :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
+                                         :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
                 end
               end
             end
@@ -1008,14 +1004,14 @@ class ProjectsController < ApplicationController
               # Create estimation_values for the new selected organization
               @project.organization.attribute_organizations.each do |am|
                 ['input', 'output'].each do |in_out|
-                  mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                               :organization_id => @organization.id,
-                                               :module_project_id => cap_module_project.id,
-                                               :in_out => in_out, :is_mandatory => am.is_mandatory,
-                                               :description => am.pe_attribute.description, :display_order => nil,
-                                               :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
-                                               :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
-                                               :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
+                  EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                         :organization_id => @organization.id,
+                                         :module_project_id => cap_module_project.id,
+                                         :in_out => in_out, :is_mandatory => am.is_mandatory,
+                                         :description => am.pe_attribute.description, :display_order => nil,
+                                         :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => ''},
+                                         :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => ''},
+                                         :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => ''})
                 end
               end
             end
@@ -1401,15 +1397,15 @@ class ProjectsController < ApplicationController
         my_module_project.staffing_model_id = staffing_model_id
         staffing_model = Staffing::StaffingModel.find(staffing_model_id)
         #Then create an staffing_custom_data object for current module_project
-        staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: staffing_model_id,
-                                                                    module_project_id: my_module_project.id,
-                                                                    pbs_project_element_id: @pbs_project_element.id,
-                                                                    staffing_method: 'trapeze',
-                                                                    period_unit: 'week',
-                                                                    global_effort_type: 'probable',
-                                                                    mc_donell_coef: 6,
-                                                                    puissance_n: 0.33,
-                                                                    trapeze_parameter_values: staffing_model.trapeze_default_values)
+        Staffing::StaffingCustomDatum.create( staffing_model_id: staffing_model_id,
+                                              module_project_id: my_module_project.id,
+                                              pbs_project_element_id: @pbs_project_element.id,
+                                              staffing_method: 'trapeze',
+                                              period_unit: 'week',
+                                              global_effort_type: 'probable',
+                                              mc_donell_coef: 6,
+                                              puissance_n: 0.33,
+                                              trapeze_parameter_values: staffing_model.trapeze_default_values)
 
       elsif @pemodule.alias == "effort_breakdown"
         wbs_id = params[:module_selected].split(',').first.to_i
@@ -1423,7 +1419,7 @@ class ProjectsController < ApplicationController
         end
 
 
-        wai = my_module_project.wbs_activity_inputs.first
+        my_module_project.wbs_activity_inputs.first
 
         #create module_project ratio elements
         my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
@@ -1501,33 +1497,33 @@ class ProjectsController < ApplicationController
           unless am.pe_attribute.nil?
             if am.in_out == 'both'
               ['input', 'output'].each do |in_out|
-                mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                             :organization_id => @organization.id,
-                                             :module_project_id => my_module_project.id,
-                                             :in_out => in_out,
-                                             :is_mandatory => am.is_mandatory,
-                                             :description => am.description,
-                                             :display_order => am.display_order,
-                                             :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                             :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                             :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                             :custom_attribute => am.custom_attribute,
-                                             :project_value => am.project_value)
+                EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                       :organization_id => @organization.id,
+                                       :module_project_id => my_module_project.id,
+                                       :in_out => in_out,
+                                       :is_mandatory => am.is_mandatory,
+                                       :description => am.description,
+                                       :display_order => am.display_order,
+                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                       :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                       :custom_attribute => am.custom_attribute,
+                                       :project_value => am.project_value)
 
               end
             elsif am.in_out != nil
-              mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                           :organization_id => @organization.id,
-                                           :module_project_id => my_module_project.id,
-                                           :in_out => am.in_out,
-                                           :is_mandatory => am.is_mandatory,
-                                           :display_order => am.display_order,
-                                           :description => am.description,
-                                           :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                           :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                           :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                           :custom_attribute => am.custom_attribute,
-                                           :project_value => am.project_value)
+              EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                     :organization_id => @organization.id,
+                                     :module_project_id => my_module_project.id,
+                                     :in_out => am.in_out,
+                                     :is_mandatory => am.is_mandatory,
+                                     :display_order => am.display_order,
+                                     :description => am.description,
+                                     :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                     :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                     :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                     :custom_attribute => am.custom_attribute,
+                                     :project_value => am.project_value)
             end
           end
         end
@@ -1539,32 +1535,32 @@ class ProjectsController < ApplicationController
 
             if am.in_out == 'both'
               ['input', 'output'].each do |in_out|
-                mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                             :organization_id => @organization.id,
-                                             :module_project_id => my_module_project.id,
-                                             :in_out => in_out,
-                                             :is_mandatory => am.is_mandatory,
-                                             :description => am.description,
-                                             :display_order => am.display_order,
-                                             :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                             :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                             :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                             :custom_attribute => am.custom_attribute,
-                                             :project_value => am.project_value)
+                EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                       :organization_id => @organization.id,
+                                       :module_project_id => my_module_project.id,
+                                       :in_out => in_out,
+                                       :is_mandatory => am.is_mandatory,
+                                       :description => am.description,
+                                       :display_order => am.display_order,
+                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                       :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                       :custom_attribute => am.custom_attribute,
+                                       :project_value => am.project_value)
               end
             else
-              mpa = EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
-                                           :organization_id => @organization.id,
-                                           :module_project_id => my_module_project.id,
-                                           :in_out => am.in_out,
-                                           :is_mandatory => am.is_mandatory,
-                                           :display_order => am.display_order,
-                                           :description => am.description,
-                                           :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
-                                           :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
-                                           :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
-                                           :custom_attribute => am.custom_attribute,
-                                           :project_value => am.project_value)
+              EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                     :organization_id => @organization.id,
+                                     :module_project_id => my_module_project.id,
+                                     :in_out => am.in_out,
+                                     :is_mandatory => am.is_mandatory,
+                                     :display_order => am.display_order,
+                                     :description => am.description,
+                                     :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                     :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                     :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                     :custom_attribute => am.custom_attribute,
+                                     :project_value => am.project_value)
             end
           end
         end
@@ -1719,14 +1715,14 @@ class ProjectsController < ApplicationController
 
     @my_results = Hash.new
     @last_estimation_results = Hash.new
-    set_attributes_name_list = {'low' => [], 'high' => [], 'most_likely' => []}
+    # set_attributes_name_list = {'low' => [], 'high' => [], 'most_likely' => []}
 
     if start_module_project.nil?
       pbs_project_element = current_component
       pbs_project_element_id = pbs_project_element.id
       start_module_project = current_module_project
-      rest_of_module_projects = crawl_module_project(current_module_project, pbs_project_element)
-      set_attributes = {'low' => {}, 'most_likely' => {}, 'high' => {}}
+      # rest_of_module_projects = crawl_module_project(current_module_project, pbs_project_element)
+      set_attributes = {:low => {}, :most_likely => {}, :high => {}}
 
 
       ['low', 'most_likely', 'high'].each do |level|
@@ -1781,13 +1777,11 @@ class ProjectsController < ApplicationController
         @my_results.each do |res|
           ['low', 'most_likely', 'high'].each do |level|
             # We don't have to replace the value, but we need to update them
-            level_estimation_value = Hash.new
             level_estimation_value = est_val.send("string_data_#{level}")
             level_estimation_value_without_consistency = @my_results[level.to_sym]["#{est_val_attribute_alias}_#{start_module_project.id.to_s}".to_sym]
 
             # In case when module use the wbs_project_element, the is_consistent need to be set
             if start_module_project.pemodule.yes_for_output_with_ratio? || start_module_project.pemodule.yes_for_output_without_ratio? || start_module_project.pemodule.yes_for_input_output_with_ratio? || start_module_project.pemodule.yes_for_input_output_without_ratio?
-              psb_level_estimation = level_estimation_value[@pbs_project_element.id]
               level_estimation_value[@pbs_project_element.id] = set_element_value_with_activities(level_estimation_value_without_consistency, start_module_project)
             else
               level_estimation_value[@pbs_project_element.id] = level_estimation_value_without_consistency
@@ -1797,7 +1791,6 @@ class ProjectsController < ApplicationController
           end
 
           # compute the probable value for each node
-          probable_estimation_value = Hash.new
           probable_estimation_value = est_val.send('string_data_probable')
           if est_val_attribute_type == 'numeric'
             probable_estimation_value[@pbs_project_element.id] = probable_value(@my_results, est_val)
@@ -1824,7 +1817,6 @@ class ProjectsController < ApplicationController
         in_result = Hash.new
 
         ['low', 'most_likely', 'high'].each do |level|
-          level_estimation_value = Hash.new
           level_estimation_value = est_val.send("string_data_#{level}")
           begin
             pbs_level_form_input = input_attributes[level][est_val_attribute_alias]
@@ -1845,7 +1837,6 @@ class ProjectsController < ApplicationController
         end
 
         #calulate the Probable value for the input data
-        input_probable_estimation_value = Hash.new
         input_probable_estimation_value = est_val.send('string_data_probable')
         minimum = in_result["string_data_low"][@pbs_project_element.id].to_f
         most_likely = in_result["string_data_most_likely"][@pbs_project_element.id].to_f
@@ -1980,7 +1971,6 @@ public
     authorize! :execute_estimation_plan, @project
 
     @result_hash = Hash.new
-    inputs = Hash.new
     # Add the current project id in input data parameters
     input_data['current_project_id'.to_sym] = @project.id
 
@@ -2450,7 +2440,7 @@ public
   end
 
   def default_work_element_type
-    wet = @current_organization.work_element_types.first_or_create(name: "Default", alias: "default")
+    @current_organization.work_element_types.first_or_create(name: "Default", alias: "default")
   end
 
   #Add/Import a WBS-Activity template from Library to Project
@@ -2525,7 +2515,6 @@ private
   end
 
   def create_wbs_activity_from_child(node, pe_wbs_activity, wbs_elt_root)
-    project = pe_wbs_activity.project
     authorize! :alter_wbsactivities, @project
 
     wbs_project_element = WbsProjectElement.new(:pe_wbs_project_id => pe_wbs_activity.id, :wbs_activity_element_id => node.id, :wbs_activity_id => node.wbs_activity_id, :name => node.name,
@@ -2706,110 +2695,107 @@ public
     build_footer
   end
 
-  def sort_SAVE
-    @organization = @current_organization
-    # @projects = @organization.organization_estimations
-    @projects = @organization.projects
-
-    k = params[:f]
-    s = params[:s]
-
-    @sort_column = k
-    @sort_order = s
-
-    ### Les tris par défaut ( date descendant et title ascendant)
-    # if k != "start_date"
-    #   @projects = @projects.unscoped.order("start_date desc")
-    # end
-
-    case k
-      when "title"
-        @projects = @projects.unscoped.order("title #{s}")
-      when "description"
-        @projects = @projects.unscoped.order("description #{s}")
-      when "project_area"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                        .where(organization_id: @organization.id)
-                        .order("project_areas.name #{s}")
-      when "project_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("project_categories.name #{s}")
-      when "platform_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("platform_categories.name #{s}")
-      when "acquisition_category"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                        .where(organization_id: @organization.id)
-                        .order("acquisition_categories.name #{s}")
-      when "status_name"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}")
-      when "status_name"
-        @projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id)
-                        .order("estimation_statuses.name #{s}")
-      when "start_date"
-        @projects = @projects.unscoped.order("start_date #{s}")
-      when "updated_at"
-        @projects = @projects.unscoped.order("updated_at #{s}")
-      when "created_at"
-        @projects = @projects.unscoped.order("created_at #{s}")
-      else
-    end
-
-
-    @projects = @projects.where(:is_model => [nil, false]).all
-
-    res = []
-    @projects.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-        res << p
-      end
-    end
-
-    ###@projects = res[0..50].nil? ? [] : res[0..50]
-    @object_per_page = (current_user.object_per_page || 10)
-    if params['previous_next_action'] == "true"
-      @min = params['min'].to_i
-      @max = params['max'].to_i
-    else
-      @min = 0
-      @max = @object_per_page
-    end
-    @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
-
-    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
-    @last_page_min = (last_page.to_i-1) * @object_per_page
-    @last_page_max = @last_page_min + @object_per_page
-
-
-    if params[:is_last_page] == "true" || (@min == @last_page_min)
-      @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
-
-      @min = (last_page.to_i-1) * @object_per_page
-      @max = @min + @object_per_page
-      @is_last_page = "true"
-    else
-      @is_last_page = "false"
-    end
-
-    build_footer
-  end
-
+  # def sort_SAVE
+  #   @organization = @current_organization
+  #   # @projects = @organization.organization_estimations
+  #   @projects = @organization.projects
+  #
+  #   k = params[:f]
+  #   s = params[:s]
+  #
+  #   @sort_column = k
+  #   @sort_order = s
+  #
+  #   ### Les tris par défaut ( date descendant et title ascendant)
+  #   # if k != "start_date"
+  #   #   @projects = @projects.unscoped.order("start_date desc")
+  #   # end
+  #
+  #   case k
+  #     when "title"
+  #       @projects = @projects.unscoped.order("title #{s}")
+  #     when "description"
+  #       @projects = @projects.unscoped.order("description #{s}")
+  #     when "project_area"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("project_areas.name #{s}")
+  #     when "project_category"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("project_categories.name #{s}")
+  #     when "platform_category"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("platform_categories.name #{s}")
+  #     when "acquisition_category"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("acquisition_categories.name #{s}")
+  #     when "status_name"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("estimation_statuses.name #{s}")
+  #     when "status_name"
+  #       @projects = Project.unscoped
+  #                       .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+  #                       .where(organization_id: @organization.id)
+  #                       .order("estimation_statuses.name #{s}")
+  #     when "start_date"
+  #       @projects = @projects.unscoped.order("start_date #{s}")
+  #     when "updated_at"
+  #       @projects = @projects.unscoped.order("updated_at #{s}")
+  #     when "created_at"
+  #       @projects = @projects.unscoped.order("created_at #{s}")
+  #     else
+  #   end
+  #
+  #
+  #   @projects = @projects.where(:is_model => [nil, false]).all
+  #
+  #   res = []
+  #   @projects.each do |p|
+  #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+  #       res << p
+  #     end
+  #   end
+  #
+  #   ###@projects = res[0..50].nil? ? [] : res[0..50]
+  #   @object_per_page = (current_user.object_per_page || 10)
+  #   if params['previous_next_action'] == "true"
+  #     @min = params['min'].to_i
+  #     @max = params['max'].to_i
+  #   else
+  #     @min = 0
+  #     @max = @object_per_page
+  #   end
+  #   @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
+  #
+  #   last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+  #   @last_page_min = (last_page.to_i-1) * @object_per_page
+  #   @last_page_max = @last_page_min + @object_per_page
+  #
+  #
+  #   if params[:is_last_page] == "true" || (@min == @last_page_min)
+  #     @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
+  #
+  #     @min = (last_page.to_i-1) * @object_per_page
+  #     @max = @min + @object_per_page
+  #     @is_last_page = "true"
+  #   else
+  #     @is_last_page = "false"
+  #   end
+  #
+  #   build_footer
+  # end
 
   def search
     @organization = @current_organization
-    options = {}
-    results = []
     final_results = []
 
     @object_per_page = (current_user.object_per_page || 10)
@@ -2952,7 +2938,6 @@ public
 
      last_project = projects.last
      result = []
-     i = 0
      # nb_total = 0
 
      estimations_abilities = lambda do |projects|
@@ -2984,7 +2969,6 @@ public
          next_projects = last_project.next_ones_by_date(desired_size)
          unless next_projects.all.empty?
            @current_ability = Ability.new(current_user, @current_organization, next_projects, desired_size, true)
-           i = 0
            estimations_abilities.call(next_projects)
          end
        end
@@ -3303,7 +3287,6 @@ private
   # Set the new checked-outed project version_number
   def set_project_version(project_to_checkout)
     #No authorize is required as method is private and could not be accessed by any route
-    new_version = ''
     parent_version = project_to_checkout.version_number
 
     # The new version_number number is calculated according to the parent project position (if parent project has children or not)
@@ -3321,7 +3304,6 @@ private
     else
       #That means project has successor(s)/children, and a new branch need to be created
       branch_version = 1
-      branch_name = ''
       parent_version_ended_end = 0
       if parent_version.include?('-')
         split_parent_version = parent_version.split('-')
@@ -3488,7 +3470,6 @@ public
             project_parent =  project.parent
             project_child = project.children.first
             #delete link between project to delete and its parent and child
-            new_ancestry = project_child.ancestor_ids.delete_if { |x| x == project.id }.join("/")
             #project_child.update_attribute project.class.ancestry_column, new_ancestry || nil
             project_child.update_attribute(:parent, project_parent)
             project_child.save
@@ -3711,10 +3692,10 @@ public
       @expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
 
       array_attributes.each do |a|
-        ie = ExpertJudgement::InstanceEstimate.where(  pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                       expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                       module_project_id: current_module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 module_project_id: current_module_project.id,
+                                                 pbs_project_element_id: current_component.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "skb"

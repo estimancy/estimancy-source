@@ -271,6 +271,7 @@ module Guw
         begin
           GuwOutputType.create(guw_model_id: guw_model.id, guw_output_id: new_output.id, guw_type_id: new_type.id, display_type: output_type.display_type)
         rescue
+          # ignored
         end
       end
 

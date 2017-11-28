@@ -362,6 +362,8 @@ class ModuleProject < ActiveRecord::Base
                 ratio_variable.percentage_of_input = "E2"
                 ratio_variable.save
               end
+            else
+              # type code here
           end
         end
 

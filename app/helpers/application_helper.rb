@@ -35,6 +35,8 @@ module ApplicationHelper
         tmp = "platform_category"
       when I18n.t(:acquisition_category)
         tmp = "acquisition_category"
+      else
+        # type code here
     end
 
     unless tmp.nil?

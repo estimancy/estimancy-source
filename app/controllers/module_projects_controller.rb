@@ -187,6 +187,10 @@ class ModuleProjectsController < ApplicationController
           module_project_successors_ids << target_id
         when "detach"
           module_project_successors_ids.delete(target_id)
+        else
+          # ignored
+          # type code here
+        else
       end
 
       #update associations

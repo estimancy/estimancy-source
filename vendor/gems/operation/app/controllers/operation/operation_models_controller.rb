@@ -289,6 +289,8 @@ class Operation::OperationModelsController < ApplicationController
                 output_ev.send("string_data_#{level}")[current_component.id] = result_value
                 output_tmp_prbl << result_value
               end
+            else
+              # type code here
           end
 
           output_probable_value = ((output_tmp_prbl[0].to_f + (4 * output_tmp_prbl[1].to_f) + output_tmp_prbl[2].to_f)/6)

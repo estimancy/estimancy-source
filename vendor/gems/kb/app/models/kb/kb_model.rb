@@ -105,6 +105,8 @@ module Kb
         when "percent"
           unit_coefficient = 1
           unit = "%"
+        else
+          # type code here
       end
 
       begin

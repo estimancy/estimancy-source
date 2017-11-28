@@ -88,6 +88,8 @@ module Staffing
             else
               errors.add(:x3, "obligatoire et doit être supérieur à x2")
             end
+          else
+            # type code here
         end
       end
     end
@@ -133,6 +135,8 @@ module Staffing
         when "staffing"
           unit_coefficient = 1
           unit = I18n.t(:unit_staffing)
+        else
+          # type code here
       end
 
       begin

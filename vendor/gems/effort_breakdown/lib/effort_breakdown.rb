@@ -339,50 +339,50 @@ module EffortBreakdown
     end
 
 
-    # Debut fonction recursive pour calcul de l'effort
-    def get_effort_and_cost_per_phase_as_subtree_SAVE(element, output_effort_from_formula, theoretical_or_retained)
-
-      efforts_tjm_costs = @efforts_tjm_costs_per_phase_profiles
-
-      if element.is_childless?
-        begin
-          #effort
-          effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
-          effort = effort_value.nil? ? nil : effort_value.to_f
-          #cost
-          tjm = efforts_tjm_costs[element.id][:tjm]
-          cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
-        rescue
-          effort = 0
-          cost = 0
-        end
-
-      else
-        effort = 0.0
-        cost = 0.0
-
-        element.children.each do |node|
-          # Test if node is selected or not ( it will be taken in account only if the node is selected)
-          mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
-          if (mp_ratio_element && mp_ratio_element.selected==true)
-            child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
-
-            effort += child_effort unless child_effort.nil?
-            cost += child_cost unless child_cost.nil?
-          end
-        end
-      end
-
-      efforts_tjm_costs[element.id]["#{theoretical_or_retained}_effort".to_sym] = effort
-      efforts_tjm_costs[element.id]["#{theoretical_or_retained}_cost".to_sym] = cost
-
-      if theoretical_or_retained == "theoretical"
-        efforts_tjm_costs[element.id][:retained_effort] = effort
-        efforts_tjm_costs[element.id][:retained_cost] = cost
-      end
-
-      [effort, cost]
-    end
+    # # Debut fonction recursive pour calcul de l'effort
+    # def get_effort_and_cost_per_phase_as_subtree_SAVE(element, output_effort_from_formula, theoretical_or_retained)
+    #
+    #   efforts_tjm_costs = @efforts_tjm_costs_per_phase_profiles
+    #
+    #   if element.is_childless?
+    #     begin
+    #       #effort
+    #       effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
+    #       effort = effort_value.nil? ? nil : effort_value.to_f
+    #       #cost
+    #       tjm = efforts_tjm_costs[element.id][:tjm]
+    #       cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
+    #     rescue
+    #       effort = 0
+    #       cost = 0
+    #     end
+    #
+    #   else
+    #     effort = 0.0
+    #     cost = 0.0
+    #
+    #     element.children.each do |node|
+    #       # Test if node is selected or not ( it will be taken in account only if the node is selected)
+    #       mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
+    #       if (mp_ratio_element && mp_ratio_element.selected==true)
+    #         child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
+    #
+    #         effort += child_effort unless child_effort.nil?
+    #         cost += child_cost unless child_cost.nil?
+    #       end
+    #     end
+    #   end
+    #
+    #   efforts_tjm_costs[element.id]["#{theoretical_or_retained}_effort".to_sym] = effort
+    #   efforts_tjm_costs[element.id]["#{theoretical_or_retained}_cost".to_sym] = cost
+    #
+    #   if theoretical_or_retained == "theoretical"
+    #     efforts_tjm_costs[element.id][:retained_effort] = effort
+    #     efforts_tjm_costs[element.id][:retained_cost] = cost
+    #   end
+    #
+    #   [effort, cost]
+    # end
 
     # get retained efforts and costs
     def get_effort_and_cost_per_phase_as_subtree(element, output_effort_from_formula, theoretical_or_retained)

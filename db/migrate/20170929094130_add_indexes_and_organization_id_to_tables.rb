@@ -16,6 +16,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
         mp.organization_id = project.organization_id
         mp.save
       rescue
+        # ignored
       end
     end
     add_index :module_projects, [:organization_id, :pemodule_id, :project_id], name: "organization_module_projects"
@@ -49,6 +50,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
         element.organization_id = element.wbs_activity.organization_id
         element.save
       rescue
+        # ignored
       end
     end
     add_index :wbs_activity_elements, [:organization_id, :wbs_activity_id, :ancestry], name: "organization_wbs_activity_elements"  ### ancestry ???

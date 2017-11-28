@@ -280,7 +280,9 @@
                       <% td_class = "scale_factor" %>
                   <% when "c" %>
                       <% td_class = "conversion_factor" %>
-                  <% end %>
+                  <% else
+                       # type code here
+                     end %>
                   <tr>
                     <td class="<%= td_class %>"><%= ge_factor.scale_prod %></td>
                     <td><%= ge_factor.factor_type %></td>
@@ -319,7 +321,9 @@
                           <% tr_class = "scale_factor" %>
                       <% when "c" %>
                           <% tr_class = "conversion_factor" %>
-                      <% end %>
+                      <% else
+                           # type code here
+                         end %>
                       <tr>
                         <td class='<%= tr_class %>'><%= ge_factor_value.factor_scale_prod %></td>
                         <td class='<%= tr_class %>'><%= ge_factor_value.factor_name %></td>

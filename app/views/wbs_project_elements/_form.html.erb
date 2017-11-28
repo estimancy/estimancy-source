@@ -8,8 +8,8 @@
 
         <div class="form-inputs">
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge'}, :disabled => disabled_if_from_library, :autofocus => (controller.action_name == 'new') %>
-          <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :label => 'Parent element', :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'}, :disabled => disabled_if_from_library %>
-          <%= f.input :pe_wbs_project_id, :label => 'Pe-WBS Project', :as => :hidden, :label => 'PE-WBS-Project', :input_html => {:value => @pe_wbs_project_activity.id, :class => 'input-xxlarge'} %>
+          <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'}, :disabled => disabled_if_from_library %>
+          <%= f.input :pe_wbs_project_id, :label => 'Pe-WBS Project', :as => :hidden, :input_html => { :value => @pe_wbs_project_activity.id, :class => 'input-xxlarge' } %>
           <%= hidden_field_tag 'project_id', @project.id %>
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 3}, :disabled => disabled_if_from_library %>

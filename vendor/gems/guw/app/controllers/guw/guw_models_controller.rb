@@ -133,6 +133,7 @@ class Guw::GuwModelsController < ApplicationController
                     i = i+1
                     order_value_coeff = tab[i][0]
                   rescue
+                    # ignored
                   end
                 end
 
@@ -463,6 +464,7 @@ class Guw::GuwModelsController < ApplicationController
                   route_flag = 6
                 end
               rescue
+                # ignored
               end
             else
               if worksheet.sheet_name != I18n.t(:is_model) && worksheet.sheet_name != I18n.t(:attribute_description)# && worksheet.sheet_name != I18n.t(:Type_acquisitions)
@@ -1161,6 +1163,7 @@ class Guw::GuwModelsController < ApplicationController
             begin
               coeff_elements_worksheet[indx][col].change_border(symbole.to_sym, 'thin')
             rescue
+              # ignored
             end
           end
         end
@@ -1205,6 +1208,7 @@ class Guw::GuwModelsController < ApplicationController
           begin
             outputs_worksheet[indx][col].change_border(symbole.to_sym, 'thin')
           rescue
+            # ignored
           end
         end
       end
@@ -1421,6 +1425,7 @@ class Guw::GuwModelsController < ApplicationController
               guw_attribute_type = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: attribute.id).first
               worksheet.add_cell(aln2 + index, 16, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value))
             rescue
+              # ignored
             end
 
           end

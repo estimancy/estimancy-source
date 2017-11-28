@@ -113,6 +113,8 @@ namespace :ge_models do
                                            string_data_high: size_input_ev.string_data_high, string_data_probable: size_input_ev.string_data_probable,
                                            estimation_value_id: size_input_ev.estimation_value_id)
             end
+          else
+            # type code here
         end
 
 
@@ -142,6 +144,8 @@ namespace :ge_models do
                                            string_data_high: size_output_ev.string_data_high, string_data_probable: size_output_ev.string_data_probable,
                                            estimation_value_id: size_output_ev.estimation_value_id)
             end
+          else
+            # type code here
         end
 
 

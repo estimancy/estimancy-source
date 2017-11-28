@@ -157,6 +157,8 @@ module ProjectsHelper
         pe_attribute_alias = "retained_#{pe_attribute_alias}_probable"
       when "theoretical_effort", "theoretical_cost"
         pe_attribute_alias = "#{pe_attribute_alias}_probable"
+      else
+        # type code here
     end
 
     min_effort_value = nil
@@ -333,6 +335,8 @@ module ProjectsHelper
             value.round(precision)
           when "remaining_defects"
             value.round(precision)
+          else
+            # type code here
         end
       end
     else

@@ -63,6 +63,7 @@ class Kb::KbInputsController < ApplicationController
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
             rescue
+              # ignored
             end
           end
         end

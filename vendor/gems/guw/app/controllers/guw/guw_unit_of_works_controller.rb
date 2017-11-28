@@ -1833,7 +1833,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-    elsif params[:from] = "Redmine"
+    elsif params[:from] == "Redmine"
 
       (1..8).each do |i|
 
@@ -2333,6 +2333,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                 end
               rescue
+                # ignored
               end
 
               if guw_uow.changed?
@@ -2714,6 +2715,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                   end
                 rescue
+                  # ignored
                 end
 
                 if guw_uow.changed?

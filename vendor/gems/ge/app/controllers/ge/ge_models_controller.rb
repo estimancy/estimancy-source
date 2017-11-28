@@ -467,6 +467,7 @@ class Ge::GeModelsController < ApplicationController
                       @ge_model["#{attr_name}"] = val unless attr_name.nil?
                     end
                   rescue
+                    # ignored
                   end
                 end
               end
@@ -796,8 +797,12 @@ class Ge::GeModelsController < ApplicationController
                   when "sort2"
                     @calculated["#{level}"]["#{output_ev.id}"] = total_remaining_defects
                     out_tmp_probable["#{output_ev.id}"] << total_remaining_defects
+                  else
+                    # type code here
                 end
 
+              else
+                # type code here
             end
           end
         end
@@ -1135,6 +1140,8 @@ class Ge::GeModelsController < ApplicationController
 
             #rescue
             #end
+          else
+            # type code here
         end
       end
     end

@@ -165,22 +165,22 @@ module ViewsWidgetsHelper
   end
 
 
-  def get_ev_value_SAVE(ev_id, current_component_id)
-    unless ev_id.to_i == 0
-      ev = EstimationValue.find(ev_id.to_i)
-      val = ev.string_data_probable[current_component_id]
-      unless ev.nil?
-        if ev.is_a?(Hash)
-          compute_value(val, ev, current_component_id)
-          val.to_s
-        else
-          val.to_s
-        end
-      else
-        nil
-      end
-    end
-  end
+  # def get_ev_value_SAVE(ev_id, current_component_id)
+  #   unless ev_id.to_i == 0
+  #     ev = EstimationValue.find(ev_id.to_i)
+  #     val = ev.string_data_probable[current_component_id]
+  #     unless ev.nil?
+  #       if ev.is_a?(Hash)
+  #         compute_value(val, ev, current_component_id)
+  #         val.to_s
+  #       else
+  #         val.to_s
+  #       end
+  #     else
+  #       nil
+  #     end
+  #   end
+  # end
 
   private def correct_syntax? code
     stderr = $stderr
@@ -308,65 +308,65 @@ module ViewsWidgetsHelper
 
 
   #Work In Progress avant correction KPI
-  private def compute_value_SAVE(value, est_val, mp_id)
-    module_project = ModuleProject.find(mp_id)
-    est_val_pe_attribute = est_val.pe_attribute
-    precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
-
-    if est_val_pe_attribute.alias == "retained_size" || est_val_pe_attribute.alias == "theorical_size"
-      if module_project.pemodule.alias == "ge"
-        ge_model = module_project.ge_model
-        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
-        size_unit = ge_model.output_size_unit
-        if est_val.in_out == "input"
-          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
-          size_unit = ge_model.input_size_unit
-        end
-
-        "#{convert_with_standard_unit_coefficient(est_val, value.to_f, effort_standard_unit_coefficient, precision)}"
-      else
-        "#{convert_with_precision(value.to_f, precision, true)}"
-      end
-
-    elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
-      if module_project.pemodule.alias == "ge"
-        ge_model = module_project.ge_model
-        effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
-        effort_unit = ge_model.output_effort_unit
-
-        if est_val.in_out == "input"
-          effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
-          effort_unit = ge_model.input_effort_unit
-        end
-
-        "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
-      else
-        "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
-      end
-
-    elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
-      "#{convert_with_precision(value, precision, true)}"
-    elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
-      unless value.class == Hash
-        "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
-      end
-    elsif est_val_pe_attribute.alias == "remaining_defects" || est_val_pe_attribute.alias == "introduced_defects"
-      unless value.class == Hash
-        "#{convert_with_precision(value, 2, true)}"
-      end
-    else
-      case est_val_pe_attribute
-        when 'date'
-          display_date(value)
-        when 'float'
-          "#{ convert_with_precision(convert(value, @project.organization), precision, true) }"
-        when 'integer'
-          "#{convert(value, @project.organization).round(precision)}"
-        else
-          value
-      end
-    end
-  end
+  # private def compute_value_SAVE(value, est_val, mp_id)
+  #   module_project = ModuleProject.find(mp_id)
+  #   est_val_pe_attribute = est_val.pe_attribute
+  #   precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
+  #
+  #   if est_val_pe_attribute.alias == "retained_size" || est_val_pe_attribute.alias == "theorical_size"
+  #     if module_project.pemodule.alias == "ge"
+  #       ge_model = module_project.ge_model
+  #       effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+  #       size_unit = ge_model.output_size_unit
+  #       if est_val.in_out == "input"
+  #         effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+  #         size_unit = ge_model.input_size_unit
+  #       end
+  #
+  #       "#{convert_with_standard_unit_coefficient(est_val, value.to_f, effort_standard_unit_coefficient, precision)}"
+  #     else
+  #       "#{convert_with_precision(value.to_f, precision, true)}"
+  #     end
+  #
+  #   elsif est_val_pe_attribute.alias.in?("effort", "theoretical_effort")
+  #     if module_project.pemodule.alias == "ge"
+  #       ge_model = module_project.ge_model
+  #       effort_standard_unit_coefficient = ge_model.output_effort_standard_unit_coefficient
+  #       effort_unit = ge_model.output_effort_unit
+  #
+  #       if est_val.in_out == "input"
+  #         effort_standard_unit_coefficient = ge_model.input_effort_standard_unit_coefficient
+  #         effort_unit = ge_model.input_effort_unit
+  #       end
+  #
+  #       "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
+  #     else
+  #       "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
+  #     end
+  #
+  #   elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
+  #     "#{convert_with_precision(value, precision, true)}"
+  #   elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
+  #     unless value.class == Hash
+  #       "#{convert_with_precision(value, 2, true)} #{get_attribute_unit(est_val_pe_attribute)}"
+  #     end
+  #   elsif est_val_pe_attribute.alias == "remaining_defects" || est_val_pe_attribute.alias == "introduced_defects"
+  #     unless value.class == Hash
+  #       "#{convert_with_precision(value, 2, true)}"
+  #     end
+  #   else
+  #     case est_val_pe_attribute
+  #       when 'date'
+  #         display_date(value)
+  #       when 'float'
+  #         "#{ convert_with_precision(convert(value, @project.organization), precision, true) }"
+  #       when 'integer'
+  #         "#{convert(value, @project.organization).round(precision)}"
+  #       else
+  #         value
+  #     end
+  #   end
+  # end
 
   def get_kpi_widget_data(view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)
@@ -1296,6 +1296,8 @@ module ViewsWidgetsHelper
 
       #when "stacked_bar_chart_cost_per_phases_profiles"
 
+      else
+        # type code here
     end
     ###result
   end

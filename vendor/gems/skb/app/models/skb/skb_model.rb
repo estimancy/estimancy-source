@@ -94,6 +94,8 @@ module Skb
         when "retained_size"
           unit_coefficient = 1
           unit = skb_model.send("size_unit")
+        else
+          # type code here
       end
 
       begin

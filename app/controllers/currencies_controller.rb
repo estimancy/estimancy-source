@@ -74,7 +74,6 @@ class CurrenciesController < ApplicationController
     set_breadcrumbs I18n.t(:currencies) => profiles_path, I18n.t('edit_currency') => ""
 
     @currency = nil
-    current_currency = Currency.find(params[:id])
 
     if @currency.update_attributes(params[:currency])
       redirect_to redirect(currencies_url), notice: "#{I18n.t (:notice_currency_successful_updated)}"
