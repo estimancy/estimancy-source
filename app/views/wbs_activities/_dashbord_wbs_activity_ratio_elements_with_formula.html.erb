@@ -498,4 +498,17 @@
         }
     });
    //$('input.input-small').number(true, 2, ',', ' ');
+
+   // Ajouter des parenthèses au valeurs théorique calculé dont la phase est décochée
+    $('[id^="theoretical_effort_most_likely_visible_"], [id^="theoretical_cost_most_likely_visible_"]').each(function() {
+        var element_id = $(this).attr('id');
+        var mp_ratio_elt_id = element_id.replace(new RegExp("theoretical_effort_most_likely_visible_"), "").replace(new RegExp("theoretical_cost_most_likely_visible_"), "");
+
+        var disabled_value = $(this).val();
+        if($("#selected_phase_"+mp_ratio_elt_id).is(':checked') == false){
+            $(this).val("( " + disabled_value + " )");
+            $(this).closest('td').append("<i class='fa fa-info-circle' title='<%= I18n.t(:value_not_taken_in_account) %>' style='margin-right: -1em; color: #bbb;'></i>");
+        }
+    })
+
 </script>

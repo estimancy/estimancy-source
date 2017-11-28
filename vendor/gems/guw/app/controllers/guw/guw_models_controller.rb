@@ -1759,10 +1759,9 @@ class Guw::GuwModelsController < ApplicationController
                                                   guw_attribute_id: guw_attribute.id,
                                                   guw_type_id: guw_type.nil? ? nil : guw_type.id).first
 
-        gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
-                                          guw_attribute_id: guowa.guw_attribute_id).first
-
         unless guowa.nil?
+          gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                            guw_attribute_id: guowa.guw_attribute_id).first
           worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
         else
           p "GUOWA is nil"

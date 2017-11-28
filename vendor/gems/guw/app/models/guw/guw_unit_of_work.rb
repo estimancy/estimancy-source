@@ -22,6 +22,7 @@
 module Guw
   class GuwUnitOfWork < ActiveRecord::Base
 
+    belongs_to :organization
     belongs_to :guw_type
     belongs_to :guw_model
     belongs_to :guw_complexity

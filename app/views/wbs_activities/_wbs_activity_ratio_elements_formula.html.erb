@@ -18,7 +18,9 @@
   <%# @wbs_activity_ratio_elements.each_with_index do |wbs_activity_ratio_element, i| %>
   <% wbs_activity_elements.each_with_index do |activity_element, i| %>
       <% wbs_activity_ratio_element = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
-      <tr>
+
+      <% unless wbs_activity_ratio_element.nil? %>
+        <tr>
         <td>
           <% elt_position = wbs_activity_ratio_element.wbs_activity_element.nil? ? nil : wbs_activity_ratio_element.wbs_activity_element.position %>
           <%= elt_position.nil? ? nil : ("%g" % (elt_position)) %>
@@ -42,6 +44,7 @@
         <%= hidden_field_tag 'wbs_activity_ratio_id', wbs_activity_ratio_element.wbs_activity_ratio_id %>
         <%= hidden_field_tag 'wbs_activity_id', wbs_activity_ratio_element.wbs_activity_ratio.wbs_activity_id %>
       </tr>
+      <% end %>
   <% end %>
 </table>
 

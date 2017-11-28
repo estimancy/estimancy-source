@@ -3,7 +3,7 @@ class CreateModuleProjectGuwUnitOfWorksView < ActiveRecord::Migration
   def up
 
     execute <<-SQL
-      CREATE VIEW module_project_guw_unit_of_works AS
+      CREATE OR REPLACE VIEW module_project_guw_unit_of_works AS
 
       SELECT o.id AS uow_organization_id, o.name AS organization_name,
              p.id AS uow_project_id, p.title AS project_name,

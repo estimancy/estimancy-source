@@ -858,7 +858,7 @@ frsncf:
   project_successful_updated: "Project a été mis à jour avec succès.."
   notice_project_successful_duplicated: "Project a été dupliqué avec succès"
   error_project_failed_duplicate: "La duplication a échouée: Une erreur est survenue lors de la duplication du projet"
-  project_already_exist: "le devis \"%{value}\" existe déja. Veuillez choisir un autre nom d'estimation"
+  project_already_exist: "Le devis \"%{value}\" existe déja. Veuillez choisir un autre nom d'estimation"
   confirm_new_branch_project_checkout: "Vous êtes sur le point de créer une nouvelle branche. malgré les difficultés liées à la fusion, voulez-vous continuer cette opération?"
   notice_project_successful_checkout: "La nouvelle version du projet a été créée avec succès"
   notice_wbs_activity_successful_added: "Wbs-Activity a été ajouté avec succès au projet."
@@ -2072,4 +2072,5 @@ frsncf:
   number_of_uw_lines: "Nombre de lignes de Composants Fonctionnels"
   number_of_uw_modifies_lines: "Nombre de lignes de Composants Fonctionnels Modif."
   number_of_uw_selected: "Nombre de lignes de Composants Fonctionnels Sélect."
+  value_not_taken_in_account: "Valeur non prise en compte"
 
