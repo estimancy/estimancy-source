@@ -190,7 +190,6 @@ class ModuleProjectsController < ApplicationController
         else
           # ignored
           # type code here
-        else
       end
 
       #update associations
@@ -458,7 +457,6 @@ class ModuleProjectsController < ApplicationController
                 widget_est_val = view_widget.estimation_value
                 in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
                 estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
-                estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
                 widget_copy = ViewsWidget.new(view_id: new_view_saved_as.id, module_project_id: @module_project.id, estimation_value_id: view_widget.estimation_value_id,
                                               name: view_widget.name, show_name: view_widget.show_name,
                                               equation: view_widget.equation,
