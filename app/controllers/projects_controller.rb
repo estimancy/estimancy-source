@@ -2151,13 +2151,6 @@ public
       #if creation from template
       if !params[:create_project_from_template].nil?
 
-        unless params['project'].nil?
-          if @organization.projects.map(&:title).include?(params['project']['title'])
-            flash[:error] = I18n.t(:project_already_exist, value: params['project']['title'])
-            redirect_to projects_from_path(organization_id: @organization.id) and return
-          end
-        end
-
         new_prj.original_model_id = old_prj.id
 
         #Update some params with the form input data
