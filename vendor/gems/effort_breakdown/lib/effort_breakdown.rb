@@ -107,24 +107,29 @@ module EffortBreakdown
         tjm_per_phase = Hash.new
         
         @wbs_activity_elements.each do |element|
-            tjm_per_phase[element.id] = 0.0
-            element_tjm = 0.0
-            tjm_is_nil = true
-            
-            wbs_activity_ratio_element = @wbs_activity_ratio_elements.where(wbs_activity_element_id: element.id).first
-            unless wbs_activity_ratio_element.nil?
-                wbs_activity_ratio_profiles = wbs_activity_ratio_element.wbs_activity_ratio_profiles
-                unless wbs_activity_ratio_profiles.nil?
-                    wbs_activity_ratio_profiles.each do |warp|
-                        unless warp.ratio_value.nil?
-                          tjm_is_nil = false
-                          element_tjm += warp.organization_profile.cost_per_hour.to_f * warp.ratio_value.to_f / 100
-                        end
-                    end
-                    tjm_value = (tjm_is_nil == true) ? nil : element_tjm
-                    tjm_per_phase[element.id] = tjm_value
-                    @efforts_tjm_costs_per_phase_profiles[element.id][:tjm] = tjm_value
-                end
+            if element.is_root?
+              tjm_per_phase[element.id] = nil
+              @efforts_tjm_costs_per_phase_profiles[element.id][:tjm] = nil
+            else
+              tjm_per_phase[element.id] = 0.0
+              element_tjm = 0.0
+              tjm_is_nil = true
+
+              wbs_activity_ratio_element = @wbs_activity_ratio_elements.where(wbs_activity_element_id: element.id).first
+              unless wbs_activity_ratio_element.nil?
+                  wbs_activity_ratio_profiles = wbs_activity_ratio_element.wbs_activity_ratio_profiles
+                  unless wbs_activity_ratio_profiles.nil?
+                      wbs_activity_ratio_profiles.each do |warp|
+                          unless warp.ratio_value.nil?
+                            tjm_is_nil = false
+                            element_tjm += warp.organization_profile.cost_per_hour.to_f * warp.ratio_value.to_f / 100
+                          end
+                      end
+                      tjm_value = (tjm_is_nil == true) ? nil : element_tjm
+                      tjm_per_phase[element.id] = tjm_value
+                      @efforts_tjm_costs_per_phase_profiles[element.id][:tjm] = tjm_value
+                  end
+              end
             end
         end
         tjm_per_phase
@@ -462,14 +467,16 @@ module EffortBreakdown
         effort = 0.0
         cost = 0.0
         element.children.each do |node|
+          #unless node.nil? || node.wbs_activity.nil?
           # Test if node is selected or not ( it will be taken in account only if the node is selected)
-          #mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
-          if (mp_ratio_element && mp_ratio_element.selected==true)
+          node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
+          if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
             child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
 
             effort += child_effort unless child_effort.nil?
             cost += child_cost unless child_cost.nil?
           end
+          #end
         end
       end
 

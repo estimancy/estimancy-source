@@ -154,6 +154,8 @@
             <% unless mp_ratio_element.nil? %>
                 <%= hidden_field_tag 'wbs_activity_ratio_id', mp_ratio_element.wbs_activity_ratio_id %>
                 <%= hidden_field_tag 'wbs_activity_id', mp_ratio_element.wbs_activity_ratio.wbs_activity_id %>
+                <%= hidden_field_tag 'root_mp_ratio_element_id', root_mp_ratio_element_id %>
+
                 <% name_to_show = mp_ratio_element.name_to_show %>
 
                 <% mp_ratio_element_ancestor_ids = [] %>
@@ -212,7 +214,7 @@
                   </td>
                   <% unless @wbs_activity_ratio.do_not_show_cost %>
                     <% element_tjm = mp_ratio_element.tjm %>
-                    <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+                    <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
                   <% end %>
 
                   <% phase_formula = "" %>
@@ -498,17 +500,5 @@
         }
     });
    //$('input.input-small').number(true, 2, ',', ' ');
-
-   // Ajouter des parenthèses au valeurs théorique calculé dont la phase est décochée
-    $('[id^="theoretical_effort_most_likely_visible_"], [id^="theoretical_cost_most_likely_visible_"]').each(function() {
-        var element_id = $(this).attr('id');
-        var mp_ratio_elt_id = element_id.replace(new RegExp("theoretical_effort_most_likely_visible_"), "").replace(new RegExp("theoretical_cost_most_likely_visible_"), "");
-
-        var disabled_value = $(this).val();
-        if($("#selected_phase_"+mp_ratio_elt_id).is(':checked') == false){
-            $(this).val("( " + disabled_value + " )");
-            $(this).closest('td').append("<i class='fa fa-info-circle' title='<%= I18n.t(:value_not_taken_in_account) %>' style='margin-right: -1em; color: #bbb;'></i>");
-        }
-    })
 
 </script>
