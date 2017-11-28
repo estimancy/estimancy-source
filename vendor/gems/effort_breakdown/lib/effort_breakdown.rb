@@ -170,8 +170,16 @@ module EffortBreakdown
     end
 
     def calculate_estimations
+
+      # Si on initialise le calcul, on recoche toutes les phases
+      if @initialize_calculation == true
+        @module_project_ratio_elements.update_all(selected: true)
+      end
+
+      # calcul des valeurs théoriques
       get_theoretical_effort
 
+      # Calcul des valeurs modifiées / retenues
       if @initialize_calculation != true
         get_effort
       end
@@ -470,9 +478,11 @@ module EffortBreakdown
           #unless node.nil? || node.wbs_activity.nil?
           # Test if node is selected or not ( it will be taken in account only if the node is selected)
           node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
-          if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
-            child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
+          #if (mp_ratio_element && mp_ratio_element.selected == true)
+          child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
 
+          # on ajoute la valeur du fils que si celui-ci est sélectionné
+          if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
             effort += child_effort unless child_effort.nil?
             cost += child_cost unless child_cost.nil?
           end
@@ -896,8 +906,8 @@ module EffortBreakdown
         #   end
         # end
 
-         # calculate theoretical and retained effort value
-         get_effort_and_cost_per_phase_as_subtree(@wbs_activity_root, output_effort_with_dependencies, "theoretical")
+        # calculate theoretical and retained effort value
+        get_effort_and_cost_per_phase_as_subtree(@wbs_activity_root, output_effort_with_dependencies, "theoretical")
 
         @wbs_activity_root.subtree.each do |element|
           if output_effort[element.id].nil?
