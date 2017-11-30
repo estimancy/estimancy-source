@@ -12,94 +12,98 @@
     </ul>
 
     <div id="tabs-1">
-      <table>
-        <%= f.input :title, :label => I18n.t(:label_project_name), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-        <%= f.input :version_number, :label => I18n.t('label_project_version'), :input_html => { :class => 'input-large' } %>
-        <%= f.input :private, :label => I18n.t(:private_estimation) %>
-        <tr>
-          <% if action_name.in?(['new', 'create']) %>
-            <td>
-              <label class="checkbox"></label>
-              <% if can?(:manage_estimation_models, Project) && @is_model %>
-                <%= f.input :is_model, :label => I18n.t('label_project_is_model'), :as => :hidden, :input_html => {value: @is_model, :class => 'input-xlarge'} %>
-              <% else %>
-                <%= f.input :is_model, :label => I18n.t('label_project_is_model'), :as => :hidden, :input_html => {value: false, :class => 'input-xlarge'} %>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
-        <tr>
-          <td>
-            <% if @project.is_model == true %>
-              <% apps = @project.applications %>
-              <% if @current_organization.applications.empty? and apps.empty? %>
-                <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
-              <% else %>
-                <%= f.association :applications,
-                                  as: :select,
-                                  collection: @current_organization.applications,
-                                  label: I18n.t(:label_product_name),
-                                  input_html: { :class => 'input-large' },
-                                  include_blank: true %>
-              <% end %>
-            <% else %>
 
-              <% unless @project.original_model_id.nil? %>
+        <%= hidden_field_tag :project_id, @project.id %>
+
+        <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+        <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
+        <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !can?(:alter_private_estimation_setup, @project) %>
+
+        <table>
+          <tr>
+            <td>
+              <% if @project.is_model == true %>
+                <% apps = @project.applications %>
+                <% if @current_organization.applications.empty? and apps.empty? %>
+                  <%= f.input :application_name,
+                              :label => I18n.t(:label_product_name),
+                              :disabled => !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)),
+                              :input_html => { :class => 'input-large' } %>
+                <% else %>
+                  <%= f.association :applications,
+                                    as: :select,
+                                    collection: @current_organization.applications,
+                                    :label => I18n.t(:label_product_name),
+                                    :input_html => { :class => 'input-large' },
+                                    include_blank: true,
+                                    :disabled => !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) %>
+                <% end %>
+              <% else %>
                 <% begin %>
                   <% apps = Project.find(@project.original_model_id).applications %>
                 <% rescue %>
                   <% apps = [] %>
                 <% end %>
-              <% else %>
-                <% apps = [] %>
+
+                <% if @current_organization.applications.empty? and apps.empty? %>
+                  <%= f.input :application_name,
+                              input_html: { :class => 'input-large' },
+                              label: I18n.t(:label_product_name),
+                              readonly: !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) %>
+                <% else %>
+                  <% if (!(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || @project.private) %>
+                    <label>
+                      <%= I18n.t(:application) %>
+                    </label>
+                    <strong>
+                      <%= @project.application %>
+                    </strong>
+                    <br/>
+                  <% else %>
+                    <%= f.input :application_id,
+                                as: :select,
+                                collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
+                                label: I18n.t(:label_product_name),
+                                input_html: {:class => 'input-large'},
+                                selected: @project.application_id %>
+                  <% end %>
+                <% end %>
               <% end %>
+            </td>
+          </tr>
 
-              <% if @current_organization.applications.empty? and apps.empty? %>
-                <%= f.input :application_name, :input_html => {:class => 'input-large'}, :label => I18n.t(:label_product_name) %>
-              <% else %>
-                <%= f.input :application_id, as: :select,
-                            collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
-                            label: I18n.t(:label_product_name),
-                            selected: @project.application_id,
-                            input_html: {:class => 'input-large'} %>
-              <% end %>
-            <% end %>
-          </td>
-
-        </tr>
-
-        <tr>
-          <td>
-            <label>
-              <%= I18n.t(:original_model) %>
-            </label>
-          </td>
-        </tr>
-        <% if action_name.in?(%w(edit update)) && !@project.original_model_id.nil? %>
           <tr>
             <td>
-              <% if can_show_estimation?(@project.original_model) %>
-                <% unless @project.original_model.nil? %>
+              <label>
+                <%= I18n.t(:original_model) %>
+              </label>
+            </td>
+          </tr>
+          <% if !@project.original_model_id.nil? %>
+            <tr>
+              <td>
+                <% if can_show_estimation?(@project.original_model) %>
+                  <% unless @project.original_model.nil? %>
                   <span>
                     <%= link_to(@project.original_model, dashboard_path(@project.original_model)) %>  <br>
                   </span>
-                <% end %>
-              <% else %>
+                  <% end %>
+                <% else %>
                 <span>
                   <%= @project.original_model %>
                   <br>
                 </span>
-              <% end %>
-            </td>
-          </tr>
-        <% else %>
-          <tr>
-            <td>
-              -
-            </td>
-          </tr>
-        <% end %>
-      </table>
+                <% end %>
+              </td>
+            </tr>
+          <% else %>
+            <tr>
+              <td>
+                -
+              </td>
+            </tr>
+          <% end %>
+        </table>
 
       <br>
       <%= tinymce %>
@@ -144,28 +148,21 @@
         </tr>
 
         <tr>
+
           <td>
             <%= f.input :organization_id, :label => "#{I18n.t 'organizations'}", :as => :select, :collection => [[@organization.name, @organization.id]], selected: @organization.id, :input_html => {:class => 'input-large'}, disabled: true %>
             <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
           </td>
-          <% if @project.is_model == true %>
-            <td>
-              <%= f.input :estimation_status_id, label: I18n.t('state'),
-                          as: :select,
-                          collection: @organization.estimation_statuses.map{ |i| [i.name, i.id] },
-                          :input_html => { class: 'input-xlarge' },
-                          include_blank: false %>
-            </td>
-          <% else %>
-            <td>
-              <%= f.input :estimation_status_id, label: I18n.t('state'),
-                          as: :select,
-                          collection: @project.project_estimation_statuses(@organization),
-                          :input_html => {:class => 'input-xlarge'},
-                          include_blank: false,
-                          disabled: @project.private %>
-            </td>
-          <% end %>
+
+          <td>
+            <%= f.input :estimation_status_id,
+                        label: I18n.t(:estimation_status),
+                        as: :select,
+                        collection: @project.project_estimation_statuses,
+                        disabled: !( can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || @project.private,
+                        input_html: { :class => 'input-xlarge' },
+                        include_blank: false %>
+          </td>
 
           <% unless @project.new_record? %>
             <td>
@@ -175,13 +172,10 @@
         </tr>
       </table>
 
-      <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'} %>
-
-      <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'} %>
-
-      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'} %>
-
-      <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_areas, @project) ) %>
+      <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project) ) %>
+      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_platform_categories, @project) ) %>
+      <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_categories, @project) ) %>
 
       <div class="actions-tabs">
         <% if action_name.in?(['edit', 'update']) %>
@@ -324,8 +318,10 @@
                   </table>
 
                   <div class="actions-tabs">
-                    <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                      <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <% end %>
                     <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
                   </div>
                 </div>
@@ -409,8 +405,10 @@
                 </table>
 
                 <div class="actions-tabs">
-                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                  <% end %>
                   <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
                 </div>
               </div>
@@ -462,8 +460,10 @@
                   </table>
 
                   <div class="actions-tabs">
-                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <% end %>
                     <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
                   </div>
                 </div>

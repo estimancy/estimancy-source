@@ -727,26 +727,26 @@ class ProjectsController < ApplicationController
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
-        if can_show_estimation?(@project)
-          redirect_to(:action => 'show') and return
-        else
+        # if can_show_estimation?(@project)
+        #   redirect_to(:action => 'show') and return
+        # else
           #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
           redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
-        end
+        # end
       end
 
     else
 
       set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
-      if cannot?(:edit_project, @project)    # No write access to project
-        redirect_to(:action => 'show') and return
-      end
+      # if cannot?(:edit_project, @project)    # No write access to project
+      #   redirect_to(:action => 'show') and return
+      # end
 
       # We need to verify user's groups rights on estimation according to the current estimation status
       if !can_modify_estimation?(@project)
         if can_show_estimation?(@project)
-          redirect_to(:action => 'show')
+          # redirect_to(:action => 'show')
         else
           redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
@@ -809,7 +809,7 @@ class ProjectsController < ApplicationController
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
         if can_show_estimation?(@project)
-          redirect_to(:action => 'show') and return
+          redirect_to(:action => 'edit') and return
         else
           redirect_to(organization_setting_path(@organization), flash: { warning: I18n.t(:warning_no_modify_permission_on_project_status)}) and return
         end
@@ -822,7 +822,7 @@ class ProjectsController < ApplicationController
       if !can_modify_estimation?(@project) && !can_alter_estimation?(@project)
         flash[:warning] = I18n.t(:warning_no_modify_permission_on_project_status)
         if can_show_estimation?(@project)
-          redirect_to(:action => 'show') and return
+          redirect_to(:action => 'edit') and return
         else
           redirect_to(organization_estimations_path(@organization)) and return
         end
