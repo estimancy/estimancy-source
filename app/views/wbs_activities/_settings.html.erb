@@ -481,7 +481,10 @@
 <script>
   $(document).ready(function(){
 
+    var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
+
     $(".selected_phase").change(function(){
+
       var val = this.value;
 
       //alert("value = "+ val);
@@ -489,8 +492,14 @@
       if ($(this).is(':checked') ) {
           if ($("#retained_effort_most_likely_" + val).val() == "") {
 
-            $("#retained_effort_most_likely_visible_" + val).val($("#theoretical_effort_most_likely_visible_" + val).val());
-            $("#retained_cost_most_likely_visible_" + val).val($("#theoretical_cost_most_likely_visible_" + val).val());
+            var theoretical_effort_ml_visible = $("#theoretical_effort_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
+            var theoretical_cost_ml_visible = $("#theoretical_cost_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
+
+            //$("#retained_effort_most_likely_visible_" + val).val($("#theoretical_effort_most_likely_visible_" + val).val());
+            //$("#retained_cost_most_likely_visible_" + val).val($("#theoretical_cost_most_likely_visible_" + val).val());
+
+            $("#retained_effort_most_likely_visible_" + val).val(theoretical_effort_ml_visible);
+            $("#retained_cost_most_likely_visible_" + val).val(theoretical_cost_ml_visible);
 
             $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
             $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
@@ -503,6 +512,12 @@
           $("#retained_effort_most_likely_visible_" + val).val("");
           $("#retained_cost_most_likely_visible_" + val).val("");
       }
+
+      // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
+      $("#theoretical_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+      $("#theoretical_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+      $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+      $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
     });
 
 
@@ -530,6 +545,21 @@
           }
       });
 
+      // Ajouter des parenthèses au valeurs théorique calculé dont la phase est décochée
+      $('[id^="theoretical_effort_most_likely_visible_"], [id^="theoretical_cost_most_likely_visible_"]').each(function() {
+          var element_id = $(this).attr('id');
+          var mp_ratio_elt_id = element_id.replace(new RegExp("theoretical_effort_most_likely_visible_"), "").replace(new RegExp("theoretical_cost_most_likely_visible_"), "");
+
+          var disabled_value = $(this).val();
+          if((disabled_value != "") && ($("#selected_phase_"+mp_ratio_elt_id).is(':checked') == false)){
+              $(this).val("( " + disabled_value + " )");
+              $(this).closest('td').append("<i class='fa fa-info-circle' title='<%= I18n.t(:value_not_taken_in_account) %>' style='margin-right: -1em; color: #bbb;'></i>");
+          }
+      });
+
+
+      // Mettre à jour les valeurs des champs contenant les vraies valeurs de la phase modifiée
+      // Puis mettre à blanc la valeur affichee du Root/racine
       $('input.retained_effort_visible, input.retained_cost_visible').change(function() {
           var element_id = $(this).attr('id');
           var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
@@ -547,6 +577,10 @@
                   new_value: new_value
               }
           });
+
+          // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
+          $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+          $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
       });
 
       var clkBtn = "";
