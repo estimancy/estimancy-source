@@ -165,7 +165,6 @@
           </td>
         </tr>
         <tr>
-
           <td>
             <%= f.input :organization_id,
                         :label => "#{I18n.t 'organizations'}",
@@ -173,22 +172,24 @@
                         :collection => @organizations.map{|i| [i.name, i.id] },
                         :input_html => {:class => 'input-xlarge'},
                         :disabled => true %>
-
-            <td>
-              <%= f.input :estimation_status_id,
-                          label: I18n.t(:estimation_status),
-                          as: :select,
-                          collection: @project.project_estimation_statuses,
-                          disabled: !( can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || @project.private,
-                          input_html: { :class => 'input-xlarge' },
-                          include_blank: false %>
-            </td>
-            <% if can_alter_estimation?(@project) && can?(:alter_project_status_comment, @project) %>
-              <td>
-                <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => @project.id), :class => "icon-comment", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %>
-              </td>
-            <% end %>
           </td>
+
+          <td>
+            <%= f.input :estimation_status_id,
+                        label: I18n.t(:estimation_status),
+                        as: :select,
+                        collection: @project.project_estimation_statuses,
+                        disabled: !( can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || @project.private,
+                        input_html: { :class => 'input-xlarge' },
+                        include_blank: false %>
+          </td>
+
+          <% if can_alter_estimation?(@project) && can?(:alter_project_status_comment, @project) %>
+            <td>
+              <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => @project.id), :class => "icon-comment", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %>
+            </td>
+          <% end %>
+
         </tr>
       </table>
 

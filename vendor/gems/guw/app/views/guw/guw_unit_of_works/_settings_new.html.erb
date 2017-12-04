@@ -20,10 +20,12 @@
 
       <% end %>
 
-      <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
-        <button type="button" class="btn" data-toggle="modal" data-target="#extract">
-          <%= I18n.t(:import) %>
-        </button>
+      <% if can? :execute_estimation_plan, @project %>
+        <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
+          <button type="button" class="btn" data-toggle="modal" data-target="#extract">
+            <%= I18n.t(:import) %>
+          </button>
+        <% end %>
       <% end %>
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
@@ -207,7 +209,9 @@
                 <% end %>
               <% end %>
 
-              <th class=""><%= I18n.t :actions %></th>
+              <% if can? :execute_estimation_plan, @project %>
+                <th class=""><%= I18n.t :actions %></th>
+              <% end %>
             </tr>
 
            <%# uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
@@ -649,8 +653,8 @@
                   <% end %>
                 <% end %>
 
-                <td class="span3">
-                  <% if can? :execute_estimation_plan, @project %>
+                <% if can? :execute_estimation_plan, @project %>
+                  <td class="span3">
                     <% if @guw_model.allow_ml == true %>
                       <%= link_to "", guw.ml_trt_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
                     <% end %>
@@ -662,8 +666,9 @@
                     <%= link_to "", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg, position: guow.display_order), class: "fa fa-plus", title: I18n.t(:add) %>
                     <%= link_to "", guw.edit_guw_model_guw_unit_of_work_path(@guw_model, guow, g: uowg), class: "fa fa-pencil", title: I18n.t(:edit) %>
                     <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete) %>
-                  <% end %>
-                </td>
+                  </td>
+                <% end %>
+
               </tr>
            <% end %>
           </table>
