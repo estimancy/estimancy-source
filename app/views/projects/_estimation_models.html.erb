@@ -29,14 +29,18 @@
       <% if can_see_estimation?(project) %>
           <tr>
             <td>
-              <% if can_show_estimation?(project) %>
-                <%= link_to(project.title, change_new_estimation_data_path(template_id: project.id,
-                                                                           organization_id: project.organization_id,
-                                                                           action_name: "create_project_from_template"),
-                            title: I18n.t('button_duplicate_model'),
-                            remote: true) %>
+              <% if can?(:create_project_from_template, Project) %>
+                  <%= link_to(project.title, change_new_estimation_data_path(template_id: project.id,
+                                                                             organization_id: project.organization_id,
+                                                                             action_name: "create_project_from_template"),
+                                                                             title: I18n.t('button_duplicate_model'),
+                                                                             remote: true) %>
               <% else %>
-                <%= project.title %>
+                  <% if can_show_estimation?(project) %>
+                      <%= link_to(project.title, edit_project_path(project, :anchor => 'tabs-1'), :title => I18n.t('edit')) %>
+                  <% else %>
+                      <%= project.title %>
+                  <% end %>
               <% end %>
             </td>
             <td class="center"><%= project.version_number %></td>

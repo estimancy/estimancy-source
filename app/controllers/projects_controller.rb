@@ -727,12 +727,12 @@ class ProjectsController < ApplicationController
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
-        # if can_show_estimation?(@project)
+        unless can_show_estimation?(@project)
         #   redirect_to(:action => 'show') and return
         # else
           #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
           redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
-        # end
+        end
       end
 
     else
@@ -745,9 +745,7 @@ class ProjectsController < ApplicationController
 
       # We need to verify user's groups rights on estimation according to the current estimation status
       if !can_modify_estimation?(@project)
-        if can_show_estimation?(@project)
-          # redirect_to(:action => 'show')
-        else
+        unless can_show_estimation?(@project)
           redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
       end
@@ -808,10 +806,11 @@ class ProjectsController < ApplicationController
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
+        flash[:warning] = I18n.t(:warning_no_modify_permission_on_project_status)
         if can_show_estimation?(@project)
           redirect_to(:action => 'edit') and return
         else
-          redirect_to(organization_setting_path(@organization), flash: { warning: I18n.t(:warning_no_modify_permission_on_project_status)}) and return
+          redirect_to(organization_setting_path(@organization)) and return
         end
       end
 
@@ -846,7 +845,6 @@ class ProjectsController < ApplicationController
             @project.application_name = params[:project][:application_name]
           end
         rescue
-
           # ignored
         end
       end
@@ -1333,7 +1331,11 @@ class ProjectsController < ApplicationController
     @organization = @project.organization
     @pemodule = Pemodule.find(params[:module_selected].split(',').last.to_i)
 
-    authorize! :alter_estimation_plan, @project
+    if @project.is_model
+      authorize! :manage_estimation_models, Project
+    else
+      authorize! :alter_estimation_plan, @project
+    end
 
     @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
 
@@ -2576,11 +2578,15 @@ public
   end
 
   def projects_from
-    set_page_title I18n.t(:text_create_from_model_2)
-
-    authorize! :create_project_from_template, Project
-
     @organization = Organization.find(params[:organization_id])
+    set_page_title I18n.t(:text_create_from_model_2)
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
+
+    #authorize! :create_project_from_template, Project
+    if cannot?(:create_project_from_template, Project)
+      redirect_to :back, flash: {warning: I18n.t(:error_access_denied)}
+    end
+
     #@estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
     @estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @organization.id, :is_model => true)
 
@@ -2604,8 +2610,6 @@ public
     end
 
     ###@current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
-
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
   end
 
   #Set the checkout version
@@ -2677,105 +2681,6 @@ public
     build_footer
   end
 
-  # def sort_SAVE
-  #   @organization = @current_organization
-  #   # @projects = @organization.organization_estimations
-  #   @projects = @organization.projects
-  #
-  #   k = params[:f]
-  #   s = params[:s]
-  #
-  #   @sort_column = k
-  #   @sort_order = s
-  #
-  #   ### Les tris par défaut ( date descendant et title ascendant)
-  #   # if k != "start_date"
-  #   #   @projects = @projects.unscoped.order("start_date desc")
-  #   # end
-  #
-  #   case k
-  #     when "title"
-  #       @projects = @projects.unscoped.order("title #{s}")
-  #     when "description"
-  #       @projects = @projects.unscoped.order("description #{s}")
-  #     when "project_area"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("project_areas.name #{s}")
-  #     when "project_category"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("project_categories.name #{s}")
-  #     when "platform_category"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("platform_categories.name #{s}")
-  #     when "acquisition_category"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("acquisition_categories.name #{s}")
-  #     when "status_name"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("estimation_statuses.name #{s}")
-  #     when "status_name"
-  #       @projects = Project.unscoped
-  #                       .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-  #                       .where(organization_id: @organization.id)
-  #                       .order("estimation_statuses.name #{s}")
-  #     when "start_date"
-  #       @projects = @projects.unscoped.order("start_date #{s}")
-  #     when "updated_at"
-  #       @projects = @projects.unscoped.order("updated_at #{s}")
-  #     when "created_at"
-  #       @projects = @projects.unscoped.order("created_at #{s}")
-  #     else
-  #   end
-  #
-  #
-  #   @projects = @projects.where(:is_model => [nil, false]).all
-  #
-  #   res = []
-  #   @projects.each do |p|
-  #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-  #       res << p
-  #     end
-  #   end
-  #
-  #   ###@projects = res[0..50].nil? ? [] : res[0..50]
-  #   @object_per_page = (current_user.object_per_page || 10)
-  #   if params['previous_next_action'] == "true"
-  #     @min = params['min'].to_i
-  #     @max = params['max'].to_i
-  #   else
-  #     @min = 0
-  #     @max = @object_per_page
-  #   end
-  #   @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
-  #
-  #   last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
-  #   @last_page_min = (last_page.to_i-1) * @object_per_page
-  #   @last_page_max = @last_page_min + @object_per_page
-  #
-  #
-  #   if params[:is_last_page] == "true" || (@min == @last_page_min)
-  #     @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
-  #
-  #     @min = (last_page.to_i-1) * @object_per_page
-  #     @max = @min + @object_per_page
-  #     @is_last_page = "true"
-  #   else
-  #     @is_last_page = "false"
-  #   end
-  #
-  #   build_footer
-  # end
-
   def search
     @organization = @current_organization
     final_results = []
@@ -2816,46 +2721,6 @@ public
 
         @search_column = k
         @search_value = val
-
-        # case k
-        #   when "title"
-        #     results = @projects.where("title liKE ?", "%#{val}%").all.map(&:id)
-        #   when "creator"
-        #     creator = User.where("last_name liKE ? OR first_name LIKE ?", "%#{params[k]}%", "%#{params[k]}%" ).first
-        #     creator_id = creator.nil? ? nil : creator.id
-        #     results = @projects.where("creator_id liKE ?", "%#{creator_id}%").all.map(&:id)
-        #   when "version_number"
-        #     results = @projects.where("version_number liKE ?", "%#{params[k]}%").all.map(&:id)
-        #   when "application"
-        #     ids = Application.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(application_id: ids).all.map(&:id)
-        #   when "description"
-        #     results = @projects.where("description liKE ?", "%#{params[k]}%").all.map(&:id)
-        #   when "status_name"
-        #     ids = EstimationStatus.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(estimation_status_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "start_date"
-        #     results = @projects.where("start_date liKE ?", "%#{params[k]}%").all.map(&:id)
-        #   when "project_area"
-        #     ids = ProjectArea.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(project_area_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "project_category"
-        #     ids = ProjectCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(project_category_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "platform_category"
-        #     ids = PlatformCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(platform_category_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "acquisition_category"
-        #     ids = AcquisitionCategory.where("name liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(acquisition_category_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "original_model"
-        #     ids = Project.where("title liKE ?", "%#{params[k]}%").all.map(&:id)
-        #     results = @projects.where(original_model_id: ids, organization_id: @organization.id).all.map(&:id)
-        #   when "private"
-        #     results = @projects.where("private liKE ?", "%#{val}%").all.map(&:id)
-        #   else
-        #     options[k] = v
-        # end
 
         results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
 

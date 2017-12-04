@@ -1711,7 +1711,7 @@ es:
   notice_no_estimation_created_from_model: "There is no estimation created from the \"%{model_name}\" model"
   text_confirm_estimation_model_deletion: "Are you SURE you want to delete this Estimation Model and all related data ?"
   label_model_user_security_resume: "User securities resume of estimation created from this model"
-  label_model_group_security_resume: "Group securities resume of estimation created from this model"
+  label_model_group_security_resume: "Group securities resume of current model"
   estimation_creator_from_model: "Creator of estimation from this model"
   text_create_from_model: "Create project from the \"%{model_name}\" template"
   model_securities: "Permissions on the model"
