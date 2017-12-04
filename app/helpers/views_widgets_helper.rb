@@ -1424,29 +1424,30 @@ module ViewsWidgetsHelper
         if wbs_activity_elt.is_childless? #!= wbs_activity_root
           mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
 
-          activity_value = 0
-          level_estimation_values = probable_est_value
-          if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
+          if mp_ratio_element
             activity_value = 0
-          else
-            wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
-            if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
-
-              if view_widget.use_organization_effort_unit == true
-                # use the organization effort unit
-                activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
-              else
-                # use module instance effort unit
-                activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
-              end
+            level_estimation_values = probable_est_value
+            if level_estimation_values.nil? || level_estimation_values[pbs_project_element.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id].nil? || level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value].nil?
+              activity_value = 0
             else
-              activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
+              wbs_value = level_estimation_values[pbs_project_element.id][wbs_activity_elt.id][:value]
+              if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)###("effort", "theoretical_effort")
+
+                if view_widget.use_organization_effort_unit == true
+                  # use the organization effort unit
+                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
+                else
+                  # use module instance effort unit
+                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
+                end
+              else
+                activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
+              end
             end
+
+            #chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
+            chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '.').to_f]
           end
-
-          #chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
-          chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '.').to_f]
-
         end
       end
     end
