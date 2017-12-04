@@ -103,6 +103,7 @@ class Ability
       #When user can create a project template, he also can edit the model
       alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
       alias_action :delete_project, :is_model => true, :to => :manage_estimation_models
+      alias_action :create_project_from_template, :is_model => true, :to => :manage_estimation_models
 
       @array_users = Array.new
       @array_status_groups = Array.new

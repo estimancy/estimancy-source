@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171027100650) do
+ActiveRecord::Schema.define(:version => 20171114132243) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -585,15 +585,15 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
   create_table "guw_guw_complexities", :force => true do |t|
     t.string   "name"
     t.string   "alias"
-    t.float    "weight"
+    t.decimal  "weight",        :precision => 20, :scale => 7
     t.integer  "bottom_range"
     t.integer  "top_range"
     t.integer  "guw_type_id"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.datetime "created_at",                                                  :null => false
+    t.datetime "updated_at",                                                  :null => false
     t.integer  "copy_id"
     t.boolean  "enable_value"
-    t.integer  "display_order", :default => 0
+    t.integer  "display_order",                                :default => 0
     t.boolean  "default_value"
     t.float    "weight_b"
   end
@@ -824,6 +824,8 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
   add_index "guw_guw_unit_of_work_attributes", ["guw_type_id", "guw_attribute_id", "guw_unit_of_work_id"], :name => "guw_unit_of_work_attributes"
 
   create_table "guw_guw_unit_of_work_groups", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "project_id"
     t.string   "name"
     t.text     "comments"
     t.integer  "module_project_id"
@@ -837,6 +839,8 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
   add_index "guw_guw_unit_of_work_groups", ["module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
 
   create_table "guw_guw_unit_of_works", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "project_id"
     t.string   "name"
     t.text     "comments"
     t.float    "result_low"
@@ -972,6 +976,87 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",                           :default => 0, :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                                :default => 0, :null => false
+    t.string   "project_name"
+    t.integer  "uow_group_module_project_id",                   :default => 0, :null => false
+    t.integer  "uow_group_pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id",                     :default => 0, :null => false
+    t.integer  "number_of_uow_lines",              :limit => 8
+    t.integer  "number_of_uow_selected_lines",     :limit => 8
+    t.integer  "id",                                            :default => 0, :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.integer  "module_project_id"
+    t.datetime "created_at",                                                   :null => false
+    t.datetime "updated_at",                                                   :null => false
+    t.integer  "pbs_project_element_id"
+    t.string   "notes"
+    t.integer  "organization_technology_id"
+  end
+
+  create_table "module_project_guw_unit_of_works", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",           :default => 0,     :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
+    t.integer  "uow_module_project_id",         :default => 0,     :null => false
+    t.integer  "uow_pbs_project_element_id"
+    t.integer  "uow_guw_model_id",              :default => 0,     :null => false
+    t.string   "uow_guw_model_name"
+    t.integer  "guw_uow_group_id"
+    t.string   "guw_uow_group_name"
+    t.boolean  "uow_selected"
+    t.integer  "guw_unit_of_work_id",           :default => 0,     :null => false
+    t.integer  "id",                            :default => 0,     :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.float    "result_low"
+    t.float    "result_most_likely"
+    t.float    "result_high"
+    t.integer  "guw_type_id"
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "guw_complexity_id"
+    t.text     "effort"
+    t.text     "ajusted_size"
+    t.integer  "guw_model_id"
+    t.integer  "module_project_id"
+    t.integer  "pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id"
+    t.integer  "guw_work_unit_id"
+    t.text     "tracking"
+    t.boolean  "off_line"
+    t.boolean  "selected"
+    t.boolean  "flagged"
+    t.integer  "display_order"
+    t.integer  "organization_technology_id"
+    t.boolean  "off_line_uo"
+    t.float    "quantity"
+    t.integer  "guw_weighting_id"
+    t.integer  "guw_factor_id"
+    t.text     "size"
+    t.text     "cost"
+    t.integer  "guw_original_complexity_id"
+    t.boolean  "missing_value",                 :default => false
+    t.float    "intermediate_work_unit_values"
+    t.float    "intermediate_weighting_values"
+    t.float    "intermediate_factor_values"
+    t.float    "work_unit_value"
+    t.float    "weighting_value"
+    t.float    "factor_value"
+    t.float    "intermediate_weight"
+    t.float    "intermediate_percent"
+    t.string   "url"
+    t.text     "cplx_comments"
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
@@ -1487,6 +1572,7 @@ ActiveRecord::Schema.define(:version => 20171027100650) do
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
+  add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
   create_table "projects_users", :id => false, :force => true do |t|
     t.integer  "project_id"
