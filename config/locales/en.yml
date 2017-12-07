@@ -3,6 +3,11 @@ en:
   # Text direction: Left-to-Right (ltr) or Right-to-Left (rtl)
   direction: ltr
   date:
+    # for delocalize gem
+    input:
+      formats:
+        - :default
+
     abbr_day_names:
     - Sun
     - Mon
@@ -119,6 +124,10 @@ en:
       week: Week
 
   time:
+    # for delocalize gem
+    input:
+      formats:
+        - :default
     formats:
       default: "%m/%d/%Y %I:%M %p"
       time: "%I:%M %p"

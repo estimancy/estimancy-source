@@ -164,6 +164,8 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 
 gem 'passenger'
 
+gem "delocalize"
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
