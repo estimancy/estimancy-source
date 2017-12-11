@@ -102,7 +102,7 @@ public
       @organization = @current_organization
     end
 
-    @user.transaction do
+    # @user.transaction do
       @user.save #@user.save(validate: false)
 
       if @organization
@@ -148,7 +148,7 @@ public
       else
         render(:new, organization_id: @organization_id)
       end
-    end
+    # end
   end
 
   def edit
