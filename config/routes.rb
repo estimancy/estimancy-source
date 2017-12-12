@@ -23,6 +23,9 @@
 
 Projestimate::Application.routes.draw do
 
+  resources :providers
+
+
   resources :wbs_activity_ratio_variables
 
 
@@ -232,6 +235,7 @@ Projestimate::Application.routes.draw do
     resources :work_element_types
     resources :organization_profiles
     resources :views
+    resources :providers
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
@@ -252,12 +256,14 @@ Projestimate::Application.routes.draw do
     get "export_acquisition_categories" => 'organizations#export_acquisition_categories'
     get "export_platform_categories" => 'organizations#export_platform_categories'
     get "export_project_categories" => 'organizations#export_project_categories'
+    get "export_providers" => 'organizations#export_provider'
 
     post "import_project_areas" => 'organizations#import_project_areas'
     post "import_project_profile" => 'organizations#import_project_profile'
     post "import_project_categories" => 'organizations#import_project_categories'
     post "import_platform_categories" => 'organizations#import_platform_categories'
     post "import_acquisition_categories" => 'organizations#import_acquisition_categories'
+    post "import_providers" => 'organizations#import_providers'
     get "polyval_export" => 'organizations#polyval_export'
   end
 

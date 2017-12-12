@@ -81,6 +81,9 @@ class Organization < ActiveRecord::Base
 
   has_many :applications
 
+  has_many :providers
+
+
   belongs_to :currency
   #validates_presence_of :name
   validates :name, :presence => true, :uniqueness => {:case_sensitive => false}

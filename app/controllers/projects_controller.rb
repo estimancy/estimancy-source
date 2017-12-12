@@ -500,6 +500,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @current_organization.platform_categories
     @acquisition_categories = @current_organization.acquisition_categories
     @project_categories = @current_organization.project_categories
+    @providers = @current_organization.providers
   end
 
   def new
@@ -521,6 +522,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
   end
 
   #Create a new project
@@ -561,6 +563,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     estimation_owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
 
@@ -719,6 +722,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     #generate_dashboard
 
@@ -801,6 +805,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
@@ -1089,6 +1094,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     # We need to verify user's groups rights on estimation according to the current estimation status
     if !can_show_estimation?(@project)
@@ -1263,6 +1269,7 @@ class ProjectsController < ApplicationController
     @platform_categories = PlatformCategory.all
     @acquisition_categories = AcquisitionCategory.all
     @project_categories = ProjectCategory.all
+    @providers = Provider.all
   end
 
   #Load specific security depending of user selected (last tabs on project editing page)

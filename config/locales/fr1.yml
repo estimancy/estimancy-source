@@ -1716,3 +1716,13 @@ fr1:
   number_of_uw_selected_lines: "Nombre de lignes de UO. Sélect."
   value_not_taken_in_account: "Valeur non prise en compte"
 
+  #Provider / fournisseur
+  provider: "Fournisseur"
+  providers: "Fournisseurs"
+
+  edit_provider: "Editer fournisseur \"%{value}\" ..."
+  new_provider: "Créer un fournisseur"
+  provider_edition: "Editer un fournisseur"
+  notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
+  request_number: "Numéro de la demande"
+

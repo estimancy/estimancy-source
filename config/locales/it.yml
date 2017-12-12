@@ -1582,3 +1582,7 @@ it:
   number_of_uw_modifies_lines: "Number lines of UO. Modif."
   number_of_uw_selected_lines: "Number lines of UO. Sélect."
   value_not_taken_in_account: "Valeur non prise en compte"
+  provider: "Fournisseur"
+  providers: "Fournisseurs"
+  notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
+  request_number: "Numéro de la demande"
