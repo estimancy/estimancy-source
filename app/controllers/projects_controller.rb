@@ -3471,7 +3471,7 @@ public
   end
 
 
-  def export_pdf
+  def export_dashboard
     @current_organization = @project.organization
     @pbs_project_element = current_component
     @user = current_user
@@ -3481,7 +3481,9 @@ public
       format.html
       format.pdf do
         render pdf: "Test",
-               encoding: "UTF-8"
+               encoding: "UTF-8",
+               page_size: 'A4',
+               orientation: :landscape
       end
     end
   end
