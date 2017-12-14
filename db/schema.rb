@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171211145119) do
+ActiveRecord::Schema.define(:version => 20171212153928) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1320,6 +1320,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.integer  "estimations_counter"
     t.text     "estimations_counter_history"
     t.boolean  "copy_in_progress"
+    t.string   "automatic_quotation_number",  :default => "0"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|
@@ -1538,7 +1539,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
 
   create_table "projects", :force => true do |t|
     t.string   "title"
-    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "version_number",                 :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"
@@ -1566,10 +1567,11 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
-    t.boolean  "private",                               :default => false
+    t.boolean  "private",                                      :default => false
     t.boolean  "is_historicized"
     t.integer  "provider_id"
-    t.integer  "request_number"
+    t.string   "request_number"
+    t.boolean  "use_automatic_quotation_number"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"

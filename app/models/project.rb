@@ -23,7 +23,7 @@ class Project < ActiveRecord::Base
   attr_accessible :title, :description, :version_number, :alias, :state, :estimation_status_id, :status_comment,
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
-                  :private
+                  :private, :provider_id, :request_number, :use_automatic_quotation_number
 
   attr_accessor :project_organization_statuses, :new_status_comment, :available_inline_columns
 
@@ -93,6 +93,7 @@ class Project < ActiveRecord::Base
   self.available_inline_columns =
     [
       QueryColumn.new(:title, :sortable => "#{Project.table_name}.title", :caption => "label_project_name"),
+      QueryColumn.new(:request_number, :sortable => "#{Project.table_name}.request_number", :caption => "request_number"),
       QueryColumn.new(:application, :sortable => "#{Application.table_name}.name", :caption => "application"),
       QueryColumn.new(:original_model, :sortable => "#{Project.table_name}.name", :caption => "original_model"),
       QueryColumn.new(:version_number, :sortable => "#{Project.table_name}.version_number", :caption => "label_version"),
@@ -101,6 +102,7 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:project_category, :sortable => "#{ProjectCategory.table_name}.name", :caption => "category"),
       QueryColumn.new(:acquisition_category, :sortable => "#{AcquisitionCategory.table_name}.name", :caption => "label_acquisition"),
       QueryColumn.new(:platform_category, :sortable => "#{PlatformCategory.table_name}.name", :caption => "label_platform"),
+      QueryColumn.new(:provider, :sortable => "#{Provider.table_name}.name", :caption => "provider"),
       QueryColumn.new(:description, :sortable => "#{Project.table_name}.description", :caption => "description"),
       QueryColumn.new(:start_date, :sortable => "#{Project.table_name}.start_date", :caption => "label_date"),
       QueryColumn.new(:creator, :sortable => "#{User.table_name}.first_name", :caption => "author"),

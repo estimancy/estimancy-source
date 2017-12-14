@@ -1,0 +1,27 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:providers) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for([@organization, @provider]) do |f| %>
+        <%= f.error_notification %>
+
+        <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+
+        <div class="actions-tabs">
+          <% if can? :manage, Provider %>
+              <% if action_name.in?(%w(new create)) %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name=='update' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-providers'), :class => 'btn' %>
+        </div>
+    <% end %>
+  </div>
+</div>

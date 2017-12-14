@@ -1586,3 +1586,8 @@ it:
   providers: "Fournisseurs"
   notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
   request_number: "Numéro de la demande"
+  notice_provider_successful_created: "Le fournisseur a été créé avec succès"
+  notice_provider_successful_updated: "Le fournisseur a été mis à jour avec succès"
+  notice_provider_successful_deleted: "Le fournisseur a été supprimé avec succès"
+  automatic_quotation_number: "Numéro de devis automatique et incrémental"
+  use_automatic_quotation_number: "Générer automatiquement le nom de l'estimation créé à partir de ce modèle"
