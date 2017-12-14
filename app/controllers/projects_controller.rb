@@ -2181,13 +2181,13 @@ public
         # new_prj.project_securities = new_prj.project_securities.reject{|i| i.is_model_permission == true }
       else
         # simple copy
-        if old_prj.original_model.use_automatic_quotation_number
-          new_prj.title = new_automatic_number
-          @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
+        if old_prj.original_model
+          if old_prj.original_model.use_automatic_quotation_number
+            new_prj.title = new_automatic_number
+            @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
+          end
         end
-
       end
-
 
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
