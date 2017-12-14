@@ -3477,9 +3477,8 @@ public
     @user = current_user
     @module_projects = @project.module_projects
 
-
     respond_to do |format|
-      # format.html
+      format.html
       format.pdf do
         render pdf: "Test",
                encoding: "UTF-8"
