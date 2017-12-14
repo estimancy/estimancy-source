@@ -453,7 +453,7 @@
                   <td class="text_field_text_overflow">
                     <span class="pull-left">
                       <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
-                            module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: "#{name_to_show}", method: "post", remote: true %>
+                            module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: (mp_ratio_element.comments.blank? ? name_to_show : mp_ratio_element.comments), method: "post", remote: true %>
                     </span>
                   </td>
 
