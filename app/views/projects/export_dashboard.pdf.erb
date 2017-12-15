@@ -128,23 +128,39 @@
 <hr>
 
 <% @module_projects.each do |module_project| %>
-  <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
-  <div class="row-fluid">
-    <% view_widgets.each do |view_widget| %>
-      <div class="span3">
-        <h4><%= view_widget.name %></h4>
-        <% unless view_widget.estimation_value.nil? %>
+  <% if module_project.pemodule.alias == "effort_breakdown" %>
+    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+    <div class="row-fluid">
+      <% view_widgets.each do |view_widget| %>
+        <div class="span3">
+          <h4><%= view_widget.name %></h4>
           <% begin %>
             <p>
-              <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
+              <%= view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
             </p>
           <% rescue %>
-            -
+            <p>
+              -
+            </p>
           <% end %>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
+        </div>
+      <% end %>
+    </div>
+  <% elsif module_project.pemodule.alias == "guw" %>
+    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+    <div class="row-fluid">
+      <% view_widgets.each do |view_widget| %>
+        <div class="span3">
+          <h4><%= view_widget.name %></h4>
+          <% unless view_widget.estimation_value.nil? %>
+            <p>
+              <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
 
 <div class="alwaysbreak"></div>
