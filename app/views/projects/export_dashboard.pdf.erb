@@ -152,10 +152,14 @@
       <% view_widgets.each do |view_widget| %>
         <div class="span3">
           <h4><%= view_widget.name %></h4>
-          <% unless view_widget.estimation_value.nil? %>
-            <p>
-              <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
-            </p>
+          <% if view_widget.widget_type == "kpi" %>
+            <%= get_kpi_value(view_widget) %>
+          <% else %>
+            <% unless view_widget.estimation_value.nil? %>
+              <p>
+                <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+              </p>
+            <% end %>
           <% end %>
         </div>
       <% end %>
@@ -174,6 +178,7 @@
     <hr>
     <table class="table main table-condensed" style="font-size: 10px;">
       <tr>
+        <th></th>
         <th>Nom</th>
         <th>Prix Service</th>
         <th>Effort Théorique</th>
@@ -188,6 +193,9 @@
       <% @wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
         <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
         <tr>
+          <td>
+            <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '-') %></b>
+          </td>
           <td>
             <b><%= wbs_activity_element.name %></b>
           </td>
@@ -210,7 +218,7 @@
         <% unless mp_ratio_element.comments.nil? %>
           <tr>
             <td colspan="1"></td>
-            <td colspan="7"> &#8226; <%= mp_ratio_element.comments %></td>
+            <td colspan="7"> &#8226; <%= raw(mp_ratio_element.comments) %></td>
           </tr>
         <% end %>
       <% end %>
@@ -333,6 +341,7 @@
                   <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
                     <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <td>
+                      <%= uow.size["#{go.id}"].to_f.round(user_number_precision) %> <br>
                       <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
                     </td>
                   <% else %>
