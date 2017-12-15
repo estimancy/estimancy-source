@@ -19,6 +19,10 @@
     div.alwaysbreak { page-break-before: always; }
     div.nobreak:before { clear:both; }
     div.nobreak { page-break-inside: avoid; }
+
+    main {
+      font-size:	10px;
+    }
   </style>
 </head>
 
@@ -152,7 +156,7 @@
       <%= @wbs_activity.name %>
     </h2>
     <hr>
-    <table class="table">
+    <table class="table main table-condensed" style="font-size: 10px;">
       <tr>
         <th>Nom</th>
         <th>Prix Service</th>
@@ -160,7 +164,6 @@
         <th>Cout Théorique</th>
         <th>Effort Retenu</th>
         <th>Cout Retenu</th>
-        <th>Commentaire</th>
       </tr>
 
       <% @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first %>
@@ -187,10 +190,13 @@
           <td>
             <%= mp_ratio_element.theoretical_cost_probable.to_f.round(user_number_precision) %>
           </td>
-          <td>
-            <%= mp_ratio_element.comments %>
-          </td>
         </tr>
+        <% unless mp_ratio_element.comments.nil? %>
+          <tr>
+            <td><b>Commentaires</b></td>
+            <td colspan="7"> <%= mp_ratio_element.comments %></td>
+          </tr>
+        <% end %>
       <% end %>
     </table>
 
@@ -232,7 +238,7 @@
         <h3>
           <%= uowg.name %>
         </h3>
-        <table class="table table-bordered">
+        <table class="table table-bordered table-condensed main" style="font-size: 10px;">
           <tr>
             <th>Nom</th>
             <th>Type</th>
@@ -241,13 +247,13 @@
                 <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
                   <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
                   <% unless guw_coefficient.nil? %>
-                    <th>
+                    <th class="span1">
                       <%= i[0] %>
                     </th>
                   <% end %>
                 <% elsif i[0] == "Coefficient" %>
                   <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
-                    <th>
+                    <th class="span1">
                       <%= i[0] %>
                     </th>
                   <% end %>
@@ -255,9 +261,9 @@
 
                 <% elsif i[0] == "Coeff. de Complexité" %>
                   <% if i[1].blank? %>
-                    <th></th>
+                    <th class="span1"></th>
                   <% else %>
-                    <th>
+                    <th class="span1">
                       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
                         Coeff. de complexité
                       <% else %>
@@ -266,7 +272,7 @@
                     </th>
                   <% end %>
                 <% else %>
-                  <th>
+                  <th class="span1">
                     <%= i[0] %>
                   </th>
                 <% end %>
@@ -287,7 +293,9 @@
                 <% unless i[1].blank? %>
                   <% if i[0] == "Coeff. de Complexité" %>
                     <td>
-                      <%= uow.intermediate_percent %>
+                      <p>
+                        <%= uow.intermediate_percent %>
+                      </p>
                     </td>
                   <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
                     <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
@@ -317,6 +325,28 @@
                 <% end %>
               <% end %>
             </tr>
+
+            <tr>
+              <td colspan="1"></td>
+              <td colspan="2"><b>Nom de l'attribut</b></td>
+              <td colspan="1"><b>Quantité</b></td>
+              <td colspan="12"><b>Commentaires</b></td>
+            </tr>
+
+            <% uow.guw_unit_of_work_attributes.where(guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
+              <% gat = Guw::GuwAttributeType.where(guw_type_id: uow.guw_type.id, guw_attribute_id: uowa.guw_attribute_id).first %>
+              <% unless uow.guw_type.nil? %>
+                <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: uow.guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
+              <% end %>
+              <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
+                <tr>
+                  <td colspan="1"></td>
+                  <td colspan="2"><%= uowa.guw_attribute.name %> (<%= gat.nil? ? '-' : gat.default_value.to_f %>) </td>
+                  <td colspan="1"><%= uowa.most_likely %></td>
+                  <td colspan="12"><%= uowa.comments %></td>
+                </tr>
+              <% end %>
+            <% end %>
           <% end %>
         </table>
 

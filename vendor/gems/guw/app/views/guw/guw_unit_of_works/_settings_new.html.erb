@@ -514,6 +514,7 @@
                                 <% end %>
                               </td>
                               <% if @guw_coefficient.allow_comments == true %>
+                                <% if can? :execute_estimation_plan, @project %>
                                   <script>
                                     $(document).ready(function(){
                                       var defaultValue = <%= @guw_coefficient.guw_coefficient_elements.first.value.to_f %>;
@@ -545,6 +546,7 @@
                                       });
                                     });
                                   </script>
+                                <% end %>
                               <% end %>
                             <% else %>
                               <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
