@@ -43,10 +43,28 @@
 
 <div class="row-fluid">
   <div class="span4">
+    <b>Numéro de la demande</b>
+  </div>
+  <div class="span8">
+    <%= @project.request_number %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
     <b>Numéro du devis</b>
   </div>
   <div class="span8">
     <%= @project.title %> <%= @project.version_number %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Nom du fournisseur</b>
+  </div>
+  <div class="span8">
+    <%= @project.provider %>
   </div>
 </div>
 
@@ -129,10 +147,12 @@
 
 <% @module_projects.each do |module_project| %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
-    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+
+    <% view_widgets = ViewsWidget.where(module_project_id: @initialization_module_project.id).all %>
+
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
-        <div class="span3">
+        <div class="span2">
           <h4><%= view_widget.name %></h4>
           <% begin %>
             <p>
@@ -147,15 +167,25 @@
       <% end %>
     </div>
   <% elsif module_project.pemodule.alias == "guw" %>
-    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+
+    <% @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
+    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all +
+                      ViewsWidget.where(module_project_id: @initialization_module_project.id).all %>
+
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
-        <div class="span3">
+        <div class="span2">
           <h4><%= view_widget.name %></h4>
-          <% unless view_widget.estimation_value.nil? %>
+          <% if view_widget.is_kpi_widget == true %>
             <p>
-              <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+              <%= get_kpi_value(view_widget) %>
             </p>
+          <% else %>
+            <% unless view_widget.estimation_value.nil? %>
+              <p>
+                <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+              </p>
+            <% end %>
           <% end %>
         </div>
       <% end %>
@@ -174,6 +204,7 @@
     <hr>
     <table class="table main table-condensed" style="font-size: 10px;">
       <tr>
+        <th></th>
         <th>Nom</th>
         <th>Prix Service</th>
         <th>Effort Théorique</th>
@@ -189,7 +220,10 @@
         <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
         <tr>
           <td>
-            <%= wbs_activity_element.name %>
+            <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '-') %></b>
+          </td>
+          <td>
+            <b><%= wbs_activity_element.name %></b>
           </td>
           <td>
             <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
@@ -209,8 +243,8 @@
         </tr>
         <% unless mp_ratio_element.comments.nil? %>
           <tr>
-            <td><b>Commentaires</b></td>
-            <td colspan="7"> <%= mp_ratio_element.comments %></td>
+            <td colspan="1"></td>
+            <td colspan="7"> &#8226; <%= raw(mp_ratio_element.comments) %></td>
           </tr>
         <% end %>
       <% end %>
@@ -254,7 +288,7 @@
         <h3>
           <%= uowg.name %>
         </h3>
-        <table class="table table-bordered table-condensed main" style="font-size: 10px;">
+        <table class="table table-condensed main" style="font-size: 10px;">
           <tr>
             <th>Nom</th>
             <th>Type</th>
@@ -299,7 +333,7 @@
           <% uowg.guw_unit_of_works.each do |uow| %>
             <tr>
               <td>
-                <%= uow.name %>
+                <b><%= uow.name %></b>
               </td>
               <td>
                 <%= uow.guw_type %>
@@ -333,6 +367,7 @@
                   <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
                     <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <td>
+                      <%= uow.size["#{go.id}"].to_f.round(user_number_precision) %> <br>
                       <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
                     </td>
                   <% else %>
@@ -340,13 +375,6 @@
                   <% end %>
                 <% end %>
               <% end %>
-            </tr>
-
-            <tr>
-              <td colspan="1"></td>
-              <td colspan="2"><b>Nom de l'attribut</b></td>
-              <td colspan="1"><b>Quantité</b></td>
-              <td colspan="12"><b>Commentaires</b></td>
             </tr>
 
             <% uow.guw_unit_of_work_attributes.where(guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
@@ -357,7 +385,7 @@
               <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
                 <tr>
                   <td colspan="1"></td>
-                  <td colspan="2"><%= uowa.guw_attribute.name %> (<%= gat.nil? ? '-' : gat.default_value.to_f %>) </td>
+                  <td colspan="2"> &#8226; <%= uowa.guw_attribute.name %> (<%= gat.nil? ? '-' : gat.default_value.to_f %>) </td>
                   <td colspan="1"><%= uowa.most_likely %></td>
                   <td colspan="12"><%= uowa.comments %></td>
                 </tr>
@@ -369,7 +397,7 @@
         <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
         <div class="row-fluid">
           <% view_widgets.each do |view_widget| %>
-            <div class="span3">
+            <div class="span2">
               <h4><%= view_widget.name %></h4>
               <% unless view_widget.estimation_value.nil? %>
                 <% if view_widget.estimation_value.string_data_probable.is_a?(Float) %>
