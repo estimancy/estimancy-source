@@ -184,8 +184,8 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          new_app = Provider.new(name: row[0], organization_id: @organization.id)
-          unless new_app.save
+          new_provider = Provider.new(name: row[0], organization_id: @organization.id)
+          unless new_provider.save
             tab_error << index + 1
           end
         elsif row[0].nil?

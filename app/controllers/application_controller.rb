@@ -542,11 +542,16 @@ class ApplicationController < ActionController::Base
         when "acquisition_category"
           ids = AcquisitionCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(acquisition_category_id: ids, organization_id: organization_id)
+        when "provider"
+          ids = Provider.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = projects.where(provider_id: ids, organization_id: organization_id)
         when "original_model"
           ids = Project.where("title LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(original_model_id: ids, organization_id: organization_id)
         when "private"
           results = projects.where("private LIKE ?", "%#{val}%")
+        when "request_number"
+          results = projects.where("request_number LIKE ?", "%#{val}%")
         else
           #options[k] = v
           results = projects
@@ -564,20 +569,24 @@ class ApplicationController < ActionController::Base
     s = sort_order  #params[:s]
 
     case k
-      when "title"
-        projects = projects.order("title #{s}")
-      when "version_number"
-        projects = projects.order("version_number #{s}")
-      when "description"
-        projects = projects.order("description #{s}")
-      when "private"
-        projects = projects.order("private #{s}")
-      when "start_date"
-        projects = projects.order("start_date #{s}")
-      when "updated_at"
-        projects = projects.order("updated_at #{s}")
-      when "created_at"
-        projects = projects.order("created_at #{s}")
+      when "title", "request_number", "version_number",  "description", "private", "start_date", "updated_at", "created_at"
+        projects = projects.order(k + ' ' + s)
+
+      # when "request_number"
+      #   projects = projects.order("request_number #{s}")
+      # when "version_number"
+      #   projects = projects.order("version_number #{s}")
+      # when "description"
+      #   projects = projects.order("description #{s}")
+      # when "private"
+      #   projects = projects.order("private #{s}")
+      # when "start_date"
+      #   projects = projects.order("start_date #{s}")
+      # when "updated_at"
+      #   projects = projects.order("updated_at #{s}")
+      # when "created_at"
+      #   projects = projects.order("created_at #{s}")
+
       when "application"
         projects = Project.unscoped
                         .joins("LEFT JOIN applications ON projects.application_id = applications.id")
@@ -622,7 +631,13 @@ class ApplicationController < ActionController::Base
                         .joins("LEFT JOIN users ON projects.creator_id = users.id")
                         .where(organization_id: organization_id)
                         .order("users.first_name #{s}, users.last_name #{s}")
+      when "provider"
+        projects = Project.unscoped
+                       .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
+                       .where(organization_id: organization_id)
+                       .order("providers.name #{s}")
       else
+        projects = projects.order(k + ' ' + s)
     end
 
     projects = projects.where(:is_model => [nil, false])
