@@ -25,11 +25,11 @@
           <td><%= user.login_name %></td>
           <td><%= simple_format(user.organizations.join("\n")) %></td>
           <td><%= user.email %></td>
-          <td class="center"><%= I18n.l(user.last_sign_in_at) unless user.last_sign_in_at.nil? %></td>
+          <td class="center"><%= I18n.l(user.last_sign_in_at.to_date) unless user.last_sign_in_at.nil? %></td>
           <td><%= user.auth_method %></td>
-          <td class="center"><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : user.confirmed_at.strftime("%d/%m/%Y") %></td>
-          <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : user.locked_at.strftime("%d/%m/%Y") %></td>
-          <td class="center"><%= user.subscription_end_date.nil? ? "-" : user.subscription_end_date.strftime("%d/%m/%Y") %></td>
+          <td class="center"><%= user.confirmed_at.nil? ? I18n.t(:not_confirmed) : I18n.l(user.confirmed_at.to_date) %></td>
+          <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
+          <td class="center"><%= user.subscription_end_date.nil? ? "-" : I18n.l(user.subscription_end_date.to_date) %></td>
 
           <td style="min-width: 105px;" class="align-center">
             <% if current_user.super_admin == true %>

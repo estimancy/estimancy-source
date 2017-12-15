@@ -27,7 +27,16 @@ class UsersController < ApplicationController
   #load_and_authorize_resource :except => [:edit, :show, :update, :create_inactive_user]
   load_resource
 
-protected
+  private
+
+  # For delocalize gem - get user params
+  def user_params
+    delocalize_config = { :subscription_end_date => :date }
+    params[:user].delocalize(delocalize_config)
+  end
+
+
+  protected
 
   def load_data
     #No authorize required since this method is protected and won't be call from any route
@@ -251,7 +260,8 @@ public
 
     @user.auth_type = params[:user][:auth_type].nil? ? AuthMethod.find_by_name('Application').id : params[:user][:auth_type]
     @user.language_id = params[:user][:language_id]
-    @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
+    #@user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
+    @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : user_params[:subscription_end_date]
 
     #validation conditions
     if params[:user][:password].blank?
