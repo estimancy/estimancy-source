@@ -1676,3 +1676,18 @@ en-gb:
 
   locked_at: "Locked at"
   unlocked: "Unlocked"
+
+  #Provider / fournisseur
+  provider: "Provider"
+  providers: "Providers"
+
+  edit_provider: "Edit the \"%{value}\" provider"
+  new_provider: "New provider"
+  provider_edition: "Edit provider"
+  notice_cannot_view_providers: "You don't have the rights to view the providers"
+  request_number: "Request number"
+  notice_provider_successful_created: "Provider was successfully created"
+  notice_provider_successful_updated: "Provider was successfully updated"
+  notice_provider_successful_deleted: "Provider was successfully deleted"
+  automatic_quotation_number: "Automatic and incremental quotation number"
+  use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"

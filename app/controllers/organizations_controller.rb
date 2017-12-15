@@ -173,6 +173,34 @@ class OrganizationsController < ApplicationController
     redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile")
   end
 
+
+  # Import Organization's Providers
+  def import_providers
+    @organization = Organization.find(params[:organization_id])
+    tab_error = []
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      tab = workbook[0].extract_data
+
+      tab.each_with_index do |row, index|
+        if index > 0 && !row[0].nil?
+          new_app = Provider.new(name: row[0], organization_id: @organization.id)
+          unless new_app.save
+            tab_error << index + 1
+          end
+        elsif row[0].nil?
+          tab_error << index + 1
+        end
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+    unless tab_error.empty?
+      flash[:error] = "Une erreur est survenue durant l'import"
+    end
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-providers")
+  end
+
   def export_project_areas
     @organization = Organization.find(params[:organization_id])
     organization_project_area = @organization.project_areas
@@ -231,6 +259,19 @@ class OrganizationsController < ApplicationController
       worksheet.add_cell(index + 1, 1, ac.description)
     end
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Project-Category-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def export_providers
+    @organization = Organization.find(params[:organization_id])
+    organization_providers = @organization.providers
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, I18n.t(:name))
+    organization_providers.each_with_index do |provider, index|
+      worksheet.add_cell(index + 1, 0, provider.name)
+    end
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Provider-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def polyval_export

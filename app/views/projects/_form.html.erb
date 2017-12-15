@@ -16,6 +16,10 @@
         <%= hidden_field_tag :project_id, @project.id %>
 
         <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+        <% if @project.is_model %>
+            <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge' } %>
+        <% end %>
+        <%= f.input :request_number, :label => "#{I18n.t 'request_number'}", :disabled => !(can?(:alter_request_number, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
         <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
         <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !can?(:alter_private_estimation_setup, @project) %>
 
@@ -176,6 +180,7 @@
       <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project) ) %>
       <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_platform_categories, @project) ) %>
       <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_project_categories, @project) ) %>
+      <%= f.association :provider, :label => "#{I18n.t 'provider'}", :as => :select, :collection => @providers, :input_html => {:class => 'input-xxlarge'}, :disabled => !( can_alter_estimation?(@project) && can?(:alter_providers, @project) ) %>
 
       <div class="actions-tabs">
         <% if action_name.in?(['edit', 'update']) %>

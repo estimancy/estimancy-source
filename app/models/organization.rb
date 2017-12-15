@@ -22,7 +22,7 @@
 class Organization < ActiveRecord::Base
 
   attr_accessible :name, :description, :is_image_organization, :number_hours_per_day, :number_hours_per_month, :cost_per_hour, :currency_id, :inflation_rate,
-                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title,
+                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
                   :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit
 
@@ -80,6 +80,9 @@ class Organization < ActiveRecord::Base
   has_many :views
 
   has_many :applications
+
+  has_many :providers
+
 
   belongs_to :currency
   #validates_presence_of :name

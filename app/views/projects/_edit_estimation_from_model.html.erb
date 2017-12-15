@@ -10,7 +10,11 @@
     <table>
       <tr>
         <td>
-          <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %>
+          <% if @project_template.use_automatic_quotation_number %>
+            <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
+          <% else %>
+              <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %>
+          <% end %>
         </td>
         <td>
           <%= f.input :version_number, :input_html => {:class => 'input-large'} %>

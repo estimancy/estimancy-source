@@ -500,6 +500,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @current_organization.platform_categories
     @acquisition_categories = @current_organization.acquisition_categories
     @project_categories = @current_organization.project_categories
+    @providers = @current_organization.providers
   end
 
   def new
@@ -521,6 +522,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
   end
 
   #Create a new project
@@ -561,6 +563,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     estimation_owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
 
@@ -719,6 +722,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     #generate_dashboard
 
@@ -801,6 +805,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.platform_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
@@ -1089,6 +1094,7 @@ class ProjectsController < ApplicationController
     @platform_categories = @organization.platform_categories
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
+    @providers = @organization.providers
 
     # We need to verify user's groups rights on estimation according to the current estimation status
     if !can_show_estimation?(@project)
@@ -1263,6 +1269,7 @@ class ProjectsController < ApplicationController
     @platform_categories = PlatformCategory.all
     @acquisition_categories = AcquisitionCategory.all
     @project_categories = ProjectCategory.all
+    @providers = Provider.all
   end
 
   #Load specific security depending of user selected (last tabs on project editing page)
@@ -2137,14 +2144,17 @@ public
         new_prj.is_model = true
       else
         new_prj.is_model = false
+        new_prj.use_automatic_quotation_number = false
       end
 
       # new_prj.is_private = old_prj.is_private
+      new_automatic_number = @organization.automatic_quotation_number.next
 
       #if creation from template
       if !params[:create_project_from_template].nil?
 
         new_prj.original_model_id = old_prj.id
+        new_prj.use_automatic_quotation_number = false
 
         #Update some params with the form input data
         new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
@@ -2161,8 +2171,22 @@ public
         # start_date = (params['project']['start_date'].nil? || params['project']['start_date'].blank?) ? Time.now.to_date : params['project']['start_date']
         new_prj.start_date = Time.now
 
+        # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
+        if old_prj.use_automatic_quotation_number
+          new_prj.title = new_automatic_number
+          @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
+        end
+
         #Only the securities for the generated project will be taken in account
         # new_prj.project_securities = new_prj.project_securities.reject{|i| i.is_model_permission == true }
+      else
+        # simple copy
+        if old_prj.original_model
+          if old_prj.original_model.use_automatic_quotation_number
+            new_prj.title = new_automatic_number
+            @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
+          end
+        end
       end
 
       if new_prj.save

@@ -15,6 +15,7 @@
         <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
     <% end %>
     <li><a href="#tabs-select-columns-list"><%= I18n.t(:select_columns_list) %></a></li>
+    <li><a href="#tabs-providers"><%= I18n.t(:providers) %></a></li>
   </ul>
 
   <div id="tabs-applications">
@@ -485,6 +486,68 @@
       <div class="red_color"><%= I18n.t(:notice_cannot_view_selected_columns_list) %></div>
     <% end %>
   </div>
+
+  <!-- Fournisseurs -->
+  <div id="tabs-providers">
+    <% if can? :show_providers, Provider %>
+
+        <% if can? :manage, Provider %>
+            <div class="group_button">
+              <%= link_to I18n.t('create_button'), new_organization_provider_path(@organization), :class => 'btn' %>
+              <a href="#ImportProviders" role="button" class="btn" title="Import providers from excel" data-toggle="modal">
+                <%= I18n.t(:import) %>
+              </a>
+              <%= link_to I18n.t('export'), organization_export_providers_path(@organization), :class => 'btn'%>
+            </div>
+
+            <div id="ImportProviders" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <%= form_tag organization_import_providers_path(@organization), :multipart => true, :class => 'simple_form' do %>
+                  <div class="modal-header modal-drag">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+                  </div>
+                  <div class="modal-body">
+                    <%= file_field_tag :file %>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                  </div>
+                  <div class="loading span11 hide">
+                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+                  </div>
+              <% end %>
+            </div>
+        <% end %>
+
+
+        <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+          <thead>
+          <tr>
+            <th><%= I18n.t('name') %></th>
+            <th class="action"><%= I18n.t(:actions) %></th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <% @organization.providers.each do |pr| %>
+              <tr>
+                <td><%= pr.name %></td>
+                <td class="center">
+                  <%= link_to '', edit_organization_provider_path(@organization, pr), :class => 'icon-pencil' %>
+                  <% if can? :manage, Provider %>
+                      <%= link_to '', organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                  <% end %>
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+    <% else %>
+        <div class="red_color"><%= I18n.t(:notice_cannot_view_providers) %></div>
+    <% end %>
+  </div>
+
 
 </div>
 
