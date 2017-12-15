@@ -1645,24 +1645,27 @@ class Guw::GuwModelsController < ApplicationController
                 I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
                 I18n.t(:likely).length, I18n.t(:high).length]
 
-    ([I18n.t(:estimation),
-     I18n.t(:version_number),
-     I18n.t(:group),
-     I18n.t(:selected),
-     I18n.t(:name),
-     I18n.t(:description),
-     "Type",
-     @guw_model.coefficient_label.blank? ? 'Facteur sans nom 1' : @guw_model.coefficient_label.to_s,
-     @guw_model.weightings_label.blank? ? 'Facteur sans nom 2' : @guw_model.weightings_label,
-     @guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label,
-     I18n.t(:organization_technology),
-     I18n.t(:quantity),
-     I18n.t(:tracability),
-     I18n.t(:cotation),
-     I18n.t(:results),
-     I18n.t(:retained_result),
-      "COEF"] +
-      hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
+    ([
+        "Nom du CDS",
+        "Nom du fournisseur",
+        "Nom de l'application",
+        "Numéro de devis",
+        "Numéro de demande",
+        "Statut du devis",
+        "Service",
+        "Prestation",
+        "Localication",
+        I18n.t(:estimation),
+        I18n.t(:version_number),
+        I18n.t(:group),
+        I18n.t(:selected),
+        I18n.t(:name),
+        "Type d'UO",
+        I18n.t(:description),
+        I18n.t(:quantity),
+        I18n.t(:tracability),
+        I18n.t(:cotation),
+       "COEF"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
@@ -1684,43 +1687,26 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_module_project.project.title)
-
-      tab_size[0]= tab_size[0] < current_module_project.project.title.length ? current_module_project.project.title.length : tab_size[0]
-      # worksheet.change_column_width(0, tab_size[0])
-      worksheet.add_cell(ind, 1, current_module_project.project.version_number)
-      worksheet.add_cell(ind, 2, guow.guw_unit_of_work_group.name)
-
-      tab_size[2] = tab_size[2] < guow.guw_unit_of_work_group.name.length ? guow.guw_unit_of_work_group.name.length : tab_size[2]
-      worksheet.change_column_width(2, tab_size[2])
-      worksheet.add_cell(ind, 3, guow.selected ? 1 : 0)
-      worksheet.add_cell(ind, 4, guow.name)
-
-      type_name = (guow.guw_type.nil? ? '' : guow.guw_type.name)
-
-      tab_size[4] = tab_size[4] < guow.name.length ? guow.name.length : tab_size[4]
-      worksheet.change_column_width(4, tab_size[4])
-      worksheet.add_cell(ind, 6, type_name)
-
-      # tab_size[6] = tab_size[6] < type_name.to_s.length ? type_name.to_s.length : tab_size[6]
-      worksheet.change_column_width(6, tab_size[6])
-      worksheet.add_cell(ind, 5, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-      worksheet.add_cell(ind, 7, guow.guw_work_unit.nil? ? '' : guow.guw_work_unit.name)
-      worksheet.add_cell(ind, 8, guow.guw_weighting.nil? ? '' : guow.guw_weighting.name)
-      worksheet.add_cell(ind, 9, guow.guw_factor.nil? ? '' : guow.guw_factor.name)
-      worksheet.add_cell(ind, 10, guow.organization_technology)
-
-      tab_size[10] = tab_size[10] < guow.organization_technology.to_s.length ? guow.organization_technology.to_s.length : tab_size[10]
-      worksheet.change_column_width(8, tab_size[10])
-      worksheet.add_cell(ind, 11, guow.quantity)
-      worksheet.add_cell(ind, 12, guow.tracking)
-      worksheet.add_cell(ind, 13, cplx)
-
-      tab_size[13] = tab_size[13] < cplx.length ? cplx.length : tab_size[13]
-      worksheet.add_cell(ind, 14, (guow.size.is_a?(Hash) ? '' : guow.size))
-      worksheet.add_cell(ind, 15, (guow.ajusted_size.is_a?(Hash) ? '' : guow.ajusted_size))
-
-      worksheet.add_cell(ind, 16, guow.intermediate_weight)
+      worksheet.add_cell(ind, 0, current_module_project.project.organization)
+      worksheet.add_cell(ind, 1, "Fournisseur")
+      worksheet.add_cell(ind, 2, "Demandeur")
+      worksheet.add_cell(ind, 3, current_module_project.project.application)
+      worksheet.add_cell(ind, 4, current_module_project.project.title)
+      worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
+      worksheet.add_cell(ind, 6, current_module_project.project.project_area)
+      worksheet.add_cell(ind, 7, current_module_project.project.acquisition_category)
+      worksheet.add_cell(ind, 8, current_module_project.project.platform_category)
+      worksheet.add_cell(ind, 9, current_module_project.project.title)
+      worksheet.add_cell(ind, 10, current_module_project.project.version_number)
+      worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.name)
+      worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
+      worksheet.add_cell(ind, 13, guow.name)
+      worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+      worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 16, guow.quantity)
+      worksheet.add_cell(ind, 17, guow.tracking)
+      worksheet.add_cell(ind, 18, cplx)
+      worksheet.add_cell(ind, 19, guow.intermediate_weight)
 
 
       hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
@@ -1733,11 +1719,11 @@ class Guw::GuwModelsController < ApplicationController
                                                                 module_project_id: current_module_project.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
-                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               elsif guw_coefficient.coefficient_type == "Coefficient"
-                worksheet.add_cell(ind, 17+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-;                worksheet.add_cell(ind, 17+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+;                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -1747,12 +1733,13 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
-              worksheet.add_cell(ind, 17 + j, v.to_s)
+              worksheet.add_cell(ind, 20 + j, v.to_s)
             end
           end
         end
       end
 
+      ii = 0
       @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
         guw_type = guow.guw_type
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
@@ -1762,15 +1749,20 @@ class Guw::GuwModelsController < ApplicationController
         unless guowa.nil?
           gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
                                             guw_attribute_id: guowa.guw_attribute_id).first
-          worksheet.add_cell(ind, jj + i, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+          worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+          worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
         else
           p "GUOWA is nil"
         end
+        ii = ii + 2
       end
     end
 
-    @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
-      worksheet.add_cell(0, jj + i, guw_attribute.name)
+    ii = 0
+    @guw_model.guw_attributes.each do |guw_attribute|
+      worksheet.add_cell(0, jj + ii, guw_attribute.name)
+      worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+      ii = ii + 2
     end
 
     # send_data(workbook.stream.string, filename: "export.xlsx", type: "application/vnd.ms-excel")

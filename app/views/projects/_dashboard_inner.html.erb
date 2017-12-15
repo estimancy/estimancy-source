@@ -28,6 +28,11 @@
             <%= current_component %>
           </span>
         </h5>
+        <div class="buttons">
+          <span>
+              <%= link_to "Exporter en PDF", export_dashboard_path(format: "pdf"), class: "btn btn-mini" %>
+          </span>
+        </div>
       </div>
       <div class="collapse in" id="collapseProduct">
         <div class="widget-content resizableProduct">
@@ -40,8 +45,6 @@
         </div>
       </div>
     </div>
-
-
 
   </div>
 

@@ -1,0 +1,380 @@
+<html>
+<head>
+  <script>
+    function number_pages() {
+      var vars={};
+      var x=document.location.search.substring(1).split('&');
+      for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = decodeURIComponent(z[1]);}
+      var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
+      for(var i in x) {
+        var y = document.getElementsByClassName(x[i]);
+        for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
+      }
+    }
+  </script>
+
+  <%= wicked_pdf_stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+
+  <style>
+    div.alwaysbreak { page-break-before: always; }
+    div.nobreak:before { clear:both; }
+    div.nobreak { page-break-inside: avoid; }
+
+    main {
+      font-size:	10px;
+    }
+  </style>
+</head>
+
+<h2>
+  Informations générales
+</h2>
+<hr>
+
+<body onload="number_pages()">
+<div class="row-fluid">
+  <div class="span4">
+    <b>Nom de l'organisation</b>
+  </div>
+  <div class="span8">
+    <%= @project.organization.name %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Numéro du devis</b>
+  </div>
+  <div class="span8">
+    <%= @project.title %> <%= @project.version_number %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Nom de l'application</b>
+  </div>
+  <div class="span8">
+    <%= @project.application %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Description</b>
+  </div>
+  <div class="span8">
+    <%= @project.description %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Secteur de projets</b>
+  </div>
+  <div class="span8">
+    <%= @project.project_area %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Acquisition</b>
+  </div>
+  <div class="span8">
+    <%= @project.acquisition_category %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Platform Category</b>
+  </div>
+  <div class="span8">
+    <%= @project.platform_category %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Date de démarrage</b>
+  </div>
+  <div class="span8">
+    <%= @project.start_date %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Statut du devis</b>
+  </div>
+  <div class="span8">
+    <%= @project.estimation_status %>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span4">
+    <b>Historique des changements de statuts</b>
+  </div>
+  <div class="span8">
+    <%= @project.status_comment %>
+  </div>
+</div>
+
+<h2>
+  Résultats
+</h2>
+<hr>
+
+<% @module_projects.each do |module_project| %>
+  <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+  <div class="row-fluid">
+    <% view_widgets.each do |view_widget| %>
+      <div class="span3">
+        <h4><%= view_widget.name %></h4>
+        <% unless view_widget.estimation_value.nil? %>
+          <% begin %>
+            <p>
+              <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
+            </p>
+          <% rescue %>
+            -
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="alwaysbreak"></div>
+
+<% @module_projects.each do |module_project| %>
+  <% @wbs_activity = module_project.wbs_activity %>
+  <% if module_project.pemodule.alias == "effort_breakdown" %>
+    <h2>
+      <%= @wbs_activity.name %>
+    </h2>
+    <hr>
+    <table class="table main" style="font-size: 0.9em;">
+      <tr>
+        <th>Nom</th>
+        <th>Prix Service</th>
+        <th>Effort Théorique</th>
+        <th>Cout Théorique</th>
+        <th>Effort Retenu</th>
+        <th>Cout Retenu</th>
+      </tr>
+
+      <% @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first %>
+      <% @module_project_ratio_elements = module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component) %>
+
+      <% @wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
+        <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
+        <tr>
+          <td>
+            <%= wbs_activity_element.name %>
+          </td>
+          <td>
+            <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
+          </td>
+          <td>
+            <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %>
+          </td>
+          <td>
+            <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %>
+          </td>
+          <td>
+            <%= mp_ratio_element.theoretical_effort_probable.to_f.round(user_number_precision) %>
+          </td>
+          <td>
+            <%= mp_ratio_element.theoretical_cost_probable.to_f.round(user_number_precision) %>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="10">Commentaires</th>
+        </tr>
+        <tr>
+          <td colspan="10">
+            <%= mp_ratio_element.comments %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+
+    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+    <div class="row-fluid">
+      <% view_widgets.each do |view_widget| %>
+        <div class="span3">
+          <h4><%= view_widget.name %></h4>
+          <% unless view_widget.estimation_value.nil? %>
+            <% begin %>
+              <p>
+                <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
+              </p>
+            <% rescue %>
+              -
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="alwaysbreak"></div>
+
+  <% elsif module_project.pemodule.alias == "guw" %>
+
+    <% @guw_model = module_project.guw_model %>
+    <% @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where( organization_id: @current_organization.id,
+                                                                     project_id: @project.id,
+                                                                     module_project_id: module_project.id,
+                                                                     pbs_project_element_id: @pbs_project_element.id).all %>
+
+    <h2>
+      <%= @guw_model.name %>
+    </h2>
+    <hr>
+    <% unless @unit_of_work_groups.nil? %>
+      <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
+      <% @unit_of_work_groups.each do |uowg| %>
+        <h3>
+          <%= uowg.name %>
+        </h3>
+        <table class="table table-bordered">
+          <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+              <% unless i[1].blank? %>
+                <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
+                  <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                  <% unless guw_coefficient.nil? %>
+                    <th class="span1">
+                      <%= i[0] %>
+                    </th>
+                  <% end %>
+                <% elsif i[0] == "Coefficient" %>
+                  <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                    <th class="span1">
+                      <%= i[0] %>
+                    </th>
+                  <% end %>
+                <% elsif i[0] == "Critères" %>
+
+                <% elsif i[0] == "Coeff. de Complexité" %>
+                  <% if i[1].blank? %>
+                    <th class="span1"></th>
+                  <% else %>
+                    <th class="span1">
+                      <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                        Coeff. de complexité
+                      <% else %>
+                        Complexité
+                      <% end %>
+                    </th>
+                  <% end %>
+                <% else %>
+                  <th class="span1">
+                    <%= i[0] %>
+                  </th>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tr>
+
+          <% uowg.guw_unit_of_works.each do |uow| %>
+            <tr>
+              <td>
+                <%= uow.name %>
+              </td>
+              <td>
+                <%= uow.guw_type %>
+              </td>
+
+              <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                <% unless i[1].blank? %>
+                  <% if i[0] == "Coeff. de Complexité" %>
+                    <td>
+                      <%= uow.intermediate_percent %>
+                    </td>
+                  <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
+                    <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
+                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                                                                           guw_coefficient_id: @guw_coefficient.id,
+                                                                           guw_coefficient_element_id: nil).last %>
+                      <td>
+                        <%= ceuw.percent %>
+                      </td>
+                    <% else %>
+                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                                                                           guw_coefficient_id: @guw_coefficient.id).last %>
+                      <td>
+                        <%= ceuw.guw_coefficient_element.name %>
+                      </td>
+                    <% end %>
+
+                  <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
+                    <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <td>
+                      <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
+                    </td>
+                  <% else %>
+
+                  <% end %>
+                <% end %>
+              <% end %>
+            </tr>
+
+            <tr>
+              <td colspan="3"><b>Nom de l'attribut</b></td>
+              <td colspan="1"><b>Quantité</b></td>
+              <td colspan="12"><b>Commentaires</b></td>
+            </tr>
+
+            <% uow.guw_unit_of_work_attributes.where(guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
+              <% gat = Guw::GuwAttributeType.where(guw_type_id: uow.guw_type.id, guw_attribute_id: uowa.guw_attribute_id).first %>
+              <% unless uow.guw_type.nil? %>
+                <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: uow.guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
+              <% end %>
+              <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
+                <tr>
+                  <td colspan="3"><%= uowa.guw_attribute.name %> (<%= gat.nil? ? '-' : gat.default_value.to_f %>) </td>
+                  <td colspan="1"><%= uowa.most_likely %></td>
+                  <td colspan="12"><%= uowa.comments %></td>
+                </tr>
+              <% end %>
+            <% end %>
+          <% end %>
+        </table>
+
+        <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+        <div class="row-fluid">
+          <% view_widgets.each do |view_widget| %>
+            <div class="span3">
+              <h4><%= view_widget.name %></h4>
+              <% unless view_widget.estimation_value.nil? %>
+                <% if view_widget.estimation_value.string_data_probable.is_a?(Float) %>
+                  <p>
+                    <%= view_widget.estimation_value.string_data_probable.to_f.round(user_number_precision) %>
+                  </p>
+                <% else %>
+                  <p>
+                    <%= view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision) %>
+                  </p>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="alwaysbreak"></div>
+
+      <% end %>
+    <% end %>
+
+  <% end %>
+<% end %>
+
+</body>
+</html>

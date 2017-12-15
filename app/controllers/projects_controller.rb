@@ -3495,15 +3495,22 @@ public
   end
 
 
-  def export_pdf
-    @project = Project.find(params[:project_id])
-    pdf = WickedPdf.new.pdf_from_url('https://github.com/mileszs/wicked_pdf')
-    save_path = Rails.root.join('pdfs','filename.pdf')
-    File.open(save_path, 'wb') do |file|
-      file << pdf
+  def export_dashboard
+    @current_organization = @project.organization
+    @pbs_project_element = current_component
+    @user = current_user
+    @module_projects = @project.module_projects
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "Test",
+               encoding: "UTF-8",
+               page_size: 'A4',
+               orientation: :landscape
+      end
     end
-    redirect_to :back
-   end
+  end
 
   private
   def generate_dashboard

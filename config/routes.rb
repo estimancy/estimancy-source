@@ -104,7 +104,7 @@ Projestimate::Application.routes.draw do
   get '/support' => redirect("https://estimancy-themes.com/en/support/")
 
 
-  get 'export_pdf' => 'projects#export_pdf', :as => 'export_pdf'
+  get 'export_dashboard' => 'projects#export_dashboard', :as => 'export_dashboard'
   match 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'
