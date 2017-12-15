@@ -189,7 +189,7 @@
         <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
         <tr>
           <td>
-            <%= wbs_activity_element.name %>
+            <b><%= wbs_activity_element.name %></b>
           </td>
           <td>
             <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
@@ -209,8 +209,8 @@
         </tr>
         <% unless mp_ratio_element.comments.nil? %>
           <tr>
-            <td><b>Commentaires</b></td>
-            <td colspan="7"> <%= mp_ratio_element.comments %></td>
+            <td colspan="1">-</td>
+            <td colspan="7"><%= mp_ratio_element.comments %></td>
           </tr>
         <% end %>
       <% end %>
@@ -254,7 +254,7 @@
         <h3>
           <%= uowg.name %>
         </h3>
-        <table class="table table-bordered table-condensed main" style="font-size: 10px;">
+        <table class="table table-condensed main" style="font-size: 10px;">
           <tr>
             <th>Nom</th>
             <th>Type</th>
@@ -299,7 +299,7 @@
           <% uowg.guw_unit_of_works.each do |uow| %>
             <tr>
               <td>
-                <%= uow.name %>
+                <b><%= uow.name %></b>
               </td>
               <td>
                 <%= uow.guw_type %>
@@ -342,13 +342,6 @@
               <% end %>
             </tr>
 
-            <tr>
-              <td colspan="1"></td>
-              <td colspan="2"><b>Nom de l'attribut</b></td>
-              <td colspan="1"><b>Quantité</b></td>
-              <td colspan="12"><b>Commentaires</b></td>
-            </tr>
-
             <% uow.guw_unit_of_work_attributes.where(guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
               <% gat = Guw::GuwAttributeType.where(guw_type_id: uow.guw_type.id, guw_attribute_id: uowa.guw_attribute_id).first %>
               <% unless uow.guw_type.nil? %>
@@ -356,7 +349,7 @@
               <% end %>
               <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
                 <tr>
-                  <td colspan="1"></td>
+                  <td colspan="2"></td>
                   <td colspan="2"><%= uowa.guw_attribute.name %> (<%= gat.nil? ? '-' : gat.default_value.to_f %>) </td>
                   <td colspan="1"><%= uowa.most_likely %></td>
                   <td colspan="12"><%= uowa.comments %></td>
