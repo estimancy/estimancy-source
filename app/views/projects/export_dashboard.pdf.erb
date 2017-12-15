@@ -1,5 +1,33 @@
-<%= wicked_pdf_stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+<html>
+<head>
+  <script>
+    function number_pages() {
+      var vars={};
+      var x=document.location.search.substring(1).split('&');
+      for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = decodeURIComponent(z[1]);}
+      var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
+      for(var i in x) {
+        var y = document.getElementsByClassName(x[i]);
+        for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
+      }
+    }
+  </script>
 
+  <%= wicked_pdf_stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+
+  <style>
+    div.alwaysbreak { page-break-before: always; }
+    div.nobreak:before { clear:both; }
+    div.nobreak { page-break-inside: avoid; }
+  </style>
+</head>
+
+<h2>
+  Informations générales
+</h2>
+<hr>
+
+<body onload="number_pages()">
 <div class="row-fluid">
   <div class="span4">
     <b>Nom de l'organisation</b>
@@ -90,49 +118,40 @@
   </div>
 </div>
 
-<%
-   @module_projects.each do |module_project|
-
-     if module_project.pemodule.alias == "guw"
-       @guw_model = module_project.guw_model
-       @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @current_organization.id,
-                                                                    project_id: @project.id,
-                                                                    module_project_id: module_project.id,
-                                                                    pbs_project_element_id: @pbs_project_element.id).all
-
-     elsif module_project.pemodule.alias == "effort_breakdown"
-       @wbs_activity = module_project.wbs_activity
-       @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
-       @wbs_activity_ratio = module_project.get_wbs_activity_ratio(@pbs_project_element.id)
-
-       if @wbs_activity_ratio.nil?
-         unless params[:ratio].nil?
-           @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
-         end
-       end
-
-       unless @wbs_activity_ratio.nil?
-         ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
-         @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
-
-         # Module_project Ratio elements
-         @module_project_ratio_elements = module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
-
-         # Module Project Ratio Variables
-         @module_project_ratio_variables = module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
-       end
-     else
-       # other
-     end
-   end
-%>
-
+<h2>
+  Résultats
+</h2>
 <hr>
+
 <% @module_projects.each do |module_project| %>
+  <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+  <div class="row-fluid">
+    <% view_widgets.each do |view_widget| %>
+      <div class="span3">
+        <h4><%= view_widget.name %></h4>
+        <% unless view_widget.estimation_value.nil? %>
+          <% begin %>
+            <p>
+              <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
+            </p>
+          <% rescue %>
+            -
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="alwaysbreak"></div>
+
+<% @module_projects.each do |module_project| %>
+  <% @wbs_activity = module_project.wbs_activity %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
     <h2>
       <%= @wbs_activity.name %>
     </h2>
+    <hr>
     <table class="table">
       <tr>
         <th>Nom</th>
@@ -154,19 +173,19 @@
             <%= wbs_activity_element.name %>
           </td>
           <td>
-            <%= mp_ratio_element.tjm %>
+            <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
           </td>
           <td>
-            <%= mp_ratio_element.retained_effort_probable %>
+            <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %>
           </td>
           <td>
-            <%= mp_ratio_element.retained_cost_probable %>
+            <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %>
           </td>
           <td>
-            <%= mp_ratio_element.theoretical_effort_probable %>
+            <%= mp_ratio_element.theoretical_effort_probable.to_f.round(user_number_precision) %>
           </td>
           <td>
-            <%= mp_ratio_element.theoretical_cost_probable %>
+            <%= mp_ratio_element.theoretical_cost_probable.to_f.round(user_number_precision) %>
           </td>
           <td>
             <%= mp_ratio_element.comments %>
@@ -181,21 +200,32 @@
         <div class="span3">
           <h4><%= view_widget.name %></h4>
           <% unless view_widget.estimation_value.nil? %>
-            <p>
-              <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value] %>
-            </p>
+            <% begin %>
+              <p>
+                <%= view_widget.estimation_value.string_data_probable[current_component.id][@wbs_activity.root_element.id][:value].to_f.round(user_number_precision) %>
+              </p>
+            <% rescue %>
+              -
+            <% end %>
           <% end %>
         </div>
       <% end %>
     </div>
 
-    <hr>
-
+    <div class="alwaysbreak"></div>
 
   <% elsif module_project.pemodule.alias == "guw" %>
+
+    <% @guw_model = module_project.guw_model %>
+    <% @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where( organization_id: @current_organization.id,
+                                                                     project_id: @project.id,
+                                                                     module_project_id: module_project.id,
+                                                                     pbs_project_element_id: @pbs_project_element.id).all %>
+
     <h2>
       <%= @guw_model.name %>
     </h2>
+    <hr>
     <% unless @unit_of_work_groups.nil? %>
       <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
       <% @unit_of_work_groups.each do |uowg| %>
@@ -279,7 +309,7 @@
                   <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
                     <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
                     <td>
-                      <%= uow.ajusted_size["#{go.id}"] %>
+                      <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
                     </td>
                   <% else %>
 
@@ -298,11 +328,11 @@
               <% unless view_widget.estimation_value.nil? %>
                 <% if view_widget.estimation_value.string_data_probable.is_a?(Float) %>
                   <p>
-                    <%= view_widget.estimation_value.string_data_probable %>
+                    <%= view_widget.estimation_value.string_data_probable.to_f.round(user_number_precision) %>
                   </p>
                 <% else %>
                   <p>
-                    <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+                    <%= view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision) %>
                   </p>
                 <% end %>
               <% end %>
@@ -310,10 +340,13 @@
           <% end %>
         </div>
 
-        <hr>
+        <div class="alwaysbreak"></div>
 
       <% end %>
     <% end %>
 
   <% end %>
 <% end %>
+
+</body>
+</html>
