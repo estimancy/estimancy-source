@@ -569,23 +569,25 @@ class ApplicationController < ActionController::Base
     s = sort_order  #params[:s]
 
     case k
-      when "title", "request_number", "version_number",  "description", "private", "start_date", "updated_at", "created_at"
-        projects = projects.order(k + ' ' + s)
+      # when "title" , "request_number", "version_number",  "description", "private", "start_date", "updated_at", "created_at"
+      #   projects = projects.order(k + ' ' + s)
 
-      # when "request_number"
-      #   projects = projects.order("request_number #{s}")
-      # when "version_number"
-      #   projects = projects.order("version_number #{s}")
-      # when "description"
-      #   projects = projects.order("description #{s}")
-      # when "private"
-      #   projects = projects.order("private #{s}")
-      # when "start_date"
-      #   projects = projects.order("start_date #{s}")
-      # when "updated_at"
-      #   projects = projects.order("updated_at #{s}")
-      # when "created_at"
-      #   projects = projects.order("created_at #{s}")
+      when "title"
+        projects = projects.order("title #{s}")
+      when "request_number"
+        projects = projects.order("request_number #{s}")
+      when "version_number"
+        projects = projects.order("version_number #{s}")
+      when "description"
+        projects = projects.order("description #{s}")
+      when "private"
+        projects = projects.order("private #{s}")
+      when "start_date"
+        projects = projects.order("start_date #{s}")
+      when "updated_at"
+        projects = projects.order("updated_at #{s}")
+      when "created_at"
+        projects = projects.order("created_at #{s}")
 
       when "application"
         projects = Project.unscoped
