@@ -181,13 +181,13 @@
           <% if view_widget.is_kpi_widget == true %>
             <h4><%= view_widget.name %></h4>
             <p>
-              <%= get_kpi_value(view_widget) %>
+              <%= get_kpi_value(view_widget).to_f.round(user_number_precision) %>
             </p>
           <% else %>
             <% unless view_widget.estimation_value.nil? %>
               <h4><%= view_widget.name %></h4>
               <p>
-                <%= view_widget.estimation_value.string_data_probable[current_component.id] %>
+                <%= view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision) %>
               </p>
             <% end %>
           <% end %>
