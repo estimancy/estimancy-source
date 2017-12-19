@@ -1760,29 +1760,40 @@ class Guw::GuwModelsController < ApplicationController
         ii = ii + 2
       end
 
-      kk = 3 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + (@wbs_activity_module_project.wbs_activity_elements.size * 2) + (@guw_model.guw_attributes.size * 2)
+      kk = 13 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + (@wbs_activity_module_project.wbs_activity_elements.size * 2) + (@guw_model.guw_attributes.size * 2)
 
       @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
       @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
       @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
 
+      calculator = Dentaku::Calculator.new
       ii = 0
-      @wbs_activity_module_project.wbs_activity_elements.each_with_index do |wbs_activity_element, i|
+      @wbs_activity_module_project.wbs_activity_elements.each_with_index do |wbs_activity_element|
 
-        guw_output = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
+        guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
+        guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
 
         mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
-        guw_output_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output.id}"].to_f.round(2)))
+
+        guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+        guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+
+        corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+        final_formula = corresponding_ratio_elt.formula
+                            .gsub("RTU", guw_output_effort_value.to_s)
+                            .gsub("TEST", guw_output_test_value.to_s)
+                            .gsub('%', ' * 0.01 ')
 
         begin
-          value_effort = guw_output_value * mp_ratio_element.retained_effort_probable.to_f / @root_module_project_ratio_element.retained_effort_probable.to_f
+          value = calculator.evaluate(final_formula).to_f
         rescue
-          value_effort = 0
+          value = 0
         end
 
-        value_cost = guw_output_value * mp_ratio_element.tjm.to_f
+        value_cost = value * mp_ratio_element.tjm.to_f
 
-        worksheet.add_cell(ind, kk + ii, value_effort.round(4))
+        worksheet.add_cell(ind, kk + ii, value.round(4))
         worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
         ii = ii + 2
       end
