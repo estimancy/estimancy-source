@@ -34,7 +34,7 @@
 <body onload="number_pages()">
 <div class="row-fluid">
   <div class="span4">
-    <b>Nom de l'organisation</b>
+    <b>Nom du CDS</b>
   </div>
   <div class="span8">
     <%= @project.organization.name %>
@@ -88,7 +88,7 @@
 
 <div class="row-fluid">
   <div class="span4">
-    <b>Secteur de projets</b>
+    <b><%= I18n.t(:project_area) %></b>
   </div>
   <div class="span8">
     <%= @project.project_area %>
@@ -97,7 +97,7 @@
 
 <div class="row-fluid">
   <div class="span4">
-    <b>Acquisition</b>
+    <b><%= I18n.t(:acquisition_category) %></b>
   </div>
   <div class="span8">
     <%= @project.acquisition_category %>
@@ -106,7 +106,7 @@
 
 <div class="row-fluid">
   <div class="span4">
-    <b>Platform Category</b>
+    <b><%= I18n.t(:platform_category) %></b>
   </div>
   <div class="span8">
     <%= @project.platform_category %>
@@ -115,7 +115,7 @@
 
 <div class="row-fluid">
   <div class="span4">
-    <b>Date de démarrage</b>
+    <b><%= I18n.t(:start_date) %></b>
   </div>
   <div class="span8">
     <%= @project.start_date %>
@@ -124,7 +124,7 @@
 
 <div class="row-fluid">
   <div class="span4">
-    <b>Statut du devis</b>
+    <b><%= I18n.t(:estimation_status) %></b>
   </div>
   <div class="span8">
     <%= @project.estimation_status %>
@@ -269,6 +269,7 @@
       <% end %>
     </table>
 
+    <hr>
     <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
@@ -366,6 +367,8 @@
                     <td class="center">
                       <p>
                         <%= uow.intermediate_percent %>
+                        <br>
+                        <%= uow.intermediate_weight %>
                       </p>
                     </td>
                   <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
@@ -387,9 +390,16 @@
 
                   <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
                     <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                                      guw_output_id: go.id,
+                                                      guw_type_id: uow.guw_type.id).first %>
                     <td class="center">
-                      <%= uow.size["#{go.id}"].to_f.round(user_number_precision) %> <br>
-                      <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
+                      <% if got.display_type == "display" || got.display_type == "modif" %>
+                        <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
+                      <% else %>
+                        <%= uow.size["#{go.id}"].to_f.round(user_number_precision) %> <br>
+                        <%= uow.ajusted_size["#{go.id}"].to_f.round(user_number_precision) %>
+                      <% end %>
                     </td>
                   <% else %>
 
@@ -417,6 +427,8 @@
 
       <% end %>
     <% end %>
+
+    <hr>
 
     <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
     <div class="row-fluid">
