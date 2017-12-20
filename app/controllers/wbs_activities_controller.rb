@@ -586,8 +586,6 @@ class WbsActivitiesController < ApplicationController
       wbs_effort_breakdown_results[:high] = wbs_effort_breakdown_results[:most_likely]
     end
 
-    ###TESTS
-
     ["low", "most_likely", "high"].each do |level|
       theoretical_efforts[level.to_sym] = wbs_effort_breakdown_results[level.to_sym][:theoretical_efforts]
       theoretical_costs[level.to_sym] =   wbs_effort_breakdown_results[level.to_sym][:theoretical_costs]
@@ -681,8 +679,6 @@ class WbsActivitiesController < ApplicationController
     end
 
 
-    ###FIN TESTS
-
     # Sauvegarde des informations de sorties
     current_pbs_estimations.each do |est_val|
       @tmp_results = Hash.new
@@ -692,7 +688,6 @@ class WbsActivitiesController < ApplicationController
           ratio_name = @ratio_reference.name
           est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_name })
 
-        #elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost")
         elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
           if (est_val.in_out == 'output') && (est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost"))
 
@@ -830,7 +825,7 @@ class WbsActivitiesController < ApplicationController
                   tmp = Hash.new
                   unless corresponding_ratio_profile_value.nil?
 
-                    #if est_val.pe_attribute.alias == "cost" or "theoretical_cost"
+                    #If est_val.pe_attribute.alias == "cost" or "theoretical_cost"
                     if est_val.pe_attribute.alias.in?("theoretical_cost", "cost")
                       effort_man_month_attribute = "retained_effort"
                       if est_val.pe_attribute.alias == "theoretical_cost"
@@ -845,7 +840,7 @@ class WbsActivitiesController < ApplicationController
                         wbs_activity_ratio_element = WbsActivityRatioElement.where(wbs_activity_ratio_id: @ratio_reference.id, wbs_activity_element_id: key).first
                         unless wbs_activity_ratio_element.nil?
                           wbs_activity_ratio_element.wbs_activity_ratio_profiles.each do |warp|
-                            if efforts_man_month[key].nil?
+                            if efforts_man_month[key].nil? || warp.ratio_value.blank?
                               tmp[warp.organization_profile.id] = nil
                             else
                               tmp[warp.organization_profile.id] = warp.organization_profile.cost_per_hour.to_f * (efforts_man_month[key].to_f * @wbs_activity.effort_unit_coefficient.to_f) * (warp.ratio_value.to_f / 100)

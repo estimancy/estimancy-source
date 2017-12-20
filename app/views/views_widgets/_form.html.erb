@@ -53,13 +53,13 @@
           </td>
           <td><div id="view_icon_class_image"></div></td>
         </tr>
+
         <tr>
           <td>
             <label class="checkbox"></label>
+            <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
             <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-            <%# if @module_project.wbs_activity %>
             <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
-            <%# end %>
           </td>
         </tr>
       </table>
@@ -103,6 +103,8 @@
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
 
     var widget_type = $("#views_widget_widget_type").val();
+
+    // Affichage du MIN/MAX
     if (widget_type == "text" || widget_type == "bar_chart"){
         $('#views_widget_show_min_max').removeAttr('disabled');
     }
@@ -111,6 +113,19 @@
         $('#views_widget_show_min_max').attr('disabled','disabled');
         $("#views_widget_widget_type").value = 0;
     }
+
+    // Affichage ou non du TJM
+    if ((widget_type == "table_cost_per_phase") || (widget_type == "table_cost_per_phase_without_zero") ||
+        (widget_type == "cost_per_phases_profiles_table") || (widget_type == "cost_per_phases_profiles_table_without_zero") ||
+        (widget_type == "table_effort_and_cost_per_phases_profiles") || (widget_type == "table_effort_and_cost_per_phases_profiles_without_zero"))
+    {
+        $('#views_widget_show_tjm').removeAttr('disabled');
+    }
+    else {
+        $('#views_widget_show_tjm').attr('checked', false);
+        $('#views_widget_show_tjm').attr('disabled','disabled');
+    }
+
 //    if (widget_type !== ""){
 //        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
 //            $('#views_widget_show_min_max').attr('disabled','disabled');
@@ -161,6 +176,20 @@
             $('#views_widget_show_min_max').attr('disabled','disabled');
             $("#views_widget_widget_type").value = 0;
         }
+
+        // Affichage on non du TJM
+        if ((widget_type == "table_cost_per_phase") || (widget_type == "table_cost_per_phase_without_zero") ||
+            (widget_type == "cost_per_phases_profiles_table") || (widget_type == "cost_per_phases_profiles_table_without_zero") ||
+            (widget_type == "table_effort_and_cost_per_phases_profiles") || (widget_type == "table_effort_and_cost_per_phases_profiles_without_zero"))
+        {
+            $('#views_widget_show_tjm').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_tjm').attr('checked', false);
+            $('#views_widget_show_tjm').attr('disabled','disabled');
+        }
+
+
 //        if (widget_type !== ""){
 //            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
 //                $('#views_widget_show_min_max').attr('disabled','disabled');

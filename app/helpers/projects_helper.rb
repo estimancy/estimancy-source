@@ -155,7 +155,7 @@ module ProjectsHelper
     case pe_attribute_alias
       when "effort", "cost"
         pe_attribute_alias = "retained_#{pe_attribute_alias}_probable"
-      when "theoretical_effort", "theoretical_cost"
+      when "theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"
         pe_attribute_alias = "#{pe_attribute_alias}_probable"
       else
         # type code here

@@ -15,7 +15,14 @@
      effort_unit_coefficient = 1
    end
 
-   #module_project_ratio_elementss = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(:order => :position))
+   pe_attribute_alias = estimation_value.pe_attribute.alias
+   if pe_attribute_alias.in?("cost", "effort")
+     effort_attribute_alias = "retained_effort"
+     cost_attribute_alias = "retained_cost"
+   else
+     effort_attribute_alias = "theoretical_effort"
+     cost_attribute_alias = "theoretical_cost"
+   end
 
    unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
      if view_widget.use_organization_effort_unit == true
@@ -24,6 +31,15 @@
      end
    end
 
+   effort_unit = wbs_activity.effort_unit
+   cost_unit = @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
+
+   # Get min value and organization effort unit coeff
+   if view_widget.use_organization_effort_unit == true
+     min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+     effort_unit = organization_effort_unit
+   end
 
 %>
 
@@ -32,7 +48,12 @@
     <th rowspan=""<%= rowspan %>">Phases</th>
     <th colspan=<%= colspan %>>
       <span>
-        <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= "(#{wbs_unit})" %>
+        <%= I18n.t("#{effort_attribute_alias}") %> <%= "(#{effort_unit})" %>
+      </span>
+    </th>
+    <th>
+      <span>
+        <%= I18n.t("#{cost_attribute_alias}") %> <%= "(#{cost_unit})" %>
       </span>
     </th>
   </tr>
@@ -41,8 +62,6 @@
   <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
     <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
     <% if mp_ratio_element %>
-      <%# module_project_ratio_elements.each do |mp_ratio_element| %>
-      <% completion_consistency = "" %>
       <% title = "" %>
       <tr>
         <td>
@@ -51,32 +70,37 @@
         </span>
         </td>
         <% levels.each do |level| %>
-            <td class=''>
-          <span class='pull-right'>
+            <% effort_level_value = mp_ratio_element.send("#{effort_attribute_alias}_#{level}") %>
+            <% cost_level_value = mp_ratio_element.send("#{cost_attribute_alias}_#{level}") %>
 
-            <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
-            <%=
-                if mp_ratio_element.selected
-                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
-                        level_value.nil? ? "-" : "#{convert_with_precision(level_value, number_precision, true)} #{wbs_unit}"
-                    else
-                      # for Effort attribute
-                      if view_widget.use_organization_effort_unit == true
-                        # use organization effort unit
-                        # "#{convert_with_precision(convert(level_value, @project.organization), number_precision, true)} #{@wbs_unit}"
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
-                      else
-                        # use module instance effort unit
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), number_precision, true)} #{wbs_unit}"
-                      end
-                    end
-                else
-                    "-"
-                end
-            %>
+            <% if mp_ratio_element.selected %>
+                <!--  # for Effort attribute -->
+                <td class=''>
+                    <span class='pull-right'>
+                        <%=
 
-          </span>
-            </td>
+                            if view_widget.use_organization_effort_unit == true
+                              # use organization effort unit
+                              effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
+                            else
+                              # use module instance effort unit
+                              effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_level_value, effort_unit_coefficient), number_precision, true)} #{effort_unit}"
+                            end
+                        %>
+                    </span>
+                </td>
+
+                <!--  # for Cost attribute -->
+                <td class=''>
+                    <span class='pull-right'>
+                        <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
+                    </span>
+                </td>
+
+            <% else %>
+                <td class=''><span class='pull-right'> - </span></td>
+                <td class=''><span class='pull-right'> - </span></td>
+            <% end %>
         <% end %>
         <tr>
     <% end %>
