@@ -178,24 +178,28 @@
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
         <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>;">
-          <% if view_widget.is_kpi_widget == true %>
-            <h4><%= view_widget.name %></h4>
-            <p>
-              <%= Guw::GuwModel::display_value(get_kpi_value(view_widget).to_f.round(user_number_precision),
-                                               view_widget.estimation_value,
-                                               view_widget,
-                                               current_user) %>
-            </p>
-          <% else %>
-            <% unless view_widget.estimation_value.nil? %>
+          <% begin %>
+            <% if view_widget.is_kpi_widget == true %>
               <h4><%= view_widget.name %></h4>
               <p>
-                <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
+                <%= Guw::GuwModel::display_value(get_kpi_value(view_widget).to_f.round(user_number_precision),
                                                  view_widget.estimation_value,
                                                  view_widget,
                                                  current_user) %>
               </p>
+            <% else %>
+              <% unless view_widget.estimation_value.nil? %>
+                <h4><%= view_widget.name %></h4>
+                <p>
+                  <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
+                                                   view_widget.estimation_value,
+                                                   view_widget,
+                                                   current_user) %>
+                </p>
+              <% end %>
             <% end %>
+          <% rescue%>
+           -
           <% end %>
         </div>
       <% end %>
