@@ -1649,7 +1649,7 @@ class Guw::GuwModelsController < ApplicationController
                 I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
                 I18n.t(:likely).length, I18n.t(:high).length]
 
-    ([
+    header = [
         "Nom du CDS",
         "Nom du fournisseur",
         "Nom de l'application",
@@ -1658,7 +1658,7 @@ class Guw::GuwModelsController < ApplicationController
         "Statut du devis",
         "Service",
         "Prestation",
-        "Localication",
+        "Localisation",
         I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
@@ -1669,9 +1669,11 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:quantity),
         I18n.t(:tracability),
         I18n.t(:cotation),
-        "COEF"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.map{|i| [i.name, "Commentaires"] } + @wbs_activity.wbs_activity_elements.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }).flatten.each_with_index do |val, index|
-          worksheet.add_cell(0, index, val)
-        end
+        "COEF"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]
+
+    header.each_with_index do |val, index|
+      worksheet.add_cell(0, index, val)
+    end
 
     worksheet.change_row_bold(0,true)
 
@@ -1726,7 +1728,7 @@ class Guw::GuwModelsController < ApplicationController
               elsif guw_coefficient.coefficient_type == "Coefficient"
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-                ;                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -1743,7 +1745,7 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       ii = 0
-      @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+      @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
         guw_type = guow.guw_type
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
                                                   guw_attribute_id: guw_attribute.id,
@@ -1760,15 +1762,18 @@ class Guw::GuwModelsController < ApplicationController
         ii = ii + 2
       end
 
-      kk = 13 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size + (@wbs_activity_module_project.wbs_activity_elements.size * 2) + (@guw_model.guw_attributes.size * 2)
+      kk = header.size - @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
 
       @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
       @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
       @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
 
+      tjm_array = []
+
       calculator = Dentaku::Calculator.new
       ii = 0
-      @wbs_activity_module_project.wbs_activity_elements.each_with_index do |wbs_activity_element|
+
+      @wbs_activity_module_project.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
         guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
         guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
@@ -1793,11 +1798,16 @@ class Guw::GuwModelsController < ApplicationController
 
         value_cost = value * mp_ratio_element.tjm.to_f
 
+        tjm_array << mp_ratio_element.tjm.to_f
+
         worksheet.add_cell(ind, kk + ii, value.round(4))
         worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
         ii = ii + 2
       end
 
+      unless tjm_array.empty?
+        worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size))
+      end
 
     end
 
