@@ -1791,7 +1791,7 @@ class Guw::GuwModelsController < ApplicationController
                             .gsub('%', ' * 0.01 ')
 
         begin
-          value = calculator.evaluate(final_formula).to_f
+          value = calculator.evaluate(final_formula).to_f.round(3)
         rescue
           value = 0
         end
@@ -1800,13 +1800,13 @@ class Guw::GuwModelsController < ApplicationController
 
         tjm_array << mp_ratio_element.tjm.to_f
 
-        worksheet.add_cell(ind, kk + ii, value.round(4))
+        worksheet.add_cell(ind, kk + ii, value.round(3))
         worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
         ii = ii + 2
       end
 
       unless tjm_array.empty?
-        worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size))
+        worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
       end
 
     end
