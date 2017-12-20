@@ -78,6 +78,7 @@ Guw::Engine.routes.draw do
     end
     post "duplicate"
     post "export"
+    post "export_with_wbs"
     post "export_old_config"
     post "export_new_config"
     get "all_guw_types"
