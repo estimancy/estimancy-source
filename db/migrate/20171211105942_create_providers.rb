@@ -1,6 +1,6 @@
 class CreateProviders < ActiveRecord::Migration
   def change
-    create_table :providers do |t|
+    create_table :providers, :force => true do |t|
       t.string :name
       t.integer :organization_id
 

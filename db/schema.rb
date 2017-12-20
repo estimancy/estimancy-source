@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171211145119) do
+ActiveRecord::Schema.define(:version => 20171219155153) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1320,6 +1320,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.integer  "estimations_counter"
     t.text     "estimations_counter_history"
     t.boolean  "copy_in_progress"
+    t.string   "automatic_quotation_number",  :default => "0"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|
@@ -1538,7 +1539,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
 
   create_table "projects", :force => true do |t|
     t.string   "title"
-    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "version_number",                 :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"
@@ -1566,10 +1567,11 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
-    t.boolean  "private",                               :default => false
+    t.boolean  "private",                                      :default => false
     t.boolean  "is_historicized"
     t.integer  "provider_id"
     t.string   "request_number"
+    t.boolean  "use_automatic_quotation_number"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
@@ -1930,9 +1932,8 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.text     "equation"
     t.string   "kpi_unit"
     t.boolean  "use_organization_effort_unit"
+    t.boolean  "show_tjm"
   end
-
-  add_index "views_widgets", ["module_project_id", "pe_attribute_id", "estimation_value_id"], :name => "module_project_views_widgets"
 
   create_table "wbs_activities", :force => true do |t|
     t.string   "uuid"
@@ -1972,7 +1973,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.string   "name"
     t.text     "description"
     t.string   "ancestry"
-    t.integer  "ancestry_depth",     :default => 0
+    t.integer  "ancestry_depth",   :default => 0
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
@@ -1982,16 +1983,14 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.string   "dotted_id"
     t.boolean  "is_root"
     t.string   "master_ancestry"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.float    "position"
     t.string   "phase_short_name"
-    t.boolean  "allow_modif_effort"
-    t.boolean  "allow_modif_cost"
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
-  add_index "wbs_activity_elements", ["organization_id", "wbs_activity_id", "ancestry"], :name => "organization_wbs_activity_elements"
+  add_index "wbs_activity_elements", ["wbs_activity_id", "ancestry"], :name => "organization_wbs_activity_elements"
   add_index "wbs_activity_elements", ["wbs_activity_id"], :name => "index_wbs_activity_elements_on_wbs_activity_id"
 
   create_table "wbs_activity_inputs", :force => true do |t|
@@ -2028,7 +2027,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
   end
 
   add_index "wbs_activity_ratio_elements", ["ancestry"], :name => "index_wbs_activity_ratio_elements_on_ancestry"
-  add_index "wbs_activity_ratio_elements", ["organization_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_wbs_activity_ratio_elements"
+  add_index "wbs_activity_ratio_elements", ["wbs_activity_ratio_id", "wbs_activity_element_id"], :name => "organization_wbs_activity_ratio_elements"
 
   create_table "wbs_activity_ratio_profiles", :force => true do |t|
     t.integer  "wbs_activity_ratio_element_id"
@@ -2054,7 +2053,7 @@ ActiveRecord::Schema.define(:version => 20171211145119) do
     t.boolean  "is_used_in_ratio_calculation"
   end
 
-  add_index "wbs_activity_ratio_variables", ["organization_id", "wbs_activity_ratio_id"], :name => "organization_wbs_activity_ratio_variables"
+  add_index "wbs_activity_ratio_variables", ["wbs_activity_ratio_id"], :name => "organization_wbs_activity_ratio_variables"
 
   create_table "wbs_activity_ratios", :force => true do |t|
     t.integer  "organization_id"

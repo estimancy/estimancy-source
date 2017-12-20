@@ -927,7 +927,9 @@ module ViewsWidgetsHelper
               value_to_show = "" #I18n.t(:error_invalid_date)
             end
 
-          when "table_effort_per_phase", "table_cost_per_phase", "table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero"
+          when "table_effort_per_phase", "table_cost_per_phase", "table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
+               "table_effort_and_cost_per_phase", "table_effort_and_cost_per_phase_without_zero"
+
             unless estimation_value.in_out == "input"
               wbs_activity = module_project.wbs_activity
               wai = WbsActivityInput.where(wbs_activity_id: wbs_activity, wbs_activity_ratio_id: ratio_reference.id, module_project_id: module_project.id, pbs_project_element_id: pbs_project_elt.id).first
@@ -986,7 +988,8 @@ module ViewsWidgetsHelper
                                                     chart_height: chart_height
                                        })
 
-          when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"
+          when "effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero",
+              "table_effort_and_cost_per_phases_profiles", "table_effort_and_cost_per_phases_profiles_without_zero"
 
             unless estimation_value.in_out == "input"
               value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
@@ -1109,12 +1112,21 @@ module ViewsWidgetsHelper
       module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
 
       if view_widget.widget_type.in?(["table_effort_per_phase_without_zero", "table_cost_per_phase_without_zero",
-                                      "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero"])
-        module_project_ratio_elements = module_project_ratio_elements.where(
-            "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL OR
-             retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL AND
-             retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
-             retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
+                                      "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero",
+                                      "table_effort_and_cost_per_phase_without_zero", "table_effort_and_cost_per_phases_profiles_without_zero"
+                                     ])
+        # module_project_ratio_elements = module_project_ratio_elements.where(
+        #     "retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL OR
+        #      retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL AND
+        #      retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
+        #      retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
+
+        module_project_ratio_elements_test = module_project_ratio_elements.where(
+            "((retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL) OR
+             (retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL))
+             AND
+             ((retained_effort_probable <> ? AND retained_effort_most_likely <> ?) OR
+             (retained_cost_probable <> ? AND retained_cost_most_likely <> ?))", 0, 0, 0, 0)
       end
     end
 
@@ -1146,7 +1158,6 @@ module ViewsWidgetsHelper
                                             wbs_activity_element_root: wbs_activity_element_root,
                                             view_widget_type: view_widget.widget_type,
                                             view_widget_id: view_widget.id
-
                                        } )
 
 
@@ -1194,8 +1205,54 @@ module ViewsWidgetsHelper
                                                     module_project_ratio_elements: module_project_ratio_elements,
                                                     wbs_activity_element_root: wbs_activity_element_root,
                                                     view_widget_type: view_widget.widget_type,
-                                                     view_widget_id: view_widget.id
+                                                    view_widget_id: view_widget.id
                                         } )
+
+
+      when "table_effort_and_cost_per_phase", "table_effort_and_cost_per_phase_without_zero"
+
+        result = raw(render :partial => 'views_widgets/effort_and_cost_by_phases_with_mp_ratio_elements',
+                            :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                         estimation_value: estimation_value,
+                                         pe_attribute: estimation_value.pe_attribute,
+                                         module_project: module_project,
+                                         project_organization_profiles: project_organization_profiles,
+                                         estimation_pbs_probable_results: pbs_probable_est_value,
+                                         ratio_reference: ratio_reference,
+                                         pe_attribute_alias: pe_attribute_alias,
+                                         wbs_unit: wbs_unit,
+                                         module_project_ratio_elements: module_project_ratio_elements,
+                                         wbs_activity_element_root: wbs_activity_element_root,
+                                         view_widget_type: view_widget.widget_type,
+                                         view_widget_id: view_widget.id
+
+                            } )
+
+      when "table_effort_and_cost_per_phases_profiles", "table_effort_and_cost_per_phases_profiles_without_zero"
+
+        if ratio_reference.nil?
+          added_module_project_ratio_elements = []
+        else
+          added_module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_element_id: nil).all
+        end
+        result = raw(render :partial => 'views_widgets/effort_and_cost_by_phases_profiles',
+                            :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                         estimation_value: estimation_value,
+                                         pe_attribute: estimation_value.pe_attribute,
+                                         module_project: module_project,
+                                         pbs_project_element_id: pbs_project_element.id,
+                                         project_organization_profiles: project_organization_profiles,
+                                         estimation_pbs_probable_results: pbs_probable_est_value,
+                                         ratio_reference: ratio_reference,
+                                         added_module_project_ratio_elements: added_module_project_ratio_elements,
+                                         pe_attribute_alias: pe_attribute_alias,
+                                         wbs_unit: wbs_unit,
+                                         module_project_ratio_elements: module_project_ratio_elements,
+                                         wbs_activity_element_root: wbs_activity_element_root,
+                                         view_widget_type: view_widget.widget_type,
+                                         view_widget_id: view_widget.id
+                            } )
+
 
       when "stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles",
            "stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles"
