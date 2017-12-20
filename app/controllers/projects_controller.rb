@@ -3496,6 +3496,7 @@ public
 
 
   def export_dashboard
+    @project = Project.find(params[:project_id])
     @current_organization = @project.organization
     @pbs_project_element = current_component
     @user = current_user

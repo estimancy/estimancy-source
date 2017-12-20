@@ -308,7 +308,7 @@ module Guw
         unit = ''
       end
 
-      begin
+      # begin
         if pe_attribute.alias == "effort" && guw_model.config_type == "old"
           res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{guw_model.effort_unit}"
         elsif pe_attribute.alias == "cost" && guw_model.config_type == "old"
@@ -318,9 +318,9 @@ module Guw
         else
           res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: I18n.t('number.format.delimiter'), precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{unit}"
         end
-      rescue
-        #??
-      end
+      # rescue
+      #   #??
+      # end
 
       return res
 

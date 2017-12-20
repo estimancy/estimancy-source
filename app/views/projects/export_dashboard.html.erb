@@ -153,7 +153,7 @@
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
         <% if view_widget.widget_type == "text" %>
-          <div class="span2 badge badge-primary">
+          <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>;">
             <% begin %>
               <h4><%= view_widget.name %></h4>
               <p>
@@ -177,17 +177,23 @@
 
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
-        <div class="span2 badge badge-primary">
+        <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>;">
           <% if view_widget.is_kpi_widget == true %>
             <h4><%= view_widget.name %></h4>
             <p>
-              <%= get_kpi_value(view_widget).to_f.round(user_number_precision) %>
+              <%= Guw::GuwModel::display_value(get_kpi_value(view_widget).to_f.round(user_number_precision),
+                                               view_widget.estimation_value,
+                                               view_widget,
+                                               current_user) %>
             </p>
           <% else %>
             <% unless view_widget.estimation_value.nil? %>
               <h4><%= view_widget.name %></h4>
               <p>
-                <%= view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision) %>
+                <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
+                                                 view_widget.estimation_value,
+                                                 view_widget,
+                                                 current_user) %>
               </p>
             <% end %>
           <% end %>
@@ -263,7 +269,7 @@
     <div class="row-fluid">
       <% view_widgets.each do |view_widget| %>
         <% if view_widget.widget_type == "text" %>
-          <div class="span2 badge badge-primary">
+          <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>;">
             <h4><%= view_widget.name %></h4>
             <% unless view_widget.estimation_value.nil? %>
               <% begin %>
@@ -405,30 +411,36 @@
           <% end %>
         </table>
 
-        <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
-        <div class="row-fluid">
-          <% view_widgets.each do |view_widget| %>
-            <div class="span2 badge badge-primary">
-              <h4><%= view_widget.name %></h4>
-              <% unless view_widget.estimation_value.nil? %>
-                <% if view_widget.estimation_value.string_data_probable.is_a?(Float) %>
-                  <p>
-                    <%= view_widget.estimation_value.string_data_probable.to_f.round(user_number_precision) %>
-                  </p>
-                <% else %>
-                  <p>
-                    <%= view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision) %>
-                  </p>
-                <% end %>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="alwaysbreak"></div>
-
       <% end %>
     <% end %>
+
+    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all %>
+    <div class="row-fluid">
+      <% view_widgets.each do |view_widget| %>
+        <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>;">
+          <h4><%= view_widget.name %></h4>
+          <% unless view_widget.estimation_value.nil? %>
+            <% if view_widget.estimation_value.string_data_probable.is_a?(Float) %>
+              <p>
+                <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable.to_f.round(user_number_precision),
+                                                 view_widget.estimation_value,
+                                                 view_widget,
+                                                 current_user) %>
+              </p>
+            <% else %>
+              <p>
+                <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
+                                                 view_widget.estimation_value,
+                                                 view_widget,
+                                                 current_user) %>
+              </p>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="alwaysbreak"></div>
 
   <% end %>
 <% end %>
