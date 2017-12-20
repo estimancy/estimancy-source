@@ -6,7 +6,7 @@
     <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
     <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
-    <div class="well well-rounded" style="border-width: 1px;">
+    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
         <table>
           <tr>
             <td><%= f.input :name, label: I18n.t(:name) %></td>
@@ -28,7 +28,7 @@
           </tr>
         </table>
     </div>
-    <div class="well well-rounded" style="border-width: 1px;">
+    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
       <table>
         <tr>
           <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
