@@ -3230,7 +3230,7 @@ public
 
     @organization = Organization.find(params[:organization_id])
 
-    @projects = @organization.projects
+    @projects = Project.find(params[:project_ids])  #@organization.projects
 
     unless selected_filter_version.empty?
       case selected_filter_version
