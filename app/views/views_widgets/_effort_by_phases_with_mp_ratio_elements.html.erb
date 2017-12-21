@@ -24,12 +24,20 @@
      end
    end
 
+   #Libelle du TJM / taux moyen
+   tjm_taux_moyen = wbs_activity.average_rate_wording.blank? ? "Taux moyen" : wbs_activity.average_rate_wording
+   tjm_global = nil
 
 %>
 
 <table class='table table-condensed table-bordered  table_effort_per_phase' style="margin-left:20px;">
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
+
+    <% if view_widget.show_tjm %>
+        <th><%= tjm_taux_moyen %></th>
+    <% end %>
+
     <th colspan=<%= colspan %>>
       <span>
         <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= "(#{wbs_unit})" %>
@@ -50,6 +58,13 @@
            <%= mp_ratio_element.name_to_show %> <%#= wbs_activity_elt.name %>
         </span>
         </td>
+
+        <!--  AFFICHAGE DU TJM -->
+        <% if view_widget.show_tjm %>
+            <% element_tjm = mp_ratio_element.tjm %>
+            <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+        <% end %>
+
         <% levels.each do |level| %>
             <td class=''>
           <span class='pull-right'>

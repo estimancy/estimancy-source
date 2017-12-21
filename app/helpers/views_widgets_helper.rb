@@ -1121,7 +1121,7 @@ module ViewsWidgetsHelper
         #      retained_effort_probable <> ? AND retained_effort_most_likely <> ? OR
         #      retained_cost_probable <> ? AND retained_cost_most_likely <> ?", 0, 0, 0, 0)
 
-        module_project_ratio_elements_test = module_project_ratio_elements.where(
+        module_project_ratio_elements = module_project_ratio_elements.where(
             "((retained_effort_probable IS NOT NULL && retained_effort_most_likely IS NOT NULL) OR
              (retained_cost_probable IS NOT NULL && retained_cost_most_likely IS NOT NULL))
              AND

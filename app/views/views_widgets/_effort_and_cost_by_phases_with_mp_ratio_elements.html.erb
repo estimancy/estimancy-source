@@ -41,11 +41,19 @@
      effort_unit = organization_effort_unit
    end
 
+   #Libelle du TJM / taux moyen
+   tjm_taux_moyen = wbs_activity.average_rate_wording.blank? ? "Taux moyen" : wbs_activity.average_rate_wording
+   tjm_global = nil
+
 %>
 
 <table class='table table-condensed table-bordered  table_effort_per_phase' style="margin-left:20px;">
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
+    <% if view_widget.show_tjm %>
+        <th><%= tjm_taux_moyen %></th>
+    <% end %>
+
     <th colspan=<%= colspan %>>
       <span>
         <%= I18n.t("#{effort_attribute_alias}") %> <%= "(#{effort_unit})" %>
@@ -69,6 +77,13 @@
            <%= mp_ratio_element.name_to_show %> <%#= wbs_activity_elt.name %>
         </span>
         </td>
+
+        <!--  AFFICHAGE DU TJM -->
+        <% if view_widget.show_tjm %>
+            <% element_tjm = mp_ratio_element.tjm %>
+            <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+        <% end %>
+
         <% levels.each do |level| %>
             <% effort_level_value = mp_ratio_element.send("#{effort_attribute_alias}_#{level}") %>
             <% cost_level_value = mp_ratio_element.send("#{cost_attribute_alias}_#{level}") %>
@@ -78,7 +93,6 @@
                 <td class=''>
                     <span class='pull-right'>
                         <%=
-
                             if view_widget.use_organization_effort_unit == true
                               # use organization effort unit
                               effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"

@@ -1,6 +1,13 @@
 <% unless ratio_reference.nil? %>
   <% wbs_activity = ratio_reference.wbs_activity  %>
-  <% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1 %>
+  <% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1
+
+     view_widget = ViewsWidget.find(view_widget_id)
+     #Libelle du TJM / taux moyen
+     tjm_taux_moyen = wbs_activity.average_rate_wording.blank? ? "Taux moyen" : wbs_activity.average_rate_wording
+     tjm_global = nil
+  %>
+
 <% end %>
 
 <div>
@@ -8,6 +15,10 @@
     <table id="profiles_per_activity" class="table table-bordered table-condensed table_effort_per_phase" style="margin-left:20px;">
       <tr>
         <th><%= I18n.t(:phases) %></th>
+        <% if view_widget.show_tjm %>
+            <th><%= tjm_taux_moyen %></th>
+        <% end %>
+
         <th colspan="<%= project_organization_profiles.length %>"><%= I18n.t(:profiles) %></th>
         <th rowspan="2">
           <%= I18n.t(:total_per_phase) %> <br>
@@ -86,13 +97,15 @@
                           <tr>
                             <td>
                               <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
-                                <% unless mp_ratio_element.nil? %>
                                   <%= wbs_activity_elt.name %>
-                                <% else %>
-                                  -
-                                <% end %>
                               </span>
                             </td>
+
+                            <!--  AFFICHAGE DU TJM -->
+                            <% if view_widget.show_tjm %>
+                                <% element_tjm = mp_ratio_element.tjm %>
+                                <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+                            <% end %>
 
                             <% if project_organization_profiles.length > 0 %>
                                 <% array_profile_sum = Array.new %>
