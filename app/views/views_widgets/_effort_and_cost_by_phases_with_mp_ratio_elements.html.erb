@@ -6,6 +6,7 @@
    view_widget = ViewsWidget.find(view_widget_id)
    pbs_project_element = current_component
    pemodule = module_project.pemodule
+   project = module_project.project
    precision = estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision
 
    wbs_activity = module_project.wbs_activity
@@ -27,17 +28,17 @@
    unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
      if view_widget.use_organization_effort_unit == true
         min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
-        organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+        organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, project.organization)
      end
    end
 
    effort_unit = wbs_activity.effort_unit
-   cost_unit = @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
+   cost_unit = project.organization.currency.nil? ? nil.to_s : "#{project.organization.currency.sign}"
 
    # Get min value and organization effort unit coeff
    if view_widget.use_organization_effort_unit == true
      min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
-     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project.organization)
      effort_unit = organization_effort_unit
    end
 
