@@ -2184,7 +2184,7 @@ public
 
     # Lock organization instead project is created/save
     Organization.transaction do
-      begin
+      #begin
         # get et lock the organization
         @organization = Organization.find(params[:organization_id]).lock(true)
 
@@ -2197,11 +2197,12 @@ public
           new_prj.save
           @organization.save!
         end
-      rescue
-        flash[:error] = "Erreur lors de la génération du numéro de devis automatique"
-        redirect_to request.referer #and return
-        raise ActiveRecord::Rollback and return
-      end
+
+      # rescue
+      #   flash[:error] = "Erreur lors de la génération du numéro de devis automatique"
+      #   redirect_to request.referer #and return
+      #   raise ActiveRecord::Rollback and return
+      # end
 
     end
     # end lock
