@@ -2210,7 +2210,7 @@ public
     # Debut transaction
     ActiveRecord::Base.transaction do
 
-      if new_prj#.save
+      if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
 
         #Update the project securities for the current user who create the estimation from model
