@@ -2129,7 +2129,7 @@ public
       authorize! :create_project_from_template, Project
     end
 
-    #@organization = Organization.find(params[:organization_id])
+    @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
@@ -2186,7 +2186,7 @@ public
     Organization.transaction do
       #begin
         # get et lock the organization
-        @organization = Organization.find(params[:organization_id]).lock(true)
+        @organization.lock!
 
         new_automatic_number = @organization.automatic_quotation_number.next
         @organization.automatic_quotation_number = new_automatic_number
