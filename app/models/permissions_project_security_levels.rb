@@ -25,4 +25,6 @@ class PermissionsProjectSecurityLevels < ActiveRecord::Base
   belongs_to :permission
 
   has_many :estimation_status_group_roles
+
+  audited
 end

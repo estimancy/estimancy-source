@@ -24,7 +24,10 @@ class Permission < ActiveRecord::Base
   attr_accessible :alias, :name, :description, :category, :is_master_permission, :is_permission_project, :object_type, :object_associated
 
   has_and_belongs_to_many :users
-  has_and_belongs_to_many :groups
+
+  has_many :groups, through: :groups_permission
+  has_many :groups_permission
+
   has_and_belongs_to_many :project_security_levels
 
   validates :name, :description, :alias, :presence => true

@@ -54,7 +54,7 @@ class Audit < ActiveRecord::Base
         when "delete"
           changes = "Suppression"
         else
-          # type code here
+          changes = "#{audited_changes} et #{action}"
       end
     end
     return changes
