@@ -2129,67 +2129,88 @@ public
       authorize! :create_project_from_template, Project
     end
 
-    @organization = Organization.find(params[:organization_id])
+    #@organization = Organization.find(params[:organization_id])
+    old_prj = Project.find(params[:project_id])
+
+    new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
+    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+    new_prj.ancestry = nil
+    new_prj.creator_id = current_user.id
+    if params[:action_name] == "duplication_model"
+      new_prj.is_model = true
+    else
+      new_prj.is_model = false
+      new_prj.use_automatic_quotation_number = false
+    end
+
+    # new_prj.is_private = old_prj.is_private
+
+    generate_automatique_title = false
+
+    #=======
+    #if creation from template
+    if !params[:create_project_from_template].nil?
+
+      new_prj.original_model_id = old_prj.id
+      new_prj.use_automatic_quotation_number = false
+
+      #Update some params with the form input data
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
+
+      if params['project']['application_id'].present?
+        new_prj.application_id = params['project']['application_id']
+      else
+        new_prj.application_name = params['project']['application_name']
+      end
+
+      new_prj.title = params['project']['title']
+      new_prj.version_number = params['project']['version_number']
+      new_prj.description = params['project']['description']
+      new_prj.start_date = Time.now
+
+      # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
+      if old_prj.use_automatic_quotation_number
+        generate_automatique_title = true
+      end
+    else
+      # simple copy
+      if old_prj.original_model
+        if old_prj.original_model.use_automatic_quotation_number
+          generate_automatique_title = true
+        end
+      end
+    end
+    #=======
+
+    # Lock organization instead project is created/save
+    Organization.transaction do
+      begin
+        # get et lock the organization
+        @organization = Organization.find(params[:organization_id]).lock(true)
+
+        new_automatic_number = @organization.automatic_quotation_number.next
+        @organization.automatic_quotation_number = new_automatic_number
+
+        # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
+        if generate_automatique_title == true
+          new_prj.title = new_automatic_number
+          new_prj.save
+          @organization.save!
+        end
+      rescue
+        flash[:error] = "Erreur lors de la génération du numéro de devis automatique"
+        redirect_to request.referer #and return
+        raise ActiveRecord::Rollback and return
+      end
+
+    end
+    # end lock
+
 
     # Debut transaction
     ActiveRecord::Base.transaction do
 
-      old_prj = Project.find(params[:project_id])
-
-      new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
-      new_prj.ancestry = nil
-      new_prj.creator_id = current_user.id
-      if params[:action_name] == "duplication_model"
-        new_prj.is_model = true
-      else
-        new_prj.is_model = false
-        new_prj.use_automatic_quotation_number = false
-      end
-
-      # new_prj.is_private = old_prj.is_private
-      new_automatic_number = @organization.automatic_quotation_number.next
-
-      #if creation from template
-      if !params[:create_project_from_template].nil?
-
-        new_prj.original_model_id = old_prj.id
-        new_prj.use_automatic_quotation_number = false
-
-        #Update some params with the form input data
-        new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
-
-        if params['project']['application_id'].present?
-          new_prj.application_id = params['project']['application_id']
-        else
-          new_prj.application_name = params['project']['application_name']
-        end
-
-        new_prj.title = params['project']['title']
-        new_prj.version_number = params['project']['version_number']
-        new_prj.description = params['project']['description']
-        # start_date = (params['project']['start_date'].nil? || params['project']['start_date'].blank?) ? Time.now.to_date : params['project']['start_date']
-        new_prj.start_date = Time.now
-
-        # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
-        if old_prj.use_automatic_quotation_number
-          new_prj.title = new_automatic_number
-          @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
-        end
-
-        #Only the securities for the generated project will be taken in account
-        # new_prj.project_securities = new_prj.project_securities.reject{|i| i.is_model_permission == true }
-      else
-        # simple copy
-        if old_prj.original_model
-          if old_prj.original_model.use_automatic_quotation_number
-            new_prj.title = new_automatic_number
-            @organization.update_attribute(:automatic_quotation_number, new_automatic_number)
-          end
-        end
-      end
-
-      if new_prj.save
+      if new_prj#.save
         old_prj.save #Original project copy number will be incremented to 1
 
         #Update the project securities for the current user who create the estimation from model
