@@ -553,7 +553,7 @@ $(document).ready(function() {
                 }
             });
             return false;
-        });
+    });
 
 
     //Filter estimations according to the estimation version
@@ -567,7 +567,8 @@ $(document).ready(function() {
                     filter_selected: $(this).val(),
                     project_list_name: $(this).attr('id'),
                     organization_id: $(this).data('organization_id'),
-                    group_id: $("#group_id").val()
+                    group_id: $("#group_id").val(),
+                    project_ids: $(this).data('project_ids')
                 },
                 success: function(data) {
                     //return alert("success");

@@ -56,12 +56,10 @@
                               readonly: !(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) %>
                 <% else %>
                   <% if (!(can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || @project.private) %>
-                    <label>
-                      <%= I18n.t(:application) %>
-                    </label>
-                    <strong>
-                      <%= @project.application %>
-                    </strong>
+                    <%= f.input :application_name,
+                              input_html: { :class => 'input-large', value: @project.application },
+                              label: I18n.t(:application),
+                              disabled: true %>
                     <br/>
                   <% else %>
                     <%= f.input :application_id,
@@ -184,7 +182,11 @@
 
       <div class="actions-tabs">
         <% if action_name.in?(['edit', 'update']) %>
-          <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+          <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
+                ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
+                  can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
+                )
+          %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary submit_project' %>
               <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
           <% end %>

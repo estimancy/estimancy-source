@@ -4,6 +4,7 @@
 <% end %>
 
 <%
+   project = module_project.project
    in_out = estimation_value.in_out
    view_widget = ViewsWidget.find(view_widget_id)
    pe_attribute_alias = estimation_value.pe_attribute.alias
@@ -16,14 +17,14 @@
      cost_attribute_alias = "theoretical_cost"
    end
 
-   module_project_attributes = @module_project.pemodule.pe_attributes
+   module_project_attributes = module_project.pemodule.pe_attributes
 
    effort_pe_attribute = module_project_attributes.where(alias: effort_attribute_alias).last
    cost_pe_attribute = module_project_attributes.where(alias: cost_attribute_alias).last
    mp_estimation_values = module_project.estimation_values
 
-   effort_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', effort_pe_attribute.id, in_out).last
-   cost_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', cost_pe_attribute.id, in_out).last
+   effort_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', effort_pe_attribute.id, in_out).last rescue nil
+   cost_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', cost_pe_attribute.id, in_out).last rescue nil
 
    effort_probable_est_value = effort_estimation_value.send("string_data_probable")
    effort_pbs_probable_est_value = effort_probable_est_value[pbs_project_element_id] rescue {}
@@ -33,13 +34,14 @@
 
    # Get effort and cost unit
    effort_unit = wbs_activity.effort_unit
-   cost_unit = @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
+   cost_unit = project.organization.currency.nil? ? nil.to_s : "#{project.organization.currency.sign}"
 
    # Get min value and organization effort unit coeff
    if view_widget.use_organization_effort_unit == true
      min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, effort_attribute_alias)
-     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project.organization)
      effort_unit = organization_effort_unit
+     effort_unit_coefficient = organization_effort_limit_coeff
    end
 
    #Libelle du TJM / taux moyen
@@ -304,7 +306,7 @@
 
                     <% if view_widget.show_tjm %>
                         <td>
-                          <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} Global : " %><p id="tjm_global"></p></strong>
+                          <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} Global : " %><p id='<%= "tjm_global_#{view_widget.id}" %>'></p></strong>
                         </td>
                     <% end %>
 
@@ -379,5 +381,6 @@
 </div>
 
 <script>
-  $("p#tjm_global").text('<%= tjm_global %>');
+  //$("p#tjm_global").text('<%#= tjm_global %>');
+  $("p#tjm_global_"+'<%= view_widget.id %>').text('<%= tjm_global %>');
 </script>
