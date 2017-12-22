@@ -27,7 +27,7 @@
 
    unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
      if view_widget.use_organization_effort_unit == true
-        min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
+        min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{effort_attribute_alias}_probable")
         organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, project.organization)
      end
    end
@@ -82,12 +82,24 @@
         <!--  AFFICHAGE DU TJM -->
         <% if view_widget.show_tjm %>
             <% element_tjm = mp_ratio_element.tjm %>
-            <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+            <% if mp_ratio_element.is_root? %>
+                <td>
+                  <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} global : " %>
+                    <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
+                  </strong>
+                </td>
+            <% else %>
+                <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+            <% end %>
         <% end %>
 
         <% levels.each do |level| %>
             <% effort_level_value = mp_ratio_element.send("#{effort_attribute_alias}_#{level}") %>
             <% cost_level_value = mp_ratio_element.send("#{cost_attribute_alias}_#{level}") %>
+
+            <% if mp_ratio_element.is_root? %>
+                <% tjm_global = convert_with_precision(cost_level_value.to_f / effort_level_value.to_f, 3, true) %>
+            <% end %>
 
             <% if mp_ratio_element.selected %>
                 <!--  # for Effort attribute -->
@@ -121,3 +133,7 @@
     <% end %>
   <% end %>
 </table>
+
+<script>
+    $("p#tjm_global_"+'<%= view_widget.id %>').text('<%= tjm_global %>');
+</script>

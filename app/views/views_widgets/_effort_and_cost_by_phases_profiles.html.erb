@@ -41,6 +41,7 @@
      min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, effort_attribute_alias)
      organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project.organization)
      effort_unit = organization_effort_unit
+     effort_unit_coefficient = organization_effort_limit_coeff
    end
 
    #Libelle du TJM / taux moyen
@@ -305,7 +306,7 @@
 
                     <% if view_widget.show_tjm %>
                         <td>
-                          <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} Global : " %><p id="tjm_global"></p></strong>
+                          <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} Global : " %><p id='<%= "tjm_global_#{view_widget.id}" %>'></p></strong>
                         </td>
                     <% end %>
 
@@ -380,5 +381,6 @@
 </div>
 
 <script>
-  $("p#tjm_global").text('<%= tjm_global %>');
+  //$("p#tjm_global").text('<%#= tjm_global %>');
+  $("p#tjm_global_"+'<%= view_widget.id %>').text('<%= tjm_global %>');
 </script>

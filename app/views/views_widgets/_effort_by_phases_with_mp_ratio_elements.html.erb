@@ -3,6 +3,14 @@
    colspan = 1
    rowspan = 1
 
+   if pe_attribute_alias.in?("cost", "effort")
+     effort_attribute_alias = "retained_effort"
+     cost_attribute_alias = "retained_cost"
+   else
+     effort_attribute_alias = "theoretical_effort"
+     cost_attribute_alias = "theoretical_cost"
+   end
+
    view_widget = ViewsWidget.find(view_widget_id)
    pbs_project_element = current_component
    pemodule = module_project.pemodule
@@ -63,8 +71,22 @@
         <!--  AFFICHAGE DU TJM -->
         <% if view_widget.show_tjm %>
             <% element_tjm = mp_ratio_element.tjm %>
-            <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+            <% if mp_ratio_element.is_root? %>
+                <% root_effort = mp_ratio_element.send("#{effort_attribute_alias}_most_likely") %>
+                <% root_cost = mp_ratio_element.send("#{cost_attribute_alias}_most_likely") %>
+                <% tjm_global = root_cost/root_effort %>
+                <td>
+                  <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} global : " %>
+                    <p id='<%= "tjm_global_#{view_widget.id}" %>'>
+                      <%= tjm_global.blank? ? "-" : convert_with_precision(tjm_global, 3, true) %>
+                    </p>
+                  </strong>
+                </td>
+            <% else %>
+                <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+            <% end %>
         <% end %>
+
 
         <% levels.each do |level| %>
             <td class=''>

@@ -68,7 +68,7 @@ class Ability
     # For estimation: when we can edit a project, we can also see and show it
     alias_action :see_project, :to => :show_project
     alias_action :show_project, :to => :edit_project
-    alias_action :alter_project_areas, :alter_acquisition_categories, :alter_platform_categories, :alter_project_categories, :to => :edit_project
+    alias_action :alter_project_areas, :alter_acquisition_categories, :alter_platform_categories, :alter_project_categories, :alter_providers, :alter_request_number, :to => :edit_project
     alias_action :execute_estimation_plan, :manage_estimation_widgets, :alter_estimation_status, :alter_project_status_comment, :commit_project, :to => :alter_estimation_plan
     alias_action :alter_estimation_plan, :manage_project_security, :to => :edit_project
 
