@@ -14,6 +14,7 @@
   </script>
 
   <%= wicked_pdf_stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tag %>
 
   <style>
     div.alwaysbreak { page-break-before: always; }
@@ -26,9 +27,17 @@
   </style>
 </head>
 
-<h2>
-  <%= @project.organization.name %> / <%= @project.title %> <%= @project.version_number %>
-</h2>
+<div class="row-fluid">
+  <div class="span2">
+    <%= image_tag("/assets/Logo 200x75.png") %>
+  </div>
+  <div class="span10">
+    <h2>
+      <%= @project.organization.name %> / <%= @project.title %> <%= @project.version_number %>
+    </h2>
+  </div>
+</div>
+
 <hr>
 
 <body onload="number_pages()">
