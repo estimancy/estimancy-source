@@ -31,7 +31,10 @@ class Group < ActiveRecord::Base
 
   has_many :project_securities
 
-  has_and_belongs_to_many :permissions
+  has_many :permissions, through: :groups_permission
+  has_many :groups_permission
+
+  has_paper_trail
 
   #Estimations permissions on Group according to the estimation status
   has_many :estimation_status_group_roles

@@ -9,7 +9,6 @@
         <th><%= I18n.t(:audit_changes) %></th>
         <th><%= I18n.t(:audit_user) %></th>
         <th><%= I18n.t(:created_at) %></th>
-        <th class="action" style="width: 110px"><%= I18n.t(:actions) %></th>
       </tr>
     </thead>
     <tbody>
@@ -18,7 +17,10 @@
       <% else %>
         <% @audits.each do |audit| %>
           <tr>
-            <td><%= audit.auditable_type %></td>
+            <td>
+              <%= audit %>
+              <%= audit.auditable_type %>
+            </td>
             <td><%= link_to(audit.auditable_id, "#{audit.auditable_type.downcase.pluralize}/#{audit.auditable_id}") %></td>
             <td><%= audit.customize_action_name %></td>
 
@@ -29,13 +31,6 @@
             <td><%= audit.customize_user_id %></td>
 
             <td><%= audit.created_at.nil? ? nil : I18n.l(audit.created_at) %></td>
-            <td>
-              <%#= link_to(' ', edit_audit_path(user, :anchor => "tabs-1"), :class => 'icon-pencil pull-left', :title => I18n.t('edit')) +
-                          link_to(' ', "users/#{user.id}/activate", :class => 'icon-legal pull-left', :style => 'color:green', :title => I18n.t('button_activate_user_account')) +
-                          link_to(' ', {:controller => 'users', :action => 'find_use_user', :user_id => user.id}, :remote => true, :class => 'icon-info pull-left', :title => I18n.t('button_find_use')) +
-                          link_to(' ', user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash pull-left', :style => 'color:red', :title => I18n.t('delete'))
-              %>
-            </td>
           </tr>
         <% end %>
 

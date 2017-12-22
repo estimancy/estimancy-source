@@ -124,7 +124,7 @@ gem "jit-rails", "~> 0.0.2"
 
 # Gem to audit User actions
 gem "audited-activerecord"#, "~> 3.0"
-# gem "audited"#, "~> 4.3"
+# gem "audited", "~> 4.5"
 
 #Authentication gem
 gem 'devise'
@@ -239,3 +239,4 @@ gem 'rack-reverse-proxy', :require => 'rack/reverse_proxy'
 gem 'grit'
 gem 'pdfkit'
 
+gem 'paper_trail'
