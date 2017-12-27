@@ -941,7 +941,7 @@ module ViewsWidgetsHelper
               end
 
               if module_project_ratio_elements.empty? || module_project_ratio_elements.nil?
-                value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id)
+                value_to_show =  raw estimation_value.nil? ? "#{ content_tag(:div, I18n.t(:notice_no_estimation_saved), :class => 'no_estimation_value')}" : display_effort_or_cost_per_phase(pbs_project_elt, module_project, estimation_value, view_widget_id, ratio_reference)
               else
                 # Avec les module_project Ratio-Elements
                 value_to_show = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
@@ -1512,7 +1512,7 @@ module ViewsWidgetsHelper
   end
 
   #The view to display result with ACTIVITIES : EFFORT PER PHASE AND COST PER PHASE TABLE
-  def display_effort_or_cost_per_phase(pbs_project_element, module_project_id, estimation_value, view_widget_id)
+  def display_effort_or_cost_per_phase(pbs_project_element, module_project_id, estimation_value, view_widget_id, ratio_reference)
     res = String.new
     unless view_widget_id.nil?
       view_widget = ViewsWidget.find(view_widget_id)
