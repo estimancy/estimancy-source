@@ -2131,6 +2131,7 @@ public
 
     @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
+    generate_automatique_title = false
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
     new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
@@ -2145,12 +2146,9 @@ public
 
     # new_prj.is_private = old_prj.is_private
 
-    generate_automatique_title = false
-
     #=======
     #if creation from template
     if !params[:create_project_from_template].nil?
-
       new_prj.original_model_id = old_prj.id
       new_prj.use_automatic_quotation_number = false
 
@@ -2182,9 +2180,9 @@ public
     end
     #=======
 
-    # Lock organization instead project is created/save
+    # Locking organization instead project is created/save
     Organization.transaction do
-      #begin
+      begin
         # get et lock the organization
         @organization.lock!
 
@@ -2193,19 +2191,20 @@ public
 
         # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
         if generate_automatique_title == true
-          new_prj.title = new_automatic_number
+          new_prj.title = "#{@organization.prefix_quotation_number} #{new_automatic_number}"
           new_prj.save
           @organization.save!
         end
 
-      # rescue
-      #   flash[:error] = "Erreur lors de la génération du numéro de devis automatique"
-      #   redirect_to request.referer #and return
-      #   raise ActiveRecord::Rollback and return
-      # end
+      rescue
+        flash[:error] = "Erreur lors de la génération du numéro de devis automatique"
+        #redirect_to request.referer #and return
 
+        raise ActiveRecord::Rollback #and return
+        redirect_to request.referer and return
+      end
     end
-    # end lock
+    # end locking
 
 
     # Debut transaction

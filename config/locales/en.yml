@@ -2077,7 +2077,9 @@ en:
   notice_provider_successful_created: "Provider was successfully created"
   notice_provider_successful_updated: "Provider was successfully updated"
   notice_provider_successful_deleted: "Provider was successfully deleted"
+  prefix_quotation_number: "Prefix quotation number"
   automatic_quotation_number: "Automatic and incremental quotation number"
+  label_automatic_quotation_number: "Automatic and incremental number"
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
   show_tjm: "Show TJM"
 
