@@ -30,8 +30,6 @@ class Project < ActiveRecord::Base
   include ActionView::Helpers
   include ActiveModel::Dirty
 
-  audited associated_with: :application
-
   has_ancestry  # For the Ancestry gem
 
   belongs_to :application

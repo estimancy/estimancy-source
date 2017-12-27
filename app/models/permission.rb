@@ -26,11 +26,13 @@ class Permission < ActiveRecord::Base
   has_and_belongs_to_many :users
 
   has_many :groups, through: :groups_permission
-  has_many :groups_permission
+  has_many :groups_permission, dependent: :destroy
 
   has_and_belongs_to_many :project_security_levels
 
   validates :name, :description, :alias, :presence => true
+
+  has_paper_trail
 
   def to_s
     self.nil? ? '' : self.name

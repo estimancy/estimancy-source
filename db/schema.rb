@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171222153643) do
+ActiveRecord::Schema.define(:version => 20171227105443) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -506,7 +506,7 @@ ActiveRecord::Schema.define(:version => 20171222153643) do
     t.integer  "copy_id"
   end
 
-  create_table "groups_permissions", :id => false, :force => true do |t|
+  create_table "groups_permissions", :force => true do |t|
     t.integer  "group_id"
     t.integer  "permission_id"
     t.datetime "created_at"
@@ -1660,7 +1660,6 @@ ActiveRecord::Schema.define(:version => 20171222153643) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
-  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -1970,13 +1969,28 @@ ActiveRecord::Schema.define(:version => 20171222153643) do
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["unlock_token"], :name => "index_users_on_unlock_token", :unique => true
 
-  create_table "versions", :force => true do |t|
-    t.datetime "local_latest_update"
-    t.datetime "repository_latest_update"
-    t.text     "comment"
-    t.datetime "created_at",               :null => false
-    t.datetime "updated_at",               :null => false
+  create_table "version_associations", :force => true do |t|
+    t.integer "version_id"
+    t.string  "foreign_key_name", :null => false
+    t.integer "foreign_key_id"
   end
+
+  add_index "version_associations", ["foreign_key_name", "foreign_key_id"], :name => "index_version_associations_on_foreign_key"
+  add_index "version_associations", ["version_id"], :name => "index_version_associations_on_version_id"
+
+  create_table "versions", :force => true do |t|
+    t.string   "item_type",      :limit => 191,        :null => false
+    t.integer  "item_id",                              :null => false
+    t.string   "event",                                :null => false
+    t.string   "whodunnit"
+    t.text     "object",         :limit => 2147483647
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+    t.text     "object_changes", :limit => 2147483647
+  end
+
+  add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
+  add_index "versions", ["transaction_id"], :name => "index_versions_on_transaction_id"
 
   create_table "views", :force => true do |t|
     t.string   "name"
