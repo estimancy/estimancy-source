@@ -1589,6 +1589,8 @@ it:
   notice_provider_successful_created: "Le fournisseur a été créé avec succès"
   notice_provider_successful_updated: "Le fournisseur a été mis à jour avec succès"
   notice_provider_successful_deleted: "Le fournisseur a été supprimé avec succès"
+  prefix_quotation_number: "Préfixe du numéro de devis"
   automatic_quotation_number: "Numéro de devis automatique et incrémental"
+  label_automatic_quotation_number: "Numéro automatique et incrémental"
   use_automatic_quotation_number: "Générer automatiquement le nom de l'estimation créé à partir de ce modèle"
   show_tjm: "Afficher le TJM (taux moyen)"
