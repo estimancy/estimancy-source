@@ -1391,6 +1391,7 @@ ActiveRecord::Schema.define(:version => 20171227105443) do
     t.text     "estimations_counter_history"
     t.boolean  "copy_in_progress"
     t.string   "automatic_quotation_number",  :default => "0"
+    t.string   "prefix_quotation_number"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|

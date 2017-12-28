@@ -3,6 +3,12 @@ $("#modal_cotation").modal({
   keyboard: false,
   backdrop: "static"
 });
+
+//        .css({
+//  width: "80%",
+//  'margin-left': "-40%"
+//});
+
 var my_value = $("#ajusted_size_<%= @guw_unit_of_work.id %>").val()
 $("#hidden_ajusted_size_<%= @guw_unit_of_work.id %>").val(my_value)
 

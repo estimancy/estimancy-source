@@ -45,8 +45,8 @@
         <% if @guw_model.three_points_estimation == true %>
           <th>M</th>
         <% else %>
-          <th></th>
-          <th></th>
+          <th>Valeur</th>
+          <th>Commentaire</th>
         <% end %>
         <% if @guw_model.three_points_estimation == true %>
           <th>H</th>
@@ -61,28 +61,38 @@
               <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
-              <td>
+              <td class="span3">
                 <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
               </td>
 
               <% if @guw_model.three_points_estimation == true %>
-                <td>
+                <td class="span1">
                   <%= text_field_tag "low[#{guow.id}][#{uowa.id}]", uowa.low, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
                 </td>
               <% end %>
 
-              <td>
+              <td class="span1">
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
+                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments), "#!", class: "comments", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}" %>
               </td>
 
               <script>
+                var cdi = "";
 
                 $(".comments").on('click', function(e) {
-                  // TODO
+                  cdi = $(this).attr("custom-data-id");
+                  $("#rich_comments").modal({
+                    keyboard: false,
+                    backdrop: "static"
+                  });
                 });
+
+                function yolo(){
+                  $('#rich_comments').modal('hide');
+                  $("#" + cdi).val($("#tinymce").innerHTML);
+                };
 
                 $(".ml").on('focus', function(e) {
                   $(".submit_cotation").attr('disabled', 'disabled');
@@ -136,28 +146,24 @@
     <% end %>
   </div>
 
-  <div class="modal fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
+  <div class="modal fade" tabindex="-1" role="dialog" id="rich_comments" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Commentaire riche
+          </h4>
+        </div>
 
-          <div class="modal-header modal-drag">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">
-              Commentaire riche
-            </h4>
-          </div>
+        <div class="modal-body" style="height: inherit;">
+          <%= text_area_tag "rich_comment_area", "", class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+          <%= tinymce %>
+        </div>
 
-          <div class="modal-body" style="height: inherit;">
-            OKIDOKI
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <%= submit_tag "OK", :class => 'btn btn-primary' %>
-          </div>
-
-        <% end %>
+        <div class="modal-footer">
+          <%= link_to "OK", "#", :class => 'btn btn-primary', onclick: "yolo();" %>
+        </div>
       </div>
     </div>
   </div>
