@@ -75,7 +75,8 @@
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments), "#!", class: "comments", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}" %>
+                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
+                <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, rows: "5", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}", class: "input-large pull-left comments hide", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "width: 95%; text-align: left;" %>
               </td>
 
               <script>
@@ -91,7 +92,8 @@
 
                 function yolo(){
                   $('#rich_comments').modal('hide');
-                  $("#" + cdi).val($("#tinymce").innerHTML);
+                  $("#" + cdi).html($("#tinymce").innerHTML);
+                  $("#" + cdi).prev().html($("#tinymce").innerHTML.substring(0,30));
                 };
 
                 $(".ml").on('focus', function(e) {
@@ -152,7 +154,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Commentaire riche
+            Commentaire
           </h4>
         </div>
 
