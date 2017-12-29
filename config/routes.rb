@@ -279,6 +279,8 @@ Projestimate::Application.routes.draw do
   get 'set_available_inline_columns' => 'organizations#set_available_inline_columns', as: 'set_available_inline_columns'
   match 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
 
+  get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
+
   resources :subcontractors
 
   resources :labor_categories

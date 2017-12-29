@@ -89,15 +89,11 @@ class ApplicationController < ActionController::Base
   before_filter :update_activity_time
   before_filter :initialization_module
 
-  before_filter :user_for_paper_trail
+  skip_before_filter :set_paper_trail_whodunnit
   before_filter :set_paper_trail_whodunnit
 
-  def user_for_paper_trail
-    current_user
-  end
-
   def set_paper_trail_whodunnit
-    current_user
+    PaperTrail.whodunnit = current_user
   end
 
   def reset_button_action

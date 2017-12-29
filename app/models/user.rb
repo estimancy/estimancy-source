@@ -36,8 +36,6 @@ class User < ActiveRecord::Base
   validates_length_of :password, :within => Devise.password_length, :allow_blank => true
   validates_format_of :email, :with  => Devise.email_regexp, :allow_blank => true, :if => :email_changed?
 
-  ###audited # audit the users (users account)
-
   attr_accessible :current_password, :email, :login_name, :id_connexion, :super_admin, :password_changed,
                   :password, :password_confirmation, :remember_me, :provider, :uid, :description,
                   :avatar, :language_id, :first_name, :last_name, :initials, :time_zone, :locked_at,

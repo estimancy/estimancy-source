@@ -2296,6 +2296,41 @@ class OrganizationsController < ApplicationController
     authorize! :show_organizations, Organization
   end
 
+  def export_organization_reference
+    cn = {}
+    Dir.foreach("#{Rails.root}/app/models") do |model_path|
+      class_name = model_path.gsub(".rb", "").classify
+      begin
+        cn[class_name] = eval(class_name).column_names
+      rescue
+        # noting to do
+      end
+    end
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook.worksheets[0]
+    worksheet.sheet_name = 'Référence Organisation'
+
+    worksheet.add_cell(0, 0, "Table")
+    worksheet.add_cell(0, 1, "Champs")
+    worksheet.add_cell(0, 2, "Validation")
+
+    i = 1
+    cn.each do |k,v|
+      v.each do |j|
+
+        worksheet.add_cell(i, 0, k)
+        worksheet.add_cell(i, 1, j)
+
+        i = i + 1
+
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "reference.xlsx", type: "application/vnd.ms-excel")
+
+  end
+
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true
