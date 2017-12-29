@@ -30,3 +30,27 @@ class Currency < ActiveRecord::Base
     self.nil? ? '' : self.sign
   end
 end
+
+# oid = Organization.where(name: "CDS PROD TRAIN").first.id
+# pid = Provider.where(name: "SOGETI").first.id
+#
+# Project.where(organization_id: oid).all.each do |project|
+#   if project.is_model == true
+#     project.use_automatic_quotation_number = true
+#     project.save(validate: false)
+#   end
+# end
+#
+# Project.where(organization_id: oid).all.each do |project|
+#   project.provider_id = pid
+#   project.save(validate: false)
+# end
+#
+#
+# orga = Organization.where(name: "CDS PROD TRAIN").first
+# auth_type = AuthMethod.where(name: "Application").first
+#
+# orga.users.each do |user|
+#   user.auth_type = "Application"
+#   user.save
+# end

@@ -75,27 +75,37 @@
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
+                <%# link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
+                <%# text_area_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, rows: "5", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}", class: "input-large pull-left comments hide", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "width: 95%; text-align: left;" %>
                 <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
-                <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, rows: "5", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}", class: "input-large pull-left comments hide", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "width: 95%; text-align: left;" %>
               </td>
 
               <script>
-                var cdi = "";
-
-                $(".comments").on('click', function(e) {
-                  cdi = $(this).attr("custom-data-id");
-                  $("#rich_comments").modal({
-                    keyboard: false,
-                    backdrop: "static"
-                  });
-                });
-
-                function yolo(){
-                  $('#rich_comments').modal('hide');
-                  $("#" + cdi).html($("#tinymce").innerHTML);
-                  $("#" + cdi).prev().html($("#tinymce").innerHTML);
-                  console.log($("#tinymce").innerHTML);
-                };
+//                var content = "";
+//                var cdi = "";
+//
+//                $(".comments").on('click', function(e) {
+//
+//                  cdi = $(this).attr("custom-data-id");
+//                  console.log(cdi);
+//
+//                  $("#rich_comments").modal({
+//                    keyboard: false,
+//                    backdrop: "static"
+//                  });
+//                });
+//
+//                function yolo(){
+//                  console.log(cdi);
+//                  console.log(tinymce.get('rich_comment_area').getContent());
+//                  console.log($(this));
+//                  console.log($(this).closest("textarea"));
+//
+//
+//                  $('#rich_comments').modal('hide');
+//                  $(this).closest("textarea").html(tinymce.get('rich_comment_area').getContent());
+//                  $(this).closest("textarea").prev().html(tinymce.get('rich_comment_area').getContent());
+//                };
 
                 $(".ml").on('focus', function(e) {
                   $(".submit_cotation").attr('disabled', 'disabled');
@@ -160,12 +170,12 @@
         </div>
 
         <div class="modal-body" style="height: inherit;">
-          <%= text_area_tag "rich_comment_area", "", class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
-          <%= tinymce %>
+          <%# text_area_tag "rich_comment_area", "", class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+          <%# tinymce %>
         </div>
 
         <div class="modal-footer">
-          <%= link_to "OK", "#", :class => 'btn btn-primary', onclick: "yolo();" %>
+          <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo();" %>
         </div>
       </div>
     </div>
