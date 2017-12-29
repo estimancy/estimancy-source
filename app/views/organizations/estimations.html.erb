@@ -14,8 +14,9 @@
                                                  [I18n.t(:label_filter_on_project_version_1),1],
                                                  [I18n.t(:label_filter_on_project_version_3),3],
                                                  [I18n.t(:label_filter_on_project_version_4),4]],
-                                                :selected => params[:filter_organization_projects_version] || 4),
-                              'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>
+                                                :selected => params[:filter_version] || 4),
+                             'data-organization_id' => @organization.id, include_blank: false %>
+                              <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
             </td>
 
             <td colspan=2 style="text-align:right;">

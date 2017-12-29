@@ -74,6 +74,7 @@ module OrganizationsHelper
 
     sort_column = params[:f] || params[:sort_column]
     sort_order = params[:s] || params[:sort_order]
+    filter_version = params[:filter_version] || '4'
 
     # if sort_column.blank? || sort_order.blank?
     #   sort_column = session[:sort_column]
@@ -116,7 +117,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
 
           lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "asc"), class: 'btn btn-mini fa fa-sort-down fa-lg chevron_up_down', remote: true)
+          lk << link_to("", sort_path(f: column.name, s: "asc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-down fa-lg chevron_up_down', remote: true)
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -124,7 +125,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
 
           lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+          lk << link_to("", sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -132,7 +133,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
 
           lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "desc"), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+          lk << link_to("", sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
 
       end
 
@@ -140,7 +141,7 @@ module OrganizationsHelper
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
       lk = content_tag(:span, I18n.t(column.caption))
-      lk << link_to("", sort_path(f: column.name, s: column_sort_order), class: 'btn btn-mini fa fa-unsorted fa-lg chevron_up_down', remote: true)
+      lk << link_to("", sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), class: 'btn btn-mini fa fa-unsorted fa-lg chevron_up_down', remote: true)
     end
 
 

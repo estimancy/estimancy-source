@@ -144,7 +144,7 @@ class ApplicationController < ActionController::Base
 
     # Le code qui suit remplace les lignes du dessus
     case params[:action]
-      when "estimations", "sort", "search"
+      when "estimations", "sort", "search", "add_filter_on_project_version"
         @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.organization_estimations)
       when "projects_from"
         estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
