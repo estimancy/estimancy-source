@@ -1,14 +1,24 @@
+
+//var filter_organization_projects_version = $('#filter_organization_projects_version').val();
+
 <% case params[:project_list_name] %>
     <% when 'filter_projects_version' %>
         $("#projects").html("<%=raw j(render :partial => 'projects/projects', :object => [@organization, @projects]) %>");
     <% when 'filter_organization_projects_version' %>
-        $("#organization_projects").html("<%=raw j(render :partial => 'organizations/organization_projects', object: [@organization, @projects]) %>");
+        $("#organization_projects").html("<%=raw j(render :partial => 'organizations/organization_projects', object: [@organization, @projects], :locals => {is_last_page: @is_last_page}) %>");
+
     <% when 'filter_user_projects_version' %>
         $("#user_projects").html("<%=raw j(render :partial => 'users/user_projects', :locals => {:projects => @projects, :project_users => current_user.projects}) %>");
     <% when 'filter_group_projects_version' %>
         <% @group = Group.find(params[:group_id])  %>
         $("#group_projects").html("<%=raw j(render :partial => 'groups/group_projects', :locals => {:projects => @projects, :group => @group}) %>");
 <% end %>
+
+//Mettre à jour l'url sans recharger la page
+if (history.pushState) {
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?version_filter_number=<%= @filter_organization_projects_version %>&min=<%= @min %>&max=<%= @max %>&sort_column=<%= session[:sort_column] %>&sort_order=<%= session[:sort_order] %>&sort_action=<%= session[:sort_action] %>&is_last_page=<%= @is_last_page %>&search_column=<%= session[:search_column] %>&search_value=<%= session[:search_value] %>';
+    window.history.pushState({path:newurl},'',newurl);
+}
 
 
 var pagerOptions = {
