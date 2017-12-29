@@ -46,11 +46,13 @@ end
 #   project.save(validate: false)
 # end
 #
-#
+# @
 # orga = Organization.where(name: "CDS PROD TRAIN").first
-# auth_type = AuthMethod.where(name: "Application").first
+# auth_type = AuthMethod.where(name: "SAML").first
 #
 # orga.users.each do |user|
-#   user.auth_type = "Application"
-#   user.save
+#   unless user.super_admin == true
+#     user.auth_type = auth_type.id
+#     user.save(validate: false)
+#   end
 # end
