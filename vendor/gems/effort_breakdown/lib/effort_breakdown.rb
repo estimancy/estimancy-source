@@ -171,11 +171,6 @@ module EffortBreakdown
 
     def calculate_estimations
 
-      # Si on initialise le calcul, on recoche toutes les phases
-      if @initialize_calculation == true
-        @module_project_ratio_elements.update_all(selected: true)
-      end
-
       # calcul des valeurs théoriques
       get_theoretical_effort
 
