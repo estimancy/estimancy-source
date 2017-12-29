@@ -16,7 +16,7 @@
 
 //Mettre à jour l'url sans recharger la page
 if (history.pushState) {
-    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?version_filter_number=<%= @filter_organization_projects_version %>&min=<%= @min %>&max=<%= @max %>&sort_column=<%= session[:sort_column] %>&sort_order=<%= session[:sort_order] %>&sort_action=<%= session[:sort_action] %>&is_last_page=<%= @is_last_page %>&search_column=<%= session[:search_column] %>&search_value=<%= session[:search_value] %>';
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?filter_organization_projects_version=<%= @filter_organization_projects_version %>&min=<%= @min %>&max=<%= @max %>&sort_column=<%= session[:sort_column] %>&sort_order=<%= session[:sort_order] %>&sort_action=<%= session[:sort_action] %>&is_last_page=<%= @is_last_page %>&search_column=<%= session[:search_column] %>&search_value=<%= session[:search_value] %>';
     window.history.pushState({path:newurl},'',newurl);
 }
 

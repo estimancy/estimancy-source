@@ -2759,7 +2759,7 @@ public
     end
 
     # filtre sur les versions
-    filter_organization_projects_version = params[:filter_organization_projects_version]
+    @filter_organization_projects_version = params[:filter_organization_projects_version]
 
     params.delete("utf8")
     params.delete("commit")
@@ -2802,8 +2802,8 @@ public
     end
 
     # filtre sur la version des estimations
-    if !filter_organization_projects_version.to_s.in?(['4', ''])
-      @organization_estimations = filter_estimation_versions(@organization_estimations, filter_organization_projects_version)
+    if !@filter_organization_projects_version.to_s.in?(['4', ''])
+      @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_organization_projects_version)
     end
 
     res = []
@@ -2829,30 +2829,6 @@ public
     session[:search_value] = @search_value
 
     build_footer
-  end
-
-
-  # Filter estimations according to the selection
-  def filter_estimation_versions(projects_list, selected_filter_version)
-    filtered_projects = projects_list
-
-    unless selected_filter_version.blank?
-      case selected_filter_version
-        when '1' #Display leaves projects only
-          filtered_projects = projects_list.reject { |i| !i.is_childless? }
-        when '2' #Display all versions
-          filtered_projects = projects_list
-        when '3' #Display root version_number only
-          filtered_projects = projects_list.reject { |i| !i.is_root? }
-        when '4' #Most recent version_number
-          #@projects = @projects.reorder('updated_at DESC').uniq_by(&:title)
-          filtered_projects = projects_list.sort{ |x,y| y.updated_at <=> x.updated_at }.uniq(&:title)
-        else
-          #filtered_projects = projects_list
-      end
-    end
-
-    filtered_projects
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)
