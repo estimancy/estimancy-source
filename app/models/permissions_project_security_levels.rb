@@ -26,5 +26,5 @@ class PermissionsProjectSecurityLevels < ActiveRecord::Base
 
   has_many :estimation_status_group_roles
 
-  has_paper_trail
+  # has_paper_trail
 end
