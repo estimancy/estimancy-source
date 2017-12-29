@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary", :data => { :disable_with => 'Veuillez patienter' } %>
       <%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
   <% end %>
   </div>

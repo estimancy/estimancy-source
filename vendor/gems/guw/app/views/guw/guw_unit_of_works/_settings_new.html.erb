@@ -295,15 +295,17 @@
                                                                               end,
                                                                               selected: @guw_type.id),
                                    class: "guw_type",
-                                   style: "width: 80%",
+                                   style: "width: 90%",
                                    prompt: "",
-                                   guw: guow.id %>
+                                   guw: guow.id,
+                                   title: guow.guw_type %>
                   <% else %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    class: "guw_type",
-                                   style: "width: 80%;",
+                                   style: "width: 90%;",
                                    prompt: "",
-                                   guw: guow.id %>
+                                   guw: guow.id,
+                                   title: guow.guw_type %>
                   <% end %>
                 </td>
 

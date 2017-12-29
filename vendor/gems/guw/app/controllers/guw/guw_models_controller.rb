@@ -1773,7 +1773,7 @@ class Guw::GuwModelsController < ApplicationController
       calculator = Dentaku::Calculator.new
       ii = 0
 
-      @wbs_activity_module_project.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+      @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
         guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
         guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
