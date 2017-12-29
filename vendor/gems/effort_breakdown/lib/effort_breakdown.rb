@@ -922,7 +922,9 @@ module EffortBreakdown
         get_effort_and_cost_per_phase_as_subtree(@wbs_activity_root, output_effort_with_dependencies, "theoretical")
 
         @wbs_activity_root.subtree.each do |element|
-          if output_effort[element.id].nil?
+          mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: element.id).first
+
+          if output_effort[element.id].nil? && mp_ratio_element.selected == true
             output_effort[element.id] = @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_effort]
           else
             @efforts_tjm_costs_per_phase_profiles[element.id][:theoretical_effort] = output_effort[element.id]
