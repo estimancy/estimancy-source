@@ -1,5 +1,5 @@
-<%= I18n.t(:label_filter_on_projects_version) %>
-<%= select_tag 'filter_organization_projects_version', options_for_select([[I18n.t(:label_filter_on_project_version_1),1], [I18n.t(:label_filter_on_project_version_2),2], [I18n.t(:label_filter_on_project_version_3),3], [I18n.t(:label_filter_on_project_version_4),4]], :selected => 1), 'data-organization_id' => @organization.id, :include_blank => false %>
+<%#= I18n.t(:label_filter_on_projects_version) %>
+<%#= select_tag 'filter_organization_projects_version', options_for_select([[I18n.t(:label_filter_on_project_version_1),1], [I18n.t(:label_filter_on_project_version_2),2], [I18n.t(:label_filter_on_project_version_3),3], [I18n.t(:label_filter_on_project_version_4),4]], :selected => 1), 'data-organization_id' => @organization.id, :include_blank => false %>
 
 <% if can? :manage_estimation_models, Project %>
   <div class="group_button">
@@ -13,13 +13,13 @@
       <th class="text_left"><%= I18n.t(:label_model_name) %></th>
       <th class="center">Vers.</th>
       <th class="center">Description</th>
-      <th class="text_left"><%= I18n.t(:label_product_name) %></th>
       <th class="center"><%= I18n.t(:created_at) %></th>
       <th style="width: 50px" class="filter-select"> <%= I18n.t(:state) %></th>
       <th><%= I18n.t(:project_area)%></th>
       <th><%= I18n.t(:category)%></th>
       <th><%= I18n.t(:label_platform)%></th>
       <th><%= I18n.t(:label_acquisition)%></th>
+      <th class="text_left"><%= I18n.t(:provider) %></th>
       <th class="action"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
@@ -45,13 +45,13 @@
             </td>
             <td class="center"><%= project.version_number %></td>
             <td class="text_field_text_overflow"><%= ActionView::Base.full_sanitizer.sanitize(project.description).to_s.html_safe %></td>
-            <td class="text_field_text_overflow"><%= project.root_component %></td>
             <td class="center"><%= I18n.l(project.created_at) %></td>
             <td><span class="badge" style="background-color: <%= project.status_background_color %>"><%= project.status_name %></span></td>
             <td class="text_field_text_overflow"><%= project.project_area %></td>
             <td class="text_field_text_overflow"><%= project.project_category %></td>
             <td class="text_field_text_overflow"><%= project.platform_category %></td>
             <td class="text_field_text_overflow"><%= project.acquisition_category %></td>
+            <td class="text_field_text_overflow"><%= project.provider %></td>
             <td style="min-width:130px;">
 
               <% if can? :manage_estimation_models, Project %>

@@ -757,7 +757,11 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    session[:filter_organization_projects_version] = '4'
+    if params[:filter_version].present?
+      @filter_version = params[:filter_version]
+    else
+      @filter_version = '4'
+    end
 
     @object_per_page = (current_user.object_per_page || 10)
 
@@ -811,7 +815,11 @@ class OrganizationsController < ApplicationController
           end
         end
       end
+    end
 
+    # Filtre sur les versions des estimations
+    if !@filter_version.in?(['4', ''])
+      res = filter_estimation_versions(res, @filter_version)
     end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]

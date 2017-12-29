@@ -1584,65 +1584,68 @@ module ViewsWidgetsHelper
     module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id, pbs_project_element_id: pbs_project_element.id, selected: true)
     WbsActivityElement.sort_by_ancestry(current_wbs_activity_elements).each do |wbs_activity_elt|
       mp_ratio_element = module_project_ratio_elements.where(wbs_activity_element_id: wbs_activity_elt.id).first
+      if mp_ratio_element
+        #For wbs-activity-completion node consistency
+        completion_consistency = ""
+        title = ""
+        res << "<tr>
+                  <td>
+                    <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> <strong>#{mp_ratio_element.name_to_show}</strong></span>
+                  </td>"
 
-      #For wbs-activity-completion node consistency
-      completion_consistency = ""
-      title = ""
-      res << "<tr>
-                <td>
-                  <span class='tree_element_in_out' title='#{title}' style='margin-left:#{wbs_activity_elt.depth}em;'> <strong>#{mp_ratio_element.name_to_show}</strong></span>
-                </td>"
+        levels.each do |level|
+          res << "<td class=''>"
+          res << "<span class='pull-right'>"
+            level_estimation_values = Hash.new
+            level_estimation_values = estimation_value.send("string_data_#{level}")
+            pbs_estimation_values = level_estimation_values[pbs_project_element.id]
 
-      levels.each do |level|
-        res << "<td class=''>"
-        res << "<span class='pull-right'>"
-          level_estimation_values = Hash.new
-          level_estimation_values = estimation_value.send("string_data_#{level}")
-          pbs_estimation_values = level_estimation_values[pbs_project_element.id]
+            if wbs_activity_elt.is_root?
+              begin
+                if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                  @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+                else
+                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
+                end
+              rescue
+                if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                  @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+                else
+                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
+                end
+              end
+            end
 
-          if wbs_activity_elt.is_root?
             begin
               if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-                @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+                if pbs_estimation_values.nil?
+                  res << "-"
+                else
+                  res << "#{convert_with_precision(pbs_estimation_values[wbs_activity_elt.id][:value], user_number_precision, true)} #{@wbs_unit}"
+                end
               else
-                @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
+                res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true)} #{@wbs_unit}"
               end
             rescue
               if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-                @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+                if pbs_estimation_values.nil?
+                  res << "-"
+                else
+                  res << "#{ convert_with_precision(pbs_estimation_values[wbs_activity_elt.id], user_number_precision, true) } #{@wbs_unit}"
+                end
               else
-                @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
+                res << " #{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
               end
             end
-          end
 
-          begin
-            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-              if pbs_estimation_values.nil?
-                res << "-"
-              else
-                res << "#{convert_with_precision(pbs_estimation_values[wbs_activity_elt.id][:value], user_number_precision, true)} #{@wbs_unit}"
-              end
-            else
-              res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true)} #{@wbs_unit}"
-            end
-          rescue
-            if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
-              if pbs_estimation_values.nil?
-                res << "-"
-              else
-                res << "#{ convert_with_precision(pbs_estimation_values[wbs_activity_elt.id], user_number_precision, true) } #{@wbs_unit}"
-              end
-            else
-              res << " #{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
-            end
-          end
-
-        res << "</span>"
-        res << "</td>"
+          res << "</span>"
+          res << "</td>"
+        end
+        res << '</tr>'
       end
-      res << '</tr>'
     end
+
+
     res << '</table>'
     res
   end

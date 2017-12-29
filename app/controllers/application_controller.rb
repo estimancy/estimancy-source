@@ -144,7 +144,7 @@ class ApplicationController < ActionController::Base
 
     # Le code qui suit remplace les lignes du dessus
     case params[:action]
-      when "estimations", "sort", "search"
+      when "estimations", "sort", "search", "add_filter_on_project_version"
         @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.organization_estimations)
       when "projects_from"
         estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
@@ -665,5 +665,30 @@ class ApplicationController < ActionController::Base
     # end
     # res
   end
+
+
+  # Filter estimations according to the selection
+  def filter_estimation_versions(projects_list, selected_filter_version)
+    filtered_projects = projects_list
+
+    unless selected_filter_version.blank?
+      case selected_filter_version
+        when '1' #Display leaves projects only
+          filtered_projects = projects_list.reject { |i| !i.is_childless? }
+        when '2' #Display all versions
+          filtered_projects = projects_list
+        when '3' #Display root version_number only
+          filtered_projects = projects_list.reject { |i| !i.is_root? }
+        when '4' #Most recent version_number
+          #@projects = @projects.reorder('updated_at DESC').uniq_by(&:title)
+          filtered_projects = projects_list.sort{ |x,y| y.updated_at <=> x.updated_at }.uniq(&:title)
+        else
+          #filtered_projects = projects_list
+      end
+    end
+
+    filtered_projects
+  end
+
 
 end

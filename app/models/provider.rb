@@ -5,6 +5,7 @@ class Provider < ActiveRecord::Base
 
   belongs_to :organization
   has_many :projects
+  has_many :organization_estimations
 
   #Override
   def to_s
