@@ -402,48 +402,32 @@ module EffortBreakdown
       if mp_ratio_element.selected == true
         effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
       else
-        #if theoretical_or_retained == "retained"
+        if theoretical_or_retained == "retained"
           effort_value = nil
-        # else
-        #   effort_value = output_effort_from_formula[:"#{element.id}"]
-        # end
+        else
+          effort_value = output_effort_from_formula[:"#{element.id}"]
+        end
       end
 
-      # get the retained values
-      if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
-        changed_retained_effort_value = @changed_retained_effort_values[element.id]
+      # Pour les retenus, lorsqu'on la phase n'est pas sélectionnée, la valeur est nulle
+      if theoretical_or_retained == "retained" && mp_ratio_element.selected != true
+        effort = nil
+        cost = nil
+      else
+        # get the retained values
+        if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
+          changed_retained_effort_value = @changed_retained_effort_values[element.id]
 
-        #effort
-        if changed_retained_effort_value.blank?
-          begin
-            effort = effort_value.nil? ? nil : effort_value.to_f
-          rescue
-            effort = 0.0
-          end
-        else
-          effort = changed_retained_effort_value.to_f
-        end
-
-        #cost
-        if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
-          changed_retained_cost_value =  @changed_retained_cost_values[element.id]
-          if changed_retained_cost_value.blank?
-            if mp_ratio_element.selected == true
-              cost = @theoretical_cost[element.id]
-            else
-              cost = nil
+          #effort
+          if changed_retained_effort_value.blank?
+            begin
+              effort = effort_value.nil? ? nil : effort_value.to_f
+            rescue
+              effort = 0.0
             end
           else
-            cost = changed_retained_cost_value.to_f
+            effort = changed_retained_effort_value.to_f
           end
-        else
-          cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
-        end
-
-      elsif element.is_childless?
-        begin
-          #effort
-          effort = effort_value.nil? ? nil : effort_value.to_f
 
           #cost
           if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
@@ -461,27 +445,47 @@ module EffortBreakdown
             cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
           end
 
-        rescue
-          effort = 0
-          cost = 0
-        end
+        elsif element.is_childless?
+          begin
+            #effort
+            effort = effort_value.nil? ? nil : effort_value.to_f
 
-      else
-        effort = 0.0
-        cost = 0.0
-        element.children.each do |node|
-          #unless node.nil? || node.wbs_activity.nil?
-          # Test if node is selected or not ( it will be taken in account only if the node is selected)
-          node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
-          #if (mp_ratio_element && mp_ratio_element.selected == true)
-          child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
-
-          # on ajoute la valeur du fils que si celui-ci est sélectionné
-          if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
-            effort += child_effort unless child_effort.nil?
-            cost += child_cost unless child_cost.nil?
+            #cost
+            if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.cost_is_modifiable)
+              changed_retained_cost_value =  @changed_retained_cost_values[element.id]
+              if changed_retained_cost_value.blank?
+                if mp_ratio_element.selected == true
+                  cost = @theoretical_cost[element.id]
+                else
+                  cost = nil
+                end
+              else
+                cost = changed_retained_cost_value.to_f
+              end
+            else
+              cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
+            end
+          rescue
+            effort = 0
+            cost = 0
           end
-          #end
+        else
+          effort = 0.0
+          cost = 0.0
+          element.children.each do |node|
+            #unless node.nil? || node.wbs_activity.nil?
+            # Test if node is selected or not ( it will be taken in account only if the node is selected)
+            node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
+            #if (mp_ratio_element && mp_ratio_element.selected == true)
+            child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
+
+            # on ajoute la valeur du fils que si celui-ci est sélectionné
+            if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
+              effort += child_effort unless child_effort.nil?
+              cost += child_cost unless child_cost.nil?
+            end
+            #end
+          end
         end
       end
 
