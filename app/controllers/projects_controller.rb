@@ -2758,7 +2758,7 @@ public
     end
 
     # filtre sur les versions
-    @filter_version = params[:filter_version]
+    @filter_version = params[:filter_organization_projects_version]
 
     params.delete("utf8")
     params.delete("commit")

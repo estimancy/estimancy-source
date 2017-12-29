@@ -402,11 +402,11 @@ module EffortBreakdown
       if mp_ratio_element.selected == true
         effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
       else
-        if theoretical_or_retained == "retained"
+        #if theoretical_or_retained == "retained"
           effort_value = nil
-        else
-          effort_value = output_effort_from_formula[:"#{element.id}"]
-        end
+        # else
+        #   effort_value = output_effort_from_formula[:"#{element.id}"]
+        # end
       end
 
       # get the retained values

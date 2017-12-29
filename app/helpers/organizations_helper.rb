@@ -74,7 +74,9 @@ module OrganizationsHelper
 
     sort_column = params[:f] || params[:sort_column]
     sort_order = params[:s] || params[:sort_order]
-    filter_version = params[:filter_version] || '4'
+    #filter_version = params[:filter_version] || '4'
+    filter_version = @filter_version.blank? ? params[:filter_version] : @filter_version
+    filter_version = filter_version.blank? ? '4' : filter_version
 
     # if sort_column.blank? || sort_order.blank?
     #   sort_column = session[:sort_column]
