@@ -757,6 +757,8 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
+    session[:filter_organization_projects_version] = '4'
+
     @object_per_page = (current_user.object_per_page || 10)
 
     if params[:min].present? && params[:max].present?

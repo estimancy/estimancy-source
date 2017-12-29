@@ -2,6 +2,8 @@
 class OrganizationEstimation < ActiveRecord::Base
   self.primary_key = 'project_id'
 
+  has_ancestry  # For the Ancestry gem
+
   #### Nexts and Previous by date DESC
   scope :next_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at < ?", organization_id, created_at) }
   scope :previous_by_date, lambda {|organization_id, created_at| where("organization_id = ? AND created_at > ?", organization_id, created_at) }

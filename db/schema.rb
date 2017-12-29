@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171226151158) do
+ActiveRecord::Schema.define(:version => 20171227100659) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1390,8 +1390,7 @@ ActiveRecord::Schema.define(:version => 20171226151158) do
     t.integer  "estimations_counter"
     t.text     "estimations_counter_history"
     t.boolean  "copy_in_progress"
-    t.string   "automatic_quotation_number",  :default => "0"
-    t.string   "prefix_quotation_number"
+    t.string   "automatic_quotation_number",  :default => "0.0"
   end
 
   create_table "organizations_users", :id => false, :force => true do |t|

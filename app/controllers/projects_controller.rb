@@ -2191,7 +2191,8 @@ public
 
         # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
         if generate_automatique_title == true
-          new_prj.title = "#{@organization.prefix_quotation_number} #{new_automatic_number}"
+          #new_prj.title = "#{@organization.prefix_quotation_number} #{new_automatic_number}"
+          new_prj.title = new_automatic_number
           new_prj.save
           @organization.save!
         end
@@ -2690,7 +2691,13 @@ public
       end
     end
 
-    @object_per_page = (current_user.object_per_page || 10)
+    # Filtre sur les versions des estimations
+    if !session[:filter_organization_projects_version].in?(['4', ''])
+    #if !params[:filter_organization_projects_version].in?(['4', ''])
+      res = filter_estimation_versions(res, params[:filter_organization_projects_version])
+    end
+
+      @object_per_page = (current_user.object_per_page || 10)
     if params['previous_next_action'] == "true"
       @min = params['min'].to_i
       @max = params['max'].to_i
@@ -2715,6 +2722,10 @@ public
     else
       @is_last_page = "false"
     end
+
+    session[:object_per_page] = @object_per_page
+    session[:last_page_min] = @last_page_min
+    session[:last_page_max] = @last_page_max
 
     session[:sort_column] = @sort_column
     session[:sort_order] = @sort_order
@@ -2746,6 +2757,9 @@ public
     if @sort_action == "true" && @sort_column != "" && @sort_order != ""
       @projects = get_sorted_estimations(@organization.id, @projects, params[:sort_column], params[:sort_order])
     end
+
+    # filtre sur les versions
+    filter_organization_projects_version = params[:filter_organization_projects_version]
 
     params.delete("utf8")
     params.delete("commit")
@@ -2787,6 +2801,11 @@ public
       @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
     end
 
+    # filtre sur la version des estimations
+    if !filter_organization_projects_version.to_s.in?(['4', ''])
+      @organization_estimations = filter_estimation_versions(@organization_estimations, filter_organization_projects_version)
+    end
+
     res = []
     @organization_estimations.each do |p|
       if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
@@ -2810,6 +2829,30 @@ public
     session[:search_value] = @search_value
 
     build_footer
+  end
+
+
+  # Filter estimations according to the selection
+  def filter_estimation_versions(projects_list, selected_filter_version)
+    filtered_projects = projects_list
+
+    unless selected_filter_version.blank?
+      case selected_filter_version
+        when '1' #Display leaves projects only
+          filtered_projects = projects_list.reject { |i| !i.is_childless? }
+        when '2' #Display all versions
+          filtered_projects = projects_list
+        when '3' #Display root version_number only
+          filtered_projects = projects_list.reject { |i| !i.is_root? }
+        when '4' #Most recent version_number
+          #@projects = @projects.reorder('updated_at DESC').uniq_by(&:title)
+          filtered_projects = projects_list.sort{ |x,y| y.updated_at <=> x.updated_at }.uniq(&:title)
+        else
+          #filtered_projects = projects_list
+      end
+    end
+
+    filtered_projects
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)
@@ -3246,41 +3289,37 @@ public
 
   #Filter the projects list according to version_number
   def add_filter_on_project_version
-    #No authorize required
-    selected_filter_version = params[:filter_selected]
-
     @organization = Organization.find(params[:organization_id])
+    #No authorize required
+    #if params['project_list_name'] == 'filter_organization_projects_version'
+    #@projects = Project.find(params[:project_ids])  #@organization.projects
+    projects_list = @organization.organization_estimations.where(id: params[:project_ids])  #@organization.projects
+    #@projects = @projects.reject{|i| i.is_model ==  true}
 
-    @projects = Project.find(params[:project_ids])  #@organization.projects
+    selected_filter_version = params[:filter_selected]
+    res = filter_estimation_versions(projects_list, selected_filter_version)
+    @filter_organization_projects_version = selected_filter_version
+    session[:filter_organization_projects_version] = selected_filter_version
 
-    unless selected_filter_version.empty?
-      case selected_filter_version
-        when '1' #Display leaves projects only
-          @projects = @projects.reject { |i| !i.is_childless? }
-        when '2' #Display all versions
-          @projects = @projects
-        when '3' #Display root version_number only
-          @projects = @projects.reject { |i| !i.is_root? }
-        when '4' #Most recent version_number
-          #@projects = @projects.reorder('updated_at DESC').uniq_by(&:title)
-          @projects = @projects.sort{ |x,y| y.updated_at <=> x.updated_at }.uniq(&:title)
-        else
-          @projects = @projects #Project.all
-      end
+    @object_per_page = (current_user.object_per_page || 10)
+    @min = 0
+    @max = @object_per_page
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min) || (@projects.size <= @last_page_max)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
     end
-    @projects = @projects.reject{|i| i.is_model ==  true}
-
 
     @fields_coefficients = {}
     @pfs = {}
-
     fields = @organization.fields
-
-    # ProjectField.where(project_id: @projects.map(&:id).uniq, field_id: fields.map(&:id).uniq).each do |pf|
-    #   @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
-    # end
-
-    # Correction concernant les valeurs des champs personnalisés qui ne remontent pas
     ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(fields.map(&:id))
@@ -3296,6 +3335,7 @@ public
         else
           pf.delete
         end
+
       rescue
         #puts "erreur"
       end
