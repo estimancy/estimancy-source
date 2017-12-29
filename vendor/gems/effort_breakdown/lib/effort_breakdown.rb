@@ -409,15 +409,15 @@ module EffortBreakdown
         end
       end
 
-      # Pour les retenus, lorsqu'on la phase n'est pas sélectionnée, la valeur est nulle
-      if theoretical_or_retained == "retained" && mp_ratio_element.selected != true
-        effort = nil
-        cost = nil
-      else
-        # get the retained values
-        if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
-          changed_retained_effort_value = @changed_retained_effort_values[element.id]
+      # get the retained values
+      if (theoretical_or_retained == "retained" && mp_ratio_element.wbs_activity_ratio_element.effort_is_modifiable)
+        changed_retained_effort_value = @changed_retained_effort_values[element.id]
 
+        # Pour les valeurs retenues, lorsque la phase n'est pas sélectionnée la valeur est nulle
+        if theoretical_or_retained == "retained" && mp_ratio_element.selected != true
+          effort = nil
+          cost = nil
+        else
           #effort
           if changed_retained_effort_value.blank?
             begin
@@ -444,9 +444,15 @@ module EffortBreakdown
           else
             cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
           end
+        end
 
-        elsif element.is_childless?
-          begin
+      elsif element.is_childless?
+        begin
+          # Pour les valeurs retenues, lorsque la phase n'est pas sélectionnée la valeur est nulle
+          if theoretical_or_retained == "retained" && mp_ratio_element.selected != true
+            effort = nil
+            cost = nil
+          else
             #effort
             effort = effort_value.nil? ? nil : effort_value.to_f
 
@@ -465,28 +471,35 @@ module EffortBreakdown
             else
               cost = ( effort.nil? || tjm.nil? ) ? nil : (effort.to_f * tjm.to_f)
             end
-          rescue
-            effort = 0
-            cost = 0
           end
-        else
-          effort = 0.0
-          cost = 0.0
-          element.children.each do |node|
-            #unless node.nil? || node.wbs_activity.nil?
-            # Test if node is selected or not ( it will be taken in account only if the node is selected)
-            node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
-            #if (mp_ratio_element && mp_ratio_element.selected == true)
-            child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
-
-            # on ajoute la valeur du fils que si celui-ci est sélectionné
-            if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
-              effort += child_effort unless child_effort.nil?
-              cost += child_cost unless child_cost.nil?
-            end
-            #end
-          end
+        rescue
+          effort = 0
+          cost = 0
         end
+      else
+        effort = 0.0
+        cost = 0.0
+        element.children.each do |node|
+          #unless node.nil? || node.wbs_activity.nil?
+          # Test if node is selected or not ( it will be taken in account only if the node is selected)
+          node_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: node.id).first
+          #if (mp_ratio_element && mp_ratio_element.selected == true)
+          child_effort, child_cost = get_effort_and_cost_per_phase_as_subtree(node, output_effort_from_formula, theoretical_or_retained)
+
+          # on ajoute la valeur du fils que si celui-ci est sélectionné
+          if (node_mp_ratio_element && node_mp_ratio_element.selected == true)
+            effort += child_effort unless child_effort.nil?
+            cost += child_cost unless child_cost.nil?
+          end
+          #end
+        end
+
+        # Pour les valeurs retenues, lorsque la phase n'est pas sélectionnée la valeur est nulle
+        if theoretical_or_retained == "retained" && mp_ratio_element.selected != true
+          effort = nil
+          cost = nil
+        end
+
       end
 
       efforts_tjm_costs[element.id]["#{theoretical_or_retained}_effort".to_sym] = effort
