@@ -77,7 +77,7 @@
               <td>
                 <%# link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
                 <%# text_area_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, rows: "5", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}", class: "input-large pull-left comments hide", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "width: 95%; text-align: left;" %>
-                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
+                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
               </td>
 
               <script>
