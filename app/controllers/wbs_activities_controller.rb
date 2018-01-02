@@ -1142,6 +1142,7 @@ class WbsActivitiesController < ApplicationController
     @corresponding_element_id = params['corresponding_element_id']
     @theoretical_value = params['theoretical_value'].to_f
     @new_value =  params['new_value'].to_f
+    @root_mp_ratio_element_id = params['root_mp_ratio_element_id']
     @value_to_set = @new_value
 
     number_precision = user_number_precision
