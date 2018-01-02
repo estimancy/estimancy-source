@@ -17,10 +17,10 @@
       <tbody>
         <% @versions.each do |version| %>
           <tr>
-            <td>
+            <td class="span2">
               <%= version.item_type %>
             </td>
-            <td>
+            <td class="span2">
               <% u = User.find_by_id(version.whodunnit) %>
               <% unless u.nil? %>
                 <%= u.name %>
@@ -28,7 +28,7 @@
                 N/A
               <% end %>
             </td>
-            <td>
+            <td class="span2">
               <% unless version.event == "destroy" %>
                 <% unless version.object_changes.nil? %>
                   <% YAML.load(version.object_changes).each do |k,v| %>
@@ -45,7 +45,7 @@
                 <% end %>
               <% end %>
             </td>
-            <td>
+            <td class="span3">
              <% unless version.object_changes.nil? %>
                 <% YAML.load(version.object_changes).each do |k,v| %>
                     <%= k %> : <%= v.last %>
@@ -55,7 +55,7 @@
                 -
               <% end %>
             </td>
-            <td>
+            <td class="span2">
               <%=
                  case version.event
                    when "update"
