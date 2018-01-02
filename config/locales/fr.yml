@@ -2116,7 +2116,7 @@ fr:
   new_provider: "Créer un fournisseur"
   provider_edition: "Editer un fournisseur"
   notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
-  request_number: "Numéro de la demande"
+  request_number: "N° de la demande"
   notice_provider_successful_created: "Le fournisseur a été créé avec succès"
   notice_provider_successful_updated: "Le fournisseur a été mis à jour avec succès"
   notice_provider_successful_deleted: "Le fournisseur a été supprimé avec succès"

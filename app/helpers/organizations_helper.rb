@@ -208,8 +208,10 @@ module OrganizationsHelper
         rescue
           content_tag('td', '-')
         end
-      when :version_number, :request_number
+      when :version_number
         content_tag("td class='center'", value)
+      when :request_number
+        content_tag("td", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
             content_tag("td class='center'") do

@@ -55,7 +55,7 @@
 
     <div class="row-fluid">
       <div class="span4">
-        <b>Numéro de la demande</b>
+        <b><%= I18n.t :request_number %></b>
       </div>
       <div class="span8">
         <%= @project.request_number %>
@@ -64,7 +64,7 @@
 
     <div class="row-fluid">
       <div class="span4">
-        <b>Numéro du devis</b>
+        <b><%= I18n.t :title %></b>
       </div>
       <div class="span8">
         <%= @project.title %> <%= @project.version_number %>
