@@ -2664,10 +2664,8 @@ public
   #Set the checkout version
   def set_checkout_version
     @project = Project.find(params[:project_id])
-    unless @project.is_childless?
-      @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
-      @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
-    end
+    @archive_status = @project.organization.estimation_statuses.where(is_archive_status: true).first
+    @new_status = @project.organization.estimation_statuses.where(is_new_status: true).first
   end
 
 
