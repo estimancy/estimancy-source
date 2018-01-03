@@ -3082,7 +3082,8 @@ public
             new_mp.guw_unit_of_work_groups.each do |guw_group|
               new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
               new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-              guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
+              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
+                                         project_id: new_prj.id)
 
               # Update the group unit of works and attributes
               guw_group.guw_unit_of_works.each do |guw_uow|
@@ -3091,7 +3092,9 @@ public
 
                 new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
                 new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-                guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
+                guw_uow.update_attributes(module_project_id: new_uow_mp_id,
+                                          pbs_project_element_id: new_pbs_id,
+                                          project_id: new_prj.id)
               end
             end
 

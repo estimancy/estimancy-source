@@ -751,8 +751,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def change_selected_state
     authorize! :execute_estimation_plan, @project
 
-    module_project = current_module_project
-    component = current_component
+    # module_project = current_module_project
+    # component = current_component
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     if @guw_unit_of_work.selected == false
       @guw_unit_of_work.selected = true
@@ -762,97 +762,97 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.save
 
-    @group = Guw::GuwUnitOfWorkGroup.find(params[:guw_unit_of_work_group_id])
-
-    #For grouped unit of work
-    @group_size_ajusted = Guw::GuwUnitOfWork.where( guw_model_id: @guw_unit_of_work.guw_model.id,
-                                                    organization_id: @project.organization_id,
-                                                    project_id: @project.id,
-                                                    module_project_id: module_project.id,
-                                                    pbs_project_element_id: component.id,
-                                                    guw_unit_of_work_group_id: @group.id,
-                                                    selected: true).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(user_number_precision)
-
-    @group_size_theorical = Guw::GuwUnitOfWork.where(guw_model_id: @guw_unit_of_work.guw_model.id,
-                                                     organization_id: @project.organization_id,
-                                                     project_id: @project.id,
-                                                     module_project_id: module_project.id,
-                                                     pbs_project_element_id: component.id,
-                                                     guw_unit_of_work_group_id: @group.id,
-                                                     selected: true).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(user_number_precision)
-
-    @group_number_of_unit_of_works = Guw::GuwUnitOfWork.where(guw_unit_of_work_group_id: @group.id,
-                                                              organization_id: @project.organization_id,
-                                                              project_id: @project.id,
-                                                              pbs_project_element_id: component.id,
-                                                              module_project_id: module_project.id,
-                                                              guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
-
-    @group_selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
-                                                                guw_unit_of_work_group_id: @group.id,
-                                                                organization_id: @project.organization_id,
-                                                                project_id: @project.id,
-                                                                pbs_project_element_id: component.id,
-                                                                module_project_id: module_project.id,
-                                                                guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
-
-    @group_flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
-                                                            guw_unit_of_work_group_id: @group.id,
-                                                            organization_id: @project.organization_id,
-                                                            project_id: @project.id,
-                                                            pbs_project_element_id: component.id,
-                                                            module_project_id: module_project.id,
-                                                            guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
-
-
-    #For all unit of work
-    @ajusted_size = Guw::GuwUnitOfWork.where(selected: true,
-                                             organization_id: @project.organization_id,
-                                             project_id: @project.id,
-                                             pbs_project_element_id: component.id,
-                                             module_project_id: module_project.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
-
-    @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
-                                               organization_id: @project.organization_id,
-                                               project_id: @project.id,
-                                               pbs_project_element_id: component.id,
-                                               module_project_id: module_project.id,
-                                               guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
-
-    @effort = Guw::GuwUnitOfWork.where(selected: true,
-                                       organization_id: @project.organization_id,
-                                       project_id: @project.id,
-                                       pbs_project_element_id: component.id,
-                                       module_project_id: module_project.id,
-                                       guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
-
-    @cost = Guw::GuwUnitOfWork.where(selected: true,
-                                     organization_id: @project.organization_id,
-                                     project_id: @project.id,
-                                     pbs_project_element_id: component.id,
-                                     module_project_id: module_project.id,
-                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum.to_f.round(user_number_precision)
-
-    @number_of_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @project.organization_id,
-                                                        project_id: @project.id,
-                                                        pbs_project_element_id: component.id,
-                                                        module_project_id: module_project.id,
-                                                        guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
-
-    @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
-                                                          organization_id: @project.organization_id,
-                                                          project_id: @project.id,
-                                                          pbs_project_element_id: component.id,
-                                                          module_project_id: module_project.id,
-                                                          guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
-
-    @flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
-                                                      organization_id: @project.organization_id,
-                                                      project_id: @project.id,
-                                                      pbs_project_element_id: component.id,
-                                                      module_project_id: module_project.id,
-                                                      guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
+    # @group = Guw::GuwUnitOfWorkGroup.find(params[:guw_unit_of_work_group_id])
+    #
+    # #For grouped unit of work
+    # @group_size_ajusted = Guw::GuwUnitOfWork.where( guw_model_id: @guw_unit_of_work.guw_model.id,
+    #                                                 organization_id: @project.organization_id,
+    #                                                 project_id: @project.id,
+    #                                                 module_project_id: module_project.id,
+    #                                                 pbs_project_element_id: component.id,
+    #                                                 guw_unit_of_work_group_id: @group.id,
+    #                                                 selected: true).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(user_number_precision)
+    #
+    # @group_size_theorical = Guw::GuwUnitOfWork.where(guw_model_id: @guw_unit_of_work.guw_model.id,
+    #                                                  organization_id: @project.organization_id,
+    #                                                  project_id: @project.id,
+    #                                                  module_project_id: module_project.id,
+    #                                                  pbs_project_element_id: component.id,
+    #                                                  guw_unit_of_work_group_id: @group.id,
+    #                                                  selected: true).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(user_number_precision)
+    #
+    # @group_number_of_unit_of_works = Guw::GuwUnitOfWork.where(guw_unit_of_work_group_id: @group.id,
+    #                                                           organization_id: @project.organization_id,
+    #                                                           project_id: @project.id,
+    #                                                           pbs_project_element_id: component.id,
+    #                                                           module_project_id: module_project.id,
+    #                                                           guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
+    #
+    # @group_selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
+    #                                                             guw_unit_of_work_group_id: @group.id,
+    #                                                             organization_id: @project.organization_id,
+    #                                                             project_id: @project.id,
+    #                                                             pbs_project_element_id: component.id,
+    #                                                             module_project_id: module_project.id,
+    #                                                             guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
+    #
+    # @group_flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
+    #                                                         guw_unit_of_work_group_id: @group.id,
+    #                                                         organization_id: @project.organization_id,
+    #                                                         project_id: @project.id,
+    #                                                         pbs_project_element_id: component.id,
+    #                                                         module_project_id: module_project.id,
+    #                                                         guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).compact.sum.to_f.round(user_number_precision)
+    #
+    #
+    # #For all unit of work
+    # @ajusted_size = Guw::GuwUnitOfWork.where(selected: true,
+    #                                          organization_id: @project.organization_id,
+    #                                          project_id: @project.id,
+    #                                          pbs_project_element_id: component.id,
+    #                                          module_project_id: module_project.id,
+    #                                          guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
+    #
+    # @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
+    #                                            organization_id: @project.organization_id,
+    #                                            project_id: @project.id,
+    #                                            pbs_project_element_id: component.id,
+    #                                            module_project_id: module_project.id,
+    #                                            guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
+    #
+    # @effort = Guw::GuwUnitOfWork.where(selected: true,
+    #                                    organization_id: @project.organization_id,
+    #                                    project_id: @project.id,
+    #                                    pbs_project_element_id: component.id,
+    #                                    module_project_id: module_project.id,
+    #                                    guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
+    #
+    # @cost = Guw::GuwUnitOfWork.where(selected: true,
+    #                                  organization_id: @project.organization_id,
+    #                                  project_id: @project.id,
+    #                                  pbs_project_element_id: component.id,
+    #                                  module_project_id: module_project.id,
+    #                                  guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum.to_f.round(user_number_precision)
+    #
+    # @number_of_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @project.organization_id,
+    #                                                     project_id: @project.id,
+    #                                                     pbs_project_element_id: component.id,
+    #                                                     module_project_id: module_project.id,
+    #                                                     guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
+    #
+    # @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
+    #                                                       organization_id: @project.organization_id,
+    #                                                       project_id: @project.id,
+    #                                                       pbs_project_element_id: component.id,
+    #                                                       module_project_id: module_project.id,
+    #                                                       guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
+    #
+    # @flagged_unit_of_works = Guw::GuwUnitOfWork.where(flagged: true,
+    #                                                   organization_id: @project.organization_id,
+    #                                                   project_id: @project.id,
+    #                                                   pbs_project_element_id: component.id,
+    #                                                   module_project_id: module_project.id,
+    #                                                   guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(user_number_precision)
 
     update_estimation_values
     update_view_widgets_and_project_fields
