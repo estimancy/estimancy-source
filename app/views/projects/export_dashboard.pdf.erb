@@ -28,13 +28,18 @@
 </head>
 
 <div class="row-fluid">
-  <div class="span2">
-    <%= image_tag("/assets/Logo 200x75.png") %>
-  </div>
-  <div class="span10">
+  <div class="span12">
     <h2>
-      <%= @project.organization.name %> / <%= @project.title %> <%= @project.version_number %>
+      Informations générales
     </h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span12">
+    <h3>
+      <%= @project.organization.name %> / <%= @project.title %> <%= @project.version_number %>
+    </h3>
   </div>
 </div>
 
@@ -282,7 +287,7 @@
   <% @wbs_activity = module_project.wbs_activity %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
     <h3>
-      Financier - <%= @wbs_activity.name %>
+      Financier Synthèse - <%= @wbs_activity.name %>
     </h3>
     <hr>
     <table class="table main table-condensed" style="font-size: 10px;">
@@ -290,8 +295,6 @@
         <th></th>
         <th>Nom</th>
         <th>Prix unitaire en €/UC</th>
-        <th>Effort Théorique</th>
-        <th>Cout Théorique</th>
         <th>Charge (en UC)</th>
         <th>Montant en €</th>
       </tr>
@@ -304,7 +307,7 @@
         <tr>
           <td>
             <% unless mp_ratio_element.is_root? %>
-              <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '-') %></b>
+              <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '') %></b>
             <% end %>
           </td>
           <td>
@@ -315,12 +318,6 @@
           </td>
           <td class="center">
             <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
-          </td>
-          <td class="center">
-            <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %>
-          </td>
-          <td class="center">
-            <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %>
           </td>
           <td class="center">
             <%= mp_ratio_element.theoretical_effort_probable.to_f.round(user_number_precision) %>
@@ -372,7 +369,7 @@
                                                                      pbs_project_element_id: @pbs_project_element.id).all %>
 
     <h3>
-      Dénombrements - <%= @guw_model.name %>
+      Financier Détails - <%= @guw_model.name %>
     </h3>
 
     <hr>
@@ -380,9 +377,9 @@
     <% unless @unit_of_work_groups.nil? %>
       <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
       <% @unit_of_work_groups.each do |uowg| %>
-        <h3>
+        <h4>
           <%= uowg.name %>
-        </h3>
+        </h4>
         <table class="table table-condensed main" style="font-size: 10px;">
           <tr>
             <th>
