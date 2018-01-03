@@ -84,9 +84,9 @@
             <% element_tjm = mp_ratio_element.tjm %>
             <% if mp_ratio_element.is_root? %>
                 <td>
-                  <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} global : " %>
-                    <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
-                  </strong>
+                  <strong style="vertical-align: middle">
+                  <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
+                </strong>
                 </td>
             <% else %>
                 <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
