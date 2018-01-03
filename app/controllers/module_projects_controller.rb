@@ -390,6 +390,7 @@ class ModuleProjectsController < ApplicationController
                   estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
                   widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: @module_project.id, estimation_value_id: estimation_value_id,
                                                 name: view_widget.name, show_name: view_widget.show_name,
+                                                show_tjm: view_widget.show_tjm,
                                                 equation: view_widget.equation,
                                                 comment: view_widget.comment,
                                                 is_kpi_widget: view_widget.is_kpi_widget,
@@ -459,6 +460,7 @@ class ModuleProjectsController < ApplicationController
                 estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
                 widget_copy = ViewsWidget.new(view_id: new_view_saved_as.id, module_project_id: @module_project.id, estimation_value_id: view_widget.estimation_value_id,
                                               name: view_widget.name, show_name: view_widget.show_name,
+                                              show_tjm: view_widget.show_tjm,
                                               equation: view_widget.equation,
                                               comment: view_widget.comment,
                                               is_kpi_widget: view_widget.is_kpi_widget,

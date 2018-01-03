@@ -1190,6 +1190,7 @@ class OrganizationsController < ApplicationController
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
                 widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
                                                  name: view_widget.name, show_name: view_widget.show_name,
+                                                 show_tjm: view_widget.show_tjm,
                                                  equation: view_widget.equation,
                                                  comment: view_widget.comment,
                                                  is_kpi_widget: view_widget.is_kpi_widget,
