@@ -560,27 +560,41 @@
 
       // Mettre à jour les valeurs des champs contenant les vraies valeurs de la phase modifiée
       // Puis mettre à blanc la valeur affichee du Root/racine
-      $('input.retained_effort_visible, input.retained_cost_visible').change(function() {
-          var element_id = $(this).attr('id');
-          var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
-          var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
-          var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
-          var theoretical_value = parseFloat($('#'+theoretical_value_id).val());
-          var new_value = parseFloat($(this).val().replace("," , ".").replace(/\s/g, ''));  //$(this).val();  //
+      //$('input.retained_effort_visible, input.retained_cost_visible').change(function() {
+      $('input.retained_effort_visible, input.retained_cost_visible').on('focusin', function(){
+          console.log("Saving value " + $(this).val());
+          $(this).data('val', $(this).val());
+      }).on('keyup', function() {
+          var previousValue = $(this).data('val');
+          var currentValue = $(this).val();
 
-          $.ajax({
-              url: "/update_mp_ratio_element_changed_value",
-              method: "get",
-              data: {
-                  corresponding_element_id: corresponding_element_id,
-                  theoretical_value: theoretical_value,
-                  new_value: new_value
-              }
-          });
+          //console.log("Prev value " + previousValue);
+          //console.log("New value " + currentValue);
 
-          // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
-          $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
-          $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+          if(parseFloat(currentValue) != parseFloat(previousValue)) {
+              var element_id = $(this).attr('id');
+              var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
+              var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
+              var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
+              var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
+              var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
+
+              //console.log("valeur différente");
+              $.ajax({
+                  url: "/update_mp_ratio_element_changed_value",
+                  method: "get",
+                  data: {
+                      corresponding_element_id: corresponding_element_id,
+                      theoretical_value: theoretical_value,
+                      new_value: new_value,
+                      root_mp_ratio_element_id: root_mp_ratio_element_id
+                  }
+              });
+
+              // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
+              $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+              $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+          }
       });
 
       var clkBtn = "";
