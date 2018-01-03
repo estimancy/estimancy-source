@@ -18,7 +18,7 @@
       <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
 
       <div class="row-fluid">
-        <div class="span5">
+        <div class="span6">
           <div class="form-inputs">
 
             <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id]} %>
@@ -65,11 +65,6 @@
 
             <%= f.input :guw_unit_of_work_group_id, as: :select, collection: current_module_project.guw_unit_of_work_groups, label: I18n.t(:uw_groups), selected: params[:g], input_html: { class: "input-xxlarge" }  %>
           </div>
-        </div>
-        <div class="span7">
-          <span class="guw_type_description">
-            <%= simple_format(@guw_model.guw_types.first.description) %>
-          </span>
         </div>
       </div>
 
