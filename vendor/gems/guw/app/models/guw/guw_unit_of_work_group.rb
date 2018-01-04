@@ -29,6 +29,7 @@ module Guw
     belongs_to :module_project
     belongs_to :pbs_project_element
     belongs_to :organization_technology
+    belongs_to :organization
 
     validates_presence_of :name#, :organization_technology_id
 

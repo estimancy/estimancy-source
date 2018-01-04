@@ -75,37 +75,46 @@
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%# link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments" %>
-                <%# text_area_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, rows: "5", :"custom-data-id" => "comments_#{guow.id}_#{uowa.id}", class: "input-large pull-left comments hide", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "width: 95%; text-align: left;" %>
-                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
+                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments", id: "preview_comment_#{guow.id}_#{uowa.id}", :"custom-data-id" => "preview_comment_#{guow.id}_#{uowa.id}" %>
+              </td>
+
+              <td>
+                <div class="modal fade modal_comments" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header modal-drag">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">
+                          Commentaire
+                        </h4>
+                      </div>
+
+                      <div class="modal-body" style="height: inherit;">
+                        <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: uowa.comments), class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+                      </div>
+
+                      <div class="modal-footer">
+                        <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo();" %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </td>
 
               <script>
-//                var content = "";
-//                var cdi = "";
-//
-//                $(".comments").on('click', function(e) {
-//
-//                  cdi = $(this).attr("custom-data-id");
-//                  console.log(cdi);
-//
-//                  $("#rich_comments").modal({
-//                    keyboard: false,
-//                    backdrop: "static"
-//                  });
-//                });
-//
-//                function yolo(){
-//                  console.log(cdi);
-//                  console.log(tinymce.get('rich_comment_area').getContent());
-//                  console.log($(this));
-//                  console.log($(this).closest("textarea"));
-//
-//
-//                  $('#rich_comments').modal('hide');
-//                  $(this).closest("textarea").html(tinymce.get('rich_comment_area').getContent());
-//                  $(this).closest("textarea").prev().html(tinymce.get('rich_comment_area').getContent());
-//                };
+                var content = "";
+                var cdi = "";
+
+                $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
+                  $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                    keyboard: false,
+                    backdrop: "static"
+                  });
+                });
+
+                function yolo(){
+                  $('.modal_comments').modal('hide');
+                };
 
                 $(".ml").on('focus', function(e) {
                   $(".submit_cotation").attr('disabled', 'disabled');
@@ -159,26 +168,6 @@
     <% end %>
   </div>
 
-  <div class="modal fade" tabindex="-1" role="dialog" id="rich_comments" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header modal-drag">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">
-            Commentaire
-          </h4>
-        </div>
-
-        <div class="modal-body" style="height: inherit;">
-          <%# text_area_tag "rich_comment_area", "", class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
-          <%# tinymce %>
-        </div>
-
-        <div class="modal-footer">
-          <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo();" %>
-        </div>
-      </div>
-    </div>
-  </div>
-
 <% end %>
+
+<%= tinymce %>
