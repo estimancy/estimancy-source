@@ -2608,6 +2608,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                           guowa.low = val
                           guowa.most_likely = val
                           guowa.high = val
+                          guowa.comments = row[ind + 1].to_s
                           guowa.save
                         end
                       end
@@ -2673,9 +2674,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   # ignored
                 end
 
-                # if guw_uow.changed?
+                if guw_uow.changed?
                   guw_uow.save
-                # end
+                end
 
                 unless @guw_type.nil?
                   if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
