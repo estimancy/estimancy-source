@@ -2563,11 +2563,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id,
                                                   tracking: row[17],
-                                                  quantity: row[16].nil? ? 1 : row[11],
+                                                  quantity: row[12].nil? ? 1 : row[12],
                                                   size: nil,
                                                   ajusted_size: nil,
-                                                  intermediate_percent: row[19].nil? ? nil : row[19],
-                                                  intermediate_weight: row[19].nil? ? nil : row[19],
+                                                  intermediate_percent: row[22].nil? ? nil : row[22],
+                                                  intermediate_weight: row[26].nil? ? nil : row[26],
                                                   guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
@@ -2663,7 +2663,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     unless row[19].blank?
                       unless @guw_type.nil?
                         guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
-                                                                  name: row[19]).first
+                                                                  name: row[18]).first
                       end
                     end
 
@@ -2673,9 +2673,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   # ignored
                 end
 
-                if guw_uow.changed?
+                # if guw_uow.changed?
                   guw_uow.save
-                end
+                # end
 
                 unless @guw_type.nil?
                   if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
