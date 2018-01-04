@@ -2552,7 +2552,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-
                 guw_uow = Guw::GuwUnitOfWork.new( selected: row[12].to_i == 1,
                                                   name: row[13],
                                                   comments: row[15],
@@ -2566,7 +2565,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   quantity: row[12].nil? ? 1 : row[12],
                                                   size: nil,
                                                   ajusted_size: nil,
-                                                  intermediate_percent: row[22].nil? ? nil : row[22],
+                                                  intermediate_percent: row[19].nil? ? nil : row[19],
                                                   intermediate_weight: row[26].nil? ? nil : row[26],
                                                   guw_type_id: @guw_type.id)
 
@@ -2592,7 +2591,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   @guw_attributes.size.times do |jj|
 
-                    ind = 20 + @guw_outputs.size + @guw_coefficients.size + jj
+                    ind = 20 + @guw_outputs.size + @guw_coefficients.size + jj + 2
 
                     tmp_val = row[ind]
 
