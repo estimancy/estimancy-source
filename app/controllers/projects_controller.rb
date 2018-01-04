@@ -2702,7 +2702,7 @@ public
       res = filter_estimation_versions(res, params[:filter_version])
     end
 
-      @object_per_page = (current_user.object_per_page || 10)
+    @object_per_page = (current_user.object_per_page || 10)
     if params['previous_next_action'] == "true"
       @min = params['min'].to_i
       @max = params['max'].to_i

@@ -93,7 +93,7 @@ module OrganizationsHelper
           sort_order = "desc"
         end
       when :title
-        column_sort_order = "desc"
+        column_sort_order = "asc" #"desc"
       when :description
         column_sort_order = "asc"
       when :version_number
