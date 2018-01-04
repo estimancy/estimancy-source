@@ -754,6 +754,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     # module_project = current_module_project
     # component = current_component
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @group = @guw_unit_of_work.guw_unit_of_work_group
+
     if @guw_unit_of_work.selected == false
       @guw_unit_of_work.selected = true
     else

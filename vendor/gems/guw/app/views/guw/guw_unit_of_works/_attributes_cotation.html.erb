@@ -75,8 +75,7 @@
                 <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%# link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments attribute_tooltip", id: "preview_comment_#{guow.id}_#{uowa.id}", title: simple_format(uowa.comments.to_s) %>
-                <%= text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
+                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments attribute_tooltip", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw(simple_format(uowa.comments.to_s)) %>
               </td>
 
               <td>
@@ -129,7 +128,7 @@
                 });
 
                 $(".ml").on('blur', function(k) {
-                  var val = $(this).closest('td').next().find('input').val();
+                  var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
                     $(".submit_cotation").attr('disabled', 'disabled');
                   } else {
@@ -139,10 +138,13 @@
                   valu = $(this).val();
                   dv = $(this).attr("default_value");
 
-                  console.log(valu);
-                  console.log(dv);
-                  if(valu == dv){
+                  if(valu == dv) {
                     $(".submit_cotation").removeAttr('disabled');
+                  } else {
+                    $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                      keyboard: false,
+                      backdrop: "static"
+                    });
                   }
 
                 });
@@ -172,3 +174,9 @@
 <% end %>
 
 <%= tinymce %>
+
+<script>
+  $(document).ready(function() {
+    $('.attribute_tooltip').tooltip({'html' : true });
+  });
+</script>
