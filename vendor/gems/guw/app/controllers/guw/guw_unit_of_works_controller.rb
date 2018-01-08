@@ -1078,7 +1078,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_model.organization
     @project = module_project.project
     @component = current_component
-    @guw_unit_of_works = Guw::ModuleProjectGuwUnitOfWork.where(organization_id: @organization.id,
+    @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
                                                                project_id: @project.id,
                                                                module_project_id: module_project.id,
                                                                pbs_project_element_id: @component.id,
