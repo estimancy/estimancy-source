@@ -51,6 +51,7 @@
         <% if @guw_model.three_points_estimation == true %>
           <th>H</th>
         <% end %>
+        <th></th>
       </tr>
 
       <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
@@ -95,7 +96,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo();" %>
+                        <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo(#{uowa.id});" %>
                       </div>
                     </div>
                   </div>
@@ -112,9 +113,9 @@
                   });
                 });
 
-                function yolo(){
+                function yolo(uowa_id){
                   $('.modal_comments').modal('hide');
-                  $('#preview_comment_' + <%= guow.id %> + "_" + <%= uowa.id %>).html(tinymce.get('comments_' + <%= guow.id %> + '_' + <%= uowa.id %>).getContent());
+                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(tinymce.get('comments_' + <%= guow.id %> + '_' + uowa_id).getContent());
                 };
 
                 $(".ml").on('focus', function(e) {
