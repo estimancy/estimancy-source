@@ -1147,10 +1147,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @ocis_hash[oci.guw_output_id] = oci
       end
 
-      @goas = {}
-      Guw::GuwOutputAssociation.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
-        @goas[goa.guw_output_id] = goa
-      end
+      # @goas = {}
+      # Guw::GuwOutputAssociation.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
+      #   @goas[goa.guw_output_id] = goa
+      # end
 
       @guw_outputs.each_with_index do |guw_output, index|
 
@@ -1399,16 +1399,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         coef = coeffs.compact.inject(&:*)
 
         oa_value = []
-        # goas[guw_output.id]
-        # Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-        #                                 guw_complexity_id: guw_unit_of_work.guw_complexity_id)
-        # @goas[guw_output.id].all.each do |goa|
-          unless @goas[guw_output.id].value.to_f == 0
-            unless @goas[guw_output.id].aguw_output.nil?
-              oa_value << tmp_hash_ares["#{@goas[guw_output.id].aguw_output.id}"].to_f * @goas[guw_output.id].value.to_f
+        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
+                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
+          unless goa.value.to_f == 0
+            unless goa.aguw_output.nil?
+              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
             end
           end
-        # end
+        end
 
         inter_value = oa_value.compact.sum.to_f
 
