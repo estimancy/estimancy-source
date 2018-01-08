@@ -295,7 +295,7 @@ class ModuleProject < ActiveRecord::Base
         end
       end
 
-      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id)
+      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.id)
       activity_elt = mp_ratio_elt.wbs_activity_element
       activity_elt_ancestor_ids = activity_elt.ancestor_ids
       new_ancestor_ids_list = []
