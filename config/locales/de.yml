@@ -1648,3 +1648,4 @@ de:
   label_automatic_quotation_number: "Incremental number"
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
   show_tjm: "Show TJM"
+  only_numeric: "Only numeric values ​​are allowed"

@@ -1594,3 +1594,4 @@ it:
   label_automatic_quotation_number: "Numéro automatique et incrémental"
   use_automatic_quotation_number: "Générer automatiquement le nom de l'estimation créé à partir de ce modèle"
   show_tjm: "Afficher le TJM (taux moyen)"
+  only_numeric: "Seul les valeurs numériques sont autorisées"
