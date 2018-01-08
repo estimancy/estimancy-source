@@ -1147,11 +1147,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @ocis_hash[oci.guw_output_id] = oci
       end
 
-      # @goas = {}
-      # Guw::GuwOutputAssociation.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
-      #   @goas[goa.guw_output_id] = goa
-      # end
-
       @guw_outputs.each_with_index do |guw_output, index|
 
         @oc = @ocs_hash[guw_output.id]

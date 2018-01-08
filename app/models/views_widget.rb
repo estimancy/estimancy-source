@@ -101,25 +101,27 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.update_field(module_project, organization, project, component, set_to_nil = false)
+    organization_fields = organization.fields
     module_project.views_widgets.each do |view_widget|
-      organization.fields.each do |field|
+      view_widget_estimation_value = view_widget.estimation_value
+      organization_fields.each do |field|
 
         pf = ProjectField.where(field_id: field.id,
                                 project_id: project.id,
                                 views_widget_id: view_widget.id).first
 
-        unless view_widget.estimation_value.nil?
+        unless view_widget_estimation_value.nil?
           if set_to_nil == true
             @value = nil
           else
-            if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+            if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
               begin
-                @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
               rescue
-                @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
+                @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
               end
             else
-              @value = view_widget.estimation_value.string_data_probable[component.id]
+              @value = view_widget_estimation_value.string_data_probable[component.id]
             end
           end
 
