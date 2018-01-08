@@ -1078,11 +1078,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_model.organization
     @project = module_project.project
     @component = current_component
-    @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
-                                                  project_id: @project.id,
-                                                  module_project_id: module_project.id,
-                                                  pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
+    @guw_unit_of_works = Guw::ModuleProjectGuwUnitOfWork.where(organization_id: @organization.id,
+                                                               project_id: @project.id,
+                                                               module_project_id: module_project.id,
+                                                               pbs_project_element_id: @component.id,
+                                                               guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
@@ -1104,7 +1104,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      reorder guw_unit_of_work.guw_unit_of_work_group
+      # reorder guw_unit_of_work.guw_unit_of_work_group
 
       if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
         guw_type = guw_unit_of_work.guw_type
@@ -1135,14 +1135,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
+
+
+      @ocs_hash = {}
+      Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).all.each do |oc|
+        @ocs_hash[oc.guw_output_id] = oc
+      end
+
+      @ocis_hash = {}
+      Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |oci|
+        @ocis_hash[oci.guw_output_id] = oci
+      end
+
+      @goas = {}
+      Guw::GuwOutputAssociation.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
+        @goas[goa.guw_output_id] = goa
+      end
+
       @guw_outputs.each_with_index do |guw_output, index|
 
-        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                             guw_output_id: guw_output.id,
-                                             value: 1).first
-
-        @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                                            guw_output_id: guw_output.id).first
+        @oc = @ocs_hash[guw_output.id]
+        @oci = @ocis_hash[guw_output.id]
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
@@ -1386,14 +1399,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         coef = coeffs.compact.inject(&:*)
 
         oa_value = []
-        Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
-          unless goa.value.to_f == 0
-            unless goa.aguw_output.nil?
-              oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
+        # goas[guw_output.id]
+        # Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
+        #                                 guw_complexity_id: guw_unit_of_work.guw_complexity_id)
+        # @goas[guw_output.id].all.each do |goa|
+          unless @goas[guw_output.id].value.to_f == 0
+            unless @goas[guw_output.id].aguw_output.nil?
+              oa_value << tmp_hash_ares["#{@goas[guw_output.id].aguw_output.id}"].to_f * @goas[guw_output.id].value.to_f
             end
           end
-        end
+        # end
 
         inter_value = oa_value.compact.sum.to_f
 
