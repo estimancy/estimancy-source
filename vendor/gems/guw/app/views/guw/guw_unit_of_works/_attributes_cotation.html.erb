@@ -51,6 +51,7 @@
         <% if @guw_model.three_points_estimation == true %>
           <th>H</th>
         <% end %>
+        <th></th>
       </tr>
 
       <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
@@ -72,10 +73,11 @@
               <% end %>
 
               <td class="span1">
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
-                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments", id: "preview_comment_#{guow.id}_#{uowa.id}", :"custom-data-id" => "preview_comment_#{guow.id}_#{uowa.id}" %>
+                <%= link_to (uowa.comments.blank? ? '...' : uowa.comments.to_s.truncate(30)), "#!", class: "comments attribute_tooltip", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw(simple_format(uowa.comments.to_s)) %>
+                <%# text_field_tag "comments[#{guow.id}][#{uowa.id}]", uowa.comments, class: "input-large pull-left comments", readonly: !can?(:execute_estimation_plan, @project), placeholder: "Votre commentaire", style: "text-align: left;" %>
               </td>
 
               <td>
@@ -90,11 +92,11 @@
                       </div>
 
                       <div class="modal-body" style="height: inherit;">
-                        <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: uowa.comments), class: "tinymce optional", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+                        <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: raw(uowa.comments)), class: "tinymce optional rich_comment_area_#{uowa.id}", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo();" %>
+                        <%= link_to "OK", "#", :class => 'btn btn-primary validate', onclick: "yolo(#{uowa.id});" %>
                       </div>
                     </div>
                   </div>
@@ -103,7 +105,6 @@
 
               <script>
                 var content = "";
-                var cdi = "";
 
                 $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
                   $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
@@ -112,8 +113,9 @@
                   });
                 });
 
-                function yolo(){
+                function yolo(uowa_id){
                   $('.modal_comments').modal('hide');
+                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(tinymce.get('comments_' + <%= guow.id %> + '_' + uowa_id).getContent());
                 };
 
                 $(".ml").on('focus', function(e) {
@@ -127,8 +129,8 @@
                   });
                 });
 
-                $(".ml").on('blur', function(k) {
-                  var val = $(this).closest('td').next().find('input').val();
+                $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
+                  var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
                     $(".submit_cotation").attr('disabled', 'disabled');
                   } else {
@@ -138,10 +140,13 @@
                   valu = $(this).val();
                   dv = $(this).attr("default_value");
 
-                  console.log(valu);
-                  console.log(dv);
-                  if(valu == dv){
+                  if(valu == dv) {
                     $(".submit_cotation").removeAttr('disabled');
+                  } else {
+                    $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                      keyboard: false,
+                      backdrop: "static"
+                    });
                   }
 
                 });
@@ -171,3 +176,9 @@
 <% end %>
 
 <%= tinymce %>
+
+<script>
+  $(document).ready(function() {
+    $('.attribute_tooltip').tooltip({'html' : true });
+  });
+</script>
