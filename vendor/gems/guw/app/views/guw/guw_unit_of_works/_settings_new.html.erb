@@ -308,16 +308,28 @@
                                    style: "width: 90%",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: guow.guw_type %>
+                                   title: @guw_type.name %>
                   <% else %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    class: "guw_type",
                                    style: "width: 90%;",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: guow.guw_type %>
+                                   title: @guw_type.name %>
                   <% end %>
                 </td>
+
+                <% hash_guw_coefficients = {} %>
+                <% Guw::GuwCoefficient.where(name: @guw_model.orders.map(&:first),
+                                             guw_model_id: @guw_model.id).all.each do |guw_coef| %>
+                  <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
+                <% end %>
+
+                <% hash_guw_outputs = {} %>
+                <% Guw::GuwOutput.where(name: @guw_model.orders.map(&:first),
+                                        guw_model_id: @guw_model.id).all.each do |guw_output| %>
+                  <% hash_guw_outputs[guw_output.name] = guw_output %>
+                <% end %>
 
                 <% @deported_guw_coefficients = @guw_coefficients.where(deported: true, guw_model_id: @guw_model.id) %>
                 <% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id) %>
@@ -333,8 +345,9 @@
                     <% end %>
                   <% else %>
 
-                    <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
-                    <% @guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% @guw_coefficient = hash_guw_coefficients[i[0]] %>
+                    <% @guw_output = hash_guw_outputs[i[0]] %>
+
                     <% if i[0] == "Coefficient" %>
                       <% unless @deported_guw_coefficients.map(&:id).empty? %>
                         <%
