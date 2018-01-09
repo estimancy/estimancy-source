@@ -160,7 +160,7 @@
         </div>
       </div>
 
-      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll;">
+      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll; padding-bottom: 10px;">
         <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
         <div class="accordion-inner">
@@ -171,17 +171,27 @@
               <th><%= I18n.t :name %></th>
               <th>UO</th>
 
+              <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
+              <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
+
+              <% hash_guw_coefficients = {} %>
+              <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                           name: @guw_model.orders.map(&:first),
+                                           deported: false).each do |guw_coef| %>
+                <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
+              <% end %>
+
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
-                  <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                    <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                  <% if hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
+                    <% guw_coefficient = hash_guw_coefficients[i[0]] %>
                     <% unless guw_coefficient.nil? %>
                       <th>
                         <%= i[0] %>
                       </th>
                     <% end %>
                   <% elsif i[0] == "Coefficient" %>
-                    <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                    <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
                       <th>
                         <%= i[0] %>
                       </th>
@@ -298,18 +308,30 @@
                                    style: "width: 90%",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: @guw_type %>
+                                   title: @guw_type.name %>
                   <% else %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    class: "guw_type",
                                    style: "width: 90%;",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: @guw_type %>
+                                   title: @guw_type.name %>
                   <% end %>
                 </td>
 
-                <% @deported_guw_coefficients = @guw_coefficients.where(deported: true, guw_model_id: @guw_model.id) %>
+                <% hash_guw_coefficients = {} %>
+                <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                             name: @guw_model.orders.map(&:first)).all.each do |guw_coef| %>
+                  <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
+                <% end %>
+
+                <% hash_guw_outputs = {} %>
+                <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+                                        name: @guw_model.orders.map(&:first)).all.each do |guw_output| %>
+                  <% hash_guw_outputs[guw_output.name] = guw_output %>
+                <% end %>
+
+                <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
                 <% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id) %>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
@@ -323,8 +345,9 @@
                     <% end %>
                   <% else %>
 
-                    <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
-                    <% @guw_output = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                    <% @guw_coefficient = hash_guw_coefficients[i[0]] %>
+                    <% @guw_output = hash_guw_outputs[i[0]] %>
+
                     <% if i[0] == "Coefficient" %>
                       <% unless @deported_guw_coefficients.map(&:id).empty? %>
                         <%
