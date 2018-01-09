@@ -1324,10 +1324,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             end
 
-            cces = {}
-            Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
-              cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}"] = cce
-            end
+            # cces = {}
+            # Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
+            #   cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}"] = cce
+            # end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
 
@@ -1424,12 +1424,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = module_project.id
 
-                ceuw.save
+                if ceuw.changed?
+                  ceuw.save
+                end
               end
 
-              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-                                                               guw_coefficient_element_id: ce.id,
-                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+              # cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+              #                                                  guw_coefficient_element_id: ce.id,
+              #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
               cce = cces["#{ce.id}_#{guw_unit_of_work.guw_complexity_id}"]
 
