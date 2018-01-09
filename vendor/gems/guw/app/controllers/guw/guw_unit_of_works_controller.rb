@@ -1094,6 +1094,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work.effort = nil
       guw_unit_of_work.cost = nil
 
+      guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
+
       #guw_unit_of_work.save
 
       array_pert = Array.new
@@ -1153,18 +1155,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @oci = @ocis_hash[guw_output.id]
 
         #gestion des valeurs intermédiaires
-        weight = (guw_unit_of_work.guw_complexity.nil? ? 1.0 : (guw_unit_of_work.guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work.guw_complexity.weight.to_f))
-        weight_b = (guw_unit_of_work.guw_complexity.nil? ? 0 : (guw_unit_of_work.guw_complexity.weight_b.nil? ? 0 : guw_unit_of_work.guw_complexity.weight_b.to_f))
+        weight = (guw_unit_of_work_guw_complexity.nil? ? 1.0 : (guw_unit_of_work_guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work_guw_complexity.weight.to_f))
+        weight_b = (guw_unit_of_work_guw_complexity.nil? ? 0 : (guw_unit_of_work_guw_complexity.weight_b.nil? ? 0 : guw_unit_of_work_guw_complexity.weight_b.to_f))
 
         result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
         result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
         result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
 
-        if guw_unit_of_work.guw_complexity.nil?
+        if guw_unit_of_work_guw_complexity.nil?
           @final_value = nil
         else
           # weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
-          if guw_unit_of_work.guw_complexity.enable_value == false
+          if guw_unit_of_work_guw_complexity.enable_value == false
             if @oc.nil?
               @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
             else
