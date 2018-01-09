@@ -160,7 +160,7 @@
         </div>
       </div>
 
-      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll; padding-bottom: 10px;">
+      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll;">
         <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
         <div class="accordion-inner">
@@ -298,14 +298,14 @@
                                    style: "width: 90%",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: guow.guw_type %>
+                                   title: @guw_type %>
                   <% else %>
                     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    class: "guw_type",
                                    style: "width: 90%;",
                                    prompt: "",
                                    guw: guow.id,
-                                   title: guow.guw_type %>
+                                   title: @guw_type %>
                   <% end %>
                 </td>
 

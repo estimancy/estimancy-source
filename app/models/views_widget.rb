@@ -70,7 +70,9 @@ class ViewsWidget < ActiveRecord::Base
           ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
         end
         ev.send("string_data_probable=", { pbs_project_element.id => nil })
-        ev.save
+        unless ev.changed?
+          ev.save
+        end
       end
 
       # reset module_project_ratio_elements for EffortBreakdown module
@@ -81,7 +83,9 @@ class ViewsWidget < ActiveRecord::Base
               mp_ratio_elt.send("#{attribute}_#{level}=", nil)
             end
           end
-          mp_ratio_elt.save
+          unless mp_ratio_elt.changed?
+            mp_ratio_elt.save
+          end
         end
       end
     end
@@ -101,25 +105,32 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.update_field(module_project, organization, project, component, set_to_nil = false)
+    organization_fields = organization.fields
     module_project.views_widgets.each do |view_widget|
-      organization.fields.each do |field|
 
-        pf = ProjectField.where(field_id: field.id,
-                                project_id: project.id,
-                                views_widget_id: view_widget.id).first
+      pfs = {}
+      ProjectField.where(project_id: project.id,
+                         views_widget_id: view_widget.id).all.each do |pf|
+        pfs[pf.field_id] = pf
+      end
 
-        unless view_widget.estimation_value.nil?
+      view_widget_estimation_value = view_widget.estimation_value
+      organization_fields.each do |field|
+
+        pf = pfs[field.id]
+
+        unless view_widget_estimation_value.nil?
           if set_to_nil == true
             @value = nil
           else
-            if view_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+            if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
               begin
-                @value = view_widget.estimation_value.string_data_probable[component.id][view_widget.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
               rescue
-                @value = view_widget.estimation_value.string_data_probable[project.root_component.id]
+                @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
               end
             else
-              @value = view_widget.estimation_value.string_data_probable[component.id]
+              @value = view_widget_estimation_value.string_data_probable[component.id]
             end
           end
 
