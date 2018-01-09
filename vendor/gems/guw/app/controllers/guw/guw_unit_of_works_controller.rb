@@ -1227,9 +1227,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw = ceuws[guw_coefficient.id]
             if ceuw.nil?
-              GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
-                                                     guw_coefficient_id: guw_coefficient.id,
-                                                     guw_coefficient_element_id: nil)
+              ceuw = GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                            guw_coefficient_id: guw_coefficient.id,
+                                                            guw_coefficient_element_id: nil)
             end
 
             begin
@@ -1283,18 +1283,26 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           elsif guw_coefficient.coefficient_type == "Coefficient"
 
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                              guw_coefficient_id: guw_coefficient.id,
-                                                              guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                               guw_coefficient_id: guw_coefficient.id,
-                                                                                                               guw_coefficient_element_id: nil)
+            ceuw = ceuws[guw_coefficient.id]
+            if ceuw.nil?
+              ceuw = GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                            guw_coefficient_id: guw_coefficient.id,
+                                                            guw_coefficient_element_id: nil)
+            end
+
+            # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
+            #                                                   guw_coefficient_id: guw_coefficient.id,
+            #                                                   guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
+            #                                                                                                    guw_coefficient_id: guw_coefficient.id,
+            #                                                                                                    guw_coefficient_element_id: nil)
             begin
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             rescue
               if ceuw.percent.nil?
-                ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                                                      guw_model_id: @guw_model.id,
-                                                      default: true).first
+                # ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                #                                       guw_model_id: @guw_model.id,
+                #                                       default: true).first
+                ce = ces[guw_coefficient.id]
                 if ce.nil?
                   ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                         guw_model_id: @guw_model.id).first
@@ -1350,6 +1358,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
               # end
             # end
+
+            ceuw = ceuws[guw_coefficient.id]
+            if ceuw.nil?
+
+            end
 
             if ce.nil?
               ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
