@@ -1227,9 +1227,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw = ceuws[guw_coefficient.id]
             if ceuw.nil?
-              ceuw = GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
-                                                            guw_coefficient_id: guw_coefficient.id,
-                                                            guw_coefficient_element_id: nil)
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                 guw_coefficient_id: guw_coefficient.id,
+                                                                 guw_coefficient_element_id: nil)
             end
 
             begin
@@ -1285,9 +1285,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw = ceuws[guw_coefficient.id]
             if ceuw.nil?
-              ceuw = GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
-                                                            guw_coefficient_id: guw_coefficient.id,
-                                                            guw_coefficient_element_id: nil)
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                guw_coefficient_id: guw_coefficient.id,
+                                                                guw_coefficient_element_id: nil)
             end
 
             # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
