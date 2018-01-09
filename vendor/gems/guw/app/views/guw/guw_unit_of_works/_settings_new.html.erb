@@ -171,17 +171,27 @@
               <th><%= I18n.t :name %></th>
               <th>UO</th>
 
+              <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
+              <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
+
+              <% hash_guw_coefficients = {} %>
+              <% Guw::GuwCoefficient.where(name: @guw_model.orders.map(&:first),
+                                           guw_model_id: @guw_model.id,
+                                           deported: false).all.each do |guw_coef| %>
+                <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
+              <% end %>
+
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
-                  <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                    <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                  <% if hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
+                    <% guw_coefficient = hash_guw_coefficients[i[0]] %>
                     <% unless guw_coefficient.nil? %>
                       <th>
                         <%= i[0] %>
                       </th>
                     <% end %>
                   <% elsif i[0] == "Coefficient" %>
-                    <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                    <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
                       <th>
                         <%= i[0] %>
                       </th>
