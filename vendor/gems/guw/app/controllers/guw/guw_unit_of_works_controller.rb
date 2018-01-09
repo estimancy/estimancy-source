@@ -1286,8 +1286,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw = ceuws[guw_coefficient.id]
             if ceuw.nil?
               ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
-                                                                guw_coefficient_id: guw_coefficient.id,
-                                                                guw_coefficient_element_id: nil)
+                                                                 guw_coefficient_id: guw_coefficient.id,
+                                                                 guw_coefficient_element_id: nil)
             end
 
             # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1299,10 +1299,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
             rescue
               if ceuw.percent.nil?
-                # ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                #                                       guw_model_id: @guw_model.id,
-                #                                       default: true).first
-                ce = ces[guw_coefficient.id]
+                ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                                                      guw_model_id: @guw_model.id,
+                                                      default: true).first
+                # ce = ces[guw_coefficient.id]
                 if ce.nil?
                   ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                         guw_model_id: @guw_model.id).first
@@ -1326,10 +1326,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_unit_of_work.flagged = true
               end
 
-              # cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-              #                                                  guw_coefficient_element_id: guw_coefficient_element.id,
-              #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
-              cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
+              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+                                                               guw_coefficient_element_id: guw_coefficient_element.id,
+                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
+
+              # cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
+              #
+              # p "########"
+              # p cce.id
+              # p cce2.id
+
               if cce.nil?
                 cce = Guw::GuwComplexityCoefficientElement.create(guw_output_id: guw_output.id,
                                                                   guw_coefficient_element_id: guw_coefficient_element.id,

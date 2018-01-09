@@ -401,10 +401,10 @@ public
   def about
     # No authorize required since everyone can access the about page
     set_page_title I18n.t(:about)
-    latest_record_version = Version.last.nil? ? Version.create(:comment => 'No update data has been save') : Version.last
-    @latest_repo_update = latest_record_version.repository_latest_update #Home::latest_repo_update
-    @latest_local_update = latest_record_version.local_latest_update
-    Rails.cache.write('latest_update', @latest_local_update)
+    # latest_record_version = Version.last.nil? ? Version.create(:comment => 'No update data has been save') : Version.last
+    # @latest_repo_update = latest_record_version.repository_latest_update #Home::latest_repo_update
+    # @latest_local_update = latest_record_version.local_latest_update
+    # Rails.cache.write('latest_update', @latest_local_update)
   end
 
   def display_states
