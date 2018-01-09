@@ -1137,8 +1137,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
-
-
       @ocs_hash = {}
       Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).all.each do |oc|
         @ocs_hash[oc.guw_output_id] = oc
@@ -1147,6 +1145,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @ocis_hash = {}
       Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |oci|
         @ocis_hash[oci.guw_output_id] = oci
+      end
+
+      ceuws = {}
+      Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
+                                                 guw_coefficient_element_id: nil).each do |ceuw|
+        ceuws[ceuw.guw_coefficient_id] = ceuw
+      end
+
+      ceuws_without_nil = {}
+      Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
+                                                 guw_coefficient_element_id: nil).each do |ceuw|
+        ceuws_without_nil[ceuw.guw_coefficient_id] = ceuw
+      end
+
+      ces = {}
+      ce = Guw::GuwCoefficientElement.where(guw_model_id: @guw_model.id,
+                                            default: true).each do |ce|
+        ces[ce.guw_coefficient_id] = ce
       end
 
       @guw_outputs.each_with_index do |guw_output, index|
@@ -1205,28 +1221,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
-
-        ceuws = {}
-        Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                   guw_coefficient_element_id: nil).each do |ceuw|
-          ceuws[ceuw.guw_coefficient_id] = ceuw
-        end
-
-        ceuws_without_nil = {}
-        Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                   guw_coefficient_element_id: nil).each do |ceuw|
-          ceuws_without_nil[ceuw.guw_coefficient_id] = ceuw
-        end
-
         cces = {}
         Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
           cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}"] = cce
-        end
-
-        ces = {}
-        ce = Guw::GuwCoefficientElement.where(guw_model_id: @guw_model.id,
-                                              default: true).each do |ce|
-          ces[ce.guw_coefficient_id] = ce
         end
 
         coeffs = []
@@ -1277,7 +1274,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 percents << (pc.to_f / 100)
                 percents << cce.value.to_f
 
-                v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
+                v = (guw_coefficient_element.value.nil? ? 1 : guw_coefficient_element.value).to_f
                 selected_coefficient_values["#{guw_output.id}"] << (v / 100)
 
               else
@@ -1290,7 +1287,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = module_project.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
 
           elsif guw_coefficient.coefficient_type == "Coefficient"
 
@@ -1366,7 +1365,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
             ceuw.module_project_id = module_project.id
 
-            ceuw.save
+            if ceuw.changed?
+              ceuw.save
+            end
+
           else
 
             begin
@@ -1451,7 +1453,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         oa_value = []
         Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |goa|
+                                        guw_complexity_id: guw_unit_of_work.guw_complexity_id).includes(:aguw_output).each do |goa|
           unless goa.value.to_f == 0
             unless goa.aguw_output.nil?
               oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f
