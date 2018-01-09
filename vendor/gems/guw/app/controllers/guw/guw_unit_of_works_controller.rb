@@ -3114,7 +3114,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     else
       @module_project.guw_model_id = @guw_model.id
-      @module_project.save
+      # @module_project.save
       @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
       # number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
@@ -3152,7 +3152,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         i.ajusted_size["#{guw_output.id}"].to_f)}.compact.sum
 
               tmp_prbl = Array.new
-              ["low", "most_likely", "high"].each do |level|
+              ["most_likely"].each do |level|
                 if am_pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
                   ev.send("string_data_#{level}")[component.id] = value.to_f.round(user_number_precision)
                   if guw_output.output_type == "Effort"
