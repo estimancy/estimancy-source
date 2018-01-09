@@ -1218,6 +1218,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuws_without_nil[ceuw.guw_coefficient_id] = ceuw
         end
 
+        cces = {}
+        Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
+          cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}"] = cce
+        end
+
         ces = {}
         ce = Guw::GuwCoefficientElement.where(guw_model_id: @guw_model.id,
                                               default: true).each do |ce|
@@ -1425,6 +1430,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                guw_coefficient_element_id: ce.id,
                                                                guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+
+              cce = cces["#{ce.id}_#{guw_unit_of_work.guw_complexity_id}"]
 
               unless cce.nil?
                 selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
