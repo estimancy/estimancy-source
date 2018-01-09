@@ -1314,8 +1314,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             cces = {}
-            Guw::GuwComplexityCoefficientElement.all.each do |cce|
-              cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}_#{cce.guw_output_id}"] = cce
+            Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
+              cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}"] = cce
             end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
@@ -1330,7 +1330,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               #                                                  guw_coefficient_element_id: guw_coefficient_element.id,
               #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).all
 
-              cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}_#{guw_output.id}"]
+              cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
 
               if cce.nil?
                 cce = Guw::GuwComplexityCoefficientElement.create(guw_output_id: guw_output.id,
