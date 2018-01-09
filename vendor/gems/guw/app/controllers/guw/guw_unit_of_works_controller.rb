@@ -1205,6 +1205,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
         end
 
+
+        ceuws = {}
+        Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
+                                                   guw_coefficient_element_id: nil).each do |ceuw|
+          ceuws[ceuw.guw_coefficient_id] = ceuw
+        end
+
+        ces = {}
+        ce = Guw::GuwCoefficientElement.where(guw_model_id: @guw_model.id,
+                                              default: true).each do |ce|
+          ces[ce.guw_coefficient_id] = ce
+        end
+
         coeffs = []
         percents = []
         selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
@@ -1212,19 +1225,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @guw_coefficients.each do |guw_coefficient|
           if guw_coefficient.coefficient_type == "Pourcentage"
 
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                              guw_coefficient_id: guw_coefficient.id,
-                                                              guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work,
-                                                                                                               guw_coefficient_id: guw_coefficient.id,
-                                                                                                               guw_coefficient_element_id: nil)
+            ceuw = ceuws[guw_coefficient.id]
+            if ceuw.nil?
+              GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                     guw_coefficient_id: guw_coefficient.id,
+                                                     guw_coefficient_element_id: nil)
+            end
 
             begin
               pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
             rescue
               if ceuw.percent.nil?
-                ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                                                      guw_model_id: @guw_model.id,
-                                                      default: true).first
+                # ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
+                #                                       guw_model_id: @guw_model.id,
+                #                                       default: true).first
+                ce = ces[guw_coefficient.id]
                 if ce.nil?
                    ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                          guw_model_id: @guw_model.id).first
@@ -1540,15 +1555,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_complexity_id = guw_unit_of_work.guw_complexity_id
     end
 
-    if (guw_unit_of_work.guw_type.allow_complexity == true && guw_unit_of_work.guw_type.allow_criteria == false)
+    if (guw_type.allow_complexity == true && guw_type.allow_criteria == false)
 
-      tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
-                                                 organization_technology_id: guw_unit_of_work.organization_technology_id).first
+      # tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_complexity_id,
+      #                                            organization_technology_id: guw_unit_of_work.organization_technology_id).first
 
-      if guw_unit_of_work.guw_complexity.nil?
+      guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
+
+      if guw_unit_of_work_guw_complexity.nil?
         array_pert << 0
       else
-        array_pert << (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
+        array_pert << (guw_unit_of_work_guw_complexity.weight.nil? ? 1 : guw_unit_of_work_guw_complexity.weight.to_f)
       end
       if guw_unit_of_work.changed?
         guw_unit_of_work.save
