@@ -1314,8 +1314,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
 
             cces = {}
-            Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id).each do |cce|
-              cces["#{cce.guw_coefficient_element_id}_#{guw_unit_of_work.guw_complexity_id}"] = cce
+            Guw::GuwComplexityCoefficientElement.all.each do |cce|
+              cces["#{cce.guw_coefficient_element_id}_#{cce.guw_complexity_id}_#{cce.guw_output_id}"] = cce
             end
 
             guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
@@ -1326,15 +1326,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_unit_of_work.flagged = true
               end
 
-              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-                                                               guw_coefficient_element_id: guw_coefficient_element.id,
-                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
+              # cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
+              #                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+              #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).all
 
-              # cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
-              #
-              # p "########"
-              # p cce.id
-              # p cce2.id
+              cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}_#{guw_output.id}"]
 
               if cce.nil?
                 cce = Guw::GuwComplexityCoefficientElement.create(guw_output_id: guw_output.id,
@@ -1362,8 +1358,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.save
           else
 
-            # unless params['guw_coefficient'].nil?
-            #   unless params['guw_coefficients']["#{guw_unit_of_work.id}"].nil?
             begin
               unless params['deported_guw_coefficient'].nil?
                 ce = Guw::GuwCoefficientElement.find_by_id(params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
@@ -1373,8 +1367,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             rescue
               ce = nil
             end
-              # end
-            # end
 
             ceuw = ceuws[guw_coefficient.id]
             if ceuw.nil?
