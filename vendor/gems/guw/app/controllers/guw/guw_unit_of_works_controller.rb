@@ -1272,9 +1272,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_unit_of_work.flagged = true
               end
 
-              cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
-                                                               guw_coefficient_element_id: guw_coefficient_element.id,
-                                                               guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
+              cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
+              if cce.nil?
+                cce = Guw::GuwComplexityCoefficientElement.create(guw_output_id: guw_output.id,
+                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+                                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id)
+              end
 
               unless cce.value.blank?
                 percents << (pc.to_f / 100)
