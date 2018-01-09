@@ -3094,7 +3094,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 if am_pe_attribute.alias == "number_of_unit_of_work"
                   ev.send("string_data_#{level}")[component.id] = number_of_unit_of_work
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                  tmp_prbl << ev.send("string_data_#{level}")[component.id]
                 elsif am_pe_attribute.alias == "offline_unit_of_work"
                   ev.send("string_data_#{level}")[component.id] = offline_unit_of_work
                   tmp_prbl << ev.send("string_data_#{level}")[component.id]
