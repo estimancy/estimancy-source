@@ -1169,7 +1169,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         # @oc = @ocs_hash[guw_output.id]
         # @oci = @ocis_hash[guw_output.id]
 
-        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity.id,
+        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity,
                                              guw_output_id: guw_output.id,
                                              value: 1).first
 
