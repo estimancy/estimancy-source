@@ -30,7 +30,7 @@
         <div class="<%= pbs_class %> module_project <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>" style="top: <%= top_position %>; left: <%= left_position %>">
 
             <% if pmod.id != @initialization_module_project.id %>
-              <%= link_to pmod, edit_module_project_path(pmod), class: "a_white" %>
+              <%= link_to pmod, edit_module_project_path(pmod, organization_id: @organization.id), class: "a_white" %>
             <% else %>
               <%= link_to pmod, "#", class: "a_white" %> <%#= pmod %>
             <% end %>
