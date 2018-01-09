@@ -70,7 +70,9 @@ class ViewsWidget < ActiveRecord::Base
           ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
         end
         ev.send("string_data_probable=", { pbs_project_element.id => nil })
-        ev.save
+        unless ev.changed?
+          ev.save
+        end
       end
 
       # reset module_project_ratio_elements for EffortBreakdown module
@@ -81,7 +83,9 @@ class ViewsWidget < ActiveRecord::Base
               mp_ratio_elt.send("#{attribute}_#{level}=", nil)
             end
           end
-          mp_ratio_elt.save
+          unless mp_ratio_elt.changed?
+            mp_ratio_elt.save
+          end
         end
       end
     end

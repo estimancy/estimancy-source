@@ -1078,11 +1078,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_model.organization
     @project = module_project.project
     @component = current_component
-    @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
-                                                               project_id: @project.id,
-                                                               module_project_id: module_project.id,
-                                                               pbs_project_element_id: @component.id,
-                                                               guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
+    @guw_unit_of_works = Guw::GuwUnitOfWork.where( organization_id: @organization.id,
+                                                   project_id: @project.id,
+                                                   module_project_id: module_project.id,
+                                                   pbs_project_element_id: @component.id,
+                                                   guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
@@ -2994,36 +2994,36 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
               if am_pe_attribute.alias == "retained_size"
-                ev.send("string_data_#{level}")[current_component.id] = retained_size
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = retained_size
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "effort"
-                ev.send("string_data_#{level}")[current_component.id] = effort.to_f * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion)
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = effort.to_f * (@guw_model.hour_coefficient_conversion.nil? ? 1 : @guw_model.hour_coefficient_conversion)
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "theorical_size"
-                ev.send("string_data_#{level}")[current_component.id] = theorical_size
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = theorical_size
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               end
 
               guw = Guw::Guw.new(theorical_size, retained_size, params["complexity_#{level}"], @project)
 
               if am_pe_attribute.alias == "cost"
-                ev.send("string_data_#{level}")[@component.id] = cost
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = cost
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "introduced_defects"
-                ev.send("string_data_#{level}")[@component.id] = guw.get_defects(retained_size, current_component, @module_project)
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = guw.get_defects(retained_size, component, @module_project)
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "number_of_unit_of_work"
-                ev.send("string_data_#{level}")[@component.id] = number_of_unit_of_work
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = number_of_unit_of_work
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "offline_unit_of_work"
-                ev.send("string_data_#{level}")[@component.id] = offline_unit_of_work
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = offline_unit_of_work
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "flagged_unit_of_work"
-                ev.send("string_data_#{level}")[@component.id] = flagged_unit_of_work
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = flagged_unit_of_work
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               elsif am_pe_attribute.alias == "selected_of_unit_of_work"
-                ev.send("string_data_#{level}")[@component.id] = selected_of_unit_of_work
-                tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                ev.send("string_data_#{level}")[component.id] = selected_of_unit_of_work
+                tmp_prbl << ev.send("string_data_#{level}")[component.id]
               end
               ev.update_attribute(:"string_data_#{level}", ev.send("string_data_#{level}"))
             end
@@ -3117,7 +3117,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
                     :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
                 }
-                ev.update_attributes(h)
+                unless ev.changed?
+                  ev.update_attributes(h)
+                end
               end
             end
           end
