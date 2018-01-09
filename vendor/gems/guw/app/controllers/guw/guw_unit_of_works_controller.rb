@@ -1137,15 +1137,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
-      @ocs_hash = {}
-      Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).all.each do |oc|
-        @ocs_hash[oc.guw_output_id] = oc
-      end
-
-      @ocis_hash = {}
-      Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).all.each do |oci|
-        @ocis_hash[oci.guw_output_id] = oci
-      end
+      # @ocs_hash = {}
+      # Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).each do |oc|
+      #   @ocs_hash[oc.guw_output_id] = oc
+      # end
+      #
+      # @ocis_hash = {}
+      # Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |oci|
+      #   @ocis_hash[oci.guw_output_id] = oci
+      # end
 
       ceuws = {}
       Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
@@ -1154,8 +1154,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       ceuws_without_nil = {}
-      Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
-                                                 guw_coefficient_element_id: nil).each do |ceuw|
+      Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id).each do |ceuw|
         ceuws_without_nil[ceuw.guw_coefficient_id] = ceuw
       end
 
@@ -1167,8 +1166,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_outputs.each_with_index do |guw_output, index|
 
-        @oc = @ocs_hash[guw_output.id]
-        @oci = @ocis_hash[guw_output.id]
+        # @oc = @ocs_hash[guw_output.id]
+        # @oci = @ocis_hash[guw_output.id]
+
+        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity.id,
+                                             guw_output_id: guw_output.id,
+                                             value: 1).first
+
+        @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                                            guw_output_id: guw_output.id).first
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work_guw_complexity.nil? ? 1.0 : (guw_unit_of_work_guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work_guw_complexity.weight.to_f))
@@ -1396,7 +1402,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               ceuw = ceuws_without_nil[guw_coefficient.id]
               if ceuw.nil?
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_coefficient_id: guw_coefficient,
-                                                                  guw_unit_of_work_id: guw_unit_of_work)
+                                                                   guw_unit_of_work_id: guw_unit_of_work)
               end
 
               # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
@@ -3108,17 +3114,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @module_project.save
       @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
-      number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
-                                                             pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works}.flatten.size
-
-      selected_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
-                                                               pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(selected: true)}.flatten.size
-
-      offline_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
-                                                           pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(off_line: true)}.flatten.size
-
-      flagged_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
-                                                           pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
+      # number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
+      #                                                        pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works}.flatten.size
+      #
+      # selected_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
+      #                                                          pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(selected: true)}.flatten.size
+      #
+      # offline_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
+      #                                                      pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(off_line: true)}.flatten.size
+      #
+      # flagged_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
+      #                                                      pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
       @selected_guw_unit_of_works = Guw::GuwUnitOfWork.where( guw_model_id: @guw_model.id,
                                                               module_project_id: @module_project.id,

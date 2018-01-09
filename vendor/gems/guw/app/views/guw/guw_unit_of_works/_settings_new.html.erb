@@ -320,18 +320,18 @@
                 </td>
 
                 <% hash_guw_coefficients = {} %>
-                <% Guw::GuwCoefficient.where(name: @guw_model.orders.map(&:first),
-                                             guw_model_id: @guw_model.id).all.each do |guw_coef| %>
+                <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                             name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
                   <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
                 <% end %>
 
                 <% hash_guw_outputs = {} %>
-                <% Guw::GuwOutput.where(name: @guw_model.orders.map(&:first),
-                                        guw_model_id: @guw_model.id).all.each do |guw_output| %>
+                <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+                                        name: @guw_model.orders.map(&:first)).each do |guw_output| %>
                   <% hash_guw_outputs[guw_output.name] = guw_output %>
                 <% end %>
 
-                <% @deported_guw_coefficients = @guw_coefficients.where(deported: true, guw_model_id: @guw_model.id) %>
+                <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
                 <% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id) %>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
