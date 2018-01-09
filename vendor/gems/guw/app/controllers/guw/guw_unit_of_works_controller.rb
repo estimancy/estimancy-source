@@ -3115,7 +3115,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     else
       @module_project.guw_model_id = @guw_model.id
       # @module_project.save
-      @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
+      @guw_outputs = @guw_model.guw_outputs#.order("display_order ASC")
 
       # number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
       #                                                        pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works}.flatten.size
