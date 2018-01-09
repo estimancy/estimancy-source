@@ -3084,26 +3084,26 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_prbl = Array.new
               ["low", "most_likely", "high"].each do |level|
                 if am_pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
-                  ev.send("string_data_#{level}")[current_component.id] = value.to_f.round(user_number_precision)
+                  ev.send("string_data_#{level}")[component.id] = value.to_f.round(user_number_precision)
                   if guw_output.output_type == "Effort"
-                    tmp_prbl << ev.send("string_data_#{level}")[@component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
+                    tmp_prbl << ev.send("string_data_#{level}")[component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
                   else
-                    tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                    tmp_prbl << ev.send("string_data_#{level}")[component.id]
                   end
                 end
 
                 if am_pe_attribute.alias == "number_of_unit_of_work"
-                  ev.send("string_data_#{level}")[@component.id] = number_of_unit_of_work
+                  ev.send("string_data_#{level}")[component.id] = number_of_unit_of_work
                   tmp_prbl << ev.send("string_data_#{level}")[@component.id]
                 elsif am_pe_attribute.alias == "offline_unit_of_work"
-                  ev.send("string_data_#{level}")[@component.id] = offline_unit_of_work
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                  ev.send("string_data_#{level}")[component.id] = offline_unit_of_work
+                  tmp_prbl << ev.send("string_data_#{level}")[component.id]
                 elsif am_pe_attribute.alias == "flagged_unit_of_work"
-                  ev.send("string_data_#{level}")[@component.id] = flagged_unit_of_work
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                  ev.send("string_data_#{level}")[component.id] = flagged_unit_of_work
+                  tmp_prbl << ev.send("string_data_#{level}")[component.id]
                 elsif am_pe_attribute.alias == "selected_of_unit_of_work"
-                  ev.send("string_data_#{level}")[@component.id] = selected_of_unit_of_work
-                  tmp_prbl << ev.send("string_data_#{level}")[@component.id]
+                  ev.send("string_data_#{level}")[component.id] = selected_of_unit_of_work
+                  tmp_prbl << ev.send("string_data_#{level}")[component.id]
                 end
 
                 ev.send(:"string_data_#{level}=", ev.send("string_data_#{level}"))
@@ -3112,10 +3112,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if ev.in_out == "output" && am_pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
                 h = Hash.new
                 h = {
-                    :"string_data_low" => { @component.id => tmp_prbl[0] },
-                    :"string_data_most_likely" => { @component.id => tmp_prbl[1].to_f },
-                    :"string_data_high" => { @component.id => tmp_prbl[2].to_f },
-                    :"string_data_probable" => { @component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
+                    :"string_data_low" => { component.id => tmp_prbl[0] },
+                    :"string_data_most_likely" => { component.id => tmp_prbl[1].to_f },
+                    :"string_data_high" => { component.id => tmp_prbl[2].to_f },
+                    :"string_data_probable" => { component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
                 }
                 unless ev.changed?
                   ev.update_attributes(h)
