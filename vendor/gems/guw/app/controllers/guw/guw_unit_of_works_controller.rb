@@ -3076,7 +3076,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           @evs.each do |ev|
             @guw_outputs.each do |guw_output|
 
-              @selected_guw_unit_of_works.map{ |i|
+              value = @selected_guw_unit_of_works.map{ |i|
                 i.ajusted_size.nil? ? nil :
                     (i.ajusted_size.is_a?(Numeric) ?
                         i.ajusted_size.to_f :
