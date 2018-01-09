@@ -3060,6 +3060,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       flagged_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
                                                            pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
+      @selected_guw_unit_of_works = Guw::GuwUnitOfWork.where( guw_model_id: @guw_model.id,
+                                                              module_project_id: @module_project.id,
+                                                              pbs_project_element_id: component.id,
+                                                              selected: true)
 
       @module_project.pemodule.attribute_modules.where(guw_model_id: @guw_model.id).each do |am|
 
@@ -3072,10 +3076,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           @evs.each do |ev|
             @guw_outputs.each do |guw_output|
 
-              value = Guw::GuwUnitOfWork.where(guw_model_id: @guw_model.id,
-                                               module_project_id: @module_project.id,
-                                               pbs_project_element_id: component.id,
-                                               selected: true).map{ |i|
+              @selected_guw_unit_of_works.map{ |i|
                 i.ajusted_size.nil? ? nil :
                     (i.ajusted_size.is_a?(Numeric) ?
                         i.ajusted_size.to_f :
