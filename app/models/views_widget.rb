@@ -103,12 +103,17 @@ class ViewsWidget < ActiveRecord::Base
   def self.update_field(module_project, organization, project, component, set_to_nil = false)
     organization_fields = organization.fields
     module_project.views_widgets.each do |view_widget|
+
+      pfs = {}
+      ProjectField.where(project_id: project.id,
+                         views_widget_id: view_widget.id).all.each do |pf|
+        pfs[pf.field_id] = pf
+      end
+
       view_widget_estimation_value = view_widget.estimation_value
       organization_fields.each do |field|
 
-        pf = ProjectField.where(field_id: field.id,
-                                project_id: project.id,
-                                views_widget_id: view_widget.id).first
+        pf = pfs[field.id]
 
         unless view_widget_estimation_value.nil?
           if set_to_nil == true

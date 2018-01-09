@@ -3061,7 +3061,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                            pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
 
-      @module_project.pemodule.attribute_modules.each do |am|
+      @module_project.pemodule.attribute_modules.where(guw_model_id: @guw_model.id).each do |am|
 
         am_pe_attribute = am.pe_attribute
 
