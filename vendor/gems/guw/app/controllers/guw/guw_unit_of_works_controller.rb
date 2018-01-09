@@ -3134,14 +3134,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               pbs_project_element_id: component.id,
                                                               selected: true)
 
+      @hash_evs = Hash.new {|h,k| h[k] = Array.new }
+      EstimationValue.where(:module_project_id => @module_project.id).each do |tmp_ev|
+        @hash_evs[tmp_ev.pe_attribute_id] << tmp_ev
+      end
+
       @module_project.pemodule.attribute_modules.where(guw_model_id: @guw_model.id).each do |am|
 
         am_pe_attribute = am.pe_attribute
 
         unless am_pe_attribute.nil?
 
-          @evs = EstimationValue.where(:module_project_id => @module_project.id,
-                                       :pe_attribute_id => am_pe_attribute.id).all
+          # @evs = EstimationValue.where(:module_project_id => @module_project.id,
+          #                              :pe_attribute_id => am_pe_attribute.id).all
+          @evs = @hash_evs[am_pe_attribute.id]
+
           @evs.each do |ev|
             @guw_outputs.each do |guw_output|
 
