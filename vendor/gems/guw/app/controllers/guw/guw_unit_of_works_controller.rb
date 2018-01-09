@@ -1137,15 +1137,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       tmp_hash_res = Hash.new
       tmp_hash_ares = Hash.new
 
-      # @ocs_hash = {}
-      # Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).each do |oc|
-      #   @ocs_hash[oc.guw_output_id] = oc
-      # end
-      #
-      # @ocis_hash = {}
-      # Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |oci|
-      #   @ocis_hash[oci.guw_output_id] = oci
-      # end
+      @ocs_hash = {}
+      Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).each do |oc|
+        @ocs_hash[oc.guw_output_id] = oc
+      end
+
+      @ocis_hash = {}
+      Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |oci|
+        @ocis_hash[oci.guw_output_id] = oci
+      end
 
       ceuws = {}
       Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
@@ -1166,15 +1166,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_outputs.each_with_index do |guw_output, index|
 
-        # @oc = @ocs_hash[guw_output.id]
-        # @oci = @ocis_hash[guw_output.id]
+        @oc = @ocs_hash[guw_output.id]
+        @oci = @ocis_hash[guw_output.id]
 
-        @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity,
-                                             guw_output_id: guw_output.id,
-                                             value: 1).first
-
-        @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
-                                                            guw_output_id: guw_output.id).first
+        # @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity,
+        #                                      guw_output_id: guw_output.id,
+        #                                      value: 1).first
+        #
+        # @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+        #                                                     guw_output_id: guw_output.id).first
 
         #gestion des valeurs intermédiaires
         weight = (guw_unit_of_work_guw_complexity.nil? ? 1.0 : (guw_unit_of_work_guw_complexity.weight.nil? ? 1.0 : guw_unit_of_work_guw_complexity.weight.to_f))
