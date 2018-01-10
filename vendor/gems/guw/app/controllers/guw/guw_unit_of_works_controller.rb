@@ -1079,14 +1079,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project = module_project.project
     @component = current_component
 
-    modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
-    if modified_guw_line_ids.blank?
+    if params["modified_guw_line_ids"].blank?
       @guw_unit_of_works = Guw::GuwUnitOfWork.where( organization_id: @organization.id,
                                                      project_id: @project.id,
                                                      module_project_id: module_project.id,
                                                      pbs_project_element_id: @component.id,
                                                      guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
     else
+      modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
       @guw_unit_of_works = Guw::GuwUnitOfWork.where(id: modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
     end
 
