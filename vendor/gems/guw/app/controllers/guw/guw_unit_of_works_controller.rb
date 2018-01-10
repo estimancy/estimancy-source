@@ -3159,7 +3159,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         i.ajusted_size["#{guw_output.id}"].to_f)}.compact.sum
 
               tmp_prbl = Array.new
-              ["most_likely"].each do |level|
+              ["low", "most_likely", "high"].each do |level|
                 if am_pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
                   ev.send("string_data_#{level}")[component.id] = value.to_f.round(user_number_precision)
                   if guw_output.output_type == "Effort"

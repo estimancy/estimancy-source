@@ -836,21 +836,21 @@
   });
 </script>
 
-<div class="modal fade" id="modal_cotation" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="modal_cotation" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-cotation" id="modal_cotation_content">
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_comments_content">
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_coefficient_comments_content">
 
@@ -858,7 +858,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="cplx_comments" tabindex="-1" role="dialog" aria-labelledby="modal_cplx_comments_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="cplx_comments" tabindex="-1" role="dialog" aria-labelledby="modal_cplx_comments_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_cplx_comments_content">
 
@@ -866,21 +866,21 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal_trackings" tabindex="-1" role="dialog" aria-labelledby="modal_trackings_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="modal_trackings" tabindex="-1" role="dialog" aria-labelledby="modal_trackings_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_trackings_content">
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="modal_name" tabindex="-1" role="dialog" aria-labelledby="modal_name_label" aria-hidden="true" backdrop="static">
+<div class="modal hide fade" id="modal_name" tabindex="-1" role="dialog" aria-labelledby="modal_name_label" aria-hidden="true" backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content" id="modal_name_content">
     </div>
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel">
+<div class="modal hide fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header modal-drag">
@@ -904,7 +904,7 @@
 <%#= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
 
 <!-- Word Trees modal : Modèle de données -->
-<div class="modal fade" tabindex="-1" role="dialog" id="word_trees_modal" aria-labelledby="myModalLabel">
+<div class="modal hide fade" tabindex="-1" role="dialog" id="word_trees_modal" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document" style="width:100%">
     <div class="modal-content">
       <div class="modal-header modal-drag">
@@ -927,7 +927,7 @@
 
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
+<div class="modal hide fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
@@ -959,7 +959,7 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
+<div class="modal hide fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
@@ -991,7 +991,7 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="extract" aria-labelledby="myModalLabel">
+<div class="modal hide fade" tabindex="-1" role="dialog" id="extract" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <%= form_tag guw.extract_from_url_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
