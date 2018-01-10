@@ -737,7 +737,11 @@
     <% end %>
   </div>
 
-  <%= hidden_field_tag "modified_guw_line_ids", nil %>
+  <% if params[:recalculate] == true %>
+    <%= hidden_field_tag "modified_guw_line_ids", @unit_of_work_groups.map{|i| i.guw_unit_of_works.map(&:id) }.flatten %>
+  <% else %>
+    <%= hidden_field_tag "modified_guw_line_ids", nil %>
+  <% end %>
 
   <script>
     var my_array = [];
