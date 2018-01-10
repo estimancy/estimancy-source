@@ -664,7 +664,7 @@ class OrganizationsController < ApplicationController
   def report
     @organization = Organization.find(params[:organization_id])
     set_page_title I18n.t(:report, parameter: @organization)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
   end
 
@@ -672,7 +672,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:authorisation, parameter: @organization)
 
     @groups = @organization.groups
@@ -696,7 +696,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:Parameter, parameter: @organization)
 
     @technologies = @organization.organization_technologies
@@ -733,7 +733,7 @@ class OrganizationsController < ApplicationController
 
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
     set_page_title I18n.t(:module ,parameter: @organization)
 
     @guw_models = @organization.guw_models.order("name asc")
@@ -746,7 +746,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_users, parameter: @organization)
   end
 
@@ -1898,7 +1898,7 @@ class OrganizationsController < ApplicationController
     authorize! :create_organizations, Organization
 
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:new_organization) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @organization = Organization.new
     @groups = @organization.groups
   end
@@ -1910,7 +1910,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:organizations)
     @organization = Organization.find(params[:id])
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
 
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
@@ -1933,7 +1933,7 @@ class OrganizationsController < ApplicationController
     authorize! :create_organizations, Organization
 
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:new_organization) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
 
     @organization = Organization.new(params[:organization])
 
@@ -1980,7 +1980,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:id])
 
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
 
     if @organization.update_attributes(params[:organization])
       flash[:notice] = I18n.t (:notice_organization_successful_updated)
@@ -2045,8 +2045,7 @@ class OrganizationsController < ApplicationController
 
   def organizationals_params
     set_page_title I18n.t(:Organizational_Parameters)
-
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
 
     if current_user.super_admin?
       @organizations = Organization.all

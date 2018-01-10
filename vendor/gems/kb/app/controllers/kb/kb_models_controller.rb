@@ -74,7 +74,8 @@ class Kb::KbModelsController < ApplicationController
     authorize! :show_modules_instances, ModuleProject
 
     @kb_model = Kb::KbModel.find(params[:id])
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:kb_modules) => main_app.organization_module_estimation_path(@kb_model.organization, anchor: "effort"), @kb_model.organization => ""
+    @organization = @kb_model.organization
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:kb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @organization => ""
   end
 
   def duplicate
@@ -111,7 +112,7 @@ class Kb::KbModelsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @kb_model = Kb::KbModel.new
     set_page_title I18n.t(:New_knowledge_base)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:kb_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "effort"), I18n.t(:new) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:kb_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "effort"), I18n.t(:new) => ""
   end
 
   def edit
@@ -122,7 +123,7 @@ class Kb::KbModelsController < ApplicationController
 
     @current_organization
     set_page_title I18n.t(:Edit_knowledge_base)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:kb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @kb_model.name => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:kb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @kb_model.name => ""
   end
 
   def import
