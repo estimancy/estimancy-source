@@ -9,8 +9,10 @@
 
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
   <%# @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
-  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id, project_id: @project.id,
-                                                                  module_project_id: current_module_project.id, pbs_project_element_id: current_component.id) %>
+  <% @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
+                                                                  project_id: @project.id,
+                                                                  module_project_id: current_module_project.id,
+                                                                  pbs_project_element_id: current_component.id) %>
   <% @guw_coefficients = @guw_model.guw_coefficients %>
 
   <div class="row-fluid">
@@ -81,7 +83,7 @@
       <span class="label label-info">
         <%= I18n.t(:number_of_uw_selected_lines) %> :
         <span class="selected_of_unit_of_work">
-          <%# "#{@unit_of_work_groups.map(&:number_of_uow_selected_lines).sum} / #{@unit_of_work_groups.map(&:number_of_uow_lines).sum}" %>
+          <%= "#{@group_unit_of_works.map(&:number_of_uow_selected_lines).sum} / #{@group_unit_of_works.map(&:number_of_uow_lines).sum}" %>
         </span>
       </span>
     </div>
@@ -99,10 +101,10 @@
       <% end %>
     <% end %>
 
-    <% @unit_of_work_groups.each_with_index do |uowg, j| %>
+    <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
-      <%# uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
+      <%# uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+      <% uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
 
       <div class="accordion-heading" style="padding:5px;">
@@ -151,8 +153,8 @@
               <span class="label label-info">
                 <%= I18n.t(:number_of_uw_selected) %> :
                 <span class="<%= uowg.id %>_selected">
-                  <%#= uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
-                  <%# "#{uowg.number_of_uow_selected_lines} / #{uowg.number_of_uow_lines}" %>
+                  <%# uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                  <%= "#{uowg.number_of_uow_selected_lines} / #{uowg.number_of_uow_lines}" %>
                 </span>
               </span>
             </div>
