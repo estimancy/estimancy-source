@@ -149,6 +149,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_cplx_comments
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
+    @organization = @guw_model.organization
+    @project = @module_project.project
+    @component = current_component
+
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @value = params[:value].blank? ? @guw_unit_of_work.intermediate_weight : params[:value]
 
@@ -156,7 +162,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.intermediate_weight = @value.to_f
     @guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project)
+    redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
 
   def load_coefficient_comments
@@ -196,7 +202,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @ceuw.save
     @guw_unit_of_work.save
 
-    # redirect_to main_app.dashboard_path(@project)
+    redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
 
   def load_cotations
@@ -434,7 +440,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @new_guw_unit_of_work = @guw_unit_of_work.amoeba_dup
     @new_guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
+    redirect_to main_app.dashboard_path(@project, recalculate: true, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
   def save_guw_unit_of_works

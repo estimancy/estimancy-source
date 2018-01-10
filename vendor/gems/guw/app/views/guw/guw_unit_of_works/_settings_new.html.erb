@@ -737,8 +737,8 @@
     <% end %>
   </div>
 
-  <% if params[:recalculate] == true %>
-    <%= hidden_field_tag "modified_guw_line_ids", @unit_of_work_groups.map{|i| i.guw_unit_of_works.map(&:id) }.flatten %>
+  <% if params[:recalculate] == "true" %>
+    <%= hidden_field_tag "modified_guw_line_ids", @unit_of_work_groups.map{|i| i.guw_unit_of_works.map(&:id) }.flatten.join(",") %>
   <% else %>
     <%= hidden_field_tag "modified_guw_line_ids", nil %>
   <% end %>

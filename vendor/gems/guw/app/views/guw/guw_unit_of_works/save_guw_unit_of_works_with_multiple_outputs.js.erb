@@ -12,6 +12,13 @@ $("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new"
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
+
+//Mettre à jour l'url sans recharger la page
+if (history.pushState) {
+  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  window.history.pushState({path:newurl},'',newurl);
+}
+
 var gridster = [];
 var iteration = -1;
 $(function () { //DOM Ready
