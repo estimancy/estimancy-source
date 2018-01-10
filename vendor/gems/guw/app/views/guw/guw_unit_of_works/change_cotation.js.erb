@@ -1,62 +1,7 @@
-$(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_complexity_#{@guw_unit_of_work.id}", options_for_select(@guw_unit_of_work.guw_type.guw_complexities.map{|i| [i.name, i.id] }, selected: nil), class: "input-small", style: "width: 70px;", prompt: "", disabled: !@guw_unit_of_work.guw_type.allow_complexity) %>")
-
-<% if @guw_model.config_type == "old" %>
-  <% if @guw_unit_of_work.guw_type.allow_quantity == true %>
-    $(".quantity_label_<%= @guw_unit_of_work.id %>").html("<%= j(number_field_tag "quantity[#{@guw_unit_of_work.id}]", @guw_unit_of_work.quantity, class: "input-mini") %>")
-  <% else %>
-    $(".quantity_label_<%= @guw_unit_of_work.id %>").html("")
-  <% end %>
-
-  <% results = Guw::GuwComplexityTechnology.where(guw_type_id: @guw_unit_of_work.guw_type_id).select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq %>
-  <% unless results.empty? %>
-  $(".technology_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_technology[#{@guw_unit_of_work.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                  selected: @guw_unit_of_work.organization_technology.nil? ? @guw_unit_of_work.guw_unit_of_work_group.organization_technology_id : @guw_unit_of_work.organization_technology_id),
-                 class: "guw_technology input-xsmall",
-                 guw: @guw_unit_of_work.id,
-                 required: true,
-                 readonly: (!@guw_unit_of_work.guw_type.allow_complexity && !can?(:execute_estimation_plan, @project))) %>")
-  <% else %>
-    $(".technology_<%= @guw_unit_of_work.id %>").html("")
-  <% end %>
-
-
-  <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: @guw_unit_of_work.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_work_unit }.uniq}.flatten.compact %>
-  <% unless results.empty? %>
-    $(".work_unit_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_work_unit[#{@guw_unit_of_work.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                   selected: @guw_unit_of_work.guw_work_unit_id),
-                   class: "guw_work_unit input-xsmall",
-                   guw: @guw_unit_of_work.id,
-                   required: true,
-                   readonly: !can?(:execute_estimation_plan, @project)) %>")
-  <% else %>
-    $(".work_unit_<%= @guw_unit_of_work.id %>").html("")
-  <% end %>
-
-  <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: @guw_unit_of_work.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact %>
-  <% unless results.empty? %>
-    $(".weighting_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_weighting_[#{@guw_unit_of_work.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                   selected: @guw_unit_of_work.guw_weighting_id),
-                   class: "guw_weighting input-xsmall",
-                   guw: @guw_unit_of_work.id,
-                   required: true,
-                   readonly: !can?(:execute_estimation_plan, @project)) %>")
-  <% else %>
-    $(".weighting_<%= @guw_unit_of_work.id %>").html("")
-  <% end %>
-
-  <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: @guw_unit_of_work.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact %>
-  <% unless results.empty? %>
-    $(".factor_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_factor_[#{@guw_unit_of_work.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                   selected: @guw_unit_of_work.guw_factor_id),
-                   class: "guw_factor input-xsmall",
-                   guw: @guw_unit_of_work.id,
-                   required: true,
-                   readonly: !can?(:execute_estimation_plan, @project)) %>")
-  <% else %>
-    $(".factor_<%= @guw_unit_of_work.id %>").html("")
-  <% end %>
+<% if @guw_unit_of_work.guw_type.display_threshold == true %>
+  $(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_complexity_#{@guw_unit_of_work.id}", options_for_select(@guw_unit_of_work.guw_type.guw_complexities.map{|i| [i.name, i.id] }, selected: nil), class: "input-small", style: "width: 70px;", prompt: "", disabled: !@guw_unit_of_work.guw_type.allow_complexity) %>")
 <% else %>
-  <%= "test" %>
+  $(".cotation_label_<%= @guw_unit_of_work.id %>").html("-");
 <% end %>
 
 <% if @guw_unit_of_work.guw_type.allow_criteria == true %>
@@ -69,3 +14,15 @@ $(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_com
 <% else %>
   $(".criteria_label_<%= @guw_unit_of_work.id %>").html("")
 <% end %>
+
+<% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+  <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+    <% unless @guw_type.nil? %>
+      <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_unit_of_work.guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+    <% else %>
+      <% results = [] %>
+    <% end %>
+    $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(<%= results.first.value %>);
+  <% end %>
+<% end %>
+
