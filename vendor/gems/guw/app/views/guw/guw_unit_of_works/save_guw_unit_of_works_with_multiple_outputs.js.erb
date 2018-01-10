@@ -5,6 +5,6 @@ console.log("toto");
                                                         module_project_id: @module_project.id,
                                                         pbs_project_element_id: @component.id).all %>
 
-$("#guw_block").html("<%= raw render(partial: "guw/guw_unit_of_works/settings_new") %>");
+$("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
 
 $(".guw_submit").attr("data-disable-with", "");
