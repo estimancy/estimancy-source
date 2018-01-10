@@ -170,6 +170,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_coefficient_comments
+
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
+    @organization = @guw_model.organization
+    @project = @module_project.project
+    @component = current_component
+
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
@@ -189,7 +196,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @ceuw.save
     @guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project)
+    # redirect_to main_app.dashboard_path(@project)
   end
 
   def load_cotations
@@ -230,9 +237,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_uo
-    module_project = current_module_project
-    @project = module_project.project
-    @guw_model = module_project.guw_model
+    @module_project = current_module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
     @component = current_component
     guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     begin
@@ -431,8 +438,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_guw_unit_of_works
-    module_project = current_module_project
-    @guw_model = module_project.guw_model
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @guw_model.organization_id,
                                                   project_id: module_project.project_id,
@@ -1540,18 +1547,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_uo_with_multiple_outputs
-    module_project = current_module_project
-    @project = module_project.project
-    @guw_model = module_project.guw_model
+    @module_project = current_module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
     @component = current_component
+    @organization = @guw_model.organization
 
     guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     guw_unit_of_work.ajusted_size = {}
     guw_unit_of_work.size = {}
     guw_unit_of_work.effort = {}
     guw_unit_of_work.cost = {}
-
-    # guw_unit_of_work.save
 
     begin
       guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -1707,7 +1713,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-          ceuw.module_project_id = module_project.id
+          ceuw.module_project_id = @module_project.id
 
           if ceuw.changed?
             ceuw.save
@@ -1742,7 +1748,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw.percent = params["hidden_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-          ceuw.module_project_id = module_project.id
+          ceuw.module_project_id = @module_project.id
 
           if ceuw.changed?
             ceuw.save
@@ -1772,7 +1778,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = guw_unit_of_work.id
-            ceuw.module_project_id = module_project.id
+            ceuw.module_project_id = @module_project.id
 
             if ceuw.changed?
               ceuw.save
@@ -1843,7 +1849,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
+    # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
   def extract_from_url
@@ -2649,7 +2655,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   size: nil,
                                                   ajusted_size: nil,
                                                   intermediate_percent: row[19].nil? ? nil : row[19],
-                                                  intermediate_weight: row[26].nil? ? nil : row[26],
+                                                  intermediate_weight: row[19].nil? ? nil : row[19],
                                                   guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
