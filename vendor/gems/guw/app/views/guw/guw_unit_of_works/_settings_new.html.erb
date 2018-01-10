@@ -748,7 +748,13 @@
   <script>
     var my_array = [];
     $(document).ready(function(){
-      $("table#guw input, table#guw select").on("change", function(){
+      $("table#guw input").keyup(function(e) {
+        var new_line = $(this).closest("tr").data("guw-id");
+        my_array.push(new_line);
+        $("#modified_guw_line_ids").val(my_array);
+      });
+
+      $("table#guw select").on("change", function(e) {
         var new_line = $(this).closest("tr").data("guw-id");
         my_array.push(new_line);
         $("#modified_guw_line_ids").val(my_array);

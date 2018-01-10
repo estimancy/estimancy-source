@@ -1112,8 +1112,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         guw_unit_of_work.effort = nil
         guw_unit_of_work.cost = nil
 
-        guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
-
         #guw_unit_of_work.save
 
         array_pert = Array.new
@@ -1150,6 +1148,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.off_line_uo = false
           guw_unit_of_work.off_line = false
         end
+
+        guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
 
         #Pour le calcul des valeurs intermédiares, on prend uniquement le premier attributs (pour l'instant)
         tmp_hash_res = Hash.new
@@ -1202,7 +1202,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
           result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
 
-          if guw_unit_of_work_guw_complexity.nil?
+          if guw_unit_of_work.guw_complexity.nil?
             @final_value = nil
           else
             # weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
@@ -1480,7 +1480,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           oa_value = []
           Guw::GuwOutputAssociation.where(guw_output_id: guw_output.id,
-                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id).includes(:aguw_output).each do |goa|
+                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id).each do |goa|
             unless goa.value.to_f == 0
               unless goa.aguw_output.nil?
                 oa_value << tmp_hash_ares["#{goa.aguw_output.id}"].to_f * goa.value.to_f

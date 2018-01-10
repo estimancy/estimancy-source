@@ -49,6 +49,9 @@ $(document).ready(function() {
 
     //====================================================
 
+    //tinymce.init({
+    //    selector: 'textarea'
+    //});
 
     $(".modal").draggable({
         handle: ".modal-drag"
