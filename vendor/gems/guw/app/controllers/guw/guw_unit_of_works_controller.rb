@@ -1078,11 +1078,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_model.organization
     @project = module_project.project
     @component = current_component
-    @guw_unit_of_works = Guw::GuwUnitOfWork.where( organization_id: @organization.id,
-                                                   project_id: @project.id,
-                                                   module_project_id: module_project.id,
-                                                   pbs_project_element_id: @component.id,
-                                                   guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
+
+    modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
+    if modified_guw_line_ids.blank?
+      @guw_unit_of_works = Guw::GuwUnitOfWork.where( organization_id: @organization.id,
+                                                     project_id: @project.id,
+                                                     module_project_id: module_project.id,
+                                                     pbs_project_element_id: @component.id,
+                                                     guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
+    else
+      @guw_unit_of_works = Guw::GuwUnitOfWork.where(id: modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
+    end
 
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")

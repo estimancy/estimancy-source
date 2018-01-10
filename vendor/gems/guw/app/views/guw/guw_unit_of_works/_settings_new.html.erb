@@ -233,7 +233,7 @@
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
               <% end %>
 
-              <tr>
+              <tr data-guw-id="<%= guow.id %>">
                 <%
                    hash_color_priorities = {}
 
@@ -736,6 +736,20 @@
       </div>
     <% end %>
   </div>
+
+  <%= hidden_field_tag "modified_guw_line_ids", nil %>
+
+  <script>
+    var my_array = [];
+    $(document).ready(function(){
+      $("table#guw input, table#guw select").on("change", function(){
+        var new_line = $(this).closest("tr").data("guw-id");
+        my_array.push(new_line);
+        $("#modified_guw_line_ids").val(my_array);
+      });
+    });
+  </script>
+
 <% end %>
 
 
