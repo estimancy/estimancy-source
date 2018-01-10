@@ -3,7 +3,7 @@ console.log("toto");
 <% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @organization.id,
                                                         project_id: @project.id,
                                                         module_project_id: @module_project.id,
-                                                        pbs_project_element_id: @component.id).all %>
+                                                        pbs_project_element_id: @component.id) %>
 
 $("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
 
