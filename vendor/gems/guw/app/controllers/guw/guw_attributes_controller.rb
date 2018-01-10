@@ -25,13 +25,15 @@ class Guw::GuwAttributesController < ApplicationController
   def new
     @guw_attribute = Guw::GuwAttribute.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_model.organization), @guw_model.organization => ""
+    @organization = @guw_model.organization
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def edit
     @guw_attribute = Guw::GuwAttribute.find(params[:id])
     @guw_model = @guw_attribute.guw_model
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_model.organization), @guw_model.organization => ""
+    @organization = @guw_model.organization
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
     set_page_title I18n.t(:Edit_attribute)
   end
 

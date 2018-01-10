@@ -34,7 +34,7 @@ class Guw::GuwCoefficientsController < ApplicationController
 
     set_page_title "New"
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization)
   end
 
@@ -43,7 +43,7 @@ class Guw::GuwCoefficientsController < ApplicationController
     @guw_coefficient_element = Guw::GuwCoefficientElement.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     set_page_title "Edit"
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization),
                     @guw_coefficient => guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id)
   end

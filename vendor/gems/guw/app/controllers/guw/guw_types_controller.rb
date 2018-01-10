@@ -25,23 +25,29 @@ class Guw::GuwTypesController < ApplicationController
   def show
     @guw_type = Guw::GuwType.find(params[:id])
     @guw_model = @guw_type.guw_model
+    @organization = @guw_model.organization
+
     set_page_title "#{@guw_type}"
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_model.organization), @guw_model.organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def new
     @guw_type = Guw::GuwType.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+    @organization = @guw_model.organization
+
     set_page_title I18n.t(:add_unit_of_work)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_model.organization), @guw_model.organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def edit
 
     @guw_type = Guw::GuwType.find(params[:id])
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+    @organization = @guw_type.guw_model.organization
+
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_type.name)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_type.guw_model.organization), @guw_type.guw_model.organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def create
@@ -49,8 +55,10 @@ class Guw::GuwTypesController < ApplicationController
     @guw_type.guw_model_id = params[:guw_type][:guw_model_id]
     @guw_type.save
     @guw_model = @guw_type.guw_model
+    @organization = @guw_model.organization
+
     set_page_title I18n.t(:new_complexity)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", I18n.t(:uo_model) => main_app.edit_organization_path(@guw_type.guw_model.organization), @guw_type.guw_model.organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
     if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
     else

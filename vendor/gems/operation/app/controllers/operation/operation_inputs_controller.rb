@@ -17,7 +17,7 @@ class Operation::OperationInputsController < ApplicationController
 
       set_page_title "New"
 
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}",
                       @organization.to_s => main_app.organization_estimations_path(@organization),
                       I18n.t(:operation_modules) => main_app.organization_module_estimation_path(@organization.id, anchor: "effort"),
                       @operation_model => operation.edit_operation_model_path(@operation_model, organization_id: @organization.id),
@@ -33,7 +33,7 @@ class Operation::OperationInputsController < ApplicationController
 
       set_page_title "Edit"
 
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}",
                       @organization.to_s => main_app.organization_estimations_path(@organization),
                       I18n.t(:operation_modules) => main_app.organization_module_estimation_path(@organization.id, anchor: "effort"),
                       @operation_model => operation.edit_operation_model_path(@operation_model, organization_id: @organization.id),
@@ -47,7 +47,7 @@ class Operation::OperationInputsController < ApplicationController
       @organization = @current_organization
 
       set_page_title "Edit"
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}",
                       @organization.to_s => main_app.organization_estimations_path(@organization),
                       I18n.t(:operation_modules) => main_app.organization_module_estimation_path(@organization.id, anchor: "effort"),
                       @operation_model => operation.edit_operation_model_path(@operation_model, organization_id: @organization.id),
@@ -88,7 +88,7 @@ class Operation::OperationInputsController < ApplicationController
 
       set_page_title "Edit"
 
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params",
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}",
                       @organization.to_s => main_app.organization_estimations_path(@organization),
                       I18n.t(:operation_modules) => main_app.organization_module_estimation_path(@organization.id, anchor: "effort"),
                       @operation_model => operation.edit_operation_model_path(@operation_model, organization_id: @organization.id),
