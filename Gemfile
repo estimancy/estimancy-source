@@ -239,5 +239,4 @@ gem 'pdfkit'
 
 gem 'paper_trail'
 
-gem 'ckeditor_rails'
-gem 'ckeditor'
+

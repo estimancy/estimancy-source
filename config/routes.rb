@@ -129,7 +129,6 @@ Projestimate::Application.routes.draw do
   mount Skb::Engine, :at => '/skb'
   mount Staffing::Engine, :at => '/staffing'
   mount BalancingModule::Engine, at: '/balancing_module'
-  mount Ckeditor::Engine => '/ckeditor'
 
   post "save_effort_breakdown" => "wbs_activities#save_effort_breakdown"
   post "update_effort_breakdown_retained_values" => "wbs_activities#update_effort_breakdown_retained_values"
