@@ -724,6 +724,7 @@ input[type="color"],
     filter: alpha(opacity=0);
     visibility: visible;
     z-index: 99999;
+    text-align: left;
 }
 
 
@@ -744,11 +745,12 @@ input[type="color"],
     color: #333333;
     text-align: center;
     text-decoration: none;
-    background-color: #FFFFCC;
+    background-color: #ffffff;
     border: 1px solid darkgrey;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
+    font-weight: 400;
 }
 
 .not_consistent{
