@@ -64,7 +64,6 @@ public
     else
       User.all.reject{|i| i.initials == owner_key.value }
     end
-    @audits = Audit.all
   end
 
   def new

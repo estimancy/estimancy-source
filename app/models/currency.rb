@@ -56,3 +56,24 @@ end
 #     user.save(validate: false)
 #   end
 # end
+#
+# pct = [0.9, 0.8, 0.7, 1.05, 1.1, 1.13]
+# o = Organization.where(name: "CDS FORMATION").first
+# o.organization_profiles.each do |profile|
+#   profile.cost_per_hour = profile.cost_per_hour * pct.sample
+#   profile.save
+# end
+#
+# pct = [0.9, 0.8, 0.7, 1.05, 1.1, 1.13]
+# o = Organization.where(name: "CDS FORMATION").first
+# o.guw_models.where("name LIKE ? OR name LIKE ?", "%CONSEIL%", "%DIRE%").each do |guw_model|
+#   guw_model.guw_types.each do |guw_type|
+#     guw_type.guw_complexities.each do |guw_complexity|
+#       guw_complexity.weight = guw_complexity.weight * pct.sample
+#       guw_complexity.save
+#     end
+#   end
+# end
+#
+#
+
