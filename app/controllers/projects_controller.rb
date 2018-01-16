@@ -3566,16 +3566,16 @@ public
       @projects[project.business_need.to_s] = tmp
     end
 
-    # @user = current_user
-    # respond_to do |format|
-    #   format.html
-    #   format.pdf do
-    #     render pdf: "Test",
-    #            encoding: "UTF-8",
-    #            page_size: 'A4',
-    #            orientation: :landscape
-    #   end
-    # end
+    @user = current_user
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "Test",
+               encoding: "UTF-8",
+               page_size: 'A4',
+               orientation: :landscape
+      end
+    end
   end
 
   private
