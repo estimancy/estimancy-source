@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180109163304) do
+ActiveRecord::Schema.define(:version => 20180116085530) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1717,6 +1717,7 @@ ActiveRecord::Schema.define(:version => 20180109163304) do
     t.integer  "provider_id"
     t.string   "request_number"
     t.boolean  "use_automatic_quotation_number"
+    t.string   "business_need"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"

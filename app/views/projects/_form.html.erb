@@ -21,6 +21,7 @@
             <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge' } %>
         <% end %>
         <%= f.input :request_number, :label => "#{I18n.t 'request_number'}", :disabled => !(can?(:alter_request_number, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+        <%= f.input :business_need, :label => "#{I18n.t 'business_need'}", :disabled => !(can?(:alter_request_number, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
         <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
         <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !can?(:alter_private_estimation_setup, @project) %>
 

@@ -3552,21 +3552,30 @@ public
 
 
   def export_dashboard
-    @project = Project.find(params[:project_id])
-    @current_organization = @project.organization
-    @pbs_project_element = current_component
-    @user = current_user
-    @module_projects = @project.module_projects
+    # conditions = {}
+    # conditions[:request_number] = params[:request_number] unless params[:request_number].blank?
+    # conditions[:title] = params[:title] unless params[:title].blank?
+    # conditions[:business_need] = params[:business_need] unless params[:business_need].blank?
+    #
+    # @business_need_projects = Project.where(conditions).group_by{|i| i.business_need }
 
-    respond_to do |format|
-      format.html
-      format.pdf do
-        render pdf: "Test",
-               encoding: "UTF-8",
-               page_size: 'A4',
-               orientation: :landscape
-      end
+    @projects = {}
+    tmp = Hash.new {|h,k| h[k] = [] }
+    Project.where(business_need: params[:business_need]).each do |project|
+      tmp[project.request_number.to_s] << project
+      @projects[project.business_need.to_s] = tmp
     end
+
+    # @user = current_user
+    # respond_to do |format|
+    #   format.html
+    #   format.pdf do
+    #     render pdf: "Test",
+    #            encoding: "UTF-8",
+    #            page_size: 'A4',
+    #            orientation: :landscape
+    #   end
+    # end
   end
 
   private

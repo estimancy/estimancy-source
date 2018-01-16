@@ -2074,6 +2074,7 @@ en:
   provider_edition: "Edit provider"
   notice_cannot_view_providers: "You don't have the rights to view the providers"
   request_number: "Request number"
+  business_need: "Besoin métier"
   notice_provider_successful_created: "Provider was successfully created"
   notice_provider_successful_updated: "Provider was successfully updated"
   notice_provider_successful_deleted: "Provider was successfully deleted"

@@ -40,7 +40,7 @@
         <td style="min-width: 145px;">
           <% if can_show_estimation?(project) %>
             <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
-            <%= link_to '', export_dashboard_path(format: "pdf", project_id: project.id), class: 'fa fa-file-pdf-o pull-left', style: "color: black; margin-top:4px;", :title => 'Exporter en PDF', target: "_blank" %>
+            <%= link_to('', "#!", class: 'fa fa-file-pdf-o pull-left', style: "color: black; margin-top:4px;", :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
             <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
           <% end %>
 

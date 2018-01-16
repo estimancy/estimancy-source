@@ -42,3 +42,50 @@
   <%= submit_tag "", class: "invisible_button" %>
 
 <% end %>
+
+
+<div class="modal hide fade modal_export" tabindex="-1" role="dialog" id="export_dashboard" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_tag export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form' do %>
+
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Exporter les devis sous format PDF
+          </h4>
+        </div>
+
+        <div class="modal-body" style="height: inherit;">
+
+          <p>
+            <label>
+              <b>Besoin</b>
+            </label>
+            <%= text_field_tag :business_need %>
+          </p>
+
+          <p>
+            <label>
+              <b><%= I18n.t :request_number %></b>
+            </label>
+            <%= text_field_tag :request_number %>
+          </p>
+
+          </p>
+          <label>
+            <b><%= I18n.t :title %></b>
+          </label>
+          <%= text_field_tag :title %>
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <%= submit_tag "Exporter en PDF", :class => 'btn btn-primary' %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
