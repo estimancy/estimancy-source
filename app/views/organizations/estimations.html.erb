@@ -7,7 +7,7 @@
     <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
         <table>
           <tr>
-            <td>
+            <td colspan=2 style="text-align:right;">
               <%= I18n.t(:label_filter_on_projects_version) %>
               <%= select_tag 'filter_organization_projects_version',
                               options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
@@ -17,9 +17,7 @@
                                                 :selected => params[:filter_version] || 4),
                              'data-organization_id' => @organization.id, include_blank: false %>
                               <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
-            </td>
 
-            <td colspan=2 style="text-align:right;">
               <% if can? :create_project_from_template, Project %>
                 <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
@@ -27,8 +25,9 @@
               <% if can? :create_project_from_scratch, Project %>
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
-
+              <%= link_to('Exporter au format PDF', "#!", class: 'btn', :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
             </td>
+
           </tr>
         </table>
 
@@ -60,16 +59,16 @@
 
           <p>
             <label>
-              <b>Besoin</b>
+              <b>Besoin métier</b>
             </label>
-            <%= text_field_tag :business_need %>
+            <%= select_tag "", options_for_select(@projects.map(&:business_need).uniq.compact), prompt: "Sélectionnez un besoin métier" %>
           </p>
 
           <p>
             <label>
               <b><%= I18n.t :request_number %></b>
             </label>
-            <%= text_field_tag :request_number %>
+            <%= select_tag "", options_for_select(@projects.map(&:request_number).uniq.compact), prompt: "Sélectionnez un n° de demmande" %>
           </p>
 
           </p>
