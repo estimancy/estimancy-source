@@ -173,18 +173,6 @@
               <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
               <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
 
-              <% guow_guw_unit_of_work_attributes = Hash.new {|h,k| h[k] = [] } %>
-              <% Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id).each do |guowa| %>
-                <% guow_guw_unit_of_work_attributes[guowa.guw_unit_of_work_id] << guowa %>
-              <% end %>
-
-              <% hash_guw_coefficients = {} %>
-              <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                           name: @guw_model.orders.map(&:first),
-                                           deported: false).each do |guw_coef| %>
-                <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
-              <% end %>
-
               <% hash_guw_coefficients = {} %>
               <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
                                            name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
@@ -200,6 +188,13 @@
               <% guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
               <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
                 <% guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
+              <% end %>
+
+              <% hash_guw_coefficients = {} %>
+              <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                           name: @guw_model.orders.map(&:first),
+                                           deported: false).each do |guw_coef| %>
+                <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
               <% end %>
 
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
@@ -340,8 +335,10 @@
                                    title: @guw_type.name %>
                   <% end %>
                 </td>
-                guow_guw_unit_of_work_attributes
-                <% guow_guw_unit_of_work_attributes = guow_guw_unit_of_work_attributes[guow.id] %>
+
+                <% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                                                        guw_unit_of_work_id: guow.id) %>
+
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% if i[1].blank? %>
                     <% if i[0] == "Coeff. de Complexité" %>
