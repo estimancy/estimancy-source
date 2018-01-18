@@ -8,8 +8,8 @@
   </div>
 
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
-  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
+  <%# @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+  <% @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: @project.id,
                                                                   module_project_id: current_module_project.id,
                                                                   pbs_project_element_id: current_component.id) %>
@@ -50,7 +50,7 @@
           Total <%= guw_output.name %> retenu :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%= @unit_of_work_groups.map do |i|
+            <%# @unit_of_work_groups.map do |i|
               #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
@@ -65,7 +65,7 @@
           Total <%= guw_output.name %> théorique :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%= @unit_of_work_groups.map do |i|
+            <%# @unit_of_work_groups.map do |i|
               #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
@@ -99,8 +99,8 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <%# uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
-      <% uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
+      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+      <%# uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
 
       <div class="accordion-heading" style="padding:5px;">
@@ -224,6 +224,21 @@
               <% end %>
             </tr>
 
+            <% hash_guw_coefficients = {} %>
+            <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                         name: @guw_model.orders.map(&:first)).all.each do |guw_coef| %>
+              <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
+            <% end %>
+
+            <% hash_guw_outputs = {} %>
+            <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+                                    name: @guw_model.orders.map(&:first)).all.each do |guw_output| %>
+              <% hash_guw_outputs[guw_output.name] = guw_output %>
+            <% end %>
+
+            <%# GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).all.each do |i| %>
+
+            <%# end %>
            <%# uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC, name ASC").each_with_index do |guow, i| %>
            <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
@@ -235,7 +250,7 @@
                 <%
                    hash_color_priorities = {}
 
-                   gceuws = guow.guw_coefficient_element_unit_of_works
+                   gceuws = guow.guw_coefficient_element_unit_of_works.includes(:guw_coefficient_element)
                    gceuws.each do |gceuw|
                      gce = gceuw.guw_coefficient_element
                      unless gce.nil?
@@ -317,18 +332,6 @@
                                    title: @guw_type.name %>
                   <% end %>
                 </td>
-
-                <% hash_guw_coefficients = {} %>
-                <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                             name: @guw_model.orders.map(&:first)).all.each do |guw_coef| %>
-                  <% hash_guw_coefficients[guw_coef.name] = guw_coef %>
-                <% end %>
-
-                <% hash_guw_outputs = {} %>
-                <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
-                                        name: @guw_model.orders.map(&:first)).all.each do |guw_output| %>
-                  <% hash_guw_outputs[guw_output.name] = guw_output %>
-                <% end %>
 
                 <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
                 <% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(guw_type_id: @guw_type.id) %>
