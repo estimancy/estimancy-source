@@ -80,8 +80,6 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.find(params[:id])
     @guw_unit_of_work_group.destroy
 
-    expire_fragment "guw"
-
     redirect_to main_app.dashboard_path(@project)
   end
 
