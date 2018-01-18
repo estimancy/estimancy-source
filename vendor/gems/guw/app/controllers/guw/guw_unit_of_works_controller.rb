@@ -162,7 +162,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.intermediate_weight = @value.to_f
     @guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project, recalculate: true)
+    # redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
 
   def load_coefficient_comments
@@ -202,7 +202,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @ceuw.save
     @guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project, recalculate: true)
+    # redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
 
   def load_cotations
@@ -236,8 +236,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.comments = params[:comments].values.first
     @guw_unit_of_work.tracking = params[:trackings].values.first
     @guw_unit_of_work.save
-
-    expire_fragment "guw"
 
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
