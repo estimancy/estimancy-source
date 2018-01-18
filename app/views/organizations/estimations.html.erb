@@ -25,7 +25,7 @@
               <% if can? :create_project_from_scratch, Project %>
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
-              <%= link_to('Exporter au format PDF', "#!", class: 'btn', :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
+              <%# link_to('Exporter au format PDF', "#!", class: 'btn', :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
             </td>
 
           </tr>
@@ -61,14 +61,14 @@
             <label>
               <b>Besoin métier</b>
             </label>
-            <%= select_tag "", options_for_select(@projects.map(&:business_need).uniq.compact), prompt: "Sélectionnez un besoin métier" %>
+            <%= select_tag "", options_for_select(@projects.map(&:business_need).uniq.compact) %>
           </p>
 
           <p>
             <label>
               <b><%= I18n.t :request_number %></b>
             </label>
-            <%= select_tag "", options_for_select(@projects.map(&:request_number).uniq.compact), prompt: "Sélectionnez un n° de demmande" %>
+            <%= select_tag "", options_for_select(@projects.map(&:request_number).uniq.compact) %>
           </p>
 
           </p>
