@@ -2289,8 +2289,10 @@ public
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
             pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
-            mp_ratio_element.pbs_project_element_id = pbs_id
-            mp_ratio_element.save
+            unless pbs_id.nil?
+              mp_ratio_element.pbs_project_element_id = pbs_id
+              mp_ratio_element.save
+            end
           end
 
           new_mp_ratio_elements = new_mp.module_project_ratio_elements
