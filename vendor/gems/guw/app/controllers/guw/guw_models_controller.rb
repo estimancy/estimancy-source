@@ -1923,7 +1923,7 @@ class Guw::GuwModelsController < ApplicationController
               elsif guw_coefficient.coefficient_type == "Coefficient"
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-                ;                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
