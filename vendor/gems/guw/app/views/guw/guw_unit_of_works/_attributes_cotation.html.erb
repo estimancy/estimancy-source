@@ -96,7 +96,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate', onclick: "yolo(#{uowa.id});" %>
+                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate', onclick: "open_comment(#{uowa.id});" %>
                       </div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@
                   });
                 });
 
-                function yolo(uowa_id){
+                function open_comment(uowa_id){
                   $('.modal_comments').modal('hide');
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val());
                 };
