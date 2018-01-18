@@ -248,7 +248,7 @@
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
               <% end %>
 
-              <tr data-guw-id="<%= guow.id %>">
+              <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
                 <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
               </tr>
 
