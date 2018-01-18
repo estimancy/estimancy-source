@@ -46,7 +46,7 @@
 <div class="modal hide fade modal_export" tabindex="-1" role="dialog" id="export_dashboard" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form' do %>
+      <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
 
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

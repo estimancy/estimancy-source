@@ -3550,8 +3550,25 @@ public
     end
   end
 
-
   def export_dashboard
+    @project = Project.find(params[:project_id])
+    @current_organization = @project.organization
+    @pbs_project_element = current_component
+    @user = current_user
+    @module_projects = @project.module_projects
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "Test",
+               encoding: "UTF-8",
+               page_size: 'A4',
+               orientation: :landscape
+      end
+    end
+  end
+
+  def multiple_export_dashboard
     conditions = {}
     conditions[:request_number] = params[:request_number] unless params[:request_number].blank?
     conditions[:title] = params[:title] unless params[:title].blank?
