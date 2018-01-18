@@ -33,10 +33,6 @@
 
       <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
 
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#stats_modal">
-        Statistiques détaillées
-      </button>
-
       <% if @guw_model.view_data == true %>
         <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
       <% end %>
@@ -914,11 +910,11 @@
         <h4 class="modal-title">Statistiques détaillés</h4>
       </div>
       <div class="modal-body">
-        <% begin %>
-          <%= render partial: "guw/guw_unit_of_works/details" %>
-        <% rescue %>
-          Une erreur est survenue lors de l'affichage des statistiques détaillées
-        <% end %>
+        <%# begin %>
+          <%# render partial: "guw/guw_unit_of_works/details" %>
+        <%# rescue %>
+          <!--Une erreur est survenue lors de l'affichage des statistiques détaillées-->
+        <%# end %>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
