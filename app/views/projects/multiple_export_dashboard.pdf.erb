@@ -317,33 +317,35 @@
 
             <% @wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
               <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
-              <tr>
-                <td>
-                  <% unless mp_ratio_element.is_root? %>
-                    <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '') %></b>
-                  <% end %>
-                </td>
-                <td>
-                  <% unless mp_ratio_element.is_root? %>
-                    <b><%= raw(mp_ratio_element.selected == true ? "&nbsp;" : '') %></b>
-                  <% end %>
-                  <b><%= wbs_activity_element.name %></b>
-                </td>
-                <td class="center">
-                  <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
-                </td>
-                <td class="center">
-                  <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %>
-                </td>
-                <td class="center">
-                  <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %>
-                </td>
-              </tr>
-              <% unless mp_ratio_element.comments.nil? %>
+              <% unless mp_ratio_element.nil? %>
                 <tr>
-                  <td colspan="1"></td>
-                  <td colspan="7"> &#8226; <%= raw(mp_ratio_element.comments) %></td>
+                  <td>
+                    <% unless mp_ratio_element.is_root? %>
+                      <b><%= raw(mp_ratio_element.selected == true ? "&#10003;" : '') %></b>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% unless mp_ratio_element.is_root? %>
+                      <b><%= raw(mp_ratio_element.selected == true ? "&nbsp;" : '') %></b>
+                    <% end %>
+                    <b><%= wbs_activity_element.name %></b>
+                  </td>
+                  <td class="center">
+                    <%= mp_ratio_element.tjm.to_f.round(user_number_precision) %>
+                  </td>
+                  <td class="center">
+                    <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %>
+                  </td>
+                  <td class="center">
+                    <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %>
+                  </td>
                 </tr>
+                <% unless mp_ratio_element.comments.nil? %>
+                  <tr>
+                    <td colspan="1"></td>
+                    <td colspan="7"> &#8226; <%= raw(mp_ratio_element.comments) %></td>
+                  </tr>
+                <% end %>
               <% end %>
             <% end %>
           </table>
