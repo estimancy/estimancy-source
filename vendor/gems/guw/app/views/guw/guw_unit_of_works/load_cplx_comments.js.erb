@@ -8,8 +8,7 @@ $("#cplx_comments").modal({
   backdrop: "static"
 });
 
-$("#cplx_comments").on("hidden.bs.modal", function () {
-  $(".retained-guw-" + <%= @guw_unit_of_work.id %>).val("<%= @previousValue %>");
+$("#cplx_comments").on("shown.bs.modal", function () {
   $("#guw_form").unbind('submit');
   $(".guw_submit").prop("disabled", false);
 });

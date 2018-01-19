@@ -434,15 +434,15 @@ frsncf:
   #groups
   global: "Global"
   text_group_associated_users: "Utilisateurs membre du groupe \"%{value}\""
-  edit_group: "Editer le groupe \"%{value}\" ... "
-  new_group: "Créer un nouveau groupe ... "
+  edit_group: "Editer le groupe \"%{value}\""
+  new_group: "Créer un nouveau groupe"
 
   #Labor categories
-  edit_labor_category: "Editer la catégorie de travail \"%{value}\" ..."
+  edit_labor_category: "Editer la catégorie de travail \"%{value}\""
   new_labor_category: "Créer une catégorie de travail"
 
   #languages
-  edit_language: "Editer le langage \"%{value}\" ..."
+  edit_language: "Editer le langage \"%{value}\""
   new_language: "Créer un nouveau langage"
   local: "Local"
 
@@ -455,7 +455,7 @@ frsncf:
   new_estimation_value: "Créer un nouvel attribut de module de projet"
 
   #module_project
-  edit_module_project: "Editer le module de projet \"%{value}\" ..."
+  edit_module_project: "Editer le module de projet \"%{value}\""
   new_module_project: "Créer un nouveau module de projet"
   related_attributes: "Attributs associés"
   module_ratio_settings: "Paramètrage Ratio"
@@ -480,7 +480,7 @@ frsncf:
   currency: "Devise"
   hour_per_day: "Heures par jour"
   days_per_year: "Jours par année"
-  edit_organization_labor_category: "Editer la catégorie de travailleurs organisationnelle \"%{value}\" ..."
+  edit_organization_labor_category: "Editer la catégorie de travailleurs organisationnelle \"%{value}\" "
   new_organization_labor_category: "Créer une catégorie de travailleurs de l'organisation"
 
   #Organization
@@ -1076,7 +1076,7 @@ frsncf:
   warning_project_state_to_inreview: "si vous continuez (%{value_b}) seuls les utilisateurs avec le privilège 'accès en écriture au projet inreview' sera en mesure de modifier cette version du projet."
   warning_project_state_unusual: "C'est inhabituel de passer de l'état \"%{value_a}\" à l'état \"%{value_b}\"."
   warning_project_state_unnormal: "Ce n'est pas normal de passer de l'état \"%{value_a}\" à l'état \"%{value_b}\"."
-  confirm: "Confirmez-vous...?"
+  confirm: "Confirmez-vous?"
   error_project_state: "Désolé... mais cette transaction n'est pas possible!"
   warning_project_cannot_be_deleted: "Les projets se trouvant dans ce état ne peuvent être supprimés"
   label_project_history: "Historique"
@@ -1310,7 +1310,7 @@ frsncf:
   view_successfully_created: 'La vue a été créée avec succès.'
   view_successfully_updated: 'La vue a été mise à jour avec succès.'
   new_widget: "Nouvelle vignette"
-  edit_widget: "Editer la vignette \"%{value}\"..."
+  edit_widget: "Editer la vignette \"%{value}\""
   widget_successfully_created: 'La vignette a été créée avec succès.'
   widget_successfully_updated: 'La vue a été mise à jour avec succès.'
   widgets: "Vues"

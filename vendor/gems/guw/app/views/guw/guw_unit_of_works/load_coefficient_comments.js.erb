@@ -10,8 +10,7 @@ $("#coefficient_comments").modal({
   backdrop: "static"
 });
 
-$("#coefficient_comments").on("hidden.bs.modal", function () {
-  $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= @guw_coefficient.id %>").val("<%= @previousValue %>");
+$("#coefficient_comments").on("shown.bs.modal", function () {
   $("#guw_form").unbind('submit');
   $(".guw_submit").prop("disabled", false);
 });

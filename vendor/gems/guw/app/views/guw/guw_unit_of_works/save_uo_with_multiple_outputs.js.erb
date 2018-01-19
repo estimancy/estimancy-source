@@ -25,7 +25,7 @@
 $("#modal_cotation").modal('toggle');
 $('.modal_comments').modal('hide');
 
-$("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
+$("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 

@@ -2710,7 +2710,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                if @guw_type.allow_complexity == false
+                # if @guw_type.allow_complexity == false
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
@@ -2745,7 +2745,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   else
                     guw_uow.result_high = @highs.sum
                   end
-                end
+                # end
 
                 begin
                   unless params["guw_complexity_#{guw_uow.id}"].nil?
@@ -2861,7 +2861,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       unless guw_output.nil?
                         (16..60).to_a.each do |k|
                           if guw_output.name == tab[0][k]
-                            # tmp_hash_res["#{guw_output.id}"] = row[k]
+                            tmp_hash_res["#{guw_output.id}"] = row[k]
                             tmp_hash_ares["#{guw_output.id}"] = row[k]
                           end
                         end
@@ -2877,13 +2877,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   guw_uow.save
                 end
 
-                @guw_attributes.all.each do |gac|
-                  unless @guw_type.nil?
-                    finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                                                               guw_attribute_id: gac.id,
-                                                               guw_unit_of_work_id: guw_uow.id).first_or_create
-                  end
-                end
+                # @guw_attributes.all.each do |gac|
+                #   unless @guw_type.nil?
+                    # finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                    #                                            guw_attribute_id: gac.id,
+                    #                                            guw_unit_of_work_id: guw_uow.id).first_or_create
+                #   end
+                # end
 
               end
             end
