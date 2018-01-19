@@ -1866,8 +1866,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     default_group = params[:group_name]
 
-    module_project = current_module_project
-    @guw_model = module_project.guw_model
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
+    @organization = @guw_model.organization
+    @project = @module_project.project
+    @component = current_component
+    @guw_model = @module_project.guw_model
     @guw_model_guw_attributes = @guw_model.guw_attributes.all
 
     if params[:from] == "Excel"

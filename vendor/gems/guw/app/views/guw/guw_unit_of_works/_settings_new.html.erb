@@ -484,7 +484,7 @@
 <div class="modal hide fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form', remote: true do %>
 
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -516,7 +516,7 @@
 <div class="modal hide fade" tabindex="-1" role="dialog" id="ml_data" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
+      <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form', remote: true do %>
 
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -636,7 +636,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :"disable-with" => "Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>" %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => "Veuillez patienter..." } %>
           </div>
 
       <% end %>
@@ -724,7 +724,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer !</button>
         <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
       </div>
   <% end %>

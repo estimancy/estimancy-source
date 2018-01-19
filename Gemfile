@@ -238,5 +238,6 @@ gem 'grit'
 gem 'pdfkit'
 
 gem 'paper_trail'
+# gem 'jquery-fileupload-rails'
 
 
