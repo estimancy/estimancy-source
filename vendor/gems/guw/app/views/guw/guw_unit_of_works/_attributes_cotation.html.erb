@@ -119,7 +119,7 @@
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val());
                 };
 
-                $(".ml").on('focus', function(e) {
+                $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
                   $(".submit_cotation").attr('disabled', 'disabled');
                   $(".comments").keyup(function(e) {
                     if ($(this).val().length == 0) {
