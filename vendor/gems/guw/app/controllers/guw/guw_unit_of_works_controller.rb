@@ -2686,7 +2686,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   @guw_attributes.size.times do |jj|
 
-                    ind = 20 + @guw_outputs.size + @guw_coefficients.size + jj + 2
+                    ind = 20 + @guw_outputs.size + @guw_coefficients.size + jj
 
                     tmp_val = row[ind]
 
