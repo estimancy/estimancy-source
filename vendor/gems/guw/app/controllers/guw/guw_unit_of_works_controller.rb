@@ -2877,13 +2877,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   guw_uow.save
                 end
 
-                # @guw_attributes.all.each do |gac|
-                #   unless @guw_type.nil?
-                    # finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
-                    #                                            guw_attribute_id: gac.id,
-                    #                                            guw_unit_of_work_id: guw_uow.id).first_or_create
-                #   end
-                # end
+                @guw_attributes.all.each do |gac|
+                  unless @guw_type.nil?
+                    finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+                                                               guw_attribute_id: gac.id,
+                                                               guw_unit_of_work_id: guw_uow.id).first_or_create
+                  end
+                end
 
               end
             end
