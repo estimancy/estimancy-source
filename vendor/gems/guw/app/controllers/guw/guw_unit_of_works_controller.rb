@@ -362,7 +362,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
     guw_unit_of_work.save
 
-    final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+    final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
     # calculate_attributes(guw_unit_of_work, guw_factor, guw_weighting, guw_work_unit, tcplx, final_value, @guw_model)
 
     complexity_work_unit = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
@@ -404,7 +404,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].blank?
       guw_unit_of_work.ajusted_size = final_value
     elsif params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"] != array_pert.sum
-      guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+      guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f
     end
 
     guw_unit_of_work.flagged = false
@@ -589,7 +589,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if params["ajusted_size"].nil?
           guw_unit_of_work.ajusted_size = nil
         else
-          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
         end
       else
         guw_unit_of_work.size = final_value.to_f *
@@ -597,12 +597,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*))
 
         if guw_unit_of_work.guw_type.allow_retained == false
-          guw_unit_of_work.ajusted_size = guw_unit_of_work.size.round(3)
+          guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
         else
           if params["ajusted_size"]["#{guw_unit_of_work.id}"].blank?
-            guw_unit_of_work.ajusted_size = guw_unit_of_work.size.round(3)
+            guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
           else
-            guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f.round(3)
+            guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
           end
         end
       end
@@ -622,7 +622,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       else
         if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
           guw_unit_of_work.flagged = true
-        elsif guw_unit_of_work.size.to_f.round(3) != guw_unit_of_work.ajusted_size.round(3)
+        elsif guw_unit_of_work.size.to_f != guw_unit_of_work.ajusted_size.to_f
           guw_unit_of_work.flagged = true
         else
           guw_unit_of_work.flagged = false
@@ -1668,7 +1668,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     #gestion des valeurs intermédiaires
-    @final_value = (@guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+    @final_value = (@guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
 
     @guw_unit_of_work.quantity = params["hidden_quantity"]["#{@guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{@guw_unit_of_work.id}"].to_f
 
@@ -1807,7 +1807,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if params["hidden_ajusted_size"].nil?
           tmp_hash_res["#{guw_output.id}"] = nil
         else
-          tmp_hash_res["#{guw_output.id}"] = params["hidden_ajusted_size"]["#{@guw_unit_of_work.id}"]["#{guw_output.id}"].to_f.round(3)
+          tmp_hash_res["#{guw_output.id}"] = params["hidden_ajusted_size"]["#{@guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
         end
         @guw_unit_of_work.ajusted_size = tmp_hash_res
         @guw_unit_of_work.size = tmp_hash_res
@@ -2492,7 +2492,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if @guw_type.allow_criteria == true
                   begin
                     #gestion des valeurs intermédiaires
-                    @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+                    @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
                   rescue
                     @final_value = nil
                   end
@@ -2814,7 +2814,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
                 # gestion des valeurs intermédiaires
-                @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f.round(3))
+                @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
 
                 guw_uow.quantity = 1
                 guw_uow.ajusted_size = nil
@@ -3184,7 +3184,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               tmp_prbl = Array.new
               ["low", "most_likely", "high"].each do |level|
                 if am_pe_attribute.alias == guw_output.name.underscore.gsub(" ", "_")
-                  ev.send("string_data_#{level}")[component.id] = value.to_f.round(user_number_precision)
+                  ev.send("string_data_#{level}")[component.id] = value.to_f
                   if guw_output.output_type == "Effort"
                     tmp_prbl << ev.send("string_data_#{level}")[component.id] * (guw_output.standard_coefficient.nil? ? 1 : guw_output.standard_coefficient.to_f )
                   else

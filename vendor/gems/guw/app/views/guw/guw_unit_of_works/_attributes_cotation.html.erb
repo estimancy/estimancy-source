@@ -1,4 +1,4 @@
-<%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post", remote: true do %>
+<%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post", remote: true, class: "uo_form" do %>
 
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
@@ -96,7 +96,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate', onclick: "open_comment(#{uowa.id});" %>
+                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate', onclick: "close_comment(#{uowa.id});" %>
                       </div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@
                   });
                 });
 
-                function open_comment(uowa_id){
+                function close_comment(uowa_id){
                   $('.modal_comments').modal('hide');
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val());
                 };
@@ -128,6 +128,7 @@
                       $(".submit_cotation").removeAttr('disabled');
                     }
                   });
+//                  $(".submit_cotation").bind("submit");
                 });
 
                 $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
@@ -137,6 +138,8 @@
                   } else {
                     $(".submit_cotation").removeAttr('disabled');
                   }
+
+//                  $(".submit_cotation").unbind("submit");
 
                   valu = $(this).val();
                   dv = $(this).attr("default_value");

@@ -1669,7 +1669,7 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:quantity),
         I18n.t(:tracability),
         I18n.t(:cotation),
-        "COEF"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]
+        "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]
 
     header.each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
@@ -1865,7 +1865,7 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:quantity),
         I18n.t(:tracability),
         I18n.t(:cotation),
-        "COEF"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
+        "Coeff de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first }).each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
     end
 
@@ -1927,7 +1927,7 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
           end
-        elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+        els if Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
           guw_output = Guw::GuwOutput.where(name: i[0],
                                             guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
