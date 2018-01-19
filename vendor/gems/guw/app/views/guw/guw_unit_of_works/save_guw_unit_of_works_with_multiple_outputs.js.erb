@@ -7,7 +7,7 @@
   @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 %>
 
-<% if @recalculate == false %>
+<% if @reload_partial == true %>
   <% @guw_types = @guw_model.guw_types %>
 
   <% @hash_guw_outputs = {} %>
@@ -33,13 +33,11 @@
   <% end %>
 
   $("#modified_guw_line_ids").val("");
-<% else %>
-  $("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
+<%# else %>
+//  $("#guw_block").html("<%# j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
 <% end %>
 
-
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
-
 
 //Mettre à jour l'url sans recharger la page
 if (history.pushState) {
