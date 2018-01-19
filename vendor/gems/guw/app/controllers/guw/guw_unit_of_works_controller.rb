@@ -1090,6 +1090,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project = @module_project.project
     @component = current_component
     @reload_partial = true
+    @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
 
     if params["modified_guw_line_ids"].blank?
       @reload_partial = false
@@ -1100,7 +1101,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #                                                guw_model_id: @guw_model.id).includes(:guw_type, :guw_complexity).order("name ASC")
     else
       @reload_partial = true
-      modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
       @guw_unit_of_works = Guw::GuwUnitOfWork.where(id: modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
 
       @guw_coefficients = @guw_model.guw_coefficients
