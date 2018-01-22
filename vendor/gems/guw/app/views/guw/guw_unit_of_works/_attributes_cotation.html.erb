@@ -96,7 +96,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate', onclick: "close_comment(#{uowa.id});" %>
+                        <%= link_to "OK", "#!", :class => 'btn btn-primary validate_comments', disabled: true %>
                       </div>
                     </div>
                   </div>
@@ -112,6 +112,20 @@
                     keyboard: false,
                     backdrop: "static"
                   });
+
+                  $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                    if ($(this).val().length == 0) {
+                      $(".validate_comments").attr('disabled', 'disabled');
+                      $(".validate_comments").on('click', function(e){
+                        e.preventDefault();
+                      })
+                    } else {
+                      $(".validate_comments").removeAttr('disabled');
+                      $(".validate_comments").on('click', function(e){
+                        close_comment(<%= uowa.id %>);
+                      })
+                    }
+                  });
                 });
 
                 function close_comment(uowa_id){
@@ -122,6 +136,7 @@
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
                   $(".submit_cotation").attr('disabled', 'disabled');
+
                   $(".comments").keyup(function(e) {
                     if ($(this).val().length == 0) {
                       $(".submit_cotation").attr('disabled', 'disabled');
@@ -129,7 +144,20 @@
                       $(".submit_cotation").removeAttr('disabled');
                     }
                   });
-//                  $(".submit_cotation").bind("submit");
+
+                  $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                    if ($(this).val().length == 0) {
+                      $(".validate_comments").attr('disabled', 'disabled');
+                      $(".validate_comments").on('click', function(e){
+                        e.preventDefault();
+                      })
+                    } else {
+                      $(".validate_comments").removeAttr('disabled');
+                      $(".validate_comments").on('click', function(e){
+                        close_comment(<%= uowa.id %>);
+                      })
+                    }
+                  });
                 });
 
                 $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
@@ -139,8 +167,6 @@
                   } else {
                     $(".submit_cotation").removeAttr('disabled');
                   }
-
-//                  $(".submit_cotation").unbind("submit");
 
                   valu = $(this).val();
                   dv = $(this).attr("default_value");
