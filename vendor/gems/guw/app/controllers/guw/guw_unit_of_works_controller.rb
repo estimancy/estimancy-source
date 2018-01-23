@@ -2691,11 +2691,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     @all_guw_attribute_complexities[@guw_type.id][gac.id] = Guw::GuwAttributeComplexity.where(guw_type_id: (@guw_type.nil? ? nil : @guw_type.id),
                                                                                                               guw_attribute_id: gac.id).all
                   end
+                end
 
-                  @guw_attributes.size.times do |jj|
+                # ind = 20 + @guw_outputs.size + @guw_coefficients.size
 
-                    ind = 20 + @guw_outputs.size + @guw_coefficients.size + jj
+                @guw_attributes.each do |gac|
 
+                  ((20 + @guw_outputs.size + @guw_coefficients.size)..100).each do |ind|
                     tmp_val = row[ind]
 
                     unless tmp_val.nil?
@@ -2715,8 +2717,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         end
                       end
                     end
+
                   end
+
+                  # ind = ind + 1
+
                 end
+                # end
 
                 array_pert = Array.new
 
