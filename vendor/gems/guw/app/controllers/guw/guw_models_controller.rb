@@ -1762,6 +1762,13 @@ class Guw::GuwModelsController < ApplicationController
         ii = ii + 2
       end
 
+      ii = 0
+      @guw_model.guw_attributes.each do |guw_attribute|
+        worksheet.add_cell(0, jj + ii, guw_attribute.name)
+        worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+        ii = ii + 2
+      end
+
       kk = header.size - @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
 
       @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
@@ -1771,7 +1778,6 @@ class Guw::GuwModelsController < ApplicationController
       tjm_array = []
 
       calculator = Dentaku::Calculator.new
-      ii = 0
 
       @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
@@ -1927,7 +1933,7 @@ class Guw::GuwModelsController < ApplicationController
               end
             end
           end
-        els if Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+        elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
           guw_output = Guw::GuwOutput.where(name: i[0],
                                             guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
@@ -1940,7 +1946,7 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       ii = 0
-      @guw_model.guw_attributes.each_with_index do |guw_attribute, i|
+      @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
         guw_type = guow.guw_type
         guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
                                                   guw_attribute_id: guw_attribute.id,
