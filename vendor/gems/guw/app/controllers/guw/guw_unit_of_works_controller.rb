@@ -2607,8 +2607,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     results = []
 
     if params[:import_type] == "Remplacer"
-      Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
       Guw::GuwUnitOfWorkGroup.where(module_project_id: module_project.id).delete_all
+      Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
     end
 
     if source == "Excel"
@@ -2697,7 +2697,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 @guw_attributes.each do |gac|
 
-                  #cub pas pris en compte ....
                   ((18 + @guw_outputs.size + @guw_coefficients.size)..100).each do |ind|
                     tmp_val = row[ind]
 
