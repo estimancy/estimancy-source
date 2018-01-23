@@ -1090,7 +1090,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project = @module_project.project
     @component = current_component
     @reload_partial = true
-    @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
+
+    unless params["modified_guw_line_ids"].nil?
+      @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
+    end
 
     if params["modified_guw_line_ids"].blank?
       @reload_partial = false
