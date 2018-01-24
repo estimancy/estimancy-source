@@ -8,8 +8,6 @@
 //= require jquery.remotipart
 //= require jquery_ujs
 //= require jquery-ui
-//= require tinymce-jquery
-//= require tinymce
 //= require jit
 //= require highcharts
 //= require highcharts/highcharts-more
