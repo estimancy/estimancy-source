@@ -110,14 +110,14 @@
         </table>
 
       <br>
-      <%= tinymce %>
+
 
       <label>
          <%= I18n.t(:description) %>
        </label>
 
        <%= simple_format(@project.description) %>
-       <%= f.input :description, :label => false, :input_html => {:class => 'input-large tinymce', :rows => 5, :cols => 10 } %>
+       <%= f.input :description, :label => false, :input_html => {:class => 'span6 form-control', :rows => 6 } %>
 
       <table>
         <tr>

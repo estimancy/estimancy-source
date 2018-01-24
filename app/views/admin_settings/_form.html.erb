@@ -9,7 +9,7 @@
 
         <%= f.input :key, :label => I18n.t('key'), :input_html => { :autofocus => (controller.action_name == 'new') } %>
 
-        <%= tinymce %>
+
         <%= f.input :value, :label => I18n.t('value'), :input_html => {:class => 'tinymce input-xxlarge', :rows => 30} unless (@admin_setting.key.in? %w(session_maximum_lifetime session_inactivity_timeout password_min_length self-registration allow_feedback audit_history_lifetime online_support disable_access functionnal_version_number)) %>
 
         <%= f.input :value, :label => I18n.t('value'), :as => 'integer', :input_html => {:class => 'numeric integer optional', :type => 'number', :min => 0, :max => 40} if (@admin_setting.key=='password_min_length') %>
