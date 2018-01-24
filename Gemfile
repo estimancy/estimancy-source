@@ -141,7 +141,7 @@ gem 'time_diff', '~> 0.3.0'
 # Licence finder gem
 # gem 'license_finder'
 
-gem 'tinymce-rails'
+# gem 'tinymce-rails'
 
 # Tool for asynchronous jobs processing
 ###gem 'sidekiq'
@@ -238,6 +238,5 @@ gem 'grit'
 gem 'pdfkit'
 
 gem 'paper_trail'
-# gem 'jquery-fileupload-rails'
 
 
