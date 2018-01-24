@@ -29,6 +29,40 @@ $("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
+var my_array = [];
+$(document).ready(function(){
+
+  $("input#name").val("");
+  $("textarea#comments").val("");
+
+  $("table#guw input").keyup(function(e) {
+    var new_line = $(this).closest("tr").data("guw-id");
+    my_array.push(new_line);
+    $("#modified_guw_line_ids").val(my_array);
+  });
+
+  $("table#guw select").on("change", function(e) {
+    var new_line = $(this).closest("tr").data("guw-id");
+    my_array.push(new_line);
+    $("#modified_guw_line_ids").val(my_array);
+  });
+
+  $('.selected').change(function(){
+    $.ajax({
+      url: "<%= guw.change_selected_state_path %>",
+      data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
+    });
+  });
+
+  $('.guw_type').change(function(){
+    reset($(this).attr("guw"));
+    $.ajax({
+      url: "<%= guw.change_cotation_path %>",
+      data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+    });
+  });
+});
+
 var gridster = [];
 var iteration = -1;
 $(function () { //DOM Ready

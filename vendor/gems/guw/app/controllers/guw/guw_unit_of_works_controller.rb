@@ -112,13 +112,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_estimation_values
     update_view_widgets_and_project_fields
 
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{group.id}")
+    # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{group.id}")
   end
 
   def up
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    guw_model = @guw_unit_of_work.guw_model
-    guw_group = @guw_unit_of_work.guw_unit_of_work_group
+    # guw_model = @guw_unit_of_work.guw_model
+    # guw_group = @guw_unit_of_work.guw_unit_of_work_group
 
     display_order = @guw_unit_of_work.display_order.to_i
 
