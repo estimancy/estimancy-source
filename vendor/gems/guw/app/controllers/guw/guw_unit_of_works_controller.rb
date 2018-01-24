@@ -71,6 +71,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = {}
     @guw_unit_of_work.cost = {}
 
+    @position = params[:hidden_position]
     @guw_unit_of_work.display_order = params[:hidden_position].to_i
 
     @guw_unit_of_work.save
@@ -117,27 +118,34 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def up
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    # guw_model = @guw_unit_of_work.guw_model
-    # guw_group = @guw_unit_of_work.guw_unit_of_work_group
 
     display_order = @guw_unit_of_work.display_order.to_i
 
-    @guw_unit_of_work.display_order = display_order - 1
+    @guw_unit_of_work.display_order = display_order - 2
     @guw_unit_of_work.save
 
-    # @previous_unit_of_work = Guw::GuwUnitOfWork.where(guw_model_id: guw_model.id, guw_unit_of_work_group_id: guw_group.id, display_order: display_order).first
-    # @previous_unit_of_work.display_order = display_order
-    # @previous_unit_of_work.save
+    #reorder to keep good order
+    reorder @guw_unit_of_work.guw_unit_of_work_group
 
-    redirect_to :back
+    @module_project = current_module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @component = current_component
+    @organization = @guw_model.organization
   end
 
   def down
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 1
+    @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 2
     @guw_unit_of_work.save
 
-    redirect_to :back
+    reorder @guw_unit_of_work.guw_unit_of_work_group
+
+    @module_project = current_module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @component = current_component
+    @organization = @guw_model.organization
   end
 
   def load_cplx_comments
@@ -3258,11 +3266,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
+    group.guw_unit_of_works.order("display_order asc").each_with_index do |u, i|
       u.display_order = i
-      # if u.changed?
-        u.save
-      # end
+      u.save
     end
   end
 
