@@ -230,13 +230,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_comments
+    @module_project = current_module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @component = current_component
+    @organization = @guw_model.organization
+
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:comments].keys.first)
     @guw_unit_of_work.name = params[:name].values.first
     @guw_unit_of_work.comments = params[:comments].values.first
     @guw_unit_of_work.tracking = params[:trackings].values.first
+    @guw_unit_of_work.guw_unit_of_work_group_id = params[:guw_unit_of_work_group_id]
     @guw_unit_of_work.save
-
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
   def save_uo

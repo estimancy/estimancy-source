@@ -522,17 +522,16 @@
 <div class="modal hide fade" tabindex="-1" role="dialog" id="new_guw" aria-labelledby="new_guw_label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header modal-drag">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">
-          Création d'un composant fonctionnel
-        </h4>
-      </div>
-      <div class="modal-body" style="height: inherit;">
+      <% @guw_unit_of_work = Guw::GuwUnitOfWork.new %>
+      <%= form_tag guw.guw_model_guw_unit_of_works_path(@guw_model, @guw_unit_of_work), remote: true do |f| %>
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            Création d'un composant fonctionnel
+          </h4>
+        </div>
 
-        <% @guw_unit_of_work = Guw::GuwUnitOfWork.new %>
-        <%= form_tag guw.guw_model_guw_unit_of_works_path(@guw_model, @guw_unit_of_work), remote: true do |f| %>
-
+        <div class="modal-body" style="height: inherit;">
           <%= hidden_field_tag :guw_model_id, @guw_model.id %>
 
           <div class="row-fluid">
@@ -577,10 +576,13 @@
               </div>
             </div>
           </div>
+        </div>
 
+        <div class="modal-footer modal-drag">
           <%= submit_tag I18n.t('save'), data: { :"disable-with" => "Veuillez patienter..." }, class: "btn btn-primary" %>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
+
     </div>
   </div>
 </div>

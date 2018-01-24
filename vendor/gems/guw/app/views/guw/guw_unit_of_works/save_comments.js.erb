@@ -1,9 +1,13 @@
-<%
+<% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @organization.id,
+                                                        project_id: @project.id,
+                                                        module_project_id: @module_project.id,
+                                                        pbs_project_element_id: @component.id)
+
   @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
   @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
-  @guw_types = @guw_model.guw_types
-  @guw_type = @guw_unit_of_work.guw_type
 %>
+
+<% @guw_types = @guw_model.guw_types %>
 
 <% @hash_guw_outputs = {} %>
 <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
@@ -22,18 +26,20 @@
   <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
 <% end %>
 
-$("#new_guw").modal('toggle');
+$("#modal_comments").modal('toggle');
 
-$('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
+$("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
+//Mettre à jour l'url sans recharger la page
+if (history.pushState) {
+  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  window.history.pushState({path:newurl},'',newurl);
+}
+
 var my_array = [];
 $(document).ready(function(){
-
-  $("input#name").val("");
-  $("textarea#comments").val("");
-
   $("table#guw input").keyup(function(e) {
     var new_line = $(this).closest("tr").data("guw-id");
     my_array.push(new_line);
@@ -151,3 +157,4 @@ $(function () { //DOM Ready
     }).data('gridster');
   })
 });
+
