@@ -19,7 +19,6 @@
 #
 #############################################################################
 
-
 class Guw::GuwUnitOfWorksController < ApplicationController
 
   include ModuleProjectsHelper
@@ -45,12 +44,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def create
-    unless params[:guw_unit_of_work][:guw_type_id].blank?
-      @guw_type = Guw::GuwType.find(params[:guw_unit_of_work][:guw_type_id])
+    unless params[:guw_type_id].blank?
+      @guw_type = Guw::GuwType.find(params[:guw_type_id])
     end
 
-    @guw_model = Guw::GuwModel.find(params[:guw_unit_of_work][:guw_model_id])
-    @guw_unit_of_work = Guw::GuwUnitOfWork.new(params[:guw_unit_of_work])
+    @guw_model = Guw::GuwModel.find(params[:guw_model_id])
+    @guw_outputs = @guw_model.guw_outputs
+    @guw_unit_of_work = Guw::GuwUnitOfWork.new(name: params[:name],
+                                               comments: params[:comments],
+                                               guw_type_id: params[:guw_type_id],
+                                               project_id: params[:project_id],
+                                               organization_id: params[:organization_id],
+                                               guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
 
     module_project = current_module_project
     @organization = @guw_model.organization
@@ -66,15 +71,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = {}
     @guw_unit_of_work.cost = {}
 
-    if params[:position].blank?
-      @guw_unit_of_work.display_order = @guw_unit_of_work.guw_unit_of_work_group.guw_unit_of_works.size.to_i + 1
-    else
-      @guw_unit_of_work.display_order = params[:position].to_i
-    end
+    @guw_unit_of_work.display_order = params[:position].to_i
 
     @guw_unit_of_work.save
 
-    reorder(@guw_unit_of_work.guw_unit_of_work_group)
+    # reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
@@ -83,9 +84,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_attribute_id: gac.id)
     end
 
-    expire_fragment "guw"
-
-    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
+    # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
   def update
@@ -432,13 +431,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def duplicate
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @old_guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
     # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
-    @new_guw_unit_of_work = @guw_unit_of_work.amoeba_dup
-    @new_guw_unit_of_work.save
+    @guw_unit_of_work = @old_guw_unit_of_work.amoeba_dup
+    @guw_unit_of_work.save
 
-    redirect_to main_app.dashboard_path(@project, recalculate: true, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
+    @guw_model = @guw_unit_of_work.guw_model
+    @guw_outputs = @guw_model.guw_outputs
   end
 
   def save_guw_unit_of_works

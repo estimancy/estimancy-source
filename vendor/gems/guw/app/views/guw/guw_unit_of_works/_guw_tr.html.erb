@@ -53,15 +53,15 @@
 </td>
 
 <td class="span1">
-                  <span class="badge badge-default">
-                    #<%= guow.id %>
-                  </span>
+  <span class="badge badge-default">
+    #<%= guow.id %>
+  </span>
 </td>
 
 <td class="text_field_text_overflow span3">
-                  <span class="pull-left">
-                    <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
-                  </span>
+  <span class="pull-left">
+    <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
+  </span>
 </td>
 
 <td class="span3">
@@ -465,7 +465,7 @@
     <% end %>
     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
 
-    <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
+    <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate), remote: true %>
     <%= link_to "", guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up", title: I18n.t(:up) %>
     <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down", title: I18n.t(:down) %>
     <%= link_to "", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg, position: guow.display_order), class: "fa fa-plus", title: I18n.t(:add) %>
