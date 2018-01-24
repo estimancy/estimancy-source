@@ -124,7 +124,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.display_order = display_order - 2
     @guw_unit_of_work.save
 
-    #reorder to keep good order
     reorder @guw_unit_of_work.guw_unit_of_work_group
 
     @module_project = current_module_project
@@ -136,7 +135,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def down
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 2
+
+    @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 1
     @guw_unit_of_work.save
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
