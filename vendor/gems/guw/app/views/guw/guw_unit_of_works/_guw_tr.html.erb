@@ -46,8 +46,6 @@
    end
 %>
 
-<td><%= guow.display_order %></td>
-
 <td style="border-left: <%= border_color %>" class="span1">
   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}_group" %>
