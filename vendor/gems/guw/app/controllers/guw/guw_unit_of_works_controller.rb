@@ -71,11 +71,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = {}
     @guw_unit_of_work.cost = {}
 
-    @guw_unit_of_work.display_order = params[:position].to_i
+    @guw_unit_of_work.display_order = params[:hidden_position].to_i
 
     @guw_unit_of_work.save
 
-    # reorder(@guw_unit_of_work.guw_unit_of_work_group)
+    reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
@@ -99,7 +99,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       render :edit
     end
 
-    expire_fragment "guw"
   end
 
   def destroy
@@ -465,7 +464,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
 
       #reorder to keep good order
-      reorder guw_unit_of_work.guw_unit_of_work_group
+      # reorder guw_unit_of_work.guw_unit_of_work_group
 
       begin
         guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
@@ -3259,12 +3258,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    # group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
-    #   u.display_order = i
-    #   if u.changed?
-    #     u.save
-    #   end
-    # end
+    group.guw_unit_of_works.order("display_order asc, name asc, updated_at asc").each_with_index do |u, i|
+      u.display_order = i
+      # if u.changed?
+        u.save
+      # end
+    end
   end
 
 end

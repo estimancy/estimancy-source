@@ -99,7 +99,7 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+      <% uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
       <%# uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
 
@@ -279,8 +279,8 @@
     var my_array = [];
     $(document).ready(function(){
       $(".new_guw_button").on('click', function(e){
-        console.log($(this).data("group-id"));
-        $("select#guw_unit_of_work_group_id").val($(this).data("group-id"))
+        $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
+        $("#hidden_position").val($(this).data("display-order"));
       });
 
       $("table#guw input").keyup(function(e) {
@@ -540,6 +540,7 @@
 
                 <%= hidden_field_tag :organization_id, @current_organization.id %>
                 <%= hidden_field_tag :project_id, @project.id %>
+                <%= hidden_field_tag :hidden_position, nil %>
 
                 <p>
                   <h5>
