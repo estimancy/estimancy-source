@@ -35,7 +35,8 @@
       </b>
     </label>
     <%= select_tag :guw_unit_of_work_group_id,
-                   options_for_select(current_module_project.guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
+                   options_for_select(current_module_project.guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort,
+                                      selected: guow.guw_unit_of_work_group_id),
                    class: "input-xlarge" %>
 
     <br>
