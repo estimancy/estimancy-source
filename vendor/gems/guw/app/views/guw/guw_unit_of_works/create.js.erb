@@ -30,6 +30,9 @@ $("#new_guw").modal('toggle');
   $('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr').eq(<%= @position.to_i + 1 %>).after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
 <% end %>
 
+$(".selected_of_unit_of_work").html("<%= @selected_of_unit_of_works %>");
+$(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
+
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
 var my_array = [];

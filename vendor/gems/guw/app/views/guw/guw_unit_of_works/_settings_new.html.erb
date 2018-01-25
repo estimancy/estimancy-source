@@ -8,8 +8,11 @@
   </div>
 
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
-  <%# @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
-  <% @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
+  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
+                                                          project_id: @project.id,
+                                                          pbs_project_element_id: current_component.id,
+                                                          module_project_id: current_module_project.id) %>
+  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: @project.id,
                                                                   module_project_id: current_module_project.id,
                                                                   pbs_project_element_id: current_component.id) %>
@@ -79,7 +82,13 @@
       <span class="label label-info">
         <%= I18n.t(:number_of_uw_selected_lines) %> :
         <span class="selected_of_unit_of_work">
-          <%= "#{@group_unit_of_works.size} / #{@group_unit_of_works.size}" %>
+          <%
+             current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+          %>
+          <%=
+              "#{current_module_project_guw_unit_of_works.where(selected: true).size} /
+              #{current_module_project_guw_unit_of_works.size}"
+          %>
         </span>
       </span>
     </div>
@@ -150,7 +159,7 @@
                 <%= I18n.t(:number_of_uw_selected) %> :
                 <span class="<%= uowg.id %>_selected">
                   <%# uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
-                  <%= "#{uowg.guw_unit_of_works.size} / #{uowg.guw_unit_of_works.size}" %>
+                  <%= "#{uowg_guw_unit_of_works.where(selected: true).size} / #{uowg_guw_unit_of_works.size}" %>
                 </span>
               </span>
             </div>

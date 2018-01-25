@@ -78,6 +78,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     reorder(@guw_unit_of_work.guw_unit_of_work_group)
 
+
+    @group = @guw_unit_of_work.guw_unit_of_work_group
+    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+    @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
+    @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
+                                                                                         selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
+
     @guw_model.guw_attributes.all.each do |gac|
       Guw::GuwUnitOfWorkAttribute.create(
           guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
@@ -774,8 +781,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def change_selected_state
     authorize! :execute_estimation_plan, @project
 
-    # module_project = current_module_project
-    # component = current_component
+    @module_project = current_module_project
+    @organization = current_module_project.organization
+    @guw_model = @module_project.guw_model
+    @component = current_component
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @group = @guw_unit_of_work.guw_unit_of_work_group
 
@@ -787,8 +796,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.save
 
-    # @group = Guw::GuwUnitOfWorkGroup.find(params[:guw_unit_of_work_group_id])
-    #
+    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+    @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
+
+    @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
+                                                                                         selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
+
     # #For grouped unit of work
     # @group_size_ajusted = Guw::GuwUnitOfWork.where( guw_model_id: @guw_unit_of_work.guw_model.id,
     #                                                 organization_id: @project.organization_id,
