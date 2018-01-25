@@ -64,6 +64,15 @@ $(document).ready(function(){
       data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
     });
   });
+
+  $(".up,.down").click(function(){
+    var row = $(this).parents("tr:first");
+    if ($(this).is(".up")) {
+      row.insertBefore(row.prev());
+    } else {
+      row.insertAfter(row.next());
+    }
+  });
 });
 
 var gridster = [];
