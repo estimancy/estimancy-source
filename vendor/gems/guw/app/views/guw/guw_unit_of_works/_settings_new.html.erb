@@ -257,7 +257,7 @@
                 <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
               <% end %>
 
-              <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
+              <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
                 <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
               </tr>
 
@@ -562,10 +562,12 @@
                   <h5>
                     <%= I18n.t(:type) %>
                   </h5>
-                  <%= select_tag :guw_type_id,
-                                 options_for_select(@guw_types.map{|i| [i.name, i.id]}.to_a.sort),
-                                 include_blank: false,
-                                 class: "input-xlarge" %>
+                  <% unless @guw_types.nil? %>
+                    <%= select_tag :guw_type_id,
+                                   options_for_select(@guw_types.map{|i| [i.name, i.id]}.to_a.sort),
+                                   include_blank: false,
+                                   class: "input-xlarge" %>
+                  <% end %>
                 </p>
 
                 <p>
@@ -723,7 +725,7 @@
           $(document).ready(function(){
 
             $(".up,.down").click(function(){
-              var row = $(this).parents("tr:first");
+              var row = $(this).parents("tr.movable:first");
               if ($(this).is(".up")) {
                 row.insertBefore(row.prev());
               } else {
