@@ -2128,7 +2128,7 @@ class OrganizationsController < ApplicationController
 
     first_line.each_with_index do |name, index|
       worksheet.add_cell(0, index, name)
-      if can?(:show_groups, Group)
+      if can?(:show_groups, Group) || can?(:manage, Group)
         @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
           line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
           line.each_with_index do |my_case, index|
