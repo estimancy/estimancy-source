@@ -482,10 +482,9 @@ class OrganizationsController < ApplicationController
           @wbs_activity = @wbs_activity_module_project.wbs_activity
         end
 
-        hash = @guw_model.orders
-        hash.delete("Critères")
-        hash.delete("Coeff. de Complexité")
-
+        # [@wbs_activity_wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]].each_with_index do |val, i|
+        #   worksheet.add_cell(0, (20 + hash.size + @guw_model_guw_attributes.size + i), val)
+        # end
         worksheet.change_row_bold(0,true)
 
         jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
@@ -2138,7 +2137,7 @@ class OrganizationsController < ApplicationController
       else
         user_groups = @organization.groups.where(name: "*USER")
         @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
-          line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user_groups.map(&:name)
+          line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + ["####"]
           line.each_with_index do |my_case, index|
             worksheet.add_cell(index_line + 1, index, my_case)
           end
