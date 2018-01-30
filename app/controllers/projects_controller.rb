@@ -3571,6 +3571,7 @@ public
   end
 
   def multiple_export_dashboard
+    @projects = []
     conditions = {}
     conditions[:request_number] = params[:request_number] unless params[:request_number].blank?
     conditions[:title] = params[:title] unless params[:title].blank?
