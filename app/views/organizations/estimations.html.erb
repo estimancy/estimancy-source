@@ -25,7 +25,8 @@
               <% if can? :create_project_from_scratch, Project %>
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
-              <%# link_to('Exporter au format PDF', "#!", class: 'btn', :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
+
+              <%= link_to('Exporter au format PDF', "#!", class: 'btn', :title => 'Exporter en PDF', onclick: "$('#export_dashboard').modal();") %>
             </td>
 
           </tr>

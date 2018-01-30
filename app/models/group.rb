@@ -34,7 +34,7 @@ class Group < ActiveRecord::Base
   has_many :permissions, through: :groups_permission
   has_many :groups_permission, dependent: :destroy
 
-  has_paper_trail
+  # has_paper_trail
 
   #Estimations permissions on Group according to the estimation status
   has_many :estimation_status_group_roles

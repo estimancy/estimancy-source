@@ -89,12 +89,12 @@ class ApplicationController < ActionController::Base
   before_filter :update_activity_time
   before_filter :initialization_module
 
-  skip_before_filter :set_paper_trail_whodunnit
-  before_filter :set_paper_trail_whodunnit
+  # skip_before_filter :set_paper_trail_whodunnit
+  # before_filter :set_paper_trail_whodunnit
 
-  def set_paper_trail_whodunnit
-    PaperTrail.whodunnit = current_user
-  end
+  # def set_paper_trail_whodunnit
+    # PaperTrail.whodunnit = current_user
+  # end
 
   def reset_button_action
     flash[:warning] = "L'action a été annulée avec succès"

@@ -165,114 +165,7 @@
 
 <% @module_projects.each do |module_project| %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
-
-    <% initialization_module = Pemodule.where(alias: 'initialization').first %>
-    <% initialization_views = View.where(pemodule_id: initialization_module.id ).all.map(&:id) %>
-    <% view_widgets = ViewsWidget.where(view_id: initialization_views, module_project_id: module_project.id).all %>
-
-    <div class="row-fluid">
-      <% view_widgets.each do |view_widget| %>
-        <% if view_widget.widget_type == "text" %>
-          <div class="span2" style="padding: 6px; background-color: <%= view_widget.color %>; margin-bottom: 10px; text-align: center;">
-            <% begin %>
-              <h4><%= view_widget.name %></h4>
-              <p>
-                <% if view_widget.estimation_value.pe_attribute.alias == "cost" %>
-                  <%= number_to_currency(view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f, precision: user_number_precision, locale: curren_user.language.alias) %>
-                <% else %>
-                  <%= view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f %>
-                <% end %>
-              </p>
-            <% rescue %>
-              <h4><%= view_widget.name %></h4>
-              <p>
-                -
-              </p>
-            <% end %>
-          </div>
-        <% elsif view_widget.widget_type == "table_cost_per_phase"  %>
-          <% wbs_activity = module_project.wbs_activity %>
-          <% wbs_activity_ratio = wbs_activity.wbs_activity_ratios.first %>
-          <% module_project_ratio_elements = module_project.get_module_project_ratio_elements(wbs_activity_ratio, current_component) %>
-          <div class="span5" style="padding: 6px; background-color: <%= view_widget.color %>; margin-bottom: 10px;">
-            <table class="table table-bordered" style="font-size: 11px;">
-              <th>Phases</th>
-              <th>Effort (UC)</th>
-              <% wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
-                <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
-                <tr>
-                  <td>
-                    <%= wbs_activity_element.name %>
-                  </td>
-                  <td class="center">
-                    <p>
-                      <%= mp_ratio_element.retained_cost_probable.to_f.round(user_number_precision) %> €
-                    </p>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          </div>
-        <% elsif view_widget.widget_type == "table_effort_per_phase"  %>
-          <% wbs_activity = module_project.wbs_activity %>
-          <% wbs_activity_ratio = wbs_activity.wbs_activity_ratios.first %>
-          <% module_project_ratio_elements = module_project.get_module_project_ratio_elements(wbs_activity_ratio, current_component) %>
-          <div class="span5" style="padding: 6px; background-color: <%= view_widget.color %>;">
-            <table class="table table-bordered" style="font-size: 11px;">
-              <th>Phases</th>
-              <th>Cout (€)</th>
-              <% wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
-                <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
-                <tr>
-                  <td>
-                    <%= wbs_activity_element.name %>
-                  </td>
-                  <td class="center">
-                    <p>
-                      <%= mp_ratio_element.retained_effort_probable.to_f.round(user_number_precision) %> UC
-                    </p>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
   <% elsif module_project.pemodule.alias == "guw" %>
-
-    <% @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
-    <% view_widgets = ViewsWidget.where(module_project_id: module_project.id).all + ViewsWidget.where(module_project_id: @initialization_module_project.id).all %>
-
-    <div class="row-fluid">
-      <% view_widgets.each do |view_widget| %>
-        <div class="span2 center" style="padding: 6px; background-color: <%= view_widget.color %>; margin-bottom: 15px; text-align: center;">
-          <% begin %>
-            <% if view_widget.is_kpi_widget == true %>
-              <h4><%= view_widget.name %></h4>
-              <p>
-                <%= Guw::GuwModel::display_value(get_kpi_value(view_widget).to_f.round(user_number_precision),
-                                                 view_widget.estimation_value,
-                                                 view_widget,
-                                                 current_user) %>
-              </p>
-            <% else %>
-              <% unless view_widget.estimation_value.nil? %>
-                <h4><%= view_widget.name %></h4>
-                <p>
-                  <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
-                                                   view_widget.estimation_value,
-                                                   view_widget,
-                                                   current_user) %>
-                </p>
-              <% end %>
-            <% end %>
-          <% rescue %>
-            -
-          <% end %>
-        </div>
-      <% end %>
-    </div>
   <% end %>
 <% end %>
 
@@ -287,7 +180,7 @@
     <hr>
     <table class="table main table-condensed" style="font-size: 10px;">
       <tr>
-        <th></th>
+        <th>Sélect.</th>
         <th>Nom</th>
         <th>Prix unitaire en €/UC</th>
         <th>Charge (en UC)</th>
