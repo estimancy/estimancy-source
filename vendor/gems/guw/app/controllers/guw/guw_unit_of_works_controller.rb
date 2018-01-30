@@ -1479,7 +1479,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
 
                   ceuw.guw_coefficient_id = guw_coefficient.id
-                  ceuw.guw_unit_of_work_id = g  uw_unit_of_work.id
+                  ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                   ceuw.module_project_id = @module_project.id
 
                   if ceuw.changed?
