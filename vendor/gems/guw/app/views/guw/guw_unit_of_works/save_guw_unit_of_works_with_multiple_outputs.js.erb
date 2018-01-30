@@ -30,6 +30,10 @@
 
     <% @guw_unit_of_works.each do |guw_unit_of_work| %>
       <% @guw_type = guw_unit_of_work.guw_type %>
+      <% unless @guw_type.nil? %>
+        <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
+      <% end %>
+
       $("tr#<%= guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => guw_unit_of_work, "uowg" => guw_unit_of_work.guw_unit_of_work_group})) %>");
     <% end %>
 
@@ -42,10 +46,10 @@
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
 //Mettre à jour l'url sans recharger la page
-if (history.pushState) {
-  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-  window.history.pushState({path:newurl},'',newurl);
-}
+//if (history.pushState) {
+//  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+//  window.history.pushState({path:newurl},'',newurl);
+//}
 
 var my_array = [];
 $(document).ready(function(){
