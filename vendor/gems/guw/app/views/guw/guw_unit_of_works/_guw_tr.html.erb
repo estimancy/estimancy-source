@@ -94,10 +94,12 @@
   <% if i[1].blank? %>
     <% if i[0] == "Coeff. de Complexité" %>
       <% unless @guw_type.nil? %>
-        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|j| [j.name, j.id] },
-                                                                       selected: @guw_complexities.first.nil? ? nil : @guw_complexities.first.id),
-                       guw: guow.id,
-                       class: "guw_complexity hide" %>
+        <% unless @guw_complexities.nil? %>
+          <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|j| [j.name, j.id] },
+                                                                         selected: @guw_complexities.first.nil? ? nil : @guw_complexities.first.id),
+                         guw: guow.id,
+                         class: "guw_complexity hide" %>
+        <% end %>
       <% end %>
     <% end %>
   <% else %>
