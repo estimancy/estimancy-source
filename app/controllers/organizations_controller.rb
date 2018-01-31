@@ -30,6 +30,82 @@ class OrganizationsController < ApplicationController
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
 
+
+  # Export PDF de la liste des changements
+  def export_to_pdf_security_audit_utilities
+    @organization = @current_organization  #Organization.find(params[:organization_id])
+    @start_date = params[:start_date]
+    @end_date = params[:end_date] || DateTime.now
+
+    @versions = AutorizationLogEvent.where(organization_id: @organization.id)
+    unless @start_date.blank?
+      #@versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: start_date .. end_date)
+      #@versions = AutorizationLogEvent.where("created_at >= ? AND created_at <= ?", Time.parse(start_date), Time.parse(end_date))
+      @versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: Time.parse(@start_date)..Time.parse(@end_date))
+    end
+
+    @user_versions = @versions.where(item_type: ["User", "OrganizationUser", "GroupUser"])
+    @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
+    @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+
+    # #Pour les estimations et les models
+    @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
+    @estimation_model_versions = @project_securities.where(is_model_security: true)
+    @estimation_versions = @project_securities.where(is_project_security: true)
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "export_to_pdf_security_audit_utilities.pdf",
+               template: 'organizations/export_audit_audit_utilities.pdf',
+               encoding: "UTF-8",
+               page_size: 'A4',
+               orientation: :landscape
+      end
+    end
+  end
+
+  # Fonction d'audit de sécurité
+  def security_audit_utilities
+    @organization = @current_organization
+    @versions = AutorizationLogEvent.where(organization_id: @organization.id) #@current_organization.versions
+
+    #@versions.where(item_type: ["User","OrganizationsUsers"])
+    #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
+    @user_versions = @versions.where(item_type: ["User", "OrganizationUser", "GroupUser"])
+    @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
+    @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+
+    # #Pour les estimations et les models
+    @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
+    @estimation_model_versions = @project_securities.where(is_model_security: true)
+    @estimation_model_groups_versions = @project_securities.where(is_model_security: true)
+    @estimation_model_users_versions = @project_securities.where(is_model_security: true)
+
+    @estimation_versions = @project_securities.where(is_project_security: true)
+
+
+    #@security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionsProjectSecurityLevels", "EstimationStatusGroupRole"])
+    # @organization_users_versions = @versions.where(item_type: ["UserOrganizations"])
+    # @group_users_versions = @versions.where(item_type: ["UserGroups"])
+    # @group_versions = @versions.where(item_type: ["Group"])
+    # @group_permissions_versions = @versions.where(item_type: ["GroupsPermission"])
+    #
+    # @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionsProjectSecurityLevels", "EstimationStatusGroupRole"])
+    #
+    # #Pour les estimations et les models
+    # @project_securities = @versions.where(item_type: ["ProjectSecurity"])
+    # @estimation_model_versions = @project_securities.where(is_model: true)
+    # @estimation_versions = @project_securities.where(is_model: [false, nil])
+  end
+
+
+  # Fonction d'audit de l'intégrité du Corps commun
+  def audit_integrity_common_data
+
+  end
+
+
   def import_project_areas
     @organization = Organization.find(params[:organization_id])
     tab_error = []

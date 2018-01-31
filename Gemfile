@@ -22,7 +22,7 @@ if File.exist?(database_file)
     adapters.each do |adapter|
       case adapter
         when 'mysql2'
-          gem 'mysql2', '~> 0.3.11'
+          gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
         when /postgres/
            gem 'pg'
         else
@@ -185,6 +185,8 @@ group :development do
 
   # Generates diagrams using Graphviz
   #gem 'rails-erd', require: false, group: :development
+
+  #gem 'byebug'
 end
 
 group :test do
@@ -238,5 +240,7 @@ gem 'grit'
 gem 'pdfkit'
 
 gem 'paper_trail'
+
+gem "hairtrigger"
 
 

@@ -23,6 +23,9 @@ require 'net/ldap'
 
 # User of the application. User has many projects, groups, permissions and project securities. User have one language
 class User < ActiveRecord::Base
+
+  include DirtyAssociations   # For tracking associations changes
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :timeoutable, :lockable,# :saml_authenticatable, :trackable,
@@ -30,6 +33,11 @@ class User < ActiveRecord::Base
          :confirmable, # account confirmation
          :omniauthable, :omniauth_providers => [:google_oauth2, :saml],
          :authentication_keys => [:id_connexion]
+
+  serialize :organization_ids_before_last_update, JSON
+  serialize :organization_ids_after_last_update, JSON
+  serialize :group_ids_before_last_update, JSON
+  serialize :group_ids_after_last_update, JSON
 
   validates_presence_of :password, :on => :create
   validates_confirmation_of :password, :on => :create
@@ -57,13 +65,17 @@ class User < ActiveRecord::Base
   has_one :creator, :class_name => 'User', :foreign_key => 'creator_id'
 
   has_many :groups_users, class_name: 'GroupsUsers'
-  has_many :groups, through: :groups_users
+  has_many :groups, through: :groups_users, :source => :group,
+                    :after_add    => :make_dirty_add,
+                    :after_remove => :make_dirty_remove
 
   #has_many :organizations, through: :groups, :uniq => true
 
   #For user without group
   has_many :organizations_users, class_name: 'OrganizationsUsers'
-  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true
+  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true,
+                           :after_add    => :make_dirty_add,
+                           :after_remove => :make_dirty_remove
 
   #Master and Special Data Tables
   # has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'
@@ -88,6 +100,11 @@ class User < ActiveRecord::Base
   has_many :estimations, :foreign_key => 'creator_id', :class_name => 'Project'
 
   serialize :ten_latest_projects, Array
+
+  before_save :update_associations_for_triggers
+
+  # Security Audit management
+  has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
 
   validates_presence_of :last_name, :first_name
   validates :login_name, :presence => true, :uniqueness => { case_sensitive: false }
@@ -373,4 +390,28 @@ class User < ActiveRecord::Base
       :en
     end
   end
+
+  private
+  def update_associations_for_triggers
+    #self.organization_ids_after_last_update = self.organization_ids
+    #self.group_ids_after_last_update = self.group_ids
+
+    ApplicationController.helpers.save_associations_event_changes(self)
+
+    puts self.changed?
+    begin
+      what_changes = self._record_changes
+      changes_create = self._record_changes_create
+      changes_delete = self._record_changes_delete
+
+      # if self._record_changes_create.changed?
+      #   puts self._record_changes_create.changes?
+      # end
+
+     rescue
+      puts "test"
+     end
+  end
+
+
 end

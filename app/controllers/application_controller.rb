@@ -96,6 +96,48 @@ class ApplicationController < ActionController::Base
     # PaperTrail.whodunnit = current_user
   # end
 
+  def info_for_paper_trail
+    # initialisation des variables
+    is_model = nil ; is_group_security = nil; is_user_security = nil; is_security_on_model=nil; is_security_on_created_from_model = nil
+
+    if params[:project_id]
+      project = Project.find(params[:project_id])
+      if project && project.is_model
+        is_model = true
+        # securite sur le modele
+        if params[:is_security_on_model]
+          is_security_on_model = true
+        end
+        # securite sur les estimations créées à partir de ce modele
+        if params[:is_security_on_created_from_model]
+          is_security_on_created_from_model = true
+        end
+      end
+    end
+
+    # Differencier les permissions/group avec les permissions/users
+    if params[:model_created_from_group_security_levels]
+      is_group_security = true
+      if is_model == true
+        is_security_on_created_from_model = true
+      end
+    end
+
+    if params[:model_group_security_levels]
+      is_group_security = true
+    end
+
+    if params[:user_security_levels]
+      is_user_security = true
+    end
+
+    { organization_id: session[:organization_id], is_model: is_model,
+      is_group_security: is_group_security, is_user_security: is_user_security,
+      is_security_on_model: is_security_on_model, is_security_on_created_from_model: is_security_on_created_from_model
+    } if user_signed_in? rescue nil
+
+  end
+
   def reset_button_action
     flash[:warning] = "L'action a été annulée avec succès"
     return render(:nothing => true, :status => 204)
@@ -153,6 +195,7 @@ class ApplicationController < ActionController::Base
         @current_ability ||= Ability.new(current_user, @current_organization, [@project])
     end
   end
+
 
   def update_activity_time
     if current_user
@@ -277,7 +320,6 @@ class ApplicationController < ActionController::Base
       session[:organization_id] = nil
       @current_organization = nil
     end
-
   end
 
   # Get the selected Pbs_Project_Element

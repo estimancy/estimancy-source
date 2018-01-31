@@ -23,6 +23,9 @@
 
 Projestimate::Application.routes.draw do
 
+  resources :autorization_log_events
+
+
   resources :providers
 
 
@@ -258,6 +261,8 @@ Projestimate::Application.routes.draw do
     get "export_platform_categories" => 'organizations#export_platform_categories'
     get "export_project_categories" => 'organizations#export_project_categories'
     get "export_providers" => 'organizations#export_providers'
+    get "security_audit_utilities" => 'organizations#security_audit_utilities'
+    get "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
 
     post "import_project_areas" => 'organizations#import_project_areas'
     post "import_project_profile" => 'organizations#import_project_profile'
@@ -281,6 +286,7 @@ Projestimate::Application.routes.draw do
   match 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
+  get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities
 
   resources :subcontractors
 

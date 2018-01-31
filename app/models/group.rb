@@ -23,18 +23,20 @@
 #Special Data
 #Group class contains some User.
 class Group < ActiveRecord::Base
-  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id
 
+  include DirtyAssociations   # For tracking associations changes
+
+  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id
 
   has_and_belongs_to_many :users
   has_and_belongs_to_many :projects
 
   has_many :project_securities
 
-  has_many :permissions, through: :groups_permission
   has_many :groups_permission, dependent: :destroy
-
-  # has_paper_trail
+  has_many :permissions, through: :groups_permission,
+           :after_add    => :make_dirty_add,
+           :after_remove => :make_dirty_remove
 
   #Estimations permissions on Group according to the estimation status
   has_many :estimation_status_group_roles
@@ -43,6 +45,11 @@ class Group < ActiveRecord::Base
 
   has_many :groups_users, class_name: 'GroupsUsers'
   has_many :users, through: :groups_users
+
+  # Security Audit management
+  #has_paper_trail
+
+  before_save :update_associations_for_triggers
 
   validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 
@@ -72,6 +79,12 @@ class Group < ActiveRecord::Base
     customize(lambda { |original_group, new_group|
       new_group.copy_id = original_group.id
     })
+  end
+
+  private
+  def update_associations_for_triggers
+    ApplicationController.helpers.save_associations_event_changes(self)
+    #puts self.changed?
   end
 
 end

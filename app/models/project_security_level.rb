@@ -21,13 +21,26 @@
 
 #Master Data
 class ProjectSecurityLevel < ActiveRecord::Base
+
+  include DirtyAssociations   # For tracking associations changes
+
   attr_accessible :name, :description, :organization_id
 
   has_many :project_securities, dependent: :destroy
-  has_and_belongs_to_many :permissions
   has_many :estimation_status_group_roles  #Estimations permissions on Group according to the estimation status
 
+  #has_and_belongs_to_many :permissions
+  has_many :permissions_project_security_levels, class_name: 'PermissionsProjectSecurityLevels'
+  has_many :permissions, through: :permissions_project_security_levels,
+           :after_add    => :make_dirty_add,
+           :after_remove => :make_dirty_remove
+
+
   belongs_to :organization
+
+  # Security Audit management
+  has_paper_trail
+  before_save :update_associations_for_triggers
 
   validates :name, :presence => true
 
@@ -42,5 +55,11 @@ class ProjectSecurityLevel < ActiveRecord::Base
 
   def to_s
     self.nil? ? '' : self.name
+  end
+
+  private
+  def update_associations_for_triggers
+    ApplicationController.helpers.save_associations_event_changes(self)
+    #puts self.changed?
   end
 end

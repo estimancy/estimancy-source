@@ -24,4 +24,54 @@ class OrganizationsUsers < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :user
+
+  # Security Audit management
+  has_paper_trail
+
+  # Triggers
+  trigger.after(:insert) do
+    <<-SQL
+
+    INSERT INTO autorization_log_events
+      SET
+        organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'OrganizationsUsers',
+        item_id=  NEW.id,
+        event = 'create',
+        object_changes = JSON_OBJECT( 'user_id', json_array("", NEW.user_id), 'organization_id', json_array("", NEW.organization_id)),
+        created_at =  CURRENT_TIMESTAMP;
+    SQL
+  end
+
+  trigger.after(:update).of(:user_id) do
+    <<-SQL
+
+    INSERT INTO autorization_log_events
+      SET
+        organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'OrganizationsUsers',
+        item_id=  OLD.id,
+        event = 'update',
+        object_changes = JSON_OBJECT( 'user_id', json_array(OLD.user_id, NEW.user_id), 'organization_id', json_array(OLD.organization_id, NEW.organization_id)),
+        created_at =  CURRENT_TIMESTAMP;
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+
+    INSERT INTO autorization_log_events
+      SET
+        organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'OrganizationsUsers',
+        item_id=  OLD.id,
+        event = 'delete',
+        object_changes = JSON_OBJECT( 'user_id', json_array(OLD.user_id, ""), 'organization_id', json_array(OLD.organization_id, "")),
+        created_at =  CURRENT_TIMESTAMP;
+    SQL
+  end
+
 end

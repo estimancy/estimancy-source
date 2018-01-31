@@ -20,10 +20,11 @@
 #############################################################################
 
 class GroupsUsers < ActiveRecord::Base
-  attr_accessible  :group_id, :user_id
+  attr_accessible  :group_id, :user_id, :originator_id, :event_organization_id
   belongs_to :group
   belongs_to :user
 
-  # has_paper_trail
+  # Security Audit management
+  has_paper_trail
 
 end

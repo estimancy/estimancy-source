@@ -19,6 +19,12 @@
 #
 ##############################################################################
 
-class Version < ActiveRecord::Base
-  attr_accessible :comment, :local_latest_update, :repository_latest_update
+module PaperTrail
+  class Version < ActiveRecord::Base
+    include PaperTrail::VersionConcern
+    attr_accessible :comment, :local_latest_update, :repository_latest_update, :organization_id, :is_model,
+                    :is_group_security, :is_user_security, :is_security_on_model, :is_security_on_created_from_model
+
+    belongs_to :organization
+  end
 end

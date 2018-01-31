@@ -28,7 +28,9 @@ class Permission < ActiveRecord::Base
   has_many :groups, through: :groups_permission
   has_many :groups_permission, dependent: :destroy
 
-  has_and_belongs_to_many :project_security_levels
+  #has_and_belongs_to_many :project_security_levels
+  has_many :permissions_project_security_levels, class_name: 'PermissionsProjectSecurityLevels'
+  has_many :project_security_levels, through: :permissions_project_security_levels
 
   validates :name, :description, :alias, :presence => true
 

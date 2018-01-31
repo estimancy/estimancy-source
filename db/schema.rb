@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180116085530) do
+ActiveRecord::Schema.define(:version => 20171222100148) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -936,68 +936,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.integer  "display_order", :default => 0
   end
 
-  create_table "guw_unit_of_work_lines", :id => false, :force => true do |t|
-    t.integer  "uow_organization_id",           :default => 0,     :null => false
-    t.string   "organization_name"
-    t.integer  "uow_project_id",                :default => 0,     :null => false
-    t.string   "project_name"
-    t.integer  "uow_module_project_id",         :default => 0,     :null => false
-    t.integer  "uow_pbs_project_element_id"
-    t.integer  "uow_guw_model_id",              :default => 0,     :null => false
-    t.string   "uow_guw_model_name"
-    t.integer  "guw_uow_group_id"
-    t.string   "guw_uow_group_name"
-    t.boolean  "uow_selected"
-    t.integer  "guw_unit_of_work_id",           :default => 0,     :null => false
-    t.integer  "id",                            :default => 0,     :null => false
-    t.integer  "organization_id"
-    t.integer  "project_id"
-    t.string   "name"
-    t.text     "comments"
-    t.float    "result_low"
-    t.float    "result_most_likely"
-    t.float    "result_high"
-    t.integer  "guw_type_id"
-    t.datetime "created_at",                                       :null => false
-    t.datetime "updated_at",                                       :null => false
-    t.integer  "guw_complexity_id"
-    t.text     "effort"
-    t.text     "ajusted_size"
-    t.integer  "guw_model_id"
-    t.integer  "module_project_id"
-    t.integer  "pbs_project_element_id"
-    t.integer  "guw_unit_of_work_group_id"
-    t.integer  "guw_work_unit_id"
-    t.text     "tracking"
-    t.boolean  "off_line"
-    t.boolean  "selected"
-    t.boolean  "flagged"
-    t.integer  "display_order"
-    t.integer  "organization_technology_id"
-    t.boolean  "off_line_uo"
-    t.float    "quantity"
-    t.integer  "guw_weighting_id"
-    t.integer  "guw_factor_id"
-    t.text     "size"
-    t.text     "cost"
-    t.integer  "guw_original_complexity_id"
-    t.boolean  "missing_value",                 :default => false
-    t.float    "intermediate_work_unit_values"
-    t.float    "intermediate_weighting_values"
-    t.float    "intermediate_factor_values"
-    t.float    "work_unit_value"
-    t.float    "weighting_value"
-    t.float    "factor_value"
-    t.float    "intermediate_weight"
-    t.float    "intermediate_percent"
-    t.string   "url"
-    t.text     "cplx_comments"
-    t.integer  "guw_coefficient_element_id"
-    t.integer  "guw_coefficient_id"
-    t.float    "percent"
-    t.text     "ceuw_comments"
-  end
-
   create_table "input_cocomos", :force => true do |t|
     t.integer  "factor_id"
     t.integer  "organization_uow_complexity_id"
@@ -1121,6 +1059,8 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
   create_table "module_project_guw_unit_of_works", :id => false, :force => true do |t|
     t.integer  "uow_organization_id",           :default => 0,     :null => false
     t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
     t.integer  "uow_module_project_id",         :default => 0,     :null => false
     t.integer  "uow_pbs_project_element_id"
     t.integer  "uow_guw_model_id",              :default => 0,     :null => false
@@ -1717,7 +1657,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.integer  "provider_id"
     t.string   "request_number"
     t.boolean  "use_automatic_quotation_number"
-    t.string   "business_need"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
@@ -2040,18 +1979,15 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
   add_index "version_associations", ["version_id"], :name => "index_version_associations_on_version_id"
 
   create_table "versions", :force => true do |t|
-    t.string   "item_type",      :limit => 191,        :null => false
-    t.integer  "item_id",                              :null => false
-    t.string   "event",                                :null => false
+    t.string   "item_type",  :limit => 191,        :null => false
+    t.integer  "item_id",                          :null => false
+    t.string   "event",                            :null => false
     t.string   "whodunnit"
-    t.text     "object",         :limit => 2147483647
+    t.text     "object",     :limit => 2147483647
     t.datetime "created_at"
-    t.integer  "transaction_id"
-    t.text     "object_changes", :limit => 2147483647
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
-  add_index "versions", ["transaction_id"], :name => "index_versions_on_transaction_id"
 
   create_table "views", :force => true do |t|
     t.string   "name"

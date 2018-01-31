@@ -1,0 +1,32 @@
+<%= simple_form_for(@autorization_log_event) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :organization_id %>
+    <%= f.input :author_id %>
+    <%= f.input :item_type %>
+    <%= f.input :item_id %>
+    <%= f.input :event %>
+    <%= f.input :object %>
+    <%= f.input :created_at %>
+    <%= f.input :transaction_id %>
+    <%= f.input :object_changes %>
+    <%= f.input :is_project_security %>
+    <%= f.input :is_model_security %>
+    <%= f.input :is_group_security %>
+    <%= f.input :is_security_on_created_from_model %>
+    <%= f.input :project_id %>
+    <%= f.input :group_id %>
+    <%= f.input :user_id %>
+    <%= f.input :estimation_status_id %>
+    <%= f.input :permission_id %>
+    <%= f.input :project_security_id %>
+    <%= f.input :project_security_level_id %>
+    <%= f.input :permissions_project_security_level_id %>
+    <%= f.input :estimation_status_group_role_id %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

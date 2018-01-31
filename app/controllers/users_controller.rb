@@ -100,6 +100,11 @@ public
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
     @generated_password = SecureRandom.hex(4)
 
+    # for Trigger
+    @user.event_organization_id = @current_organization.id #params[:organization_id]
+    @user.originator_id = @current_user.id
+    # end for Trigger
+
     if auth_type.name == "SAML"
       @user.skip_confirmation!
     end
@@ -189,6 +194,14 @@ public
     set_page_title I18n.t(:edit_user, value: @user.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
+    # Set last value before update pour Trigger
+    @user.organization_ids_before_last_update = @user.organization_ids.to_json
+    @user.group_ids_before_last_update = @user.group_ids.to_json
+
+    # Trigger : Gestion historique des evenements
+    @user.event_organization_id = @current_organization.id #params[:organization_id]
+    @user.originator_id = @current_user.id
+
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
     end
@@ -238,16 +251,41 @@ public
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
         else
+
           @organization.groups.each do |group|
-            GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+            #GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+            grp = @user.groups.where(id: group.id).first
+            if grp  #@user.groups.exists?(group)
+              @user.groups.delete(group)
+            end
           end
 
           params[:groups].keys.each do |group_id|
-            GroupsUsers.create(user_id: @user.id, group_id: group_id)
+            #GroupsUsers.create(user_id: @user.id, group_id: group_id, originator_id: @current_user.id, event_organization_id: @organization.id)
+            grp = Group.find(group_id)
+            #@user.groups.create(Group.where(id: group_id))
+            @user.groups << Group.where(id: group_id).first
           end
+
+          # new_groups_array = params[:groups].keys.map(&:to_i)
+          # @user.group_ids = new_groups_array.uniq
+
         end
       end
     end
+
+
+    #=======  TEST DIRTYABLE
+    puts @user.changed?
+    begin
+      changes = @user._record_changes
+      if @user._record_changes.changed?
+        puts @user._record_changes.changes?
+      end
+    rescue
+    end
+
+    # #=======
 
     # Get the Application authType
     application_auth_type = AuthMethod.where(name: 'Application').first

@@ -265,4 +265,28 @@ module OrganizationsHelper
     true if Float(string) rescue false
   end
 
+
+  def show_trigger_object_changes(column_name, column_value)
+    #jsonArray = JSON.parse(column_value)
+    case column_name
+      when "organization_ids", "Organization"
+        Organization.where(id: column_value).map(&:name)
+      when "group_ids", "Group"
+        Group.where(id: column_value).map(&:name)
+      when "User"
+        User.where(id: column_value)
+      when "Permission"
+        Permission.where(id: column_value)
+      when "ProjectSecurityLevel"
+        ProjectSecurityLevel.where(id: column_value)
+      when "Project"
+        Project.where(id: column_value)
+      when "ProjectSecurity"
+        ProjectSecurity.where(id: column_value)
+      else
+        []
+    end
+  end
+
+
 end

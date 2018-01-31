@@ -27,4 +27,7 @@ class EstimationStatusGroupRole < ActiveRecord::Base
   belongs_to :project_security_level
   belongs_to :organization
 
+  # Security Audit management
+  has_paper_trail
+
 end

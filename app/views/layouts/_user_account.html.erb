@@ -82,6 +82,28 @@
     </ul>
   </li>
 
+  <!-- Menu audit de securite -->
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t(:security_audit_management)%>">
+      <i class="fa fa-lock fa-lg pull-left"></i></b>
+    </a>
+    <ul class="dropdown-menu">
+      <% if @current_organization && can?(:manage_security_audit, @current_organization)%>
+          <li class="dropdown">
+            <a href="<%= main_app.organization_security_audit_utilities_path(@current_organization)%>">
+              <%= I18n.t(:security_audit_utilities)%>
+            </a>
+          </li>
+          <li class="dropdown">
+            <a href="<%= main_app.organization_audit_integrity_common_data_path(@current_organization)%>">
+              <%= I18n.t(:common_data_integrity)%>
+            </a>
+          </li>
+      <% end %>
+    </ul>
+  </li>
+  <!-- Fin Menu audit de securite -->
+
   <li class="dropdown">
     <% if current_user.super_admin? %>
       <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t :label_menu_master_admin %>">

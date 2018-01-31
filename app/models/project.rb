@@ -20,6 +20,9 @@
 #############################################################################
 
 class Project < ActiveRecord::Base
+
+  include DirtyAssociations   # For tracking associations changes
+
   attr_accessible :title, :description, :version_number, :alias, :state, :estimation_status_id, :status_comment,
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
@@ -47,7 +50,11 @@ class Project < ActiveRecord::Base
 
   has_many :module_projects, :dependent => :destroy
   has_many :pemodules, :through => :module_projects
-  has_many :project_securities, :dependent => :destroy
+
+  has_many :project_securities, :dependent => :destroy,
+           :after_add    => :make_dirty_add,
+           :after_remove => :make_dirty_remove
+
   has_many :project_fields, :dependent => :destroy
 
   has_many :projects_from_model, foreign_key: "original_model_id", class_name: "Project"
@@ -85,6 +92,9 @@ class Project < ActiveRecord::Base
 
     propagate
   end
+
+  # Security Audit management
+  before_save :update_associations_for_triggers
 
   # get the selectable/available inline columns
   class_attribute :available_inline_columns
@@ -297,6 +307,12 @@ class Project < ActiveRecord::Base
       #{id: node.id.to_s, name: node.title, title: node.title, version_number: node.version_number, data: {}, children: json_tree(sub_nodes).compact}
       {:id => node.id.to_s, :name => node.version_number, :data => {:title => node.title, :version_number => node.version_number, :state => node.status_name.to_s}, :children => json_tree(sub_nodes).compact}
     end
+  end
+
+  private
+  def update_associations_for_triggers
+    ApplicationController.helpers.save_associations_event_changes(self)
+    #puts self.changed?
   end
 
   # Method that execute the duplication core

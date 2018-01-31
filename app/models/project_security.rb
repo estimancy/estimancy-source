@@ -28,6 +28,9 @@ class ProjectSecurity < ActiveRecord::Base
   belongs_to :project, :touch => true
   belongs_to :project_security_level
 
+  # Security Audit management
+  has_paper_trail
+
   #Return level of security project
   def level
     self.project_security_level.nil? ? '-' : self.project_security_level.name

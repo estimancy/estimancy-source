@@ -1,0 +1,78 @@
+<div class="tabs">
+  <h4><%= I18n.t(:actions_history) %></h4>
+
+  <div style="margin: 10px;">
+    <%#= link_to I18n.t('export'), export_to_pdf_security_audit_utilities_path(format: "pdf", organization_id: @organization.id), :class => 'btn', :title => 'Exporter en PDF', target: "_blank" %>
+
+    <%= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
+        <%#= I18n.t(:filters)%>
+        <div class="input row-fluid">
+          <div class="span2">
+              <label class="string control-label" for="objet">Date de début</label>
+              <input class="date-picker input-large" id="start_date" name="start_date" size="50" type="text">
+          </div>
+          <div class="span2">
+              <label class="string control-label" for="objet">Date de fin</label>
+              <input class="date-picker input-large" id="end_date" name="end_date" size="50" type="text">
+          </div>
+          <div class="span2" style="margin-top: 25px;">
+            <%= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>
+          </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $(".date-picker").datepicker({
+                    language: 'fr',
+                    autoclose: true,
+                    todayHighlight: true,
+                    todayBtn: true
+                });
+            });
+        </script>
+
+    <% end %>
+  </div>
+
+  <ul>
+    <li><a href="#tabs-users"><%= I18n.t(:users) %></a></li>
+    <li><a href="#tabs-group_permissions"><%= "Groupe / Permissions" %></a></li>
+    <li><a href="#tabs-security_levels"><%= I18n.t(:security_level) %></a></li>
+    <li><a href="#tabs-estimation_models"><%= I18n.t(:audit_estimation_models_permissions) %></a></li>
+    <li><a href="#tabs-estimations"><%= I18n.t(:audit_estimations_permissions) %></a></li>
+  </ul>
+
+  <%#= render partial: 'all_securities_events', object: [@user_versions, @group_permissions_versions, @security_level_versions] %>
+
+  <!-- ========================  UTILISATEURS ===================== -->
+
+  <div id="tabs-users">
+    <%= render partial: 'security_audit_utilities', locals: { table_versions: @user_versions} %>
+  </div>
+
+  <!-- ========================  GROUPS ===================== -->
+
+  <div id="tabs-group_permissions">
+    <%= render partial: 'security_audit_utilities', locals: { table_versions: @group_permissions_versions} %>
+  </div>
+  <!-- ========================  SECURITY-LEVELS ===================== -->
+
+  <div id="tabs-security_levels">
+    <%= render partial: 'security_audit_utilities', locals: { table_versions: @security_level_versions} %>
+  </div>
+
+  <div id="tabs-estimation_models">
+    <%= render partial: 'security_audit_utilities_estimations',
+               formats: [:html],
+               locals: { table_versions: @estimation_model_versions} %>
+  </div>
+
+  <div id="tabs-estimations">
+    <%= render partial: 'security_audit_utilities_estimations',
+               formats: [:html],
+               locals: { table_versions: @estimation_versions} %>
+  </div>
+
+</div>
+
+

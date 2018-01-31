@@ -145,8 +145,10 @@ class PermissionsController < ApplicationController
       @project_security_levels.each do |psl|
         if params[:permissions].nil?
           psl.update_attribute('permission_ids', nil)
+          #psl.update_attributes(project_security_levels: nil)
         else
           psl.update_attribute('permission_ids', params[:permissions][psl.id.to_s])
+          #psl.update_attributes(project_security_levels: params[:permissions][psl.id.to_s])
         end
       end
 

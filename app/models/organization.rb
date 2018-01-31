@@ -78,13 +78,12 @@ class Organization < ActiveRecord::Base
 
   # Results view
   has_many :views
-
   has_many :applications
-
   has_many :providers
-
+  has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
 
   belongs_to :currency
+
   #validates_presence_of :name
   validates :name, :presence => true, :uniqueness => {:case_sensitive => false}
   validates :number_hours_per_month, :cost_per_hour, numericality: { greater_than: 0 }   ###, on: :update, :unless => Proc.new {|organization| organization.number_hours_per_day.nil? || organization.number_hours_per_month.nil? || organization.cost_per_hour.nil? }

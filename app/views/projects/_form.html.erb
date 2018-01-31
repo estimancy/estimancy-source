@@ -424,8 +424,8 @@
 
                 <div class="actions-tabs">
                   <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <%= submit_tag I18n.t('save'), :name => "user_security_levels", :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :name => "user_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
                   <% end %>
 
                   <% if @project.is_model %>
@@ -485,8 +485,8 @@
 
                   <div class="actions-tabs">
                     <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                      <%= submit_tag I18n.t('save'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
                     <% end %>
 
                     <% if @project.is_model %>
