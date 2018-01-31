@@ -35,6 +35,7 @@
   </div>
 
   <ul>
+    <li><a href="#tabs-simples_events">Données de base</a></li>
     <li><a href="#tabs-users"><%= I18n.t(:users) %></a></li>
     <li><a href="#tabs-group_permissions"><%= "Groupe / Permissions" %></a></li>
     <li><a href="#tabs-security_levels"><%= I18n.t(:security_level) %></a></li>
@@ -44,8 +45,12 @@
 
   <%#= render partial: 'all_securities_events', object: [@user_versions, @group_permissions_versions, @security_level_versions] %>
 
-  <!-- ========================  UTILISATEURS ===================== -->
 
+  <div id="tabs-simples_events">
+    <%= render partial: 'security_audit_utilities_simple_events', locals: { table_versions: @simple_events_versions} %>
+  </div>
+
+  <!-- ========================  UTILISATEURS ===================== -->
   <div id="tabs-users">
     <%= render partial: 'security_audit_utilities', locals: { table_versions: @user_versions} %>
   </div>

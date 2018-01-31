@@ -53,6 +53,19 @@ class User < ActiveRecord::Base
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
   attr_accessor :id_connexion, :updating_password, :current_password
 
+  # Hair-Triggers
+  # trigger.after(:insert) do
+  #   #"UPDATE autorization_log_events SET author_id = 61 WHERE id = NEW.id;"
+  # end
+
+  # trigger.after(:update).of(:super_admin).declare("old_value integer; new_value integer") do
+  #   <<-SQL
+  #     INSERT INTO autorization_log_events (organization_id, author_id, item_type, item_id, event, object_changes, created_at)
+  #     VALUES (NEW.event_organization_id, NEW.originator_id, 'User', OLD.id, 'update', '{ "super_admin": [old_value, new_value] }', CURRENT_TIMESTAMP );
+  #   SQL
+  # end
+
+
   has_and_belongs_to_many :projects
   has_and_belongs_to_many :permissions
   ###has_and_belongs_to_many :organizations  ##to comment if not working
@@ -397,20 +410,17 @@ class User < ActiveRecord::Base
     #self.group_ids_after_last_update = self.group_ids
 
     ApplicationController.helpers.save_associations_event_changes(self)
-
-    puts self.changed?
-    begin
-      what_changes = self._record_changes
-      changes_create = self._record_changes_create
-      changes_delete = self._record_changes_delete
-
-      # if self._record_changes_create.changed?
-      #   puts self._record_changes_create.changes?
-      # end
-
-     rescue
-      puts "test"
-     end
+    # puts self.changed?
+    # begin
+    #   what_changes = self._record_changes
+    #   changes_create = self._record_changes_create
+    #   changes_delete = self._record_changes_delete
+    #   # if self._record_changes_create.changed?
+    #   #   puts self._record_changes_create.changes?
+    #   # end
+    #  rescue
+    #   puts "test"
+    #  end
   end
 
 

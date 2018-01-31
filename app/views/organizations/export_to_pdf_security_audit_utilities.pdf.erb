@@ -73,7 +73,7 @@
 <h3> Filtres : </h3>
 <div class="row-fluid">
   <div class="span4">
-    <b><%= I18n.t(:start_date) %> : </b>
+    <b><%= "Date de début" %> : </b>
     <%= @start_date.blank? ? "-" : I18n.l(@start_date) %>
   </div>
   <div class="span4">
@@ -82,6 +82,19 @@
   </div>
 </div>
 
+<br>
+<!-- ========================  UTILISATEURS ===================== -->
+<div class="alwaysbreak"></div>
+<h3>
+  Données de base
+</h3>
+<hr>
+
+<div id="tabs-simples_events">
+  <%= render partial: 'security_audit_utilities_simple_events',
+             formats: [:html],
+             locals: { table_versions: @simple_events_versions} %>
+</div>
 <br>
 
 <!-- ========================  UTILISATEURS ===================== -->

@@ -31,8 +31,8 @@
           <%= show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue "-"  %>
         </td>
         <td class="span2 align-center"> <%= version.association_class_name %> </td>
-        <td class="span2 align-center"> <%= version.is_group_security? ? "Oui" : "Non" %> <%= Group.where(id: version.group_id).first %> </td>
-        <td class="span2 align-center"> <%= version.is_project_security? ? "Oui" : "Non" %> <%= User.where(id: version.user_id).first %> </td>
+        <td class="span2 align-center"> <%= version.is_group_security? ? "Oui" : "Non" %> <%#= Group.where(id: version.group_id).first %> </td>
+        <td class="span2 align-center"> <%= version.is_project_security? ? "Oui" : "Non" %> <%#= User.where(id: version.user_id).first %> </td>
 
         <td class="span2">
           <p class="align-center"><%= I18n.t("audit_#{version.event}") %></p> <br>

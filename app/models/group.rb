@@ -26,7 +26,7 @@ class Group < ActiveRecord::Base
 
   include DirtyAssociations   # For tracking associations changes
 
-  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id
+  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id, :originator_id, :event_organization_id
 
   has_and_belongs_to_many :users
   has_and_belongs_to_many :projects
@@ -48,6 +48,54 @@ class Group < ActiveRecord::Base
 
   # Security Audit management
   #has_paper_trail
+
+  # Hair-Triggers
+  trigger.after(:insert) do
+    <<-SQL
+
+      INSERT INTO autorization_log_events SET
+            organization_id = NEW.event_organization_id,
+            author_id = NEW.originator_id,
+            item_type = 'Group',
+            item_id = NEW.id,
+            object_class_name = 'Group',
+            event = 'create',
+            object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
+            created_at = CURRENT_TIMESTAMP;
+      SQL
+  end
+
+  trigger.after(:update) do
+    <<-SQL
+
+      INSERT INTO autorization_log_events SET
+        organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'update',
+        object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
+        created_at = CURRENT_TIMESTAMP;
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+      INSERT INTO autorization_log_events SET
+        organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'delete',
+        object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
+        created_at = CURRENT_TIMESTAMP;
+    SQL
+  end
+
+  # END Hair-Triggers
+
 
   before_save :update_associations_for_triggers
 
@@ -83,6 +131,7 @@ class Group < ActiveRecord::Base
 
   private
   def update_associations_for_triggers
+
     ApplicationController.helpers.save_associations_event_changes(self)
     #puts self.changed?
   end

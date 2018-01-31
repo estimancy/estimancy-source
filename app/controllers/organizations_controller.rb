@@ -44,9 +44,10 @@ class OrganizationsController < ApplicationController
       @versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: Time.parse(@start_date)..Time.parse(@end_date))
     end
 
-    @user_versions = @versions.where(item_type: ["User", "OrganizationUser", "GroupUser"])
+    @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
     @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
     @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+    @simple_events_versions = @versions.where(item_type: ["Group", "User"])
 
     # #Pour les estimations et les models
     @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
@@ -72,9 +73,10 @@ class OrganizationsController < ApplicationController
 
     #@versions.where(item_type: ["User","OrganizationsUsers"])
     #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
-    @user_versions = @versions.where(item_type: ["User", "OrganizationUser", "GroupUser"])
+    @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
     @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
     @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+    @simple_events_versions = @versions.where(item_type: ["Group", "User"])
 
     # #Pour les estimations et les models
     @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])

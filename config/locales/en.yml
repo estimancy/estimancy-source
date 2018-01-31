@@ -2090,6 +2090,7 @@ en:
   audit_create: "Creation"
   audit_update: "Update"
   audit_destroy: "Deletion"
+  audit_delete: "Deletion"
   audit_User: "User"
   audit_Group: "Group"
   audit_GroupsUsers: "Group / Users"

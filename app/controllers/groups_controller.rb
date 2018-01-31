@@ -58,6 +58,10 @@ class GroupsController < ApplicationController
     @enable_update_in_local = true
     @organization = Organization.find_by_id(params['group']['organization_id'])
 
+    # for Trigger
+    @group.originator_id = @current_user.id
+    @group.event_organization_id = @organization.id
+
     set_page_title I18n.t(:new_group)
     set_breadcrumbs I18n.t(:groups) => organization_setting_path(@organization, anchor: "tabs-group"), I18n.t('new_group') => ""
 
@@ -134,7 +138,7 @@ class GroupsController < ApplicationController
     set_page_title I18n.t(:edit_group, value: @group.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:groups)} / #{@group.to_s}" => edit_organization_path(@organization)
 
-    if @group.update_attributes(params[:group])
+    if @group.update_attributes(params[:group].merge(originator_id: @current_user.id, event_organization_id: @organization.id))
       #redirect_to redirect(groups_path), :notice => "#{I18n.t (:notice_group_successful_updated)}"
       flash[:notice] =  "#{I18n.t (:notice_group_successful_updated)}"
       #redirect_to edit_organization_path(@organization)

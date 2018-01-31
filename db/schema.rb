@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20171222100148) do
+ActiveRecord::Schema.define(:version => 20180129223632) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -234,6 +234,36 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.string   "encryption"
   end
 
+  create_table "autorization_log_events", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "author_id"
+    t.string   "item_type"
+    t.integer  "item_id"
+    t.string   "association_class_name"
+    t.string   "event"
+    t.text     "object"
+    t.string   "object_class_name"
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+    t.text     "object_changes"
+    t.text     "associations_before_changes"
+    t.text     "associations_after_changes"
+    t.boolean  "is_project_security"
+    t.boolean  "is_model_security"
+    t.boolean  "is_group_security"
+    t.boolean  "is_security_on_created_from_model"
+    t.integer  "project_id"
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.integer  "estimation_status_id"
+    t.integer  "permission_id"
+    t.integer  "project_security_id"
+    t.integer  "project_security_level_id"
+    t.integer  "permissions_project_security_level_id"
+    t.integer  "estimation_status_group_role_id"
+    t.boolean  "from_direct_trigger"
+  end
+
   create_table "currencies", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -257,6 +287,8 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.integer  "organization_id"
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "estimation_statuses", :force => true do |t|
@@ -504,6 +536,8 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "copy_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "groups_permissions", :force => true do |t|
@@ -511,18 +545,24 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.integer  "permission_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "groups_projects", :id => false, :force => true do |t|
     t.integer "group_id"
     t.integer "project_id"
+    t.integer "originator_id"
+    t.integer "event_organization_id"
   end
 
-  create_table "groups_users", :id => false, :force => true do |t|
+  create_table "groups_users", :force => true do |t|
     t.integer  "group_id"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "guw_guw_attribute_complexities", :force => true do |t|
@@ -934,6 +974,68 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.datetime "updated_at",                   :null => false
     t.integer  "copy_id"
     t.integer  "display_order", :default => 0
+  end
+
+  create_table "guw_unit_of_work_lines", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",           :default => 0,     :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
+    t.integer  "uow_module_project_id",         :default => 0,     :null => false
+    t.integer  "uow_pbs_project_element_id"
+    t.integer  "uow_guw_model_id",              :default => 0,     :null => false
+    t.string   "uow_guw_model_name"
+    t.integer  "guw_uow_group_id"
+    t.string   "guw_uow_group_name"
+    t.boolean  "uow_selected"
+    t.integer  "guw_unit_of_work_id",           :default => 0,     :null => false
+    t.integer  "id",                            :default => 0,     :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.float    "result_low"
+    t.float    "result_most_likely"
+    t.float    "result_high"
+    t.integer  "guw_type_id"
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "guw_complexity_id"
+    t.text     "effort"
+    t.text     "ajusted_size"
+    t.integer  "guw_model_id"
+    t.integer  "module_project_id"
+    t.integer  "pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id"
+    t.integer  "guw_work_unit_id"
+    t.text     "tracking"
+    t.boolean  "off_line"
+    t.boolean  "selected"
+    t.boolean  "flagged"
+    t.integer  "display_order"
+    t.integer  "organization_technology_id"
+    t.boolean  "off_line_uo"
+    t.float    "quantity"
+    t.integer  "guw_weighting_id"
+    t.integer  "guw_factor_id"
+    t.text     "size"
+    t.text     "cost"
+    t.integer  "guw_original_complexity_id"
+    t.boolean  "missing_value",                 :default => false
+    t.float    "intermediate_work_unit_values"
+    t.float    "intermediate_weighting_values"
+    t.float    "intermediate_factor_values"
+    t.float    "work_unit_value"
+    t.float    "weighting_value"
+    t.float    "factor_value"
+    t.float    "intermediate_weight"
+    t.float    "intermediate_percent"
+    t.string   "url"
+    t.text     "cplx_comments"
+    t.integer  "guw_coefficient_element_id"
+    t.integer  "guw_coefficient_id"
+    t.float    "percent"
+    t.text     "ceuw_comments"
   end
 
   create_table "input_cocomos", :force => true do |t|
@@ -1393,9 +1495,11 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.string   "automatic_quotation_number",  :default => "0"
   end
 
-  create_table "organizations_users", :id => false, :force => true do |t|
+  create_table "organizations_users", :force => true do |t|
     t.integer "user_id"
     t.integer "organization_id"
+    t.integer "originator_id"
+    t.integer "event_organization_id"
   end
 
   create_table "pbs_project_elements", :force => true do |t|
@@ -1485,11 +1589,13 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.string   "object_type"
   end
 
-  create_table "permissions_project_security_levels", :id => false, :force => true do |t|
+  create_table "permissions_project_security_levels", :force => true do |t|
     t.integer  "permission_id"
     t.integer  "project_security_level_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "permissions_users", :id => false, :force => true do |t|
@@ -1608,6 +1714,8 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.boolean  "is_estimation_permission"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "project_security_levels", :force => true do |t|
@@ -1620,6 +1728,8 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.text     "description"
     t.integer  "organization_id"
     t.integer  "copy_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   create_table "projects", :force => true do |t|
@@ -1657,9 +1767,13 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.integer  "provider_id"
     t.string   "request_number"
     t.boolean  "use_automatic_quotation_number"
+    t.string   "business_need"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -1919,7 +2033,7 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "",    :null => false
+    t.string   "email",                               :default => "",    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
     t.string   "login_name"
@@ -1939,11 +2053,11 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",     :default => "",    :null => false
+    t.string   "encrypted_password",                  :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0,     :null => false
+    t.integer  "sign_in_count",                       :default => 0,     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -1951,17 +2065,23 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        :default => 0,     :null => false
+    t.integer  "failed_attempts",                     :default => 0,     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
     t.string   "uid"
     t.string   "avatar"
     t.integer  "number_precision"
-    t.boolean  "super_admin",            :default => false
+    t.boolean  "super_admin",                         :default => false
     t.boolean  "password_changed"
     t.text     "description"
     t.datetime "subscription_end_date"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.string   "organization_ids_before_last_update"
+    t.string   "organization_ids_after_last_update"
+    t.string   "group_ids_before_last_update"
+    t.string   "group_ids_after_last_update"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1979,15 +2099,25 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
   add_index "version_associations", ["version_id"], :name => "index_version_associations_on_version_id"
 
   create_table "versions", :force => true do |t|
-    t.string   "item_type",  :limit => 191,        :null => false
-    t.integer  "item_id",                          :null => false
-    t.string   "event",                            :null => false
+    t.integer  "organization_id"
+    t.boolean  "is_model"
+    t.string   "item_type",                         :limit => 191,        :null => false
+    t.integer  "item_id",                                                 :null => false
+    t.string   "event",                                                   :null => false
     t.string   "whodunnit"
-    t.text     "object",     :limit => 2147483647
+    t.text     "object",                            :limit => 2147483647
     t.datetime "created_at"
+    t.integer  "transaction_id"
+    t.text     "object_changes",                    :limit => 2147483647
+    t.boolean  "is_group_security"
+    t.boolean  "is_user_security"
+    t.boolean  "is_security_on_model"
+    t.boolean  "is_security_on_created_from_model"
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
+  add_index "versions", ["organization_id"], :name => "organization_audit_versions"
+  add_index "versions", ["transaction_id"], :name => "index_versions_on_transaction_id"
 
   create_table "views", :force => true do |t|
     t.string   "name"
@@ -2228,5 +2358,134 @@ ActiveRecord::Schema.define(:version => 20171222100148) do
     t.datetime "updated_at"
     t.integer  "organization_id"
   end
+
+  # no candidate create_trigger statement could be found, creating an adapter-specific one
+  execute(<<-TRIGGERSQL)
+CREATE TRIGGER user_events AFTER UPDATE ON `users`
+FOR EACH ROW
+BEGIN
+          DECLARE old_value varchar(255);
+          DECLARE new_value varchar(255);
+          SET
+            old_value = OLD.id,
+            new_value = NEW.id;
+
+          -- Pour le super_admin
+          IF (OLD.super_admin != NEW.super_admin) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.encrypted_password != NEW.encrypted_password) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'password',  json_array('...', 'changement de mot de passe')),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.email != NEW.email) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'Email', json_array(OLD.email, NEW.email)),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+        END
+  TRIGGERSQL
+
+  # no candidate create_trigger statement could be found, creating an adapter-specific one
+  execute(<<-TRIGGERSQL)
+CREATE TRIGGER user_for_test AFTER UPDATE ON `users`
+FOR EACH ROW
+BEGIN
+          DECLARE old_value varchar(255);
+          DECLARE new_value varchar(255);
+          SET
+            old_value = OLD.id,
+            new_value = NEW.id;
+
+          -- Pour le super_admin
+          IF (OLD.super_admin != NEW.super_admin) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.encrypted_password != NEW.encrypted_password) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'password',  json_array('...', 'changement de mot de passe')),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.email != NEW.email) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = JSON_OBJECT( 'Email', json_array(OLD.email, NEW.email)),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour les organisations de l'utilisateur
+          IF (NEW.organization_ids_before_last_update != NEW.organization_ids_after_last_update) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'UserOrganizations',
+              item_id=  OLD.id,
+              event = 'update',
+              object_changes = JSON_OBJECT( 'organization_ids',  json_array(NEW.organization_ids_before_last_update, NEW.organization_ids_after_last_update)),
+              created_at = UTC_TIMESTAMP();
+          END IF;
+
+          -- Pour les groupes de l'utilisateur
+          IF (NEW.group_ids_before_last_update != NEW.group_ids_after_last_update) THEN
+            INSERT INTO autorization_log_events SET
+              organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'UserGroups',
+              item_id=  OLD.id,
+              event = 'update',
+              object_changes = JSON_OBJECT( 'group_ids',  json_array(NEW.group_ids_before_last_update, NEW.group_ids_after_last_update)),
+              created_at = UTC_TIMESTAMP();
+          END IF;
+
+        END
+  TRIGGERSQL
 
 end

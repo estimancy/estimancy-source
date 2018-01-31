@@ -2072,6 +2072,7 @@ frsncf_amoa_infra:
   audit_create: "Création"
   audit_update: "Mise à jour"
   audit_destroy: "Suppression"
+  audit_delete: "Suppression"
   audit_User: "Utilisateur"
   audit_Group: "Groupe"
   audit_GroupsUsers: "Groupe / Utilisateur"
