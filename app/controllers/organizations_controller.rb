@@ -57,7 +57,7 @@ class OrganizationsController < ApplicationController
       format.html
       format.pdf do
         render pdf: "export_to_pdf_security_audit_utilities.pdf",
-               template: 'organizations/export_audit_audit_utilities.pdf',
+               template: 'organizations/export_to_pdf_security_audit_utilities.pdf.erb',
                encoding: "UTF-8",
                page_size: 'A4',
                orientation: :landscape
