@@ -1116,11 +1116,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
     @reload_partial = true
 
-    unless params["modified_guw_line_ids"].nil?
-      @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
+    if params['commit'].present?
+      @modified_guw_line_ids = @module_project.guw_unit_of_work_ids
+    else
+      unless params["modified_guw_line_ids"].nil?
+        @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
+      else
+        @modified_guw_line_ids = ""
+      end
     end
 
-    if params["modified_guw_line_ids"].blank?
+    if @modified_guw_line_ids.blank?
       @reload_partial = false
       # @guw_unit_of_works = Guw::GuwUnitOfWork.where( organization_id: @organization.id,
       #                                                project_id: @project.id,
