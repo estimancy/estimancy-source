@@ -10,14 +10,14 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
       <<-SQL_ACTIONS
 
       INSERT INTO autorization_log_events SET
-            organization_id = NEW.event_organization_id,
-            author_id = NEW.originator_id,
-            item_type = 'Group',
-            item_id = NEW.id,
-            object_class_name = 'Group',
-            event = 'create',
-            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"] }', ', ', '"description": ', '["', '', '", "', NEW.description, '"] }'),
-            created_at = CURRENT_TIMESTAMP;
+          organization_id = NEW.event_organization_id,
+          author_id = NEW.originator_id,
+          item_type = 'Group',
+          item_id = NEW.id,
+          object_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
+          created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
 
@@ -33,7 +33,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'update',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"] }', ', ', '"description": ', '["', OLD.description, '", "', NEW.description, '"] }'),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
         created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
@@ -49,7 +49,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'delete',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"] }', ', ', '"description": ', '["', OLD.description, '", "', '', '"] }'),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
         created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
@@ -60,14 +60,14 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
       <<-SQL_ACTIONS
 
       INSERT INTO autorization_log_events SET
-            organization_id = NEW.event_organization_id,
-            author_id = NEW.originator_id,
-            item_type = 'ProjectSecurityLevel',
-            item_id = NEW.id,
-            object_class_name = 'ProjectSecurityLevel',
-            event = 'create'
-            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"] }', ', ', '"description": ', '["', '', '", "', NEW.description, '"] }'),
-            created_at = CURRENT_TIMESTAMP;
+        organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = NEW.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'create',
+        object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
+        created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
 
@@ -75,14 +75,6 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         on("project_security_levels").
         after(:update) do
       <<-SQL_ACTIONS
-
-    BEGIN
-      DECLARE old_value varchar(255);
-      DECLARE new_value varchar(255);
-      SET
-        old_value = OLD.id,
-        new_value = NEW.id;
-
       INSERT INTO autorization_log_events SET
         organization_id = NEW.event_organization_id,
         author_id = NEW.originator_id,
@@ -90,9 +82,8 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'ProjectSecurityLevel',
         event = 'update',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"] }', ', ', '"description": ', '["', OLD.description, '", "', NEW.description, '"] }'),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
         created_at = CURRENT_TIMESTAMP;
-    END;
       SQL_ACTIONS
     end
 
@@ -107,7 +98,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'ProjectSecurityLevel',
         event = 'delete',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"] }', ', ', '"description": ', '["', OLD.description, '", "', '', '"] }'),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
         created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
