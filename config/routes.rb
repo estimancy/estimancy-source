@@ -263,6 +263,7 @@ Projestimate::Application.routes.draw do
     get "export_providers" => 'organizations#export_providers'
     get "security_audit_utilities" => 'organizations#security_audit_utilities'
     get "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
+    get "report_management" => 'organizations#report_management'
 
     post "import_project_areas" => 'organizations#import_project_areas'
     post "import_project_profile" => 'organizations#import_project_profile'

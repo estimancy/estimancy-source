@@ -1,9 +1,10 @@
-<h4><%= I18n.t(:groups) %></h4>
+<h4><%= "#{I18n.t(:user)}  /  #{I18n.t(:group)}  /  #{I18n.t(:security_level)}" %></h4>
 
 <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
   <thead>
   <tr>
     <th>Type</th>
+    <th>Objet</th>
     <th>Action effectuée</th>
     <th>Avant modification</th>
     <th>Après modification</th>
@@ -17,6 +18,11 @@
         <td class="span2">
           <%= I18n.t("audit_#{version.item_type}") %>
         </td>
+
+        <td class="span2 align-center">
+          <%= show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue "-"  %>
+        </td>
+
         <td class="span2 align-center"><%= I18n.t("audit_#{version.event}") %></td>
 
         <td class="span3">

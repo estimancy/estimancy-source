@@ -30,6 +30,10 @@ class OrganizationsController < ApplicationController
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
 
+  #Pour gestion des rapports personnalisés
+  def report_management
+
+  end
 
   # Export PDF de la liste des changements
   def export_to_pdf_security_audit_utilities
@@ -69,6 +73,9 @@ class OrganizationsController < ApplicationController
   # Fonction d'audit de sécurité
   def security_audit_utilities
     @organization = @current_organization
+
+    authorize! :manage_security_audit, @organization
+
     @versions = AutorizationLogEvent.where(organization_id: @organization.id) #@current_organization.versions
 
     #@versions.where(item_type: ["User","OrganizationsUsers"])

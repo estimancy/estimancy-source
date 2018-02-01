@@ -4,7 +4,7 @@
   <tr>
     <th>Type</th>
     <th>Objet</th>
-    <th>Associations / Relations</th>
+    <!--<th>Associations / Relations</th>-->
     <th>Action effectuée</th>
     <th>Avant modification</th>
     <th>Après modification</th>
@@ -23,7 +23,7 @@
           <%= show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue "-"  %>
         </td>
 
-        <td class="span2 align-center"> <%= version.association_class_name %> </td>
+        <!--<td class="span2 align-center"> <%#= version.association_class_name %> </td>-->
 
         <td class="span2">
           <p class="align-center"><%= I18n.t("audit_#{version.event}") %></p> <br>

@@ -2076,10 +2076,11 @@ fral:
   audit_UserOrganizations: "Organization / Utilisateurs"
 
   audit_OrganizationUser: "Organisation / Utilisateurs"
-  audit_GroupUser: "Groupe / Utilisateurs"
+  audit_GroupUser: "Utilisateur / Groupes"
   create_event: "Ajout"
   delete_event: "Suppression"
   audit_PermissionGroup: "Groupe / Permissions"
   audit_PermissionProjectSecurityLevel: "Niveau de sécurité / Permissions"
   audit_ProjectSecurityProject: "Projet / Niveaux de sécurité"
   export_pdf: "Exporter en PDF"
+  report_management: "Gestion des rapports personnalisés"

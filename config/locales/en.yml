@@ -2108,13 +2108,14 @@ en:
   audit_UserOrganizations: "Organization / Users"
 
   audit_OrganizationUser: "Organization / Users"
-  audit_GroupUser: "Group / Users"
+  audit_GroupUser: "User / Groups"
   create_event: "Adding"
   delete_event: "Removal"
   audit_PermissionGroup: "Group / Permissions"
   audit_PermissionProjectSecurityLevel: "Security level / Permissions"
   audit_ProjectSecurityProject: "Project / Project securities"
   export_pdf: "Export to PDF"
+  report_management: "Custom report management"
 
 
 
