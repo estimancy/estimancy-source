@@ -23,7 +23,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
               item_id = OLD.id,
               object_class_name = 'User',
               event = 'update',
-              object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
+              object_changes = CONCAT('{ "super_admin": ', '["', OLD.super_admin, '", "', NEW.super_admin, '"]}'),
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
@@ -36,7 +36,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
               item_id = OLD.id,
               object_class_name = 'User',
               event = 'update',
-              object_changes = JSON_OBJECT( 'password',  json_array('...', 'changement de mot de passe')),
+              object_changes = CONCAT('{ "password": ', '["', '...', '", "', 'changement de mot de passe', '"]}'),
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
@@ -49,7 +49,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
               item_id = OLD.id,
               object_class_name = 'User',
               event = 'update',
-              object_changes = JSON_OBJECT( 'Email', json_array(OLD.email, NEW.email)),
+              object_changes = CONCAT('{ "Email": ', '["', OLD.email, '", "', NEW.email, '"]}'),
               created_at = UTC_TIMESTAMP() ;
           END IF;
         END;;
@@ -73,6 +73,8 @@ end
 # will be undone by the next auto-generated trigger migration.
 
 #========================== MARCHE le 29/01=========================
+
+#object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
 
 # execute <<-SQL
 #

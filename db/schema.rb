@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180129223632) do
+ActiveRecord::Schema.define(:version => 20180118162552) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -2358,58 +2358,6 @@ ActiveRecord::Schema.define(:version => 20180129223632) do
     t.datetime "updated_at"
     t.integer  "organization_id"
   end
-
-  # no candidate create_trigger statement could be found, creating an adapter-specific one
-  execute(<<-TRIGGERSQL)
-CREATE TRIGGER user_events AFTER UPDATE ON `users`
-FOR EACH ROW
-BEGIN
-          DECLARE old_value varchar(255);
-          DECLARE new_value varchar(255);
-          SET
-            old_value = OLD.id,
-            new_value = NEW.id;
-
-          -- Pour le super_admin
-          IF (OLD.super_admin != NEW.super_admin) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-
-          -- Pour le mot de passe
-          IF (OLD.encrypted_password != NEW.encrypted_password) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'password',  json_array('...', 'changement de mot de passe')),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-
-          -- Pour le mot de passe
-          IF (OLD.email != NEW.email) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'Email', json_array(OLD.email, NEW.email)),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-        END
-  TRIGGERSQL
 
   # no candidate create_trigger statement could be found, creating an adapter-specific one
   execute(<<-TRIGGERSQL)

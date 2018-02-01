@@ -47,7 +47,7 @@ class OrganizationsController < ApplicationController
     @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
     @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
     @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
-    @simple_events_versions = @versions.where(item_type: ["Group", "User"])
+    @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
 
     # #Pour les estimations et les models
     @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
@@ -76,7 +76,7 @@ class OrganizationsController < ApplicationController
     @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
     @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
     @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
-    @simple_events_versions = @versions.where(item_type: ["Group", "User"])
+    @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
 
     # #Pour les estimations et les models
     @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])

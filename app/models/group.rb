@@ -60,9 +60,11 @@ class Group < ActiveRecord::Base
             item_id = NEW.id,
             object_class_name = 'Group',
             event = 'create',
-            object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
+            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"] }', ', ', '"description": ', '["', '', '", "', NEW.description, '"] }'),
             created_at = CURRENT_TIMESTAMP;
       SQL
+
+    #object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
   end
 
   trigger.after(:update) do
@@ -75,9 +77,11 @@ class Group < ActiveRecord::Base
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'update',
-        object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"] }', ', ', '"description": ', '["', OLD.description, '", "', NEW.description, '"] }'),
         created_at = CURRENT_TIMESTAMP;
     SQL
+
+    #object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
   end
 
   trigger.after(:delete) do
@@ -89,9 +93,11 @@ class Group < ActiveRecord::Base
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'delete',
-        object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"] }', ', ', '"description": ', '["', OLD.description, '", "', '', '"] }'),
         created_at = CURRENT_TIMESTAMP;
     SQL
+
+    #object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
   end
 
   # END Hair-Triggers

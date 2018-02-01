@@ -16,7 +16,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
             item_id = NEW.id,
             object_class_name = 'Group',
             event = 'create',
-            object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
+            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"] }', ', ', '"description": ', '["', '', '", "', NEW.description, '"] }'),
             created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
@@ -33,7 +33,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'update',
-        object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"] }', ', ', '"description": ', '["', OLD.description, '", "', NEW.description, '"] }'),
         created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
@@ -49,7 +49,65 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'delete',
-        object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"] }', ', ', '"description": ', '["', OLD.description, '", "', '', '"] }'),
+        created_at = CURRENT_TIMESTAMP;
+      SQL_ACTIONS
+    end
+
+    create_trigger("project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+        on("project_security_levels").
+        after(:insert) do
+      <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+            organization_id = NEW.event_organization_id,
+            author_id = NEW.originator_id,
+            item_type = 'ProjectSecurityLevel',
+            item_id = NEW.id,
+            object_class_name = 'ProjectSecurityLevel',
+            event = 'create'
+            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"] }', ', ', '"description": ', '["', '', '", "', NEW.description, '"] }'),
+            created_at = CURRENT_TIMESTAMP;
+      SQL_ACTIONS
+    end
+
+    create_trigger("project_security_levels_after_update_row_tr", :generated => true, :compatibility => 1).
+        on("project_security_levels").
+        after(:update) do
+      <<-SQL_ACTIONS
+
+    BEGIN
+      DECLARE old_value varchar(255);
+      DECLARE new_value varchar(255);
+      SET
+        old_value = OLD.id,
+        new_value = NEW.id;
+
+      INSERT INTO autorization_log_events SET
+        organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"] }', ', ', '"description": ', '["', OLD.description, '", "', NEW.description, '"] }'),
+        created_at = CURRENT_TIMESTAMP;
+    END;
+      SQL_ACTIONS
+    end
+
+    create_trigger("project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+        on("project_security_levels").
+        after(:delete) do
+      <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"] }', ', ', '"description": ', '["', OLD.description, '", "', '', '"] }'),
         created_at = CURRENT_TIMESTAMP;
       SQL_ACTIONS
     end
@@ -113,6 +171,12 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
     drop_trigger("groups_after_update_row_tr", "groups", :generated => true)
 
     drop_trigger("groups_after_delete_row_tr", "groups", :generated => true)
+
+    drop_trigger("project_security_levels_after_insert_row_tr", "project_security_levels", :generated => true)
+
+    drop_trigger("project_security_levels_after_update_row_tr", "project_security_levels", :generated => true)
+
+    drop_trigger("project_security_levels_after_delete_row_tr", "project_security_levels", :generated => true)
 
     drop_trigger("organizations_users_after_insert_row_tr", "organizations_users", :generated => true)
 
