@@ -1757,7 +1757,7 @@ fr1:
   audit_UserGroups: "Groupe / Utilisateurs"
   audit_UserOrganizations: "Organization / Utilisateurs"
 
-  audit_OrganizationUser: "Organisation / Utilisateurs"
+  audit_OrganizationUser:  "Utilisateur / Organisations"
   audit_GroupUser: "Utilisateur / Groupes"
   create_event: "Ajout"
   delete_event: "Suppression"

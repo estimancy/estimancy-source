@@ -1718,7 +1718,7 @@ en-gb:
   audit_UserGroups: "Group / Users"
   audit_UserOrganizations: "Organization / Users"
 
-  audit_OrganizationUser: "Organization / Users"
+  audit_OrganizationUser: "User / Organizations"
   audit_GroupUser: "User / Groups"
   create_event: "Adding"
   delete_event: "Removal"
