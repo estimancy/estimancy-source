@@ -23,4 +23,18 @@ class GroupsProjects < ActiveRecord::Base
   attr_accessible  :group_id, :project_id
   belongs_to :group
   belongs_to :project
+
+  # Security Audit management
+  ##before_save :update_transaction_id_for_triggers
+
+  private
+  def update_transaction_id_for_triggers
+    begin
+      self.transaction_id = self.estimation_status.transaction_id || self.estimation_status.transaction_id rescue nil
+      self.originator_id = User.current
+      self.event_organization_id = Organization.current
+    rescue
+    end
+  end
+
 end

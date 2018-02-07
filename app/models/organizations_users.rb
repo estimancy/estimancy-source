@@ -28,8 +28,6 @@ class OrganizationsUsers < ActiveRecord::Base
   # Security Audit management
   before_save :update_transaction_id_for_triggers
 
-  has_paper_trail
-
   # Hair-Triggers
   trigger.after(:insert) do
     <<-SQL
@@ -53,7 +51,7 @@ class OrganizationsUsers < ActiveRecord::Base
   trigger.after(:delete) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = OLD.organization_id,
           transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
           author_id = OLD.originator_id,
           item_type = 'OrganizationUser',
@@ -73,9 +71,13 @@ class OrganizationsUsers < ActiveRecord::Base
 
   private
   def update_transaction_id_for_triggers
-    self.transaction_id = self.user.transaction_id
-    self.originator_id = User.current
-    self.event_organization_id = Organization.current
+    begin
+      self.transaction_id = self.user.transaction_id
+      self.originator_id = User.current
+      self.event_organization_id = Organization.current
+    rescue
+    end
+
   end
 
 

@@ -68,7 +68,7 @@ class ProjectSecurity < ActiveRecord::Base
   trigger.after(:delete) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
         transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
         author_id = OLD.originator_id,
         item_type = 'ProjectSecurity',
@@ -104,9 +104,12 @@ class ProjectSecurity < ActiveRecord::Base
 
   private
   def update_transaction_id_for_triggers
-    self.transaction_id = self.project.transaction_id || self.project.transaction_id rescue nil
-    self.originator_id = User.current
-    self.event_organization_id = Organization.current
+    begin
+      self.transaction_id = self.project.transaction_id || self.project.transaction_id rescue nil
+      self.originator_id = User.current
+      self.event_organization_id = Organization.current
+    rescue
+    end
   end
 
 end

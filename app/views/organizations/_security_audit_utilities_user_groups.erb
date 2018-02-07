@@ -19,7 +19,7 @@
       <% by_events =  versions.group_by(&:event) %>
       <% create_events =  by_events['create'] %>
       <% delete_events =  by_events['delete'] %>
-      <% version =  versions.first %>
+      <% version =  versions.select{ |v| v.event == 'create'}.first || versions.first %>
 
       <tr>
         <td class="span2">

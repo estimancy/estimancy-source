@@ -59,7 +59,7 @@ class EstimationStatusGroupRole < ActiveRecord::Base
   trigger.after(:delete) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
         transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
         author_id = OLD.originator_id,
         item_type = 'EstimationStatusGroupRole',
@@ -80,9 +80,12 @@ class EstimationStatusGroupRole < ActiveRecord::Base
 
   private
   def update_transaction_id_for_triggers
-    self.transaction_id = self.estimation_status.transaction_id || self.estimation_status.transaction_id rescue nil
-    self.originator_id = User.current
-    self.event_organization_id = Organization.current
+    begin
+      self.transaction_id = self.estimation_status.transaction_id || self.estimation_status.transaction_id rescue nil
+      self.originator_id = User.current
+      self.event_organization_id = Organization.current
+    rescue
+    end
   end
 
 end

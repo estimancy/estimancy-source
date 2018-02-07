@@ -53,7 +53,6 @@ class AddOriginatorAndEventOrganizationToTables < ActiveRecord::Migration
     add_column :estimation_status_group_roles, :transaction_id, :text
     add_column :project_securities, :transaction_id, :text
 
-
     # remplir les valeurs dans les tables de bases
     User.all.each do |user|
       user.transaction_id = "#{user.id}_1"
@@ -84,6 +83,5 @@ class AddOriginatorAndEventOrganizationToTables < ActiveRecord::Migration
       psl.transaction_id = "#{psl.id}_1"
       psl.save
     end
-
   end
 end

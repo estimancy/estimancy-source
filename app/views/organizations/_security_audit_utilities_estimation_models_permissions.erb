@@ -19,7 +19,7 @@
       <% by_events =  versions.group_by(&:event) %>
       <% create_events =  by_events['create'] %>
       <% delete_events =  by_events['delete'] %>
-      <% version =  versions.first %>
+      <% version =  versions.select{ |v| v.event == 'create'}.first  || versions.first %>
 
       <tr>
         <td class="span2">
@@ -27,7 +27,7 @@
         </td>
 
         <td class="span2 align-center">
-          <%= Project.where(id: version.item_id) rescue "-" %>
+          <%= Project.where(id: version.item_id).first rescue "-" %>
         </td>
         <!--<td class="span2 align-center"> <%#= version.association_class_name %> </td>-->
         <td class="span2">

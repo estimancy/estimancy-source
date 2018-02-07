@@ -90,7 +90,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
         transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
         author_id = OLD.originator_id,
         item_type = 'ProjectSecurity',
@@ -194,7 +194,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
         transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
         author_id = OLD.originator_id,
         item_type = 'EstimationStatusGroupRole',
@@ -238,7 +238,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
         transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
         author_id = OLD.originator_id,
         item_type = 'GroupPermission',
@@ -279,7 +279,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
         transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
         author_id = OLD.originator_id,
         item_type = 'GroupUser',
@@ -320,7 +320,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = OLD.organization_id,
           transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
           author_id = OLD.originator_id,
           item_type = 'OrganizationUser',
@@ -361,7 +361,7 @@ class CreateTriggersMultipleTables < ActiveRecord::Migration
         after(:delete) do
       <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
+        event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
         transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
         author_id = OLD.originator_id,
         item_type = 'PermissionProjectSecurityLevel',
