@@ -24,31 +24,29 @@ module AutorizationLogEventsHelper
             project_security_level_id = item._project_security_level_id rescue nil
 
             if class_name == "ProjectSecurity"
-
             else
-
             end
 
-            AutorizationLogEvent.create(organization_id: organization_id,
-                                        author_id: item.originator_id,
-                                        item_type: "#{class_name.to_s}#{item.class.name.to_s}",
-                                        item_id:  item.id,
-                                        object_class_name: item.class.name,
-                                        association_class_name: class_name,
-                                        event: 'update',
-                                        object_changes: { create_event: create_events, delete_event: delete_events },
-                                        associations_before_changes: item._associations_before_changes,
-                                        #associations_after_changes: (item.send("#{class_name.to_s.downcase.pluralize}").map(&:id) rescue []),
-                                        associations_after_changes: (item.send("#{class_name.to_s.tableize}").map(&:id) rescue []),
-                                        is_project_security: is_project_security,
-                                        is_model_security: is_model_security,
-                                        is_group_security: is_group_security,
-                                        project_id: project_id,
-                                        user_id: user_id,
-                                        group_id: group_id,
-                                        project_security_level_id: project_security_level_id,
-                                        is_security_on_created_from_model: is_security_on_created_from_model,
-                                        created_at: Time.now())
+            # AutorizationLogEvent.create(organization_id: organization_id,
+            #                             author_id: item.originator_id,
+            #                             item_type: "#{class_name.to_s}#{item.class.name.to_s}",
+            #                             item_id:  item.id,
+            #                             object_class_name: item.class.name,
+            #                             association_class_name: class_name,
+            #                             event: 'update',
+            #                             object_changes: { create_event: create_events, delete_event: delete_events },
+            #                             associations_before_changes: item._associations_before_changes,
+            #                             #associations_after_changes: (item.send("#{class_name.to_s.downcase.pluralize}").map(&:id) rescue []),
+            #                             associations_after_changes: (item.send("#{class_name.to_s.tableize}").map(&:id) rescue []),
+            #                             is_project_security: is_project_security,
+            #                             is_model_security: is_model_security,
+            #                             is_group_security: is_group_security,
+            #                             project_id: project_id,
+            #                             user_id: user_id,
+            #                             group_id: group_id,
+            #                             project_security_level_id: project_security_level_id,
+            #                             is_security_on_created_from_model: is_security_on_created_from_model,
+            #                             created_at: Time.now())
 
           end
         end

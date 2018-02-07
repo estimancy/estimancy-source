@@ -97,38 +97,61 @@
 </div>
 <br>
 
-<!-- ========================  UTILISATEURS ===================== -->
+<!-- ========================  UTILISATEURS / ORGANIZATIONS===================== -->
 <div class="alwaysbreak"></div>
 <h3>
-  <%= I18n.t(:users) %>
+  <%= I18n.t(:audit_OrganizationUser) %>
 </h3>
 <hr>
 
 <div id="tabs-users">
-  <%= render partial: 'security_audit_utilities',
+  <%= render partial: 'security_audit_utilities_user_organizations',
              formats: [:html],
-             locals: { table_versions: @user_versions} %>
+             locals: { table_versions: @user_organizations_versions} %>
 </div>
 
-<!-- ========================  GROUPS ===================== -->
+<br>
+<!-- ========================  UTILISATEURS / GROUPS ===================== -->
+<div class="alwaysbreak"></div>
+<h3>
+  <%= I18n.t(:audit_GroupUser) %>
+</h3>
+<hr>
+
+<div id="tabs-users">
+  <%= render partial: 'security_audit_utilities_user_groups',
+             formats: [:html],
+             locals: { table_versions: @user_groups_versions} %>
+</div>
+
+
+<!-- ========================  GROUPS / PERMISSIONS ===================== -->
 
 <div class="alwaysbreak"></div>
 <h3><%= "Groupe / Permissions" %></h3>
 <hr>
 
 <div id="tabs-group_permissions">
-  <%= render partial: 'security_audit_utilities',
+  <%= render partial: 'security_audit_utilities_group_permissions',
              formats: [:html],
              locals: { table_versions: @group_permissions_versions} %>
 </div>
 
+<!-- ========================  ESTIMATION-STATUS ===================== -->
+<div id="tabs-estimation_status_permissions">
+  <%= render partial: 'security_audit_utilities_estimation_status_permissions',
+             formats: [:html],
+             locals: { table_versions: @user_estimation_status_versions} %>
+</div>
 
 <!-- ========================  SECURITY-LEVELS ===================== -->
 <div class="alwaysbreak"></div>
-<h3><%= I18n.t(:security_level) %></h3>
+<h3><%= I18n.t(:audit_PermissionProjectSecurityLevel) %></h3>
 
+
+<!-- ========================  SECURITY-LEVELS / Permissions ===================== -->
 <div id="tabs-security_levels">
-  <%= render partial: 'security_audit_utilities',
+  <%= render partial: 'security_audit_utilities_project_security_level_permissions',
              formats: [:html],
              locals: { table_versions: @security_level_versions} %>
 </div>
@@ -138,14 +161,16 @@
 <div class="alwaysbreak"></div>
 <h3><%= I18n.t(:audit_estimation_models_permissions) %></h3>
 <div id="tabs-estimation_models">
-  <%= render partial: 'security_audit_utilities_estimations', formats: [:html], locals: { table_versions: @estimation_model_versions} %>
+  <%= render partial: 'security_audit_utilities_estimation_models_permissions',
+             formats: [:html], locals: { table_versions: @estimation_model_versions} %>
 </div>
 
 <!-- ========================  ESTIMATIONS ===================== -->
 <div class="alwaysbreak"></div>
 <h3><%= I18n.t(:audit_estimations_permissions) %></h3>
 <div id="tabs-estimations">
-  <%= render partial: 'security_audit_utilities_estimations', formats: [:html], locals: { table_versions: @estimation_versions} %>
+  <%= render partial: 'security_audit_utilities_estimations_permissions',
+             formats: [:html], locals: { table_versions: @estimation_versions} %>
 </div>
 
 <%#= render partial: 'all_securities_events',

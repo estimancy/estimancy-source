@@ -194,13 +194,12 @@ public
     set_page_title I18n.t(:edit_user, value: @user.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
-    # Set last value before update pour Trigger
-    @user.organization_ids_before_last_update = @user.organization_ids.to_json
-    @user.group_ids_before_last_update = @user.group_ids.to_json
-
-    # Trigger : Gestion historique des evenements
+    # # Trigger : Gestion historique des evenements
+    @user.transaction_id = @user.transaction_id.nil? ? "#{@user.id}_1" : @user.transaction_id.next rescue "#{@user.id}_1"
     @user.event_organization_id = @current_organization.id #params[:organization_id]
     @user.originator_id = @current_user.id
+    # @user.organization_ids_before_last_update = @user.organization_ids.to_json
+    # @user.group_ids_before_last_update = @user.group_ids.to_json
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
@@ -208,7 +207,6 @@ public
 
     if @organization.nil?
       if params[:organizations].nil?
-
         @user.organizations.each do |organization|
           organization.groups.each do |group|
             if @user.estimations.where(organization_id: organization.id).empty?
@@ -219,11 +217,8 @@ public
             end
           end
         end
-
         @user.save
-
       elsif current_user.super_admin == true
-
         old_organizations = @user.organization_ids - params[:organizations].keys.map(&:to_i)
         new_organizations_array = params[:organizations].keys.map(&:to_i)
 
@@ -251,41 +246,24 @@ public
             GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
           end
         else
+          # @organization.groups.each do |group|
+          #   GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+          # end
+          # params[:groups].keys.each do |group_id|
+          #   #GroupsUsers.create(user_id: @user.id, group_id: group_id, originator_id: @current_user.id, event_organization_id: @organization.id)
+          #   #@user.groups.create(Group.where(id: group_id))
+          # end
 
-          @organization.groups.each do |group|
-            #GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-            grp = @user.groups.where(id: group.id).first
-            if grp  #@user.groups.exists?(group)
-              @user.groups.delete(group)
-            end
-          end
-
-          params[:groups].keys.each do |group_id|
-            #GroupsUsers.create(user_id: @user.id, group_id: group_id, originator_id: @current_user.id, event_organization_id: @organization.id)
-            grp = Group.find(group_id)
-            #@user.groups.create(Group.where(id: group_id))
-            @user.groups << Group.where(id: group_id).first
-          end
-
-          # new_groups_array = params[:groups].keys.map(&:to_i)
-          # @user.group_ids = new_groups_array.uniq
-
+          user_groups_before = @user.groups.map(&:id)
+          user_groups_after = params[:groups].keys
+          groups_to_delete = user_groups_before - user_groups_after
+          groups_to_add = user_groups_after - user_groups_before
+          new_user_group_ids = user_groups_before - groups_to_delete + groups_to_add
+          @user.group_ids = new_user_group_ids.map(&:to_i).uniq
+          @user.save
         end
       end
     end
-
-
-    #=======  TEST DIRTYABLE
-    puts @user.changed?
-    begin
-      changes = @user._record_changes
-      if @user._record_changes.changed?
-        puts @user._record_changes.changes?
-      end
-    rescue
-    end
-
-    # #=======
 
     # Get the Application authType
     application_auth_type = AuthMethod.where(name: 'Application').first

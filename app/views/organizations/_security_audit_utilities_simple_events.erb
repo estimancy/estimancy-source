@@ -1,6 +1,6 @@
 <h4><%= "#{I18n.t(:user)}  /  #{I18n.t(:group)}  /  #{I18n.t(:security_level)}" %></h4>
 
-<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+<table id="table_list" class="table tablesorterPager table-striped table-bordered table-condensed">
   <thead>
   <tr>
     <th>Type</th>
@@ -63,7 +63,7 @@
           <% end %>
         </td>
 
-        <td class="span2 align-center"><%= I18n.l(version.created_at) %></td>
+        <td class="span2 align-center"><%=I18n.l(version.created_at, format: :audit) %></td>
       </tr>
   <% end %>
   <%#= render :partial => 'layouts/footer_table' %>

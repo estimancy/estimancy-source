@@ -22,25 +22,16 @@
 #Master Data
 class ProjectSecurityLevel < ActiveRecord::Base
 
-  include DirtyAssociations   # For tracking associations changes
-
-  attr_accessible :name, :description, :organization_id
+  attr_accessible :name, :description, :organization_id, :originator_id, :event_organization_id, :transaction_id
 
   has_many :project_securities, dependent: :destroy
   has_many :estimation_status_group_roles  #Estimations permissions on Group according to the estimation status
 
   #has_and_belongs_to_many :permissions
   has_many :permissions_project_security_levels, class_name: 'PermissionsProjectSecurityLevels'
-  has_many :permissions, through: :permissions_project_security_levels,
-           :after_add    => :make_dirty_add,
-           :after_remove => :make_dirty_remove
-
+  has_many :permissions, through: :permissions_project_security_levels
 
   belongs_to :organization
-
-  # Security Audit management
-  #has_paper_trail
-  before_save :update_associations_for_triggers
 
   # Hair-Triggers
   trigger.after(:insert) do
@@ -54,11 +45,11 @@ class ProjectSecurityLevel < ActiveRecord::Base
         object_class_name = 'ProjectSecurityLevel',
         event = 'create',
         object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL
   end
 
-  trigger.after(:update) do
+  trigger.after(:update).of(:name, :description) do
     <<-SQL
       INSERT INTO autorization_log_events SET
         organization_id = NEW.event_organization_id,
@@ -68,7 +59,7 @@ class ProjectSecurityLevel < ActiveRecord::Base
         object_class_name = 'ProjectSecurityLevel',
         event = 'update',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL
 
   end
@@ -83,7 +74,7 @@ class ProjectSecurityLevel < ActiveRecord::Base
         object_class_name = 'ProjectSecurityLevel',
         event = 'delete',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL
   end
 
@@ -105,9 +96,4 @@ class ProjectSecurityLevel < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
-  private
-  def update_associations_for_triggers
-    ApplicationController.helpers.save_associations_event_changes(self)
-    #puts self.changed?
-  end
 end

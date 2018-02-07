@@ -100,6 +100,15 @@ class Organization < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 
+  # Get the current user in model
+  def self.current
+    Thread.current[:organization]
+  end
+  def self.current=(organization)
+    Thread.current[:organization] = organization
+  end
+
+
   ## Get the organization Custom fields for QueryColumn
   #def custom_fields_query_columns
   #  custom_fields = []

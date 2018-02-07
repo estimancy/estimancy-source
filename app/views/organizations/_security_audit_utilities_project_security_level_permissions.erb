@@ -1,0 +1,78 @@
+
+<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+  <thead>
+  <tr>
+    <th>Type</th>
+    <th>Niveau de sécurité</th>
+    <!--<th>Associations / Relations</th>-->
+    <th>Action effectuée</th>
+    <th>Avant modification</th>
+    <th>Après modification</th>
+    <th>Auteur</th>
+    <th>Date modification</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% table_versions.group_by(&:transaction_id).each do |transaction_id, versions| %>
+
+      <% by_events =  versions.group_by(&:event) %>
+      <% create_events =  by_events['create'] %>
+      <% delete_events =  by_events['delete'] %>
+      <% version =  versions.first %>
+
+      <tr>
+        <td class="span2">
+            <%= I18n.t("audit_#{version.item_type}") %>
+        </td>
+
+        <td class="span2 align-center">
+          <%= ProjectSecurityLevel.where(id: version.item_id).first rescue "-"  %>
+        </td>
+        <!--<td class="span2 align-center"> <%#= version.association_class_name %> </td>-->
+        <td class="span2">
+          <% unless create_events.blank? %>
+            - Ajout <br>
+          <% end %>
+
+          <% unless delete_events.blank? %>
+            - Suppression
+          <% end %>
+        </td>
+
+        <td class="span3">
+          <% unless delete_events.blank? %>
+              Suppression <br>
+              <% delete_events.each do |event| %>
+                  - <%= Permission.find(event.permission_id) rescue nil %>  <br>
+              <% end %>
+          <% end %>
+        </td>
+
+        <td class="span3">
+          <% unless create_events.blank? %>
+              Ajout <br>
+              <% create_events.each do |event| %>
+                  - <%= Permission.find(event.permission_id) rescue nil %>  <br>
+              <% end %>
+          <% end %>
+        </td>
+
+        <td class="span2 align-center">
+          <% u = User.find_by_id(version.author_id) %>
+          <% unless u.nil? %>
+              <%= u.name %>
+          <% else %>
+              N/A
+          <% end %>
+        </td>
+
+        <td class="span2 align-center"><%= I18n.l(version.created_at, format: :audit) rescue nil %></td>
+
+      </tr>
+  <% end %>
+  <%#= render :partial => 'layouts/footer_table' %>
+  </tbody>
+</table>
+
+

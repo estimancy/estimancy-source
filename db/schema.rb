@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180201100538) do
+ActiveRecord::Schema.define(:version => 20180207102844) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
   end
 
   create_table "autorization_log_events", :force => true do |t|
-    t.integer  "organization_id"
+    t.integer  "event_organization_id"
     t.integer  "author_id"
     t.string   "item_type"
     t.integer  "item_id"
@@ -244,14 +244,15 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.text     "object"
     t.string   "object_class_name"
     t.datetime "created_at"
-    t.integer  "transaction_id"
+    t.text     "transaction_id"
     t.text     "object_changes"
     t.text     "associations_before_changes"
     t.text     "associations_after_changes"
-    t.boolean  "is_project_security"
-    t.boolean  "is_model_security"
+    t.boolean  "is_estimation_permission"
+    t.boolean  "is_model_permission"
     t.boolean  "is_group_security"
     t.boolean  "is_security_on_created_from_model"
+    t.integer  "organization_id"
     t.integer  "project_id"
     t.integer  "group_id"
     t.integer  "user_id"
@@ -289,6 +290,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at",                :null => false
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "estimation_statuses", :force => true do |t|
@@ -303,6 +305,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at",        :null => false
     t.integer  "copy_id"
     t.boolean  "is_new_status"
+    t.text     "transaction_id"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -538,6 +541,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.integer  "copy_id"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "groups_permissions", :force => true do |t|
@@ -547,6 +551,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "groups_projects", :id => false, :force => true do |t|
@@ -554,6 +559,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.integer "project_id"
     t.integer "originator_id"
     t.integer "event_organization_id"
+    t.text    "transaction_id"
   end
 
   create_table "groups_users", :force => true do |t|
@@ -563,6 +569,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "guw_guw_attribute_complexities", :force => true do |t|
@@ -1496,10 +1503,13 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
   end
 
   create_table "organizations_users", :force => true do |t|
-    t.integer "user_id"
-    t.integer "organization_id"
-    t.integer "originator_id"
-    t.integer "event_organization_id"
+    t.integer  "user_id"
+    t.integer  "organization_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.datetime "created_at"
+    t.datetime "update_at"
+    t.text     "transaction_id"
   end
 
   create_table "pbs_project_elements", :force => true do |t|
@@ -1587,6 +1597,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.boolean  "is_master_permission"
     t.string   "category",              :default => "Admin"
     t.string   "object_type"
+    t.text     "transaction_id"
   end
 
   create_table "permissions_project_security_levels", :force => true do |t|
@@ -1596,6 +1607,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "permissions_users", :id => false, :force => true do |t|
@@ -1716,6 +1728,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "updated_at"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "project_security_levels", :force => true do |t|
@@ -1730,6 +1743,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.integer  "copy_id"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "projects", :force => true do |t|
@@ -1770,6 +1784,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.string   "business_need"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
@@ -2033,7 +2048,7 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                               :default => "",    :null => false
+    t.string   "email",                  :default => "",    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
     t.string   "login_name"
@@ -2053,11 +2068,11 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "object_per_page"
-    t.string   "encrypted_password",                  :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                       :default => 0,     :null => false
+    t.integer  "sign_in_count",          :default => 0,     :null => false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -2065,23 +2080,20 @@ ActiveRecord::Schema.define(:version => 20180201100538) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",                     :default => 0,     :null => false
+    t.integer  "failed_attempts",        :default => 0,     :null => false
     t.string   "unlock_token"
     t.datetime "locked_at"
     t.string   "provider"
     t.string   "uid"
     t.string   "avatar"
     t.integer  "number_precision"
-    t.boolean  "super_admin",                         :default => false
+    t.boolean  "super_admin",            :default => false
     t.boolean  "password_changed"
     t.text     "description"
     t.datetime "subscription_end_date"
     t.integer  "originator_id"
     t.integer  "event_organization_id"
-    t.string   "organization_ids_before_last_update"
-    t.string   "organization_ids_after_last_update"
-    t.string   "group_ids_before_last_update"
-    t.string   "group_ids_after_last_update"
+    t.text     "transaction_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -2373,7 +2385,7 @@ BEGIN
           -- Pour le super_admin
           IF (OLD.super_admin != NEW.super_admin) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,
@@ -2386,7 +2398,7 @@ BEGIN
           -- Pour le mot de passe
           IF (OLD.encrypted_password != NEW.encrypted_password) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,
@@ -2399,7 +2411,7 @@ BEGIN
           -- Pour le mot de passe
           IF (OLD.email != NEW.email) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,
@@ -2411,114 +2423,38 @@ BEGIN
         END
   TRIGGERSQL
 
-  # no candidate create_trigger statement could be found, creating an adapter-specific one
-  execute(<<-TRIGGERSQL)
-CREATE TRIGGER user_for_test AFTER UPDATE ON `users`
-FOR EACH ROW
-BEGIN
-          DECLARE old_value varchar(255);
-          DECLARE new_value varchar(255);
-          SET
-            old_value = OLD.id,
-            new_value = NEW.id;
-
-          -- Pour le super_admin
-          IF (OLD.super_admin != NEW.super_admin) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'super_admin', json_array(OLD.super_admin, NEW.super_admin)),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-
-          -- Pour le mot de passe
-          IF (OLD.encrypted_password != NEW.encrypted_password) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'password',  json_array('...', 'changement de mot de passe')),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-
-          -- Pour le mot de passe
-          IF (OLD.email != NEW.email) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'User',
-              item_id = OLD.id,
-              object_class_name = 'User',
-              event = 'update',
-              object_changes = JSON_OBJECT( 'Email', json_array(OLD.email, NEW.email)),
-              created_at = UTC_TIMESTAMP() ;
-          END IF;
-
-          -- Pour les organisations de l'utilisateur
-          IF (NEW.organization_ids_before_last_update != NEW.organization_ids_after_last_update) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'UserOrganizations',
-              item_id=  OLD.id,
-              event = 'update',
-              object_changes = JSON_OBJECT( 'organization_ids',  json_array(NEW.organization_ids_before_last_update, NEW.organization_ids_after_last_update)),
-              created_at = UTC_TIMESTAMP();
-          END IF;
-
-          -- Pour les groupes de l'utilisateur
-          IF (NEW.group_ids_before_last_update != NEW.group_ids_after_last_update) THEN
-            INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'UserGroups',
-              item_id=  OLD.id,
-              event = 'update',
-              object_changes = JSON_OBJECT( 'group_ids',  json_array(NEW.group_ids_before_last_update, NEW.group_ids_after_last_update)),
-              created_at = UTC_TIMESTAMP();
-          END IF;
-
-        END
-  TRIGGERSQL
-
   create_trigger("groups_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("groups").
       after(:insert) do
     <<-SQL_ACTIONS
 
       INSERT INTO autorization_log_events SET
-          organization_id = NEW.event_organization_id,
+          event_organization_id = NEW.event_organization_id,
           author_id = NEW.originator_id,
           item_type = 'Group',
           item_id = NEW.id,
           object_class_name = 'Group',
           event = 'create',
           object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
-          created_at = CURRENT_TIMESTAMP;
+          created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
-  create_trigger("groups_after_update_row_tr", :generated => true, :compatibility => 1).
+  create_trigger("groups_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
       on("groups").
-      after(:update) do
+      after(:update).
+      of(:name, :description) do
     <<-SQL_ACTIONS
 
       INSERT INTO autorization_log_events SET
-        organization_id = NEW.event_organization_id,
+        event_organization_id = NEW.event_organization_id,
         author_id = NEW.originator_id,
         item_type = 'Group',
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'update',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
@@ -2527,14 +2463,73 @@ BEGIN
       after(:delete) do
     <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
-        organization_id = OLD.event_organization_id,
+        event_organization_id = OLD.event_organization_id,
         author_id = OLD.originator_id,
         item_type = 'Group',
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'delete',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
+          author_id = NEW.originator_id,
+          item_type = 'ProjectSecurity',
+          item_id = NEW.project_id,
+          project_id = NEW.project_id,
+          group_id = NEW.group_id,
+          user_id = NEW.user_id,
+          project_security_level_id = NEW.project_security_level_id,
+          is_model_permission = NEW.is_model_permission,
+          is_estimation_permission = NEW.is_estimation_permission,
+          object_class_name = 'Project',
+          association_class_name = 'ProjectSecurity',
+          event = 'create',
+          object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                                      ' "user_id": ', NEW.user_id,
+                                      ' "is_model_permission": ', NEW.is_model_permission,
+                                      ' "is_estimation_permission": ', NEW.is_estimation_permission,
+                                 '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurity',
+        item_id = OLD.project_id,
+        project_id = OLD.project_id,
+        group_id = OLD.group_id,
+        user_id = OLD.user_id,
+        project_security_level_id = OLD.project_security_level_id,
+        is_model_permission = OLD.is_model_permission,
+        is_estimation_permission = OLD.is_estimation_permission,
+        object_class_name = 'Project',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+        object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
+                                    ' "group_id": ', OLD.group_id,
+                                    ' "user_id": ', OLD.user_id,
+                                    ' "is_model_permission": ', OLD.is_model_permission,
+                                    ' "is_estimation_permission": ', OLD.is_estimation_permission,
+                          '}'),
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
@@ -2551,13 +2546,14 @@ BEGIN
         object_class_name = 'ProjectSecurityLevel',
         event = 'create',
         object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
-  create_trigger("project_security_levels_after_update_row_tr", :generated => true, :compatibility => 1).
+  create_trigger("project_security_levels_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
       on("project_security_levels").
-      after(:update) do
+      after(:update).
+      of(:name, :description) do
     <<-SQL_ACTIONS
       INSERT INTO autorization_log_events SET
         organization_id = NEW.event_organization_id,
@@ -2567,7 +2563,7 @@ BEGIN
         object_class_name = 'ProjectSecurityLevel',
         event = 'update',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
@@ -2583,7 +2579,137 @@ BEGIN
         object_class_name = 'ProjectSecurityLevel',
         event = 'delete',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
+          author_id = NEW.originator_id,
+          item_type = 'EstimationStatusGroupPermission',
+          item_id = NEW.estimation_status_id,
+          estimation_status_id = NEW.estimation_status_id,
+          group_id = NEW.group_id,
+          project_security_level_id = NEW.project_security_level_id,
+          object_class_name = 'EstimationStatus',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                               '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        author_id = OLD.originator_id,
+        item_type = 'EstimationStatusGroupPermission',
+        item_id = OLD.estimation_status_id,
+        group_id = OLD.group_id,
+        project_security_level_id = OLD.project_security_level_id,
+        object_class_name = 'EstimationStatus',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+          object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                               '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupPermission',
+          item_id = NEW.group_id,
+          group_id = NEW.group_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'Group',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupPermission',
+        item_id = OLD.group_id,
+        group_id = OLD.group_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'Group',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          group_id = NEW.group_id,
+          object_class_name = 'User',
+          association_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupUser',
+        item_id = OLD.user_id,
+        user_id = OLD.user_id,
+        group_id = OLD.group_id,
+        object_class_name = 'User',
+        association_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
@@ -2592,33 +2718,19 @@ BEGIN
       after(:insert) do
     <<-SQL_ACTIONS
 
-    INSERT INTO autorization_log_events
-      SET
-        organization_id = NEW.event_organization_id,
-        author_id = NEW.originator_id,
-        item_type = 'OrganizationsUsers',
-        item_id=  NEW.id,
-        event = 'create',
-        object_changes = JSON_OBJECT( 'user_id', json_array("", NEW.user_id), 'organization_id', json_array("", NEW.organization_id)),
-        created_at =  CURRENT_TIMESTAMP;
-    SQL_ACTIONS
-  end
-
-  create_trigger("organizations_users_after_update_of_user_id_row_tr", :generated => true, :compatibility => 1).
-      on("organizations_users").
-      after(:update).
-      of(:user_id) do
-    <<-SQL_ACTIONS
-
-    INSERT INTO autorization_log_events
-      SET
-        organization_id = NEW.event_organization_id,
-        author_id = NEW.originator_id,
-        item_type = 'OrganizationsUsers',
-        item_id=  OLD.id,
-        event = 'update',
-        object_changes = JSON_OBJECT( 'user_id', json_array(OLD.user_id, NEW.user_id), 'organization_id', json_array(OLD.organization_id, NEW.organization_id)),
-        created_at =  CURRENT_TIMESTAMP;
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          organization_id = NEW.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "organization_id": ', NEW.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 
@@ -2626,16 +2738,60 @@ BEGIN
       on("organizations_users").
       after(:delete) do
     <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+          author_id = OLD.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = OLD.user_id,
+          user_id = OLD.user_id,
+          organization_id = OLD.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'delete',
+          object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "organization_id": ', OLD.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
 
-    INSERT INTO autorization_log_events
-      SET
-        organization_id = OLD.event_organization_id,
+  create_trigger("permissions_project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+          author_id = NEW.originator_id,
+          item_type = 'PermissionProjectSecurityLevel',
+          item_id = NEW.project_security_level_id,
+          project_security_level_id = NEW.project_security_level_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'ProjectSecurityLevel',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
         author_id = OLD.originator_id,
-        item_type = 'OrganizationsUsers',
-        item_id=  OLD.id,
+        item_type = 'PermissionProjectSecurityLevel',
+        item_id = OLD.project_security_level_id,
+        project_security_level_id = OLD.project_security_level_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'ProjectSecurityLevel',
+        association_class_name = 'Permission',
         event = 'delete',
-        object_changes = JSON_OBJECT( 'user_id', json_array(OLD.user_id, ""), 'organization_id', json_array(OLD.organization_id, "")),
-        created_at =  CURRENT_TIMESTAMP;
+        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+        created_at = UTC_TIMESTAMP();
     SQL_ACTIONS
   end
 

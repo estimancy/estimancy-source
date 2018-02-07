@@ -77,19 +77,27 @@ class GroupsController < ApplicationController
     authorize! :manage, Group
 
     @group = Group.find(params[:group_id])
-    user_ids = params[:group][:user_ids]
+    user_ids = params[:group][:user_ids].reject { |e| e.to_s.empty? } rescue []
 
-    @group.users.each do |u|
-      gu = GroupsUsers.where(:group_id => @group.id, :user_id => u.id) unless u.blank?
-      gu.delete_all
-    end
+    # @group.users.each do |u|
+    #   gu = GroupsUsers.where(:group_id => @group.id, :user_id => u.id) unless u.blank?
+    #   gu.delete_all
+    # end
+    #
+    # user_ids.each do |u|
+    #   GroupsUsers.create(:group_id => @group.id, :user_id => u)
+    # end
 
-    user_ids.each do |u|
-      GroupsUsers.create(:group_id => @group.id, :user_id => u)
-    end
+    # # Trigger : Gestion historique des evenements et MAJ des users du group
+    @group.transaction_id = @group.transaction_id.nil? ? "#{@group.id}_1" : @group.transaction_id.next rescue "#{@group.id}_1"
+    group_users_before = @group.users.map(&:id)
+    group_users_after = user_ids.map(&:to_i)
+    groups_to_delete = group_users_before - group_users_after
+    users_to_add = group_users_after - group_users_before
+    new_user_group_ids = group_users_before - groups_to_delete + users_to_add
+    @group.user_ids = new_user_group_ids.map(&:to_i).uniq
 
     @group.projects(force_reload = true)
-
     if @group.save
       flash[:notice] = I18n.t(:notice_group_successful_updated)
     else

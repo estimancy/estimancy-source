@@ -86,6 +86,19 @@ module DirtyAssociations
   #### FIn AJOUT
 end
 
+
+#=======  TEST DIRTYABLE
+# puts @user.changed?
+# begin
+#   changes = @user._record_changes
+#   if @user._record_changes.changed?
+#     puts @user._record_changes.changes?
+#   end
+# rescue
+# end
+
+# #=======
+
 # module DirtyAssociations
 #   attr_accessor :dirty
 #

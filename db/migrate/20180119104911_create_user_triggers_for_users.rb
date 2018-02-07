@@ -17,7 +17,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
           -- Pour le super_admin
           IF (OLD.super_admin != NEW.super_admin) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,
@@ -30,7 +30,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
           -- Pour le mot de passe
           IF (OLD.encrypted_password != NEW.encrypted_password) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,
@@ -43,7 +43,7 @@ class CreateUserTriggersForUsers < ActiveRecord::Migration
           -- Pour le mot de passe
           IF (OLD.email != NEW.email) THEN
             INSERT INTO autorization_log_events SET
-              organization_id = NEW.event_organization_id,
+              event_organization_id = NEW.event_organization_id,
               author_id = NEW.originator_id,
               item_type = 'User',
               item_id = OLD.id,

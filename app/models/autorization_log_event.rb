@@ -3,7 +3,8 @@ class AutorizationLogEvent < ActiveRecord::Base
                   :is_model_security, :is_project_security, :is_security_on_created_from_model, :item_id, :item_type,
                   :object, :object_changes, :organization_id, :permission_id, :permissions_project_security_level_id,
                   :project_id, :project_security_id, :project_security_level_id, :transaction_id, :user_id,
-                  :association_class_name, :associations_before_changes, :associations_after_changes, :object_class_name
+                  :association_class_name, :associations_before_changes, :associations_after_changes, :object_class_name,
+                  :event_organization_id, :transaction_id
 
   serialize :object_changes, Hash
   serialize :object, Hash

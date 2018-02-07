@@ -20,11 +20,62 @@
 #############################################################################
 
 class GroupsUsers < ActiveRecord::Base
-  attr_accessible  :group_id, :user_id, :originator_id, :event_organization_id
+  attr_accessible  :group_id, :user_id, :originator_id, :event_organization_id, :transaction_id
+
   belongs_to :group
   belongs_to :user
 
   # Security Audit management
-  has_paper_trail
+  before_save :update_transaction_id_for_triggers
+
+  # Hair-Triggers
+  trigger.after(:insert) do
+    <<-SQL
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          group_id = NEW.group_id,
+          object_class_name = 'User',
+          association_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupUser',
+        item_id = OLD.user_id,
+        user_id = OLD.user_id,
+        group_id = OLD.group_id,
+        object_class_name = 'User',
+        association_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL
+  end
+
+  #object_changes = CONCAT('{ "user_id": ', '["', '', '", "', NEW.user_id, '"],', ' "group_id": ', '["', '', '", "', NEW.group_id, '"]}'),
+  #object_changes = CONCAT('{ "user_id": ', '["', '', '", "', OLD.user_id, '"],', ' "group_id": ', '["', '', '", "', OLD.group_id, '"]}'),
+  # END Hair-Triggers
+
+  private
+  def update_transaction_id_for_triggers
+    self.transaction_id = self.user.transaction_id || self.group.transaction_id rescue nil
+    self.originator_id = User.current
+    self.event_organization_id = Organization.current
+  end
+
 
 end

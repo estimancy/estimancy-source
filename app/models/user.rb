@@ -24,8 +24,6 @@ require 'net/ldap'
 # User of the application. User has many projects, groups, permissions and project securities. User have one language
 class User < ActiveRecord::Base
 
-  include DirtyAssociations   # For tracking associations changes
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :timeoutable, :lockable,# :saml_authenticatable, :trackable,
@@ -33,11 +31,6 @@ class User < ActiveRecord::Base
          :confirmable, # account confirmation
          :omniauthable, :omniauth_providers => [:google_oauth2, :saml],
          :authentication_keys => [:id_connexion]
-
-  serialize :organization_ids_before_last_update, JSON
-  serialize :organization_ids_after_last_update, JSON
-  serialize :group_ids_before_last_update, JSON
-  serialize :group_ids_after_last_update, JSON
 
   validates_presence_of :password, :on => :create
   validates_confirmation_of :password, :on => :create
@@ -48,23 +41,20 @@ class User < ActiveRecord::Base
                   :password, :password_confirmation, :remember_me, :provider, :uid, :description,
                   :avatar, :language_id, :first_name, :last_name, :initials, :time_zone, :locked_at,
                   :object_per_page, :password_salt, :password_hash, :password_reset_token, :auth_token, :created_at,
-                  :updated_at, :auth_type, :number_precision, :subscription_end_date
+                  :updated_at, :auth_type, :number_precision, :subscription_end_date, :transaction_id
 
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
   attr_accessor :id_connexion, :updating_password, :current_password
 
   # Hair-Triggers
-  # trigger.after(:insert) do
-  #   #"UPDATE autorization_log_events SET author_id = 61 WHERE id = NEW.id;"
-  # end
 
-  # trigger.after(:update).of(:super_admin).declare("old_value integer; new_value integer") do
-  #   <<-SQL
-  #     INSERT INTO autorization_log_events (organization_id, author_id, item_type, item_id, event, object_changes, created_at)
-  #     VALUES (NEW.event_organization_id, NEW.originator_id, 'User', OLD.id, 'update', '{ "super_admin": [old_value, new_value] }', CURRENT_TIMESTAMP );
-  #   SQL
-  # end
-
+  # Get the current user in model
+  def self.current
+    Thread.current[:user]
+  end
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
 
   has_and_belongs_to_many :projects
   has_and_belongs_to_many :permissions
@@ -78,17 +68,13 @@ class User < ActiveRecord::Base
   has_one :creator, :class_name => 'User', :foreign_key => 'creator_id'
 
   has_many :groups_users, class_name: 'GroupsUsers'
-  has_many :groups, through: :groups_users, :source => :group,
-                    :after_add    => :make_dirty_add,
-                    :after_remove => :make_dirty_remove
+  has_many :groups, through: :groups_users, :source => :group
 
   #has_many :organizations, through: :groups, :uniq => true
 
   #For user without group
   has_many :organizations_users, class_name: 'OrganizationsUsers'
-  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true,
-                           :after_add    => :make_dirty_add,
-                           :after_remove => :make_dirty_remove
+  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true
 
   #Master and Special Data Tables
   # has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'
@@ -113,8 +99,6 @@ class User < ActiveRecord::Base
   has_many :estimations, :foreign_key => 'creator_id', :class_name => 'Project'
 
   serialize :ten_latest_projects, Array
-
-  before_save :update_associations_for_triggers
 
   # Security Audit management
   has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
@@ -409,7 +393,9 @@ class User < ActiveRecord::Base
     #self.organization_ids_after_last_update = self.organization_ids
     #self.group_ids_after_last_update = self.group_ids
 
-    ApplicationController.helpers.save_associations_event_changes(self)
+    ###ApplicationController.helpers.save_associations_event_changes(self)
+
+
     # puts self.changed?
     # begin
     #   what_changes = self._record_changes

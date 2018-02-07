@@ -20,10 +20,58 @@
 #############################################################################
 
 class GroupsPermission < ActiveRecord::Base
-  attr_accessible  :group_id, :permission_id
+  attr_accessible  :group_id, :permission_id, :originator_id, :event_organization_id, :transaction_id
 
   belongs_to :group
   belongs_to :permission
 
+  # Security Audit management
+  before_save :update_transaction_id_for_triggers
   # has_paper_trail
+
+  # Hair-Triggers
+  trigger.after(:insert) do
+    <<-SQL
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupPermission',
+          item_id = NEW.group_id,
+          group_id = NEW.group_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'Group',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupPermission',
+        item_id = OLD.group_id,
+        group_id = OLD.group_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'Group',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL
+  end
+  # END Hair-Triggers
+
+  private
+  def update_transaction_id_for_triggers
+    self.transaction_id = self.group.transaction_id
+    self.originator_id = User.current
+    self.event_organization_id = Organization.current
+  end
 end

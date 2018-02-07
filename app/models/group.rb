@@ -24,9 +24,8 @@
 #Group class contains some User.
 class Group < ActiveRecord::Base
 
-  include DirtyAssociations   # For tracking associations changes
-
-  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id, :originator_id, :event_organization_id
+  attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id,
+                  :originator_id, :event_organization_id, :transaction_id
 
   has_and_belongs_to_many :users
   has_and_belongs_to_many :projects
@@ -34,9 +33,7 @@ class Group < ActiveRecord::Base
   has_many :project_securities
 
   has_many :groups_permission, dependent: :destroy
-  has_many :permissions, through: :groups_permission,
-           :after_add    => :make_dirty_add,
-           :after_remove => :make_dirty_remove
+  has_many :permissions, through: :groups_permission
 
   #Estimations permissions on Group according to the estimation status
   has_many :estimation_status_group_roles
@@ -47,63 +44,55 @@ class Group < ActiveRecord::Base
   has_many :users, through: :groups_users
 
   # Security Audit management
-  #has_paper_trail
-
   # Hair-Triggers
   trigger.after(:insert) do
     <<-SQL
 
       INSERT INTO autorization_log_events SET
-          organization_id = NEW.event_organization_id,
+          event_organization_id = NEW.event_organization_id,
           author_id = NEW.originator_id,
           item_type = 'Group',
           item_id = NEW.id,
           object_class_name = 'Group',
           event = 'create',
           object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
-          created_at = CURRENT_TIMESTAMP;
+          created_at = UTC_TIMESTAMP();
       SQL
-
-    #object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
   end
 
-  trigger.after(:update) do
+  trigger.after(:update).of(:name, :description) do
     <<-SQL
 
       INSERT INTO autorization_log_events SET
-        organization_id = NEW.event_organization_id,
+        event_organization_id = NEW.event_organization_id,
         author_id = NEW.originator_id,
         item_type = 'Group',
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'update',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL
-
-    #object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
   end
 
   trigger.after(:delete) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        organization_id = OLD.event_organization_id,
+        event_organization_id = OLD.event_organization_id,
         author_id = OLD.originator_id,
         item_type = 'Group',
         item_id = OLD.id,
         object_class_name = 'Group',
         event = 'delete',
         object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-        created_at = CURRENT_TIMESTAMP;
+        created_at = UTC_TIMESTAMP();
     SQL
-
-    #object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
   end
 
+  #object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
+  #object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),
+  #object_changes = JSON_OBJECT('name', json_array(OLD.name, ''), 'description', json_array(OLD.description, '')),
   # END Hair-Triggers
-
-
-  before_save :update_associations_for_triggers
 
   validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 
@@ -133,13 +122,6 @@ class Group < ActiveRecord::Base
     customize(lambda { |original_group, new_group|
       new_group.copy_id = original_group.id
     })
-  end
-
-  private
-  def update_associations_for_triggers
-
-    ApplicationController.helpers.save_associations_event_changes(self)
-    #puts self.changed?
   end
 
 end

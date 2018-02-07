@@ -320,6 +320,11 @@ class ApplicationController < ActionController::Base
       session[:organization_id] = nil
       @current_organization = nil
     end
+
+
+    # Pour les Trigger
+    User.current = current_user.id
+    Organization.current = @current_organization.id
   end
 
   # Get the selected Pbs_Project_Element

@@ -5,6 +5,7 @@ fr1:
       time: "%H:%M"
       short: ! '%d %b %H:%M'
       long: ! '%A %d %B %Y %H:%M'
+      audit: ! "%d/%m/%Y %H:%M:%S"
     am: am
     pm: pm
   #standard local format
@@ -1766,4 +1767,5 @@ fr1:
   audit_ProjectSecurityProject: "Projet / Niveaux de sécurité"
   export_pdf: "Exporter en PDF"
   report_management: "Gestion des rapports personnalisés"
+  audit_GroupPermission: "Groupe / Permissions"
 

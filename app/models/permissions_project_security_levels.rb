@@ -21,14 +21,61 @@
 
 class PermissionsProjectSecurityLevels < ActiveRecord::Base
 
-  attr_accessible  :project_security_level_id, :permission_id
+  attr_accessible  :project_security_level_id, :permission_id, :originator_id, :event_organization_id, :transaction_id
+
   belongs_to :project_security_level
   belongs_to :permission
 
   has_many :estimation_status_group_roles
 
   # Security Audit management
+  before_save :update_transaction_id_for_triggers
   #has_paper_trail
 
+  # Hair-Triggers
+  trigger.after(:insert) do
+    <<-SQL
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+          author_id = NEW.originator_id,
+          item_type = 'PermissionProjectSecurityLevel',
+          item_id = NEW.project_security_level_id,
+          project_security_level_id = NEW.project_security_level_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'ProjectSecurityLevel',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        author_id = OLD.originator_id,
+        item_type = 'PermissionProjectSecurityLevel',
+        item_id = OLD.project_security_level_id,
+        project_security_level_id = OLD.project_security_level_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'ProjectSecurityLevel',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL
+  end
+  # END Hair-Triggers
+
+  private
+  def update_transaction_id_for_triggers
+    self.transaction_id = self.project_security_level.transaction_id rescue nil
+    self.originator_id = User.current
+    self.event_organization_id = Organization.current
+  end
 
 end

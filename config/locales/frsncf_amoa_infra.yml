@@ -122,6 +122,7 @@ frsncf_amoa_infra:
      time: "%H:%M"
      short: ! '%d %b %H:%M'
      long: ! '%A %d %B %Y %H:%M'
+     audit: ! "%d/%m/%Y %H:%M:%S"
    am: am
    pm: pm
 
@@ -2094,6 +2095,7 @@ frsncf_amoa_infra:
   create_event: "Ajout"
   delete_event: "Suppression"
   audit_PermissionGroup: "Groupe / Permissions"
+  audit_GroupPermission: "Groupe / Permissions"
   audit_PermissionProjectSecurityLevel: "Niveau de sécurité / Permissions"
   audit_ProjectSecurityProject: "Projet / Niveaux de sécurité"
   export_pdf: "Exporter en PDF"

@@ -32,7 +32,6 @@ class OrganizationsController < ApplicationController
 
   #Pour gestion des rapports personnalisés
   def report_management
-
   end
 
   # Export PDF de la liste des changements
@@ -41,22 +40,31 @@ class OrganizationsController < ApplicationController
     @start_date = params[:start_date]
     @end_date = params[:end_date] || DateTime.now
 
-    @versions = AutorizationLogEvent.where(organization_id: @organization.id)
+    @versions = AutorizationLogEvent.where(organization_id: @organization.id).order(:created_at)
     unless @start_date.blank?
       #@versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: start_date .. end_date)
       #@versions = AutorizationLogEvent.where("created_at >= ? AND created_at <= ?", Time.parse(start_date), Time.parse(end_date))
       @versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: Time.parse(@start_date)..Time.parse(@end_date))
     end
 
-    @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
-    @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
-    @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+    @versions = AutorizationLogEvent.where(event_organization_id: @organization.id) #@current_organization.versions
+    #@versions.where(item_type: ["User","OrganizationsUsers"])
+    #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
+    @user_organizations_versions = @versions.where(item_type: ["OrganizationUser"])
+    @user_groups_versions = @versions.where(item_type: ["GroupUser"])
+    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupPermission"])
+    @group_permissions_versions = @versions.where(item_type: ["GroupPermission"])
+    @security_level_versions = @versions.where(item_type: ["PermissionProjectSecurityLevel"])
     @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
 
     # #Pour les estimations et les models
-    @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
-    @estimation_model_versions = @project_securities.where(is_model_security: true)
-    @estimation_versions = @project_securities.where(is_project_security: true)
+    @project_securities = @versions.where(item_type: ["ProjectSecurity"])
+    @estimation_model_versions = @project_securities.where(is_model_permission: true)
+    @estimation_versions = @project_securities.where(is_model_permission: [false, nil])
+
+    @estimation_model_groups_versions = @project_securities.where(is_model_permission: true)
+    @estimation_model_users_versions = @project_securities.where(is_model_permission: true)
+
 
     respond_to do |format|
       format.html
@@ -76,22 +84,25 @@ class OrganizationsController < ApplicationController
 
     authorize! :manage_security_audit, @organization
 
-    @versions = AutorizationLogEvent.where(organization_id: @organization.id) #@current_organization.versions
-
+    @versions = AutorizationLogEvent.where(event_organization_id: @organization.id) #@current_organization.versions
     #@versions.where(item_type: ["User","OrganizationsUsers"])
     #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
-    @user_versions = @versions.where(item_type: ["OrganizationUser", "GroupUser"])
-    @group_permissions_versions = @versions.where(item_type: ["PermissionGroup"])
-    @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionProjectSecurityLevel"])
+    @user_organizations_versions = @versions.where(item_type: ["OrganizationUser"])
+    @user_groups_versions = @versions.where(item_type: ["GroupUser"])
+    @group_permissions_versions = @versions.where(item_type: ["GroupPermission"])
+    @security_level_versions = @versions.where(item_type: ["PermissionProjectSecurityLevel"])
     @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
+    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupPermission"])
 
     # #Pour les estimations et les models
-    @project_securities = @versions.where(item_type: ["ProjectSecurityProject"])
-    @estimation_model_versions = @project_securities.where(is_model_security: true)
-    @estimation_model_groups_versions = @project_securities.where(is_model_security: true)
-    @estimation_model_users_versions = @project_securities.where(is_model_security: true)
+    @project_securities = @versions.where(item_type: ["ProjectSecurity"])
+    @estimation_model_versions = @project_securities.where(is_model_permission: true)
+    @estimation_versions = @project_securities.where(is_model_permission: [false, nil])
 
-    @estimation_versions = @project_securities.where(is_project_security: true)
+    @estimation_model_groups_versions = @project_securities.where(is_model_permission: true)
+    @estimation_model_users_versions = @project_securities.where(is_model_permission: true)
+
+
 
 
     #@security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionsProjectSecurityLevels", "EstimationStatusGroupRole"])

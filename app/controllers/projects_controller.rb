@@ -874,27 +874,91 @@ class ProjectsController < ApplicationController
       @wbs_activity_elements = []
       @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
 
+      # Before modifications for trigger
       # we can update group securities levels on edit or on show with some restrictions
-      if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
+      # if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
+      #   @project.project_securities.delete_all
+      #   unless params["group_securities"].nil?
+      #     params["group_securities"].each do |psl|
+      #       params["group_securities"][psl.first].each do |group|
+      #         ProjectSecurity.create(group_id: group.first.to_i,
+      #                                project_id: @project.id,
+      #                                project_security_level_id: psl.first,
+      #                                is_model_permission: false,
+      #                                is_estimation_permission: true)
+      #       end
+      #     end
+      #   end
+      #
+      #   unless params["group_securities_from_model"].nil?
+      #     params["group_securities_from_model"].each do |psl|
+      #       params["group_securities_from_model"][psl.first].each do |group|
+      #         ProjectSecurity.create(group_id: group.first.to_i,
+      #                                project_id: @project.id,
+      #                                project_security_level_id: psl.first,
+      #                                is_model_permission: true,
+      #                                is_estimation_permission: false)
+      #       end
+      #     end
+      #   end
+      #
+      #   unless params["user_securities"].nil?
+      #     params["user_securities"].each do |psl|
+      #       params["user_securities"][psl.first].each do |user|
+      #         ProjectSecurity.create(user_id: user.first.to_i,
+      #                                project_id: @project.id,
+      #                                project_security_level_id: psl.first,
+      #                                is_model_permission: @project.is_model,
+      #                                is_estimation_permission: true)
+      #       end
+      #     end
+      #   end
+      #
+      #   unless params["user_securities_from_model"].nil?
+      #     params["user_securities_from_model"].each do |psl|
+      #       params["user_securities_from_model"][psl.first].each do |user|
+      #         # TODO : vérifier cette boucle
+      #         owner_key = AdminSetting.find_by_key("Estimation Owner")
+      #         owner = User.where(initials: owner_key.value).first
+      #         ProjectSecurity.create(user_id: owner.id.to_i,
+      #                                project_id: @project.id,
+      #                                project_security_level_id: psl.first,
+      #                                is_model_permission: @project.is_model,
+      #                                is_estimation_permission: false)
+      #       end
+      #     end
+      #   end
+      # end
+      # END Before modifications for trigger
 
-        @project.project_securities.delete_all
+
+      # Après les modifications pour les Trigger
+      if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
+        groups_project_securities = @project.project_securities
 
         unless params["group_securities"].nil?
+          group_securities_a_garder = []
+          group_securities_to_add = []
+          group_securities_to_destroy = []
+
           params["group_securities"].each do |psl|
             params["group_securities"][psl.first].each do |group|
-              # ProjectSecurity.create(group_id: group.first.to_i,
-              #                        project_id: @project.id,
-              #                        project_security_level_id: psl.first,
-              #                        is_model_permission: false,
-              #                        is_estimation_permission: true)
-
-              @project.project_securities.create(group_id: group.first.to_i,
-                                                 project_security_level_id: psl.first,
-                                                 is_model_permission: false,
-                                                 is_estimation_permission: true)
+              ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first, is_model_permission: false, is_estimation_permission: true).first
+              if ps
+                group_securities_a_garder << ps
+              else
+                group_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
+                                                                              is_model_permission: false, is_estimation_permission: true,
+                                                                              originator_id: @current_user.id, event_organization_id: @organization.id)
+              end
             end
           end
+          # on met à jour les securite des groupes du projet
+          group_securities_to_destroy = groups_project_securities.map(&:id) - group_securities_a_garder.map(&:id) - group_securities_to_add.map(&:id)
+          @project.project_securities.where(id: group_securities_to_destroy).destroy_all
         end
+
+
 
         unless params["group_securities_from_model"].nil?
           params["group_securities_from_model"].each do |psl|
@@ -908,7 +972,8 @@ class ProjectsController < ApplicationController
               @project.project_securities.create(group_id: group.first.to_i,
                                                  project_security_level_id: psl.first,
                                                  is_model_permission: true,
-                                                 is_estimation_permission: false)
+                                                 is_estimation_permission: false,
+                                                 originator_id: @current_user.id, event_organization_id: @organization.id)
             end
           end
         end
@@ -925,7 +990,8 @@ class ProjectsController < ApplicationController
               @project.project_securities.create(user_id: user.first.to_i,
                                      project_security_level_id: psl.first,
                                      is_model_permission: @project.is_model,
-                                     is_estimation_permission: true)
+                                     is_estimation_permission: true,
+                                     originator_id: @current_user.id, event_organization_id: @organization.id)
             end
           end
         end
@@ -945,7 +1011,8 @@ class ProjectsController < ApplicationController
               @project.project_securities.create(user_id: owner.id.to_i,
                                      project_security_level_id: psl.first,
                                      is_model_permission: @project.is_model,
-                                     is_estimation_permission: false)
+                                     is_estimation_permission: false,
+                                     originator_id: @current_user.id, event_organization_id: @organization.id)
             end
           end
         end
