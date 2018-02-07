@@ -802,6 +802,8 @@ class ProjectsController < ApplicationController
     set_page_title I18n.t(:edit_estimation)
     @project = Project.find(params[:id])
     @organization = @project.organization
+    @project.transaction_id = @project.transaction_id.nil? ? "#{@project.id}_1" : @project.transaction_id.next rescue "#{@project.id}_1"
+
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
