@@ -20,7 +20,8 @@
 #############################################################################
 
 class EstimationStatusGroupRole < ActiveRecord::Base
-  attr_accessible :estimation_status_id, :group_id, :project_security_level_id, :organization_id
+  attr_accessible :estimation_status_id, :group_id, :project_security_level_id, :organization_id,
+                  :originator_id, :event_organization_id, :transaction_id
 
   belongs_to :group
   belongs_to :estimation_status
@@ -39,7 +40,7 @@ class EstimationStatusGroupRole < ActiveRecord::Base
           event_organization_id = NEW.event_organization_id,
           transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
           author_id = NEW.originator_id,
-          item_type = 'EstimationStatusGroupPermission',
+          item_type = 'EstimationStatusGroupRole',
           item_id = NEW.estimation_status_id,
           estimation_status_id = NEW.estimation_status_id,
           group_id = NEW.group_id,
@@ -61,7 +62,7 @@ class EstimationStatusGroupRole < ActiveRecord::Base
         event_organization_id = OLD.event_organization_id,
         transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
         author_id = OLD.originator_id,
-        item_type = 'EstimationStatusGroupPermission',
+        item_type = 'EstimationStatusGroupRole',
         item_id = OLD.estimation_status_id,
         group_id = OLD.group_id,
         project_security_level_id = OLD.project_security_level_id,

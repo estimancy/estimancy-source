@@ -52,7 +52,7 @@ class OrganizationsController < ApplicationController
     #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
     @user_organizations_versions = @versions.where(item_type: ["OrganizationUser"])
     @user_groups_versions = @versions.where(item_type: ["GroupUser"])
-    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupPermission"])
+    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupRole"])
     @group_permissions_versions = @versions.where(item_type: ["GroupPermission"])
     @security_level_versions = @versions.where(item_type: ["PermissionProjectSecurityLevel"])
     @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
@@ -84,7 +84,8 @@ class OrganizationsController < ApplicationController
 
     authorize! :manage_security_audit, @organization
 
-    @versions = AutorizationLogEvent.where(event_organization_id: @organization.id) #@current_organization.versions
+    @versions = AutorizationLogEvent.where(event_organization_id: @organization.id).order(:created_at) #@current_organization.versions
+
     #@versions.where(item_type: ["User","OrganizationsUsers"])
     #@user_versions = @versions.where(item_type: ["User", "UserOrganizations", "UserGroups"])
     @user_organizations_versions = @versions.where(item_type: ["OrganizationUser"])
@@ -92,7 +93,7 @@ class OrganizationsController < ApplicationController
     @group_permissions_versions = @versions.where(item_type: ["GroupPermission"])
     @security_level_versions = @versions.where(item_type: ["PermissionProjectSecurityLevel"])
     @simple_events_versions = @versions.where(item_type: ["Group", "User", "ProjectSecurityLevel"])
-    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupPermission"])
+    @user_estimation_status_versions = @versions.where(item_type: ["EstimationStatusGroupRole"])
 
     # #Pour les estimations et les models
     @project_securities = @versions.where(item_type: ["ProjectSecurity"])

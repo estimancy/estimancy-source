@@ -33,12 +33,13 @@ class ProjectSecurityLevel < ActiveRecord::Base
 
   belongs_to :organization
 
+  # Security Audit management
   # Hair-Triggers
   trigger.after(:insert) do
     <<-SQL
 
       INSERT INTO autorization_log_events SET
-        organization_id = NEW.event_organization_id,
+        event_organization_id = NEW.event_organization_id,
         author_id = NEW.originator_id,
         item_type = 'ProjectSecurityLevel',
         item_id = NEW.id,
@@ -52,7 +53,7 @@ class ProjectSecurityLevel < ActiveRecord::Base
   trigger.after(:update).of(:name, :description) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        organization_id = NEW.event_organization_id,
+        event_organization_id = NEW.event_organization_id,
         author_id = NEW.originator_id,
         item_type = 'ProjectSecurityLevel',
         item_id = OLD.id,
@@ -67,7 +68,7 @@ class ProjectSecurityLevel < ActiveRecord::Base
   trigger.after(:delete) do
     <<-SQL
       INSERT INTO autorization_log_events SET
-        organization_id = OLD.event_organization_id,
+        event_organization_id = OLD.event_organization_id,
         author_id = OLD.originator_id,
         item_type = 'ProjectSecurityLevel',
         item_id = OLD.id,
@@ -95,5 +96,14 @@ class ProjectSecurityLevel < ActiveRecord::Base
   def to_s
     self.nil? ? '' : self.name
   end
+
+  # private
+  # def update_data_for_triggers
+  #   ###self.transaction_id = self.transaction_id.nil? ? "#{self.id}_1" : self.transaction_id.next rescue "#{self.id}_1"
+  #   if self.name_was != self.name || self.description_was != self.description
+  #     self.originator_id = User.current
+  #     self.event_organization_id = Organization.current
+  #   end
+  # end
 
 end

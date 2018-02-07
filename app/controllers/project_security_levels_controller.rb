@@ -46,6 +46,10 @@ class ProjectSecurityLevelsController < ApplicationController
     @project_security_level = ProjectSecurityLevel.new(params[:project_security_level])
     @organization = @current_organization
 
+    # for Trigger
+    @project_security_level.originator_id = @current_user.id
+    @project_security_level.event_organization_id = @organization.id
+
     set_page_title I18n.t(:new_project_security_level)
     set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@current_organization, anchor: "tabs-project-security-levels"), I18n.t('new_project_security_level') => ""
 
@@ -65,7 +69,7 @@ class ProjectSecurityLevelsController < ApplicationController
     set_page_title I18n.t(:edit_project_security_level, value: @organization.name)
     set_breadcrumbs I18n.t(:security_level) => organization_setting_path(@organization, anchor: "tabs-project-security-levels"), I18n.t('project_security_level_edition') => ""
 
-    if @project_security_level.update_attributes(params[:project_security_level])
+    if @project_security_level.update_attributes(params[:project_security_level].merge(originator_id: @current_user.id, event_organization_id: @organization.id))
       #redirect_to organization_authorization_path(@project_security_level.organization_id, anchor: "tabs-project-security-levels"), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"
       redirect_to redirect_apply(edit_organization_project_security_level_path(@organization, @project_security_level), nil, organization_authorization_path(@organization, :anchor => 'tabs-project-security-levels')), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"
     else

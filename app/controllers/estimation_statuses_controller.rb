@@ -49,6 +49,9 @@ class EstimationStatusesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     @organization.estimation_statuses.all.each do |status|
+
+      status.update_attribute(:transaction_id, status.transaction_id.next)
+
       params[:status_group_role][status.id.to_s] ||= {}
       @organization.groups.each do |group|
         params[:status_group_role][status.id.to_s][group.id.to_s] ||= []
