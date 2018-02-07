@@ -53,7 +53,7 @@ class ProjectSecurity < ActiveRecord::Base
           is_model_permission = NEW.is_model_permission,
           is_estimation_permission = NEW.is_estimation_permission,
           object_class_name = 'Project',
-          association_class_name = 'ProjectSecurity',
+          association_class_name = 'EstimationStatusGroupRole',
           event = 'create',
           object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
                                       ' "group_id": ', NEW.group_id,

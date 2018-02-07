@@ -323,8 +323,8 @@ class ApplicationController < ActionController::Base
 
 
     # Pour les Trigger
-    User.current = current_user.id
-    Organization.current = @current_organization.id
+    User.current = current_user.id rescue nil
+    Organization.current = @current_organization.id rescue nil
   end
 
   # Get the selected Pbs_Project_Element
