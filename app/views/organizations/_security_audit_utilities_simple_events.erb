@@ -21,10 +21,13 @@
 
         <td class="span2 align-center">
           <% if version.event == 'delete' %>
-              <%= YAML.load(version.object_changes)["name"].first rescue "-"  %>
+              <% object_name = YAML.load(version.object_changes)["name"].first rescue "-"  %>
           <% else %>
-              <%= show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue "-"  %>
+              <% object_name = show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue nil  %>
+              <% object_name.blank? ? (object_name = YAML.load(version.object_changes)["name"].first rescue nil) : object_name %>
           <% end %>
+
+          <%= object_name %>
         </td>
 
         <td class="span2 align-center"><%= I18n.t("audit_#{version.event}") %></td>

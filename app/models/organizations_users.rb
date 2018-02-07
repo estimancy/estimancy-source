@@ -78,6 +78,7 @@ class OrganizationsUsers < ActiveRecord::Base
     self.event_organization_id = Organization.current
   end
 
+
   # Triggers
   # trigger.after(:insert) do
   #   <<-SQL
