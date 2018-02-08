@@ -960,8 +960,6 @@ class ProjectsController < ApplicationController
           @project.project_securities.where(id: group_securities_to_destroy).destroy_all
         end
 
-
-
         unless params["group_securities_from_model"].nil?
           params["group_securities_from_model"].each do |psl|
             params["group_securities_from_model"][psl.first].each do |group|

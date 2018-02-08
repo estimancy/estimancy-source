@@ -27,7 +27,7 @@
         </td>
 
         <td class="span2 align-center">
-          <%= EstimationStatus.where(id: version.item_id) rescue "-"  %>
+          <%= EstimationStatus.where(id: version.item_id).first rescue "-"  %>
         </td>
         <!--<td class="span2 align-center"> <%#= version.association_class_name %> </td>-->
         <td class="span2">
@@ -45,7 +45,7 @@
               Suppression <br>
               <% delete_events.each do |event| %>
                   * Group : <%= Group.find(event.group_id) rescue nil %><br>
-                  * Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
+                    Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
               <% end %>
           <% end %>
         </td>
@@ -55,7 +55,7 @@
               Ajout <br>
               <% create_events.each do |event| %>
                   * Group : <%= Group.find(event.group_id) rescue nil %><br>
-                  * Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
+                    Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
               <% end %>
           <% end %>
         </td>

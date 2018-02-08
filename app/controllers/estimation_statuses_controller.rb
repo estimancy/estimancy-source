@@ -48,26 +48,55 @@ class EstimationStatusesController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
 
-    @organization.estimation_statuses.all.each do |status|
+    # @organization.estimation_statuses.all.each do |status|
+    #   params[:status_group_role][status.id.to_s] ||= {}
+    #
+    #   @organization.groups.each do |group|
+    #     params[:status_group_role][status.id.to_s][group.id.to_s] ||= []
+    #
+    #     est_status_groups = status.estimation_status_group_roles.where(group_id: group.id)
+    #     est_status_groups.destroy_all #delete_all
+    #
+    #     unless params[:status_group_role][status.id.to_s][group.id.to_s].blank?
+    #       status.estimation_status_group_roles.build(organization_id: @organization.id,
+    #                                                  group_id: group.id,
+    #                                                  project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i)
+    #     end
+    #     status.save
+    #   end
+    # end
 
+    # TEST
+    relations_a_garder = []
+    relations_to_add = []
+    relations_to_destroy = []
+
+    @organization.estimation_statuses.all.each do |status|
       status.update_attribute(:transaction_id, status.transaction_id.next)
 
       params[:status_group_role][status.id.to_s] ||= {}
-
       @organization.groups.each do |group|
         params[:status_group_role][status.id.to_s][group.id.to_s] ||= []
-
         est_status_groups = status.estimation_status_group_roles.where(group_id: group.id)
-        est_status_groups.destroy_all #delete_all
-
         unless params[:status_group_role][status.id.to_s][group.id.to_s].blank?
-          status.estimation_status_group_roles.build(organization_id: @organization.id,
-                                                     group_id: group.id,
-                                                     project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i)
+          relation = status.estimation_status_group_roles.where(organization_id: @organization.id, group_id: group.id,
+                                                                project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i).first
+          if relation
+            relations_a_garder << relation
+          else
+            relations_to_add << status.estimation_status_group_roles.build(organization_id: @organization.id, group_id: group.id,
+                                                                           project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i)
+          end
         end
-        status.save
+
+        # on met à jour les relations
+        relations_to_destroy = est_status_groups.map(&:id) - relations_a_garder.map(&:id) - relations_to_add.map(&:id)
+        status.estimation_status_group_roles.where(id: relations_to_destroy).destroy_all
       end
+      status.save
     end
+    # Fin TEST
+
 
     redirect_to organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :notice => "#{I18n.t (:notice_estimation_status_successful_updated)}"
   end
