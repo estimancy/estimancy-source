@@ -85,7 +85,8 @@ class EstimationStatusesController < ApplicationController
             relations_a_garder << relation
           else
             relations_to_add << status.estimation_status_group_roles.build(organization_id: @organization.id, group_id: group.id,
-                                                                           project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i)
+                                                                           project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i,
+                                                                           originator_id: @current_user.id, event_organization_id: @organization.id)
           end
         end
 

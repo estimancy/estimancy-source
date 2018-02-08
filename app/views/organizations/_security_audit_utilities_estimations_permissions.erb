@@ -44,14 +44,15 @@
           <% unless delete_events.blank? %>
               Suppression <br>
               <% delete_events.each_with_index do |event, index| %>
-                  <%= index+1 %> ) <br>
-                  * Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
+                  <%#= index+1 %>
                   <% unless event.group_id.nil? %>
                       * Group : <%= Group.find(event.group_id) rescue nil %><br>
                   <% end %>
                   <% unless event.user_id.nil? %>
                       * Utilisateur : <%= User.find(event.user_id) rescue nil %><br>
                   <% end %>
+                  Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>
+                  <br>
               <% end %>
           <% end %>
         </td>
@@ -60,14 +61,15 @@
           <% unless create_events.blank? %>
               Ajout <br>
               <% create_events.each_with_index do |event, index| %>
-                  <%= index+1 %> ) <br>
-                  * Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>  <br>
+                  <%#= index+1 %>
                   <% unless event.group_id.nil? %>
                       * Group : <%= Group.find(event.group_id) rescue nil %><br>
                   <% end %>
                   <% unless event.user_id.nil? %>
                       * Utilisateur : <%= User.find(event.user_id) rescue nil %><br>
                   <% end %>
+                  Niveau de sécurité : <%= ProjectSecurityLevel.find(event.project_security_level_id) rescue nil %>
+                  <br>
               <% end %>
           <% end %>
         </td>
