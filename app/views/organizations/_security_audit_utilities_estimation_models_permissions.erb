@@ -6,6 +6,7 @@
     <th>Modèle d'estimation</th>
     <!--<th>Associations / Relations</th>-->
     <th>Action effectuée</th>
+    <th>Nature permissions</th>
     <th>Avant modification</th>
     <th>Après modification</th>
     <th>Auteur</th>
@@ -14,7 +15,8 @@
   </thead>
 
   <tbody>
-  <% table_versions.group_by(&:transaction_id).each do |transaction_id, versions| %>
+  <%# table_versions.group_by(&:transaction_id).each do |transaction_id, versions| %>
+  <% table_versions.group_by{|e| [e.transaction_id, e.is_model_permission]}.each do |transaction_id, versions| %>
 
       <% by_events =  versions.group_by(&:event) %>
       <% create_events =  by_events['create'] %>
@@ -40,6 +42,8 @@
           <% end %>
         </td>
 
+        <td><%= version.is_model_permission ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_model_group_security_resume) %>
+        </td>
         <td class="span3">
           <% unless delete_events.blank? %>
               Suppression <br>
