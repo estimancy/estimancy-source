@@ -1438,7 +1438,12 @@ class ProjectsController < ApplicationController
 
           # create the module_project_ratio_elements
           ratio.wbs_activity_ratio_elements.each do |ratio_element|
-            mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
+            mp_ratio_element = ModuleProjectRatioElement.new(organization_id: @organization.id,
+                                                             wbs_activity_id: my_module_project.wbs_activity_id,
+                                                             pbs_project_element_id: @pbs_project_element.id,
+                                                             module_project_id: my_module_project.id,
+                                                             wbs_activity_ratio_id: ratio.id,
+                                                             wbs_activity_ratio_element_id: ratio_element.id,
                                  multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
                                  ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
             mp_ratio_element.save

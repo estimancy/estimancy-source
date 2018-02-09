@@ -273,23 +273,36 @@ class ModuleProject < ActiveRecord::Base
     #create module_project ratio elements
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
       #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
-      mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id, module_project_id: self.id, pbs_project_element_id: pbs_project_element.id,
-                                                     wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
+      mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                     module_project_id: self.id,
+                                                     pbs_project_element_id: pbs_project_element.id,
+                                                     wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                     wbs_activity_ratio_element_id: ratio_element.id,
                                                      wbs_activity_element_id: ratio_element.wbs_activity_element_id).first
 
       if mp_ratio_elt.nil?
-        mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id, module_project_id: self.id, pbs_project_element_id: pbs_project_element.id,
-                                                       wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
+        mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                       module_project_id: self.id,
+                                                       pbs_project_element_id: pbs_project_element.id,
+                                                       wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                       wbs_activity_ratio_element_id: ratio_element.id).first
 
         if !mp_ratio_elt.nil?
-          mp_ratio_elt.update_attributes(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                         is_optional: ratio_element.is_optional, wbs_activity_ratio_element_id: ratio_element.id, multiple_references: ratio_element.multiple_references,
+          mp_ratio_elt.update_attributes(pbs_project_element_id: pbs_project_element.id,
+                                         module_project_id: self.id,
+                                         wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                         wbs_activity_ratio_element_id: ratio_element.id,
+                                         is_optional: ratio_element.is_optional, multiple_references: ratio_element.multiple_references,
                                          wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
                                          ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
         else
-          mp_ratio_elt = ModuleProjectRatioElement.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                                          organization_id: organization.id, wbs_activity_id: wbs_activity.id,
-                                                          is_optional: ratio_element.is_optional, wbs_activity_ratio_element_id: ratio_element.id, multiple_references: ratio_element.multiple_references,
+          mp_ratio_elt = ModuleProjectRatioElement.create(pbs_project_element_id: pbs_project_element.id,
+                                                          module_project_id: self.id,
+                                                          wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                          organization_id: organization.id,
+                                                          wbs_activity_id: wbs_activity.id,
+                                                          wbs_activity_ratio_element_id: ratio_element.id,
+                                                          is_optional: ratio_element.is_optional, multiple_references: ratio_element.multiple_references,
                                                           wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
                                                           ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
         end

@@ -360,7 +360,9 @@ class WbsActivitiesController < ApplicationController
       wai.comment = params[:comment][wai.id.to_s]
       wai.save
     end
-    @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
+    @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,
+                                                                                         wbs_activity_ratio_id: @ratio_reference.id,
+                                                                                         pbs_project_element_id: @pbs_project_element.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
 
@@ -1799,7 +1801,9 @@ class WbsActivitiesController < ApplicationController
       effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1 : @wbs_activity.effort_unit_coefficient.to_f
       @ratio_reference = @ratio_reference || WbsActivityRatio.find(params[:ratio]) ###WbsActivityRatio.find(params[:dashboard_selected_ratio_id])
 
-      @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
+      @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @wbs_activity.organization_id,
+                                                                                           wbs_activity_ratio_id: @ratio_reference.id,
+                                                                                           pbs_project_element_id: @pbs_project_element.id)
 
       # SAUVEGARDE DES VALEURS DES RATIO-ELEMENTS DU MODULE-PROJECT
       #======================  DEBUT SAUVEGARDE ====================
