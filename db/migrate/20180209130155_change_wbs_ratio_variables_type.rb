@@ -1,6 +1,6 @@
 class ChangeWbsRatioVariablesType < ActiveRecord::Migration
   def up
-    change_column :module_project_ratio_variables, :value_from_percentage, :decimal, :precision => 20, :scale => 6
+    change_column :module_project_ratio_variables, :value_from_percentage, :decimal, :precision => 15, :scale => 5
 
     # change_column :module_project_ratio_elements, :theoretical_effort_low, :decimal, :precision => 20, :scale => 6
     # change_column :module_project_ratio_elements, :theoretical_effort_high, :decimal, :precision => 20, :scale => 6
