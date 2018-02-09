@@ -1626,3 +1626,6 @@ it:
   audit_ProjectSecurityProject: "Projet / Niveaux de sécurité"
   export_pdf: "Exporter en PDF"
   report_management: "Gestion des rapports personnalisés"
+  create_new_version_when_status_changed: "Créer nouvelle version lors du changement de status"
+  change_before: "avant"
+  change_after: "après"

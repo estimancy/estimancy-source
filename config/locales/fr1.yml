@@ -1768,4 +1768,7 @@ fr1:
   export_pdf: "Exporter en PDF"
   report_management: "Gestion des rapports personnalisés"
   audit_GroupPermission: "Groupe / Permissions"
+  create_new_version_when_status_changed: "Créer nouvelle version lors du changement de status"
+  change_before: "avant"
+  change_after: "après"
 
