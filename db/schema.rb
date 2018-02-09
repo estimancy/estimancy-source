@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180116085530) do
+ActiveRecord::Schema.define(:version => 20180209130155) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -42,15 +42,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.integer  "project_area_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "activity_profiles", :force => true do |t|
-    t.integer  "project_id"
-    t.integer  "wbs_project_element_id"
-    t.integer  "organization_profile_id"
-    t.float    "ratio_percentage"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
   end
 
   create_table "admin_settings", :force => true do |t|
@@ -299,17 +290,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], :name => "organization_estimation_values"
 
-  create_table "events", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.date     "start_date"
-    t.date     "end_date"
-    t.integer  "event_type_id"
-    t.integer  "project_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "expert_judgement_instance_estimates", :force => true do |t|
     t.integer "pbs_project_element_id"
     t.integer "module_project_id"
@@ -344,17 +324,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
   end
 
   add_index "expert_judgement_instances", ["organization_id", "name"], :name => "index_expert_judgement_instances_on_organization_id_and_name", :unique => true
-
-  create_table "factor_translations", :force => true do |t|
-    t.integer  "factor_id"
-    t.string   "locale",     :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.text     "helps"
-  end
-
-  add_index "factor_translations", ["factor_id"], :name => "index_factor_translations_on_factor_id"
-  add_index "factor_translations", ["locale"], :name => "index_factor_translations_on_locale"
 
   create_table "factors", :force => true do |t|
     t.string   "name"
@@ -1053,24 +1022,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
 
   add_index "kb_kb_models", ["organization_id", "name"], :name => "index_kb_kb_models_on_organization_id_and_name", :unique => true
 
-  create_table "labor_categories", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "uuid"
-    t.integer  "record_status_id"
-    t.string   "custom_value"
-    t.integer  "owner_id"
-    t.text     "change_comment"
-    t.integer  "reference_id"
-    t.string   "reference_uuid"
-  end
-
-  add_index "labor_categories", ["record_status_id"], :name => "index_labor_categories_on_record_status_id"
-  add_index "labor_categories", ["reference_id"], :name => "index_labor_categories_on_parent_id"
-  add_index "labor_categories", ["uuid"], :name => "index_labor_categories_on_uuid", :unique => true
-
   create_table "labor_categories_project_areas", :id => false, :force => true do |t|
     t.integer  "labor_category_id"
     t.integer  "project_area_id"
@@ -1087,12 +1038,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
@@ -1121,6 +1066,8 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
   create_table "module_project_guw_unit_of_works", :id => false, :force => true do |t|
     t.integer  "uow_organization_id",           :default => 0,     :null => false
     t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
     t.integer  "uow_module_project_id",         :default => 0,     :null => false
     t.integer  "uow_pbs_project_element_id"
     t.integer  "uow_guw_model_id",              :default => 0,     :null => false
@@ -1188,20 +1135,20 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.text     "description"
     t.float    "ratio_value"
     t.float    "tjm"
-    t.decimal  "theoretical_effort_probable",    :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_probable",    :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_probable",      :precision => 20, :scale => 6
-    t.decimal  "retained_effort_probable",       :precision => 15, :scale => 5
+    t.decimal  "retained_effort_probable",       :precision => 20, :scale => 6
     t.decimal  "retained_cost_probable",         :precision => 20, :scale => 6
     t.text     "comments"
-    t.decimal  "theoretical_effort_low",         :precision => 15, :scale => 5
-    t.decimal  "theoretical_effort_high",        :precision => 15, :scale => 5
-    t.decimal  "theoretical_effort_most_likely", :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_low",         :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_high",        :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_most_likely", :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_low",           :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_high",          :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_most_likely",   :precision => 20, :scale => 6
-    t.decimal  "retained_effort_low",            :precision => 15, :scale => 5
-    t.decimal  "retained_effort_high",           :precision => 15, :scale => 5
-    t.decimal  "retained_effort_most_likely",    :precision => 15, :scale => 5
+    t.decimal  "retained_effort_low",            :precision => 20, :scale => 6
+    t.decimal  "retained_effort_high",           :precision => 20, :scale => 6
+    t.decimal  "retained_effort_most_likely",    :precision => 20, :scale => 6
     t.decimal  "retained_cost_low",              :precision => 20, :scale => 6
     t.decimal  "retained_cost_high",             :precision => 20, :scale => 6
     t.decimal  "retained_cost_most_likely",      :precision => 20, :scale => 6
@@ -1230,10 +1177,10 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.string   "name"
     t.text     "description"
     t.string   "percentage_of_input"
-    t.float    "value_from_percentage"
-    t.boolean  "is_modifiable",                  :default => false
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.decimal  "value_from_percentage",          :precision => 20, :scale => 6
+    t.boolean  "is_modifiable",                                                 :default => false
+    t.datetime "created_at",                                                                       :null => false
+    t.datetime "updated_at",                                                                       :null => false
     t.boolean  "is_used_in_ratio_calculation"
   end
 
@@ -1341,21 +1288,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.string   "application_name"
     t.boolean  "private",                               :default => false
     t.boolean  "is_historicized"
-  end
-
-  create_table "organization_labor_categories", :force => true do |t|
-    t.integer  "organization_id"
-    t.integer  "labor_category_id"
-    t.string   "level"
-    t.string   "name"
-    t.text     "description"
-    t.float    "cost_per_hour"
-    t.integer  "base_year"
-    t.integer  "currency_id"
-    t.float    "hour_per_day"
-    t.integer  "days_per_year"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "organization_profiles", :force => true do |t|
@@ -1577,21 +1509,6 @@ ActiveRecord::Schema.define(:version => 20180116085530) do
     t.integer  "project_area_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "profile_categories", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.integer  "organization_id"
-    t.string   "uuid"
-    t.integer  "record_status_id"
-    t.string   "custom_value"
-    t.integer  "owner_id"
-    t.text     "change_comment"
-    t.integer  "reference_id"
-    t.string   "reference_uuid"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
   end
 
   create_table "profiles", :force => true do |t|
