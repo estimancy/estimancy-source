@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180119104911) do
+ActiveRecord::Schema.define(:version => 20180209144649) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -42,15 +42,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.integer  "project_area_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "activity_profiles", :force => true do |t|
-    t.integer  "project_id"
-    t.integer  "wbs_project_element_id"
-    t.integer  "organization_profile_id"
-    t.float    "ratio_percentage"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
   end
 
   create_table "admin_settings", :force => true do |t|
@@ -302,11 +293,13 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.string   "status_color"
     t.boolean  "is_archive_status"
     t.text     "description"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
     t.integer  "copy_id"
     t.boolean  "is_new_status"
     t.text     "transaction_id"
+    t.boolean  "create_new_version_before"
+    t.boolean  "create_new_version_after"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -334,17 +327,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], :name => "organization_estimation_values"
-
-  create_table "events", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.date     "start_date"
-    t.date     "end_date"
-    t.integer  "event_type_id"
-    t.integer  "project_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "expert_judgement_instance_estimates", :force => true do |t|
     t.integer "pbs_project_element_id"
@@ -380,17 +362,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
   end
 
   add_index "expert_judgement_instances", ["organization_id", "name"], :name => "index_expert_judgement_instances_on_organization_id_and_name", :unique => true
-
-  create_table "factor_translations", :force => true do |t|
-    t.integer  "factor_id"
-    t.string   "locale",     :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.text     "helps"
-  end
-
-  add_index "factor_translations", ["factor_id"], :name => "index_factor_translations_on_factor_id"
-  add_index "factor_translations", ["locale"], :name => "index_factor_translations_on_locale"
 
   create_table "factors", :force => true do |t|
     t.string   "name"
@@ -1101,24 +1072,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
 
   add_index "kb_kb_models", ["organization_id", "name"], :name => "index_kb_kb_models_on_organization_id_and_name", :unique => true
 
-  create_table "labor_categories", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "uuid"
-    t.integer  "record_status_id"
-    t.string   "custom_value"
-    t.integer  "owner_id"
-    t.text     "change_comment"
-    t.integer  "reference_id"
-    t.string   "reference_uuid"
-  end
-
-  add_index "labor_categories", ["record_status_id"], :name => "index_labor_categories_on_record_status_id"
-  add_index "labor_categories", ["reference_id"], :name => "index_labor_categories_on_parent_id"
-  add_index "labor_categories", ["uuid"], :name => "index_labor_categories_on_uuid", :unique => true
-
   create_table "labor_categories_project_areas", :id => false, :force => true do |t|
     t.integer  "labor_category_id"
     t.integer  "project_area_id"
@@ -1135,12 +1088,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "machine_learnings", :force => true do |t|
-    t.string   "username"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
@@ -1238,20 +1185,20 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.text     "description"
     t.float    "ratio_value"
     t.float    "tjm"
-    t.decimal  "theoretical_effort_probable",    :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_probable",    :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_probable",      :precision => 20, :scale => 6
-    t.decimal  "retained_effort_probable",       :precision => 15, :scale => 5
+    t.decimal  "retained_effort_probable",       :precision => 20, :scale => 6
     t.decimal  "retained_cost_probable",         :precision => 20, :scale => 6
     t.text     "comments"
-    t.decimal  "theoretical_effort_low",         :precision => 15, :scale => 5
-    t.decimal  "theoretical_effort_high",        :precision => 15, :scale => 5
-    t.decimal  "theoretical_effort_most_likely", :precision => 15, :scale => 5
+    t.decimal  "theoretical_effort_low",         :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_high",        :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_most_likely", :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_low",           :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_high",          :precision => 20, :scale => 6
     t.decimal  "theoretical_cost_most_likely",   :precision => 20, :scale => 6
-    t.decimal  "retained_effort_low",            :precision => 15, :scale => 5
-    t.decimal  "retained_effort_high",           :precision => 15, :scale => 5
-    t.decimal  "retained_effort_most_likely",    :precision => 15, :scale => 5
+    t.decimal  "retained_effort_low",            :precision => 20, :scale => 6
+    t.decimal  "retained_effort_high",           :precision => 20, :scale => 6
+    t.decimal  "retained_effort_most_likely",    :precision => 20, :scale => 6
     t.decimal  "retained_cost_low",              :precision => 20, :scale => 6
     t.decimal  "retained_cost_high",             :precision => 20, :scale => 6
     t.decimal  "retained_cost_most_likely",      :precision => 20, :scale => 6
@@ -1280,10 +1227,10 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.string   "name"
     t.text     "description"
     t.string   "percentage_of_input"
-    t.float    "value_from_percentage"
-    t.boolean  "is_modifiable",                  :default => false
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.decimal  "value_from_percentage",          :precision => 20, :scale => 6
+    t.boolean  "is_modifiable",                                                 :default => false
+    t.datetime "created_at",                                                                       :null => false
+    t.datetime "updated_at",                                                                       :null => false
     t.boolean  "is_used_in_ratio_calculation"
   end
 
@@ -1391,21 +1338,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.string   "application_name"
     t.boolean  "private",                               :default => false
     t.boolean  "is_historicized"
-  end
-
-  create_table "organization_labor_categories", :force => true do |t|
-    t.integer  "organization_id"
-    t.integer  "labor_category_id"
-    t.string   "level"
-    t.string   "name"
-    t.text     "description"
-    t.float    "cost_per_hour"
-    t.integer  "base_year"
-    t.integer  "currency_id"
-    t.float    "hour_per_day"
-    t.integer  "days_per_year"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "organization_profiles", :force => true do |t|
@@ -1638,21 +1570,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
     t.datetime "updated_at"
   end
 
-  create_table "profile_categories", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.integer  "organization_id"
-    t.string   "uuid"
-    t.integer  "record_status_id"
-    t.string   "custom_value"
-    t.integer  "owner_id"
-    t.text     "change_comment"
-    t.integer  "reference_id"
-    t.string   "reference_uuid"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-  end
-
   create_table "profiles", :force => true do |t|
     t.string   "name"
     t.text     "description"
@@ -1789,7 +1706,6 @@ ActiveRecord::Schema.define(:version => 20180119104911) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
-  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -2423,5 +2339,379 @@ BEGIN
           END IF;
         END
   TRIGGERSQL
+
+  create_trigger("groups_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          author_id = NEW.originator_id,
+          item_type = 'Group',
+          item_id = NEW.id,
+          object_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
+          author_id = NEW.originator_id,
+          item_type = 'ProjectSecurity',
+          item_id = NEW.project_id,
+          project_id = NEW.project_id,
+          group_id = NEW.group_id,
+          user_id = NEW.user_id,
+          project_security_level_id = NEW.project_security_level_id,
+          is_model_permission = NEW.is_model_permission,
+          is_estimation_permission = NEW.is_estimation_permission,
+          is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
+          object_class_name = 'Project',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                                      ' "user_id": ', NEW.user_id,
+                                      ' "is_model_permission": ', NEW.is_model_permission,
+                                      ' "is_estimation_permission": ', NEW.is_estimation_permission,
+                                 '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
+        transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurity',
+        item_id = OLD.project_id,
+        project_id = OLD.project_id,
+        group_id = OLD.group_id,
+        user_id = OLD.user_id,
+        project_security_level_id = OLD.project_security_level_id,
+        is_model_permission = OLD.is_model_permission,
+        is_estimation_permission = OLD.is_estimation_permission,
+        is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
+        object_class_name = 'Project',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+        object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
+                                    ' "group_id": ', OLD.group_id,
+                                    ' "user_id": ', OLD.user_id,
+                                    ' "is_model_permission": ', OLD.is_model_permission,
+                                    ' "is_estimation_permission": ', OLD.is_estimation_permission,
+                          '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = NEW.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'create',
+        object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
+          author_id = NEW.originator_id,
+          item_type = 'EstimationStatusGroupRole',
+          item_id = NEW.estimation_status_id,
+          estimation_status_id = NEW.estimation_status_id,
+          group_id = NEW.group_id,
+          project_security_level_id = NEW.project_security_level_id,
+          object_class_name = 'EstimationStatus',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                               '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        author_id = OLD.originator_id,
+        item_type = 'EstimationStatusGroupRole',
+        item_id = OLD.estimation_status_id,
+        group_id = OLD.group_id,
+        project_security_level_id = OLD.project_security_level_id,
+        object_class_name = 'EstimationStatus',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+          object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                               '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupPermission',
+          item_id = NEW.group_id,
+          group_id = NEW.group_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'Group',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupPermission',
+        item_id = OLD.group_id,
+        group_id = OLD.group_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'Group',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          group_id = NEW.group_id,
+          object_class_name = 'User',
+          association_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupUser',
+        item_id = OLD.user_id,
+        user_id = OLD.user_id,
+        group_id = OLD.group_id,
+        object_class_name = 'User',
+        association_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          organization_id = NEW.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "organization_id": ', NEW.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+          author_id = OLD.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = OLD.user_id,
+          user_id = OLD.user_id,
+          organization_id = OLD.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'delete',
+          object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "organization_id": ', OLD.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+          author_id = NEW.originator_id,
+          item_type = 'PermissionProjectSecurityLevel',
+          item_id = NEW.project_security_level_id,
+          project_security_level_id = NEW.project_security_level_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'ProjectSecurityLevel',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        author_id = OLD.originator_id,
+        item_type = 'PermissionProjectSecurityLevel',
+        item_id = OLD.project_security_level_id,
+        project_security_level_id = OLD.project_security_level_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'ProjectSecurityLevel',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
 
 end

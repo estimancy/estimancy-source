@@ -26,6 +26,19 @@
             <td class="center">
               <%= check_box_tag("new_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.is_new_status, :disabled => true ) %>
             </td>
+
+            <td class="center">
+              <div class="row-fluid text-center">
+                <div class="span2"><%= I18n.t(:change_before) %></div>
+                <div class="span2"><%= check_box_tag("create_new_version_before_[#{estimation_status.id}]", estimation_status.id, estimation_status.create_new_version_before, :disabled => false ) %></div>
+              </div>
+
+              <div class="row-fluid">
+                <div class="span2"><%= I18n.t(:change_after) %></div>
+                <div class="span2"><%= check_box_tag("create_new_version_after_[#{estimation_status.id}]", estimation_status.id, estimation_status.create_new_version_after, :disabled => false ) %></div>
+              </div>
+            </td>
+
             <td style='width: 10%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
             <td><%= estimation_status.description %></td>
             <td class="center">
