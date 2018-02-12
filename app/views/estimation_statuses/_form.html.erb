@@ -18,6 +18,12 @@
           <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
           <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
 
+          <%= I18n.t(:create_new_version_when_status_changed) %>:
+          <div class="row-fluid">
+            <div class="span1"><%= f.input :create_new_version_before, label: I18n.t(:change_before) %></div>
+            <div class="span1"><%= f.input :create_new_version_after, label: I18n.t(:change_after) %></div>
+          </div>
+
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
         </div>
