@@ -365,10 +365,10 @@ class ModuleProject < ActiveRecord::Base
       # create the module_project_ratio_variable
       wbs_activity_ratio_variables.each do |ratio_variable|
         ModuleProjectRatioVariable.create(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
-                                                           organization_id: organization.id, wbs_activity_id: wbs_activity.id,
-                                                           wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
-                                                           name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
-                                                           is_modifiable: ratio_variable.is_modifiable, is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
+                                           organization_id: organization.id, wbs_activity_id: wbs_activity.id,
+                                           wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
+                                           name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
+                                           is_modifiable: ratio_variable.is_modifiable, is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
       end
     else
       wbs_activity_ratio_variables.each do |ratio_variable|
@@ -408,9 +408,8 @@ class ModuleProject < ActiveRecord::Base
       end
     end
 
-    module_project_ratio_variables = self.module_project_ratio_variables.where(organization_id: organization.id,
-                                                                               pbs_project_element_id: pbs_project_element.id,
-                                                                               wbs_activity_ratio_id: wbs_activity_ratio.id)
+    #module_project_ratio_variables = self.module_project_ratio_variables.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+    self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
   end
 
 

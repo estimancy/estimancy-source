@@ -1444,8 +1444,10 @@ class ProjectsController < ApplicationController
                                                              module_project_id: my_module_project.id,
                                                              wbs_activity_ratio_id: ratio.id,
                                                              wbs_activity_ratio_element_id: ratio_element.id,
-                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
-                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
+                                                             wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                                             multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name,
+                                                             description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
+                                                             ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position)
             mp_ratio_element.save
           end
           #Update module_project_ratio_element ancestry
