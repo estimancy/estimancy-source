@@ -274,8 +274,8 @@ class ModuleProject < ActiveRecord::Base
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
       #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
       mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                     module_project_id: self.id,
                                                      pbs_project_element_id: pbs_project_element.id,
+                                                     module_project_id: self.id,
                                                      wbs_activity_id: wbs_activity.id,
                                                      wbs_activity_ratio_id: wbs_activity_ratio.id,
                                                      wbs_activity_ratio_element_id: ratio_element.id,
@@ -295,10 +295,12 @@ class ModuleProject < ActiveRecord::Base
                                          wbs_activity_id: wbs_activity.id,
                                          wbs_activity_ratio_id: wbs_activity_ratio.id,
                                          wbs_activity_ratio_element_id: ratio_element.id,
-                                         is_optional: ratio_element.is_optional, multiple_references: ratio_element.multiple_references,
-                                         wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name,
+                                         is_optional: ratio_element.is_optional,
+                                         multiple_references: ratio_element.multiple_references,
+                                         wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                         name: ratio_element.wbs_activity_element.name,
                                          description: ratio_element.wbs_activity_element.description,
-                                         ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
+                                         ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: mp_ratio_elt.selected)
         else
           mp_ratio_elt = ModuleProjectRatioElement.create(organization_id: organization.id,
                                                           pbs_project_element_id: pbs_project_element.id,
@@ -306,30 +308,15 @@ class ModuleProject < ActiveRecord::Base
                                                           wbs_activity_ratio_id: wbs_activity_ratio.id,
                                                           wbs_activity_id: wbs_activity.id,
                                                           wbs_activity_ratio_element_id: ratio_element.id,
-                                                          is_optional: ratio_element.is_optional, multiple_references: ratio_element.multiple_references,
-                                                          wbs_activity_element_id: ratio_element.wbs_activity_element_id, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                                                          is_optional: ratio_element.is_optional,
+                                                          multiple_references: ratio_element.multiple_references,
+                                                          wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                                          name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
                                                           ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
-        end
-      else
-        other_same_mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                       module_project_id: self.id,
-                                                       pbs_project_element_id: pbs_project_element.id,
-                                                       wbs_activity_id: wbs_activity.id,
-                                                       wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                                       wbs_activity_ratio_element_id: ratio_element.id,
-                                                       wbs_activity_element_id: ratio_element.wbs_activity_element_id).all
-
-        if other_same_mp_ratio_elt.size > 1
-          mp_ratio_elt.delete
         end
       end
 
-      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id,
-                                                                                 wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                                                                 pbs_project_element_id: pbs_project_element.id)
-      #Puis on supprime tous les autres non utilisés
-      self.module_project_ratio_elements.where(" wbs_activity_ratio_element_id = ? AND id NOT IN (?)", ratio_element.id, current_ratio_mp_ratio_elements.map(&:id)).delete_all
-
+      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
       activity_elt = mp_ratio_elt.wbs_activity_element
       activity_elt_ancestor_ids = activity_elt.ancestor_ids
       new_ancestor_ids_list = []
