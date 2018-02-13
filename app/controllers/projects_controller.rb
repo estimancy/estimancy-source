@@ -3528,7 +3528,11 @@ public
       flash[:error] = I18n.t('errors.messages.not_saved')
     end
 
-    redirect_to :back
+    if request.env["HTTP_REFERER"].present?
+      redirect_to :back
+    else
+      redirect_to organization_estimations_path(@current_organization)
+    end
   end
 
   # Display comments about estimation status changes
