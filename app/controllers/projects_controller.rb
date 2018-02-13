@@ -3671,13 +3671,11 @@ public
         ###@project.estimation_status_id = params["project"]["estimation_status_id"]
 
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
-
         if !next_status.nil? && @project.estimation_status.create_new_version_when_changing_status == true
           @project.create_new_version_when_changing_status(next_status)
         else
           @project.estimation_status_id = params["project"]["estimation_status_id"]
         end
-
       end
     end
 
