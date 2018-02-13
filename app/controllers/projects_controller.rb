@@ -651,7 +651,8 @@ class ProjectsController < ApplicationController
           else
             @product_name = @project.application.name
           end
-          pbs_project_element = pe_wbs_project_product.pbs_project_elements.build(:name => "#{@product_name.blank? ? @project_title : @product_name}",
+          pbs_project_element = pe_wbs_project_product.pbs_project_elements.build(organization_id: @organization.id,
+                                                                                  :name => "#{@product_name.blank? ? @project_title : @product_name}",
                                                                                   :is_root => true, :start_date => Time.now, :position => 0,
                                                                                   :work_element_type_id => default_work_element_type.id,
                                                                                   :organization_technology_id => @organization.organization_technologies.first_or_create(name: "Java", alias: "Java", organization_id: @organization.id, productivity_ratio: 1, state: "draft").id)
@@ -3667,7 +3668,16 @@ public
         auto_updated_comments << auto_update_status_comment(params[:project_id], new_status_id)
         new_comments = auto_updated_comments + new_comments
         #update estimation status
-        @project.estimation_status_id = params["project"]["estimation_status_id"]
+        ###@project.estimation_status_id = params["project"]["estimation_status_id"]
+
+        next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
+
+        if !next_status.nil? && @project.estimation_status.create_new_version_when_changing_status == true
+          @project.create_new_version_when_changing_status(next_status)
+        else
+          @project.estimation_status_id = params["project"]["estimation_status_id"]
+        end
+
       end
     end
 
