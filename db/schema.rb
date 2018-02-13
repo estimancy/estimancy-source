@@ -293,13 +293,13 @@ ActiveRecord::Schema.define(:version => 20180209144649) do
     t.string   "status_color"
     t.boolean  "is_archive_status"
     t.text     "description"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "copy_id"
     t.boolean  "is_new_status"
     t.text     "transaction_id"
-    t.boolean  "create_new_version_before"
-    t.boolean  "create_new_version_after"
+    t.boolean  "create_new_version_when_changing_status"
+    t.string   "when_create_new_version"
   end
 
   create_table "estimation_values", :force => true do |t|
