@@ -287,11 +287,12 @@ class Project < ActiveRecord::Base
   def create_new_version_when_changing_status(next_status)
     current_status = self.estimation_status
     before_or_after = current_status.when_create_new_version
+    current_user = User.find(User.current) rescue nil
 
     case before_or_after
       when 'before'
         # on cree la nouvelle version
-        new_project_version = self.checkout_project_base(User.current, self.description)
+        new_project_version = self.checkout_project_base(current_user, self.description)
 
         # puis on lui change de statut
         next_status = new_project_version.get_next_status_for_commit
@@ -303,7 +304,7 @@ class Project < ActiveRecord::Base
         self.update_attribute(:estimation_status_id, next_status.id)
 
         # Puis on crée la nouvelle version
-        new_project_version = self.checkout_project_base(User.current, self.description)
+        new_project_version = self.checkout_project_base(current_user, self.description)
     end
   end
 
@@ -438,14 +439,14 @@ class Project < ActiveRecord::Base
       new_prj.alias = old_prj.alias
       new_prj.description = description
       new_prj.parent_id = old_prj.id
-      new_prj.creator_id = current_user.id
+      new_prj.creator_id = current_user.id rescue nil
 
       new_prj.version_number = version_number  #set_project_version(old_prj)
       # if version_number.blank?
       #   new_prj.version_number = set_project_version(old_prj)
       # end
 
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: (current_user.name rescue nil))}. \r\n"
 
       new_prj.transaction do
 
@@ -602,7 +603,7 @@ class Project < ActiveRecord::Base
                 old_version = old_prj.version_number
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
                   ancestor.save
                 end
               end
@@ -617,7 +618,7 @@ class Project < ActiveRecord::Base
             if new_status
               old_version = old_prj.version_number
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
           end
