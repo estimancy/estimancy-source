@@ -162,7 +162,7 @@
             <%= f.input :estimation_status_id,
                         label: I18n.t(:estimation_status),
                         as: :select,
-                        collection: @project.project_estimation_statuses,
+                        collection: @project.project_estimation_statuses(@organization),
                         disabled: !( can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || @project.private,
                         input_html: { :class => 'input-xlarge' },
                         include_blank: false %>

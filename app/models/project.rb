@@ -634,7 +634,7 @@ class Project < ActiveRecord::Base
     #Get the project's current status
     current_status_number = self.estimation_status.status_number
     # According to the status transitions map, only possible statuses will consider
-    possible_statuses = self.project_estimation_statuses.map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
+    possible_statuses = self.project_estimation_statuses(self.organization).map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
     current_status_index = possible_statuses.index(current_status_number)
     # By default the first possible status is candidate
     next_status_number = possible_statuses.first
