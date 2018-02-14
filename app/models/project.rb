@@ -284,15 +284,20 @@ class Project < ActiveRecord::Base
     end
   end
 
-  def create_new_version_when_changing_status(next_status)
+
+  def create_new_version_when_changing_status(next_status, new_version_number=nil)
     current_status = self.estimation_status
     before_or_after = current_status.when_create_new_version
     current_user = User.find(User.current) rescue nil
 
+    if new_version_number.nil?
+      new_version_number = self.set_next_project_version
+    end
+
     case before_or_after
       when 'before'
         # on cree la nouvelle version
-        new_project_version = self.checkout_project_base(current_user, self.description)
+        new_project_version = self.checkout_project_base(current_user, self.description, new_version_number)
 
         # puis on lui change de statut
         next_status = new_project_version.get_next_status_for_commit
@@ -304,9 +309,78 @@ class Project < ActiveRecord::Base
         self.update_attribute(:estimation_status_id, next_status.id)
 
         # Puis on crée la nouvelle version
-        new_project_version = self.checkout_project_base(current_user, self.description)
+        new_project_version = self.checkout_project_base(current_user, self.description, new_version_number)
     end
   end
+
+  #Function that check the couples (title,version_number) and (alias, version_number) availability
+  def is_project_version_available?(parent_title, parent_alias, new_version)
+    begin
+      #No authorize required
+      project = Project.where('(title=? AND version_number=?) OR (alias=? AND version_number=?)', parent_title, new_version, parent_alias, new_version).first
+      if project
+        false
+      else
+        true
+      end
+    rescue
+      false
+    end
+  end
+
+  # Récupérer le prochain numéro de version
+  # Set the new checked-outed project version_number
+  def set_next_project_version
+    project_to_checkout = self
+
+    #No authorize is required as method is private and could not be accessed by any route
+    parent_version = project_to_checkout.version_number
+
+    # The new version_number number is calculated according to the parent project position (if parent project has children or not)
+    if project_to_checkout.is_childless?
+      # get the version_number last numerical value
+      version_ended = parent_version.split(/(\d\d*)$/).last
+
+      #Test if ended version_number value is a Integer
+      if version_ended.valid_integer?
+        new_version_ended = "#{ version_ended.to_i + 1 }"
+        new_version = parent_version.gsub(/(\d\d*)$/, new_version_ended)
+      else
+        new_version = "#{ version_ended }.1"
+      end
+    else
+      #That means project has successor(s)/children, and a new branch need to be created
+      branch_version = 1
+      parent_version_ended_end = 0
+      if parent_version.include?('-')
+        split_parent_version = parent_version.split('-')
+        branch_name = split_parent_version.first
+        parent_version_ended = split_parent_version.last
+
+        split_parent_version_ended = parent_version_ended.split('.')
+
+        parent_version_ended_begin = split_parent_version_ended.first
+        parent_version_ended_end = split_parent_version_ended.last
+
+        branch_version = parent_version_ended_begin.to_i + 1
+
+        #new_version = parent_version.gsub(/(-.*)/, "-#{branch_version}")
+
+        new_version = "#{branch_name}-#{branch_version}.#{parent_version_ended_end}"
+      else
+        branch_name = parent_version
+        new_version = "#{branch_name}-#{branch_version}.0"
+      end
+
+      # If new_version is not available, then check for new available version_number
+      until is_project_version_available?(project_to_checkout.title, project_to_checkout.alias, new_version)
+        branch_version = branch_version+1
+        new_version = "#{branch_name}-#{branch_version}.#{parent_version_ended_end}"
+      end
+    end
+    new_version
+  end
+
 
   #Update new project/estimation views and widgets
   def update_project_views_and_widgets(old_mp, new_mp)
@@ -422,7 +496,7 @@ class Project < ActiveRecord::Base
     ###end
   end
 
-  def checkout_project_base(current_user, description, archive_last_project_version="no", new_project_version="no", version_number=nil)
+  def checkout_project_base(current_user, description, version_number=nil, archive_last_project_version="no", new_project_version="no")
     old_prj = self
     organization = old_prj.organization
 
