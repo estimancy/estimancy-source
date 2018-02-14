@@ -300,6 +300,7 @@ ActiveRecord::Schema.define(:version => 20180209144649) do
     t.text     "transaction_id"
     t.boolean  "create_new_version_when_changing_status"
     t.string   "when_create_new_version"
+    t.boolean  "automatic_change_old_versions"
   end
 
   create_table "estimation_values", :force => true do |t|

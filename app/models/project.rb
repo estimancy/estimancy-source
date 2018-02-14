@@ -309,7 +309,8 @@ class Project < ActiveRecord::Base
         self.update_attribute(:estimation_status_id, next_status.id)
 
         # Puis on crée la nouvelle version
-        new_project_version = self.checkout_project_base(current_user, self.description, new_version_number)
+        automatic_change_old_versions = next_status.automatic_change_old_versions? ? "yes" : "no"
+        new_project_version = self.checkout_project_base(current_user, self.description, new_version_number, automatic_change_old_versions)
     end
   end
 
