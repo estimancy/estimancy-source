@@ -2214,7 +2214,7 @@ class OrganizationsController < ApplicationController
                 user.save
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
-                if cnt_organization.id
+                if can?(:manage, Group, :organization_id => @current_organization.id)
                    while line[group_index]
                       group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
                       begin
