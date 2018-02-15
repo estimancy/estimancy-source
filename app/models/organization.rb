@@ -77,9 +77,9 @@ class Organization < ActiveRecord::Base
   has_many :project_security_levels, dependent: :destroy
 
   # Results view
-  has_many :views
+  has_many :views, dependent: :destroy
 
-  has_many :applications
+  has_many :applications, dependent: :destroy
 
   has_many :providers
 
