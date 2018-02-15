@@ -19,9 +19,12 @@
           <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
 
           <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed) %>
-          <%= f.input :when_create_new_version, as: :radio_buttons, label: false, collection: [['before', I18n.t(:change_before)], ['after', I18n.t(:change_after)]], label_method: :second, value_method: :first %>
-          <%= f.input :automatic_change_old_versions, label: raw(I18n.t(:archive_last_project_versions)) %>
-
+          <div style="margin-left: 15px">
+            <%= f.input :when_create_new_version, as: :radio_buttons, label: false, collection: [['before', I18n.t(:change_before)], ['after', I18n.t(:change_after)]], label_method: :second, value_method: :first %>
+          </div>
+          <div style="margin-left: 30px">
+            <%= f.input :automatic_change_old_versions, label: raw(I18n.t(:archive_last_project_versions)) %>
+          </div>
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
         </div>
