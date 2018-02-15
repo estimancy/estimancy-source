@@ -1054,9 +1054,11 @@ class OrganizationsController < ApplicationController
       #Update the project securities for the current user who create the estimation from model
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
-        creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
-        unless creator_securities.nil?
-          creator_securities.update_attribute(:user_id, user.id)
+        unless old_prj.creator.nil?
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
+          unless creator_securities.nil?
+            creator_securities.update_attribute(:user_id, user.id)
+          end
         end
       end
       #Other project securities for groups
@@ -2256,7 +2258,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
 
-    redirect_to organization_users_path(@current_organization)
+    redirect_to organization_users_path(@current_organization) and return
 
 =begin
     sep = "#{params[:separator].blank? ? I18n.t(:general_csv_separator) : params[:separator]}"
