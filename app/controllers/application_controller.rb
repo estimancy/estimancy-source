@@ -96,7 +96,8 @@ class ApplicationController < ActionController::Base
     # PaperTrail.whodunnit = current_user
   # end
 
-  def info_for_paper_trail
+  #TODO : delete this function after deletion of the paper_trail gem
+  def info_for_paper_trail_save_to_delete
     # initialisation des variables
     is_model = nil ; is_group_security = nil; is_user_security = nil; is_security_on_model=nil; is_security_on_created_from_model = nil
 
