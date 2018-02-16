@@ -29,12 +29,6 @@
 
             <td class="center">
               <%= check_box_tag("create_new_version_when_changing_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.create_new_version_when_changing_status, :disabled => true ) %>
-              <% if estimation_status.create_new_version_when_changing_status %>
-                 <%= I18n.t("change_#{estimation_status.when_create_new_version}") %>
-                  <% if estimation_status.automatic_change_old_versions %>
-                      <%= raw(I18n.t(:archive_last_project_versions)) %>
-                  <% end %>
-              <% end %>
             </td>
 
             <td style='width: 10%; background-color: <%= "##{estimation_status.status_color}" %>'></td>

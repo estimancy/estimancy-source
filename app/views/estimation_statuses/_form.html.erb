@@ -17,14 +17,7 @@
 
           <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
           <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
-
           <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed) %>
-          <div style="margin-left: 15px">
-            <%= f.input :when_create_new_version, as: :radio_buttons, label: false, collection: [['before', I18n.t(:change_before)], ['after', I18n.t(:change_after)]], label_method: :second, value_method: :first %>
-          </div>
-          <div style="margin-left: 30px">
-            <%= f.input :automatic_change_old_versions, label: raw(I18n.t(:archive_last_project_versions)) %>
-          </div>
           <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
           <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
         </div>
@@ -39,58 +32,3 @@
     <% end %>
   </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-
-        if ($('#estimation_status_create_new_version_when_changing_status').checked){
-            $('#estimation_status_when_create_new_version_before').attr("disabled", false);
-            $('#estimation_status_when_create_new_version_after').attr("disabled", false);
-        }
-        else{
-            $('#estimation_status_when_create_new_version_before').attr("checked", false);
-            $('#estimation_status_when_create_new_version_before').attr("disabled", true);
-
-            $('#estimation_status_when_create_new_version_after').attr("checked", false);
-            $('#estimation_status_when_create_new_version_after').attr("disabled", true);
-        }
-
-        $('#estimation_status_create_new_version_when_changing_status').change(function(){
-            if (this.checked){
-                $('#estimation_status_when_create_new_version_before').attr("disabled", false);
-                $('#estimation_status_when_create_new_version_after').attr("disabled", false);
-            }
-            else{
-                $('#estimation_status_when_create_new_version_before').attr("checked", false);
-                $('#estimation_status_when_create_new_version_before').attr("disabled", true);
-
-                $('#estimation_status_when_create_new_version_after').attr("checked", false);
-                $('#estimation_status_when_create_new_version_after').attr("disabled", true);
-            }
-        });
-
-
-        if ($('#estimation_status_when_create_new_version_after').checked){
-            $('#estimation_status_automatic_change_old_versions').attr("disabled", false);
-        }
-        else{
-            $('#estimation_status_automatic_change_old_versions').attr("checked", false);
-            $('#estimation_status_automatic_change_old_versions').attr("disabled", true);
-        }
-
-
-        $('#estimation_status_when_create_new_version_after').click(function () {
-            if (this.checked) {
-                $('#estimation_status_automatic_change_old_versions').attr("disabled", false);
-            }
-        });
-
-        $('#estimation_status_when_create_new_version_before').click(function () {
-            if (this.checked) {
-                $('#estimation_status_automatic_change_old_versions').attr("checked", false);
-                $('#estimation_status_automatic_change_old_versions').attr("disabled", true);
-            }
-        });
-
-    });
-</script>
