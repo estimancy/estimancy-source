@@ -286,13 +286,11 @@ class Project < ActiveRecord::Base
 
 
   def create_new_version_when_changing_status(next_status, new_version_number=nil)
-    current_status = self.estimation_status
     current_user = User.find(User.current) rescue nil
 
     if new_version_number.blank?
       new_version_number = self.set_next_project_version
     end
-
     if next_status.blank?
       next_status = self.get_next_status_for_commit
     end
@@ -306,26 +304,6 @@ class Project < ActiveRecord::Base
 
     # Puis on lui change de statut
     new_project_version.update_attribute(:estimation_status_id, next_status.id)
-
-
-    # case before_or_after
-    #   when 'before'
-    #     # on cree la nouvelle version
-    #     new_project_version = self.checkout_project_base(current_user, self.description, new_version_number)
-    #
-    #     # puis on lui change de statut
-    #     ###next_status = new_project_version.get_next_status_for_commit
-    #     new_project_version.update_attribute(:estimation_status_id, next_status.id)
-    #
-    #   when 'after'
-    #     # On change de statut d'abord
-    #     ###next_status = self.get_next_status_for_commit
-    #     self.update_attribute(:estimation_status_id, next_status.id)
-    #
-    #     # Puis on crée la nouvelle version
-    #     automatic_change_old_versions = next_status.automatic_change_old_versions? ? "yes" : "no"
-    #     new_project_version = self.checkout_project_base(current_user, self.description, new_version_number, automatic_change_old_versions)
-    # end
   end
 
   #Function that check the couples (title,version_number) and (alias, version_number) availability
