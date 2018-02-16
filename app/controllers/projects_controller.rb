@@ -3687,7 +3687,7 @@ public
         ###@project.estimation_status_id = params["project"]["estimation_status_id"]
 
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
-        if !next_status.nil? && @project.estimation_status.create_new_version_when_changing_status == true
+        if !next_status.nil? && next_status.create_new_version_when_changing_status == true
           new_version_number = set_project_version(@project)
           @project.create_new_version_when_changing_status(next_status, new_version_number)
         else
