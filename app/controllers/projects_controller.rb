@@ -805,6 +805,7 @@ class ProjectsController < ApplicationController
     @organization = @project.organization
     @project.transaction_id = @project.transaction_id.nil? ? "#{@project.id}_1" : @project.transaction_id.next rescue "#{@project.id}_1"
     estimation_status_has_changed = false
+    project_old_estimation_status = @project.estimation_status
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
@@ -1054,18 +1055,7 @@ class ProjectsController < ApplicationController
             new_comments = auto_update_status_comment(params[:id], new_status_id)
             new_comments << "#{@project.status_comment} \r\n"
             @project.status_comment = new_comments
-
             estimation_status_has_changed = true
-            #Verifier s'il faut creer une nouvelle version lors du changement de statut
-            # next_status = @organization.estimation_statuses.where(id: new_status_id).first
-            # if next_status
-            #   if next_status.create_new_version_when_changing_status == true
-            #     @project.create_new_version_when_changing_status(next_status)
-            #   else
-            #     @project.update_attribute(:estimation_status_id, next_status.id)
-            #   end
-            # end
-
           end
         end
       end
@@ -1132,7 +1122,18 @@ class ProjectsController < ApplicationController
           end
         end
 
-        @project.save
+        if @project.save
+          #Verifier s'il faut creer une nouvelle version lors du changement de statut
+          if estimation_status_has_changed == true
+            next_status = @project.estimation_status
+            if next_status && next_status.create_new_version_when_changing_status == true
+              @project.update_attribute(:estimation_status_id, project_old_estimation_status.id)
+
+              # On cree une nouvelle version de l'estimation
+              @project.create_new_version_when_changing_status(next_status)
+            end
+          end
+        end
 
         flash[:notice] = I18n.t(:notice_project_successful_updated)
         if @project.is_model
