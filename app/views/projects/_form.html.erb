@@ -23,7 +23,7 @@
         <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
       <% end %>
 
-        <% if @project.is_model %>
+        <% if @project.is_model || @is_model %>
             <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge' } %>
         <% end %>
         <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
