@@ -542,6 +542,9 @@ class ProjectsController < ApplicationController
 
     @project_title = params[:project][:title]
     @project = Project.new(params[:project])
+    if @project.new_record?
+      @project.is_model = @is_model
+    end
 
     if @is_model == true
       if params[:project][:application_ids].present?
