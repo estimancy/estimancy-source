@@ -2557,9 +2557,9 @@ public
     project.commit_status
 
     if params[:from_tree_history_view]
-      redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history')
+      redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history') and return
     else
-      redirect_to organization_estimations_path(@current_organization)
+      redirect_to organization_estimations_path(@current_organization) and return
     end
   end
 
@@ -3690,7 +3690,7 @@ public
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
         if !next_status.nil? && next_status.create_new_version_when_changing_status == true
           new_version_number = set_project_version(@project)
-          @project.create_new_version_when_changing_status(next_status, new_version_number)
+          new_project_version = @project.create_new_version_when_changing_status(next_status, new_version_number)
         else
           @project.estimation_status_id = params["project"]["estimation_status_id"]
         end

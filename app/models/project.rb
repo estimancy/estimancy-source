@@ -304,6 +304,7 @@ class Project < ActiveRecord::Base
 
     # Puis on lui change de statut
     new_project_version.update_attribute(:estimation_status_id, next_status.id)
+    new_project_version
   end
 
   #Function that check the couples (title,version_number) and (alias, version_number) availability
