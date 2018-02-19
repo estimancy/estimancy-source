@@ -14,7 +14,7 @@
   <% if flash[:error] %>
     <div class='alert alert-danger pull-left'>
       <button type="button" class="close" data-dismiss="alert">x</button>
-      <%= raw flash[:error].html_safe %>
+      <%= raw flash[:error] %>  <%#= raw flash[:error].html_safe %>
     </div>
   <% end -%>
   <% if flash[:custom] %>
