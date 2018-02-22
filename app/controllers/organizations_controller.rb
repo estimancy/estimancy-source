@@ -124,6 +124,94 @@ class OrganizationsController < ApplicationController
 
   # Fonction d'audit de l'intégrité du Corps commun
   def audit_integrity_common_data
+    #@reference_organization = Organization.where(name: "CDS DE REFERENCE").first
+    @reference_organization = Organization.where(name: "CDS PROD TRAIN").first
+    elements_to_track = {}
+    @reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
+    @all_differences = []
+
+    begin
+      @reference_default_data_save = { name: @reference_guw_model.name,
+                                description: @reference_guw_model.description,
+                                three_points_estimation: @reference_guw_model.three_points_estimation,
+                                retained_size_unit: @reference_guw_model.retained_size_unit,
+                                one_level_model: @reference_guw_model.one_level_model,
+                                coefficient_label: @reference_guw_model.coefficient_label,
+                                hour_coefficient_conversion: @reference_guw_model.hour_coefficient_conversion,
+                                default_display: @reference_guw_model.default_display,
+                                weightings_label: @reference_guw_model.weightings_label,
+                                factors_label: @reference_guw_model.factors_label,
+                                effort_unit: @reference_guw_model.effort_unit,
+                                cost_unit: @reference_guw_model.cost_unit,
+                                allow_technology: @reference_guw_model.allow_technology,
+                                work_unit_type: @reference_guw_model.work_unit_type,
+                                weighting_type: @reference_guw_model.weighting_type,
+                                factor_type: @reference_guw_model.factor_type,
+                                work_unit_min: @reference_guw_model.work_unit_min, work_unit_max: @reference_guw_model.work_unit_max,
+                                factor_min: @reference_guw_model.factor_min, factor_max: @reference_guw_model.factor_max,
+                                weighting_min: @reference_guw_model.weighting_min, weighting_max: @reference_guw_model.weighting_max,
+                                orders: @reference_guw_model.orders,
+                                config_type: @reference_guw_model.config_type,
+                                allow_ml: @reference_guw_model.allow_ml,
+                                allow_excel: @reference_guw_model.allow_excel,
+                                allow_jira: @reference_guw_model.allow_jira,
+                                allow_redmine: @reference_guw_model.allow_redmine,
+                                excel_ml_server: @reference_guw_model.excel_ml_server,
+                                jira_ml_server: @reference_guw_model.jira_ml_server,
+                                redmine_ml_server: @reference_guw_model.redmine_ml_server,
+                                allow_ml_excel: @reference_guw_model.allow_ml_excel,
+                                allow_ml_jira: @reference_guw_model.allow_ml_jira,
+                                allow_ml_redmine: @reference_guw_model.allow_ml_redmine,
+                                view_data: @reference_guw_model.view_data
+                              }
+    end
+    guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
+    @reference_default_data = HashWithIndifferentAccess.new
+
+    #On recupere les valeurs de reference
+    guw_model_columns.each do |column_name|
+      @reference_default_data[column_name] = @reference_guw_model.send(column_name)
+    end
+
+    guw_models_with_abaque = Guw::GuwModel.where("name like ?", "%abaque%")
+    #Pour chaque modele, il faut vérifier pour chaque type d'UO que les éléments sont identique par rapport à l'organization de référence
+    guw_models_with_abaque.each do |guw_model|
+      @reference_default_data.each do |column_name, column_value|
+        different = false
+
+        if column_name == "orders"
+          if (guw_model.send(column_name).to_a <=> column_value.to_a) != 0
+            different = true
+            differences = guw_model.send(column_name).diff(column_value)
+            @all_differences << { organization_id: guw_model.organization_id, guw_model_id: guw_model.id,
+                                  column_name: column_name, column_value: column_value
+            }
+          end
+        else
+          if guw_model.send(column_name) != column_value
+            different = true
+            @all_differences << { organization_id: guw_model.organization_id, guw_model_id: guw_model.id,
+                                  column_name: column_name, column_value: column_value
+                                }
+          end
+        end
+
+        # if different == true
+        #   differences = {
+        #       organization_id: guw_model.organization_id,
+        #       guw_model_id: guw_model.id,
+        #       column_name: column_name,
+        #       column_value: column_value
+        #   }
+        #   @all_differences << differences
+        # end
+
+      end
+
+      guw_model.guw_types.each do |guw_type|
+
+      end
+    end
 
   end
 
