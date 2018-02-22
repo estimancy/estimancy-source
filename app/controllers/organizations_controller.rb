@@ -2115,7 +2115,7 @@ class OrganizationsController < ApplicationController
       @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
     end
 
-    if @organizations.size == 1
+    if @organizations.size == 1 && !current_user.super_admin?
       redirect_to organization_estimations_path(@organizations.first)
     end
   end
