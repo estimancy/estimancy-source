@@ -102,3 +102,19 @@ class WidgetsController < ApplicationController
     end
   end
 end
+
+# o = Organization.where(name: "CDS PROD TRAIN").first
+# o.organization_profiles.each do |op|
+#   op.cost_per_hour = op.cost_per_hour.round(2)
+#   op.save
+# end
+#
+# o = Organization.where(name: "CDS PROD TRAIN").first
+# o.guw_models.each do |guw_model|
+#   if guw_model.name.include?("Expert")
+#     guw_type = guw_model.guw_types.first
+#     guw_complexity = guw_type.guw_complexities.first
+#     guw_complexity.weight = guw_complexity.weight.round(2)
+#     guw_complexity.save
+#   end
+# end

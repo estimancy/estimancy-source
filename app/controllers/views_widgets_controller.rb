@@ -43,7 +43,7 @@ class ViewsWidgetsController < ApplicationController
     @position_x = 1; @position_y = 1
     @module_project = ModuleProject.find(params[:module_project_id])
     @module_project_box = @module_project
-    @pbs_project_element_id = current_component.id
+    @pbs_project_element_id = current_component.id rescue nil
     @project_pbs_project_elements = @module_project.project.pbs_project_elements#.reject{|i| i.is_root?}
 
     # estimation_values = module_project.estimation_values.group_by{ |attr| attr.in_out }.sort()
@@ -175,8 +175,14 @@ class ViewsWidgetsController < ApplicationController
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
 
-        format.js { render(:js => "window.location.replace('#{dashboard_path(@project)}');")}
-        format.html { redirect_to dashboard_path(@project) and return }
+        begin
+          format.js { render(:js => "window.location.replace('#{dashboard_path(@module_project.project)}');")}
+          format.html { redirect_to dashboard_path(@module_project.project) and return }
+        rescue
+          format.js { render :js => "window.location.reload();"}
+          format.html { redirect_to :back and return }
+        end
+
       else
         flash[:error] = "Erreur d'ajout de Vignette"
         @position_x = 1; @position_y = 1
@@ -274,9 +280,13 @@ class ViewsWidgetsController < ApplicationController
           end
         end
 
-        format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
-        format.html { redirect_to dashboard_path(@project) and return }
-
+        if @views_widget.module_project
+          format.js { render :js => "window.location.replace('#{dashboard_path(@views_widget.module_project.project)}');"}
+          format.html { redirect_to dashboard_path(@views_widget.module_project.project) and return }
+        else
+          format.js { render :js => "window.location.reload();"}
+          format.html { redirect_to :back and return }
+        end
       else
         flash[:error] = "Erreur lors de la mise à jour du Widget dans la vue"
 
