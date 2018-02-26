@@ -2105,7 +2105,11 @@ class OrganizationsController < ApplicationController
 
   def organizationals_params
     set_page_title I18n.t(:Organizational_Parameters)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    if @current_organization
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+    end
 
     if current_user.super_admin?
       @organizations = Organization.all
