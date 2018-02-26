@@ -443,26 +443,26 @@ class OrganizationsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
 
-    @current_organization.module_projects.each do |module_project|
-      project = module_project.project
-      @guw_model = module_project.guw_model
+    @current_organization.projects.each do |project|
+      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }
 
+      @guw_model = module_project.guw_model
       @wbs_activity_module_project = module_project.nexts.first
       @wbs_activity = @wbs_activity_module_project.wbs_activity
 
       @component = current_component
-      @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project.id,
-                                                    guw_model_id: @guw_model.id)
+      @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
+                                                    guw_model_id: @guw_model)
 
       hash = @guw_model.orders
       hash.delete("Critères")
       hash.delete("Coeff. de Complexité")
 
-      @guw_unit_of_works.each do |i|
-        if i.nil?
-          i.destroy
-        end
-      end
+      # @guw_unit_of_works.each do |i|
+      #   if i.nil?
+      #     i.destroy
+      #   end
+      # end
 
       header = [
           "Nom du CDS",
