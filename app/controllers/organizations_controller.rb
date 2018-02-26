@@ -503,7 +503,7 @@ class OrganizationsController < ApplicationController
 
       @guw_unit_of_works.each_with_index do |guow, i|
 
-        ind = ind + i
+        ind = ind + 1
 
         if guow.off_line
           cplx = "HSAT"
