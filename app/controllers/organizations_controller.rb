@@ -452,7 +452,6 @@ class OrganizationsController < ApplicationController
 
       @component = current_component
       @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project.id,
-                                                    pbs_project_element_id: @component.id,
                                                     guw_model_id: @guw_model.id)
 
       hash = @guw_model.orders
