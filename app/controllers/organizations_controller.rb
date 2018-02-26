@@ -444,7 +444,7 @@ class OrganizationsController < ApplicationController
     worksheet = workbook.worksheets[0]
 
     @current_organization.projects.each do |project|
-      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }
+      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
 
       @guw_model = module_project.guw_model
       @wbs_activity_module_project = module_project.nexts.first
