@@ -442,8 +442,10 @@ class OrganizationsController < ApplicationController
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
+    ind = 1
 
     @current_organization.projects.each do |project|
+
       module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
 
       @guw_model = module_project.guw_model
@@ -501,7 +503,7 @@ class OrganizationsController < ApplicationController
 
       @guw_unit_of_works.each_with_index do |guow, i|
 
-        ind = i + 1
+        ind = ind + i
 
         if guow.off_line
           cplx = "HSAT"
@@ -636,7 +638,6 @@ class OrganizationsController < ApplicationController
           end
         end
       end
-
     end
 
     send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
