@@ -442,7 +442,7 @@ class OrganizationsController < ApplicationController
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
-    ind = 1
+    ind = 0
 
     @current_organization.projects.each do |project|
 
