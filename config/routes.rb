@@ -246,6 +246,7 @@ Projestimate::Application.routes.draw do
     get "report" => 'organizations#report'
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'
+    post "generate_report_excel_detail" => 'organizations#generate_report_excel_detail'
     post "generate_report_excel_from_file" => 'organizations#generate_report_excel_from_file'
     post "import_user" => 'organizations#import_user'
     post "export_user" => 'organizations#export_user'
