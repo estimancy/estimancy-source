@@ -1,123 +1,85 @@
-<table class="table table-striped table-bordered table-condensed">
+<div class="tabs">
+  <h4><%= "Integrité du corps commun des Modules de Taille" %></h4>
+  <br>
 
-  <tr>
-    <th>Organisation de référence</th>
-    <th>Champ concerné</th>
-    <th>Valeur de référence</th>
-    <th>Organisation</th>
-    <th>Module de Taille</th>
-    <th>Différences</th>
-  </tr>
+  <p>Organisation de référence : <%= @reference_organization.name %></p>
+  <p> Module de Taille de référence :
+    <%= link_to @reference_guw_model.name, guw.edit_guw_model_path(@reference_guw_model, organization_id: @reference_organization.id, anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
+  </p>
+  <div style="margin: 10px;">
 
-  <% @all_differences.each do |difference| %>
-      <% column_name = difference[:column_name] %>
-    <tr>
-        <td><%= @reference_organization.name %></td>
-        <td><%= column_name %></td>
+    <%#= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
+        <!--<div class="input row-fluid">-->
+          <!--<div class="span2">-->
+            <!--<label class="string control-label" for="objet">Date de début</label>-->
+            <!--<input class="date-picker input-large" id="start_date" name="start_date" size="50" type="text">-->
+          <!--</div>-->
+          <!--<div class="span2">-->
+            <!--<label class="string control-label" for="objet">Date de fin</label>-->
+            <!--<input class="date-picker input-large" id="end_date" name="end_date" size="50" type="text">-->
+          <!--</div>-->
+          <!--<div class="span2" style="margin-top: 25px;">-->
+            <!--<%#= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>-->
+          <!--</div>-->
+        <!--</div>-->
 
-        <td>
-          <% if column_name == "orders" %>
-              <% referenced_guw_model_orders = @reference_default_data[column_name]  %>
-            <table>
-              <% referenced_guw_model_orders.each do |item, value| %>
-              <tr>
-                <% begin %>
+        <!--<script>-->
+<!--//            $(document).ready(function () {-->
+<!--//                $(".date-picker").datepicker({-->
+<!--//                    language: 'fr',-->
+<!--//                    autoclose: true,-->
+<!--//                    todayHighlight: true,-->
+<!--//                    todayBtn: true-->
+<!--//                });-->
+<!--//            });-->
+        <!--</script>-->
+    <%# end %>
+  </div>
 
-                    <td><%= value %></td>
+  <ul>
+    <li><a href="#tabs-default_data">Données de base</a></li>
+    <li><a href="#tabs-guw_attributes"><%= "Les attibuts" %></a></li>
+    <li><a href="#tabs-coefficients"><%= "Coefficients" %></a></li>
+    <li><a href="#tabs-coefficient_elements"><%= "Elements de Coefficients" %></a></li>
+    <li><a href="#tabs-sorties"><%= "Les sorties" %></a></li>
+    <li><a href="#tabs-matrix"><%= "La Matrice" %></a></li>
+  </ul>
 
-                    <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                        <td class="orders_padding">
-                          <b>
-                            <%= item %>
-                          </b>
-                        </td>
-                    <% else %>
-                        <td class="orders_padding">
-                          <%= item %>
-                        </td>
-                    <% end %>
-                <% rescue %>
-                    <td>
-                      <%#= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item], class: "order_size" %>
-                      <%= text_field_tag "items[#{item}]", YAML::load(referenced_guw_model_orders.value)[item], class: "order_size" %>
-                    </td>
+  <!-- ========================  DONNEES DE BASE MODULE DE TAILLE  ===================== -->
+  <div id="tabs-default_data">
+    <%= render partial: 'audit_common_default_data_differences',
+               formats: [:html], object: [@default_data_differences], locals: { } %>
+  </div>
 
-                    <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                        <td class="orders_padding">
-                          <b>
-                            <%= item %>
-                          </b>
-                        </td>
-                    <% else %>
-                        <td class="orders_padding">
-                          <%= item %>
-                        </td>
-                    <% end %>
-                <% end %>
-              </tr>
-            <% end %>
-          </table>
+  <!-- ========================  ATTRIBUTS ===================== -->
+  <div id="tabs-guw_attributes">
+    <%= render partial: 'audit_common_attributes_differences',
+               formats: [:html], object: [@attributes_differences], locals: { }  %>
+  </div>
 
-          <% else %>
-            <%= @reference_default_data[column_name] %>
-          <% end %>
-        </td>
+  <!-- ======================== COEFFICIENTS ===================== -->
+  <div id="tabs-coefficients">
+    <%= render partial: 'audit_common_coefficients_differences',
+               formats: [:html], object: [@coefficients_differences], locals: { } %>
+  </div>
 
-        <td><%= Organization.where(id: difference[:organization_id]).first %></td>
-        <td><%= Guw::GuwModel.where(id: difference[:guw_model_id]).first %></td>
-        <td>
-          <% if column_name == "orders" %>
-              <% different_guw_model_orders = difference[:column_value]  %>
-              <table>
-                <% different_guw_model_orders.each do |item, value| %>
-                    <tr>
-                      <% begin %>
+  <!-- ========================  COEFFICIENT-ELEMENTS ===================== -->
+  <div id="tabs-coefficient_elements">
+    <%= render partial: 'audit_common_coefficient_elements_differences',
+               formats: [:html], object: [@coefficient_elements_differences], locals: { } %>
+  </div>
 
-                          <td>
-                            <%#= text_field_tag "items[#{item}]", value, class: "order_size" %>
-                            <%= value %>
-                          </td>
+  <!-- ========================  SORTIES ===================== -->
+  <div id="tabs-sorties">
+    <%= render partial: 'audit_common_outputs_differences',
+               formats: [:html], object: [@outputs_differences], locals: { }  %>
+  </div>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                              <td class="orders_padding">
-                                <b>
-                                  <%= item %>
-                                </b>
-                              </td>
-                          <% else %>
-                              <td class="orders_padding">
-                                <%= item %>
-                              </td>
-                          <% end %>
+  <!-- ========================  MATRICE  ===================== -->
+  <div id="tabs-matrix">
+    <%= render partial: 'audit_common_guw_types_matrix_differences',
+               formats: [:html], object: [@guw_types_differences], locals: { }  %>
+  </div>
 
-                      <% rescue %>
-                          <td>
-                            <%= text_field_tag "items[#{item}]", YAML::load(different_guw_model_orders.value)[item], class: "order_size" %>
-                          </td>
+</div>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
-                              <td class="orders_padding">
-                                <b>
-                                  <%= item %>
-                                </b>
-                              </td>
-                          <% else %>
-                              <td class="orders_padding">
-                                <%= item %>
-                              </td>
-                          <% end %>
-
-                      <% end %>
-                    </tr>
-                <% end %>
-              </table>
-
-          <% else %>
-              <%= column_name %> : <%= difference[:column_value] %>
-          <% end %>
-
-        </td>
-    </tr>
-  <% end %>
-
-</table>

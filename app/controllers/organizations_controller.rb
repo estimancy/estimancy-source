@@ -126,9 +126,16 @@ class OrganizationsController < ApplicationController
   def audit_integrity_common_data
     #@reference_organization = Organization.where(name: "CDS DE REFERENCE").first
     @reference_organization = Organization.where(name: "CDS PROD TRAIN").first
-    elements_to_track = {}
-    @reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
+    ###@reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
+    @reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi. Centre de Services P1").first
+
     @all_differences = []
+    @default_data_differences = []
+    @attributes_differences = []
+    @outputs_differences = []
+    @coefficients_differences = []
+    @coefficient_elements_differences = []
+    @guw_types_differences = []
 
     begin
       @reference_default_data_save = { name: @reference_guw_model.name,
@@ -173,9 +180,17 @@ class OrganizationsController < ApplicationController
       @reference_default_data[column_name] = @reference_guw_model.send(column_name)
     end
 
-    guw_models_with_abaque = Guw::GuwModel.where("name like ?", "%abaque%")
+    @reference_guw_model_attributes = @reference_guw_model.guw_attributes  #attributs de references
+    @reference_guw_model_outputs = @reference_guw_model.guw_outputs  #outputs de references
+    @reference_guw_model_coefficients = @reference_guw_model.guw_coefficients  #coefficients de references
+    @reference_guw_model_types = @reference_guw_model.guw_types  #Type d'UO de references
+
+    guw_models_with_abaque = Guw::GuwModel.where("name like ? AND id != ?", "%abaque%", @reference_guw_model.id).reject
     #Pour chaque modele, il faut vérifier pour chaque type d'UO que les éléments sont identique par rapport à l'organization de référence
     guw_models_with_abaque.each do |guw_model|
+      guw_model_organization_id = guw_model.organization_id
+
+      #=========================== Donnees et informations generales  ==========================#
       @reference_default_data.each do |column_name, column_value|
         different = false
 
@@ -183,15 +198,15 @@ class OrganizationsController < ApplicationController
           if (guw_model.send(column_name).to_a <=> column_value.to_a) != 0
             different = true
             differences = guw_model.send(column_name).diff(column_value)
-            @all_differences << { organization_id: guw_model.organization_id, guw_model_id: guw_model.id,
-                                  column_name: column_name, column_value: column_value
+            @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+                                  column_name: column_name, column_value: column_value, nature: ""
             }
           end
         else
           if guw_model.send(column_name) != column_value
             different = true
-            @all_differences << { organization_id: guw_model.organization_id, guw_model_id: guw_model.id,
-                                  column_name: column_name, column_value: column_value
+            @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+                                  column_name: column_name, column_value: column_value, nature: ""
                                 }
           end
         end
@@ -208,9 +223,225 @@ class OrganizationsController < ApplicationController
 
       end
 
-      guw_model.guw_types.each do |guw_type|
-
+      #=============================== Les attributs  ===============================#
+      guw_model.guw_attributes.each do |attribute|
+        reference_attribute = @reference_guw_model_attributes.where(name: attribute.name).first
+        if reference_attribute
+          identique_attribute = @reference_guw_model_attributes.where(name: attribute.name, description: attribute.description).first
+          if identique_attribute.nil?
+            # Description differente
+            @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
+                                  element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Description différente"
+            }
+          end
+        else
+          #l'attribut n'existe pas dans la référence
+          @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: nil,
+                                element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Attribut en trop par rapport à la référence"
+          }
+        end
       end
+      # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
+      diff_attributes_name = @reference_guw_model_attributes.map(&:name) - guw_model.guw_attributes.map(&:name)
+      unless diff_attributes_name.empty?
+        diff_attributes = @reference_guw_model_attributes.where(name: diff_attributes_name)
+        diff_attributes.each do |attribute|
+          @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: attribute.id,
+                                       element_id: nil, column_name: "Attribut", column_value: attribute.name, nature: "Attribut manquant dans le module de Taille"
+          }
+        end
+      end
+
+
+      #=============================== Les Sorties  ===============================#
+      guw_model.guw_outputs.each do |output|
+        reference_output = @reference_guw_model_outputs.where(name: output.name).first
+        if reference_output
+          identique_output = @reference_guw_model_outputs.where(name: output.name, output_type: output.output_type,
+                                                                allow_intermediate_value: output.allow_intermediate_value,
+                                                                allow_subtotal: output.allow_subtotal, standard_coefficient: output.standard_coefficient,
+                                                                unit: output.unit, display_order: output.display_order,
+                                                                color_code: output.color_code, color_priority: output.color_priority).first
+          if identique_output.nil?
+            # Valeurs differentes
+            @outputs_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_output.id,
+                                         element_id: output.id, column_name: "Sortie", column_value: output.name, nature: "Configuration différente"
+            }
+          end
+        else
+          #l'attribut n'existe pas dans la référence
+          @outputs_differences << { organization_id: guw_model_organization_id,
+                                    guw_model_id: guw_model.id,
+                                    reference_id: nil,
+                                    element_id: output.id,
+                                    column_name: "Sortie",
+                                    column_value: output.name,
+                                    nature: "Sortie en trop par rapport à la référence"
+          }
+        end
+      end
+      # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
+      diff_outputs_name = @reference_guw_model_outputs.map(&:name) - guw_model.guw_outputs.map(&:name)
+      unless diff_outputs_name.empty?
+        diff_outputs = @reference_guw_model_outputs.where(name: diff_outputs_name)
+        diff_outputs.each do |output|
+          @outputs_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: output.id,
+                                       element_id: nil, column_name: "Sortie", column_value: output.name, nature: "Sortie manquante dans le module de Taille"
+          }
+        end
+      end
+
+
+
+      #=============================== Les COEFFICIENTS et COEFFICIENT-ELEMENTS  ===============================#
+
+      guw_model.guw_coefficients.each do |coefficient|
+        reference_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name).first
+        if reference_coefficient
+          identique_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name, coefficient_type: coefficient.coefficient_type,
+                                                                           coefficient_calc: coefficient.coefficient_calc,
+                                                                           allow_intermediate_value: coefficient.allow_intermediate_value,
+                                                                           deported: coefficient.deported, description: coefficient.description,
+                                                                           allow_comments: coefficient.allow_comments).first
+          if identique_coefficient.nil?
+            # Coefficient avec le même nom, mais Valeurs differentes
+            @coefficients_differences << { organization_id: guw_model_organization_id,
+                                           guw_model_id: guw_model.id,
+                                           reference_id: reference_coefficient.id,
+                                           element_id: coefficient.id, column_name: "Coefficient", model_name: "Guw::GuwCoefficient",
+                                           column_value: coefficient.name, nature: "Configuration différente"
+            }
+          end
+
+          #=====================  COEFFICIENT-ELEMENTS  ===================================
+          coefficient_elements = coefficient.guw_coefficient_elements
+          reference_coefficient_elements = reference_coefficient.guw_coefficient_elements
+          # Si le coefficient existe dans ce module de Taille, On verifie les elements de coefficients
+          reference_coefficient.guw_coefficient_elements.each do |reference_coefficient_element|
+            # On verifie si le coefficient-element existe avec le même nom / puis avec la même configuration
+            coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name).first
+
+            if coefficient_element  # L'élement de coefficient existe
+              identique_coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name,
+                                                                         value: reference_coefficient_element.value,
+                                                                         display_order: reference_coefficient_element.display_order,
+                                                                         min_value: reference_coefficient_element.min_value,
+                                                                         max_value: reference_coefficient_element.max_value,
+                                                                         default_value: reference_coefficient_element.default_value,
+                                                                         description: reference_coefficient_element.description,
+                                                                         default: reference_coefficient_element.default,
+                                                                         color_code: reference_coefficient_element.color_code,
+                                                                         color_priority: reference_coefficient_element.color_priority).first
+              if identique_coefficient_element.nil?
+                # Coefficient-Element avec le même nom, mais Configuration differente
+                @coefficient_elements_differences << { organization_id: guw_model_organization_id,
+                                                       guw_model_id: guw_model.id,
+                                                       reference_id: reference_coefficient_element.id,
+                                                       element_id: coefficient_element.id,
+                                                       column_name: "Element de Coefficient",
+                                                       column_value: coefficient_element.name,
+                                                       model_name: "Guw::GuwCoefficientElement",
+                                                       nature: "Configuration différente"
+                }
+              end
+            else
+              # L'element de coefficient n'existe pas dans le module de Taille
+              @coefficient_elements_differences << { organization_id: guw_model_organization_id,
+                                                     guw_model_id: guw_model.id,
+                                                     reference_id: reference_coefficient_element.id,
+                                                     element_id: nil,
+                                                     column_name: "Element de Coefficient",
+                                                     column_value: nil,
+                                                     model_name: "Guw::GuwCoefficientElement",
+                                                     nature: "L'élément de coefficient n'existe pas dans ce module"
+                                                   }
+            end
+
+            # Puis on vérifie les élements de coefficient qui sont en trop dans ce module de Taille
+            diff_coefficient_elements_name =  coefficient_elements.map(&:name) - reference_coefficient_elements.map(&:name)
+            unless diff_coefficient_elements_name.empty?
+              diff_coefficient_elements = coefficient_elements.where(name: diff_coefficient_elements_name)
+              diff_coefficient_elements.each do |diff_coefficient_elt|
+                @coefficient_elements_differences << {  organization_id: guw_model_organization_id,
+                                                        guw_model_id: guw_model.id,
+                                                        reference_id: nil,
+                                                        element_id: diff_coefficient_elt.id,
+                                                        column_name: "Element de Coefficient",
+                                                        column_value: diff_coefficient_elt.name,
+                                                        model_name: "Guw::GuwCoefficientElement",
+                                                        nature: "L'élément de coefficient n'existe pas dans la référence"
+                                                    }
+              end
+            end
+          end
+
+        else #le Coefficient n'existe pas dans la référence
+          @coefficients_differences << { organization_id: guw_model_organization_id,
+                                         guw_model_id: guw_model.id,
+                                         reference_id: nil,
+                                         element_id: coefficient.id,
+                                         column_name: "Coefficient",
+                                         column_value: coefficient.name,
+                                         model_name: "Guw::GuwCoefficient",
+                                         nature: "Coefficient en trop par rapport à la référence"
+          }
+        end
+      end
+      # Pour voir si s'il ya des coefficients manquants dans le module de taille concerné
+      diff_coefficients_name = @reference_guw_model_coefficients.map(&:name) - guw_model.guw_coefficients.map(&:name)
+      unless diff_coefficients_name.empty?
+        diff_coefficients = @reference_guw_model_coefficients.where(name: diff_coefficients_name)
+        diff_coefficients.each do |coefficient|
+          @coefficients_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: coefficient.id,
+                                    element_id: nil, column_name: "Coefficient", column_value: coefficient.name, nature: "Coefficient manquant dans le module de Taille"
+          }
+        end
+      end
+
+
+      #=============================== Les GUW-TYPES  ===============================#
+
+      guw_model.guw_types.each do |guw_type|
+        reference_guw_type = @reference_guw_model_types.where(name: guw_type.name).first
+        if reference_guw_type
+          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name, guw_type_type: guw_type.guw_type_type,
+                                                                allow_intermediate_value: guw_type.allow_intermediate_value,
+                                                                allow_subtotal: guw_type.allow_subtotal, standard_coefficient: guw_type.standard_coefficient,
+                                                                unit: guw_type.unit, display_order: guw_type.display_order,
+                                                                color_code: guw_type.color_code, color_priority: guw_type.color_priority).first
+          if identique_guw_type.nil?
+            # Valeurs differentes
+            @guw_types_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_guw_type.id,
+                                      element_id: guw_type.id, column_name: "Sortie", column_value: guw_type.name, nature: "Configuration différente"
+            }
+          end
+        else
+          #l'attribut n'existe pas dans la référence
+          @guw_types_differences << { organization_id: guw_model_organization_id,
+                                    guw_model_id: guw_model.id,
+                                    reference_id: nil,
+                                    element_id: guw_type.id,
+                                    column_name: "Sortie",
+                                    column_value: guw_type.name,
+                                    nature: "Sortie en trop par rapport à la référence"
+          }
+        end
+      end
+      # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
+      diff_guw_types_name = @reference_guw_model_types.map(&:name) - guw_model.guw_guw_types.map(&:name)
+      unless diff_guw_types_name.empty?
+        diff_guw_types = @reference_guw_model_types.where(name: diff_guw_types_name)
+        diff_guw_types.each do |guw_type|
+          @guw_types_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: guw_type.id,
+                                    element_id: nil, column_name: "Sortie", column_value: guw_type.name, nature: "Sortie manquante dans le module de Taille"
+          }
+        end
+      end
+
+      #=============================================  FIN TEST  =============================================
+
+
+
     end
 
   end
