@@ -127,6 +127,7 @@ class OrganizationsController < ApplicationController
     #@reference_organization = Organization.where(name: "CDS DE REFERENCE").first
     @reference_organization = Organization.where(name: "CDS PROD TRAIN").first
     ###@reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
+    #@reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi.").first
     @reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi. Centre de Services P1").first
 
     @all_differences = []
@@ -171,7 +172,10 @@ class OrganizationsController < ApplicationController
                                 allow_ml_redmine: @reference_guw_model.allow_ml_redmine,
                                 view_data: @reference_guw_model.view_data
                               }
+    rescue
+      #nothing to do
     end
+
     guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
     @reference_default_data = HashWithIndifferentAccess.new
 
@@ -404,7 +408,7 @@ class OrganizationsController < ApplicationController
       guw_model.guw_types.each do |guw_type|
         reference_guw_type = @reference_guw_model_types.where(name: guw_type.name).first
         if reference_guw_type
-          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name, guw_type_type: guw_type.guw_type_type,
+          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name, guw_type: guw_type.guw_type,
                                                                 allow_intermediate_value: guw_type.allow_intermediate_value,
                                                                 allow_subtotal: guw_type.allow_subtotal, standard_coefficient: guw_type.standard_coefficient,
                                                                 unit: guw_type.unit, display_order: guw_type.display_order,
@@ -2520,7 +2524,11 @@ class OrganizationsController < ApplicationController
 
   def organizationals_params
     set_page_title I18n.t(:Organizational_Parameters)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    if @current_organization
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+    end
 
     if current_user.super_admin?
       @organizations = Organization.all
