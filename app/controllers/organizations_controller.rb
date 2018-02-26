@@ -443,7 +443,7 @@ class OrganizationsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
 
-    @organization.module_projects.each do |module_project|
+    @current_organization.module_projects.each do |module_project|
       project = module_project.project
       @guw_model = module_project.guw_model
 
