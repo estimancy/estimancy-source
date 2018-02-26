@@ -486,7 +486,10 @@ class OrganizationsController < ApplicationController
           I18n.t(:quantity),
           I18n.t(:tracability),
           I18n.t(:cotation),
-          "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]
+          "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } +
+            @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten +
+            @wbs_activity.nil? ? '' : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten +
+            ["TJM Moyen"]
 
       header.each_with_index do |val, index|
         worksheet.add_cell(0, index, val)
