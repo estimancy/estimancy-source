@@ -1693,6 +1693,16 @@ class OrganizationsController < ApplicationController
               end
             end
 
+            # Copie des authorisations (Permissions sur l'organisation / Permissions globales / Permissions sur les modules)
+            organization_image.groups.each do |group|
+              new_group = new_organization.groups.where(copy_id: group.id).first
+              unless new_group.nil?
+                new_group.permissions = group.permissions
+                new_group.save
+              end
+            end
+
+
             OrganizationsUsers.where(user_id: current_user.id, organization_id: new_organization.id).first_or_create!
 
             # Copy the WBS-Activities modules's Models instances
