@@ -67,7 +67,6 @@ class OrganizationsController < ApplicationController
     @estimation_model_groups_versions = @project_securities.where(is_model_permission: true)
     @estimation_model_users_versions = @project_securities.where(is_model_permission: true)
 
-
     respond_to do |format|
       format.html
       format.pdf do
@@ -75,7 +74,9 @@ class OrganizationsController < ApplicationController
                template: 'organizations/export_to_pdf_security_audit_utilities.pdf.erb',
                encoding: "UTF-8",
                page_size: 'A4',
-               orientation: :landscape
+               orientation: :landscape,
+               #:footer => { :html => { :template => 'layouts/pdf_footer.erb' } }
+               footer: { right: '[page] sur [topage]' }
       end
     end
   end
