@@ -40,6 +40,8 @@ class OrganizationsController < ApplicationController
     @start_date = params[:start_date]
     @end_date = params[:end_date] || DateTime.now
 
+    redirect_to organizationals_params_path if @organization.nil? and return
+
     @versions = AutorizationLogEvent.where(organization_id: @organization.id).order(:created_at)
     unless @start_date.blank?
       #@versions = AutorizationLogEvent.where(organization_id: @organization.id, created_at: start_date .. end_date)
@@ -76,7 +78,8 @@ class OrganizationsController < ApplicationController
                page_size: 'A4',
                orientation: :landscape,
                #:footer => { :html => { :template => 'layouts/pdf_footer.erb' } }
-               footer: { right: '[page] sur [topage]' }
+               footer: { right: '[page] sur [topage]' },
+               :header => { :content => header_html, :spacing => 10 }
       end
     end
   end
