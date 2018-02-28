@@ -3054,8 +3054,8 @@ public
               mp_ratio_element.module_project_id = new_mp.id
               mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
-              pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
-              mp_ratio_element.pbs_project_element_id = pbs_id
+              pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+              mp_ratio_element.pbs_project_element_id = pbs.nil? ? nil : pbs.id
               mp_ratio_element.save
             end
 
