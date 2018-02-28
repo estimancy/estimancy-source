@@ -42,6 +42,7 @@
     <li><a href="#tabs-coefficients"><%= "Coefficients" %></a></li>
     <li><a href="#tabs-coefficient_elements"><%= "Elements de Coefficients" %></a></li>
     <li><a href="#tabs-sorties"><%= "Les sorties" %></a></li>
+    <li><a href="#tabs-guw_types"><%= "Types d'unité d'oeuvre" %></a></li>
     <li><a href="#tabs-matrix"><%= "La Matrice" %></a></li>
   </ul>
 
@@ -74,6 +75,13 @@
     <%= render partial: 'audit_common_outputs_differences',
                formats: [:html], object: [@outputs_differences], locals: { }  %>
   </div>
+
+  <!-- ========================  GUW-TYPES  ===================== -->
+  <div id="tabs-guw_types">
+    <%= render partial: 'audit_common_guw_types_differences',
+               formats: [:html], object: [@guw_types_differences], locals: { }  %>
+  </div>
+
 
   <!-- ========================  MATRICE  ===================== -->
   <div id="tabs-matrix">

@@ -12,41 +12,59 @@
   </thead>
 
   <% @guw_types_differences.each do |difference| %>
+      <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
       <% column_name = difference[:column_name] %>
       <tr>
         <!--<td><%#= @reference_organization.name %></td>-->
         <td><%= column_name %></td>
         <td>
-          <% coefficient = Guw::GuwCoefficient.where(id: difference[:reference_id]).first %>
-          <% if  coefficient %>
-              <%= "Nom : #{coefficient.name}" %> <br>
-              <%= "Description : #{coefficient.description}" %> <br>
-              <%= "Type de coefficient : #{coefficient.coefficient_type}" %><br>
-              <%= "Autoriser les commentaires : #{coefficient.allow_comments}" %><br>
-              <%= "Autoriser la modification : #{coefficient.allow_intermediate_value}" %><br>
-              <%= "Coefficient déporté : #{coefficient.deported}" %>
+          <% guw_type = Guw::GuwType.where(id: difference[:reference_id]).first %>
+          <% if  guw_type %>
+              <%= "#{I18n.t(:work_unit_type)} : #{guw_type.name}" %> <br>
+              <%= "Description : #{guw_type.description}" %> <br>
+              <%= "#{I18n.t(:Changing_the_count_enter) } : #{guw_type.allow_criteria}" %><br>
+              <%= "Type de calcul pour les attributs : #{guw_type.attribute_type}" %><br>
+              <%= "#{I18n.t(:Changing_of_the_size_enter)} : #{guw_type.allow_retained}" %><br>
+              <% if guw_model.config_type == "old" %>
+                <%= "#{I18n.t(:Changing_the_quantity_enter)} : #{guw_type.allow_quantity}" %><br>
+              <% end %>
+
+              <%= "Afficher le seuil : #{guw_type.display_threshold}" %><br>
+              <%= "#{I18n.t(:Changing_the_complexity_enter)} : #{guw_type.allow_complexity}" %><br>
+              <%= "#{I18n.t(:color_code)} : #{guw_type.color_code}" %><br>
+              <%= "#{I18n.t(:color_priority)} : #{guw_type.color_priority}" %><br>
+              <%= "#{I18n.t(:allow_line_color)} : #{guw_type.allow_line_color}" %><br>
+              <%= "Type d'UO par défaut : #{guw_type.is_default}" %><br>
           <% else %>
               -
           <% end %>
+
         </td>
         <td><%= Organization.where(id: difference[:organization_id]).first %></td>
         <td>
-          <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
           <%#= link_to guw_model.name, guw.guw_model_path(guw_model, organization_id: difference[:organization_id]), confirm: I18n.t(:warning_edit_instance_module) %>
           <%= link_to guw_model.name, guw.edit_guw_model_path(guw_model, organization_id: difference[:organization_id], anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
         </td>
 
         <td><%= difference[:nature] %></td>
         <td>
-          <% coefficient =  Guw::GuwCoefficient.where(id: difference[:element_id]).first %>
-          <%#= column_name %>
-          <% if  coefficient %>
-              <%= "Nom : #{coefficient.name}" %> <br>
-              <%= "Description : #{coefficient.description}" %> <br>
-              <%= "Type de coefficient : #{coefficient.coefficient_type}" %><br>
-              <%= "Autoriser les commentaires : #{coefficient.allow_comments}" %><br>
-              <%= "Autoriser la modification : #{coefficient.allow_intermediate_value}" %><br>
-              <%= "Coefficient déporté : #{coefficient.deported}" %><br>
+          <% guw_type =  Guw::GuwType.where(id: difference[:element_id]).first %>
+          <% if  guw_type %>
+              <%= "#{I18n.t(:work_unit_type)} : #{guw_type.name}" %> <br>
+              <%= "Description : #{guw_type.description}" %> <br>
+              <%= "#{I18n.t(:Changing_the_count_enter) } : #{guw_type.allow_criteria}" %><br>
+              <%= "Type de calcul pour les attributs : #{guw_type.attribute_type}" %><br>
+              <%= "#{I18n.t(:Changing_of_the_size_enter)} : #{guw_type.allow_retained}" %><br>
+              <% if @guw_model.config_type == "old" %>
+                  <%= "#{I18n.t(:Changing_the_quantity_enter)} : #{guw_type.allow_quantity}" %><br>
+              <% end %>
+
+              <%= "Afficher le seuil : #{guw_type.display_threshold}" %><br>
+              <%= "#{I18n.t(:Changing_the_complexity_enter)} : #{guw_type.allow_complexity}" %><br>
+              <%= "#{I18n.t(:color_code)} : #{guw_type.color_code}" %><br>
+              <%= "#{I18n.t(:color_priority)} : #{guw_type.color_priority}" %><br>
+              <%= "#{I18n.t(:allow_line_color)} : #{guw_type.allow_line_color}" %><br>
+              <%= "Type d'UO par défaut : #{guw_type.is_default}" %><br>
           <% else %>
               -
           <% end %>

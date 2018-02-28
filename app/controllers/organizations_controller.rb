@@ -77,9 +77,9 @@ class OrganizationsController < ApplicationController
                encoding: "UTF-8",
                page_size: 'A4',
                orientation: :landscape,
-               #:footer => { :html => { :template => 'layouts/pdf_footer.erb' } }
-               footer: { right: '[page] sur [topage]' },
-               :header => { :content => header_html, :spacing => 10 }
+               footer: { right: '[page] sur [topage]' }
+               #:header => { :content => "pdf_header", :spacing => 10 }
+               #:header => {:content => render( :template => 'layouts/pdf_header.pdf.erb'), :spacing => 0}
       end
     end
   end
@@ -400,8 +400,13 @@ class OrganizationsController < ApplicationController
       unless diff_coefficients_name.empty?
         diff_coefficients = @reference_guw_model_coefficients.where(name: diff_coefficients_name)
         diff_coefficients.each do |coefficient|
-          @coefficients_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: coefficient.id,
-                                    element_id: nil, column_name: "Coefficient", column_value: coefficient.name, nature: "Coefficient manquant dans le module de Taille"
+          @coefficients_differences << { organization_id: guw_model_organization_id,
+                                         guw_model_id: guw_model.id,
+                                         reference_id: coefficient.id,
+                                         element_id: nil,
+                                         column_name: "Coefficient",
+                                         column_value: coefficient.name,
+                                         nature: "Coefficient manquant dans le module de Taille"
           }
         end
       end
@@ -412,36 +417,53 @@ class OrganizationsController < ApplicationController
       guw_model.guw_types.each do |guw_type|
         reference_guw_type = @reference_guw_model_types.where(name: guw_type.name).first
         if reference_guw_type
-          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name, guw_type: guw_type.guw_type,
-                                                                allow_intermediate_value: guw_type.allow_intermediate_value,
-                                                                allow_subtotal: guw_type.allow_subtotal, standard_coefficient: guw_type.standard_coefficient,
-                                                                unit: guw_type.unit, display_order: guw_type.display_order,
-                                                                color_code: guw_type.color_code, color_priority: guw_type.color_priority).first
+          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name,
+                                                                attribute_type: guw_type.attribute_type,
+                                                                description: guw_type.description,
+                                                                allow_quantity: guw_type.allow_quantity,
+                                                                allow_retained: guw_type.allow_retained,
+                                                                allow_complexity: guw_type.allow_complexity,
+                                                                allow_criteria: guw_type.allow_criteria,
+                                                                display_threshold: guw_type.display_threshold,
+                                                                is_default: guw_type.is_default,
+                                                                color_code: guw_type.color_code,
+                                                                color_priority: guw_type.color_priority,
+                                                                allow_line_color: guw_type.allow_line_color).first
           if identique_guw_type.nil?
             # Valeurs differentes
-            @guw_types_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_guw_type.id,
-                                      element_id: guw_type.id, column_name: "Sortie", column_value: guw_type.name, nature: "Configuration différente"
+            @guw_types_differences << { organization_id: guw_model_organization_id,
+                                        guw_model_id: guw_model.id,
+                                        reference_id: reference_guw_type.id,
+                                        element_id: guw_type.id,
+                                        column_name: "Sortie",
+                                        column_value: guw_type.name,
+                                        nature: "Configuration différente"
             }
           end
         else
           #l'attribut n'existe pas dans la référence
           @guw_types_differences << { organization_id: guw_model_organization_id,
-                                    guw_model_id: guw_model.id,
-                                    reference_id: nil,
-                                    element_id: guw_type.id,
-                                    column_name: "Sortie",
-                                    column_value: guw_type.name,
-                                    nature: "Sortie en trop par rapport à la référence"
+                                      guw_model_id: guw_model.id,
+                                      reference_id: nil,
+                                      element_id: guw_type.id,
+                                      column_name: "Sortie",
+                                      column_value: guw_type.name,
+                                      nature: "Sortie en trop par rapport à la référence"
           }
         end
       end
       # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
-      diff_guw_types_name = @reference_guw_model_types.map(&:name) - guw_model.guw_guw_types.map(&:name)
+      diff_guw_types_name = @reference_guw_model_types.map(&:name) - guw_model.guw_types.map(&:name)
       unless diff_guw_types_name.empty?
         diff_guw_types = @reference_guw_model_types.where(name: diff_guw_types_name)
         diff_guw_types.each do |guw_type|
-          @guw_types_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: guw_type.id,
-                                    element_id: nil, column_name: "Sortie", column_value: guw_type.name, nature: "Sortie manquante dans le module de Taille"
+          @guw_types_differences << { organization_id: guw_model_organization_id,
+                                      guw_model_id: guw_model.id,
+                                      reference_id: guw_type.id,
+                                      element_id: nil,
+                                      column_name: "Sortie",
+                                      column_value: guw_type.name,
+                                      nature: "Sortie manquante dans le module de Taille"
           }
         end
       end
