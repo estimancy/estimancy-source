@@ -1501,9 +1501,11 @@ class OrganizationsController < ApplicationController
       #Update the project securities for the current user who create the estimation from model
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
-        creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
-        unless creator_securities.nil?
-          creator_securities.update_attribute(:user_id, user.id)
+        unless old_prj.creator.nil?
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
+          unless creator_securities.nil?
+            creator_securities.update_attribute(:user_id, user.id)
+          end
         end
       end
       #Other project securities for groups
@@ -2564,7 +2566,7 @@ class OrganizationsController < ApplicationController
       @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
     end
 
-    if @organizations.size == 1
+    if @organizations.size == 1 && !current_user.super_admin?
       redirect_to organization_estimations_path(@organizations.first)
     end
   end
@@ -2665,7 +2667,7 @@ class OrganizationsController < ApplicationController
                 user.save
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
-                if cnt_organization.id
+                if can?(:manage, Group, :organization_id => @current_organization.id)
                    while line[group_index]
                       group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
                       begin
@@ -2707,7 +2709,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_4)
     end
 
-    redirect_to organization_users_path(@current_organization)
+    redirect_to organization_users_path(@current_organization) and return
 
 =begin
     sep = "#{params[:separator].blank? ? I18n.t(:general_csv_separator) : params[:separator]}"

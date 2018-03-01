@@ -542,6 +542,9 @@ class ProjectsController < ApplicationController
 
     @project_title = params[:project][:title]
     @project = Project.new(params[:project])
+    if @project.new_record?
+      @project.is_model = @is_model
+    end
 
     if @is_model == true
       if params[:project][:application_ids].present?
@@ -1560,9 +1563,16 @@ class ProjectsController < ApplicationController
 
           # create the module_project_ratio_elements
           ratio.wbs_activity_ratio_elements.each do |ratio_element|
-            mp_ratio_element = ModuleProjectRatioElement.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id, wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_element_id: ratio_element.id,
-                                 multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
-                                 ratio_value: ratio_element.ratio_value, wbs_activity_element_id: ratio_element.wbs_activity_element_id, position: ratio_element.wbs_activity_element.position)
+            mp_ratio_element = ModuleProjectRatioElement.new(organization_id: @organization.id,
+                                                             wbs_activity_id: my_module_project.wbs_activity_id,
+                                                             pbs_project_element_id: @pbs_project_element.id,
+                                                             module_project_id: my_module_project.id,
+                                                             wbs_activity_ratio_id: ratio.id,
+                                                             wbs_activity_ratio_element_id: ratio_element.id,
+                                                             wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                                             multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name,
+                                                             description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
+                                                             ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position)
             mp_ratio_element.save
           end
           #Update module_project_ratio_element ancestry
@@ -3708,7 +3718,11 @@ public
       flash[:error] = I18n.t('errors.messages.not_saved')
     end
 
-    redirect_to :back
+    if request.env["HTTP_REFERER"].present?
+      redirect_to :back
+    else
+      redirect_to organization_estimations_path(@current_organization)
+    end
   end
 
   # Display comments about estimation status changes

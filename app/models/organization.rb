@@ -77,8 +77,9 @@ class Organization < ActiveRecord::Base
   has_many :project_security_levels, dependent: :destroy
 
   # Results view
-  has_many :views
-  has_many :applications
+  has_many :views, dependent: :destroy
+  has_many :applications, dependent: :destroy
+
   has_many :providers
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
 
