@@ -55,7 +55,7 @@
               <%= "#{I18n.t(:Changing_the_count_enter) } : #{guw_type.allow_criteria}" %><br>
               <%= "Type de calcul pour les attributs : #{guw_type.attribute_type}" %><br>
               <%= "#{I18n.t(:Changing_of_the_size_enter)} : #{guw_type.allow_retained}" %><br>
-              <% if @guw_model.config_type == "old" %>
+              <% if guw_model.config_type == "old" %>
                   <%= "#{I18n.t(:Changing_the_quantity_enter)} : #{guw_type.allow_quantity}" %><br>
               <% end %>
 
