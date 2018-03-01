@@ -1711,7 +1711,7 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    #begin
+    begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -1969,6 +1969,11 @@ class OrganizationsController < ApplicationController
                 project.acquisition_category_id = new_acquisition_category.id
               end
 
+              new_provider = new_organization.providers.where(copy_id: project.provider_id).first
+              unless new_provider.nil?
+                project.provider_id = new_provider.id
+              end
+
               project.save
 
               unless project.original_model_id.nil?
@@ -2070,6 +2075,7 @@ class OrganizationsController < ApplicationController
       end
 
       respond_to do |format|
+        flash[:notice] = "Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation."
         format.html { redirect_to organizationals_params_path and return }
         #format.js { render :js => "window.location.replace('/organizationals_params');"}
         ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
@@ -2080,13 +2086,15 @@ class OrganizationsController < ApplicationController
         ##format.js { render 'layouts/flashes' }
       end
 
-    # rescue
-    #   flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
-    #   respond_to do |format|
-    #     format.html { redirect_to organizationals_params_path and return }
-    #     format.js { render :js => "window.location.replace('/organizationals_params');"}
-    #   end
-    # end
+    rescue
+      organization_image.update_attribute(:copy_in_progress, false)
+
+      flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
+      respond_to do |format|
+        format.html { redirect_to organizationals_params_path and return }
+        format.js { render :js => "window.location.replace('/organizationals_params');"}
+      end
+    end
 
   end
 
