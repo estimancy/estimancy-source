@@ -43,7 +43,12 @@
     <li><a href="#tabs-coefficient_elements"><%= "Elements de Coefficients" %></a></li>
     <li><a href="#tabs-sorties"><%= "Les sorties" %></a></li>
     <li><a href="#tabs-guw_types"><%= "Types d'unité d'oeuvre" %></a></li>
-    <li><a href="#tabs-matrix"><%= "La Matrice" %></a></li>
+
+    <li><a href="#tabs-guw_type_complexities"><%= "Seuils de complexité des Coefficients et Sorties" %></a></li>
+    <li><a href="#tabs-guw_type_complexities_coefficients_outputs_matrix"><%= "Matrice Seuils de complexité Coefficients / Sorties " %></a></li>
+
+    <li><a href="#tabs-guw_type_complexities_attributes"><%= "Seuils de complexité des attributs" %></a></li>
+    <li><a href="#tabs-guw_type_complexities_attributes_matrix"><%= "Matrice Attributs / seuils de complexité  " %></a></li>
   </ul>
 
   <!-- ========================  DONNEES DE BASE MODULE DE TAILLE  ===================== -->
@@ -83,10 +88,30 @@
   </div>
 
 
-  <!-- ========================  MATRICE  ===================== -->
-  <div id="tabs-matrix">
-    <%= render partial: 'audit_common_guw_types_matrix_differences',
-               formats: [:html], object: [@guw_types_differences], locals: { }  %>
+  <!-- ========================  GUW-TYPE-COMPLEXITIES : Seuils de complexité des coefficients et sorties  ===================== -->
+  <div id="tabs-guw_type_complexities">
+    <%= render partial: 'audit_common_guw_type_complexities_differences',
+               formats: [:html], object: [@guw_types_complexities_differences], locals: { }  %>
+  </div>
+
+  <!-- ========================  MATRICE  Seuils de complexité Coefficients / Sorties===================== -->
+  <div id="tabs-guw_type_complexities_coefficients_outputs_matrix">
+    <%= render partial: 'audit_common_guw_types_complexities_coefficients_outputs_matrix_differences',
+               formats: [:html], object: [@guw_types_complexities_coefficients_outputs_matrix_differences], locals: { }  %>
+  </div>
+
+
+  <!-- ========================  GUW-TYPE-COMPLEXITIES-ATTRIBUTES : Seuils de complexité des Attributs  ===================== -->
+  <div id="tabs-guw_type_complexities_attributes">
+    <%= render partial: 'audit_common_guw_type_attributes_type_complexities_differences',
+               formats: [:html], object: [@attributes_type_complexities_differences], locals: { }  %>
+  </div>
+
+
+  <!-- ========================  MATRICE  Matrice Attributs / seuils de complexité ===================== -->
+  <div id="tabs-guw_type_complexities_attributes_matrix">
+    <%= render partial: 'audit_common_guw_types_attributes_complexities_matrix_differences',
+               formats: [:html], object: [@attributes_type_complexities_matrix_differences], locals: { }  %>
   </div>
 
 </div>
