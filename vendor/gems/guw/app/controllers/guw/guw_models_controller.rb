@@ -127,7 +127,7 @@ class Guw::GuwModelsController < ApplicationController
                 orders = Hash.new
                 i = 10
                 order_value_coeff = tab[i][0]
-                while order_value_coeff.to_s != I18n.t(:config_type).to_s do
+                while order_value_coeff.to_s != "allow_ml_redmine" do
                   begin
                     orders["#{tab[i][0]}"] = tab[i][1]
                     i = i+1
@@ -139,6 +139,20 @@ class Guw::GuwModelsController < ApplicationController
 
                 @guw_model.orders = orders
                 @guw_model.config_type = tab[i][1]
+
+                @guw_model.allow_excel = ((tab[i][1]) == "false") ? false : true
+                @guw_model.excel_ml_server = tab[i][1]
+                @guw_model.allow_ml_excel = ((tab[i][1]) == "false") ? false : true
+
+                @guw_model.allow_jira = ((tab[i][1]) == "false") ? false : true
+                @guw_model.jira_ml_server = tab[i][1]
+                @guw_model.allow_ml_jira = ((tab[i][1]) == "false") ? false : true
+
+                @guw_model.allow_redmine = ((tab[i][1]) == "false") ? false : true
+                @guw_model.redmine_ml_server = tab[i][1]
+                @guw_model.allow_ml_redmine = ((tab[i][1]) == "false") ? false : true
+
+
                 @guw_model.save
 
               else
@@ -203,7 +217,8 @@ class Guw::GuwModelsController < ApplicationController
                                                        allow_subtotal: (row[3] == 0) ? false : true,
                                                        standard_coefficient: row[4],
                                                        display_order: row[5],
-                                                       unit: row[6])
+                                                       unit: row[6],
+                                                       allow_subtotal: row[7])
 
                     attr = PeAttribute.where(name: guw_output.name,
                                              alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
@@ -246,9 +261,11 @@ class Guw::GuwModelsController < ApplicationController
 
               [2,7,12].each do |column_index|
                 name = tab[9][column_index].nil? ? nil : tab[9][column_index]
+                default_value = tab[9][column_index + 1] == "false" ? false : true
 
                 unless name.blank?
                   @guw_complexity = Guw::GuwComplexity.new(name: name,
+                                                           default_value: default_value,
                                                            guw_type_id: @guw_type.id,
                                                            bottom_range: tab[11][column_index + 1],
                                                            top_range: tab[11][column_index + 2],
@@ -1021,6 +1038,18 @@ class Guw::GuwModelsController < ApplicationController
 
     first_page << [I18n.t(:config_type), @guw_model.config_type]
 
+    first_page << ["allow_excel", @guw_model.allow_excel]
+    first_page << ["excel_ml_server", @guw_model.excel_ml_server]
+    first_page << ["allow_ml_excel", @guw_model.allow_ml_excel]
+
+    first_page << ["allow_jira", @guw_model.allow_jira]
+    first_page << ["jira_ml_server", @guw_model.jira_ml_server]
+    first_page << ["allow_ml_jira", @guw_model.allow_ml_jira]
+
+    first_page << ["allow_redmine", @guw_model.allow_redmine]
+    first_page << ["redmine_ml_server", @guw_model.redmine_ml_server]
+    first_page << ["allow_ml_redmine", @guw_model.allow_ml_redmine]
+
     ind = 0
     ind2 = 1
 
@@ -1178,7 +1207,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit", "allow_subtotal"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
@@ -1343,6 +1372,7 @@ class Guw::GuwModelsController < ApplicationController
         ]
 
         worksheet.add_cell(ind2, column_number, guw_complexity.name)
+        worksheet.add_cell(ind2, column_number + 1, guw_complexity.default_value)
 
         guw_complexity_attributes_values.each_with_index do |name_cell, index|
           worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0])

@@ -106,4 +106,82 @@ end
 #     end
 #   end
 # end
+######### Vérifier ficheir Excel #########
+# o = Organization.where(name: "CDS RH").first
+# path = "#{Rails.root}/PRIX-DE-CDS-RH.xlsx"
+# workbook = RubyXL::Parser.parse(path)
+# tab = workbook[0].extract_data
+# tab.each_with_index do |row, index|
+#   o.guw_models.where(name: row[0]).each do |guw_model|
+#     guw_model.guw_types.each do |guw_type|
+#       guw_type.guw_complexities.each do |guw_complexity|
+#         guw_complexity.weight = row[1].to_f
+#         guw_complexity.save
+#       end
+#     end
+#   end
+# end
+
+
+# organizations = Organization.all
+# organizations.each do |organization|
+#   organization.guw_models.each do |guw_model|
+#     guw_model.guw_coefficients.each do |guw_coefficient|
+#       if guw_coefficient.name == "Dégressivité"
+#         guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+#           if guw_coefficient_element.name == "2017"
+#             guw_coefficient_element.name = "A1"
+#           elsif guw_coefficient_element.name == "2018"
+#             guw_coefficient_element.name = "A2"
+#           elsif guw_coefficient_element.name == "2019"
+#             guw_coefficient_element.name = "A3"
+#           elsif guw_coefficient_element.name == "2020"
+#             guw_coefficient_element.name = "A4"
+#           elsif guw_coefficient_element.name == "2021"
+#             guw_coefficient_element.name = "A5"
+#           elsif guw_coefficient_element.name == "2022"
+#             guw_coefficient_element.name = "A6"
+#           elsif guw_coefficient_element.name == "2023"
+#             guw_coefficient_element.name = "A7"
+#           elsif guw_coefficient_element.name == "2024"
+#             guw_coefficient_element.name = "A8"
+#           else
+#             # ignored
+#           end
+#
+#           guw_coefficient_element.save
+#         end
+#       end
+#     end
+#   end
+# organization = Organization.where(name: "CDS RH").first
+# organization.guw_models.where("name LIKE ? OR name LIKE ?", "%CONSEIL%", "%DIRE%").each do |guw_model|
+#   guw_model.guw_coefficients.each do |guw_coefficient|
+#     if guw_coefficient.name == "Dégressivité"
+#       guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+#         if guw_coefficient_element.name == "A1"
+#           guw_coefficient_element.value = 1
+#         elsif guw_coefficient_element.name == "A2"
+#           guw_coefficient_element.value = 0.95
+#         elsif guw_coefficient_element.name == "A3"
+#           guw_coefficient_element.value = 0.9215
+#         elsif guw_coefficient_element.name == "A4"
+#           guw_coefficient_element.value = 0.90307
+#         elsif guw_coefficient_element.name == "A5"
+#           guw_coefficient_element.value = 0.8850086
+#         elsif guw_coefficient_element.name == "A6"
+#           guw_coefficient_element.value = 0.867308428
+#         elsif guw_coefficient_element.name == "A7"
+#           guw_coefficient_element.value = 0.8499622594
+#         elsif guw_coefficient_element.name == "A8"
+#           guw_coefficient_element.value = 0.8329630143
+#         else
+#           # ignored
+#         end
+#
+#         guw_coefficient_element.save
+#       end
+#     end
+#   end
+# end
 

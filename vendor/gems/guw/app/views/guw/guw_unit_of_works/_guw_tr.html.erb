@@ -443,7 +443,7 @@
 
 <!-- On prend en compte les coefficients non-affichés -->
 <td class="hide">
-  <% @guw_model.orders.select { |k, v| v.empty? }.each do |elem| %>
+  <% @guw_model.orders.select { |k, v| v.blank? }.each do |elem| %>
     <% hidden_guw_coefficient = Guw::GuwCoefficient.where(name: elem.first,
                                                           guw_model_id: @guw_model.id).first %>
 

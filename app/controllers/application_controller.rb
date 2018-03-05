@@ -44,6 +44,8 @@ class ApplicationController < ActionController::Base
       elsif exception.class == ActiveRecord::RecordNotFound
         flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
+      elsif exception.message.include?("warden")
+        # Que faire ?
       else
         UserMailer.crash_log(exception, current_user, @current_organization, @project).deliver
         render :template => "layouts/500.html", :status => 500
