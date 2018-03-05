@@ -1711,7 +1711,7 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    #begin
+    begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -1818,6 +1818,16 @@ class OrganizationsController < ApplicationController
                 end
               end
             end
+
+            # Copie des authorisations (Permissions sur l'organisation / Permissions globales / Permissions sur les modules)
+            organization_image.groups.each do |group|
+              new_group = new_organization.groups.where(copy_id: group.id).first
+              unless new_group.nil?
+                new_group.permissions = group.permissions
+                new_group.save
+              end
+            end
+
 
             OrganizationsUsers.where(user_id: current_user.id, organization_id: new_organization.id).first_or_create!
 
@@ -1959,6 +1969,11 @@ class OrganizationsController < ApplicationController
                 project.acquisition_category_id = new_acquisition_category.id
               end
 
+              new_provider = new_organization.providers.where(copy_id: project.provider_id).first
+              unless new_provider.nil?
+                project.provider_id = new_provider.id
+              end
+
               project.save
 
               unless project.original_model_id.nil?
@@ -2060,6 +2075,7 @@ class OrganizationsController < ApplicationController
       end
 
       respond_to do |format|
+        flash[:notice] = "Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation."
         format.html { redirect_to organizationals_params_path and return }
         #format.js { render :js => "window.location.replace('/organizationals_params');"}
         ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
@@ -2070,13 +2086,15 @@ class OrganizationsController < ApplicationController
         ##format.js { render 'layouts/flashes' }
       end
 
-    # rescue
-    #   flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
-    #   respond_to do |format|
-    #     format.html { redirect_to organizationals_params_path and return }
-    #     format.js { render :js => "window.location.replace('/organizationals_params');"}
-    #   end
-    # end
+    rescue
+      organization_image.update_attribute(:copy_in_progress, false)
+
+      flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
+      respond_to do |format|
+        format.html { redirect_to organizationals_params_path and return }
+        format.js { render :js => "window.location.replace('/organizationals_params');"}
+      end
+    end
 
   end
 
@@ -2231,7 +2249,11 @@ class OrganizationsController < ApplicationController
 
   def organizationals_params
     set_page_title I18n.t(:Organizational_Parameters)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    if @current_organization
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+    end
 
     if current_user.super_admin?
       @organizations = Organization.all

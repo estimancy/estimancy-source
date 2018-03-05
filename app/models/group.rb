@@ -31,8 +31,8 @@ class Group < ActiveRecord::Base
 
   has_many :project_securities
 
-  has_many :permissions, through: :groups_permission
   has_many :groups_permission, dependent: :destroy
+  has_many :permissions, through: :groups_permission
 
   # has_paper_trail
 
