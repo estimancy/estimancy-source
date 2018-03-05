@@ -127,7 +127,8 @@ class Guw::GuwModelsController < ApplicationController
                 orders = Hash.new
                 i = 10
                 order_value_coeff = tab[i][0]
-                while order_value_coeff.to_s != "allow_ml_redmine" do
+                jj = 0
+                while order_value_coeff.to_s != "allow_ml_redmine"
                   begin
                     orders["#{tab[i][0]}"] = tab[i][1]
                     i = i+1
@@ -135,23 +136,30 @@ class Guw::GuwModelsController < ApplicationController
                   rescue
                     # ignored
                   end
+                  jj += 1
+                  break if jj >= 30
                 end
 
                 @guw_model.orders = orders
-                @guw_model.config_type = tab[i][1]
+                @guw_model.config_type = "new"
 
-                @guw_model.allow_excel = ((tab[i][1]) == "false") ? false : true
-                @guw_model.excel_ml_server = tab[i][1]
-                @guw_model.allow_ml_excel = ((tab[i][1]) == "false") ? false : true
+                begin
+                  @guw_model.allow_excel = ((tab[i][1]) == "false") ? false : true
+                  @guw_model.excel_ml_server = tab[i][1]
+                  @guw_model.allow_ml_excel = ((tab[i][1]) == "false") ? false : true
 
-                @guw_model.allow_jira = ((tab[i][1]) == "false") ? false : true
-                @guw_model.jira_ml_server = tab[i][1]
-                @guw_model.allow_ml_jira = ((tab[i][1]) == "false") ? false : true
+                  @guw_model.allow_jira = ((tab[i][1]) == "false") ? false : true
+                  @guw_model.jira_ml_server = tab[i][1]
+                  @guw_model.allow_ml_jira = ((tab[i][1]) == "false") ? false : true
 
-                @guw_model.allow_redmine = ((tab[i][1]) == "false") ? false : true
-                @guw_model.redmine_ml_server = tab[i][1]
-                @guw_model.allow_ml_redmine = ((tab[i][1]) == "false") ? false : true
-
+                  @guw_model.allow_redmine = ((tab[i][1]) == "false") ? false : true
+                  @guw_model.redmine_ml_server = tab[i][1]
+                  @guw_model.allow_ml_redmine = ((tab[i][1]) == "false") ? false : true
+                rescue
+                  @guw_model.allow_excel = true
+                  @guw_model.excel_ml_server = false
+                  @guw_model.allow_ml_excel = false
+                end
 
                 @guw_model.save
 
@@ -261,7 +269,7 @@ class Guw::GuwModelsController < ApplicationController
 
               [2,7,12].each do |column_index|
                 name = tab[9][column_index].nil? ? nil : tab[9][column_index]
-                default_value = tab[9][column_index + 1] == "false" ? false : true
+                default_value = tab[9][column_index + 1] == "true" ? true : false
 
                 unless name.blank?
                   @guw_complexity = Guw::GuwComplexity.new(name: name,
