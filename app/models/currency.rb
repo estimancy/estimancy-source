@@ -106,6 +106,37 @@ end
 #     end
 #   end
 # end
+#
+# organization = Organization.where(name: "CDS RH").first
+# organization.guw_models.each do |guw_model|
+#   guw_model.guw_coefficients.each do |guw_coefficient|
+#     if guw_coefficient.name == "Dégressivité"
+#       guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+#         if guw_coefficient_element.name == "2017"
+#           guw_coefficient_element.name = "A1"
+#         elsif guw_coefficient_element.name == "2018"
+#           guw_coefficient_element.name = "A2"
+#         elsif guw_coefficient_element.name == "2019"
+#           guw_coefficient_element.name = "A3"
+#         elsif guw_coefficient_element.name == "2020"
+#           guw_coefficient_element.name = "A4"
+#         elsif guw_coefficient_element.name == "2021"
+#           guw_coefficient_element.name = "A5"
+#         elsif guw_coefficient_element.name == "2022"
+#           guw_coefficient_element.name = "A6"
+#         elsif guw_coefficient_element.name == "2023"
+#           guw_coefficient_element.name = "A7"
+#         elsif guw_coefficient_element.name == "2024"
+#           guw_coefficient_element.name = "A8"
+#         else
+#           # ignored
+#         end
+#
+#         guw_coefficient_element.save
+#       end
+#     end
+#   end
+# end
 ######### Vérifier ficheir Excel #########
 # o = Organization.where(name: "CDS RH").first
 # path = "#{Rails.root}/PRIX-DE-CDS-RH.xlsx"
