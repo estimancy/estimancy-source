@@ -23,7 +23,7 @@
       <% guw_output = Guw::GuwOutput.where(id: difference[:guw_output_id]).first %>
       <% guw_complexity = Guw::GuwComplexity.where(id: difference[:guw_complexity_id]).first %>
       <tr>
-        <td><%= Guw::GuwAttribute.where(id: difference[:guw_attribute_id].first) %></td>
+        <td><%= Guw::GuwAttribute.where(id: difference[:guw_attribute_id]).first %></td>
 
         <td><%= column_name %></td>
         <td>

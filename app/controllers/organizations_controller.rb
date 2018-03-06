@@ -111,18 +111,6 @@ class OrganizationsController < ApplicationController
     @estimation_model_groups_versions = @project_securities.where(is_model_permission: true)
     @estimation_model_users_versions = @project_securities.where(is_model_permission: true)
 
-    #@security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionsProjectSecurityLevels", "EstimationStatusGroupRole"])
-    # @organization_users_versions = @versions.where(item_type: ["UserOrganizations"])
-    # @group_users_versions = @versions.where(item_type: ["UserGroups"])
-    # @group_versions = @versions.where(item_type: ["Group"])
-    # @group_permissions_versions = @versions.where(item_type: ["GroupsPermission"])
-    #
-    # @security_level_versions = @versions.where(item_type: ["ProjectSecurityLevel", "PermissionsProjectSecurityLevels", "EstimationStatusGroupRole"])
-    #
-    # #Pour les estimations et les models
-    # @project_securities = @versions.where(item_type: ["ProjectSecurity"])
-    # @estimation_model_versions = @project_securities.where(is_model: true)
-    # @estimation_versions = @project_securities.where(is_model: [false, nil])
   end
 
 
@@ -145,44 +133,6 @@ class OrganizationsController < ApplicationController
     @attributes_type_complexities_differences = []
     @guw_types_complexities_coefficients_outputs_matrix_differences = []
     @attributes_type_complexities_matrix_differences = []
-
-    begin
-      @reference_default_data_save = { name: @reference_guw_model.name,
-                                description: @reference_guw_model.description,
-                                three_points_estimation: @reference_guw_model.three_points_estimation,
-                                retained_size_unit: @reference_guw_model.retained_size_unit,
-                                one_level_model: @reference_guw_model.one_level_model,
-                                coefficient_label: @reference_guw_model.coefficient_label,
-                                hour_coefficient_conversion: @reference_guw_model.hour_coefficient_conversion,
-                                default_display: @reference_guw_model.default_display,
-                                weightings_label: @reference_guw_model.weightings_label,
-                                factors_label: @reference_guw_model.factors_label,
-                                effort_unit: @reference_guw_model.effort_unit,
-                                cost_unit: @reference_guw_model.cost_unit,
-                                allow_technology: @reference_guw_model.allow_technology,
-                                work_unit_type: @reference_guw_model.work_unit_type,
-                                weighting_type: @reference_guw_model.weighting_type,
-                                factor_type: @reference_guw_model.factor_type,
-                                work_unit_min: @reference_guw_model.work_unit_min, work_unit_max: @reference_guw_model.work_unit_max,
-                                factor_min: @reference_guw_model.factor_min, factor_max: @reference_guw_model.factor_max,
-                                weighting_min: @reference_guw_model.weighting_min, weighting_max: @reference_guw_model.weighting_max,
-                                orders: @reference_guw_model.orders,
-                                config_type: @reference_guw_model.config_type,
-                                allow_ml: @reference_guw_model.allow_ml,
-                                allow_excel: @reference_guw_model.allow_excel,
-                                allow_jira: @reference_guw_model.allow_jira,
-                                allow_redmine: @reference_guw_model.allow_redmine,
-                                excel_ml_server: @reference_guw_model.excel_ml_server,
-                                jira_ml_server: @reference_guw_model.jira_ml_server,
-                                redmine_ml_server: @reference_guw_model.redmine_ml_server,
-                                allow_ml_excel: @reference_guw_model.allow_ml_excel,
-                                allow_ml_jira: @reference_guw_model.allow_ml_jira,
-                                allow_ml_redmine: @reference_guw_model.allow_ml_redmine,
-                                view_data: @reference_guw_model.view_data
-                              }
-    rescue
-      #nothing to do
-    end
 
     guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
     @reference_default_data = HashWithIndifferentAccess.new
@@ -226,25 +176,15 @@ class OrganizationsController < ApplicationController
                                 }
           end
         end
-
-        # if different == true
-        #   differences = {
-        #       organization_id: guw_model.organization_id,
-        #       guw_model_id: guw_model.id,
-        #       column_name: column_name,
-        #       column_value: column_value
-        #   }
-        #   @all_differences << differences
-        # end
-
       end
 
       #=============================== Les attributs  ===============================#
       guw_model.guw_attributes.each do |attribute|
         reference_attribute = @reference_guw_model_attributes.where(name: attribute.name).first
         if reference_attribute
-          identique_attribute = @reference_guw_model_attributes.where(name: attribute.name, description: attribute.description).first
-          if identique_attribute.nil?
+          ###identique_attribute = @reference_guw_model_attributes.where(name: attribute.name, description: attribute.description).first
+
+          if reference_attribute.name.to_s != attribute.name.to_s || reference_attribute.description.to_s != attribute.description.to_s
             # Description differente
             @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
                                   element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Description différente"
@@ -277,12 +217,21 @@ class OrganizationsController < ApplicationController
       guw_model_outputs.each do |output|
         reference_output = @reference_guw_model_outputs.where(name: output.name).first
         if reference_output
-          identique_output = @reference_guw_model_outputs.where(name: output.name, output_type: output.output_type,
-                                                                allow_intermediate_value: output.allow_intermediate_value,
-                                                                allow_subtotal: output.allow_subtotal, standard_coefficient: output.standard_coefficient,
-                                                                unit: output.unit, display_order: output.display_order,
-                                                                color_code: output.color_code, color_priority: output.color_priority).first
-          if identique_output.nil?
+          # identique_output = @reference_guw_model_outputs.where(name: output.name, output_type: output.output_type,
+          #                                                       allow_intermediate_value: output.allow_intermediate_value,
+          #                                                       allow_subtotal: output.allow_subtotal, standard_coefficient: output.standard_coefficient,
+          #                                                       unit: output.unit, display_order: output.display_order,
+          #                                                       color_code: output.color_code, color_priority: output.color_priority).first
+          if  reference_output.name.to_s != output.name ||
+              reference_output.output_type.to_s !=  output.output_type.to_s ||
+              reference_output.allow_intermediate_value != output.allow_intermediate_value ||
+              reference_output.allow_subtotal != output.allow_subtotal ||
+              reference_output.standard_coefficient != output.standard_coefficient ||
+              reference_output.unit != output.unit ||
+              reference_output.display_order != output.display_order ||
+              reference_output.color_code != output.color_code ||
+              reference_output.color_priority != output.color_priority
+
             # Valeurs differentes
             @outputs_differences << { organization_id: guw_model_organization_id,
                                       guw_model_id: guw_model.id,
@@ -321,18 +270,24 @@ class OrganizationsController < ApplicationController
       end
 
 
-
       #=============================== Les COEFFICIENTS et COEFFICIENT-ELEMENTS  ===============================#
 
       guw_model.guw_coefficients.each do |coefficient|
         reference_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name).first
         if reference_coefficient
-          identique_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name, coefficient_type: coefficient.coefficient_type,
-                                                                           coefficient_calc: coefficient.coefficient_calc,
-                                                                           allow_intermediate_value: coefficient.allow_intermediate_value,
-                                                                           deported: coefficient.deported, description: coefficient.description,
-                                                                           allow_comments: coefficient.allow_comments).first
-          if identique_coefficient.nil?
+          # identique_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name, coefficient_type: coefficient.coefficient_type,
+          #                                                                  coefficient_calc: coefficient.coefficient_calc,
+          #                                                                  allow_intermediate_value: coefficient.allow_intermediate_value,
+          #                                                                  deported: coefficient.deported, description: coefficient.description,
+          #                                                                  allow_comments: coefficient.allow_comments).first
+          if reference_coefficient.name.to_s != coefficient.name.to_s ||
+              reference_coefficient.coefficient_type.to_s != coefficient.coefficient_type.to_s ||
+              reference_coefficient.coefficient_calc.to_s != coefficient.coefficient_calc.to_s ||
+              reference_coefficient.allow_intermediate_value !=  coefficient.allow_intermediate_value ||
+              reference_coefficient.deported != coefficient.deported ||
+              reference_coefficient.description.to_s !=  coefficient.description.to_s ||
+              reference_coefficient.allow_comments !=  coefficient.allow_comments
+
             # Coefficient avec le même nom, mais Valeurs differentes
             @coefficients_differences << { organization_id: guw_model_organization_id,
                                            guw_model_id: guw_model.id,
@@ -351,17 +306,29 @@ class OrganizationsController < ApplicationController
             coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name).first
 
             if coefficient_element  # L'élement de coefficient existe
-              identique_coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name,
-                                                                         value: reference_coefficient_element.value,
-                                                                         display_order: reference_coefficient_element.display_order,
-                                                                         min_value: reference_coefficient_element.min_value,
-                                                                         max_value: reference_coefficient_element.max_value,
-                                                                         default_value: reference_coefficient_element.default_value,
-                                                                         description: reference_coefficient_element.description,
-                                                                         default: reference_coefficient_element.default,
-                                                                         color_code: reference_coefficient_element.color_code,
-                                                                         color_priority: reference_coefficient_element.color_priority).first
-              if identique_coefficient_element.nil?
+              # identique_coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name,
+              #                                                            value: reference_coefficient_element.value,
+              #                                                            display_order: reference_coefficient_element.display_order,
+              #                                                            min_value: reference_coefficient_element.min_value,
+              #                                                            max_value: reference_coefficient_element.max_value,
+              #                                                            default_value: reference_coefficient_element.default_value,
+              #                                                            description: reference_coefficient_element.description,
+              #                                                            default: reference_coefficient_element.default,
+              #                                                            color_code: reference_coefficient_element.color_code,
+              #                                                            color_priority: reference_coefficient_element.color_priority).first
+              #if identique_coefficient_element.nil?
+              if (coefficient_element.name.to_s != reference_coefficient_element.name.to_s ||
+                 coefficient_element.value.to_f != reference_coefficient_element.value.to_f ||
+                 coefficient_element.display_order.to_i != reference_coefficient_element.display_order.to_i ||
+                 coefficient_element.min_value.to_f != reference_coefficient_element.min_value.to_f ||
+                 coefficient_element.max_value.to_f != reference_coefficient_element.max_value.to_f ||
+                 coefficient_element.default_value.to_f != reference_coefficient_element.default_value.to_f ||
+                 coefficient_element.description.to_s != reference_coefficient_element.description.to_s ||
+                 coefficient_element.default != reference_coefficient_element.default ||
+                 coefficient_element.color_code.to_s != reference_coefficient_element.color_code.to_s ||
+                 coefficient_element.color_priority.to_i != reference_coefficient_element.color_priority.to_i)
+
+
                 # Coefficient-Element avec le même nom, mais Configuration differente
                 @coefficient_elements_differences << { organization_id: guw_model_organization_id,
                                                        guw_model_id: guw_model.id,
@@ -470,19 +437,31 @@ class OrganizationsController < ApplicationController
           }
          # la reference existe
         else
-          identique_guw_type = @reference_guw_model_types.where(name: guw_type.name,
-                                                                attribute_type: guw_type.attribute_type,
-                                                                description: guw_type.description,
-                                                                allow_quantity: guw_type.allow_quantity,
-                                                                allow_retained: guw_type.allow_retained,
-                                                                allow_complexity: guw_type.allow_complexity,
-                                                                allow_criteria: guw_type.allow_criteria,
-                                                                display_threshold: guw_type.display_threshold,
-                                                                is_default: guw_type.is_default,
-                                                                color_code: guw_type.color_code,
-                                                                color_priority: guw_type.color_priority,
-                                                                allow_line_color: guw_type.allow_line_color).first
-          if identique_guw_type.nil?
+          # identique_guw_type = @reference_guw_model_types.where(name: guw_type.name,
+          #                                                       attribute_type: guw_type.attribute_type,
+          #                                                       description: guw_type.description,
+          #                                                       allow_quantity: guw_type.allow_quantity,
+          #                                                       allow_retained: guw_type.allow_retained,
+          #                                                       allow_complexity: guw_type.allow_complexity,
+          #                                                       allow_criteria: guw_type.allow_criteria,
+          #                                                       display_threshold: guw_type.display_threshold,
+          #                                                       is_default: guw_type.is_default,
+          #                                                       color_code: guw_type.color_code,
+          #                                                       color_priority: guw_type.color_priority,
+          #                                                       allow_line_color: guw_type.allow_line_color).first
+          if reference_guw_type.name != guw_type.name ||
+              reference_guw_type.attribute_type != guw_type.attribute_type ||
+              reference_guw_type.description.to_s != guw_type.description.to_s ||
+              reference_guw_type.allow_quantity != guw_type.allow_quantity ||
+              reference_guw_type.allow_retained != guw_type.allow_retained ||
+              reference_guw_type.allow_complexity != guw_type.allow_complexity ||
+              reference_guw_type.allow_criteria != guw_type.allow_criteria ||
+              reference_guw_type.display_threshold != guw_type.display_threshold ||
+              reference_guw_type.is_default != guw_type.is_default ||
+              reference_guw_type.color_code != guw_type.color_code ||
+              reference_guw_type.color_priority != guw_type.color_priority ||
+              reference_guw_type.allow_line_color != guw_type.allow_line_color
+
             # Valeurs differentes
             @guw_types_differences << { organization_id: guw_model_organization_id,
                                         guw_model_id: guw_model.id,
@@ -535,16 +514,25 @@ class OrganizationsController < ApplicationController
                                                         nature: "Seuil de complexité en trop par rapport à la référence"
               }
             else  # la reference existe
-              identique_guw_type_cplx = reference_guw_type_complexities.where(name: guw_cplx.name,
-                                                                              alias: guw_cplx.alias,
-                                                                              weight: guw_cplx.weight,
-                                                                              bottom_range: guw_cplx.bottom_range,
-                                                                              top_range: guw_cplx.top_range,
-                                                                              enable_value: guw_cplx.enable_value,
-                                                                              display_order: guw_cplx.display_order,
-                                                                              default_value: guw_cplx.default_value,
-                                                                              weight_b: guw_cplx.weight_b).first
-              if identique_guw_type_cplx.nil?
+              # identique_guw_type_cplx = reference_guw_type_complexities.where(name: guw_cplx.name,
+              #                                                                 alias: guw_cplx.alias,
+              #                                                                 weight: guw_cplx.weight,
+              #                                                                 bottom_range: guw_cplx.bottom_range,
+              #                                                                 top_range: guw_cplx.top_range,
+              #                                                                 enable_value: guw_cplx.enable_value,
+              #                                                                 display_order: guw_cplx.display_order,
+              #                                                                 default_value: guw_cplx.default_value,
+              #                                                                 weight_b: guw_cplx.weight_b).first
+              if reference_guw_cplx.name != guw_cplx.name ||
+                  reference_guw_cplx.alias != guw_cplx.alias ||
+                  reference_guw_cplx.weight != guw_cplx.weight ||
+                  reference_guw_cplx.bottom_range.to_i != guw_cplx.bottom_range.to_i ||
+                  reference_guw_cplx.top_range.to_i != guw_cplx.top_range.to_i ||
+                  reference_guw_cplx.enable_value != guw_cplx.enable_value ||
+                  reference_guw_cplx.display_order != guw_cplx.display_order ||
+                  reference_guw_cplx.default_value.to_i != guw_cplx.default_value.to_i ||
+                  reference_guw_cplx.weight_b != guw_cplx.weight_b
+
                 # Valeurs differentes
                 @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
                                                         guw_model_id: guw_model.id,
@@ -732,11 +720,8 @@ class OrganizationsController < ApplicationController
                     end
                   end
                 end
-
               end
-
             end
-
           end
 
 
@@ -779,11 +764,15 @@ class OrganizationsController < ApplicationController
                                                               column_value: type_complexity.value,
                                                               nature: "Seuil n'existe pas dans  la référence"}
               else
-                identique_reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name,
-                                                                                                     description: type_complexity.description,
-                                                                                                     value: type_complexity.value,
-                                                                                                     display_order: type_complexity.display_order).first
-                if identique_reference_type_complexity.nil?
+                  # identique_reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name,
+                  #                                                                                      description: type_complexity.description,
+                  #                                                                                      value: type_complexity.value,
+                  #                                                                                      display_order: type_complexity.display_order).first
+                if reference_type_complexity.name != type_complexity.name ||
+                    reference_type_complexity.description.to_s != type_complexity.description.to_s ||
+                    reference_type_complexity.value != type_complexity.value ||
+                    reference_type_complexity.display_order != type_complexity.display_order
+
                   # Valeurs differentes
                   @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
                                                                 guw_type_id: guw_type.id,
@@ -798,7 +787,6 @@ class OrganizationsController < ApplicationController
 
 
                 # === On compare les valeurs de la matrice de seuils de complexité des attributs
-
                 guw_model_attributes.order("name ASC").each do |guw_attribute|
                   reference_guw_attribute = @reference_guw_model_attributes.where(name: guw_attribute.name).first
 
@@ -842,28 +830,14 @@ class OrganizationsController < ApplicationController
 
 
                   end
-
                 end
-
               end
             end
-
-
           end
-
-
-
-        end  #=========== FIN MATRICE par GUW-TYPE  ===============================#
+        end  #=========== FIN AFFICHAGE DIFFERENCES par GUW-TYPE PAR RAPPORT A LA REFERENCE ==============================#
       end
 
-
-
-
-
-      #=============================================  FIN TEST  =============================================
-
     end
-
   end
 
 
