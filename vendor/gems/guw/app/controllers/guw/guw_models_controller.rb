@@ -157,7 +157,7 @@ class Guw::GuwModelsController < ApplicationController
                   @guw_model.allow_ml_redmine = ((tab[i][1]) == "false") ? false : true
                 rescue
                   @guw_model.allow_excel = true
-                  @guw_model.excel_ml_server = false
+                  @guw_model.excel_ml_server = ""
                   @guw_model.allow_ml_excel = false
                 end
 
