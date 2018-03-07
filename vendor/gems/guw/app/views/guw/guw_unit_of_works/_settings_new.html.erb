@@ -55,8 +55,7 @@
           Total <%= guw_output.name %> retenu :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%# @unit_of_work_groups.map do |i|
-              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <%= @unit_of_work_groups.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
               end
@@ -70,8 +69,7 @@
           Total <%= guw_output.name %> théorique :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%# @unit_of_work_groups.map do |i|
-              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <%= @unit_of_work_groups.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
               end
