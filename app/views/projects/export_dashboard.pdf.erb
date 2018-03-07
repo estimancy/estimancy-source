@@ -187,6 +187,7 @@
         <th>Montant en €</th>
       </tr>
 
+      <!-- TODO: Prendre le ratio du module project et non le premier car il peut y en avoir potentiellement plusieurs -->
       <% @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first %>
       <% @module_project_ratio_elements = module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component) %>
 

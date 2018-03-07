@@ -1031,12 +1031,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     unless params["comments"].nil?
-      guowa.comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+      comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+      guowa.comments = comments
     end
 
-    guowa.low = low
-    guowa.most_likely = most_likely
-    guowa.high = high
+    gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
+                                       guw_attribute_id: guowa.guw_attribute_id).first
+
+    if gat.default_value != most_likely && comments.blank?
+      # ignored, on en sauvegarde pas les valeurs
+    else
+      guowa.low = low
+      guowa.most_likely = most_likely
+      guowa.high = high
+    end
+
     guowa.save
   end
 
