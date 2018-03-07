@@ -136,6 +136,7 @@
                   $('.modal_comments').modal('hide');
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
+                  $(".validate_comments").attr('disabled', 'disabled');
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
