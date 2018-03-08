@@ -160,8 +160,9 @@
         </td>
       <% end %>
     <% elsif i[0] == "Coeff. de Complexité" %>
-      <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
-
+      <% unless @guw_type.nil? %>
+        <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
+      <% end %>
       <td class="span2">
         <span class="cotation_label_<%= guow.id %>">
           <% unless @guw_type.nil? %>
