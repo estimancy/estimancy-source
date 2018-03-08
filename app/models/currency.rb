@@ -215,4 +215,35 @@ end
 #     end
 #   end
 # end
+#
+# organization = Organization.where(name: "CDS FORMATION").first
+# organization.guw_models.each do |guw_model|
+#   guw_model.guw_coefficients.each do |guw_coefficient|
+#     if guw_coefficient.name == "Dégressivité"
+#       guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+#         if guw_coefficient_element.name == "A1"
+#           guw_coefficient_element.value = 1
+#         elsif guw_coefficient_element.name == "A2"
+#           guw_coefficient_element.value = 0.95
+#         elsif guw_coefficient_element.name == "A3"
+#           guw_coefficient_element.value = 0.9
+#         elsif guw_coefficient_element.name == "A4"
+#           guw_coefficient_element.value = 0.85
+#         elsif guw_coefficient_element.name == "A5"
+#           guw_coefficient_element.value = 0.8
+#         elsif guw_coefficient_element.name == "A6"
+#           guw_coefficient_element.value = 0.77
+#         elsif guw_coefficient_element.name == "A7"
+#           guw_coefficient_element.value = 0.75
+#         elsif guw_coefficient_element.name == "A8"
+#           guw_coefficient_element.value = 0.72
+#         else
+#           # ignored
+#         end
+#
+#         guw_coefficient_element.save
+#       end
+#     end
+#   end
+# end
 
