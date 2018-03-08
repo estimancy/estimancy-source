@@ -1917,7 +1917,7 @@ class Guw::GuwModelsController < ApplicationController
 
     worksheet.change_row_bold(0,true)
 
-    jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+    jj = 21 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
