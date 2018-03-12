@@ -12,7 +12,8 @@
   </tr>
   </thead>
 
-  <% @attributes_type_complexities_matrix_differences.each do |difference| %>
+  <%# @attributes_type_complexities_matrix_differences.each do |difference| %>
+  <% @guw_types_complexities_coefficients_outputs_matrix_differences.each do |difference| %>
       <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
       <% guw_type = Guw::GuwType.where(id: difference[:guw_type_id]).first %>
 

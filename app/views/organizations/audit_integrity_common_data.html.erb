@@ -53,31 +53,31 @@
 
   <!-- ========================  DONNEES DE BASE MODULE DE TAILLE  ===================== -->
   <div id="tabs-default_data">
-    <%= render partial: 'audit_common_default_data_differences',
+    <%#= render partial: 'audit_common_default_data_differences',
                formats: [:html], object: [@default_data_differences], locals: { } %>
   </div>
 
   <!-- ========================  ATTRIBUTS ===================== -->
   <div id="tabs-guw_attributes">
-    <%= render partial: 'audit_common_attributes_differences',
+    <%#= render partial: 'audit_common_attributes_differences',
                formats: [:html], object: [@attributes_differences], locals: { }  %>
   </div>
 
   <!-- ======================== COEFFICIENTS ===================== -->
   <div id="tabs-coefficients">
-    <%= render partial: 'audit_common_coefficients_differences',
+    <%#= render partial: 'audit_common_coefficients_differences',
                formats: [:html], object: [@coefficients_differences], locals: { } %>
   </div>
 
   <!-- ========================  COEFFICIENT-ELEMENTS ===================== -->
   <div id="tabs-coefficient_elements">
-    <%= render partial: 'audit_common_coefficient_elements_differences',
+    <%#= render partial: 'audit_common_coefficient_elements_differences',
                formats: [:html], object: [@coefficient_elements_differences], locals: { } %>
   </div>
 
   <!-- ========================  SORTIES ===================== -->
   <div id="tabs-sorties">
-    <%= render partial: 'audit_common_outputs_differences',
+    <%#= render partial: 'audit_common_outputs_differences',
                formats: [:html], object: [@outputs_differences], locals: { }  %>
   </div>
 
@@ -90,27 +90,27 @@
 
   <!-- ========================  GUW-TYPE-COMPLEXITIES : Seuils de complexité des coefficients et sorties  ===================== -->
   <div id="tabs-guw_type_complexities">
-    <%= render partial: 'audit_common_guw_type_complexities_differences',
+    <%#= render partial: 'audit_common_guw_type_complexities_differences',
                formats: [:html], object: [@guw_types_complexities_differences], locals: { }  %>
   </div>
 
   <!-- ========================  MATRICE  Seuils de complexité Coefficients / Sorties===================== -->
   <div id="tabs-guw_type_complexities_coefficients_outputs_matrix">
-    <%= render partial: 'audit_common_guw_types_complexities_coefficients_outputs_matrix_differences',
+    <%#= render partial: 'audit_common_guw_types_complexities_coefficients_outputs_matrix_differences',
                formats: [:html], object: [@guw_types_complexities_coefficients_outputs_matrix_differences], locals: { }  %>
   </div>
 
 
   <!-- ========================  GUW-TYPE-COMPLEXITIES-ATTRIBUTES : Seuils de complexité des Attributs  ===================== -->
   <div id="tabs-guw_type_complexities_attributes">
-    <%= render partial: 'audit_common_guw_type_attributes_type_complexities_differences',
+    <%#= render partial: 'audit_common_guw_type_attributes_type_complexities_differences',
                formats: [:html], object: [@attributes_type_complexities_differences], locals: { }  %>
   </div>
 
 
   <!-- ========================  MATRICE  Matrice Attributs / seuils de complexité ===================== -->
   <div id="tabs-guw_type_complexities_attributes_matrix">
-    <%= render partial: 'audit_common_guw_types_attributes_complexities_matrix_differences',
+    <%#= render partial: 'audit_common_guw_types_attributes_complexities_matrix_differences',
                formats: [:html], object: [@attributes_type_complexities_matrix_differences], locals: { }  %>
   </div>
 

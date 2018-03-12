@@ -120,7 +120,8 @@ class OrganizationsController < ApplicationController
     @reference_organization = Organization.where(name: "CDS PROD TRAIN").first
     ###@reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
     #@reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi.").first
-    @reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi. Centre de Services P1").first
+    #@reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi. Centre de Services P1").first
+    @reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi.").first
 
     @all_differences = []
     @default_data_differences = []
@@ -134,7 +135,7 @@ class OrganizationsController < ApplicationController
     @guw_types_complexities_coefficients_outputs_matrix_differences = []
     @attributes_type_complexities_matrix_differences = []
 
-    guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
+    guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "name", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
     @reference_default_data = HashWithIndifferentAccess.new
 
     #On recupere les valeurs de reference
@@ -157,59 +158,81 @@ class OrganizationsController < ApplicationController
       guw_model_attributes = guw_model.guw_attributes
 
       #=========================== Donnees et informations generales  ==========================#
-      @reference_default_data.each do |column_name, column_value|
-        different = false
+      # @reference_default_data.each do |column_name, column_value|
+      #   different = false
+      #
+      #   if column_name == "orders"
+      #     guw_model_orders = Hash[guw_model.send(column_name).map{|k, v| [k.to_s, v.to_s]}]
+      #     column_value = Hash[column_value.map{|k, v| [k.to_s, v.to_s]}]
+      #
+      #     #if (guw_model.send(column_name).to_a <=> column_value.to_a) != 0
+      #     if (guw_model_orders.to_a <=> column_value.to_a) != 0
+      #       different = true
+      #       differences = guw_model.send(column_name).diff(column_value)
+      #       @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+      #                             column_name: column_name, reference_column_value: column_value, column_value: guw_model_orders, nature: ""
+      #       }
+      #     end
+      #
+      #     #on parcourt les valeurs une à une
+      #     guw_model_orders = guw_model.send(column_name)
+      #     column_value.each do |key, value|
+      #         #if guw_model_orders[key]
+      #     end
+      #
+      #   else
+      #     guw_model_column_value = guw_model.send(column_name)
+      #     if column_value.in?([true, false]) || guw_model_column_value.in?([true, false])
+      #       if !column_value != !guw_model_column_value
+      #         different = true
+      #         @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+      #                                        column_name: column_name, reference_column_value: column_value, column_value: guw_model_column_value, nature: ""
+      #         }
+      #       end
+      #     else
+      #       if guw_model_column_value != column_value
+      #         different = true
+      #         @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+      #                                        column_name: column_name, reference_column_value: column_value, column_value: guw_model_column_value, nature: ""
+      #         }
+      #       end
+      #     end
+      #   end
+      # end
 
-        if column_name == "orders"
-          if (guw_model.send(column_name).to_a <=> column_value.to_a) != 0
-            different = true
-            differences = guw_model.send(column_name).diff(column_value)
-            @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
-                                  column_name: column_name, column_value: column_value, nature: ""
-            }
-          end
-        else
-          if guw_model.send(column_name) != column_value
-            different = true
-            @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
-                                  column_name: column_name, column_value: column_value, nature: ""
-                                }
-          end
-        end
-      end
 
       #=============================== Les attributs  ===============================#
-      guw_model.guw_attributes.each do |attribute|
-        reference_attribute = @reference_guw_model_attributes.where(name: attribute.name).first
-        if reference_attribute
-          ###identique_attribute = @reference_guw_model_attributes.where(name: attribute.name, description: attribute.description).first
-
-          if reference_attribute.name.to_s != attribute.name.to_s || reference_attribute.description.to_s != attribute.description.to_s
-            # Description differente
-            @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
-                                  element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Description différente"
-            }
-          end
-        else
-          #l'attribut n'existe pas dans la référence
-          @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: nil,
-                                element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Attribut en trop par rapport à la référence"
-          }
-        end
-      end
-      # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
-      diff_attributes_name = @reference_guw_model_attributes.map(&:name) - guw_model.guw_attributes.map(&:name)
-      unless diff_attributes_name.empty?
-        diff_attributes = @reference_guw_model_attributes.where(name: diff_attributes_name)
-        diff_attributes.each do |attribute|
-          @attributes_differences << { organization_id: guw_model_organization_id,
-                                       guw_model_id: guw_model.id,
-                                       reference_id: attribute.id,
-                                       element_id: nil,
-                                       column_name: "Attribut", column_value: attribute.name, nature: "Attribut manquant dans le module de Taille"
-          }
-        end
-      end
+      # guw_model.guw_attributes.each do |attribute|
+      #   reference_attribute = @reference_guw_model_attributes.where(name: attribute.name).first
+      #   if reference_attribute
+      #     ###identique_attribute = @reference_guw_model_attributes.where(name: attribute.name, description: attribute.description).first
+      #
+      #     if reference_attribute.name.to_s != attribute.name.to_s || reference_attribute.description.to_s != attribute.description.to_s
+      #       # Description differente
+      #       @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
+      #                             element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Description différente"
+      #       }
+      #     end
+      #   else
+      #     #l'attribut n'existe pas dans la référence
+      #     @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: nil,
+      #                           element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Attribut en trop par rapport à la référence"
+      #     }
+      #   end
+      # end
+      # # Pour voir si s'il ya des attributs manquants dans le module de taille concerné
+      # diff_attributes_name = @reference_guw_model_attributes.map(&:name) - guw_model.guw_attributes.map(&:name)
+      # unless diff_attributes_name.empty?
+      #   diff_attributes = @reference_guw_model_attributes.where(name: diff_attributes_name)
+      #   diff_attributes.each do |attribute|
+      #     @attributes_differences << { organization_id: guw_model_organization_id,
+      #                                  guw_model_id: guw_model.id,
+      #                                  reference_id: attribute.id,
+      #                                  element_id: nil,
+      #                                  column_name: "Attribut", column_value: attribute.name, nature: "Attribut manquant dans le module de Taille"
+      #     }
+      #   end
+      # end
 
 
       #=============================== Les Sorties  ===============================#
@@ -225,11 +248,12 @@ class OrganizationsController < ApplicationController
           if  reference_output.name.to_s != output.name ||
               reference_output.output_type.to_s !=  output.output_type.to_s ||
               reference_output.allow_intermediate_value != output.allow_intermediate_value ||
-              reference_output.allow_subtotal != output.allow_subtotal ||
+              !reference_output.allow_subtotal != !output.allow_subtotal ||
               reference_output.standard_coefficient != output.standard_coefficient ||
               reference_output.unit != output.unit ||
               reference_output.display_order != output.display_order ||
               reference_output.color_code != output.color_code ||
+              #((reference_output.color_code != output.color_code) && !(reference_output.color_code.to_s.in?(["", "FFFFFF"]) && output.color_code.to_s.in?(["", "FFFFFF"]))) ||
               reference_output.color_priority != output.color_priority
 
             # Valeurs differentes
@@ -272,132 +296,132 @@ class OrganizationsController < ApplicationController
 
       #=============================== Les COEFFICIENTS et COEFFICIENT-ELEMENTS  ===============================#
 
-      guw_model.guw_coefficients.each do |coefficient|
-        reference_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name).first
-        if reference_coefficient
-          # identique_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name, coefficient_type: coefficient.coefficient_type,
-          #                                                                  coefficient_calc: coefficient.coefficient_calc,
-          #                                                                  allow_intermediate_value: coefficient.allow_intermediate_value,
-          #                                                                  deported: coefficient.deported, description: coefficient.description,
-          #                                                                  allow_comments: coefficient.allow_comments).first
-          if reference_coefficient.name.to_s != coefficient.name.to_s ||
-              reference_coefficient.coefficient_type.to_s != coefficient.coefficient_type.to_s ||
-              reference_coefficient.coefficient_calc.to_s != coefficient.coefficient_calc.to_s ||
-              reference_coefficient.allow_intermediate_value !=  coefficient.allow_intermediate_value ||
-              reference_coefficient.deported != coefficient.deported ||
-              reference_coefficient.description.to_s !=  coefficient.description.to_s ||
-              reference_coefficient.allow_comments !=  coefficient.allow_comments
-
-            # Coefficient avec le même nom, mais Valeurs differentes
-            @coefficients_differences << { organization_id: guw_model_organization_id,
-                                           guw_model_id: guw_model.id,
-                                           reference_id: reference_coefficient.id,
-                                           element_id: coefficient.id, column_name: "Coefficient", model_name: "Guw::GuwCoefficient",
-                                           column_value: coefficient.name, nature: "Configuration différente"
-            }
-          end
-
-          #=====================  COEFFICIENT-ELEMENTS  ===================================
-          coefficient_elements = coefficient.guw_coefficient_elements
-          reference_coefficient_elements = reference_coefficient.guw_coefficient_elements
-          # Si le coefficient existe dans ce module de Taille, On verifie les elements de coefficients
-          reference_coefficient.guw_coefficient_elements.each do |reference_coefficient_element|
-            # On verifie si le coefficient-element existe avec le même nom / puis avec la même configuration
-            coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name).first
-
-            if coefficient_element  # L'élement de coefficient existe
-              # identique_coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name,
-              #                                                            value: reference_coefficient_element.value,
-              #                                                            display_order: reference_coefficient_element.display_order,
-              #                                                            min_value: reference_coefficient_element.min_value,
-              #                                                            max_value: reference_coefficient_element.max_value,
-              #                                                            default_value: reference_coefficient_element.default_value,
-              #                                                            description: reference_coefficient_element.description,
-              #                                                            default: reference_coefficient_element.default,
-              #                                                            color_code: reference_coefficient_element.color_code,
-              #                                                            color_priority: reference_coefficient_element.color_priority).first
-              #if identique_coefficient_element.nil?
-              if (coefficient_element.name.to_s != reference_coefficient_element.name.to_s ||
-                 coefficient_element.value.to_f != reference_coefficient_element.value.to_f ||
-                 coefficient_element.display_order.to_i != reference_coefficient_element.display_order.to_i ||
-                 coefficient_element.min_value.to_f != reference_coefficient_element.min_value.to_f ||
-                 coefficient_element.max_value.to_f != reference_coefficient_element.max_value.to_f ||
-                 coefficient_element.default_value.to_f != reference_coefficient_element.default_value.to_f ||
-                 coefficient_element.description.to_s != reference_coefficient_element.description.to_s ||
-                 coefficient_element.default != reference_coefficient_element.default ||
-                 coefficient_element.color_code.to_s != reference_coefficient_element.color_code.to_s ||
-                 coefficient_element.color_priority.to_i != reference_coefficient_element.color_priority.to_i)
-
-
-                # Coefficient-Element avec le même nom, mais Configuration differente
-                @coefficient_elements_differences << { organization_id: guw_model_organization_id,
-                                                       guw_model_id: guw_model.id,
-                                                       reference_id: reference_coefficient_element.id,
-                                                       element_id: coefficient_element.id,
-                                                       column_name: "Element de Coefficient",
-                                                       column_value: coefficient_element.name,
-                                                       model_name: "Guw::GuwCoefficientElement",
-                                                       nature: "Configuration différente"
-                }
-              end
-            else
-              # L'element de coefficient n'existe pas dans le module de Taille
-              @coefficient_elements_differences << { organization_id: guw_model_organization_id,
-                                                     guw_model_id: guw_model.id,
-                                                     reference_id: reference_coefficient_element.id,
-                                                     element_id: nil,
-                                                     column_name: "Element de Coefficient",
-                                                     column_value: nil,
-                                                     model_name: "Guw::GuwCoefficientElement",
-                                                     nature: "L'élément de coefficient n'existe pas dans ce module"
-                                                   }
-            end
-
-            # Puis on vérifie les élements de coefficient qui sont en trop dans ce module de Taille
-            diff_coefficient_elements_name =  coefficient_elements.map(&:name) - reference_coefficient_elements.map(&:name)
-            unless diff_coefficient_elements_name.empty?
-              diff_coefficient_elements = coefficient_elements.where(name: diff_coefficient_elements_name)
-              diff_coefficient_elements.each do |diff_coefficient_elt|
-                @coefficient_elements_differences << {  organization_id: guw_model_organization_id,
-                                                        guw_model_id: guw_model.id,
-                                                        reference_id: nil,
-                                                        element_id: diff_coefficient_elt.id,
-                                                        column_name: "Element de Coefficient",
-                                                        column_value: diff_coefficient_elt.name,
-                                                        model_name: "Guw::GuwCoefficientElement",
-                                                        nature: "L'élément de coefficient n'existe pas dans la référence"
-                                                    }
-              end
-            end
-          end
-
-        else #le Coefficient n'existe pas dans la référence
-          @coefficients_differences << { organization_id: guw_model_organization_id,
-                                         guw_model_id: guw_model.id,
-                                         reference_id: nil,
-                                         element_id: coefficient.id,
-                                         column_name: "Coefficient",
-                                         column_value: coefficient.name,
-                                         model_name: "Guw::GuwCoefficient",
-                                         nature: "Coefficient en trop par rapport à la référence"
-          }
-        end
-      end
-      # Pour voir si s'il ya des coefficients manquants dans le module de taille concerné
-      diff_coefficients_name = @reference_guw_model_coefficients.map(&:name) - guw_model.guw_coefficients.map(&:name)
-      unless diff_coefficients_name.empty?
-        diff_coefficients = @reference_guw_model_coefficients.where(name: diff_coefficients_name)
-        diff_coefficients.each do |coefficient|
-          @coefficients_differences << { organization_id: guw_model_organization_id,
-                                         guw_model_id: guw_model.id,
-                                         reference_id: coefficient.id,
-                                         element_id: nil,
-                                         column_name: "Coefficient",
-                                         column_value: coefficient.name,
-                                         nature: "Coefficient manquant dans le module de Taille"
-          }
-        end
-      end
+      # guw_model.guw_coefficients.each do |coefficient|
+      #   reference_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name).first
+      #   if reference_coefficient
+      #     # identique_coefficient = @reference_guw_model_coefficients.where(name: coefficient.name, coefficient_type: coefficient.coefficient_type,
+      #     #                                                                  coefficient_calc: coefficient.coefficient_calc,
+      #     #                                                                  allow_intermediate_value: coefficient.allow_intermediate_value,
+      #     #                                                                  deported: coefficient.deported, description: coefficient.description,
+      #     #                                                                  allow_comments: coefficient.allow_comments).first
+      #     if reference_coefficient.name.to_s != coefficient.name.to_s ||
+      #         reference_coefficient.coefficient_type.to_s != coefficient.coefficient_type.to_s ||
+      #         reference_coefficient.coefficient_calc.to_s != coefficient.coefficient_calc.to_s ||
+      #         !reference_coefficient.allow_intermediate_value !=  !coefficient.allow_intermediate_value ||
+      #         !reference_coefficient.deported != !coefficient.deported ||
+      #         reference_coefficient.description.to_s !=  coefficient.description.to_s ||
+      #         !reference_coefficient.allow_comments !=  !coefficient.allow_comments
+      #
+      #       # Coefficient avec le même nom, mais Valeurs differentes
+      #       @coefficients_differences << { organization_id: guw_model_organization_id,
+      #                                      guw_model_id: guw_model.id,
+      #                                      reference_id: reference_coefficient.id,
+      #                                      element_id: coefficient.id, column_name: "Coefficient", model_name: "Guw::GuwCoefficient",
+      #                                      column_value: coefficient.name, nature: "Configuration différente"
+      #       }
+      #     end
+      #
+      #     #=====================  COEFFICIENT-ELEMENTS  ===================================
+      #     coefficient_elements = coefficient.guw_coefficient_elements
+      #     reference_coefficient_elements = reference_coefficient.guw_coefficient_elements
+      #     # Si le coefficient existe dans ce module de Taille, On verifie les elements de coefficients
+      #     reference_coefficient.guw_coefficient_elements.each do |reference_coefficient_element|
+      #       # On verifie si le coefficient-element existe avec le même nom / puis avec la même configuration
+      #       coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name).first
+      #
+      #       if coefficient_element  # L'élement de coefficient existe
+      #         # identique_coefficient_element = coefficient_elements.where(name: reference_coefficient_element.name,
+      #         #                                                            value: reference_coefficient_element.value,
+      #         #                                                            display_order: reference_coefficient_element.display_order,
+      #         #                                                            min_value: reference_coefficient_element.min_value,
+      #         #                                                            max_value: reference_coefficient_element.max_value,
+      #         #                                                            default_value: reference_coefficient_element.default_value,
+      #         #                                                            description: reference_coefficient_element.description,
+      #         #                                                            default: reference_coefficient_element.default,
+      #         #                                                            color_code: reference_coefficient_element.color_code,
+      #         #                                                            color_priority: reference_coefficient_element.color_priority).first
+      #         #if identique_coefficient_element.nil?
+      #         if (coefficient_element.name.to_s != reference_coefficient_element.name.to_s ||
+      #            coefficient_element.value.to_f != reference_coefficient_element.value.to_f ||
+      #            coefficient_element.display_order.to_i != reference_coefficient_element.display_order.to_i ||
+      #            coefficient_element.min_value.to_f != reference_coefficient_element.min_value.to_f ||
+      #            coefficient_element.max_value.to_f != reference_coefficient_element.max_value.to_f ||
+      #            coefficient_element.default_value.to_f != reference_coefficient_element.default_value.to_f ||
+      #            coefficient_element.description.to_s != reference_coefficient_element.description.to_s ||
+      #            !coefficient_element.default != !reference_coefficient_element.default ||
+      #            coefficient_element.color_code.to_s != reference_coefficient_element.color_code.to_s ||
+      #            coefficient_element.color_priority.to_i != reference_coefficient_element.color_priority.to_i)
+      #
+      #
+      #           # Coefficient-Element avec le même nom, mais Configuration differente
+      #           @coefficient_elements_differences << { organization_id: guw_model_organization_id,
+      #                                                  guw_model_id: guw_model.id,
+      #                                                  reference_id: reference_coefficient_element.id,
+      #                                                  element_id: coefficient_element.id,
+      #                                                  column_name: "Element de Coefficient",
+      #                                                  column_value: coefficient_element.name,
+      #                                                  model_name: "Guw::GuwCoefficientElement",
+      #                                                  nature: "Configuration différente"
+      #           }
+      #         end
+      #       else
+      #         # L'element de coefficient n'existe pas dans le module de Taille
+      #         @coefficient_elements_differences << { organization_id: guw_model_organization_id,
+      #                                                guw_model_id: guw_model.id,
+      #                                                reference_id: reference_coefficient_element.id,
+      #                                                element_id: nil,
+      #                                                column_name: "Element de Coefficient",
+      #                                                column_value: nil,
+      #                                                model_name: "Guw::GuwCoefficientElement",
+      #                                                nature: "L'élément de coefficient n'existe pas dans ce module"
+      #                                              }
+      #       end
+      #
+      #       # Puis on vérifie les élements de coefficient qui sont en trop dans ce module de Taille
+      #       diff_coefficient_elements_name =  coefficient_elements.map(&:name) - reference_coefficient_elements.map(&:name)
+      #       unless diff_coefficient_elements_name.empty?
+      #         diff_coefficient_elements = coefficient_elements.where(name: diff_coefficient_elements_name)
+      #         diff_coefficient_elements.each do |diff_coefficient_elt|
+      #           @coefficient_elements_differences << {  organization_id: guw_model_organization_id,
+      #                                                   guw_model_id: guw_model.id,
+      #                                                   reference_id: nil,
+      #                                                   element_id: diff_coefficient_elt.id,
+      #                                                   column_name: "Element de Coefficient",
+      #                                                   column_value: diff_coefficient_elt.name,
+      #                                                   model_name: "Guw::GuwCoefficientElement",
+      #                                                   nature: "L'élément de coefficient n'existe pas dans la référence"
+      #                                               }
+      #         end
+      #       end
+      #     end
+      #
+      #   else #le Coefficient n'existe pas dans la référence
+      #     @coefficients_differences << { organization_id: guw_model_organization_id,
+      #                                    guw_model_id: guw_model.id,
+      #                                    reference_id: nil,
+      #                                    element_id: coefficient.id,
+      #                                    column_name: "Coefficient",
+      #                                    column_value: coefficient.name,
+      #                                    model_name: "Guw::GuwCoefficient",
+      #                                    nature: "Coefficient en trop par rapport à la référence"
+      #     }
+      #   end
+      # end
+      # # Pour voir si s'il ya des coefficients manquants dans le module de taille concerné
+      # diff_coefficients_name = @reference_guw_model_coefficients.map(&:name) - guw_model.guw_coefficients.map(&:name)
+      # unless diff_coefficients_name.empty?
+      #   diff_coefficients = @reference_guw_model_coefficients.where(name: diff_coefficients_name)
+      #   diff_coefficients.each do |coefficient|
+      #     @coefficients_differences << { organization_id: guw_model_organization_id,
+      #                                    guw_model_id: guw_model.id,
+      #                                    reference_id: coefficient.id,
+      #                                    element_id: nil,
+      #                                    column_name: "Coefficient",
+      #                                    column_value: coefficient.name,
+      #                                    nature: "Coefficient manquant dans le module de Taille"
+      #     }
+      #   end
+      # end
 
 
       #=============================== Les GUW-TYPES  ===============================#
@@ -419,7 +443,7 @@ class OrganizationsController < ApplicationController
       end
 
       # voir les differences
-      guw_model.guw_types.each do |guw_type|
+       guw_model.guw_types.each do |guw_type|
         reference_guw_type = @reference_guw_model_types.where(name: guw_type.name).first
 
         guw_type_guw_complexities = guw_type.guw_complexities
@@ -452,15 +476,15 @@ class OrganizationsController < ApplicationController
           if reference_guw_type.name != guw_type.name ||
               reference_guw_type.attribute_type != guw_type.attribute_type ||
               reference_guw_type.description.to_s != guw_type.description.to_s ||
-              reference_guw_type.allow_quantity != guw_type.allow_quantity ||
-              reference_guw_type.allow_retained != guw_type.allow_retained ||
-              reference_guw_type.allow_complexity != guw_type.allow_complexity ||
-              reference_guw_type.allow_criteria != guw_type.allow_criteria ||
-              reference_guw_type.display_threshold != guw_type.display_threshold ||
-              reference_guw_type.is_default != guw_type.is_default ||
+              !reference_guw_type.allow_quantity != !guw_type.allow_quantity ||
+              !reference_guw_type.allow_retained != !guw_type.allow_retained ||
+              !reference_guw_type.allow_complexity != !guw_type.allow_complexity ||
+              !reference_guw_type.allow_criteria != !guw_type.allow_criteria ||
+              !reference_guw_type.display_threshold != !guw_type.display_threshold ||
+              !reference_guw_type.is_default != !guw_type.is_default ||
               reference_guw_type.color_code != guw_type.color_code ||
               reference_guw_type.color_priority != guw_type.color_priority ||
-              reference_guw_type.allow_line_color != guw_type.allow_line_color
+              !reference_guw_type.allow_line_color != !guw_type.allow_line_color
 
             # Valeurs differentes
             @guw_types_differences << { organization_id: guw_model_organization_id,
@@ -479,365 +503,366 @@ class OrganizationsController < ApplicationController
           reference_guw_type_complexities = reference_guw_type.guw_complexities
 
           # simple / moyen / complexe
-          guw_type.guw_complexities.order("display_order asc").each do |guw_cplx|
-            guw_complexity = guw_cplx
-
-            reference_guw_cplx = reference_guw_type_complexities.where(name: guw_cplx).first
-
-            #== Pour voir s'il ya des Guw-types-complexities manquants dans le module de taille concerné
-            diff_guw_type_complexities_name = reference_guw_type_complexities.all.map(&:name) - guw_type.guw_complexities.all.map(&:name)
-            unless diff_guw_type_complexities_name.empty?
-              diff_guw_type_complexities = reference_guw_type_complexities.where(name: diff_guw_type_complexities_name)
-              diff_guw_type_complexities.each do |diff_guw_type_cplx|
-                @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
-                                                        guw_model_id: guw_model.id,
-                                                        guw_type_id: guw_type.id,
-                                                        reference_id: diff_guw_type_cplx.id,
-                                                        element_id: nil,
-                                                        column_name: "Seuil de complexité",
-                                                        column_value: diff_guw_type_cplx.name,
-                                                        nature: "Seuil de complexité manquant dans le module de Taille"
-                }
-              end
-            end
-
-            #=== On verifie s'il existe dans la reference
-            if reference_guw_cplx.nil?
-              #la complexite n'existe pas dans la référence
-              @guw_types_complexities_differences << {  organization_id: guw_model_organization_id,
-                                                        guw_model_id: guw_model.id,
-                                                        guw_type_id: guw_type.id,
-                                                        reference_id: nil,
-                                                        element_id: guw_cplx.id,
-                                                        column_name: "Seuil de complexité",
-                                                        column_value: guw_cplx.name,
-                                                        nature: "Seuil de complexité en trop par rapport à la référence"
-              }
-            else  # la reference existe
-              # identique_guw_type_cplx = reference_guw_type_complexities.where(name: guw_cplx.name,
-              #                                                                 alias: guw_cplx.alias,
-              #                                                                 weight: guw_cplx.weight,
-              #                                                                 bottom_range: guw_cplx.bottom_range,
-              #                                                                 top_range: guw_cplx.top_range,
-              #                                                                 enable_value: guw_cplx.enable_value,
-              #                                                                 display_order: guw_cplx.display_order,
-              #                                                                 default_value: guw_cplx.default_value,
-              #                                                                 weight_b: guw_cplx.weight_b).first
-              if reference_guw_cplx.name != guw_cplx.name ||
-                  reference_guw_cplx.alias != guw_cplx.alias ||
-                  reference_guw_cplx.weight != guw_cplx.weight ||
-                  reference_guw_cplx.bottom_range.to_i != guw_cplx.bottom_range.to_i ||
-                  reference_guw_cplx.top_range.to_i != guw_cplx.top_range.to_i ||
-                  reference_guw_cplx.enable_value != guw_cplx.enable_value ||
-                  reference_guw_cplx.display_order != guw_cplx.display_order ||
-                  reference_guw_cplx.default_value.to_i != guw_cplx.default_value.to_i ||
-                  reference_guw_cplx.weight_b != guw_cplx.weight_b
-
-                # Valeurs differentes
-                @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
-                                                        guw_model_id: guw_model.id,
-                                                        reference_id: reference_guw_cplx.id,
-                                                        element_id: guw_cplx.id,
-                                                        column_name: "Seuil de complexité",
-                                                        column_value: guw_cplx.name,
-                                                        nature: "Configuration différente"}
-              end
-
-              # ====   On compare les valeurs de la matrice  ====
-
-              guw_model_outputs.each do |guw_output|
-
-                reference_guw_output = @reference_guw_model_outputs.where(name: guw_output.name).first
-
-                if reference_guw_output
-
-                  ##=== Ligne 1 : guw_output_complexity_initializations
-                  oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_cplx.id,
-                                                                     guw_output_id: guw_output.id).first
-
-                  reference_oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: reference_guw_cplx.id,
-                                                                               guw_output_id: reference_guw_output.id).first
-                  if !oci.nil? && !reference_oci.nil?
-                    if oci.init_value.to_f != reference_oci.init_value.to_f
-                      # Differences
-                      @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                      guw_model_id: guw_model.id,
-                                                                      guw_type_id: guw_type.id,
-                                                                      reference_guw_type_id: reference_guw_type.id,
-
-                                                                      reference_guw_output_id: reference_guw_output.id,
-                                                                      guw_output_id: guw_output.id,
-                                                                      class_name: "Guw::GuwOutputComplexityInitialization",
-                                                                      coefficient_name: "Valeur initiale (Σ)",
-                                                                      element_id: oci.id,
-                                                                      reference_id: reference_oci.id,
-                                                                      guw_complexity_id: guw_cplx.id,
-                                                                      reference_guw_complexity_id: reference_guw_cplx.id,
-                                                                      column_name: "Un (1)",
-                                                                      column_value: oci.init_value,
-                                                                      reference_column_value: reference_oci.init_value,
-                                                                      nature: "Valeur d'initialisation différente" }
-                    end
-                  end
-
-
-                  ##===== Ligne 2
-                  oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_cplx.id, guw_output_id: guw_output.id).first
-
-                  reference_oc = Guw::GuwOutputComplexity.where(guw_complexity_id: reference_guw_cplx.id,
-                                                                guw_output_id: reference_guw_output.id).first
-                  if !oc.nil? && !reference_oc.nil?
-                    if oc.value.to_f != reference_oc.value.to_f
-                      # Differences
-                      @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                      guw_model_id: guw_model.id,
-                                                                      guw_type_id: guw_type.id,
-                                                                      reference_guw_type_id: reference_guw_type.id,
-                                                                      reference_guw_output_id: reference_guw_output.id,
-                                                                      guw_output_id: guw_output.id,
-                                                                      class_name: "Guw::GuwOutputComplexity",
-                                                                      coefficient_name: "Valeur initiale (Σ)",
-                                                                      element_id: oc.id,
-                                                                      reference_id: reference_oc.id,
-                                                                      guw_complexity_id: guw_cplx.id,
-                                                                      reference_guw_complexity_id: reference_guw_cplx.id,
-                                                                      column_name: "UO CPLX",
-                                                                      column_value: oc.value,
-                                                                      reference_column_value: reference_oc.value,
-                                                                      nature: "Valeur différente" }
-                    end
-                  end
-
-
-                  ##===== Ligne Sorties / Sorties
-                  reference_got = Guw::GuwOutputType.where(guw_model_id: @reference_guw_model.id,
-                                                           guw_output_id: reference_guw_output.id,
-                                                           guw_type_id: reference_guw_type.id).first
-
-                  got = Guw::GuwOutputType.where(guw_model_id: guw_model.id,
-                                                 guw_output_id: guw_output.id,
-                                                 guw_type_id: guw_type.id).first
-
-                  if !got.nil? && !reference_got.nil?
-                    if got.display_type != reference_got.display_type
-                      # Differences sur le mode d'affichage des resultats
-                      @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                      guw_model_id: guw_model.id,
-                                                                      guw_type_id: guw_type.id,
-                                                                      reference_guw_type_id: reference_guw_type.id,
-                                                                      reference_guw_output_id: reference_guw_output.id,
-                                                                      guw_output_id: guw_output.id,
-                                                                      class_name: "Guw::GuwOutputComplexity",
-                                                                      coefficient_name: "Valeur initiale (Σ)",
-                                                                      element_id: got.id,
-                                                                      reference_id: reference_got.id,
-                                                                      guw_complexity_id: guw_cplx.id,
-                                                                      reference_guw_complexity_id: reference_guw_cplx.id,
-                                                                      column_name: guw_output.name,
-                                                                      column_value: got.display_type,
-                                                                      reference_column_value: reference_got.display_type,
-                                                                      nature: "Mode d'affichage différente" }
-                    end
-
-                    guw_model_outputs.each do |aguw_output|
-
-                      reference_aguw_output =  @reference_guw_model_outputs.where(name: aguw_output.name).first
-
-                      oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
-                                                            guw_output_associated_id: aguw_output.id,
-                                                            guw_output_id: guw_output.id).first
-
-                      reference_oa = Guw::GuwOutputAssociation.where( guw_complexity_id: reference_guw_cplx.id,
-                                                                      guw_output_associated_id: reference_aguw_output.id,
-                                                                      guw_output_id: reference_guw_output.id).first
-
-                      if oa && reference_oa
-                        if oa.value != reference_oa.value
-                          # Differences sur le mode d'affichage des resultats
-                          @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                          guw_model_id: guw_model.id,
-                                                                          guw_type_id: guw_type.id,
-                                                                          reference_guw_type_id: reference_guw_type.id,
-                                                                          reference_guw_output_id: reference_guw_output.id,
-                                                                          guw_output_id: guw_output.id,
-                                                                          class_name: "Guw::GuwOutputAssociation",
-                                                                          coefficient_name: "Valeur initiale (Σ)",
-                                                                          element_id: oa.id,
-                                                                          reference_id: reference_oa.id,
-                                                                          guw_complexity_id: guw_cplx.id,
-                                                                          reference_guw_complexity_id: reference_guw_cplx.id,
-                                                                          column_name: aguw_output.name,
-                                                                          column_value: oa.value,
-                                                                          reference_column_value: reference_oa.value,
-                                                                          nature: "Mode de calcul des sorties différente" }
-                        end
-                      end
-
-                    end
-                  end
-
-                  ##===== Ligne Coefficient (avec Elements de coefficient) / Sorties
-                  guw_model.guw_coefficients.each do |guw_coefficient|
-                    reference_guw_coefficient = @reference_guw_model_coefficients.where(name: guw_coefficient.name).first
-
-                    guw_coefficient_elements = guw_coefficient.guw_coefficient_elements
-                    reference_guw_coefficient_elements = reference_guw_coefficient.guw_coefficient_elements
-
-                    # guw_complexity_coefficient_elements = {}
-                    # guw_type.guw_complexity_coefficient_elements.each do |gcce|
-                    # end
-
-                    guw_coefficient_elements.each do |guw_coefficient_element|
-
-                      reference_guw_coefficient_element = reference_guw_coefficient_elements.where(name: guw_coefficient_element.name).first
-                      ref_guw_complexity = reference_guw_type_complexities.where(name: guw_coefficient_element.guw_complexity.name).first
-
-                      reference_guw_coefficient_element = reference_guw_coefficient_elements.where(guw_complexity_id: (ref_guw_complexity.id rescue nil),
-                                                                                                   guw_coefficient_element_id: reference_guw_coefficient_element.id,
-                                                                                                   guw_output_id: reference_guw_output.id).first
-
-                      if reference_guw_coefficient_element
-                        if guw_coefficient_element.value != reference_guw_coefficient_element.value
-                          # Differences entre coefficient element / Sorties
-                          @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                          guw_model_id: guw_model.id,
-                                                                          guw_type_id: guw_type.id,
-                                                                          reference_guw_type_id: reference_guw_type.id,
-                                                                          reference_guw_output_id: reference_guw_output.id,
-                                                                          guw_output_id: guw_output.id,
-                                                                          class_name: "Guw::GuwComplexityCoefficientElement",
-                                                                          coefficient_name: guw_coefficient.name,
-                                                                          element_id: guw_coefficient_element.id,
-                                                                          reference_id: reference_guw_coefficient_element.id,
-                                                                          guw_complexity_id: guw_cplx.id,
-                                                                          reference_guw_complexity_id: reference_guw_cplx.id,
-                                                                          column_name: guw_coefficient_element.name,
-                                                                          column_value: guw_coefficient_element.value,
-                                                                          reference_column_value: reference_guw_coefficient_element.value,
-                                                                          nature: "Valeur différente entre #{guw_coefficient_element.name} / #{guw_output.name}" }
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
+          # guw_type.guw_complexities.order("display_order asc").each do |guw_cplx|
+          #   guw_complexity = guw_cplx
+          #
+          #   reference_guw_cplx = reference_guw_type_complexities.where(name: guw_cplx).first
+          #
+          #   #== Pour voir s'il ya des Guw-types-complexities manquants dans le module de taille concerné
+          #   diff_guw_type_complexities_name = reference_guw_type_complexities.all.map(&:name) - guw_type.guw_complexities.all.map(&:name)
+          #   unless diff_guw_type_complexities_name.empty?
+          #     diff_guw_type_complexities = reference_guw_type_complexities.where(name: diff_guw_type_complexities_name)
+          #     diff_guw_type_complexities.each do |diff_guw_type_cplx|
+          #       @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
+          #                                               guw_model_id: guw_model.id,
+          #                                               guw_type_id: guw_type.id,
+          #                                               reference_id: diff_guw_type_cplx.id,
+          #                                               element_id: nil,
+          #                                               column_name: "Seuil de complexité",
+          #                                               column_value: diff_guw_type_cplx.name,
+          #                                               nature: "Seuil de complexité manquant dans le module de Taille"
+          #       }
+          #     end
+          #   end
+          #
+          #   #=== On verifie s'il existe dans la reference
+          #   if reference_guw_cplx.nil?
+          #     #la complexite n'existe pas dans la référence
+          #     @guw_types_complexities_differences << {  organization_id: guw_model_organization_id,
+          #                                               guw_model_id: guw_model.id,
+          #                                               guw_type_id: guw_type.id,
+          #                                               reference_id: nil,
+          #                                               element_id: guw_cplx.id,
+          #                                               column_name: "Seuil de complexité",
+          #                                               column_value: guw_cplx.name,
+          #                                               nature: "Seuil de complexité en trop par rapport à la référence"
+          #     }
+          #   else  # la reference existe
+          #     # identique_guw_type_cplx = reference_guw_type_complexities.where(name: guw_cplx.name,
+          #     #                                                                 alias: guw_cplx.alias,
+          #     #                                                                 weight: guw_cplx.weight,
+          #     #                                                                 bottom_range: guw_cplx.bottom_range,
+          #     #                                                                 top_range: guw_cplx.top_range,
+          #     #                                                                 enable_value: guw_cplx.enable_value,
+          #     #                                                                 display_order: guw_cplx.display_order,
+          #     #                                                                 default_value: guw_cplx.default_value,
+          #     #                                                                 weight_b: guw_cplx.weight_b).first
+          #     if reference_guw_cplx.name != guw_cplx.name ||
+          #         reference_guw_cplx.alias != guw_cplx.alias ||
+          #         reference_guw_cplx.weight != guw_cplx.weight ||
+          #         reference_guw_cplx.bottom_range.to_i != guw_cplx.bottom_range.to_i ||
+          #         reference_guw_cplx.top_range.to_i != guw_cplx.top_range.to_i ||
+          #         reference_guw_cplx.enable_value != guw_cplx.enable_value ||
+          #         reference_guw_cplx.display_order != guw_cplx.display_order ||
+          #         reference_guw_cplx.default_value.to_i != guw_cplx.default_value.to_i ||
+          #         reference_guw_cplx.weight_b != guw_cplx.weight_b
+          #
+          #       # Valeurs differentes
+          #       @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
+          #                                               guw_model_id: guw_model.id,
+          #                                               reference_id: reference_guw_cplx.id,
+          #                                               element_id: guw_cplx.id,
+          #                                               column_name: "Seuil de complexité",
+          #                                               column_value: guw_cplx.name,
+          #                                               nature: "Configuration différente"}
+          #     end
+          #
+          #     # ====   On compare les valeurs de la matrice  ====
+          #
+          #     guw_model_outputs.each do |guw_output|
+          #
+          #       reference_guw_output = @reference_guw_model_outputs.where(name: guw_output.name).first
+          #
+          #       if reference_guw_output
+          #
+          #         ##=== Ligne 1 : guw_output_complexity_initializations
+          #         oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_cplx.id,
+          #                                                            guw_output_id: guw_output.id).first
+          #
+          #         reference_oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: reference_guw_cplx.id,
+          #                                                                      guw_output_id: reference_guw_output.id).first
+          #         if !oci.nil? && !reference_oci.nil?
+          #           if oci.init_value.to_f != reference_oci.init_value.to_f
+          #             # Differences
+          #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                             guw_model_id: guw_model.id,
+          #                                                             guw_type_id: guw_type.id,
+          #                                                             reference_guw_type_id: reference_guw_type.id,
+          #
+          #                                                             reference_guw_output_id: reference_guw_output.id,
+          #                                                             guw_output_id: guw_output.id,
+          #                                                             class_name: "Guw::GuwOutputComplexityInitialization",
+          #                                                             coefficient_name: "Valeur initiale (Σ)",
+          #                                                             element_id: oci.id,
+          #                                                             reference_id: reference_oci.id,
+          #                                                             guw_complexity_id: guw_cplx.id,
+          #                                                             reference_guw_complexity_id: reference_guw_cplx.id,
+          #                                                             column_name: "Un (1)",
+          #                                                             column_value: oci.init_value,
+          #                                                             reference_column_value: reference_oci.init_value,
+          #                                                             nature: "Valeur d'initialisation différente" }
+          #           end
+          #         end
+          #
+          #
+          #         ##===== Ligne 2
+          #         oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_cplx.id, guw_output_id: guw_output.id).first
+          #
+          #         reference_oc = Guw::GuwOutputComplexity.where(guw_complexity_id: reference_guw_cplx.id,
+          #                                                       guw_output_id: reference_guw_output.id).first
+          #         if !oc.nil? && !reference_oc.nil?
+          #           if oc.value.to_f != reference_oc.value.to_f
+          #             # Differences
+          #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                             guw_model_id: guw_model.id,
+          #                                                             guw_type_id: guw_type.id,
+          #                                                             reference_guw_type_id: reference_guw_type.id,
+          #                                                             reference_guw_output_id: reference_guw_output.id,
+          #                                                             guw_output_id: guw_output.id,
+          #                                                             class_name: "Guw::GuwOutputComplexity",
+          #                                                             coefficient_name: "Valeur initiale (Σ)",
+          #                                                             element_id: oc.id,
+          #                                                             reference_id: reference_oc.id,
+          #                                                             guw_complexity_id: guw_cplx.id,
+          #                                                             reference_guw_complexity_id: reference_guw_cplx.id,
+          #                                                             column_name: "UO CPLX",
+          #                                                             column_value: oc.value,
+          #                                                             reference_column_value: reference_oc.value,
+          #                                                             nature: "Valeur différente" }
+          #           end
+          #         end
+          #
+          #
+          #         ##===== Ligne Sorties / Sorties
+          #         reference_got = Guw::GuwOutputType.where(guw_model_id: @reference_guw_model.id,
+          #                                                  guw_output_id: reference_guw_output.id,
+          #                                                  guw_type_id: reference_guw_type.id).first
+          #
+          #         got = Guw::GuwOutputType.where(guw_model_id: guw_model.id,
+          #                                        guw_output_id: guw_output.id,
+          #                                        guw_type_id: guw_type.id).first
+          #
+          #         if !got.nil? && !reference_got.nil?
+          #           if got.display_type != reference_got.display_type
+          #             # Differences sur le mode d'affichage des resultats
+          #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                             guw_model_id: guw_model.id,
+          #                                                             guw_type_id: guw_type.id,
+          #                                                             reference_guw_type_id: reference_guw_type.id,
+          #                                                             reference_guw_output_id: reference_guw_output.id,
+          #                                                             guw_output_id: guw_output.id,
+          #                                                             class_name: "Guw::GuwOutputComplexity",
+          #                                                             coefficient_name: "Valeur initiale (Σ)",
+          #                                                             element_id: got.id,
+          #                                                             reference_id: reference_got.id,
+          #                                                             guw_complexity_id: guw_cplx.id,
+          #                                                             reference_guw_complexity_id: reference_guw_cplx.id,
+          #                                                             column_name: guw_output.name,
+          #                                                             column_value: got.display_type,
+          #                                                             reference_column_value: reference_got.display_type,
+          #                                                             nature: "Mode d'affichage différente" }
+          #           end
+          #
+          #           guw_model_outputs.each do |aguw_output|
+          #
+          #             reference_aguw_output =  @reference_guw_model_outputs.where(name: aguw_output.name).first
+          #
+          #             oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+          #                                                   guw_output_associated_id: aguw_output.id,
+          #                                                   guw_output_id: guw_output.id).first
+          #
+          #             reference_oa = Guw::GuwOutputAssociation.where( guw_complexity_id: reference_guw_cplx.id,
+          #                                                             guw_output_associated_id: reference_aguw_output.id,
+          #                                                             guw_output_id: reference_guw_output.id).first
+          #
+          #             if oa && reference_oa
+          #               if oa.value != reference_oa.value
+          #                 # Differences sur le mode d'affichage des resultats
+          #                 @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                                 guw_model_id: guw_model.id,
+          #                                                                 guw_type_id: guw_type.id,
+          #                                                                 reference_guw_type_id: reference_guw_type.id,
+          #                                                                 reference_guw_output_id: reference_guw_output.id,
+          #                                                                 guw_output_id: guw_output.id,
+          #                                                                 class_name: "Guw::GuwOutputAssociation",
+          #                                                                 coefficient_name: "Valeur initiale (Σ)",
+          #                                                                 element_id: oa.id,
+          #                                                                 reference_id: reference_oa.id,
+          #                                                                 guw_complexity_id: guw_cplx.id,
+          #                                                                 reference_guw_complexity_id: reference_guw_cplx.id,
+          #                                                                 column_name: aguw_output.name,
+          #                                                                 column_value: oa.value,
+          #                                                                 reference_column_value: reference_oa.value,
+          #                                                                 nature: "Mode de calcul des sorties différente" }
+          #               end
+          #             end
+          #
+          #           end
+          #         end
+          #
+          #         ##===== Ligne Coefficient (avec Elements de coefficient) / Sorties
+          #         guw_model.guw_coefficients.each do |guw_coefficient|
+          #           reference_guw_coefficient = @reference_guw_model_coefficients.where(name: guw_coefficient.name).first
+          #
+          #           guw_coefficient_elements = guw_coefficient.guw_coefficient_elements
+          #           reference_guw_coefficient_elements = reference_guw_coefficient.guw_coefficient_elements
+          #
+          #           # guw_complexity_coefficient_elements = {}
+          #           # guw_type.guw_complexity_coefficient_elements.each do |gcce|
+          #           # end
+          #
+          #           guw_coefficient_elements.each do |guw_coefficient_element|
+          #
+          #             reference_guw_coefficient_element = reference_guw_coefficient_elements.where(name: guw_coefficient_element.name).first
+          #             ref_guw_complexity = reference_guw_type_complexities.where(name: guw_coefficient_element.guw_complexity.name).first
+          #
+          #             reference_guw_coefficient_element = reference_guw_coefficient_elements.where(guw_complexity_id: (ref_guw_complexity.id rescue nil),
+          #                                                                                          guw_coefficient_element_id: reference_guw_coefficient_element.id,
+          #                                                                                          guw_output_id: reference_guw_output.id).first
+          #
+          #             if reference_guw_coefficient_element
+          #               if guw_coefficient_element.value != reference_guw_coefficient_element.value
+          #                 # Differences entre coefficient element / Sorties
+          #                 @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                                 guw_model_id: guw_model.id,
+          #                                                                 guw_type_id: guw_type.id,
+          #                                                                 reference_guw_type_id: reference_guw_type.id,
+          #                                                                 reference_guw_output_id: reference_guw_output.id,
+          #                                                                 guw_output_id: guw_output.id,
+          #                                                                 class_name: "Guw::GuwComplexityCoefficientElement",
+          #                                                                 coefficient_name: guw_coefficient.name,
+          #                                                                 element_id: guw_coefficient_element.id,
+          #                                                                 reference_id: reference_guw_coefficient_element.id,
+          #                                                                 guw_complexity_id: guw_cplx.id,
+          #                                                                 reference_guw_complexity_id: reference_guw_cplx.id,
+          #                                                                 column_name: guw_coefficient_element.name,
+          #                                                                 column_value: guw_coefficient_element.value,
+          #                                                                 reference_column_value: reference_guw_coefficient_element.value,
+          #                                                                 nature: "Valeur différente entre #{guw_coefficient_element.name} / #{guw_output.name}" }
+          #               end
+          #             end
+          #           end
+          #         end
+          #       end
+          #     end
+          #   end
+          # end
 
 
           #=== Fin Gestion Matrice des Attributs : Seuil de complexité des Attributs
           reference_guw_type_guw_type_complexities = reference_guw_type.guw_type_complexities.order("display_order asc")
 
-          if guw_type.allow_criteria == true
+          # if guw_type.allow_criteria == true
+          #
+          #   # Les valeur de seuil de complexité des attributs manquantes dans le type d'UO
+          #   # Pour voir si s'il ya des complexités des attributs manquants dans le module de taille concerné
+          #   diff_type_complexities_name = reference_guw_type_guw_type_complexities.all.map(&:name) - guw_type_guw_type_complexities.all.map(&:name)
+          #
+          #   unless diff_type_complexities_name.empty?
+          #     diff_type_complexities = reference_guw_type_guw_type_complexities.where(name: diff_type_complexities_name)
+          #     diff_type_complexities.each do |type_complexity|
+          #       @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+          #                                                     guw_model_id: guw_model.id,
+          #                                                     guw_type_id: guw_type.id,
+          #                                                     reference_guw_type_id: reference_guw_type.id,
+          #                                                     reference_id: type_complexity.id,
+          #                                                     element_id: type_complexity.id,
+          #                                                     column_name: "Seuil de complexité des attributs",
+          #                                                     column_value: type_complexity.value,
+          #                                                     nature: "Seuil d'attribut manquant dans le module de Taille"}
+          #     end
+          #   end
+          #
+          #   # Comparaison avec la référence
+          #   guw_type_guw_type_complexities.each do |type_complexity|
+          #
+          #     reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name).first
+          #
+          #     if reference_type_complexity.nil?
+          #       #Seuil de complexité des attributs n'existe pas dans la référence
+          #       @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+          #                                                     guw_model_id: guw_model.id,
+          #                                                     reference_id: nil,
+          #                                                     element_id: type_complexity.id,
+          #                                                     column_name: "Seuil de complexité des attributs",
+          #                                                     column_value: type_complexity.value,
+          #                                                     nature: "Seuil n'existe pas dans  la référence"}
+          #     else
+          #         # identique_reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name,
+          #         #                                                                                      description: type_complexity.description,
+          #         #                                                                                      value: type_complexity.value,
+          #         #                                                                                      display_order: type_complexity.display_order).first
+          #       if reference_type_complexity.name != type_complexity.name ||
+          #           reference_type_complexity.description.to_s != type_complexity.description.to_s ||
+          #           reference_type_complexity.value != type_complexity.value ||
+          #           reference_type_complexity.display_order != type_complexity.display_order
+          #
+          #         # Valeurs differentes
+          #         @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+          #                                                       guw_type_id: guw_type.id,
+          #                                                       reference_guw_type_id: reference_guw_type.id,
+          #                                                       guw_model_id: guw_model.id,
+          #                                                       reference_id: reference_type_complexity.id,
+          #                                                       element_id: type_complexity.id,
+          #                                                       column_name: "Seuil de complexité des attributs",
+          #                                                       column_value: type_complexity.value,
+          #                                                       nature: "Configuration différente" }
+          #       end
+          #
+          #
+          #       # === On compare les valeurs de la matrice de seuils de complexité des attributs
+          #       guw_model_attributes.order("name ASC").each do |guw_attribute|
+          #         reference_guw_attribute = @reference_guw_model_attributes.where(name: guw_attribute.name).first
+          #
+          #         if reference_guw_attribute
+          #           gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: guw_attribute.id).first
+          #           reference_gat = Guw::GuwAttributeType.where(guw_type_id: reference_guw_type.id, guw_attribute_id: reference_guw_attribute.id).first
+          #
+          #           ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id,
+          #                                                  guw_type_id: guw_type,
+          #                                                  guw_type_complexity_id: type_complexity.id).first
+          #
+          #           reference_ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: reference_guw_attribute.id,
+          #                                                            guw_type_id: reference_guw_type.id,
+          #                                                            guw_type_complexity_id: reference_type_complexity.id).first
+          #
+          #           if ac && reference_ac
+          #             if (ac.bottom_range != reference_ac.bottom_range) || (ac.top_range != reference_ac.top_range) ||
+          #                (ac.value != reference_ac.value) ||  (ac.value_b != reference_ac.value_b) || (ac.enable_value != reference_ac.enable_value)
+          #               # au moins une des valeur est différente
+          #               @attributes_type_complexities_matrix_differences << { organization_id: guw_model_organization_id,
+          #                                                               guw_model_id: guw_model.id,
+          #                                                               guw_type_id: guw_type.id,
+          #                                                               guw_attribute_id: guw_attribute.id,
+          #                                                               type_complexity_id: type_complexity.id,
+          #                                                               reference_guw_type_id: reference_guw_type.id,
+          #                                                               reference_guw_output_id: nil,
+          #                                                               guw_output_id: nil,
+          #                                                               class_name: "Guw::GuwAttributeComplexity",
+          #                                                               coefficient_name: nil,
+          #                                                               element_id: type_complexity.id,
+          #                                                               reference_id: reference_type_complexity.id,
+          #                                                               guw_type_complexity_id: type_complexity.id,
+          #                                                               reference_guw_type_complexity_id: reference_type_complexity.id,
+          #                                                               column_name: "Seuil de complexité des attributs",
+          #                                                               column_value: nil,
+          #                                                               reference_column_value: nil,
+          #                                                               nature: "Valeur différente entre #{guw_attribute.name} / #{type_complexity.name}" }
+          #
+          #             end
+          #           end
+          #
+          #
+          #         end
+          #       end
+          #     end
+          #   end
+          # end
 
-            # Les valeur de seuil de complexité des attributs manquantes dans le type d'UO
-            # Pour voir si s'il ya des complexités des attributs manquants dans le module de taille concerné
-            diff_type_complexities_name = reference_guw_type_guw_type_complexities.all.map(&:name) - guw_type_guw_type_complexities.all.map(&:name)
 
-            unless diff_type_complexities_name.empty?
-              diff_type_complexities = reference_guw_type_guw_type_complexities.where(name: diff_type_complexities_name)
-              diff_type_complexities.each do |type_complexity|
-                @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
-                                                              guw_model_id: guw_model.id,
-                                                              guw_type_id: guw_type.id,
-                                                              reference_guw_type_id: reference_guw_type.id,
-                                                              reference_id: type_complexity.id,
-                                                              element_id: type_complexity.id,
-                                                              column_name: "Seuil de complexité des attributs",
-                                                              column_value: type_complexity.value,
-                                                              nature: "Seuil d'attribut manquant dans le module de Taille"}
-              end
-            end
-
-            # Comparaison avec la référence
-            guw_type_guw_type_complexities.each do |type_complexity|
-
-              reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name).first
-
-              if reference_type_complexity.nil?
-                #Seuil de complexité des attributs n'existe pas dans la référence
-                @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
-                                                              guw_model_id: guw_model.id,
-                                                              reference_id: nil,
-                                                              element_id: type_complexity.id,
-                                                              column_name: "Seuil de complexité des attributs",
-                                                              column_value: type_complexity.value,
-                                                              nature: "Seuil n'existe pas dans  la référence"}
-              else
-                  # identique_reference_type_complexity = reference_guw_type_guw_type_complexities.where(name: type_complexity.name,
-                  #                                                                                      description: type_complexity.description,
-                  #                                                                                      value: type_complexity.value,
-                  #                                                                                      display_order: type_complexity.display_order).first
-                if reference_type_complexity.name != type_complexity.name ||
-                    reference_type_complexity.description.to_s != type_complexity.description.to_s ||
-                    reference_type_complexity.value != type_complexity.value ||
-                    reference_type_complexity.display_order != type_complexity.display_order
-
-                  # Valeurs differentes
-                  @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
-                                                                guw_type_id: guw_type.id,
-                                                                reference_guw_type_id: reference_guw_type.id,
-                                                                guw_model_id: guw_model.id,
-                                                                reference_id: reference_type_complexity.id,
-                                                                element_id: type_complexity.id,
-                                                                column_name: "Seuil de complexité des attributs",
-                                                                column_value: type_complexity.value,
-                                                                nature: "Configuration différente" }
-                end
-
-
-                # === On compare les valeurs de la matrice de seuils de complexité des attributs
-                guw_model_attributes.order("name ASC").each do |guw_attribute|
-                  reference_guw_attribute = @reference_guw_model_attributes.where(name: guw_attribute.name).first
-
-                  if reference_guw_attribute
-                    gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id, guw_attribute_id: guw_attribute.id).first
-                    reference_gat = Guw::GuwAttributeType.where(guw_type_id: reference_guw_type.id, guw_attribute_id: reference_guw_attribute.id).first
-
-                    ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id,
-                                                           guw_type_id: guw_type,
-                                                           guw_type_complexity_id: type_complexity.id).first
-
-                    reference_ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: reference_guw_attribute.id,
-                                                                     guw_type_id: reference_guw_type.id,
-                                                                     guw_type_complexity_id: reference_type_complexity.id).first
-
-                    if ac && reference_ac
-                      if (ac.bottom_range != reference_ac.bottom_range) || (ac.top_range != reference_ac.top_range) ||
-                         (ac.value != reference_ac.value) ||  (ac.value_b != reference_ac.value_b) || (ac.enable_value != reference_ac.enable_value)
-                        # au moins une des valeur est différente
-                        @attributes_type_complexities_matrix_differences << { organization_id: guw_model_organization_id,
-                                                                        guw_model_id: guw_model.id,
-                                                                        guw_type_id: guw_type.id,
-                                                                        guw_attribute_id: guw_attribute.id,
-                                                                        type_complexity_id: type_complexity.id,
-                                                                        reference_guw_type_id: reference_guw_type.id,
-                                                                        reference_guw_output_id: nil,
-                                                                        guw_output_id: nil,
-                                                                        class_name: "Guw::GuwAttributeComplexity",
-                                                                        coefficient_name: nil,
-                                                                        element_id: type_complexity.id,
-                                                                        reference_id: reference_type_complexity.id,
-                                                                        guw_type_complexity_id: type_complexity.id,
-                                                                        reference_guw_type_complexity_id: reference_type_complexity.id,
-                                                                        column_name: "Seuil de complexité des attributs",
-                                                                        column_value: nil,
-                                                                        reference_column_value: nil,
-                                                                        nature: "Valeur différente entre #{guw_attribute.name} / #{type_complexity.name}" }
-
-                      end
-                    end
-
-
-                  end
-                end
-              end
-            end
-          end
         end  #=========== FIN AFFICHAGE DIFFERENCES par GUW-TYPE PAR RAPPORT A LA REFERENCE ==============================#
-      end
-
-    end
+      end  # end guw_type
+    end  # end each guw_model
   end
 
 
