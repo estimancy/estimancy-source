@@ -588,7 +588,8 @@
               var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
               var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
 
-              //console.log("valeur différente");
+              console.log("valeur différente");
+
               $.ajax({
                   url: "/update_mp_ratio_element_changed_value",
                   method: "get",
