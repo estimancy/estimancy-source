@@ -173,27 +173,27 @@
                                guw: guow.id,
                                class: "guw_complexity",
                                prompt: "HSAT",
-                               readonly: !@guw_type.allow_complexity,
+                               disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% elsif guow.off_line_uo == true %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
                                class: "guw_complexity",
                                prompt: "HSUO",
-                               readonly: !@guw_type.allow_complexity,
+                               disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% elsif guow.guw_complexity.nil? %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
                                guw: guow.id,
                                class: "guw_complexity",
                                include_blank: false,
-                               readonly: !@guw_type.allow_complexity,
+                               disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% else %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                class: "guw_complexity",
                                include_blank: false,
-                               readonly: !@guw_type.allow_complexity,
+                               disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% end %>
             <% else %>
