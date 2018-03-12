@@ -1633,7 +1633,7 @@ fr1:
   Judgment_Expert_module: "Module de Jugement d'expert"
   wbs_activities_module: "Module WBS Activités"
   do_not_show_phases_with_zero_value: "Ne pas afficher les phases dont l'effort retenu est à zéro"
-  is_used_in_ratio_calculation: "Entre dans la calcul du Ratio"
+  is_used_in_ratio_calculation: "Entre dans le calcul du Ratio"
   do_not_show_cost: "Ne pas afficher le coût"
   effort_display_unit: "Unité d'affichage de l'effort"
   organization_effort_unit: "Utiliser l'unité d'effort de l'organisation : %{value}"

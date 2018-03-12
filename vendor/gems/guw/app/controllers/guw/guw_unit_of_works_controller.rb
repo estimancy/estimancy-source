@@ -1054,8 +1054,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_type = guw_unit_of_work.guw_type
 
     if (value_pert >= guw_c.bottom_range) and (value_pert < guw_c.top_range)
-      guw_unit_of_work.guw_complexity_id = guw_c.id
-      guw_unit_of_work.guw_original_complexity_id = guw_c.id
+      if guw_type.allow_complexity == false
+        guw_unit_of_work.guw_complexity_id = guw_c.id
+        guw_unit_of_work.guw_original_complexity_id = guw_c.id
+      end
     end
 
     if (guw_unit_of_work.result_low.to_f >= guw_c.bottom_range) and (guw_unit_of_work.result_low.to_i < guw_c.top_range)
@@ -1106,9 +1108,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     probable_value = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
     guw_unit_of_work.intermediate_percent = probable_value
-    # if guw_unit_of_work.intermediate_weight.nil?
-      guw_unit_of_work.intermediate_weight = probable_value
-    # end
+    guw_unit_of_work.intermediate_weight = probable_value
     guw_unit_of_work.save
 
     result = compute_probable_value(uo_weight_low.to_f, uo_weight_ml.to_f, uo_weight_high.to_f)[:value]

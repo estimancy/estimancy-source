@@ -160,93 +160,96 @@
         </td>
       <% end %>
     <% elsif i[0] == "Coeff. de Complexité" %>
+      <% unless @guw_type.nil? %>
+        <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
+      <% end %>
       <td class="span2">
-                        <span class="cotation_label_<%= guow.id %>">
-                          <% unless @guw_type.nil? %>
-                            <% if @guw_type.display_threshold == true %>
-                              <% if guow.off_line == true %>
-                                <% @default_complexity = @guw_complexities.where(default_value: true).first %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                               guw: guow.id,
-                                               class: "guw_complexity",
-                                               prompt: "HSAT",
-                                               readonly: !@guw_type.allow_complexity,
-                                               style: "width: 80%;" %>
-                              <% elsif guow.off_line_uo == true %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
-                                               guw: guow.id,
-                                               class: "guw_complexity",
-                                               prompt: "HSUO",
-                                               readonly: !@guw_type.allow_complexity,
-                                               style: "width: 80%;" %>
-                              <% elsif guow.guw_complexity.nil? %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
-                                               guw: guow.id,
-                                               class: "guw_complexity",
-                                               include_blank: false,
-                                               readonly: !@guw_type.allow_complexity,
-                                               style: "width: 80%;" %>
-                              <% else %>
-                                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                                               class: "guw_complexity",
-                                               include_blank: false,
-                                               readonly: !@guw_type.allow_complexity,
-                                               style: "width: 80%;" %>
-                              <% end %>
-                            <% else %>
-                              <% if guow.off_line == true %>
-                                HSAT
-                              <% elsif guow.off_line_uo == true %>
-                                HSUO
-                              <% else %>
-                                <% if guow.guw_complexity_id == nil %>
-                                  -
-                                <% else %>
-                                  <% if guow.intermediate_percent != guow.intermediate_weight %>
-                                    <% color = @guw_type.color_code %>
-                                  <% end %>
-                                  <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
-                                                       style: "width: 80%; text-align: right;",
-                                                       class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
-                                                       guw: guow.id,
-                                                       readonly: true %>
-                                  <% if @guw_type.allow_complexity %>
-                                    <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
-                                                         style: "width: 80%; background-color: ##{color}; text-align: right;",
-                                                         class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
-                                                         guw: guow.id,
-                                                         title: guow.cplx_comments,
-                                                         step: 0.001 %>
-                                    <script>
-                                      $(document).ready(function(){
-                                        var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
+        <span class="cotation_label_<%= guow.id %>">
+          <% unless @guw_type.nil? %>
+            <% if @guw_type.display_threshold == true %>
+              <% if guow.off_line == true %>
+                <% @default_complexity = @guw_complexities.where(default_value: true).first %>
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                               guw: guow.id,
+                               class: "guw_complexity",
+                               prompt: "HSAT",
+                               disabled: !@guw_type.allow_complexity,
+                               style: "width: 80%;" %>
+              <% elsif guow.off_line_uo == true %>
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                               guw: guow.id,
+                               class: "guw_complexity",
+                               prompt: "HSUO",
+                               disabled: !@guw_type.allow_complexity,
+                               style: "width: 80%;" %>
+              <% elsif guow.guw_complexity.nil? %>
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
+                               guw: guow.id,
+                               class: "guw_complexity",
+                               include_blank: false,
+                               disabled: !@guw_type.allow_complexity,
+                               style: "width: 80%;" %>
+              <% else %>
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
+                               class: "guw_complexity",
+                               include_blank: false,
+                               disabled: !@guw_type.allow_complexity,
+                               style: "width: 80%;" %>
+              <% end %>
+            <% else %>
+              <% if guow.off_line == true %>
+                HSAT
+              <% elsif guow.off_line_uo == true %>
+                HSUO
+              <% else %>
+                <% if guow.guw_complexity_id == nil %>
+                  -
+                <% else %>
+                  <% if guow.intermediate_percent != guow.intermediate_weight %>
+                    <% color = @guw_type.color_code %>
+                  <% end %>
+                  <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
+                                       style: "width: 80%; text-align: right;",
+                                       class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                       guw: guow.id,
+                                       readonly: true %>
+                  <% if @guw_type.allow_complexity %>
+                    <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
+                                         style: "width: 80%; background-color: ##{color}; text-align: right;",
+                                         class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
+                                         guw: guow.id,
+                                         title: guow.cplx_comments,
+                                         step: 0.001 %>
+                    <script>
+                      $(document).ready(function(){
+                        var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
 
-                                        $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
+                        $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
 
-                                          var currentValue = $(this).val();
+                          var currentValue = $(this).val();
 
-                                          if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
+                          if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
 
-                                            $("#guw_form").bind("submit");
-                                            $(".guw_submit").prop("disabled", true);
+                            $("#guw_form").bind("submit");
+                            $(".guw_submit").prop("disabled", true);
 
-                                            $.ajax({
-                                              url: "<%= guw.load_cplx_comments_path %>",
-                                              data: "guw_unit_of_work_id=" + $(this).attr("guw") +
-                                              "&value=" + currentValue +
-                                              "&previousValue=" + parseFloat(previousSavedValue)
-                                            });
-                                          }
-                                        });
-                                      });
-                                    </script>
+                            $.ajax({
+                              url: "<%= guw.load_cplx_comments_path %>",
+                              data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                              "&value=" + currentValue +
+                              "&previousValue=" + parseFloat(previousSavedValue)
+                            });
+                          }
+                        });
+                      });
+                    </script>
 
-                                  <% end %>
-                                <% end %>
-                              <% end %>
-                            <% end %>
-                          <% end %>
-                        </span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </span>
       </td>
     <% elsif @guw_coefficient.class == Guw::GuwCoefficient %>
 

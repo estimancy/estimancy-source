@@ -34,7 +34,9 @@
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
-      <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
+      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
+      <% end %>
 
       <% if @guw_model.view_data == true %>
         <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>

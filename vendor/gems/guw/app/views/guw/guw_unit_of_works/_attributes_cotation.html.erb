@@ -85,7 +85,7 @@
               </td>
 
               <td>
-                <div class="modal fade modal_comments" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
+                <div class="modal fade modal_comments hide" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header modal-drag">
@@ -109,6 +109,8 @@
 
               <script>
                 var content = "";
+
+                $("#modal_cotation_content").css("z-index", "1500");
 
                 $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
 
@@ -136,6 +138,7 @@
                   $('.modal_comments').modal('hide');
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
+                  $(".validate_comments").attr('disabled', 'disabled');
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
