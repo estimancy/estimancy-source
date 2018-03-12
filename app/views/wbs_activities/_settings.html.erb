@@ -534,6 +534,10 @@
         }
     }
 
+  function precisionRound(number, precision) {
+      var factor = Math.pow(10, precision);
+      return Math.round(number * factor) / factor;
+  }
 
   $(function() {
 
@@ -568,10 +572,15 @@
           var previousValue = $(this).data('val');
           var currentValue = $(this).val();
 
-          //console.log("Prev value " + previousValue);
-          //console.log("New value " + currentValue);
+          console.log("Prev value " + previousValue);
+          console.log("New value " + currentValue);
 
-          if(parseFloat(currentValue) != parseFloat(previousValue)) {
+          console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
+          console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
+
+          if( (parseFloat(currentValue) != parseFloat(previousValue)) ||
+              (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10)))) {
+
               var element_id = $(this).attr('id');
               var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
               var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
