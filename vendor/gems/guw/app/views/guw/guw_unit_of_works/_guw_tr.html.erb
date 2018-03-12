@@ -143,18 +143,18 @@
         <td class="span2">
           <% unless @guw_type.nil? %>
             <% if @guw_type.allow_criteria == true %>
-                              <span class="text-center criteria_label_<%= guow.id %>">
-                                <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
-                                <% if counting.empty? %>
-                                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
-                                <% else %>
-                                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
-                                <% end %>
-                              </span>
+              <span class="text-center criteria_label_<%= guow.id %>">
+                <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
+                <% if counting.empty? %>
+                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                <% else %>
+                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                <% end %>
+              </span>
             <% else %>
-                              <span class="text-center">
-                                -
-                              </span>
+              <span class="text-center">
+                -
+              </span>
             <% end %>
           <% end %>
         </td>
@@ -205,16 +205,16 @@
                 <% if guow.guw_complexity_id == nil %>
                   -
                 <% else %>
-                  <% if guow.intermediate_percent != guow.intermediate_weight %>
+                  <% if guow.intermediate_percent.to_f.round(3) != guow.intermediate_weight.to_f.round(3) %>
                     <% color = @guw_type.color_code %>
                   <% end %>
-                  <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent,
+                  <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.to_f.round(3),
                                        style: "width: 80%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
                                        guw: guow.id,
                                        readonly: true %>
                   <% if @guw_type.allow_complexity %>
-                    <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight,
+                    <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight.to_f.round(3),
                                          style: "width: 80%; background-color: ##{color}; text-align: right;",
                                          class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
                                          guw: guow.id,
