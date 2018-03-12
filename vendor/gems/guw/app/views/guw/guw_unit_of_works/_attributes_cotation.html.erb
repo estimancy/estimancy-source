@@ -119,9 +119,16 @@
                     backdrop: "static"
                   });
 
+                  valu = $(".ml_" + <%= uowa.id %>).val();
+                  dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
                   $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                     if ($(this).val().length == 0) {
-                      $(".validate_comments").attr("disabled", "disabled");
+                      if(valu == dv) {
+                        $(".validate_comments").removeAttr("disabled");
+                      } else {
+                        $(".validate_comments").attr("disabled", "disabled");
+                      }
                     } else {
                       $(".validate_comments").removeAttr("disabled");
                     }
@@ -129,7 +136,11 @@
 
                   $(".validate_comments").on('click', function(e){
                     if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
-                      e.preventDefault();
+                      if(valu == dv) {
+                        close_comment(<%= uowa.id %>);
+                      } else {
+                        e.preventDefault();
+                      }
                     } else {
                       close_comment(<%= uowa.id %>);
                     }
@@ -138,9 +149,19 @@
 
                 function close_comment(uowa_id){
                   $('.modal_comments').modal('hide');
-                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html($('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
-                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30));
+
+                  comment_extract = $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30);
+                  if (comment_extract.length == 0) {
+                    comment_extract = "...";
+                  }
+
+                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
+                  $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
+
                   document.getElementById('validate_comments').disabled = true;
+
+                  document.getElementById('submit_cotation').disabled = false;
+
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
@@ -152,25 +173,26 @@
                       document.getElementById('submit_cotation').disabled = false;
                     }
                   });
-
-                  $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
-                    if ($(this).val().length == 0) {
-                      $(".validate_comments").on('click', function(e){
-                        e.preventDefault();
-                      });
-                    } else {
-                      document.getElementById('validate_comments').disabled = false;
-                      $(".validate_comments").on('click', function(e){
-                        document.getElementById('submit_cotation').disabled = false;
-                        if($('.rich_comment_area_<%= uowa.id %>').val().length != 0){
-                          close_comment(<%= uowa.id %>);
-                        }
-                      })
-                    }
-                  });
                 });
 
-//                $(".ml_" + <%# uowa.id %>).on('blur', function(k) {
+
+                $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                  if ($(this).val().length == 0) {
+                    $(".validate_comments").on('click', function(e){
+                      e.preventDefault();
+                    });
+                  } else {
+                    document.getElementById('validate_comments').disabled = false;
+                    $(".validate_comments").on('click', function(e){
+                      document.getElementById('submit_cotation').disabled = false;
+                      if($('.rich_comment_area_<%= uowa.id %>').val().length != 0){
+                        close_comment(<%= uowa.id %>);
+                      }
+                    })
+                  }
+                });
+
+                //                $(".ml_" + <%# uowa.id %>).on('blur', function(k) {
 //                  var val = $('#most_likely_' + <%# guow.id %> +"_" + <%# uowa.id %>).val();
 //                  if (val.length == 0) {
 //                    document.getElementById('submit_cotation').disabled = true;
