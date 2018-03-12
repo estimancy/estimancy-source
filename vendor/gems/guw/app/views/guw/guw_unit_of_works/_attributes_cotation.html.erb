@@ -192,16 +192,7 @@
                   }
                 });
 
-                //                $(".ml_" + <%# uowa.id %>).on('blur', function(k) {
-//                  var val = $('#most_likely_' + <%# guow.id %> +"_" + <%# uowa.id %>).val();
-//                  if (val.length == 0) {
-//                    document.getElementById('submit_cotation').disabled = true;
-//                  } else {
-//                    document.getElementById('submit_cotation').disabled = false;
-//                  }
-//                });
-
-                $(".ml_" + <%= uowa.id %>).on('focusout', function(k) {
+                $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
 
                   var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
