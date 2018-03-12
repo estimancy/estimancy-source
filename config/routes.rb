@@ -203,8 +203,10 @@ Projestimate::Application.routes.draw do
 
   resources :module_project_ratio_elements do
     post "load_comments"
+    post "load_name_description"
   end
   post "save_comments" => "module_project_ratio_elements#save_comments", as: "save_mp_ratio_element_comments"
+  post "save_name_description" => "module_project_ratio_elements#save_name_description", as: "save_mp_ratio_element_name_description"
   post "save_mp_ratio_element" => "module_project_ratio_elements#save_mp_ratio_element", as: "save_mp_ratio_element"
   get 'refresh_dashboard_module_project_ratio_elements' => 'module_project_ratio_elements#refresh_dashboard_module_project_ratio_elements', :as => 'refresh_dashboard_module_project_ratio_elements'
   get 'refresh_dashboard_retained_effort_and_cost' => 'module_project_ratio_elements#refresh_dashboard_retained_effort_and_cost', :as => 'refresh_dashboard_retained_effort_and_cost'

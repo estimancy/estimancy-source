@@ -1,5 +1,7 @@
-$("#modal_comments_content").html("<%= j(render 'comments_modal', { :mp_ratio_element => @module_project_ratio_element })%>")
+
+$("#modal_comments_content").html("<%= j(render 'comments_modal', { :mp_ratio_element => @module_project_ratio_element, hidden_comments_save: @module_project_ratio_element.comments })%>")
 $("#modal_comments").modal({
     keyboard: false,
     backdrop: "static"
 });
+

@@ -62,6 +62,27 @@ class ModuleProjectRatioElementsController < ApplicationController
     redirect_to main_app.dashboard_path(@project)
   end
 
+  def load_name_description
+    @module_project_ratio_element = ModuleProjectRatioElement.find(params[:'module_project_ratio_element_id'])
+  end
+
+  def save_name_description
+    @module_project_ratio_element = ModuleProjectRatioElement.find(params[:module_project_ratio_element_id])
+    if @module_project_ratio_element
+      old_name = @module_project_ratio_element.name
+      new_name = params[:name].values.first
+
+      @module_project_ratio_element.name = new_name.to_s
+      @module_project_ratio_element.description = params[:description].values.first
+
+      if old_name.to_s != new_name
+        @module_project_ratio_element.name_is_modified = true
+      end
+
+      @module_project_ratio_element.save
+    end
+  end
+
   def load_comments
     @module_project_ratio_element = ModuleProjectRatioElement.find(params[:'module_project_ratio_element_id'])
   end
@@ -69,20 +90,22 @@ class ModuleProjectRatioElementsController < ApplicationController
   def save_comments
     @module_project_ratio_element = ModuleProjectRatioElement.find(params[:comments].keys.first)
     if @module_project_ratio_element
-      old_name = @module_project_ratio_element.name
-      new_name = params[:name].values.first
+      # old_name = @module_project_ratio_element.name
+      # new_name = params[:name].values.first
+      #
+      # @module_project_ratio_element.name = new_name.to_s
+      # @module_project_ratio_element.description = params[:description].values.first
+      # if old_name.to_s != new_name
+      #   @module_project_ratio_element.name_is_modified = true
+      # end
 
-      @module_project_ratio_element.name = new_name.to_s
-      @module_project_ratio_element.description = params[:description].values.first
       @module_project_ratio_element.comments = params[:comments].values.first
-      if old_name.to_s != new_name
-        @module_project_ratio_element.name_is_modified = true
-      end
-
-      @module_project_ratio_element.save
+      #@module_project_ratio_element.save
     end
     #redirect_to main_app.dashboard_path(@project)
   end
+
+
 
 
   def refresh_dashboard_module_project_ratio_elements

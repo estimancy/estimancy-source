@@ -1,0 +1,6 @@
+//$('#name_'+'<%#= @module_project_ratio_element.id %>').css('white-space', 'pre');
+
+var name_id = '<%= "mp_ratio_element_name_description_#{@module_project_ratio_element.id}" %>';
+$('#'+name_id).html("<%=raw ( @module_project_ratio_element.name_to_show) %>");
+
+$('#modal_comments').modal('toggle');
