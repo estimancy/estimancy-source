@@ -1109,19 +1109,13 @@ class Guw::GuwModelsController < ApplicationController
 
     #==================  GUW-COEFFICIENTS  ==================
 
-    coefficients_worksheet = workbook.add_worksheet(I18n.t(:weighting_coefficients))
-    ind = 0
+    coefficients_worksheet = workbook.add_worksheet("Coefficients")
     counter_line = 1
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
     coefficients_worksheet.add_cell(0, 1, I18n.t(:description))
     coefficients_worksheet.add_cell(0, 2, I18n.t(:coefficient_type))
     coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
-    coefficients_worksheet.add_cell(0, 4, "Coefficient déporté")
-    coefficients_worksheet.change_row_bold(0,true)
-    coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
-
-    column_0_width = coefficients_worksheet.get_column_width(0)
-    column_1_width = coefficients_worksheet.get_column_width(1)
+    coefficients_worksheet.add_cell(0, 4, I18n.t(:deported))
 
     @guw_model.guw_coefficients.each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
@@ -1130,33 +1124,12 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
       coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
 
-      coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
-
-      if column_0_width < coeff.name.size
-        coefficients_worksheet.change_column_width(0, coeff.name.size)
-        column_0_width = coeff.name.size
-      end
-
-      if column_1_width < coeff.coefficient_type.size
-        coefficients_worksheet.change_column_width(1, coeff.coefficient_type.size)
-        column_1_width = coeff.coefficient_type.size
-      end
-
       counter_line += 1
-    end
-
-    counter_line.times.each do |line|
-      2.times do |col|
-        ["bottom", "right"].each do |symbole|
-          coefficients_worksheet[line][col].change_border(symbole.to_sym, 'thin')
-          coefficients_worksheet[line][col].change_border(symbole.to_sym, 'thin')
-        end
-      end
     end
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value", "color_code", "color_priority"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default", "color_code", "color_priority"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1169,24 +1142,15 @@ class Guw::GuwModelsController < ApplicationController
 
       counter_line = 2
       coeff_elements_worksheet.add_cell(counter_line, 0, "Elements du coefficient")
-      coeff_elements_worksheet.change_column_width(0, "Elements du coefficient".size)
-      coeff_elements_worksheet.change_column_width(1, coefficient.name.to_s.size)
 
       coefficient_elements_attributes.each_with_index do |attr, index|
         column_number = index + 1
         coeff_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
-        coeff_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
 
         line_number = counter_line + 1
         coefficient.guw_coefficient_elements.each do |coeff_element|
           column_value = coeff_element.send(attr)
           coeff_elements_worksheet.add_cell(line_number, column_number, column_value)
-
-          column_width = coeff_elements_worksheet.get_column_width(column_number)
-          if column_value.to_s.size > column_width
-            coeff_elements_worksheet.change_column_width(column_number, column_value.to_s.size)
-          end
-
           line_number += 1
         end
       end
