@@ -162,7 +162,7 @@
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
 
-                  $(".submit_cotation").attr("disabled", "disabled");
+                  $(".submit_cotation").removeAttr("disabled");
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
