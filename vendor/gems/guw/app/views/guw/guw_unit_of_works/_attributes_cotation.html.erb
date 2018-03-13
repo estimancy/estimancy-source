@@ -73,7 +73,7 @@
               <% end %>
 
               <td class="span1">
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "input-mini ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
               </td>
               <td>
                 <% if uowa.comments.blank? %>
@@ -110,8 +110,6 @@
               <script>
                 var content = "";
 
-                $("#modal_cotation_content").css("z-index", "1500");
-
                 $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
 
                   $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
@@ -121,6 +119,12 @@
 
                   valu = $(".ml_" + <%= uowa.id %>).val();
                   dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                  if(valu == dv) {
+                    $(".validate_comments").removeAttr("disabled");
+                  } else {
+                    $(".validate_comments").attr("disabled", "disabled");
+                  }
 
                   $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                     if ($(this).val().length == 0) {
@@ -158,23 +162,11 @@
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
 
-                  document.getElementById('validate_comments').disabled = true;
-
-                  document.getElementById('submit_cotation').disabled = false;
-
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
                   document.getElementById('submit_cotation').disabled = true;
-                  $(".comments").keyup(function(e) {
-                    if ($(this).val().length == 0) {
-                      document.getElementById('submit_cotation').disabled = true;
-                    } else {
-                      document.getElementById('submit_cotation').disabled = false;
-                    }
-                  });
                 });
-
 
                 $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                   if ($(this).val().length == 0) {
@@ -200,22 +192,30 @@
                   }
                 });
 
-                $(".ml_" + <%= uowa.id %>).on('focusout', function(k) {
+                $(".ml_" + <%= uowa.id %>).on('change', function(k) {
+
+                  valu = $(".ml_" + <%= uowa.id %>).val();
+                  dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                  if(valu == dv) {
+                    console.log("ici");
+                    $(".validate_comments").removeAttr("disabled");
+                  } else {
+                    console.log("laba");
+                    $(".validate_comments").attr("disabled", "disabled");
+                  }
 
                   var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
-                    document.getElementById('submit_cotation').disabled = true;
+                    $(".submit_cotation").attr("disabled", "disabled");
                   } else {
-                    document.getElementById('submit_cotation').disabled = false;
+                    $(".submit_cotation").removeAttr("disabled");
                   }
 
-                  valu = $(this).val();
-                  dv = $(this).attr("default_value");
-
                   if(valu == dv) {
-                    document.getElementById('submit_cotation').disabled = false;
+                    $(".submit_cotation").removeAttr("disabled");
                   } else {
-                    document.getElementById('submit_cotation').disabled = true;
+                    $(".submit_cotation").attr("disabled", "disabled");
                     $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
                       keyboard: false,
                       backdrop: "static"
