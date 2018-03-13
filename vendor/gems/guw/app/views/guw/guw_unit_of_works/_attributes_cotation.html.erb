@@ -100,7 +100,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#!", id: "validate_comments", :class => 'btn btn-primary validate_comments', disabled: true %>
+                        <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true %>
                       </div>
                     </div>
                   </div>
@@ -121,24 +121,28 @@
                   dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
 
                   if(valu == dv) {
-                    $(".validate_comments").removeAttr("disabled");
+                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                   } else {
-                    $(".validate_comments").attr("disabled", "disabled");
+                    $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                   }
 
                   $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                     if ($(this).val().length == 0) {
                       if(valu == dv) {
-                        $(".validate_comments").removeAttr("disabled");
+                        $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                       } else {
-                        $(".validate_comments").attr("disabled", "disabled");
+                        $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                       }
                     } else {
-                      $(".validate_comments").removeAttr("disabled");
+                      $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                     }
                   });
 
-                  $(".validate_comments").on('click', function(e){
+                  $("#validate_comments_<%= uowa.id %>").on('click', function(e){
+
+                    valu = $(".ml_" + <%= uowa.id %>).val();
+                    dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
                     if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
                       if(valu == dv) {
                         close_comment(<%= uowa.id %>);
@@ -166,22 +170,27 @@
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
-                  document.getElementById('submit_cotation').disabled = true;
+                  $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                 });
 
                 $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                   if ($(this).val().length == 0) {
                     if(valu == dv) {
-                      $(".validate_comments").removeAttr("disabled");
+                      $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                     } else {
-                      $(".validate_comments").attr("disabled", "disabled");
+                      $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                     }
                   } else {
-                    $(".validate_comments").removeAttr("disabled");
+                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                   }
                 });
 
-                $(".validate_comments").on('click', function(e){
+
+                $("#validate_comments_<%= uowa.id %>").on('click', function (e) {
+
+                  valu = $(".ml_" + <%= uowa.id %>).val();
+                  dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
                   if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
                     if(valu == dv) {
                       close_comment(<%= uowa.id %>);
@@ -199,9 +208,9 @@
                   dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
 
                   if(valu == dv) {
-                    $(".validate_comments").removeAttr("disabled");
+                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                   } else {
-                    $(".validate_comments").attr("disabled", "disabled");
+                    $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                   }
 
                   var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
