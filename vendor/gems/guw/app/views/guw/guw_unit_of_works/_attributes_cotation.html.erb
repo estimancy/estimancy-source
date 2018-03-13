@@ -162,6 +162,7 @@
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
                   $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
 
+                  $(".submit_cotation").attr("disabled", "disabled");
                 };
 
                 $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
@@ -198,10 +199,8 @@
                   dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
 
                   if(valu == dv) {
-                    console.log("ici");
                     $(".validate_comments").removeAttr("disabled");
                   } else {
-                    console.log("laba");
                     $(".validate_comments").attr("disabled", "disabled");
                   }
 
