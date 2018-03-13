@@ -200,7 +200,7 @@
                   }
                 });
 
-                $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
+                $(".ml_" + <%= uowa.id %>).on('focusout', function(k) {
 
                   var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
