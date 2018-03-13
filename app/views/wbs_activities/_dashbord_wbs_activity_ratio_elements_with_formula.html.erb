@@ -209,9 +209,15 @@
                     <%# padding_left = mp_ratio_element.depth.nil? ? 2 : mp_ratio_element.depth*2 %>
                     <% padding_left = mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>
                     <span class="pull-left" title="<%= wbs_activity_elt.description %>" style="padding-left:<%=gap+padding_left%>em">
-                        <%= name_to_show %> <%#= wbs_activity_elt.name %>
+                      <%#= name_to_show %> <%#= wbs_activity_elt.name %>
+                      <% if mp_ratio_element.is_root? %>
+                           <%= name_to_show %>
+                      <% else %>
+                        <%= link_to name_to_show, module_project_ratio_element_load_name_description_path(mp_ratio_element), id: "mp_ratio_element_name_description_#{mp_ratio_element.id}", title: I18n.t(:edit), method: "post", remote: true %>
+                      <% end %>
                     </span>
                   </td>
+
                   <% unless @wbs_activity_ratio.do_not_show_cost %>
                     <% element_tjm = mp_ratio_element.tjm %>
                     <td><%= (element_tjm.blank? || mp_ratio_element.is_root?) ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
@@ -452,6 +458,7 @@
 
                   <td class="text_field_text_overflow">
                     <span class="pull-left">
+                      <%= hidden_field_tag "mp_ratio_element_hidden_comments[#{mp_ratio_element.id}]", mp_ratio_element.comments, { id: "module_project_ratio_element_hidden_comments_#{mp_ratio_element.id}"} %>
                       <%= link_to (mp_ratio_element.comments.blank?) ? '-' : mp_ratio_element.comments,
                             module_project_ratio_element_load_comments_path(mp_ratio_element), id: "mp_ratio_element_comment_#{mp_ratio_element.id}", title: (mp_ratio_element.comments.blank? ? name_to_show : mp_ratio_element.comments), method: "post", remote: true %>
                     </span>

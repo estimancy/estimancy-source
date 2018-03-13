@@ -540,6 +540,8 @@ class WbsActivitiesController < ApplicationController
           end
         end
 
+        mp_ratio_element.comments = params["mp_ratio_element_hidden_comments"]["#{mp_ratio_element.id}"]
+
         if mp_ratio_element.changed?
           mp_ratio_element.save
         end
