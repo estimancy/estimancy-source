@@ -162,14 +162,6 @@
                   $(".submit_cotation").removeAttr("disabled");
                 };
 
-                $(".ml_" + <%= uowa.id %>).on('focus', function(e) {
-                  $(".submit_cotation").prop("disabled", true);
-                });
-
-                $(".ml_" + <%= uowa.id %>).on('blur', function(k) {
-                  $(".submit_cotation").prop("disabled", false);
-                });
-
                 $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                   if ($(this).val().length == 0) {
                     if(valu == dv) {
@@ -212,15 +204,15 @@
 
                   var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
                   if (val.length == 0) {
-                    $(".submit_cotation").attr("disabled", "disabled");
+                    $(".submit_cotation").prop("disabled", true);
                   } else {
-                    $(".submit_cotation").removeAttr("disabled");
+                    $(".submit_cotation").prop("disabled", false);
                   }
 
                   if(valu == dv) {
-                    $(".submit_cotation").removeAttr("disabled");
+                    $(".submit_cotation").prop("disabled", false);
                   } else {
-                    $(".submit_cotation").attr("disabled", "disabled");
+                    $(".submit_cotation").prop("disabled", true);
                     $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
                       keyboard: false,
                       backdrop: "static"

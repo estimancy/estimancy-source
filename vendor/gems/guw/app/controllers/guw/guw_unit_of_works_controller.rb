@@ -1054,7 +1054,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     guw_type = guw_unit_of_work.guw_type
 
     if (value_pert >= guw_c.bottom_range) and (value_pert < guw_c.top_range)
-      if guw_type.allow_complexity == false
+      if guw_type.allow_complexity == true
         guw_unit_of_work.guw_complexity_id = guw_c.id
         guw_unit_of_work.guw_original_complexity_id = guw_c.id
       end
