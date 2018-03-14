@@ -2110,10 +2110,9 @@ class OrganizationsController < ApplicationController
 
   def new
     authorize! :create_organizations, Organization
-
+    @organization = Organization.new
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
-    @organization = Organization.new
     @groups = @organization.groups
   end
 
@@ -2123,6 +2122,7 @@ class OrganizationsController < ApplicationController
 
     set_page_title I18n.t(:organizations)
     @organization = Organization.find(params[:id])
+    @current_organization = @organization
     check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
@@ -2147,10 +2147,11 @@ class OrganizationsController < ApplicationController
   def create
     authorize! :create_organizations, Organization
 
+    @organization = Organization.new(params[:organization])
+
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
 
-    @organization = Organization.new(params[:organization])
     check_if_organization_is_image(@organization)
 
     # Organization's projects selected columns
@@ -2161,6 +2162,8 @@ class OrganizationsController < ApplicationController
 
     #A la sauvegarde, on crée des sous traitants
     if @organization.save
+
+      @current_organization = @organization
 
       # Add admin and user groups
       admin_group = Group.create(name: "*USER", organization_id: @organization.id, description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs")
@@ -2195,6 +2198,7 @@ class OrganizationsController < ApplicationController
 
     @organization = Organization.find(params[:id])
     check_if_organization_is_image(@organization)
+    @current_organization = @organization
 
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
