@@ -267,19 +267,30 @@ class ApplicationController < ActionController::Base
         @current_organization = Organization.find(session[:organization_id])
       #Sinon on prend, la sessions
       elsif session[:organization_id].present?
-        @current_organization = Organization.find(session[:organization_id])
-      #Si ya pas de sessions
-      else
-        @current_organization = current_user.organizations.where(is_image_organization: false).first
-        if @current_organization.nil?
-          session[:organization_id] = current_user.organizations.first.id
+
+        if params[:project_id].present?
+          session[:organization_id] = Project.find(params[:project_id]).organization_id
           @current_organization = Organization.find(session[:organization_id])
         else
-          session[:organization_id] = @current_organization.id
           @current_organization = Organization.find(session[:organization_id])
         end
+
+      #Si ya pas de sessions
+      else
+        # @current_organization = current_user.organizations.where(is_image_organization: false).first
+        # if @current_organization.nil?
+          # session[:organization_id] = current_user.organizations.first.id
+          # @current_organization = nil # Organization.find(session[:organization_id])
+        # else
+        #   session[:organization_id] = @current_organization.id
+        #   @current_organization = Organization.find(session[:organization_id])
+        # end
+        session[:organization_id] = current_user.organizations.first.id
+        @current_organization = session[:organization_id]
       end
     rescue
+      flash[:warning] = "Veuillez contacter un administrateur Estimancy."
+      sign_out current_user
       session[:organization_id] = nil
       @current_organization = nil
     end
