@@ -120,15 +120,16 @@ class Guw::GuwModelsController < ApplicationController
                                                 default_display: tab[9][1],
                                                 organization_id: @current_organization.id,
                                                 allow_technology: false,
-                                                allow_ml: (tab[8][1] == "false") ? false : true)
+                                                allow_ml: (tab[8][1] == "false") ? false : true,
+                                                view_data: false)
 
 
                 # Create orders (coeff and outputs orders)
                 orders = Hash.new
-                i = 10
+                i = 11
                 order_value_coeff = tab[i][0]
                 jj = 0
-                while order_value_coeff.to_s != "allow_ml_redmine"
+                while order_value_coeff.to_s != "Coefficient"
                   begin
                     orders["#{tab[i][0]}"] = tab[i][1]
                     i = i+1
@@ -143,23 +144,23 @@ class Guw::GuwModelsController < ApplicationController
                 @guw_model.orders = orders
                 @guw_model.config_type = "new"
 
-                begin
-                  @guw_model.allow_excel = ((tab[i][1]) == "false") ? false : true
-                  @guw_model.excel_ml_server = tab[i][1]
-                  @guw_model.allow_ml_excel = ((tab[i][1]) == "false") ? false : true
-
-                  @guw_model.allow_jira = ((tab[i][1]) == "false") ? false : true
-                  @guw_model.jira_ml_server = tab[i][1]
-                  @guw_model.allow_ml_jira = ((tab[i][1]) == "false") ? false : true
-
-                  @guw_model.allow_redmine = ((tab[i][1]) == "false") ? false : true
-                  @guw_model.redmine_ml_server = tab[i][1]
-                  @guw_model.allow_ml_redmine = ((tab[i][1]) == "false") ? false : true
-                rescue
-                  @guw_model.allow_excel = true
-                  @guw_model.excel_ml_server = ""
-                  @guw_model.allow_ml_excel = false
-                end
+                # begin
+                #   @guw_model.allow_excel = ((tab[i+1][1]) == "false") ? false : true
+                #   @guw_model.excel_ml_server = tab[i+1][1]
+                #   @guw_model.allow_ml_excel = ((tab[i+1][1]) == "false") ? false : true
+                #
+                #   @guw_model.allow_jira = ((tab[i+1][1]) == "false") ? false : true
+                #   @guw_model.jira_ml_server = tab[i+1][1]
+                #   @guw_model.allow_ml_jira = ((tab[i+1][1]) == "false") ? false : true
+                #
+                #   @guw_model.allow_redmine = ((tab[i+1][1]) == "false") ? false : true
+                #   @guw_model.redmine_ml_server = tab[i+1][1]
+                #   @guw_model.allow_ml_redmine = ((tab[i+1][1]) == "false") ? false : true
+                # rescue
+                #   @guw_model.allow_excel = true
+                #   @guw_model.excel_ml_server = ""
+                #   @guw_model.allow_ml_excel = false
+                # end
 
                 @guw_model.save
 
@@ -1036,7 +1037,8 @@ class Guw::GuwModelsController < ApplicationController
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
                   [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion],
                   ["Autoriser le comptage automatique", @guw_model.allow_ml],
-                  ["Affichage par défaut", @guw_model.default_display]
+                  ["Affichage par défaut", @guw_model.default_display],
+                  ["Visualisation des données", @guw_model.view_data]
                   ]
 
     # Add Action & Coeff & coefficientElements
