@@ -1695,3 +1695,4 @@ en-gb:
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
   show_tjm: "Show TJM"
   only_numeric: "Only numeric values ​​are allowed"
+  current_estimation_does_not_exists: "There is no current estimation"

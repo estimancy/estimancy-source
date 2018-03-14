@@ -105,7 +105,7 @@ class ProjectsController < ApplicationController
       redirect_to organization_estimations_path(@current_organization) and return
     else
       if (params[:from_current_dashboard] && params[:organization_id]) && (@project.organization_id != params[:organization_id].to_i)
-        flash[:warning] = "Project courant n'existe pas"
+        flash[:warning] = I18n.t(:current_estimation_does_not_exists)
         redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
       end
     end

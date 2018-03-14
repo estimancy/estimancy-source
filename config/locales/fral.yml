@@ -2052,3 +2052,4 @@ fral:
   use_automatic_quotation_number: "Générer automatiquement le nom des estimations créées à partir de ce modèle"
   show_tjm: "Afficher le TJM (taux moyen)"
   only_numeric: "Seul les valeurs numériques sont autorisées"
+  current_estimation_does_not_exists: "Il n'y a pas d'estimation courant"
