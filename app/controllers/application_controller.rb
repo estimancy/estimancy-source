@@ -286,7 +286,7 @@ class ApplicationController < ActionController::Base
         #   @current_organization = Organization.find(session[:organization_id])
         # end
         session[:organization_id] = current_user.organizations.first.id
-        @current_organization = session[:organization_id]
+        @current_organization = current_user.organizations.first
       end
     rescue
       flash[:warning] = "Veuillez contacter un administrateur Estimancy."
