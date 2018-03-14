@@ -32,6 +32,7 @@ class OrganizationsController < ApplicationController
 
   def import_project_areas
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -58,6 +59,7 @@ class OrganizationsController < ApplicationController
 
   def import_project_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -84,6 +86,7 @@ class OrganizationsController < ApplicationController
 
   def import_platform_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -110,6 +113,7 @@ class OrganizationsController < ApplicationController
 
   def import_acquisition_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -135,12 +139,11 @@ class OrganizationsController < ApplicationController
   end
 
   def import_project_profile
-    p "rentre"
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     tab_warning_messages = ""
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-      p "aaa"
       workbook = RubyXL::Parser.parse(params[:file].path)
       tab = workbook[0].extract_data
 
@@ -152,15 +155,12 @@ class OrganizationsController < ApplicationController
             tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
           else
             new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2], organization_id: @organization.id)
-            p "bb"
             unless new_profile.save
               tab_error << index + 1
-              p "cc"
             end
           end
         elsif row[0].nil?
           tab_error << index + 1
-          p "dd"
         end
       end
     else
@@ -177,6 +177,7 @@ class OrganizationsController < ApplicationController
   # Import Organization's Providers
   def import_providers
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -203,6 +204,7 @@ class OrganizationsController < ApplicationController
 
   def export_project_areas
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_project_area = @organization.project_areas
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -218,6 +220,7 @@ class OrganizationsController < ApplicationController
 
   def export_acquisition_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_acquisition_categories = @organization.acquisition_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -233,6 +236,7 @@ class OrganizationsController < ApplicationController
 
   def export_platform_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_platform_categories = @organization.platform_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -248,6 +252,7 @@ class OrganizationsController < ApplicationController
 
   def export_project_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_project_categories = @organization.project_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -263,6 +268,7 @@ class OrganizationsController < ApplicationController
 
   def export_providers
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_providers = @organization.providers
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -276,6 +282,7 @@ class OrganizationsController < ApplicationController
 
   def polyval_export
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     case params[:MYonglet]
       when "ProjectCategory"
         polyval_var = ProjectCategory.where(organization_id: @organization.id)
@@ -308,6 +315,7 @@ class OrganizationsController < ApplicationController
 
   def import_appli
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
 
     if params[:file].nil?
@@ -339,6 +347,7 @@ class OrganizationsController < ApplicationController
 
   def export_appli
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_appli = @organization.applications
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -352,6 +361,7 @@ class OrganizationsController < ApplicationController
 
   def import_groups
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -379,6 +389,7 @@ class OrganizationsController < ApplicationController
 
   def export_groups
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_groups = @organization.groups
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -914,7 +925,6 @@ class OrganizationsController < ApplicationController
 
   def module_estimation
     @organization = Organization.find(params[:organization_id])
-
     check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
@@ -2113,6 +2123,7 @@ class OrganizationsController < ApplicationController
 
     set_page_title I18n.t(:organizations)
     @organization = Organization.find(params[:id])
+    check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
 
@@ -2140,6 +2151,7 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
 
     @organization = Organization.new(params[:organization])
+    check_if_organization_is_image(@organization)
 
     # Organization's projects selected columns
     @organization.project_selected_columns = Project.default_selected_columns
@@ -2182,6 +2194,7 @@ class OrganizationsController < ApplicationController
     authorize! :edit_organizations, Organization
 
     @organization = Organization.find(params[:id])
+    check_if_organization_is_image(@organization)
 
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
@@ -2208,6 +2221,7 @@ class OrganizationsController < ApplicationController
 
   def confirm_organization_deletion
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     authorize! :manage, Organization
   end
 
@@ -2215,6 +2229,8 @@ class OrganizationsController < ApplicationController
     authorize! :manage, Organization
 
     @organization = Organization.find(params[:id])
+    check_if_organization_is_image(@organization)
+
     @organization_id = @organization.id
 
     case params[:commit]
@@ -2270,6 +2286,7 @@ class OrganizationsController < ApplicationController
 
   def export_user
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
     first_line = [I18n.t(:first_name_attribute), I18n.t(:last_name_attribute), I18n.t(:initials_attribute),I18n.t(:email_attribute), I18n.t(:login_name_or_email), I18n.t(:authentication),I18n.t(:description), I18n.t(:label_language), I18n.t(:locked_at),I18n.t(:groups)]
@@ -2547,7 +2564,7 @@ class OrganizationsController < ApplicationController
 
   private
   def check_if_organization_is_image(organization)
-    if organization.is_image_organization == true
+    if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
       redirect_to("/organizationals_params",
                   flash: {
                       error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
