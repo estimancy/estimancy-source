@@ -99,7 +99,7 @@ class ModuleProjectRatioElementsController < ApplicationController
       #   @module_project_ratio_element.name_is_modified = true
       # end
 
-      @module_project_ratio_element.comments = params[:comments].values.first
+      @module_project_ratio_element.comments = params[:comments].values.first.html_safe
       #@module_project_ratio_element.save
     end
     #redirect_to main_app.dashboard_path(@project)

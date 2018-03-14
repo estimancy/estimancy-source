@@ -103,6 +103,11 @@ class ProjectsController < ApplicationController
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
+    else
+      if @project.organization_id != params[:organization_id]
+        flash[:warning] = "Project courant n'existe pas"
+        redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
+      end
     end
 
     @current_organization = @project.organization
