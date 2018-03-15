@@ -42,7 +42,9 @@
         <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
       <% end %>
 
-      <button type="submit" name="commit[all]" class="btn btn-primary pull-right guw_submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>">Tout recalculer</button>
+      <% if can? :execute_estimation_plan, @project %>
+        <button type="submit" name="commit[all]" class="btn btn-primary pull-right guw_submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>">Tout recalculer</button>
+      <% end %>
 
       <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
     </div>
