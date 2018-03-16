@@ -140,7 +140,7 @@
       <% end %>
     <% elsif i[0] == "Critères" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-        <td class="span2">
+        <td class="span1">
           <% unless @guw_type.nil? %>
             <% if @guw_type.allow_criteria == true %>
               <span class="text-center criteria_label_<%= guow.id %>">
