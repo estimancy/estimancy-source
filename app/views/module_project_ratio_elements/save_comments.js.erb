@@ -1,9 +1,9 @@
 //$('#comments_'+'<%#= @module_project_ratio_element.id %>').css('white-space', 'pre');
-
 var comment_id = '<%= "mp_ratio_element_comment_#{@module_project_ratio_element.id}" %>';
-$('#'+comment_id).html("<%=raw (@module_project_ratio_element.comments.blank? ? "-" : @module_project_ratio_element.comments.html_safe) %>");
+$('#'+comment_id).html("<%= j (@module_project_ratio_element.comments.blank? ? "..." : @module_project_ratio_element.comments.to_s.html_safe[0..30]) %>");
 
 var mp_id = '<%= @module_project_ratio_element.id %>';
-$('#module_project_ratio_element_hidden_comments_'+mp_id).val("<%=raw (@module_project_ratio_element.comments.html_safe) %>");
+$('#module_project_ratio_element_hidden_comments_'+mp_id).val("<%= j (@module_project_ratio_element.comments) %>");
 
 $('#modal_comments').modal('toggle');
+
