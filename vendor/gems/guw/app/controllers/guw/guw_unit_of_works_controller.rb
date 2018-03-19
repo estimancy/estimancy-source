@@ -1191,6 +1191,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.guw_complexity_id = guw_complexity_id
           guw_unit_of_work.off_line_uo = false
           guw_unit_of_work.off_line = false
+        else
+          default_guw_complexity = guw_type.guw_complexities.where(default_value: true).first
+          if default_guw_complexity.nil?
+            guw_complexity = guw_type.guw_complexities.first
+          else
+            guw_complexity = default_guw_complexity
+          end
+
+          guw_unit_of_work.guw_complexity_id = guw_complexity.id
         end
 
         guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
