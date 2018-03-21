@@ -2813,7 +2813,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                begin
+                # begin
                   unless params["guw_complexity_#{guw_uow.id}"].nil?
                     guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
                     guw_uow.guw_complexity_id = guw_complexity_id
@@ -2828,9 +2828,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                     guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                   end
-                rescue
-                  # ignored
-                end
+                # rescue
+                #   # ignored
+                # end
 
                 if guw_uow.changed?
                   guw_uow.save
