@@ -2819,7 +2819,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     guw_uow.guw_complexity_id = guw_complexity_id
                     guw_uow.guw_original_complexity_id = guw_complexity_id
                   else
-                    unless row[19].blank?
+                    unless row[18].blank?
                       unless @guw_type.nil?
                         guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                                   name: row[18]).first
