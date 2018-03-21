@@ -2776,7 +2776,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                # if @guw_type.allow_complexity == false
+                if @guw_type.allow_complexity == true
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
@@ -2811,7 +2811,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   else
                     guw_uow.result_high = @highs.sum
                   end
-                # end
+                end
 
                 begin
                   unless params["guw_complexity_#{guw_uow.id}"].nil?
