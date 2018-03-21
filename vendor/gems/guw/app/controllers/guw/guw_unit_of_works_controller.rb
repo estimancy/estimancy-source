@@ -1037,13 +1037,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
                                        guw_attribute_id: guowa.guw_attribute_id).first
-
-    if gat.default_value != most_likely && comments.blank?
-      # ignored, on en sauvegarde pas les valeurs
-    else
-      guowa.low = low
-      guowa.most_likely = most_likely
-      guowa.high = high
+    unless gat.nil?
+      if gat.default_value != most_likely && comments.blank?
+        # ignored, on en sauvegarde pas les valeurs
+      else
+        guowa.low = low
+        guowa.most_likely = most_likely
+        guowa.high = high
+      end
     end
 
     guowa.save
