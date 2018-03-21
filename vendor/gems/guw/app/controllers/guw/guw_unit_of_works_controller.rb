@@ -2776,7 +2776,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                if @guw_type.allow_complexity == true
+                # if @guw_type.allow_complexity == true
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
@@ -2811,23 +2811,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   else
                     guw_uow.result_high = @highs.sum
                   end
+                # end
+
+                unless row[18].blank?
+                  unless @guw_type.nil?
+                    guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                              name: row[18]).first
+                  end
                 end
+                guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
 
                 # begin
-                  unless params["guw_complexity_#{guw_uow.id}"].nil?
-                    guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
-                    guw_uow.guw_complexity_id = guw_complexity_id
-                    guw_uow.guw_original_complexity_id = guw_complexity_id
-                  else
-                    unless row[18].blank?
-                      unless @guw_type.nil?
-                        guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
-                                                                  name: row[18]).first
-                      end
-                    end
-
-                    guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
-                  end
+                #   unless params["guw_complexity_#{guw_uow.id}"].nil?
+                #     guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
+                #     guw_uow.guw_complexity_id = guw_complexity_id
+                #     guw_uow.guw_original_complexity_id = guw_complexity_id
+                  # else
+                  #
+                  # end
                 # rescue
                 #   # ignored
                 # end
