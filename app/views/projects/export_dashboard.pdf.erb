@@ -175,16 +175,16 @@
   <% @wbs_activity = module_project.wbs_activity %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
     <h3>
-      Financier Synthèse - <%= @wbs_activity.name %>
+      Financier Synthèse - <%= @wbs_activity.name %> - <%= @project.organization.name %>
     </h3>
     <hr>
     <table class="table main table-condensed" style="font-size: 10px;">
       <tr>
         <th>Sélect.</th>
         <th>Nom</th>
-        <th>Prix unitaire en €/UC</th>
-        <th>Charge (en UC)</th>
-        <th>Montant en €</th>
+        <th>Prix (€/j)</th>
+        <th>Charge (j)</th>
+        <th>Montant (€)</th>
       </tr>
 
       <!-- TODO: Prendre le ratio du module project et non le premier car il peut y en avoir potentiellement plusieurs -->
