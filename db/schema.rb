@@ -836,7 +836,7 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "organization_technology_id"
   end
 
-  add_index "guw_guw_unit_of_work_groups", ["module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
+  add_index "guw_guw_unit_of_work_groups", ["organization_id", "project_id", "module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
 
   create_table "guw_guw_unit_of_works", :force => true do |t|
     t.integer  "organization_id"
@@ -883,7 +883,7 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.text     "cplx_comments"
   end
 
-  add_index "guw_guw_unit_of_works", ["guw_model_id", "module_project_id", "pbs_project_element_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], :name => "module_project_guw_unit_of_works"
+  add_index "guw_guw_unit_of_works", ["organization_id", "project_id", "module_project_id", "pbs_project_element_id", "guw_model_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], :name => "module_project_guw_unit_of_works"
 
   create_table "guw_guw_weightings", :force => true do |t|
     t.integer  "guw_model_id"
@@ -1638,6 +1638,7 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -2054,7 +2055,7 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "name"
     t.text     "description"
     t.string   "ancestry"
-    t.integer  "ancestry_depth",     :default => 0
+    t.integer  "ancestry_depth",   :default => 0
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
@@ -2064,12 +2065,10 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "dotted_id"
     t.boolean  "is_root"
     t.string   "master_ancestry"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.float    "position"
     t.string   "phase_short_name"
-    t.boolean  "allow_modif_effort"
-    t.boolean  "allow_modif_cost"
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
