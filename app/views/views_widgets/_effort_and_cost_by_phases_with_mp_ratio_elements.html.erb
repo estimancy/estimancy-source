@@ -91,7 +91,7 @@
             <% if mp_ratio_element.is_root? %>
                 <td>
                   <strong style="vertical-align: middle">
-                    <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
+                    <span id='<%= "tjm_global_#{view_widget.id}" %>'></span>
                   </strong>
                 </td>
             <% else %>
@@ -142,7 +142,13 @@
                 <!--  # for Cost attribute -->
                 <td class=''>
                   <span class='pull-right'>
-                    <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
+                    <% if i == 0 %>
+                      <b>
+                        <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
+                      </b>
+                    <% else %>
+                      <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
+                    <% end %>
                   </span>
                 </td>
 
