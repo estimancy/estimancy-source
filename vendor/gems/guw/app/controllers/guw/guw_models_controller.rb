@@ -1787,8 +1787,8 @@ class Guw::GuwModelsController < ApplicationController
       unless @wbs_activity.nil?
         @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-          guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
-          guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
+          guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+          guw_output_test = Guw::GuwOutput.where(name: "Assiette Test", guw_model_id: @guw_model.id).first
 
           mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
