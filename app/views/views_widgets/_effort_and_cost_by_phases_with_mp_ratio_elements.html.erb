@@ -91,8 +91,8 @@
             <% if mp_ratio_element.is_root? %>
                 <td>
                   <strong style="vertical-align: middle">
-                  <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
-                </strong>
+                    <p id='<%= "tjm_global_#{view_widget.id}" %>'></p>
+                  </strong>
                 </td>
             <% else %>
                 <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
@@ -104,30 +104,46 @@
             <% cost_level_value = mp_ratio_element.send("#{cost_attribute_alias}_#{level}") %>
 
             <% if mp_ratio_element.is_root? %>
-                <% tjm_global = effort_level_value.nil? ? "-" : convert_with_precision(cost_level_value.to_f / effort_level_value.to_f, 3, true) %>
+              <% tjm_global = effort_level_value.nil? ? "-" : convert_with_precision(cost_level_value.to_f / effort_level_value.to_f, 3, true) %>
             <% end %>
 
             <% if mp_ratio_element.selected %>
                 <!--  # for Effort attribute -->
                 <td class=''>
-                    <span class='pull-right'>
+                  <% if i == 0 %>
+                    <b>
+                      <span class='pull-right'>
                         <%=
-                            if view_widget.use_organization_effort_unit == true
-                              # use organization effort unit
-                              effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
-                            else
-                              # use module instance effort unit
-                              effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_level_value, effort_unit_coefficient), number_precision, true)} #{effort_unit}"
-                            end
+                          if view_widget.use_organization_effort_unit == true
+                            # use organization effort unit
+                            effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
+                          else
+                            # use module instance effort unit
+                            effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_level_value, effort_unit_coefficient), number_precision, true)} #{effort_unit}"
+                          end
                         %>
+                      </span>
+                    </b>
+                  <% else %>
+                    <span class='pull-right'>
+                      <%=
+                        if view_widget.use_organization_effort_unit == true
+                          # use organization effort unit
+                          effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
+                        else
+                          # use module instance effort unit
+                          effort_level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_level_value, effort_unit_coefficient), number_precision, true)} #{effort_unit}"
+                        end
+                      %>
                     </span>
+                  <% end %>
                 </td>
 
                 <!--  # for Cost attribute -->
                 <td class=''>
-                    <span class='pull-right'>
-                        <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
-                    </span>
+                  <span class='pull-right'>
+                    <%= cost_level_value.nil? ? "-" : "#{convert_with_precision(cost_level_value, number_precision, true)} #{cost_unit}" %>
+                  </span>
                 </td>
 
             <% else %>
