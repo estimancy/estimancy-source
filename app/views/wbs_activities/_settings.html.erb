@@ -457,8 +457,12 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %></span>
-    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
+    <span>
+      <%= submit_tag I18n.t(:calculate_button), :disable_with => "Veuillez patienter...", name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
+    </span>
+    <span style="margin-right: 10px">
+      <%= submit_tag I18n.t(:initialize_calculation), :disable_with => "Veuillez patienter...", name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
+    </span>
   <% end %>
 
 <% end %>
@@ -607,11 +611,11 @@
       });
 
       var clkBtn = "";
-      $('input[type="submit"]').click(function(evt) {
-          clkBtn = evt.target.name;
-      });
+//      $('input[type="submit"]').click(function(evt) {
+//          clkBtn = evt.target.name;
+//      });
 
-      $("#save_effort_breakdown_form").on("submit",function(e) {
+      $("#save_effort_breakdown_form_save").on("submit",function(e) {
 
           var clicked_button = clkBtn;
           var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
