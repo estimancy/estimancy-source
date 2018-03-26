@@ -1972,7 +1972,7 @@ frsncf:
   Judgment_Expert_module: "Module de Jugement d'expert"
   wbs_activities_module: "Module WBS Activités"
   calculate_button: "Calculer"
-  results_button: "Résultats"
+  results_button: "Valorisation Devis"
   subscription_end_date: "Date de fin d'abonnement"
 
   rollback: "Annuler"
