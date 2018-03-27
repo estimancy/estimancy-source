@@ -500,7 +500,7 @@ class ApplicationController < ActionController::Base
       saml_auth_id = saml_auth.id
     end
     # return the path based on resource
-    if resource.password_changed || (resource.auth_type == saml_auth_id)
+    if resource.password_changed == true || (resource.auth_type == saml_auth_id)
       # if user has no organization, this means that his has no group, so no right
       if resource.organizations.where(is_image_organization: [false, nil]).size == 0
         flash[:warning] = I18n.t(:you_have_no_right_to_continue)
