@@ -2152,11 +2152,12 @@ public
     @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
     generate_automatique_title = false
+    @user = current_user
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: @user.name)} \r\n"
     new_prj.ancestry = nil
-    new_prj.creator_id = current_user.id
+    new_prj.creator_id = @user.id
     if params[:action_name] == "duplication_model"
       new_prj.is_model = true
     else
@@ -2173,7 +2174,7 @@ public
       new_prj.use_automatic_quotation_number = false
 
       #Update some params with the form input data
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: @user.name)} \r\n"
 
       if params['project']['application_id'].present?
         new_prj.application_id = params['project']['application_id']
@@ -2241,11 +2242,17 @@ public
           creator_securities = new_prj.project_securities
           creator_securities.each do |ps|
             if ps.is_model_permission == true
-              ps.update_attribute(:is_model_permission, false)
-              ps.update_attribute(:is_estimation_permission, true)
+              # Amelioration Creer à partir d'un modele
+              # ps.update_attribute(:is_model_permission, false)
+              # ps.update_attribute(:is_estimation_permission, true)
+              ps.is_model_permission = false
+              ps.is_estimation_permission = true
+
               if ps.user_id == owner.id
-                ps.update_attribute(:user_id, owner.id)
+                #ps.update_attribute(:user_id, owner.id)
+                ps.user_id = owner.id
               end
+              ps.save
             else
               ps.destroy
             end
@@ -2278,12 +2285,16 @@ public
           new_c.save
         end
 
+        hash = {}
+        Application.where(organization_id: @organization.id).all.each do |app|
+          hash[app.id] = app
+        end
+
         #For applications
         old_prj.applications.each do |application|
-          app = Application.where(name: application.name, organization_id: @organization.id).first
-          ap = ApplicationsProjects.create(application_id: app.id,
-                                           project_id: new_prj.id)
-          ap.save
+          #app = Application.where(name: application.name, organization_id: @organization.id).first
+          app = hash[application.id]
+          ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
         # For ModuleProject associations
