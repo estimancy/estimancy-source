@@ -103,6 +103,11 @@ class ProjectsController < ApplicationController
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
+    else
+      if (params[:from_current_dashboard] && params[:organization_id]) && (@project.organization_id != params[:organization_id].to_i)
+        flash[:warning] = I18n.t(:current_estimation_does_not_exists)
+        redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
+      end
     end
 
     @current_organization = @project.organization
@@ -2397,12 +2402,17 @@ public
           new_c.save
         end
 
+        hash_apps = {}
+        @organization.applications.each do |app|
+          hash_apps[app.name] = app
+        end
+
         #For applications
         old_prj.applications.each do |application|
-          app = Application.where(name: application.name, organization_id: @organization.id).first
+          # Application.where(name: application.name, organization_id: @organization.id).first
+          app = hash_apps[application.name]
           ap = ApplicationsProjects.create(application_id: app.id,
                                            project_id: new_prj.id)
-          ap.save
         end
 
         # For ModuleProject associations
@@ -3230,6 +3240,10 @@ public
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
+              pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+              mp_ratio_element.pbs_project_element_id = pbs.nil? ? nil : pbs.id
+              mp_ratio_element.save
+            end
             pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
             mp_ratio_element.pbs_project_element_id = pbs_id
             mp_ratio_element.save

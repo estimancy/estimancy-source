@@ -1997,6 +1997,7 @@ es:
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
   show_tjm: "Show TJM"
   only_numeric: "Only numeric values ​​are allowed"
+  current_estimation_does_not_exists: "There is no current estimation"
   security_audit_management: "Security audit management"
   security_audit_utilities: "Security audit utilities"
   common_data_integrity: "Common data integrity"

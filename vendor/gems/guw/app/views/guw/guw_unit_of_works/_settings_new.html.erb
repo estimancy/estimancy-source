@@ -34,15 +34,18 @@
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
-      <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
+      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
+      <% end %>
 
       <% if @guw_model.view_data == true %>
         <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
       <% end %>
 
-      <button type="submit" name="commit[all]" class="btn btn-primary pull-right guw_submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>">Tout recalculer</button>
-
-      <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
+      <% if can? :execute_estimation_plan, @project %>
+        <button type="submit" name="commit[all]" class="btn btn-primary pull-right guw_submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>">Tout recalculer</button>
+        <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
+      <% end %>
     </div>
   </div>
 
@@ -55,8 +58,7 @@
           Total <%= guw_output.name %> retenu :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%# @unit_of_work_groups.map do |i|
-              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <%= @unit_of_work_groups.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
               end
@@ -70,8 +72,7 @@
           Total <%= guw_output.name %> théorique :
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%# @unit_of_work_groups.map do |i|
-              #i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+            <%= @unit_of_work_groups.map do |i|
               i.guw_unit_of_works.where(selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
               end
@@ -178,7 +179,7 @@
               <th></th>
               <th>#</th>
               <th><%= I18n.t :name %></th>
-              <th>UO</th>
+              <th>Composant</th>
 
               <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
               <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>

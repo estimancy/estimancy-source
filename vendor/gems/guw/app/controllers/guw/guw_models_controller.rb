@@ -120,14 +120,16 @@ class Guw::GuwModelsController < ApplicationController
                                                 default_display: tab[9][1],
                                                 organization_id: @current_organization.id,
                                                 allow_technology: false,
-                                                allow_ml: (tab[8][1] == "false") ? false : true)
+                                                allow_ml: (tab[8][1] == "false") ? false : true,
+                                                view_data: false)
 
 
                 # Create orders (coeff and outputs orders)
                 orders = Hash.new
-                i = 10
+                i = 11
                 order_value_coeff = tab[i][0]
-                while order_value_coeff.to_s != I18n.t(:config_type).to_s do
+                jj = 0
+                while order_value_coeff.to_s != I18n.t(:config_type)
                   begin
                     orders["#{tab[i][0]}"] = tab[i][1]
                     i = i+1
@@ -135,10 +137,31 @@ class Guw::GuwModelsController < ApplicationController
                   rescue
                     # ignored
                   end
+                  jj += 1
+                  break if jj >= 30
                 end
 
                 @guw_model.orders = orders
-                @guw_model.config_type = tab[i][1]
+                @guw_model.config_type = "new"
+
+                begin
+                  @guw_model.allow_excel = ((tab[i+1][1]) == "false") ? false : true
+                  @guw_model.excel_ml_server = tab[i+2][1]
+                  @guw_model.allow_ml_excel = ((tab[i+3][1]) == "false") ? false : true
+
+                  @guw_model.allow_jira = ((tab[i+4][1]) == "false") ? false : true
+                  @guw_model.jira_ml_server = tab[i+5][1]
+                  @guw_model.allow_ml_jira = ((tab[i+6][1]) == "false") ? false : true
+
+                  @guw_model.allow_redmine = ((tab[i+7][1]) == "false") ? false : true
+                  @guw_model.redmine_ml_server = tab[i+8][1]
+                  @guw_model.allow_ml_redmine = ((tab[i+9][1]) == "false") ? false : true
+                rescue
+                  @guw_model.allow_excel = true
+                  @guw_model.excel_ml_server = ""
+                  @guw_model.allow_ml_excel = false
+                end
+
                 @guw_model.save
 
               else
@@ -183,7 +206,8 @@ class Guw::GuwModelsController < ApplicationController
                                                          display_order: row[4],
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
-                                                         default_value: row[5],
+                                                         default_value: (row[5].to_s == "true") ? 1 : 0,
+                                                         default: (row[5].to_s == "true") ? 1 : 0,
                                                          color_code: row[6],
                                                          color_priority: row[7])
                     gce.save(validate: false)
@@ -203,7 +227,8 @@ class Guw::GuwModelsController < ApplicationController
                                                        allow_subtotal: (row[3] == 0) ? false : true,
                                                        standard_coefficient: row[4],
                                                        display_order: row[5],
-                                                       unit: row[6])
+                                                       unit: row[6],
+                                                       allow_subtotal: row[7])
 
                     attr = PeAttribute.where(name: guw_output.name,
                                              alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
@@ -246,9 +271,11 @@ class Guw::GuwModelsController < ApplicationController
 
               [2,7,12].each do |column_index|
                 name = tab[9][column_index].nil? ? nil : tab[9][column_index]
+                default_value = tab[9][column_index + 1] == "true" ? true : false
 
                 unless name.blank?
                   @guw_complexity = Guw::GuwComplexity.new(name: name,
+                                                           default_value: default_value,
                                                            guw_type_id: @guw_type.id,
                                                            bottom_range: tab[11][column_index + 1],
                                                            top_range: tab[11][column_index + 2],
@@ -1011,7 +1038,8 @@ class Guw::GuwModelsController < ApplicationController
                   [I18n.t(:retained_size_unit), @guw_model.retained_size_unit],
                   [I18n.t(:hour_coefficient_conversion), @guw_model.hour_coefficient_conversion],
                   ["Autoriser le comptage automatique", @guw_model.allow_ml],
-                  ["Affichage par défaut", @guw_model.default_display]
+                  ["Affichage par défaut", @guw_model.default_display],
+                  ["Visualisation des données", @guw_model.view_data]
                   ]
 
     # Add Action & Coeff & coefficientElements
@@ -1020,6 +1048,18 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     first_page << [I18n.t(:config_type), @guw_model.config_type]
+
+    first_page << ["allow_excel", @guw_model.allow_excel]
+    first_page << ["excel_ml_server", @guw_model.excel_ml_server]
+    first_page << ["allow_ml_excel", @guw_model.allow_ml_excel]
+
+    first_page << ["allow_jira", @guw_model.allow_jira]
+    first_page << ["jira_ml_server", @guw_model.jira_ml_server]
+    first_page << ["allow_ml_jira", @guw_model.allow_ml_jira]
+
+    first_page << ["allow_redmine", @guw_model.allow_redmine]
+    first_page << ["redmine_ml_server", @guw_model.redmine_ml_server]
+    first_page << ["allow_ml_redmine", @guw_model.allow_ml_redmine]
 
     ind = 0
     ind2 = 1
@@ -1072,19 +1112,13 @@ class Guw::GuwModelsController < ApplicationController
 
     #==================  GUW-COEFFICIENTS  ==================
 
-    coefficients_worksheet = workbook.add_worksheet(I18n.t(:weighting_coefficients))
-    ind = 0
+    coefficients_worksheet = workbook.add_worksheet("Coefficients")
     counter_line = 1
     coefficients_worksheet.add_cell(0, 0, I18n.t(:name))
     coefficients_worksheet.add_cell(0, 1, I18n.t(:description))
     coefficients_worksheet.add_cell(0, 2, I18n.t(:coefficient_type))
     coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
-    coefficients_worksheet.add_cell(0, 4, "Coefficient déporté")
-    coefficients_worksheet.change_row_bold(0,true)
-    coefficients_worksheet.change_row_horizontal_alignment(0, 'center')
-
-    column_0_width = coefficients_worksheet.get_column_width(0)
-    column_1_width = coefficients_worksheet.get_column_width(1)
+    coefficients_worksheet.add_cell(0, 4, I18n.t(:deported))
 
     @guw_model.guw_coefficients.each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
@@ -1093,33 +1127,12 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
       coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
 
-      coefficients_worksheet.change_column_horizontal_alignment(index, 'center')
-
-      if column_0_width < coeff.name.size
-        coefficients_worksheet.change_column_width(0, coeff.name.size)
-        column_0_width = coeff.name.size
-      end
-
-      if column_1_width < coeff.coefficient_type.size
-        coefficients_worksheet.change_column_width(1, coeff.coefficient_type.size)
-        column_1_width = coeff.coefficient_type.size
-      end
-
       counter_line += 1
-    end
-
-    counter_line.times.each do |line|
-      2.times do |col|
-        ["bottom", "right"].each do |symbole|
-          coefficients_worksheet[line][col].change_border(symbole.to_sym, 'thin')
-          coefficients_worksheet[line][col].change_border(symbole.to_sym, 'thin')
-        end
-      end
     end
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default_value", "color_code", "color_priority"]
+    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default", "color_code", "color_priority"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.each_with_index do |coefficient, index|
@@ -1132,24 +1145,15 @@ class Guw::GuwModelsController < ApplicationController
 
       counter_line = 2
       coeff_elements_worksheet.add_cell(counter_line, 0, "Elements du coefficient")
-      coeff_elements_worksheet.change_column_width(0, "Elements du coefficient".size)
-      coeff_elements_worksheet.change_column_width(1, coefficient.name.to_s.size)
 
       coefficient_elements_attributes.each_with_index do |attr, index|
         column_number = index + 1
         coeff_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
-        coeff_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
 
         line_number = counter_line + 1
         coefficient.guw_coefficient_elements.each do |coeff_element|
           column_value = coeff_element.send(attr)
           coeff_elements_worksheet.add_cell(line_number, column_number, column_value)
-
-          column_width = coeff_elements_worksheet.get_column_width(column_number)
-          if column_value.to_s.size > column_width
-            coeff_elements_worksheet.change_column_width(column_number, column_value.to_s.size)
-          end
-
           line_number += 1
         end
       end
@@ -1178,7 +1182,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit", "allow_subtotal"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
@@ -1343,6 +1347,7 @@ class Guw::GuwModelsController < ApplicationController
         ]
 
         worksheet.add_cell(ind2, column_number, guw_complexity.name)
+        worksheet.add_cell(ind2, column_number + 1, guw_complexity.default_value)
 
         guw_complexity_attributes_values.each_with_index do |name_cell, index|
           worksheet.add_cell(ind2 + 1, column_number + index, name_cell[0])
@@ -1618,7 +1623,9 @@ class Guw::GuwModelsController < ApplicationController
     @guw_model = current_module_project.guw_model
 
     @wbs_activity_module_project = current_module_project.nexts.first
-    @wbs_activity = @wbs_activity_module_project.wbs_activity
+    unless @wbs_activity_module_project.nil?
+      @wbs_activity = @wbs_activity_module_project.wbs_activity
+    end
 
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
@@ -1669,7 +1676,7 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:quantity),
         I18n.t(:tracability),
         I18n.t(:cotation),
-        "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]
+        "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + (@wbs_activity.nil? ? [] : (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) + ["TJM Moyen"])
 
     header.each_with_index do |val, index|
       worksheet.add_cell(0, index, val)
@@ -1769,49 +1776,50 @@ class Guw::GuwModelsController < ApplicationController
         ii = ii + 2
       end
 
-      kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
-      @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
-      @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
-      @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
+      kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+      @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
+      @module_project_ratio_elements = @wbs_activity_module_project.nil? ? nil : @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
+      @root_module_project_ratio_element = @module_project_ratio_elements.nil? ? nil : @module_project_ratio_elements.select{|i| i.root? }.first
 
       tjm_array = []
 
       calculator = Dentaku::Calculator.new
+      unless @wbs_activity.nil?
+        @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-      @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+          guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+          guw_output_test = Guw::GuwOutput.where(name: "Assiette Test", guw_model_id: @guw_model.id).first
 
-        guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
-        guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
+          mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
-        mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+          guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+          guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
 
-        guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
-        guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+          corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
 
-        corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+          final_formula = corresponding_ratio_elt.formula
+                              .gsub("RTU", guw_output_effort_value.to_s)
+                              .gsub("TEST", guw_output_test_value.to_s)
+                              .gsub('%', ' * 0.01 ')
 
-        final_formula = corresponding_ratio_elt.formula
-                            .gsub("RTU", guw_output_effort_value.to_s)
-                            .gsub("TEST", guw_output_test_value.to_s)
-                            .gsub('%', ' * 0.01 ')
+          begin
+            value = calculator.evaluate(final_formula).to_f.round(3)
+          rescue
+            value = 0
+          end
 
-        begin
-          value = calculator.evaluate(final_formula).to_f.round(3)
-        rescue
-          value = 0
+          value_cost = value * mp_ratio_element.tjm.to_f
+
+          tjm_array << mp_ratio_element.tjm.to_f
+
+          worksheet.add_cell(ind, kk + ii, value.round(3))
+          worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+          ii = ii + 2
         end
 
-        value_cost = value * mp_ratio_element.tjm.to_f
-
-        tjm_array << mp_ratio_element.tjm.to_f
-
-        worksheet.add_cell(ind, kk + ii, value.round(3))
-        worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
-        ii = ii + 2
-      end
-
-      unless tjm_array.empty?
-        worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
+        unless tjm_array.empty?
+          worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
+        end
       end
 
     end
@@ -1876,7 +1884,7 @@ class Guw::GuwModelsController < ApplicationController
 
     worksheet.change_row_bold(0,true)
 
-    jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+    jj = 21 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 

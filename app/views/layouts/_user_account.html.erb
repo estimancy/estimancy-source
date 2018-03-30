@@ -9,7 +9,7 @@
   <li class="dropdown">
     <% begin %>
       <% if @project %>
-        <a href="<%= main_app.dashboard_path(@project) %>" title="<%= I18n.t(:Current_estimate) %>">
+        <a href="<%= main_app.dashboard_path(@project, organization_id: @current_organization.id, from_current_dashboard: true) %>" title="<%= I18n.t(:Current_estimate) %>">
           <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
         </a>
       <% else %>

@@ -58,7 +58,7 @@ module ViewsWidgetsHelper
         if result_value.nan?
           '-'
         else
-          result_value.to_s + " #{view_widget.kpi_unit.to_s}"
+          "#{ActionController::Base.helpers.number_with_precision(result_value.to_f.to_f, separator: ',', delimiter: ' ', precision: current_user.number_precision.nil? ? 2 : current_user.number_precision, locale: (current_user.language.locale rescue "fr"))} #{view_widget.kpi_unit.to_s}"
         end
       else
         '-'
@@ -98,15 +98,15 @@ module ViewsWidgetsHelper
       formula = formula.gsub("E", e_value)
     end
 
-    begin
-      if correct_syntax?(formula)
-        eval(formula).round(current_user.number_precision).to_s
-      else
-        '-'
-      end
-    rescue
-      '-'
-    end
+    # begin
+    #   if correct_syntax?(formula)
+    #     eval(formula).round(current_user.number_precision).to_s
+    #   else
+    #     '-'
+    #   end
+    # rescue
+    #   '-'
+    # end
   end
 
   def get_ev_value(ev_id, current_component_id, view_widget_id=nil)

@@ -198,7 +198,7 @@
                 <% root_effort_per_phase = nil %>
                 <td style="text-align: left">
                   <br />
-                  <strong><%= mp_ratio_element_root.name_to_show %><%#= wbs_activity_elt.name %></strong>
+                  <strong><%= wbs_activity_elt.name %>  <%#= mp_ratio_element_root.name_to_show rescue nil %></strong>
                 </td>
                 <% if project_organization_profiles.length > 0 %>
                     <% project_organization_profiles.each do |profile| %>

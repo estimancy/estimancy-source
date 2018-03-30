@@ -7,6 +7,14 @@ class Provider < ActiveRecord::Base
   has_many :projects
   has_many :organization_estimations
 
+  amoeba do
+    enable
+    exclude_association [:projects, :organization_estimations]
+    customize(lambda { |original_provider, new_provider|
+                new_provider.copy_id = original_provider.id
+              })
+  end
+
   #Override
   def to_s
     self.nil? ? '' : self.name

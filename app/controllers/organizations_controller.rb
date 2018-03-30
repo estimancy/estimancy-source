@@ -130,6 +130,7 @@ class OrganizationsController < ApplicationController
 
   def import_project_areas
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -156,6 +157,7 @@ class OrganizationsController < ApplicationController
 
   def import_project_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -182,6 +184,7 @@ class OrganizationsController < ApplicationController
 
   def import_platform_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -208,6 +211,7 @@ class OrganizationsController < ApplicationController
 
   def import_acquisition_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -233,12 +237,11 @@ class OrganizationsController < ApplicationController
   end
 
   def import_project_profile
-    p "rentre"
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     tab_warning_messages = ""
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
-      p "aaa"
       workbook = RubyXL::Parser.parse(params[:file].path)
       tab = workbook[0].extract_data
 
@@ -250,15 +253,12 @@ class OrganizationsController < ApplicationController
             tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
           else
             new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2], organization_id: @organization.id)
-            p "bb"
             unless new_profile.save
               tab_error << index + 1
-              p "cc"
             end
           end
         elsif row[0].nil?
           tab_error << index + 1
-          p "dd"
         end
       end
     else
@@ -275,6 +275,7 @@ class OrganizationsController < ApplicationController
   # Import Organization's Providers
   def import_providers
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -301,6 +302,7 @@ class OrganizationsController < ApplicationController
 
   def export_project_areas
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_project_area = @organization.project_areas
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -316,6 +318,7 @@ class OrganizationsController < ApplicationController
 
   def export_acquisition_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_acquisition_categories = @organization.acquisition_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -331,6 +334,7 @@ class OrganizationsController < ApplicationController
 
   def export_platform_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_platform_categories = @organization.platform_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -346,6 +350,7 @@ class OrganizationsController < ApplicationController
 
   def export_project_categories
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_project_categories = @organization.project_categories
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -361,6 +366,7 @@ class OrganizationsController < ApplicationController
 
   def export_providers
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_providers = @organization.providers
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -374,6 +380,7 @@ class OrganizationsController < ApplicationController
 
   def polyval_export
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     case params[:MYonglet]
       when "ProjectCategory"
         polyval_var = ProjectCategory.where(organization_id: @organization.id)
@@ -406,6 +413,7 @@ class OrganizationsController < ApplicationController
 
   def import_appli
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
 
     if params[:file].nil?
@@ -437,6 +445,7 @@ class OrganizationsController < ApplicationController
 
   def export_appli
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_appli = @organization.applications
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -450,6 +459,7 @@ class OrganizationsController < ApplicationController
 
   def import_groups
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
@@ -477,6 +487,7 @@ class OrganizationsController < ApplicationController
 
   def export_groups
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     organization_groups = @organization.groups
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
@@ -728,93 +739,219 @@ class OrganizationsController < ApplicationController
               worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
             end
 
+          end
+
+        end
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}_DONNEES_#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+
+  end
+
+  def generate_report_excel_detail
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook.worksheets[0]
+    ind = 0
+
+    @current_organization.projects.each do |project|
+
+      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
+
+      @guw_model = module_project.guw_model
+      @wbs_activity_module_project = module_project.nexts.first
+      unless @wbs_activity_module_project.nil?
+        @wbs_activity = @wbs_activity_module_project.wbs_activity
+      end
+
+      @component = current_component
+      @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
+                                                    guw_model_id: @guw_model)
+
+      hash = @guw_model.orders
+      hash.delete("Critères")
+      hash.delete("Coeff. de Complexité")
+
+      # @guw_unit_of_works.each do |i|
+      #   if i.nil?
+      #     i.destroy
+      #   end
+      # end
+
+      header = [
+          "Nom du CDS",
+          "Nom du fournisseur",
+          "Nom de l'application",
+          "Numéro de devis",
+          "Numéro de demande",
+          "Statut du devis",
+          "Service",
+          "Prestation",
+          "Localisation",
+          I18n.t(:estimation),
+          I18n.t(:version_number),
+          I18n.t(:group),
+          I18n.t(:selected),
+          I18n.t(:name),
+          "Type d'UO",
+          I18n.t(:description),
+          I18n.t(:quantity),
+          I18n.t(:tracability),
+          I18n.t(:cotation),
+          "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } +
+            @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten +
+            (@wbs_activity.nil? ? [] : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) +
+            ["TJM Moyen"]
+
+      header.each_with_index do |val, index|
+        worksheet.add_cell(0, index, val)
+      end
+
+      worksheet.change_row_bold(0,true)
+
+      jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+
+      @guw_unit_of_works.each_with_index do |guow, i|
+
+        ind = ind + 1
+
+        if guow.off_line
+          cplx = "HSAT"
+        elsif guow.off_line_uo
+          cplx = "HSUO"
+        elsif guow.guw_complexity.nil?
+          cplx = ""
+        else
+          cplx = guow.guw_complexity.name
+        end
+
+        worksheet.add_cell(ind, 0, project.organization)
+        worksheet.add_cell(ind, 1, "Fournisseur")
+        worksheet.add_cell(ind, 2, "Demandeur")
+        worksheet.add_cell(ind, 3, project.application)
+        worksheet.add_cell(ind, 4, project.title)
+        worksheet.add_cell(ind, 5, project.estimation_status)
+        worksheet.add_cell(ind, 6, project.project_area)
+        worksheet.add_cell(ind, 7, project.acquisition_category)
+        worksheet.add_cell(ind, 8, project.platform_category)
+        worksheet.add_cell(ind, 9, project.title)
+        worksheet.add_cell(ind, 10, project.version_number)
+        worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+        worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
+        worksheet.add_cell(ind, 13, guow.name)
+        worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+        worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+        worksheet.add_cell(ind, 16, guow.quantity)
+        worksheet.add_cell(ind, 17, guow.tracking)
+        worksheet.add_cell(ind, 18, cplx)
+        worksheet.add_cell(ind, 19, guow.intermediate_weight)
+
+        hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
+          if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+            guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+            unless guw_coefficient.nil?
+              unless guw_coefficient.guw_coefficient_elements.empty?
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                  guw_coefficient_id: guw_coefficient.id,
+                                                                  module_project_id: module_project.id).first
+
+                if guw_coefficient.coefficient_type == "Pourcentage"
+                  worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                elsif guw_coefficient.coefficient_type == "Coefficient"
+                  worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                else
+                  worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                end
+              end
+            end
+          elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+            guw_output = Guw::GuwOutput.where(name: i[0],
+                                              guw_model_id: @guw_model.id).first
+            unless guow.guw_type.nil?
+              unless guw_output.nil?
+                v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+                worksheet.add_cell(ind, 20 + j, v.to_s)
+              end
+            end
+          end
+        end
+
+        ii = 0
+        @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
+          guw_type = guow.guw_type
+          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+                                                    guw_attribute_id: guw_attribute.id,
+                                                    guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+
+          unless guowa.nil?
+            gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                              guw_attribute_id: guowa.guw_attribute_id).first
+            worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+            worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
+          else
+            p "GUOWA is nil"
+          end
+          ii = ii + 2
+        end
+
+        ii = 0
+        @guw_model.guw_attributes.each do |guw_attribute|
+          worksheet.add_cell(0, jj + ii, guw_attribute.name)
+          worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+          ii = ii + 2
+        end
+
+        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+        @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+        unless @wbs_activity_module_project.nil?
+          @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
+          @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
+
+          tjm_array = []
+
+          calculator = Dentaku::Calculator.new
+
+          @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+
+            guw_output_effort = Guw::GuwOutput.where(name: "UC Dév. Dg", guw_model_id: @guw_model.id).first
+            guw_output_test = Guw::GuwOutput.where(name: "UC Test Dg", guw_model_id: @guw_model.id).first
+
+            mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+
+            guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+            guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+
+            corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+            final_formula = corresponding_ratio_elt.formula
+                                .gsub("RTU", guw_output_effort_value.to_s)
+                                .gsub("TEST", guw_output_test_value.to_s)
+                                .gsub('%', ' * 0.01 ')
+
+            begin
+              value = calculator.evaluate(final_formula).to_f.round(3)
+            rescue
+              value = 0
             end
 
+            value_cost = value * mp_ratio_element.tjm.to_f
+
+            tjm_array << mp_ratio_element.tjm.to_f
+
+            worksheet.add_cell(ind, kk + ii, value.round(3))
+            worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+            ii = ii + 2
+          end
+
+          unless tjm_array.empty?
+            worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
           end
         end
       end
+    end
 
-      send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}_DONNEES_#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
-
-
-      # else
-
-      # workbook = RubyXL::Workbook.new
-      # worksheet = workbook.worksheets[0]
-      # worksheet.sheet_name = 'Data'
-      #
-      # tmp = Array.new
-      # tmp << [
-      #     I18n.t(:estimation),
-      #     I18n.t(:label_project_version),
-      #     I18n.t(:label_product_name),
-      #     I18n.t(:description),
-      #     I18n.t(:start_date),
-      #     I18n.t(:applied_model),
-      #     I18n.t(:project_area),
-      #     I18n.t(:project_category),
-      #     I18n.t(:acquisition_category),
-      #     I18n.t(:platform_category),
-      #     I18n.t(:state),
-      #     I18n.t(:creator),
-      # ] + @organization.fields.map(&:name)
-      #
-      # @projects.each do |project|
-      #   array_project = Array.new
-      #   array_value = Array.new
-      #
-      #   if can_show_estimation?(project) || can_see_estimation?(project)
-      #     array_project << [
-      #         project.title,
-      #         project.version_number,
-      #         (project.application.nil? ? project.application_name : project.application.name),
-      #         "#{Nokogiri::HTML.parse(ActionView::Base.full_sanitizer.sanitize(project.description)).text.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, '')}",
-      #         I18n.l(project.start_date),
-      #         project.original_model,
-      #         project.project_area,
-      #         project.project_category,
-      #         project.acquisition_category,
-      #         project.platform_category,
-      #         project.estimation_status,
-      #         project.creator
-      #     ]
-      #
-      #     @organization.fields.each do |field|
-      #       pf = ProjectField.where(field_id: field.id, project_id: project.id).last
-      #       if pf.nil?
-      #         array_value << ''
-      #       else
-      #         array_value << (pf.value.to_f / field.coefficient.to_f)
-      #       end
-      #     end
-      #   end
-      #
-      #   tmp << (array_project + array_value).flatten(1)
-      # end
-      #
-      # tmp2 = []
-      # tmp.map do |i|
-      #   if !i.empty?
-      #     tmp2 << i
-      #   end
-      # end
-      #
-      # tmp2.each_with_index do |r, i|
-      #   tmp2[i].each_with_index do |r, j|
-      #     if is_number?(tmp2[i][j])
-      #       unless tmp2[i][j] == 0 || j == 1
-      #         worksheet.add_cell(i, j, tmp2[i][j].to_f)#.set_number_format('.##')
-      #       else
-      #         worksheet.add_cell(i, j, tmp2[i][j])
-      #       end
-      #     else
-      #       worksheet.add_cell(i, j, tmp2[i][j])
-      #     end
-      #   end
-      # end
-      #
-      # worksheet.change_row_bold(0 , true)
-    # end
+    send_data(workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def report
@@ -886,7 +1023,6 @@ class OrganizationsController < ApplicationController
 
   def module_estimation
     @organization = Organization.find(params[:organization_id])
-
     check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
@@ -1683,7 +1819,7 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    #begin
+    begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -1790,6 +1926,16 @@ class OrganizationsController < ApplicationController
                 end
               end
             end
+
+            # Copie des authorisations (Permissions sur l'organisation / Permissions globales / Permissions sur les modules)
+            organization_image.groups.each do |group|
+              new_group = new_organization.groups.where(copy_id: group.id).first
+              unless new_group.nil?
+                new_group.permissions = group.permissions
+                new_group.save
+              end
+            end
+
 
             OrganizationsUsers.where(user_id: current_user.id, organization_id: new_organization.id).first_or_create!
 
@@ -1931,6 +2077,11 @@ class OrganizationsController < ApplicationController
                 project.acquisition_category_id = new_acquisition_category.id
               end
 
+              new_provider = new_organization.providers.where(copy_id: project.provider_id).first
+              unless new_provider.nil?
+                project.provider_id = new_provider.id
+              end
+
               project.save
 
               unless project.original_model_id.nil?
@@ -2032,6 +2183,7 @@ class OrganizationsController < ApplicationController
       end
 
       respond_to do |format|
+        flash[:notice] = "Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation."
         format.html { redirect_to organizationals_params_path and return }
         #format.js { render :js => "window.location.replace('/organizationals_params');"}
         ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
@@ -2042,22 +2194,23 @@ class OrganizationsController < ApplicationController
         ##format.js { render 'layouts/flashes' }
       end
 
-    # rescue
-    #   flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
-    #   respond_to do |format|
-    #     format.html { redirect_to organizationals_params_path and return }
-    #     format.js { render :js => "window.location.replace('/organizationals_params');"}
-    #   end
-    # end
+    rescue
+      organization_image.update_attribute(:copy_in_progress, false)
+
+      flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
+      respond_to do |format|
+        format.html { redirect_to organizationals_params_path and return }
+        format.js { render :js => "window.location.replace('/organizationals_params');"}
+      end
+    end
 
   end
 
   def new
     authorize! :create_organizations, Organization
-
+    @organization = Organization.new
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
-    @organization = Organization.new
     @groups = @organization.groups
   end
 
@@ -2067,6 +2220,8 @@ class OrganizationsController < ApplicationController
 
     set_page_title I18n.t(:organizations)
     @organization = Organization.find(params[:id])
+    @current_organization = @organization
+    check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
 
@@ -2090,10 +2245,12 @@ class OrganizationsController < ApplicationController
   def create
     authorize! :create_organizations, Organization
 
+    @organization = Organization.new(params[:organization])
+
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
 
-    @organization = Organization.new(params[:organization])
+    check_if_organization_is_image(@organization)
 
     # Organization's projects selected columns
     @organization.project_selected_columns = Project.default_selected_columns
@@ -2103,6 +2260,8 @@ class OrganizationsController < ApplicationController
 
     #A la sauvegarde, on crée des sous traitants
     if @organization.save
+
+      @current_organization = @organization
 
       # Add admin and user groups
       admin_group = Group.create(name: "*USER", organization_id: @organization.id, description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs")
@@ -2136,6 +2295,8 @@ class OrganizationsController < ApplicationController
     authorize! :edit_organizations, Organization
 
     @organization = Organization.find(params[:id])
+    check_if_organization_is_image(@organization)
+    @current_organization = @organization
 
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
@@ -2162,6 +2323,7 @@ class OrganizationsController < ApplicationController
 
   def confirm_organization_deletion
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     authorize! :manage, Organization
   end
 
@@ -2169,6 +2331,8 @@ class OrganizationsController < ApplicationController
     authorize! :manage, Organization
 
     @organization = Organization.find(params[:id])
+    check_if_organization_is_image(@organization)
+
     @organization_id = @organization.id
 
     case params[:commit]
@@ -2203,7 +2367,11 @@ class OrganizationsController < ApplicationController
 
   def organizationals_params
     set_page_title I18n.t(:Organizational_Parameters)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    if @current_organization
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+    else
+      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+    end
 
     if current_user.super_admin?
       @organizations = Organization.all
@@ -2220,6 +2388,7 @@ class OrganizationsController < ApplicationController
 
   def export_user
     @organization = Organization.find(params[:organization_id])
+    check_if_organization_is_image(@organization)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
     first_line = [I18n.t(:first_name_attribute), I18n.t(:last_name_attribute), I18n.t(:initials_attribute),I18n.t(:email_attribute), I18n.t(:login_name_or_email), I18n.t(:authentication),I18n.t(:description), I18n.t(:label_language), I18n.t(:locked_at),I18n.t(:groups)]
@@ -2497,7 +2666,7 @@ class OrganizationsController < ApplicationController
 
   private
   def check_if_organization_is_image(organization)
-    if organization.is_image_organization == true
+    if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
       redirect_to("/organizationals_params",
                   flash: {
                       error: "Vous ne pouvez pas accéder aux estimations d'une organization image"

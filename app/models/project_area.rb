@@ -36,7 +36,11 @@ class ProjectArea < ActiveRecord::Base
   amoeba do
     enable
     exclude_association [:projects]
+    customize(lambda { |original_project_area, new_project_area|
+                        new_project_area.copy_id = original_project_area.id
+                    })
   end
+
 
   #Override
   def to_s
