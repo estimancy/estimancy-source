@@ -2152,11 +2152,12 @@ public
     @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
     generate_automatique_title = false
+    @user = current_user
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: @user.name)} \r\n"
     new_prj.ancestry = nil
-    new_prj.creator_id = current_user.id
+    new_prj.creator_id = @user.id
     if params[:action_name] == "duplication_model"
       new_prj.is_model = true
     else
@@ -2293,8 +2294,7 @@ public
         old_prj.applications.each do |application|
           # Application.where(name: application.name, organization_id: @organization.id).first
           app = hash_apps[application.name]
-          ap = ApplicationsProjects.create(application_id: app.id,
-                                           project_id: new_prj.id)
+          ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
         # For ModuleProject associations

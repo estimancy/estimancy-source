@@ -1649,7 +1649,7 @@ frsncf_amoa_infra:
   trackings_of: "Traçabilité de %{parameter}"
   Description_and_trackings_of: "Description et traçabilité de %{parameter}"
   comments: "Remarques"
-  uw_name: "Nom de l'unité d'oeuvre"
+  uw_name: "Nom du composant ou service"
   Opération: "Opération"
   uw_groups: "Groupe d'UO"
   attribute_of: "Attributs de %{parameter}"
