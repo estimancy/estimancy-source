@@ -1711,9 +1711,9 @@ fr1:
   module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
   headband_title: "Titre à afficher en haut du bandeau"
 
-  number_of_uw_lines: "Nombre de lignes de UO."
-  number_of_uw_modifies_lines: "Nombre de lignes de UO. Modif."
-  number_of_uw_selected_lines: "Nombre de lignes de UO. Sélect."
+  number_of_uw_lines: "Nombre de lignes"
+  number_of_uw_modifies_lines: "Nombre de lignes Modif."
+  number_of_uw_selected_lines: "Nombre de lignes Sélect."
   value_not_taken_in_account: "Valeur non prise en compte"
 
   #Provider / fournisseur

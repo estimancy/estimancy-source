@@ -2069,9 +2069,9 @@ frsncf:
   module_instance_name_already_exists: "Une instance avec le même nom existe déjà"
   headband_title: "Titre à afficher en haut du bandeau"
 
-  number_of_uw_lines: "Nombre de lignes de Composants Fonctionnels"
-  number_of_uw_modifies_lines: "Nombre de lignes de Composants Fonctionnels Modif."
-  number_of_uw_selected: "Nombre de lignes de Composants Fonctionnels Sélect."
+  number_of_uw_lines: "Nombre de lignes"
+  number_of_uw_modifies_lines: "Nombre de lignes Modif."
+  number_of_uw_selected: "Nombre de lignes Sélect."
   value_not_taken_in_account: "Valeur non prise en compte"
 
   #Provider / fournisseur
