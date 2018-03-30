@@ -299,8 +299,6 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.boolean  "is_new_status"
     t.text     "transaction_id"
     t.boolean  "create_new_version_when_changing_status"
-    t.string   "when_create_new_version"
-    t.boolean  "automatic_change_old_versions"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -1186,29 +1184,29 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.text     "description"
     t.float    "ratio_value"
     t.float    "tjm"
-    t.decimal  "theoretical_effort_probable",    :precision => 20, :scale => 6
-    t.decimal  "theoretical_cost_probable",      :precision => 20, :scale => 6
-    t.decimal  "retained_effort_probable",       :precision => 20, :scale => 6
-    t.decimal  "retained_cost_probable",         :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_probable",    :precision => 25, :scale => 10
+    t.decimal  "theoretical_cost_probable",      :precision => 25, :scale => 10
+    t.decimal  "retained_effort_probable",       :precision => 25, :scale => 10
+    t.decimal  "retained_cost_probable",         :precision => 25, :scale => 10
     t.text     "comments"
-    t.decimal  "theoretical_effort_low",         :precision => 20, :scale => 6
-    t.decimal  "theoretical_effort_high",        :precision => 20, :scale => 6
-    t.decimal  "theoretical_effort_most_likely", :precision => 20, :scale => 6
-    t.decimal  "theoretical_cost_low",           :precision => 20, :scale => 6
-    t.decimal  "theoretical_cost_high",          :precision => 20, :scale => 6
-    t.decimal  "theoretical_cost_most_likely",   :precision => 20, :scale => 6
-    t.decimal  "retained_effort_low",            :precision => 20, :scale => 6
-    t.decimal  "retained_effort_high",           :precision => 20, :scale => 6
-    t.decimal  "retained_effort_most_likely",    :precision => 20, :scale => 6
-    t.decimal  "retained_cost_low",              :precision => 20, :scale => 6
-    t.decimal  "retained_cost_high",             :precision => 20, :scale => 6
-    t.decimal  "retained_cost_most_likely",      :precision => 20, :scale => 6
+    t.decimal  "theoretical_effort_low",         :precision => 25, :scale => 10
+    t.decimal  "theoretical_effort_high",        :precision => 25, :scale => 10
+    t.decimal  "theoretical_effort_most_likely", :precision => 25, :scale => 10
+    t.decimal  "theoretical_cost_low",           :precision => 25, :scale => 10
+    t.decimal  "theoretical_cost_high",          :precision => 25, :scale => 10
+    t.decimal  "theoretical_cost_most_likely",   :precision => 25, :scale => 10
+    t.decimal  "retained_effort_low",            :precision => 25, :scale => 10
+    t.decimal  "retained_effort_high",           :precision => 25, :scale => 10
+    t.decimal  "retained_effort_most_likely",    :precision => 25, :scale => 10
+    t.decimal  "retained_cost_low",              :precision => 25, :scale => 10
+    t.decimal  "retained_cost_high",             :precision => 25, :scale => 10
+    t.decimal  "retained_cost_most_likely",      :precision => 25, :scale => 10
     t.integer  "copy_id"
     t.float    "position"
     t.boolean  "flagged"
     t.boolean  "selected"
-    t.datetime "created_at",                                                    :null => false
-    t.datetime "updated_at",                                                    :null => false
+    t.datetime "created_at",                                                     :null => false
+    t.datetime "updated_at",                                                     :null => false
     t.boolean  "is_optional"
     t.string   "ancestry"
     t.string   "phase_short_name"
