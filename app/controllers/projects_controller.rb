@@ -2235,7 +2235,7 @@ public
 
 
     # Debut transaction
-    ActiveRecord::Base.transaction do
+    # ActiveRecord::Base.transaction do
 
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
@@ -2269,13 +2269,14 @@ public
 
         # For PBS
         new_prj_components = pe_wbs_product.pbs_project_elements
+        new_prj_application = new_prj.application
         new_prj_components.each do |new_c|
           if new_c.is_root == true
             if !params[:create_project_from_template].nil?
-              if new_prj.application.nil?
+              if new_prj_application.nil?
                 new_c.name = new_prj.application_name
               else
-                new_c.name = new_prj.application.name
+                new_c.name = new_prj_application.name
               end
               new_c.save
             end
@@ -2390,9 +2391,17 @@ public
           new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
           old_prj_pbs_project_elements = old_prj.pbs_project_elements
           new_mp_estimation_values = new_mp.estimation_values
+          hash_nmpevs = {}
           ["input", "output"].each do |io|
+
+            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: io).each do |nmpev|
+              hash_nmpevs["#{nmpev.id}_#{io}"] = nmpev
+            end
+
             new_mp_pemodule_pe_attributes.each do |attr|
-              ev = new_mp_estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+
+              ev = hash_nmpevs["#{attr.id}_#{io}"]
+
               unless ev.nil?
                 new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
                 old_prj_pbs_project_elements.each do |old_component|
@@ -2453,7 +2462,7 @@ public
           redirect_to organization_estimations_path(@current_organization)
         end
       end
-    end   # Fin transaction
+    # end   # Fin transaction
   end
 
 
