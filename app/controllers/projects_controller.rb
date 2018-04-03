@@ -2029,10 +2029,15 @@ public
   def update_views_and_widgets(new_prj, old_mp, new_mp)
     #For initialization module level
     ###if old_mp.pemodule.alias == Projestimate::Application::INITIALIZATION
+
+      new_prj_module_projects = new_prj.module_projects
       #We have to copy all the selected view's widgets in a new view for the current module_project
       if old_mp.view
         #Copy the views and widgets for the new project
-        new_view = View.new(organization_id: new_prj.organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
+        new_view = View.new(organization_id: new_prj.organization_id,
+                            pemodule_id: new_mp.pemodule_id ,
+                            name: "#{new_prj} :  #{new_mp}",
+                            description: "")
 
         if new_view.save
           old_mp_view_widgets = old_mp.view.views_widgets.all
@@ -2071,7 +2076,7 @@ public
                     mp_id = old_view_widget.equation[letter].last
 
                     begin
-                      new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                      new_mpr = new_prj_module_projects.where(copy_id: mp_id).first
                       new_mpr_id = new_mpr.id
                       begin
                         new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
@@ -2376,39 +2381,44 @@ public
             end
           end
 
+          new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+          old_prj_pbs_project_elements = old_prj.pbs_project_elements
+          new_mp_estimation_values = new_mp.estimation_values
           ["input", "output"].each do |io|
-            new_mp.pemodule.pe_attributes.each do |attr|
-              old_prj.pbs_project_elements.each do |old_component|
-                new_prj_components.each do |new_component|
-                  ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-                  unless ev.nil?
+            new_mp_pemodule_pe_attributes.each do |attr|
+              ev = new_mp_estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+              unless ev.nil?
+                new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                old_prj_pbs_project_elements.each do |old_component|
+                  new_prj_components.each do |new_component|
+                    # unless ev.nil?
 
-                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+                      # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                      # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                      # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                      # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
 
-                    ev_low = ev.string_data_low.delete(old_component.id)
-                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                    ev_high = ev.string_data_high.delete(old_component.id)
-                    ev_probable = ev.string_data_probable.delete(old_component.id)
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
 
-                    ev.string_data_low[new_component.id.to_i] = ev_low
-                    ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                    ev.string_data_high[new_component.id.to_i] = ev_high
-                    ev.string_data_probable[new_component.id.to_i] = ev_probable
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
 
-                    # update ev attribute links
-                    unless ev.estimation_value_id.nil?
-                      project_id = new_prj.id
-                      new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
-                      new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
-                      if new_ev
-                        ev.estimation_value_id = new_ev.id
+                      # update ev attribute links
+                      unless ev.estimation_value_id.nil?
+                        project_id = new_prj.id
+                        new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                        if new_ev
+                          ev.estimation_value_id = new_ev.id
+                        end
                       end
-                    end
 
-                    ev.save
+                      ev.save
+                    # end
                   end
                 end
               end
