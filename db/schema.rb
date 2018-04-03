@@ -27,12 +27,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "acquisition_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -44,15 +44,24 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.datetime "updated_at"
   end
 
+  create_table "activity_profiles", :force => true do |t|
+    t.integer  "project_id"
+    t.integer  "wbs_project_element_id"
+    t.integer  "organization_profile_id"
+    t.float    "ratio_percentage"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
   create_table "admin_settings", :force => true do |t|
     t.string   "key"
     t.text     "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description"
     t.string   "category"
   end
@@ -152,6 +161,8 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "attribute_modules", :force => true do |t|
     t.integer  "pe_attribute_id"
     t.integer  "pemodule_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_mandatory",        :default => false
     t.string   "in_out"
     t.text     "description"
@@ -165,8 +176,6 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "display_order"
     t.integer  "guw_model_id"
     t.integer  "operation_model_id"
@@ -207,12 +216,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "port"
     t.string   "base_dn"
     t.string   "user_name_attribute"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
     t.boolean  "on_the_fly_user_creation",     :default => false
     t.string   "ldap_bind_dn"
     t.string   "ldap_bind_encrypted_password"
@@ -225,6 +234,38 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "encryption"
   end
 
+  create_table "autorization_log_events", :force => true do |t|
+    t.integer  "event_organization_id"
+    t.integer  "author_id"
+    t.string   "item_type"
+    t.integer  "item_id"
+    t.string   "association_class_name"
+    t.string   "event"
+    t.text     "object"
+    t.string   "object_class_name"
+    t.datetime "created_at"
+    t.text     "transaction_id"
+    t.text     "object_changes"
+    t.text     "associations_before_changes"
+    t.text     "associations_after_changes"
+    t.boolean  "is_estimation_permission"
+    t.boolean  "is_model_permission"
+    t.boolean  "is_group_security"
+    t.boolean  "is_security_on_created_from_model"
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.boolean  "is_model"
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.integer  "estimation_status_id"
+    t.integer  "permission_id"
+    t.integer  "project_security_id"
+    t.integer  "project_security_level_id"
+    t.integer  "permissions_project_security_level_id"
+    t.integer  "estimation_status_group_role_id"
+    t.boolean  "from_direct_trigger"
+  end
+
   create_table "currencies", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -233,12 +274,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "iso_code_number"
     t.string   "sign"
     t.float    "conversion_rate"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "estimation_status_group_roles", :force => true do |t|
@@ -248,6 +289,9 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "organization_id"
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "estimation_statuses", :force => true do |t|
@@ -258,10 +302,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "status_color"
     t.boolean  "is_archive_status"
     t.text     "description"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "copy_id"
     t.boolean  "is_new_status"
+    t.text     "transaction_id"
+    t.boolean  "create_new_version_when_changing_status"
   end
 
   create_table "estimation_values", :force => true do |t|
@@ -289,6 +335,17 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
 
   add_index "estimation_values", ["links"], :name => "index_attribute_projects_on_links"
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], :name => "organization_estimation_values"
+
+  create_table "events", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "event_type_id"
+    t.integer  "project_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "expert_judgement_instance_estimates", :force => true do |t|
     t.integer "pbs_project_element_id"
@@ -324,6 +381,17 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   end
 
   add_index "expert_judgement_instances", ["organization_id", "name"], :name => "index_expert_judgement_instances_on_organization_id_and_name", :unique => true
+
+  create_table "factor_translations", :force => true do |t|
+    t.integer  "factor_id"
+    t.string   "locale",     :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.text     "helps"
+  end
+
+  add_index "factor_translations", ["factor_id"], :name => "index_factor_translations_on_factor_id"
+  add_index "factor_translations", ["locale"], :name => "index_factor_translations_on_locale"
 
   create_table "factors", :force => true do |t|
     t.string   "name"
@@ -395,15 +463,13 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   end
 
   create_table "ge_ge_model_factor_descriptions", :force => true do |t|
-    t.integer  "ge_model_id"
-    t.integer  "ge_factor_id"
-    t.string   "factor_alias"
-    t.text     "description"
-    t.integer  "organization_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-    t.integer  "project_id"
-    t.integer  "module_project_id"
+    t.integer "ge_model_id"
+    t.integer "ge_factor_id"
+    t.string  "factor_alias"
+    t.text    "description"
+    t.integer "organization_id"
+    t.integer "project_id"
+    t.integer "module_project_id"
   end
 
   create_table "ge_ge_models", :force => true do |t|
@@ -426,10 +492,10 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "p_calculation_method"
     t.string   "s_calculation_method"
     t.string   "c_calculation_method"
-    t.integer  "input_pe_attribute_id"
-    t.integer  "output_pe_attribute_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "input_pe_attribute_id"
+    t.integer  "output_pe_attribute_id"
     t.string   "ent1_unit"
     t.float    "ent1_unit_coefficient",                   :default => 1.0
     t.string   "ent2_unit"
@@ -464,15 +530,18 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "name"
     t.text     "description"
     t.string   "code_group"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "for_global_permission"
     t.boolean  "for_project_security"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "copy_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "groups_permissions", :force => true do |t|
@@ -480,18 +549,27 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "permission_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "groups_projects", :id => false, :force => true do |t|
     t.integer "group_id"
     t.integer "project_id"
+    t.integer "originator_id"
+    t.integer "event_organization_id"
+    t.text    "transaction_id"
   end
 
-  create_table "groups_users", :id => false, :force => true do |t|
+  create_table "groups_users", :force => true do |t|
     t.integer  "group_id"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "guw_guw_attribute_complexities", :force => true do |t|
@@ -905,6 +983,68 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "display_order", :default => 0
   end
 
+  create_table "guw_unit_of_work_lines", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",           :default => 0,     :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
+    t.integer  "uow_module_project_id",         :default => 0,     :null => false
+    t.integer  "uow_pbs_project_element_id"
+    t.integer  "uow_guw_model_id",              :default => 0,     :null => false
+    t.string   "uow_guw_model_name"
+    t.integer  "guw_uow_group_id"
+    t.string   "guw_uow_group_name"
+    t.boolean  "uow_selected"
+    t.integer  "guw_unit_of_work_id",           :default => 0,     :null => false
+    t.integer  "id",                            :default => 0,     :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.float    "result_low"
+    t.float    "result_most_likely"
+    t.float    "result_high"
+    t.integer  "guw_type_id"
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "guw_complexity_id"
+    t.text     "effort"
+    t.text     "ajusted_size"
+    t.integer  "guw_model_id"
+    t.integer  "module_project_id"
+    t.integer  "pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id"
+    t.integer  "guw_work_unit_id"
+    t.text     "tracking"
+    t.boolean  "off_line"
+    t.boolean  "selected"
+    t.boolean  "flagged"
+    t.integer  "display_order"
+    t.integer  "organization_technology_id"
+    t.boolean  "off_line_uo"
+    t.float    "quantity"
+    t.integer  "guw_weighting_id"
+    t.integer  "guw_factor_id"
+    t.text     "size"
+    t.text     "cost"
+    t.integer  "guw_original_complexity_id"
+    t.boolean  "missing_value",                 :default => false
+    t.float    "intermediate_work_unit_values"
+    t.float    "intermediate_weighting_values"
+    t.float    "intermediate_factor_values"
+    t.float    "work_unit_value"
+    t.float    "weighting_value"
+    t.float    "factor_value"
+    t.float    "intermediate_weight"
+    t.float    "intermediate_percent"
+    t.string   "url"
+    t.text     "cplx_comments"
+    t.integer  "guw_coefficient_element_id"
+    t.integer  "guw_coefficient_id"
+    t.float    "percent"
+    t.text     "ceuw_comments"
+  end
+
   create_table "input_cocomos", :force => true do |t|
     t.integer  "factor_id"
     t.integer  "organization_uow_complexity_id"
@@ -960,6 +1100,24 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
 
   add_index "kb_kb_models", ["organization_id", "name"], :name => "index_kb_kb_models_on_organization_id_and_name", :unique => true
 
+  create_table "labor_categories", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+  end
+
+  add_index "labor_categories", ["record_status_id"], :name => "index_labor_categories_on_record_status_id"
+  add_index "labor_categories", ["reference_id"], :name => "index_labor_categories_on_parent_id"
+  add_index "labor_categories", ["uuid"], :name => "index_labor_categories_on_uuid", :unique => true
+
   create_table "labor_categories_project_areas", :id => false, :force => true do |t|
     t.integer  "labor_category_id"
     t.integer  "project_area_id"
@@ -970,12 +1128,99 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "languages", :force => true do |t|
     t.string   "name"
     t.string   "locale"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+  end
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",                           :default => 0, :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                                :default => 0, :null => false
+    t.string   "project_name"
+    t.integer  "uow_group_module_project_id",                   :default => 0, :null => false
+    t.integer  "uow_group_pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id",                     :default => 0, :null => false
+    t.integer  "number_of_uow_lines",              :limit => 8
+    t.integer  "number_of_uow_selected_lines",     :limit => 8
+    t.integer  "id",                                            :default => 0, :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.integer  "module_project_id"
+    t.datetime "created_at",                                                   :null => false
+    t.datetime "updated_at",                                                   :null => false
+    t.integer  "pbs_project_element_id"
+    t.string   "notes"
+    t.integer  "organization_technology_id"
+  end
+
+  create_table "module_project_guw_unit_of_works", :id => false, :force => true do |t|
+    t.integer  "uow_organization_id",           :default => 0,     :null => false
+    t.string   "organization_name"
+    t.integer  "uow_project_id",                :default => 0,     :null => false
+    t.string   "project_name"
+    t.integer  "uow_module_project_id",         :default => 0,     :null => false
+    t.integer  "uow_pbs_project_element_id"
+    t.integer  "uow_guw_model_id",              :default => 0,     :null => false
+    t.string   "uow_guw_model_name"
+    t.integer  "guw_uow_group_id"
+    t.string   "guw_uow_group_name"
+    t.boolean  "uow_selected"
+    t.integer  "guw_unit_of_work_id",           :default => 0,     :null => false
+    t.integer  "id",                            :default => 0,     :null => false
+    t.integer  "organization_id"
+    t.integer  "project_id"
+    t.string   "name"
+    t.text     "comments"
+    t.float    "result_low"
+    t.float    "result_most_likely"
+    t.float    "result_high"
+    t.integer  "guw_type_id"
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
+    t.integer  "guw_complexity_id"
+    t.text     "effort"
+    t.text     "ajusted_size"
+    t.integer  "guw_model_id"
+    t.integer  "module_project_id"
+    t.integer  "pbs_project_element_id"
+    t.integer  "guw_unit_of_work_group_id"
+    t.integer  "guw_work_unit_id"
+    t.text     "tracking"
+    t.boolean  "off_line"
+    t.boolean  "selected"
+    t.boolean  "flagged"
+    t.integer  "display_order"
+    t.integer  "organization_technology_id"
+    t.boolean  "off_line_uo"
+    t.float    "quantity"
+    t.integer  "guw_weighting_id"
+    t.integer  "guw_factor_id"
+    t.text     "size"
+    t.text     "cost"
+    t.integer  "guw_original_complexity_id"
+    t.boolean  "missing_value",                 :default => false
+    t.float    "intermediate_work_unit_values"
+    t.float    "intermediate_weighting_values"
+    t.float    "intermediate_factor_values"
+    t.float    "work_unit_value"
+    t.float    "weighting_value"
+    t.float    "factor_value"
+    t.float    "intermediate_weight"
+    t.float    "intermediate_percent"
+    t.string   "url"
+    t.text     "cplx_comments"
   end
 
   create_table "module_project_ratio_elements", :force => true do |t|
@@ -1057,10 +1302,10 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "copy_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "guw_model_id"
     t.integer  "view_id"
     t.boolean  "show_results_view",            :default => true
     t.string   "color"
-    t.integer  "guw_model_id"
     t.integer  "ge_model_id"
     t.integer  "expert_judgement_instance_id"
     t.integer  "wbs_activity_id"
@@ -1107,6 +1352,60 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   end
 
   add_index "operation_operation_models", ["organization_id", "name"], :name => "index_operation_operation_models_on_organization_id_and_name", :unique => true
+
+  create_table "organization_estimations", :id => false, :force => true do |t|
+    t.integer  "current_organization_id",               :default => 0,     :null => false
+    t.string   "organization_name"
+    t.datetime "project_created_date"
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
+    t.string   "title"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
+    t.string   "alias"
+    t.string   "ancestry"
+    t.text     "description"
+    t.integer  "estimation_status_id"
+    t.string   "state"
+    t.date     "start_date"
+    t.integer  "organization_id"
+    t.integer  "original_model_id"
+    t.integer  "project_area_id"
+    t.integer  "project_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "acquisition_category_id"
+    t.boolean  "is_model"
+    t.integer  "master_anscestry"
+    t.integer  "creator_id"
+    t.text     "purpose"
+    t.text     "level_of_detail"
+    t.text     "scope"
+    t.integer  "copy_number"
+    t.integer  "copy_id"
+    t.text     "included_wbs_activities"
+    t.boolean  "is_locked"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "status_comment"
+    t.integer  "application_id"
+    t.string   "application_name"
+    t.boolean  "private",                               :default => false
+    t.boolean  "is_historicized"
+  end
+
+  create_table "organization_labor_categories", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "labor_category_id"
+    t.string   "level"
+    t.string   "name"
+    t.text     "description"
+    t.float    "cost_per_hour"
+    t.integer  "base_year"
+    t.integer  "currency_id"
+    t.float    "hour_per_day"
+    t.integer  "days_per_year"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "organization_profiles", :force => true do |t|
     t.integer  "organization_id"
@@ -1203,9 +1502,14 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "automatic_quotation_number",  :default => "0"
   end
 
-  create_table "organizations_users", :id => false, :force => true do |t|
-    t.integer "user_id"
-    t.integer "organization_id"
+  create_table "organizations_users", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "organization_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.datetime "created_at"
+    t.datetime "update_at"
+    t.text     "transaction_id"
   end
 
   create_table "pbs_project_elements", :force => true do |t|
@@ -1238,13 +1542,13 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "attr_type"
     t.text     "options"
     t.text     "aggregation"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
     t.integer  "precision"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "attribute_category_id"
     t.boolean  "single_entry_attribute"
     t.integer  "guw_model_id"
@@ -1268,38 +1572,42 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.text     "description"
     t.string   "with_activities",          :default => "0"
     t.integer  "type_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "compliant_component_type"
     t.boolean  "is_typed"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "permissions", :force => true do |t|
     t.string   "object_associated"
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_permission_project"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "alias"
     t.boolean  "is_master_permission"
     t.string   "category",              :default => "Admin"
     t.string   "object_type"
+    t.text     "transaction_id"
   end
 
-  create_table "permissions_project_security_levels", :id => false, :force => true do |t|
+  create_table "permissions_project_security_levels", :force => true do |t|
     t.integer  "permission_id"
     t.integer  "project_security_level_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "permissions_users", :id => false, :force => true do |t|
@@ -1312,12 +1620,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "platform_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1327,6 +1635,21 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "project_area_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "profile_categories", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.integer  "organization_id"
+    t.string   "uuid"
+    t.integer  "record_status_id"
+    t.string   "custom_value"
+    t.integer  "owner_id"
+    t.text     "change_comment"
+    t.integer  "reference_id"
+    t.string   "reference_uuid"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "profiles", :force => true do |t|
@@ -1344,12 +1667,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "project_areas", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1371,12 +1694,12 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   create_table "project_categories", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
     t.integer  "copy_id"
   end
@@ -1403,18 +1726,24 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.boolean  "is_estimation_permission"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "project_security_levels", :force => true do |t|
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description"
     t.integer  "organization_id"
     t.integer  "copy_id"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   create_table "projects", :force => true do |t|
@@ -1453,9 +1782,13 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "request_number"
     t.boolean  "use_automatic_quotation_number"
     t.string   "business_need"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -1719,6 +2052,8 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "email",                  :default => "",    :null => false
     t.string   "password_hash"
     t.string   "password_salt"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "login_name"
     t.string   "first_name"
     t.string   "last_name"
@@ -1733,8 +2068,6 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "auth_type"
     t.text     "ten_latest_projects"
     t.integer  "organization_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "object_per_page"
     t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
@@ -1759,6 +2092,9 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.boolean  "password_changed"
     t.text     "description"
     t.datetime "subscription_end_date"
+    t.integer  "originator_id"
+    t.integer  "event_organization_id"
+    t.text     "transaction_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
@@ -1776,17 +2112,24 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
   add_index "version_associations", ["version_id"], :name => "index_version_associations_on_version_id"
 
   create_table "versions", :force => true do |t|
-    t.string   "item_type",      :limit => 191,        :null => false
-    t.integer  "item_id",                              :null => false
-    t.string   "event",                                :null => false
+    t.integer  "organization_id"
+    t.boolean  "is_model"
+    t.string   "item_type",                         :limit => 191,        :null => false
+    t.integer  "item_id",                                                 :null => false
+    t.string   "event",                                                   :null => false
     t.string   "whodunnit"
-    t.text     "object",         :limit => 2147483647
+    t.text     "object",                            :limit => 2147483647
     t.datetime "created_at"
     t.integer  "transaction_id"
-    t.text     "object_changes", :limit => 2147483647
+    t.text     "object_changes",                    :limit => 2147483647
+    t.boolean  "is_group_security"
+    t.boolean  "is_user_security"
+    t.boolean  "is_security_on_model"
+    t.boolean  "is_security_on_created_from_model"
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
+  add_index "versions", ["organization_id"], :name => "organization_audit_versions"
   add_index "versions", ["transaction_id"], :name => "index_versions_on_transaction_id"
 
   create_table "views", :force => true do |t|
@@ -1840,6 +2183,8 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "state"
     t.text     "description"
     t.integer  "organization_id"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.integer  "owner_id"
@@ -1848,8 +2193,6 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "reference_uuid"
     t.integer  "copy_number",              :default => 0
     t.integer  "copy_id"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
     t.boolean  "three_points_estimation"
     t.string   "cost_unit"
     t.float    "cost_unit_coefficient"
@@ -1873,17 +2216,17 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.text     "description"
     t.string   "ancestry"
     t.integer  "ancestry_depth",     :default => 0
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
-    t.integer  "copy_id"
     t.string   "dotted_id"
+    t.integer  "copy_id"
     t.boolean  "is_root"
     t.string   "master_ancestry"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
     t.float    "position"
     t.string   "phase_short_name"
     t.boolean  "allow_modif_effort"
@@ -1910,14 +2253,14 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.integer  "wbs_activity_element_id"
     t.float    "ratio_value"
     t.boolean  "simple_reference"
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.boolean  "multiple_references"
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
     t.string   "ancestry"
     t.boolean  "is_optional"
     t.string   "formula"
@@ -1963,14 +2306,14 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.text     "description"
     t.integer  "wbs_activity_id"
     t.boolean  "do_not_show_cost"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
     t.integer  "reference_id"
     t.string   "reference_uuid"
     t.integer  "copy_number",                        :default => 0
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
     t.integer  "copy_id"
     t.boolean  "allow_modify_retained_effort"
     t.boolean  "do_not_show_phases_with_zero_value"
@@ -2019,14 +2362,440 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.string   "alias"
     t.text     "description"
     t.integer  "project_area_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "peicon_id"
     t.string   "custom_value"
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id"
+  end
+
+  # no candidate create_trigger statement could be found, creating an adapter-specific one
+  execute(<<-TRIGGERSQL)
+CREATE TRIGGER user_events AFTER UPDATE ON `users`
+FOR EACH ROW
+BEGIN
+          DECLARE old_value varchar(255);
+          DECLARE new_value varchar(255);
+          SET
+            old_value = OLD.id,
+            new_value = NEW.id;
+
+          -- Pour le super_admin
+          IF (OLD.super_admin != NEW.super_admin) THEN
+            INSERT INTO autorization_log_events SET
+              event_organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = CONCAT('{ "super_admin": ', '["', OLD.super_admin, '", "', NEW.super_admin, '"]}'),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.encrypted_password != NEW.encrypted_password) THEN
+            INSERT INTO autorization_log_events SET
+              event_organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = CONCAT('{ "password": ', '["', '...', '", "', 'changement de mot de passe', '"]}'),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+
+          -- Pour le mot de passe
+          IF (OLD.email != NEW.email) THEN
+            INSERT INTO autorization_log_events SET
+              event_organization_id = NEW.event_organization_id,
+              author_id = NEW.originator_id,
+              item_type = 'User',
+              item_id = OLD.id,
+              object_class_name = 'User',
+              event = 'update',
+              object_changes = CONCAT('{ "Email": ', '["', OLD.email, '", "', NEW.email, '"]}'),
+              created_at = UTC_TIMESTAMP() ;
+          END IF;
+        END
+  TRIGGERSQL
+
+  create_trigger("groups_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          author_id = NEW.originator_id,
+          item_type = 'Group',
+          item_id = NEW.id,
+          object_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
+          author_id = NEW.originator_id,
+          item_type = 'ProjectSecurity',
+          item_id = NEW.project_id,
+          project_id = NEW.project_id,
+          group_id = NEW.group_id,
+          user_id = NEW.user_id,
+          project_security_level_id = NEW.project_security_level_id,
+          is_model_permission = NEW.is_model_permission,
+          is_estimation_permission = NEW.is_estimation_permission,
+          is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
+          object_class_name = 'Project',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                                      ' "user_id": ', NEW.user_id,
+                                      ' "is_model_permission": ', NEW.is_model_permission,
+                                      ' "is_estimation_permission": ', NEW.is_estimation_permission,
+                                 '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
+        transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurity',
+        item_id = OLD.project_id,
+        project_id = OLD.project_id,
+        group_id = OLD.group_id,
+        user_id = OLD.user_id,
+        project_security_level_id = OLD.project_security_level_id,
+        is_model_permission = OLD.is_model_permission,
+        is_estimation_permission = OLD.is_estimation_permission,
+        is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
+        object_class_name = 'Project',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+        object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
+                                    ' "group_id": ', OLD.group_id,
+                                    ' "user_id": ', OLD.user_id,
+                                    ' "is_model_permission": ', OLD.is_model_permission,
+                                    ' "is_estimation_permission": ', OLD.is_estimation_permission,
+                          '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = NEW.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'create',
+        object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
+          author_id = NEW.originator_id,
+          item_type = 'EstimationStatusGroupRole',
+          item_id = NEW.estimation_status_id,
+          estimation_status_id = NEW.estimation_status_id,
+          group_id = NEW.group_id,
+          project_security_level_id = NEW.project_security_level_id,
+          object_class_name = 'EstimationStatus',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                               '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        author_id = OLD.originator_id,
+        item_type = 'EstimationStatusGroupRole',
+        item_id = OLD.estimation_status_id,
+        group_id = OLD.group_id,
+        project_security_level_id = OLD.project_security_level_id,
+        object_class_name = 'EstimationStatus',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+          object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                               '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupPermission',
+          item_id = NEW.group_id,
+          group_id = NEW.group_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'Group',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupPermission',
+        item_id = OLD.group_id,
+        group_id = OLD.group_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'Group',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          group_id = NEW.group_id,
+          object_class_name = 'User',
+          association_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupUser',
+        item_id = OLD.user_id,
+        user_id = OLD.user_id,
+        group_id = OLD.group_id,
+        object_class_name = 'User',
+        association_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          organization_id = NEW.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "organization_id": ', NEW.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+          author_id = OLD.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = OLD.user_id,
+          user_id = OLD.user_id,
+          organization_id = OLD.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'delete',
+          object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "organization_id": ', OLD.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+          author_id = NEW.originator_id,
+          item_type = 'PermissionProjectSecurityLevel',
+          item_id = NEW.project_security_level_id,
+          project_security_level_id = NEW.project_security_level_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'ProjectSecurityLevel',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        author_id = OLD.originator_id,
+        item_type = 'PermissionProjectSecurityLevel',
+        item_id = OLD.project_security_level_id,
+        project_security_level_id = OLD.project_security_level_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'ProjectSecurityLevel',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
   end
 
 end
