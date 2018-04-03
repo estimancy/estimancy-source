@@ -2029,81 +2029,29 @@ public
   def update_views_and_widgets(new_prj, old_mp, new_mp)
     #For initialization module level
     ###if old_mp.pemodule.alias == Projestimate::Application::INITIALIZATION
-    #We have to copy all the selected view's widgets in a new view for the current module_project
-    if old_mp.view
-      #Copy the views and widgets for the new project
-      new_view = View.new(organization_id: new_prj.organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
 
-      if new_view.save
-        old_mp_view_widgets = old_mp.view.views_widgets.all
-        old_mp_view_widgets.each do |old_view_widget|
-          new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
-          new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
-          widget_est_val = old_view_widget.estimation_value
-          if old_view_widget.is_kpi_widget || widget_est_val.nil?
-            # Vignette Commentaires et Vignette KPI
-            new_view_widget = ViewsWidget.new(view_id: new_view.id,
-                                              module_project_id: new_view_widget_mp_id,
-                                              name: old_view_widget.name,
-                                              show_name: old_view_widget.show_name,
-                                              show_tjm: old_view_widget.show_tjm,
-                                              is_label_widget: old_view_widget.is_label_widget,
-                                              comment: old_view_widget.comment,
-                                              is_kpi_widget: old_view_widget.is_kpi_widget,
-                                              kpi_unit: old_view_widget.kpi_unit,
-                                              equation: old_view_widget.equation,
-                                              icon_class: old_view_widget.icon_class,
-                                              color: old_view_widget.color,
-                                              show_min_max: old_view_widget.show_min_max,
-                                              widget_type: old_view_widget.widget_type,
-                                              width: old_view_widget.width,
-                                              height: old_view_widget.height,
-                                              position: old_view_widget.position,
-                                              position_x: old_view_widget.position_x,
-                                              position_y: old_view_widget.position_y)
+      new_prj_module_projects = new_prj.module_projects
+      #We have to copy all the selected view's widgets in a new view for the current module_project
+      if old_mp.view
+        #Copy the views and widgets for the new project
+        new_view = View.new(organization_id: new_prj.organization_id,
+                            pemodule_id: new_mp.pemodule_id ,
+                            name: "#{new_prj} :  #{new_mp}",
+                            description: "")
 
-            #Update KPI Widget aquation
-            ["A", "B", "C", "D", "E"].each do |letter|
-              unless old_view_widget.equation[letter].nil?
-
-                new_array = []
-                est_val_id = old_view_widget.equation[letter].first
-                mp_id = old_view_widget.equation[letter].last
-
-                begin
-                  new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
-                  new_mpr_id = new_mpr.id
-                  begin
-                    new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
-                  rescue
-                    new_est_val_id = nil
-                  end
-                rescue
-                  new_mpr_id = nil
-                end
-
-                new_array << new_est_val_id
-                new_array << new_mpr_id
-
-                new_view_widget.equation[letter] = new_array
-              end
-            end
-
-            new_view_widget.save
-          else
-            in_out = widget_est_val.in_out
-            widget_pe_attribute_id = widget_est_val.pe_attribute_id
-            unless new_view_widget_mp.nil?
-              new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
-              estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
-
+        if new_view.save
+          old_mp_view_widgets = old_mp.view.views_widgets.all
+          old_mp_view_widgets.each do |old_view_widget|
+            new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
+            new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
+            widget_est_val = old_view_widget.estimation_value
+            if old_view_widget.is_kpi_widget || widget_est_val.nil?
+              # Vignette Commentaires et Vignette KPI
               new_view_widget = ViewsWidget.new(view_id: new_view.id,
                                                 module_project_id: new_view_widget_mp_id,
-                                                estimation_value_id: estimation_value_id,
                                                 name: old_view_widget.name,
                                                 show_name: old_view_widget.show_name,
                                                 show_tjm: old_view_widget.show_tjm,
-                                                show_wbs_activity_ratio: old_view_widget.show_wbs_activity_ratio,
                                                 is_label_widget: old_view_widget.is_label_widget,
                                                 comment: old_view_widget.comment,
                                                 is_kpi_widget: old_view_widget.is_kpi_widget,
@@ -2113,28 +2061,85 @@ public
                                                 color: old_view_widget.color,
                                                 show_min_max: old_view_widget.show_min_max,
                                                 widget_type: old_view_widget.widget_type,
-                                                use_organization_effort_unit: old_view_widget.use_organization_effort_unit,
                                                 width: old_view_widget.width,
                                                 height: old_view_widget.height,
                                                 position: old_view_widget.position,
                                                 position_x: old_view_widget.position_x,
                                                 position_y: old_view_widget.position_y)
-              if new_view_widget.save
-                #Update the copied project_fields
-                pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
-                unless pf.nil?
-                  pf.views_widget_id = new_view_widget.id
-                  pf.save
+
+                #Update KPI Widget aquation
+                ["A", "B", "C", "D", "E"].each do |letter|
+                  unless old_view_widget.equation[letter].nil?
+
+                    new_array = []
+                    est_val_id = old_view_widget.equation[letter].first
+                    mp_id = old_view_widget.equation[letter].last
+
+                    begin
+                      new_mpr = new_prj_module_projects.where(copy_id: mp_id).first
+                      new_mpr_id = new_mpr.id
+                      begin
+                        new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                      rescue
+                        new_est_val_id = nil
+                      end
+                    rescue
+                      new_mpr_id = nil
+                    end
+
+                    new_array << new_est_val_id
+                    new_array << new_mpr_id
+
+                    new_view_widget.equation[letter] = new_array
+                  end
+                end
+
+                new_view_widget.save
+            else
+              in_out = widget_est_val.in_out
+              widget_pe_attribute_id = widget_est_val.pe_attribute_id
+              unless new_view_widget_mp.nil?
+                new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
+                estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
+
+                new_view_widget = ViewsWidget.new(view_id: new_view.id,
+                                                  module_project_id: new_view_widget_mp_id,
+                                                  estimation_value_id: estimation_value_id,
+                                                  name: old_view_widget.name,
+                                                  show_name: old_view_widget.show_name,
+                                                  show_tjm: old_view_widget.show_tjm,
+                                                  show_wbs_activity_ratio: old_view_widget.show_wbs_activity_ratio,
+                                                  is_label_widget: old_view_widget.is_label_widget,
+                                                  comment: old_view_widget.comment,
+                                                  is_kpi_widget: old_view_widget.is_kpi_widget,
+                                                  kpi_unit: old_view_widget.kpi_unit,
+                                                  equation: old_view_widget.equation,
+                                                  icon_class: old_view_widget.icon_class,
+                                                  color: old_view_widget.color,
+                                                  show_min_max: old_view_widget.show_min_max,
+                                                  widget_type: old_view_widget.widget_type,
+                                                  use_organization_effort_unit: old_view_widget.use_organization_effort_unit,
+                                                  width: old_view_widget.width,
+                                                  height: old_view_widget.height,
+                                                  position: old_view_widget.position,
+                                                  position_x: old_view_widget.position_x,
+                                                  position_y: old_view_widget.position_y)
+                if new_view_widget.save
+                  #Update the copied project_fields
+                  pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
+                  unless pf.nil?
+                    pf.views_widget_id = new_view_widget.id
+                    pf.save
+                  end
                 end
               end
             end
-          end
 
+          end
+          #update the new module_project view
+          new_mp.update_attribute(:view_id, new_view.id)
         end
-        #update the new module_project view
-        new_mp.update_attribute(:view_id, new_view.id)
       end
-    end
     ###end
   end
 
@@ -2387,16 +2392,11 @@ public
           old_prj_pbs_project_elements = old_prj.pbs_project_elements
           new_mp_estimation_values = new_mp.estimation_values
           hash_nmpevs = {}
-
-          new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
-            hash_nmpevs["#{nmpev.id}_#{nmpev.in_out}"] = nmpev
-          end
-
           ["input", "output"].each do |io|
 
-            # new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: io).each do |nmpev|
-            #   hash_nmpevs["#{nmpev.id}_#{io}"] = nmpev
-            # end
+            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: io).each do |nmpev|
+              hash_nmpevs["#{nmpev.id}_#{io}"] = nmpev
+            end
 
             new_mp_pemodule_pe_attributes.each do |attr|
 
