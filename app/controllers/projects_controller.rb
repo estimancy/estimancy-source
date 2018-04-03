@@ -2276,11 +2276,12 @@ public
     @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
     generate_automatique_title = false
+    @user = current_user
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: @user.name)} \r\n"
     new_prj.ancestry = nil
-    new_prj.creator_id = current_user.id
+    new_prj.creator_id = @user.id
     if params[:action_name] == "duplication_model"
       new_prj.is_model = true
     else
@@ -2297,7 +2298,7 @@ public
       new_prj.use_automatic_quotation_number = false
 
       #Update some params with the form input data
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: @user.name)} \r\n"
 
       if params['project']['application_id'].present?
         new_prj.application_id = params['project']['application_id']
@@ -2365,11 +2366,17 @@ public
           creator_securities = new_prj.project_securities
           creator_securities.each do |ps|
             if ps.is_model_permission == true
-              ps.update_attribute(:is_model_permission, false)
-              ps.update_attribute(:is_estimation_permission, true)
+              # Amelioration Creer à partir d'un modele
+              # ps.update_attribute(:is_model_permission, false)
+              # ps.update_attribute(:is_estimation_permission, true)
+              ps.is_model_permission = false
+              ps.is_estimation_permission = true
+
               if ps.user_id == owner.id
-                ps.update_attribute(:user_id, owner.id)
+                #ps.update_attribute(:user_id, owner.id)
+                ps.user_id = owner.id
               end
+              ps.save
             else
               ps.destroy
             end
@@ -2381,13 +2388,14 @@ public
 
         # For PBS
         new_prj_components = pe_wbs_product.pbs_project_elements
+        new_prj_application = new_prj.application
         new_prj_components.each do |new_c|
           if new_c.is_root == true
             if !params[:create_project_from_template].nil?
-              if new_prj.application.nil?
+              if new_prj_application.nil?
                 new_c.name = new_prj.application_name
               else
-                new_c.name = new_prj.application.name
+                new_c.name = new_prj_application.name
               end
               new_c.save
             end
@@ -2411,8 +2419,7 @@ public
         old_prj.applications.each do |application|
           # Application.where(name: application.name, organization_id: @organization.id).first
           app = hash_apps[application.name]
-          ap = ApplicationsProjects.create(application_id: app.id,
-                                           project_id: new_prj.id)
+          ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
         # For ModuleProject associations
@@ -2500,39 +2507,52 @@ public
             end
           end
 
+          new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+          old_prj_pbs_project_elements = old_prj.pbs_project_elements
+          new_mp_estimation_values = new_mp.estimation_values
+          hash_nmpevs = {}
           ["input", "output"].each do |io|
-            new_mp.pemodule.pe_attributes.each do |attr|
-              old_prj.pbs_project_elements.each do |old_component|
-                new_prj_components.each do |new_component|
-                  ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-                  unless ev.nil?
 
-                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: io).each do |nmpev|
+              hash_nmpevs["#{nmpev.id}_#{io}"] = nmpev
+            end
 
-                    ev_low = ev.string_data_low.delete(old_component.id)
-                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                    ev_high = ev.string_data_high.delete(old_component.id)
-                    ev_probable = ev.string_data_probable.delete(old_component.id)
+            new_mp_pemodule_pe_attributes.each do |attr|
 
-                    ev.string_data_low[new_component.id.to_i] = ev_low
-                    ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                    ev.string_data_high[new_component.id.to_i] = ev_high
-                    ev.string_data_probable[new_component.id.to_i] = ev_probable
+              ev = hash_nmpevs["#{attr.id}_#{io}"]
 
-                    # update ev attribute links
-                    unless ev.estimation_value_id.nil?
-                      project_id = new_prj.id
-                      new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
-                      new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
-                      if new_ev
-                        ev.estimation_value_id = new_ev.id
+              unless ev.nil?
+                new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                old_prj_pbs_project_elements.each do |old_component|
+                  new_prj_components.each do |new_component|
+                    # unless ev.nil?
+
+                      # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
+                      # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
+                      # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
+                      # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
+
+                      # update ev attribute links
+                      unless ev.estimation_value_id.nil?
+                        project_id = new_prj.id
+                        new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                        if new_ev
+                          ev.estimation_value_id = new_ev.id
+                        end
                       end
-                    end
 
-                    ev.save
+                      ev.save
+                    # end
                   end
                 end
               end
