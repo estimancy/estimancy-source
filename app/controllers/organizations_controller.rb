@@ -804,7 +804,7 @@ class OrganizationsController < ApplicationController
           ii = ii + 2
         end
 
-        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
         @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
         unless @wbs_activity_module_project.nil?
           @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
