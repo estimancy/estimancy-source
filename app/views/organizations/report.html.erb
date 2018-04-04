@@ -2,6 +2,7 @@
   <ul>
     <li><a href="#tabs-report">Rapport Excel filtré</a></li>
     <li><a href="#tabs-report-all">Rapport Excel détaillé</a></li>
+    <li><a href="#tabs-pdf-all">Rapport PDF détaillé</a></li>
   </ul>
 
   <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
@@ -120,6 +121,47 @@
       </div>
     <% end %>
   </div>
+
+  <div id="tabs-pdf-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <h4>
+      Exporter les devis sous format PDF
+    </h4>
+
+    <div class="row-fluid">
+      <div class="span12">
+        <% @projects = @organization.projects %>
+        <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
+          <div class="modal-body" style="height: inherit;">
+
+            <p>
+              <label>
+                <b>Besoin métier</b>
+              </label>
+              <%= select_tag "", options_for_select(@projects.map(&:business_need).uniq.compact) %>
+            </p>
+
+            <p>
+              <label>
+                <b><%= I18n.t :request_number %></b>
+              </label>
+              <%= select_tag "", options_for_select(@projects.map(&:request_number).uniq.compact) %>
+            </p>
+
+            </p>
+            <label>
+              <b><%= I18n.t :title %></b>
+            </label>
+            <%= text_field_tag :title %>
+            </p>
+          </div>
+
+          <%= submit_tag "Exporter en PDF", :class => 'btn btn-primary' %>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
