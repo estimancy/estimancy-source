@@ -2392,11 +2392,12 @@ public
           old_prj_pbs_project_elements = old_prj.pbs_project_elements
           new_mp_estimation_values = new_mp.estimation_values
           hash_nmpevs = {}
-          ["input", "output"].each do |io|
 
-            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: io).each do |nmpev|
-              hash_nmpevs["#{nmpev.id}_#{io}"] = nmpev
-            end
+          new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
+            hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
+          end
+
+          ["input", "output"].each do |io|
 
             new_mp_pemodule_pe_attributes.each do |attr|
 
@@ -2407,11 +2408,6 @@ public
                 old_prj_pbs_project_elements.each do |old_component|
                   new_prj_components.each do |new_component|
                     # unless ev.nil?
-
-                      # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                      # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                      # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                      # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
 
                       ev_low = ev.string_data_low.delete(old_component.id)
                       ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
