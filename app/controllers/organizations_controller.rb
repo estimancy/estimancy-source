@@ -616,17 +616,18 @@ class OrganizationsController < ApplicationController
 
               mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
-              guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
-              guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
-
-              corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
-
-              final_formula = corresponding_ratio_elt.formula
-                                  .gsub("RTU", guw_output_effort_value.to_s)
-                                  .gsub("TEST", guw_output_test_value.to_s)
-                                  .gsub('%', ' * 0.01 ')
-
               begin
+
+                guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+                guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+                final_formula = corresponding_ratio_elt.formula
+                                    .gsub("RTU", guw_output_effort_value.to_s)
+                                    .gsub("TEST", guw_output_test_value.to_s)
+                                    .gsub('%', ' * 0.01 ')
+
                 value = calculator.evaluate(final_formula).to_f.round(3)
               rescue
                 value = 0
@@ -810,7 +811,7 @@ class OrganizationsController < ApplicationController
           ii = ii + 2
         end
 
-        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
         @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
         unless @wbs_activity_module_project.nil?
           @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
