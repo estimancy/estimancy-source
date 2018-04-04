@@ -2235,7 +2235,7 @@ public
 
 
     # Debut transaction
-    # ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do
 
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
@@ -2458,7 +2458,7 @@ public
           redirect_to organization_estimations_path(@current_organization)
         end
       end
-    # end   # Fin transaction
+    end   # Fin transaction
   end
 
 
