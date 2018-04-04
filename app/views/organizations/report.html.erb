@@ -7,9 +7,9 @@
 
   <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
     <%= form_tag "generate_report_excel_detail", method: "post" do %>
-      <h4>Générer un rapport Excel</h4>
+      <h4>Générer un rapport Excel de tous les devis</h4>
       <p>
-        Les modules de type Taille et WBS seront exportés dans un fichier Excel.
+        Tout les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif.
       </p>
       <br>
       <%= hidden_field_tag "organization_id", params[:organization_id] %>
@@ -20,6 +20,9 @@
   <div id="tabs-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
     <h4>Générer un rapport Excel filtré</h4>
+    <p>
+      Seul les devis sélectionnés seront exportés dans un fichier Excel récapitulatif.
+    </p>
 
     <%= form_tag "generate_report_excel", method: "post" do %>
 
