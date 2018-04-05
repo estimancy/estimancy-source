@@ -150,7 +150,7 @@
 
   <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
   <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-    <div class="float_left <%= @wbs_activity.wbs_activity_ratios.size > 1 ? '' : 'hide_wbs_header_show_only_ratio' %> ">
+    <div class="float_left">
       <span><strong> <%= I18n.t(:change_ratio) %> : </strong></span>
 
       <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
@@ -550,7 +550,6 @@
         }
     }
 
-    $(".hide_wbs_header_show_only_ratio").hide();
 
   function precisionRound(number, precision) {
       var factor = Math.pow(10, precision);
