@@ -1038,7 +1038,7 @@ frsncf:
   notice_unit_of_work_successful_updated: "l'unités d'œuvres à été mise à jour avec succès"
   notice_unit_of_work_successful_created: "l'unités d'œuvres à été créée avec succès"
   notice_unit_of_work_successful_deleted: "l'unités d'œuvres à été supprimée avec succès"
-  new_unit_of_work: "Ajouter un Composant ou Service"
+  new_unit_of_work: "Ajouter un composant ou service"
   organization_abacus: "Abaque"
   text_organization_abacus: "Abaque de l'organisation par technologie"
   notice_subcontractor_successfully_created: "Le sous-traitant a été créé avec succès"
