@@ -400,7 +400,7 @@ module EffortBreakdown
 
       # effort value
       if mp_ratio_element.selected == true
-        effort_value = output_effort_from_formula[:"#{element.phase_short_name.downcase}"]
+        effort_value = output_effort_from_formula[:"#{element.phase_short_name.to_s.downcase}"]
       else
         if theoretical_or_retained == "retained"
           effort_value = nil
@@ -516,7 +516,7 @@ module EffortBreakdown
       effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
-        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+        calculator.store(:"#{ev.pe_attribute.alias.to_s.downcase}" => @input_effort["#{ev.id}"])
       end
 
       # Calculate the module_project_ratio_variable value_percentage
@@ -587,7 +587,7 @@ module EffortBreakdown
                     end
 
                     # Add element short_name in calculator
-                    element_phase_short_name = element.phase_short_name.downcase
+                    element_phase_short_name = element.phase_short_name.to_s.downcase
                     unless element_phase_short_name.nil?
                       if mp_ratio_element.selected == true
                         all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
@@ -605,13 +605,13 @@ module EffortBreakdown
                   child_mp_ratio_element = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
                   if child_mp_ratio_element && child_mp_ratio_element.selected == true
                     if parent_element_formula.blank?
-                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
+                      parent_element_formula = "#{child_mp_ratio_element.wbs_activity_element.phase_short_name.to_s.downcase}"
                     else
-                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name.downcase}"
+                      parent_element_formula += "+ #{child_mp_ratio_element.wbs_activity_element.phase_short_name.to_s.downcase}"
                     end
                   end
                 end
-                all_formula_to_compute[:"#{element.phase_short_name.downcase}"] = parent_element_formula
+                all_formula_to_compute[:"#{element.phase_short_name.to_s.downcase}"] = parent_element_formula
               end
 
             end
@@ -790,7 +790,7 @@ module EffortBreakdown
         effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
         current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
         current_inputs_evs.each do |ev|
-          calculator.store(:"#{ev.pe_attribute.alias.downcase}" => @input_effort["#{ev.id}"])
+          calculator.store(:"#{ev.pe_attribute.alias.to_s.downcase}" => @input_effort["#{ev.id}"])
         end
 
         # Calculate the module_project_ratio_variable value_percentage

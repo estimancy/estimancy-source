@@ -490,7 +490,7 @@ class WbsActivitiesController < ApplicationController
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
         effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient
-        calculator.store(:"#{ev.pe_attribute.alias.downcase}" => effort_value)
+        calculator.store(:"#{ev.pe_attribute.alias.to_s.downcase}" => effort_value)
       end
 
       # Calculate the module_project_ratio_variables value_percentage
@@ -509,7 +509,7 @@ class WbsActivitiesController < ApplicationController
           value_from_percentage = nil
         else
           ###value_from_percentage = calculator.evaluate("#{probable_input_effort_values.to_f} * #{percentage_of_input}")
-          formula_expression = "#{percentage_of_input.downcase}"
+          formula_expression = "#{percentage_of_input.to_s.downcase}"
           begin
             normalized_formula_expression = formula_expression.gsub('%', ' * 0.01 ')
           rescue
@@ -1218,7 +1218,7 @@ class WbsActivitiesController < ApplicationController
                       [I18n.t(:model_description), @wbs_activity.description ],
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
-                      [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header ? 1 : 0 ],
+                      [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header],
                       [I18n.t(:average_rate_wording), @wbs_activity.average_rate_wording ],
                       [I18n.t(:Wording_of_the_module_unit_effort), @wbs_activity.effort_unit],
                       [I18n.t(:Conversion_factor_standard_effort), @wbs_activity.effort_unit_coefficient],

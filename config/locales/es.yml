@@ -1997,4 +1997,8 @@ es:
   show_tjm: "Show TJM"
   only_numeric: "Only numeric values ​​are allowed"
   current_estimation_does_not_exists: "There is no current estimation"
+  show_hide_wbs_header: "Show / Hide WBS header"
+  show_only_ratio: "Show only the ratio selection "
+  hide_all: "Hide WBS header"
+  show_all: "Show WBS header"
 

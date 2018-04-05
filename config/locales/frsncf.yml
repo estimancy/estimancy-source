@@ -2094,4 +2094,8 @@ frsncf:
   show_tjm: "Afficher le TJM (taux moyen)"
   only_numeric: "Seul les valeurs numériques sont autorisées"
   current_estimation_does_not_exists: "Il n'y a pas de devis courant"
+  show_hide_wbs_header: "Afficher / Masquer l'entête de la WBS"
+  show_only_ratio: "Afficher seulement la sélection du ratio"
+  hide_all: "Masquer l'entête de la WBS"
+  show_all: "Afficher l'entête de la WBS"
 
