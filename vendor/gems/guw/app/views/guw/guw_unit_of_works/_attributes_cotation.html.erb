@@ -120,7 +120,8 @@
                   $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
 
                   $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
-                    if ($(this).val().length == 0) {
+                    if (!$.trim($(this).val())) {
+//                    if ($(this).val().length === 0) {
                       if(valu == dv) {
                         $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                       } else {
@@ -152,7 +153,7 @@
                   $('.modal_comments').modal('hide');
 
                   comment_extract = $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30);
-                  if (comment_extract.length == 0) {
+                  if (comment_extract.length === 0) {
                     comment_extract = "...";
                   }
 
@@ -163,7 +164,8 @@
                 };
 
                 $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
-                  if ($(this).val().length == 0) {
+                  if (!$.trim($(this).val())) {
+//                    if ($(this).val().length === 0) {
                     if(valu == dv) {
                       $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                     } else {
