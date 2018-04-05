@@ -2094,7 +2094,15 @@ public
                   end
                 end
 
-                new_view_widget.save
+                if new_view_widget.save
+                  #Update the copied project_fields
+                  pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
+                  unless pf.nil?
+                    pf.views_widget_id = new_view_widget.id
+                    pf.save
+                  end
+                end
+
             else
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
