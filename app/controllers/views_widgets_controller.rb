@@ -248,8 +248,7 @@ class ViewsWidgetsController < ApplicationController
           pf = ProjectField.where(project_id: project.id, field_id: params["field"].to_i).last
 
           if params[:views_widget][:is_kpi_widget].present?
-            #@value = get_kpi_value_without_unit(@views_widget)
-            @value = get_kpi_value(@views_widget)
+            @value = get_kpi_value_without_unit(@views_widget)    #@value = get_kpi_value(@views_widget)
           else
             unless @views_widget.estimation_value.nil?
               if @views_widget.estimation_value.module_project.pemodule.alias == "effort_breakdown"
