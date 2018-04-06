@@ -540,11 +540,17 @@ class Project < ActiveRecord::Base
             end
           end
 
+
+          hash_apps = {}
+          @organization.applications.each do |app|
+            hash_apps[app.name] = app
+          end
+
           #For applications
           old_prj.applications.each do |application|
-            app = Application.where(name: application.name, organization_id: organization.id).first
-            ap = ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
-            ap.save
+            # Application.where(name: application.name, organization_id: @organization.id).first
+            app = hash_apps[application.name]
+            ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
           end
 
           # For ModuleProject associations
