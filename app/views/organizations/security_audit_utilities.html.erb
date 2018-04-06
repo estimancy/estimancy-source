@@ -2,8 +2,6 @@
   <h4><%= I18n.t(:actions_history) %></h4>
 
   <div style="margin: 10px;">
-    <%#= link_to I18n.t('export'), export_to_pdf_security_audit_utilities_path(format: "pdf", organization_id: @organization.id), :class => 'btn', :title => 'Exporter en PDF', target: "_blank" %>
-
     <%= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
         <%#= I18n.t(:filters)%>
         <div class="input row-fluid">
@@ -30,9 +28,14 @@
                 });
             });
         </script>
-
     <% end %>
+
+    <div style="margin-bottom: 50px; margin-top: -40px;">
+      <%= link_to "Supprimer tout l'historique", destroy_all_security_audit_utilities_path,
+                  confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-inverse pull-right" %>
+    </div>
   </div>
+
 
   <ul>
     <li><a href="#tabs-simples_events">Données de base</a></li>

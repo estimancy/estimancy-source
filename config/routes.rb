@@ -288,6 +288,7 @@ Projestimate::Application.routes.draw do
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
   get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities
+  get "destroy_all_security_audit_utilities" => 'organizations#destroy_all_security_audit_utilities', as: :destroy_all_security_audit_utilities
 
   resources :subcontractors
 

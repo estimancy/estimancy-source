@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180301091738) do
+ActiveRecord::Schema.define(:version => 20180330143818) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -2116,7 +2116,7 @@ ActiveRecord::Schema.define(:version => 20180301091738) do
     t.float    "effort_unit_coefficient"
     t.boolean  "enabled_input"
     t.integer  "phases_short_name_number", :default => 0
-    t.boolean  "hide_wbs_header"
+    t.string   "hide_wbs_header"
     t.string   "average_rate_wording"
   end
 

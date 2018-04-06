@@ -114,6 +114,13 @@ class OrganizationsController < ApplicationController
   end
 
 
+  def destroy_all_security_audit_utilities
+    @versions = AutorizationLogEvent.where(event_organization_id: @current_organization.id)
+    @versions.delete_all
+    redirect_to :back
+  end
+
+
   # Fonction d'audit de l'intégrité du Corps commun
   def audit_integrity_common_data
     #@reference_organization = Organization.where(name: "CDS DE REFERENCE").first
