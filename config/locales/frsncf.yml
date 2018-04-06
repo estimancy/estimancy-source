@@ -1276,7 +1276,7 @@ frsncf:
   select_profile_or_fill_text_fields: "Sélectionner un profil ou veuiller remplir les champs de texte ci-dessous"
   projects_states: "États des devis"
   text_user_associated_projects_states: "États des deviss associés (États des deviss auxquels l'utilisateur a accès)"
-  estimations_statuses: "Statuts des deviss"
+  estimations_statuses: "Statuts des devis"
   manage_estimations_statuses_workflow: "Gestion du workflow des statuts des devis"
   manage_estimations_statuses_roles: "Gérer les rôles en fonction du statut du devis"
   new_devis_status: "Créer un nouvel statut de devis"
