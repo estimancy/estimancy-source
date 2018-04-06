@@ -389,7 +389,11 @@
                       <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
                                                                            guw_coefficient_id: @guw_coefficient.id).last %>
                       <td class="center">
-                        <%= ceuw.guw_coefficient_element.name %>
+                        <% begin %>
+                          <%= ceuw.guw_coefficient_element.name %>
+                        <% rescue %>
+                          -
+                        <% end  %>
                       </td>
                     <% end %>
 

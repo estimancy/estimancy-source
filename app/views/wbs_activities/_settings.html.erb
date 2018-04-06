@@ -1,4 +1,4 @@
-<h4 class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
+<h4 class="<%= (@wbs_activity.hide_wbs_header != 'show_all' ? 'hide' : 'show') %>">
   <strong>
     <%= I18n.t(:wbs_activities) %>
   </strong>
@@ -147,6 +147,17 @@
 
 
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
+
+  <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
+  <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+    <div class="float_left">
+      <span><strong> <%= I18n.t(:change_ratio) %> : </strong></span>
+
+      <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                              selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                              readonly: cannot?(:execute_estimation_plan, @project) %>
+    </div> <br>
+  <% end %>
 
   <table id="table_hide_wbs_header" class="table table-bordered">
     <!--<thead class="<%#= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">-->
@@ -319,16 +330,17 @@
         <% end %>
       <% end %>
 
-      <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header == true && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
-        <% if @wbs_activity.hide_wbs_header == true && @wbs_activity.wbs_activity_ratios.size > 1 %>
-            <span><strong> <%= I18n.t(:change_ratio) %> :  </strong></span>
-        <% end %>
+      <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+          <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
+            <% if @wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1 %>
+                <span><strong> <%= I18n.t(:change_ratio) %> :  </strong></span>
+            <% end %>
 
-        <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                       #selected: ( @wbs_activity_ratio.nil? ? wai.wbs_activity_ratio_id : @wbs_activity_ratio.id)),
-                       selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                       readonly: cannot?(:execute_estimation_plan, @project) %>
-      </td>
+            <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                           selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                           readonly: cannot?(:execute_estimation_plan, @project) %>
+          </td>
+      <% end %>
 
       <% if wbs_activity.three_points_estimation? %>
         <!-- Effort Theorique calculé -->
@@ -457,12 +469,8 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span>
-      <%= submit_tag I18n.t(:calculate_button), :disable_with => "Veuillez patienter...", name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
-    </span>
-    <span style="margin-right: 10px">
-      <%= submit_tag I18n.t(:initialize_calculation), :disable_with => "Veuillez patienter...", name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
-    </span>
+    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %></span>
+    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
   <% end %>
 
 <% end %>
@@ -530,7 +538,7 @@
     var hide_wbs_header = "<%= @wbs_activity.hide_wbs_header %>";
     var ratio_hide_wbs_header = "<%= @wbs_activity.wbs_activity_ratios.size > 1 %>";
 
-    if (hide_wbs_header == "true") {
+    if (hide_wbs_header != "show_all") {
         if (ratio_hide_wbs_header == "true") {
             $(".hide_wbs_header").hide();
         } else {
@@ -576,10 +584,10 @@
           var previousValue = $(this).data('val');
           var currentValue = $(this).val();
 
-          console.log("Prev value " + previousValue);
-          console.log("New value " + currentValue);
-          console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
-          console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
+          //console.log("Prev value " + previousValue);
+          //console.log("New value " + currentValue);
+          //console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
+          //console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
 
           if( (parseFloat(currentValue) != parseFloat(previousValue)) ||
               (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10)))) {
@@ -591,7 +599,7 @@
               var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
               var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
 
-              console.log("valeur différente");
+              //console.log("valeur différente");
 
               $.ajax({
                   url: "/update_mp_ratio_element_changed_value",
@@ -611,27 +619,26 @@
       });
 
       var clkBtn = "";
-//      $('input[type="submit"]').click(function(evt) {
-//          clkBtn = evt.target.name;
-//      });
+      $('input[type="submit"]').click(function(evt) {
+          clkBtn = evt.target.name;
+      });
 
-      $("#save_effort_breakdown_form_save").on("submit",function(e) {
+      $("#save_effort_breakdown_form").on("submit",function(e) {
 
           var clicked_button = clkBtn;
           var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
 
           //console.log("debut ");
-          //console.log("comment_required_if_modifiable ="+ comment_required_if_modifiable);
+          //console.log("comment_required_if_modifiable = "+ comment_required_if_modifiable);
 
-          if(comment_required_if_modifiable == "true"){
+          if((comment_required_if_modifiable == "true") || (comment_required_if_modifiable == true)){
               var disable_calculate_button = false;
-
               //console.log("clicked_button = " + clicked_button);
 
               //$("td.flagged").find('span').each(function(i, td_object){
               if(clicked_button == "update_calculation") {
-                  $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
 
+                  $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
                       var mp_ratio_element_id = $(td_object).data('mp_ratio_element');
                       //alert("mp_ratio_element_id = " + mp_ratio_element_id);
                       var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
@@ -641,6 +648,7 @@
                       //console.log("is checked = " + $("selected_phase_"+mp_ratio_element_id).is(':checked'));
 
                       if($("#selected_phase_"+mp_ratio_element_id).is(':checked')){
+
                         if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
                           if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
 
@@ -661,25 +669,25 @@
 
                                   if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
                                       // Get the element comments
-                                      //var comments = $(td_object).data('comments');
                                       var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).text();
                                       //alert(" Comments = " + comments);
                                       //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
 
-                                      if((comments === "") || (comments === "-") || (comments === "_")){
+                                      if((comments === "") || (comments === "-") || (comments === "_") || (comments === "...") || (comments === "---")){
                                           //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
                                           //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
                                           disable_calculate_button = true;
 
-                                          if (theoretical_effort != retained_effort)
+                                          if (theoretical_effort != retained_effort){
                                               $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
                                               $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
+                                          }
 
-                                          if (theoretical_cost != retained_cost)
+                                          if (theoretical_cost != retained_cost) {
                                               $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
                                               $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
-
+                                          }
                                           //return false; //pour arreter la boucle
                                       }
                                   }
