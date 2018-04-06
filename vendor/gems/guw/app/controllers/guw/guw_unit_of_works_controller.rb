@@ -1031,12 +1031,22 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     unless params["comments"].nil?
-      guowa.comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+      comments = params["comments"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_s
+      guowa.comments = comments
     end
 
-    guowa.low = low
-    guowa.most_likely = most_likely
-    guowa.high = high
+    gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
+                                       guw_attribute_id: guowa.guw_attribute_id).first
+    unless gat.nil?
+      if gat.default_value != most_likely && comments.blank?
+        # ignored, on en sauvegarde pas les valeurs
+      else
+        guowa.low = low
+        guowa.most_likely = most_likely
+        guowa.high = high
+      end
+    end
+
     guowa.save
   end
 
@@ -1097,9 +1107,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     probable_value = compute_probable_value(ipl.to_f, ipm.to_f, iph.to_f)[:value] * 100
     guw_unit_of_work.intermediate_percent = probable_value
-    # if guw_unit_of_work.intermediate_weight.nil?
-      guw_unit_of_work.intermediate_weight = probable_value
-    # end
+    guw_unit_of_work.intermediate_weight = probable_value
     guw_unit_of_work.save
 
     result = compute_probable_value(uo_weight_low.to_f, uo_weight_ml.to_f, uo_weight_high.to_f)[:value]
@@ -1182,6 +1190,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.guw_complexity_id = guw_complexity_id
           guw_unit_of_work.off_line_uo = false
           guw_unit_of_work.off_line = false
+        else
+          default_guw_complexity = guw_type.guw_complexities.where(default_value: true).first
+          if default_guw_complexity.nil?
+            guw_complexity = guw_type.guw_complexities.first
+          else
+            guw_complexity = default_guw_complexity
+          end
+
+          guw_unit_of_work.guw_complexity_id = guw_complexity.id
         end
 
         guw_unit_of_work_guw_complexity = guw_unit_of_work.guw_complexity
@@ -2758,7 +2775,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                # if @guw_type.allow_complexity == false
+                # if @guw_type.allow_complexity == true
                   @lows = Array.new
                   @mls = Array.new
                   @highs = Array.new
@@ -2795,24 +2812,25 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 # end
 
-                begin
-                  unless params["guw_complexity_#{guw_uow.id}"].nil?
-                    guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
-                    guw_uow.guw_complexity_id = guw_complexity_id
-                    guw_uow.guw_original_complexity_id = guw_complexity_id
-                  else
-                    unless row[19].blank?
-                      unless @guw_type.nil?
-                        guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
-                                                                  name: row[18]).first
-                      end
-                    end
-
-                    guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
-                  end
-                rescue
-                  # ignored
-                end
+                # unless row[18].blank?
+                #   unless @guw_type.nil?
+                #     guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                #                                               name: row[18]).first
+                # #   end
+                # end
+                # guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                #
+                # begin
+                #   unless params["guw_complexity_#{guw_uow.id}"].nil?
+                #     guw_complexity_id = params["guw_complexity_#{guw_uow.id}"].to_i
+                #     guw_uow.guw_complexity_id = guw_complexity_id
+                #     guw_uow.guw_original_complexity_id = guw_complexity_id
+                  # else
+                  #
+                  # end
+                # rescue
+                #   # ignored
+                # end
 
                 if guw_uow.changed?
                   guw_uow.save
@@ -2843,11 +2861,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         else
                           guw_uow.guw_complexity_id = cplx.id
                           guw_uow.guw_original_complexity_id = cplx.id
-                          array_pert << calculate_seuil(guw_uow, guw_type_guw_complexities.last, value_pert)
+                          if @guw_type.allow_complexity == false
+                            array_pert << calculate_seuil(guw_uow, guw_type_guw_complexities.last, value_pert)
+                          end
                         end
                       else
                         guw_type_guw_complexities.each do |guw_c|
-                          array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                          if @guw_type.allow_complexity == false
+                            array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                          end
                         end
                       end
                     end

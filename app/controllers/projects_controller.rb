@@ -103,6 +103,11 @@ class ProjectsController < ApplicationController
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
       redirect_to organization_estimations_path(@current_organization) and return
+    else
+      if (params[:from_current_dashboard] && params[:organization_id]) && (@project.organization_id != params[:organization_id].to_i)
+        flash[:warning] = I18n.t(:current_estimation_does_not_exists)
+        redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
+      end
     end
 
     @current_organization = @project.organization
@@ -2271,11 +2276,12 @@ public
     @organization = Organization.find(params[:organization_id])
     old_prj = Project.find(params[:project_id])
     generate_automatique_title = false
+    @user = current_user
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: current_user.name)} \r\n"
+    new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_estimation_by, estimation_name: old_prj, username: @user.name)} \r\n"
     new_prj.ancestry = nil
-    new_prj.creator_id = current_user.id
+    new_prj.creator_id = @user.id
     if params[:action_name] == "duplication_model"
       new_prj.is_model = true
     else
@@ -2292,7 +2298,7 @@ public
       new_prj.use_automatic_quotation_number = false
 
       #Update some params with the form input data
-      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: current_user.name)} \r\n"
+      new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: @user.name)} \r\n"
 
       if params['project']['application_id'].present?
         new_prj.application_id = params['project']['application_id']
@@ -2360,11 +2366,17 @@ public
           creator_securities = new_prj.project_securities
           creator_securities.each do |ps|
             if ps.is_model_permission == true
-              ps.update_attribute(:is_model_permission, false)
-              ps.update_attribute(:is_estimation_permission, true)
+              # Amelioration Creer à partir d'un modele
+              # ps.update_attribute(:is_model_permission, false)
+              # ps.update_attribute(:is_estimation_permission, true)
+              ps.is_model_permission = false
+              ps.is_estimation_permission = true
+
               if ps.user_id == owner.id
-                ps.update_attribute(:user_id, owner.id)
+                #ps.update_attribute(:user_id, owner.id)
+                ps.user_id = owner.id
               end
+              ps.save
             else
               ps.destroy
             end
@@ -2376,13 +2388,14 @@ public
 
         # For PBS
         new_prj_components = pe_wbs_product.pbs_project_elements
+        new_prj_application = new_prj.application
         new_prj_components.each do |new_c|
           if new_c.is_root == true
             if !params[:create_project_from_template].nil?
-              if new_prj.application.nil?
+              if new_prj_application.nil?
                 new_c.name = new_prj.application_name
               else
-                new_c.name = new_prj.application.name
+                new_c.name = new_prj_application.name
               end
               new_c.save
             end
@@ -2397,12 +2410,16 @@ public
           new_c.save
         end
 
+        hash_apps = {}
+        @organization.applications.each do |app|
+          hash_apps[app.name] = app
+        end
+
         #For applications
         old_prj.applications.each do |application|
-          app = Application.where(name: application.name, organization_id: @organization.id).first
-          ap = ApplicationsProjects.create(application_id: app.id,
-                                           project_id: new_prj.id)
-          ap.save
+          # Application.where(name: application.name, organization_id: @organization.id).first
+          app = hash_apps[application.name]
+          ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
         # For ModuleProject associations
@@ -2434,15 +2451,15 @@ public
             #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
 
             #unless mp_ratio_element.is_root?
-              new_ancestor_ids_list = []
-              mp_ratio_element.ancestor_ids.each do |ancestor_id|
-                ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
-                if ancestor
-                  ancestor_id = ancestor.id
-                  new_ancestor_ids_list.push(ancestor_id)
-                end
+            new_ancestor_ids_list = []
+            mp_ratio_element.ancestor_ids.each do |ancestor_id|
+              ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+              if ancestor
+                ancestor_id = ancestor.id
+                new_ancestor_ids_list.push(ancestor_id)
               end
-              mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+            end
+            mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
             #end
             mp_ratio_element.save
           end
@@ -2458,8 +2475,8 @@ public
           #For ge_model_factor_descriptions
           old_mp.ge_model_factor_descriptions.each do |factor_description|
             Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
-                                                                      factor_alias: factor_description.factor_alias, description: factor_description.description,
-                                                                      module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
+                                                factor_alias: factor_description.factor_alias, description: factor_description.description,
+                                                module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
           end
 
           # if the module_project is nil
@@ -2490,17 +2507,26 @@ public
             end
           end
 
-          ["input", "output"].each do |io|
-            new_mp.pemodule.pe_attributes.each do |attr|
-              old_prj.pbs_project_elements.each do |old_component|
-                new_prj_components.each do |new_component|
-                  ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-                  unless ev.nil?
+          new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+          old_prj_pbs_project_elements = old_prj.pbs_project_elements
+          new_mp_estimation_values = new_mp.estimation_values
+          hash_nmpevs = {}
 
-                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+          new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
+            hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
+          end
+
+          ["input", "output"].each do |io|
+
+            new_mp_pemodule_pe_attributes.each do |attr|
+
+              ev = hash_nmpevs["#{attr.id}_#{io}"]
+
+              unless ev.nil?
+                new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                old_prj_pbs_project_elements.each do |old_component|
+                  new_prj_components.each do |new_component|
+                    # unless ev.nil?
 
                     ev_low = ev.string_data_low.delete(old_component.id)
                     ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
@@ -2515,7 +2541,6 @@ public
                     # update ev attribute links
                     unless ev.estimation_value_id.nil?
                       project_id = new_prj.id
-                      new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
                       new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
                       if new_ev
                         ev.estimation_value_id = new_ev.id
@@ -2523,6 +2548,7 @@ public
                     end
 
                     ev.save
+                    # end
                   end
                 end
               end
@@ -2553,7 +2579,6 @@ public
       end
     end   # Fin transaction
   end
-
 
   def commit
     project = Project.find(params[:project_id])
@@ -3173,7 +3198,6 @@ public
     new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
 
     new_prj.transaction do
-
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
 
@@ -3230,6 +3254,10 @@ public
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
+              pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+              mp_ratio_element.pbs_project_element_id = pbs.nil? ? nil : pbs.id
+              mp_ratio_element.save
+            end
             pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
             mp_ratio_element.pbs_project_element_id = pbs_id
             mp_ratio_element.save
@@ -3331,7 +3359,7 @@ public
               end
             end
           end
-        end
+        # end
 
         #Archive project last versions
         if params['archive_last_project_version'] == "yes"

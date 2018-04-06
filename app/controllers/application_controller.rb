@@ -44,6 +44,8 @@ class ApplicationController < ActionController::Base
       elsif exception.class == ActiveRecord::RecordNotFound
         flash[:error] = I18n.t(:error_resource_not_found)
         redirect_to organization_estimations_path(@current_organization) and return
+      elsif exception.message.include?("warden")
+        # Que faire ?
       else
         UserMailer.crash_log(exception, current_user, @current_organization, @project).deliver
         render :template => "layouts/500.html", :status => 500
@@ -178,22 +180,30 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    unless @project.nil?
-      if controller_name == "projects" and @project.persisted?
-        @current_organization = @project.organization
-      end
-    end
+    # unless @project.nil?
+    #   if controller_name == "projects" and @project.persisted?
+    #     @current_organization = @project.organization
+    #   end
+    # end
     #@current_ability ||= Ability.new(current_user, @current_organization, [@project])
 
-    # Le code qui suit remplace les lignes du dessus
-    case params[:action]
-      when "estimations", "sort", "search", "add_filter_on_project_version"
-        @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.organization_estimations)
-      when "projects_from"
-        estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
-        @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
+    begin
+      if current_user.organization_ids.include?(@current_organization.id)
+        # Le code qui suit remplace les lignes du dessus
+        case params[:action]
+          when "estimations", "sort", "search", "add_filter_on_project_version"
+            @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.organization_estimations)
+          when "projects_from"
+            estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
+            @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
+          else
+            @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+        end
       else
-        @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+        @current_ability = Ability.new(current_user, nil, nil)
+      end
+    rescue
+      @current_ability = Ability.new(current_user, nil, nil)
     end
   end
 
@@ -305,19 +315,30 @@ class ApplicationController < ActionController::Base
         @current_organization = Organization.find(session[:organization_id])
       #Sinon on prend, la sessions
       elsif session[:organization_id].present?
-        @current_organization = Organization.find(session[:organization_id])
-      #Si ya pas de sessions
-      else
-        @current_organization = current_user.organizations.where(is_image_organization: false).first
-        if @current_organization.nil?
-          session[:organization_id] = current_user.organizations.first.id
+
+        if params[:project_id].present?
+          session[:organization_id] = Project.find(params[:project_id]).organization_id
           @current_organization = Organization.find(session[:organization_id])
         else
-          session[:organization_id] = @current_organization.id
           @current_organization = Organization.find(session[:organization_id])
         end
+
+      #Si ya pas de sessions
+      else
+        # @current_organization = current_user.organizations.where(is_image_organization: false).first
+        # if @current_organization.nil?
+          # session[:organization_id] = current_user.organizations.first.id
+          # @current_organization = nil # Organization.find(session[:organization_id])
+        # else
+        #   session[:organization_id] = @current_organization.id
+        #   @current_organization = Organization.find(session[:organization_id])
+        # end
+        session[:organization_id] = current_user.organizations.first.id
+        @current_organization = current_user.organizations.first
       end
     rescue
+      flash[:warning] = "Veuillez contacter un administrateur Estimancy."
+      sign_out current_user
       session[:organization_id] = nil
       @current_organization = nil
     end
@@ -527,7 +548,7 @@ class ApplicationController < ActionController::Base
       saml_auth_id = saml_auth.id
     end
     # return the path based on resource
-    if resource.password_changed || (resource.auth_type == saml_auth_id)
+    if resource.password_changed == true || (resource.auth_type == saml_auth_id)
       # if user has no organization, this means that his has no group, so no right
       if resource.organizations.where(is_image_organization: [false, nil]).size == 0
         flash[:warning] = I18n.t(:you_have_no_right_to_continue)
