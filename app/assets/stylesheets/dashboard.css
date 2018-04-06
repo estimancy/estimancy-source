@@ -1351,3 +1351,11 @@ td.float_left {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
 }
+
+.dix_pour_cent{ width: 10%; }
+.quinze_pour_cent{ width: 15%; }
+.vingt_pour_cent{ width: 20%; }
+.vingt_cinq_pour_cent{ width: 25%; }
+.trente_pour_cent{ width: 30%; }
+.quarante_pour_cent{ width: 40%; }
+.vertical_align_top{ vertical-align: top; }
