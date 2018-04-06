@@ -61,6 +61,7 @@
 <td class="text_field_text_overflow span3">
   <span class="pull-left">
     <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
+    <%= guow.display_order %>
   </span>
 </td>
 
@@ -479,8 +480,14 @@
     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate), remote: true %>
     <%= link_to "", guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up up", title: I18n.t(:up), remote: true %>
     <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down down", title: I18n.t(:down), remote: true %>
-    <%= link_to "", "#!", class: "fa fa-plus new_guw_button", title: I18n.t(:add), :"data-toggle" => "modal", :"data-target" => "#new_guw", :"data-group-id" => uowg.id , :"data-display-order" => guow.display_order %>
+    <%= link_to "", "#!", class: "fa fa-plus new_guw_button", title: I18n.t(:add), :"data-position" => guow.display_order, :"data-toggle" => "modal", :"data-target" => "#new_guw", :"data-group-id" => uowg.id , :"data-display-order" => guow.display_order %>
     <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete), remote: true %>
   </td>
 <% end %>
+
+<script>
+  (".new_guw_button").click(function(){
+    $(".hidden_position").val($(this).data("position"));
+  });
+</script>
 
