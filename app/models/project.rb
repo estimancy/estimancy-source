@@ -565,8 +565,11 @@ class Project < ActiveRecord::Base
               mp_ratio_element.module_project_id = new_mp.id
               mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
-              pbs_id = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first.id
-              mp_ratio_element.pbs_project_element_id = pbs_id
+              pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+              unless pbs.nil?
+                mp_ratio_element.pbs_project_element_id = pbs.id
+              end
+
               mp_ratio_element.save
             end
 
@@ -628,11 +631,21 @@ class Project < ActiveRecord::Base
               end
             end
 
+            new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+            old_prj_pbs_project_elements = old_prj.pbs_project_elements
+            new_mp_estimation_values = new_mp.estimation_values
+            hash_nmpevs = {}
+
+            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
+              hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
+            end
+
             ["input", "output"].each do |io|
-              new_mp.pemodule.pe_attributes.each do |attr|
-                old_prj.pbs_project_elements.each do |old_component|
+              new_mp_pemodule_pe_attributes.each do |attr|
+                old_prj_pbs_project_elements.each do |old_component|
                   new_prj_components.each do |new_component|
-                    ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+                    ev = hash_nmpevs["#{attr.id}_#{io}"]
+
                     unless ev.nil?
                       ev_low = ev.string_data_low.delete(old_component.id)
                       ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
