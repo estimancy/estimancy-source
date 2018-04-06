@@ -3197,7 +3197,7 @@ public
 
     new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
 
-    new_prj.transaction do
+    # new_prj.transaction do
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
 
@@ -3366,7 +3366,8 @@ public
                   end
                 end
               end
-            end
+          # end
+        # end
 
         #Archive project last versions
         if params['archive_last_project_version'] == "yes"
@@ -3413,7 +3414,7 @@ public
         flash[:error] = I18n.t(:error_project_checkout_failed)
         redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
       end
-    end
+    # end
     # rescue
     #   flash[:error] = I18n.t(:error_project_checkout_failed)
     #   redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
