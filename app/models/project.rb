@@ -542,7 +542,7 @@ class Project < ActiveRecord::Base
 
 
           hash_apps = {}
-          @organization.applications.each do |app|
+          organization.applications.each do |app|
             hash_apps[app.name] = app
           end
 
