@@ -140,14 +140,14 @@
               <label>
                 <b>Besoin métier</b>
               </label>
-              <%= select_tag "", options_for_select(@projects.map(&:business_need).uniq.compact) %>
+              <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact) %>
             </p>
 
             <p>
               <label>
                 <b><%= I18n.t :request_number %></b>
               </label>
-              <%= select_tag "", options_for_select(@projects.map(&:request_number).uniq.compact) %>
+              <%= select_tag "request_number", options_for_select(@projects.map(&:request_number).uniq.compact) %>
             </p>
 
             </p>
