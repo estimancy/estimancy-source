@@ -584,10 +584,10 @@
           var previousValue = $(this).data('val');
           var currentValue = $(this).val();
 
-          console.log("Prev value " + previousValue);
-          console.log("New value " + currentValue);
-          console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
-          console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
+          //console.log("Prev value " + previousValue);
+          //console.log("New value " + currentValue);
+          //console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
+          //console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
 
           if( (parseFloat(currentValue) != parseFloat(previousValue)) ||
               (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10)))) {
@@ -599,7 +599,7 @@
               var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
               var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
 
-              console.log("valeur différente");
+              //console.log("valeur différente");
 
               $.ajax({
                   url: "/update_mp_ratio_element_changed_value",
