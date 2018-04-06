@@ -7,7 +7,7 @@
       <!--</span>-->
     <!--</a>-->
 
-    <h4 class="<%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
+    <h4 class="<%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide' ) %>">
       <strong>
         <%= "Adaptation de la valeur d'entrée" %>
       </strong>
@@ -15,7 +15,7 @@
   </div>
 
   <div id="collapse_dashbord_ratio_elts" class="accordion-body collapse in">
-    <div class="accordion-inner <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
+    <div class="accordion-inner <%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide') %>">
 
       <%= hidden_field_tag "dashboard_selected_ratio_id", wbs_activity_ratio.id %>
       <br>
@@ -24,7 +24,7 @@
       <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
       <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
 
-      <table class="table-condensed <%= (@wbs_activity.hide_wbs_header == true ? 'hide' : 'show') %>">
+      <table class="table-condensed <%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide') %>">
         <%# @wbs_activity_ratio.module_project_ratio_variables.each do |mp_ratio_variable| %>
         <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
             <% unless mp_ratio_variable.wbs_activity_ratio_variable.name.blank? %>

@@ -71,15 +71,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = {}
     @guw_unit_of_work.cost = {}
 
+    @group = @guw_unit_of_work.guw_unit_of_work_group
+
     @position = params[:hidden_position]
-    @guw_unit_of_work.display_order = params[:hidden_position].to_i
+
+    if @position.blank?
+      @guw_unit_of_work.display_order = @group.guw_unit_of_works.order("display_order ASC").last.display_order.to_i + 1
+    else
+      @guw_unit_of_work.display_order = params[:hidden_position].to_i
+    end
 
     @guw_unit_of_work.save
 
-    reorder(@guw_unit_of_work.guw_unit_of_work_group)
-
-
-    @group = @guw_unit_of_work.guw_unit_of_work_group
     current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
     @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
     @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
@@ -115,12 +118,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
 
-    expire_fragment "guw"
+    reorder group
 
     update_estimation_values
     update_view_widgets_and_project_fields
-
-    # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{group.id}")
   end
 
   def up
@@ -1586,7 +1587,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
 
-        # reorder guw_unit_of_work.guw_unit_of_work_group
+        reorder guw_unit_of_work.guw_unit_of_work_group
 
         if guw_unit_of_work.changed?
           guw_unit_of_work.save
@@ -3307,7 +3308,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order asc").each_with_index do |u, i|
+    group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|
       u.display_order = i
       u.save
     end

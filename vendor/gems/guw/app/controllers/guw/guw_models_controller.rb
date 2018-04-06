@@ -1832,7 +1832,7 @@ class Guw::GuwModelsController < ApplicationController
     @component = current_component
     @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: current_module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  guw_model_id: @guw_model.id)
+                                                  guw_model_id: @guw_model.id).order("display_order ASC")
 
     hash = @guw_model.orders
     hash.delete("Critères")

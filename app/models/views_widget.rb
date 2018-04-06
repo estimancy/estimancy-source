@@ -106,11 +106,12 @@ class ViewsWidget < ActiveRecord::Base
 
   def self.update_field(module_project, organization, project, component, set_to_nil = false)
     organization_fields = organization.fields
-    module_project.views_widgets.each do |view_widget|
+
+    ###module_project.views_widgets.each do |view_widget|
+    project.views_widgets.where('module_project_id = ? OR is_kpi_widget = ?', module_project.id, true).all.each do |view_widget|
 
       pfs = {}
-      ProjectField.where(project_id: project.id,
-                         views_widget_id: view_widget.id).all.each do |pf|
+      ProjectField.where(project_id: project.id, views_widget_id: view_widget.id).all.each do |pf|
         pfs[pf.field_id] = pf
       end
 
@@ -119,19 +120,26 @@ class ViewsWidget < ActiveRecord::Base
 
         pf = pfs[field.id]
 
-        unless view_widget_estimation_value.nil?
+        begin #unless view_widget_estimation_value.nil?
           if set_to_nil == true
             @value = nil
           else
-            if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
-              begin
-                @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-              rescue
-                @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
+            if !view_widget_estimation_value.nil?
+              if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
+                begin
+                  @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                rescue
+                  @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
+                end
+              else
+                @value = view_widget_estimation_value.string_data_probable[component.id]
               end
             else
-              @value = view_widget_estimation_value.string_data_probable[component.id]
+              if view_widget.is_kpi_widget?
+                @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)  # get_kpi_value_without_unit
+              end
             end
+
           end
 
           unless pf.nil?
@@ -144,6 +152,8 @@ class ViewsWidget < ActiveRecord::Base
             pf.save
             # end
           end
+        rescue
+          # nothing
         end
       end
     end

@@ -3197,7 +3197,7 @@ public
 
     new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: current_user.name)}. \r\n"
 
-    new_prj.transaction do
+    # new_prj.transaction do
       if new_prj.save
         old_prj.save #Original project copy number will be incremented to 1
 
@@ -3321,44 +3321,52 @@ public
             end
           end
 
-          ["input", "output"].each do |io|
-            new_mp.pemodule.pe_attributes.each do |attr|
-              old_prj.pbs_project_elements.each do |old_component|
-                new_prj_components.each do |new_component|
-                  ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-                  unless ev.nil?
+            new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+            old_prj_pbs_project_elements = old_prj.pbs_project_elements
+            new_mp_estimation_values = new_mp.estimation_values
+            hash_nmpevs = {}
 
-                    # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id]
-                    # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id]
-                    # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id]
-                    # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id]
+            new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
+              hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
+            end
 
-                    ev_low = ev.string_data_low.delete(old_component.id)
-                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                    ev_high = ev.string_data_high.delete(old_component.id)
-                    ev_probable = ev.string_data_probable.delete(old_component.id)
+            ["input", "output"].each do |io|
+
+              new_mp_pemodule_pe_attributes.each do |attr|
+
+                ev = hash_nmpevs["#{attr.id}_#{io}"]
+
+                unless ev.nil?
+                  new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                  old_prj_pbs_project_elements.each do |old_component|
+                    new_prj_components.each do |new_component|
+
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
 
                     ev.string_data_low[new_component.id.to_i] = ev_low
                     ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
                     ev.string_data_high[new_component.id.to_i] = ev_high
                     ev.string_data_probable[new_component.id.to_i] = ev_probable
 
-                    # update ev attribute links
-                    unless ev.estimation_value_id.nil?
-                      project_id = new_prj.id
-                      new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
-                      new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
-                      if new_ev
-                        ev.estimation_value_id = new_ev.id
+                        # update ev attribute links
+                        unless ev.estimation_value_id.nil?
+                          project_id = new_prj.id
+                          new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                          if new_ev
+                            ev.estimation_value_id = new_ev.id
+                          end
+                        end
+
+                        ev.save
                       end
                     end
-
-                    ev.save
                   end
                 end
               end
-            end
-          end
+          # end
         # end
 
         #Archive project last versions
@@ -3406,7 +3414,7 @@ public
         flash[:error] = I18n.t(:error_project_checkout_failed)
         redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
       end
-    end
+    # end
     # rescue
     #   flash[:error] = I18n.t(:error_project_checkout_failed)
     #   redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
