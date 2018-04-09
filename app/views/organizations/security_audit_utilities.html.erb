@@ -1,4 +1,4 @@
-<div class="tabs">
+<div>
   <h4><%= I18n.t(:actions_history) %></h4>
 
   <div style="margin: 10px;">
@@ -35,8 +35,11 @@
                   confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-inverse pull-right" %>
     </div>
   </div>
+</div>
 
+<hr />
 
+<div class="tabs">
   <ul>
     <li><a href="#tabs-simples_events">Données de base</a></li>
     <li><a href="#tabs-user_organizations"><%= I18n.t(:audit_OrganizationUser) %></a></li>
@@ -92,5 +95,3 @@
   </div>
 
 </div>
-
-
