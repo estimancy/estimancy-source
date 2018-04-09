@@ -15,11 +15,11 @@
   <tbody>
   <% table_versions.each do |version| %>
       <tr>
-        <td class="span2">
+        <td class="dix_pour_cent vertical_align_top">
           <%= I18n.t("audit_#{version.item_type}") %>
         </td>
 
-        <td class="span2 align-center">
+        <td class="dix_pour_cent align-center">
           <% if version.event == 'delete' %>
               <% object_name = YAML.load(version.object_changes)["name"].first rescue "-"  %>
           <% else %>
@@ -30,9 +30,9 @@
           <%= object_name %>
         </td>
 
-        <td class="span2 align-center"><%= I18n.t("audit_#{version.event}") %></td>
+        <td class="dix_pour_cent align-center"><%= I18n.t("audit_#{version.event}") %></td>
 
-        <td class="span3">
+        <td class="vingt_pour_cent">
           <% if version.event == "destroy" %>
               <% YAML.load(version.object).each do |k,v| %>
                   <%= k %> : <%= v %>
@@ -50,7 +50,7 @@
           <% end %>
         </td>
 
-        <td class="span3">
+        <td class="vingt_pour_cent">
           <% if version.object_changes.nil? %>
               -
           <% else %>
@@ -61,7 +61,7 @@
           <% end %>
         </td>
 
-        <td class="span2">
+        <td class="dix_pour_cent">
           <% u = User.find_by_id(version.author_id) %>
           <% unless u.nil? %>
               <%= u.name %>
@@ -70,10 +70,10 @@
           <% end %>
         </td>
 
-        <td class="span2 align-center"><%=I18n.l(version.created_at, format: :audit) %></td>
+        <td class="dix_pour_cent align-center"><%=I18n.l(version.created_at, format: :audit) %></td>
       </tr>
   <% end %>
-  <%#= render :partial => 'layouts/footer_table' %>
+
   </tbody>
 </table>
 
