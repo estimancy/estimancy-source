@@ -84,6 +84,13 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  # Page d'accueil de le fonction d'audit de sécurité
+  def security_audit_utilities_view
+    @organization = @current_organization
+    authorize! :manage_security_audit, @organization
+
+  end
+
   # Fonction d'audit de sécurité
   def security_audit_utilities
     @organization = @current_organization

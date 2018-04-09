@@ -1,0 +1,48 @@
+<div>
+  <h4><%= I18n.t(:actions_history) %></h4>
+
+  <div style="margin: 10px;">
+    <%= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
+        <%#= I18n.t(:filters)%>
+        <div class="input row-fluid">
+          <div class="span2">
+              <label class="string control-label" for="objet">Date de début</label>
+              <input class="date-picker input-large" id="start_date" name="start_date" size="50" type="text">
+          </div>
+          <div class="span2">
+              <label class="string control-label" for="objet">Date de fin</label>
+              <input class="date-picker input-large" id="end_date" name="end_date" size="50" type="text">
+          </div>
+          <div class="span2" style="margin-top: 25px;">
+            <%= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>
+          </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $(".date-picker").datepicker({
+                    language: 'fr',
+                    autoclose: true,
+                    todayHighlight: true,
+                    todayBtn: true
+                });
+            });
+        </script>
+    <% end %>
+
+    <div style="margin-bottom: 50px; margin-top: -40px;">
+      <%= link_to "Supprimer tout l'historique", destroy_all_security_audit_utilities_path,
+                  confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-inverse pull-right" %>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 50px;">
+  <%= link_to "Afficher l'historique de l'audit", organization_security_audit_utilities_path,
+              class: "btn btn-primary pull-left" %>
+</div>
+
+
+<div id="show_security_audit_utilities" style="margin-top: 30px;">
+</div>

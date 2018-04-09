@@ -91,7 +91,7 @@
         <ul class="dropdown-menu">
           <% if @current_organization && can?(:manage_security_audit, @current_organization)%>
               <li class="dropdown">
-                <a href="<%= main_app.organization_security_audit_utilities_path(@current_organization)%>">
+                <a href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
                   <%= I18n.t(:security_audit_utilities)%>
                 </a>
               </li>
@@ -100,11 +100,11 @@
                   <!--<%#= I18n.t(:common_data_integrity)%>-->
                 <!--</a>-->
               <!--</li>-->
-              <li class="dropdown">
-                <a href="<%= main_app.organization_report_management_path(@current_organization)%>">
-                  <%= I18n.t(:report_management)%>
-                </a>
-              </li>
+              <!--<li class="dropdown">-->
+                <!--<a href="<%#= main_app.organization_report_management_path(@current_organization)%>">-->
+                  <!--<%#= I18n.t(:report_management)%>-->
+                <!--</a>-->
+              <!--</li>-->
           <% end %>
         </ul>
       </li>

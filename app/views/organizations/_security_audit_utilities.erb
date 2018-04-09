@@ -1,88 +1,56 @@
+<div class="tabs">
+<ul>
+  <li><a href="#tabs-simples_events">Données de base</a></li>
+  <li><a href="#tabs-user_organizations"><%= I18n.t(:audit_OrganizationUser) %></a></li>
+  <li><a href="#tabs-user_groups"><%= I18n.t(:audit_GroupUser) %></a></li>
+  <li><a href="#tabs-group_permissions"><%= "Groupe / Permissions" %></a></li>
+  <li><a href="#tabs-estimation_status_permissions"><%= "Statut / Groupe / Niveaux sécurité" %></a></li>
+  <li><a href="#tabs-security_levels"><%= I18n.t(:audit_PermissionProjectSecurityLevel) %></a></li>
+  <li><a href="#tabs-estimation_models"><%= I18n.t(:audit_estimation_models_permissions) %></a></li>
+  <li><a href="#tabs-estimations"><%= I18n.t(:audit_estimations_permissions) %></a></li>
+</ul>
 
-<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-  <thead>
-  <tr>
-    <th>Type</th>
-    <th>Objet</th>
-    <!--<th>Associations / Relations</th>-->
-    <th>Action effectuée</th>
-    <th>Avant modification</th>
-    <th>Après modification</th>
-    <th>Auteur</th>
-    <th>Date modification</th>
-  </tr>
-  </thead>
-  <tbody>
-  <% table_versions.each do |version| %>
-      <tr>
-        <td class="span2">
-            <%= I18n.t("audit_#{version.item_type}") %>
-        </td>
+<!-- ========================  TABLES DE BASE : UTILISATEUR - GROUPE - NIVEAU DE SECURITE ===================== -->
+<div id="tabs-simples_events">
+  <%= render partial: 'security_audit_utilities_simple_events', locals: { table_versions: @simple_events_versions} %>
+</div>
 
-        <td class="span2 align-center">
-          <%= show_trigger_object_changes(version.object_class_name, version.item_id).join(",") rescue "-"  %>
-        </td>
-        <!--<td class="span2 align-center"> <%#= version.association_class_name %> </td>-->
-        <td class="span2">
-          <% unless version.object_changes.nil? %>
-              <% version.object_changes.each do |k,v| %>
-                  <% unless v.blank? %>
-                    - <%= I18n.t(k) %>  <br>
-                  <% end %>
-                  <%# show_trigger_object_changes(version.association_class_name, v).each do |val| %>
-                      <%#= " - #{val}" %>
-                      <!--<br>-->
-                  <%# end %>
-                  <br>
-              <% end %>
-          <% end %>
-        </td>
+<!-- ========================  UTILISATEURS ORGANIZATIONS ===================== -->
+<div id="tabs-user_organizations">
+  <%= render partial: 'security_audit_utilities_user_organizations', locals: { table_versions: @user_organizations_versions} %>
+</div>
 
-        <td class="span3">
-          <% unless version.object_changes.nil? %>
-              <% version.object_changes.each do |k,v| %>
-                  <% if !v.blank? && k == :delete_event %>
-                      <%= I18n.t(k) %> :  <br>
-                      <% show_trigger_object_changes(version.association_class_name, v).each do |val| %>
-                      <%= " - #{val}" %>
-                      <br>
-                      <% end %>
-                      <br>
-                  <% end %>
-              <% end %>
-          <% end %>
-        </td>
+<!-- ========================  UTILISATEURS GROUPS ===================== -->
+<div id="tabs-user_groups">
+  <%= render partial: 'security_audit_utilities_user_groups', locals: { table_versions: @user_groups_versions} %>
+</div>
 
-        <td class="span3">
-          <% unless version.object_changes.nil? %>
-              <% version.object_changes.each do |k,v| %>
-                  <% if !v.blank? && k == :create_event %>
-                      <%= I18n.t(k) %> : <br>
-                      <% show_trigger_object_changes(version.association_class_name, v).each do |val| %>
-                          <%= " - #{val}" %>
-                          <br>
-                      <% end %>
-                      <br>
-                  <% end %>
-              <% end %>
-          <% end %>
-        </td>
+<!-- ========================  GROUPS ===================== -->
+<div id="tabs-group_permissions">
+  <%= render partial: 'security_audit_utilities_group_permissions', locals: { table_versions: @group_permissions_versions} %>
+</div>
 
-        <td class="span2 align-center">
-          <% u = User.find_by_id(version.author_id) %>
-          <% unless u.nil? %>
-              <%= u.name %>
-          <% else %>
-              N/A
-          <% end %>
-        </td>
+<!-- ========================  ESTIMATION-STATUS ===================== -->
+<div id="tabs-estimation_status_permissions">
+  <%= render partial: 'security_audit_utilities_estimation_status_permissions',
+             locals: { table_versions: @user_estimation_status_versions} %>
+</div>
 
-        <td class="span2 align-center"><%= I18n.l(version.created_at) rescue nil %></td>
+<!-- ========================  SECURITY-LEVELS / Permissions ===================== -->
+<div id="tabs-security_levels">
+  <%= render partial: 'security_audit_utilities_project_security_level_permissions', locals: { table_versions: @security_level_versions} %>
+</div>
 
-      </tr>
-  <% end %>
-  <%#= render :partial => 'layouts/footer_table' %>
-  </tbody>
-</table>
+<div id="tabs-estimation_models">
+  <%= render partial: 'security_audit_utilities_estimation_models_permissions',
+             formats: [:html],
+             locals: { table_versions: @estimation_model_versions} %>
+</div>
 
+<div id="tabs-estimations">
+  <%= render partial: 'security_audit_utilities_estimations_permissions',
+             formats: [:html],
+             locals: { table_versions: @estimation_versions} %>
+</div>
 
+</div>

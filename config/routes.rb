@@ -264,6 +264,7 @@ Projestimate::Application.routes.draw do
     get "export_platform_categories" => 'organizations#export_platform_categories'
     get "export_project_categories" => 'organizations#export_project_categories'
     get "export_providers" => 'organizations#export_providers'
+    get "security_audit_utilities_view" => 'organizations#security_audit_utilities_view'
     get "security_audit_utilities" => 'organizations#security_audit_utilities'
     get "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
     get "report_management" => 'organizations#report_management'
