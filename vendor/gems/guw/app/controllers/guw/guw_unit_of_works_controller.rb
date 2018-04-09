@@ -76,9 +76,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @position = params[:hidden_position]
 
     if @position.blank?
-      unless @group.guw_unit_of_works.nil?
+      begin
         @guw_unit_of_work.display_order = @group.guw_unit_of_works.order("display_order ASC").last.display_order.to_i + 1
-      else
+      rescue
         @guw_unit_of_work.display_order = 0
       end
     else
