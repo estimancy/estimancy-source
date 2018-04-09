@@ -13,44 +13,19 @@
     <thead>
       <tr>
         <th>Nom</th>
-        <th>Description</th>
-        <th>Allow Criteria</th>
-        <th><%= @guw_model.coefficient_label.blank? ? '-' : @guw_model.weightings_label.to_s %></th>
-        <th><%= @guw_model.factors_label.blank? ? '-' : @guw_model.factors_label.to_s %></th>
-        <th><%= @guw_model.weightings_label.blank? ? '-' : @guw_model.weightings_label.to_s %></th>
-        <th>Technologies</th>
-        <th>Seuils</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <% @guw_types.each do |guw_type| %>
         <tr>
-          <td class="span2">
+          <td>
             <%= link_to(guw_type.name, guw_type) %>
           </td>
           <td>
-            <%= guw_type.description.to_s.truncate(100) %>
-          </td>
-          <td class="span2">
-            <%= guw_type.allow_criteria == true ? "Oui" : "Non" %>
-          </td>
-          <td class="span3">
-            <%= @guw_model.guw_work_units.map(&:name).join(", ") %>
-          </td>
-          <td class="span3">
-            <%= @guw_model.guw_weightings.map(&:name).join(", ") %>
-          </td>
-          <td class="span3">
-            <%= @guw_model.guw_factors.map(&:name).join(", ") %>
-          </td>
-          <td class="span3">
-            <%= @organization.organization_technologies.map(&:name).join(", ") %>
-          </td>
-          <td class="span4">
             <%= guw_type.guw_complexities.map(&:name).join(", ") %>
           </td>
-          <td class="span1 center">
+          <td class="center">
             <%= link_to "", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "fa fa-edit" %>
             <%= link_to "", guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "fa fa-trash" %>
           </td>

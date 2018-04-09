@@ -1,196 +1,319 @@
-<h4>
-  <%= @guw_type %>
-</h4>
+<h5>
+  <strong>
+    <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
+  </strong>
+</h5>
 
-<%= link_to "#{I18n.t(:edit)} #{@guw_type}", guw.edit_guw_model_guw_type_path(@guw_model, @guw_type), class: "btn btn-mini pull-right" %>
-<% if can? :manage_modules_instances, ModuleProject %>
-  <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type), class: "btn btn-mini pull-right button_margin_right" %>
-<% end %>
-<%= link_to "Retour à la liste", guw.guw_model_all_guw_types_path(@guw_model), class: "btn btn-mini pull-right button_margin_right" %>
+<% @guw_outputs = @guw_model.guw_outputs %>
+<% guw_type_guw_complexities = @guw_type.guw_complexities %>
+<% guw_type_guw_type_complexities = @guw_type.guw_type_complexities %>
+<% guw_model_guw_attributes = @guw_model.guw_attributes %>
 
-<%= simple_format(@guw_type.description) %>
+<div id="tabs-<%= @guw_type.name.gsub(/[^0-9A-Za-z]/, '') %>">
 
-<h4>
-  <b>
-    <%= I18n.t(:UO_type_complexity_of, parameter: @guw_type) %>
-  </b>
-
-</h4>
-
-<%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
-  <table class="table table-bordered">
-    <tr>
-      <th></th>
-      <% @guw_type.guw_complexities.order("display_order DESC").each do |guw_cplx| %>
-        <th colspan="2">
-          <%= guw_cplx.name %> -
-          <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx) %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-            - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
-          <% end %>
-        </th>
-      <% end %>
-    </tr>
-
-    <tr>
-      <th></th>
-      <% @guw_type.guw_complexities.order("display_order DESC").each do |guw_cplx| %>
-        <% if @guw_type.allow_criteria == true %>
-          <th>Prod.</th>
-        <% end %>
-        <th colspan="<%= @guw_type.allow_criteria == true ? '0' : '2' %>" >
-          <% if @guw_type.allow_criteria == true %>
-            [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %>
-          <% else %>
-            <%= I18n.t :weight %>
-          <% end %>
-        </th>
-      <% end %>
-    </tr>
-
-    <tr>
-      <td>Seuils</td>
-      <% @guw_type.guw_complexities.order("display_order DESC").each do |guw_cplx| %>
-        <% if @guw_type.allow_criteria == true %>
-          <td class="align-center">
-            <%= check_box_tag "enable_value[#{@guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %>
-          </td>
-        <% end %>
-        <td class="align-center" colspan="<%= @guw_type.allow_criteria == true ? '0' : '2' %>">
-          <% if @guw_type.allow_criteria == true %>
-            [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
-          <% end %>
-          <%= guw_cplx.weight %>
-        </td>
-      <% end %>
-    </tr>
-
-    <tr>
-      <td colspan="<%= @guw_type.guw_complexities.size * 2 + 1 %>">
-        <b>
-          <%= @guw_model.coefficient_label %>
-        </b>
-      </td>
-    </tr>
-
-    <% @guw_model.guw_work_units.order("display_order ASC").each do |work_unit| %>
-      <tr>
-        <td>
-          <%= work_unit.name %>
-        </td>
-
-        <% @guw_type.guw_complexities.order("display_order DESC").each do |guw_cplx| %>
-          <td colspan="2" class="align-center">
-            <% cwu = Guw::GuwComplexityWorkUnit.where(guw_complexity_id: guw_cplx.id,
-                                                      guw_work_unit_id: work_unit.id).first %>
-            <%= text_field_tag "value[#{guw_cplx.id}][#{work_unit.id}]", cwu.nil? ? '' : cwu.value, class: "input-mini" %>
-          </td>
-        <% end %>
-        </td>
-      </tr>
-    <% end %>
-
-    <tr>
-      <td colspan="<%= @guw_type.guw_complexities.size * 2 + 1 %>">
-        <b>
-          <%= I18n.t :technology %>
-        </b>
-      </td>
-    </tr>
-
-    <% @guw_model.organization.organization_technologies.each do |technology| %>
-      <tr>
-        <td>
-          <%= technology.name %>
-        </td>
-
-        <% @guw_type.guw_complexities.order("display_order DESC").each do |guw_cplx| %>
-          <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
-                                                        organization_technology_id: technology.id).first %>
-          <td colspan="2" class="align-center">
-            <%= text_field_tag "coefficient[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "input-mini" %>
-          </td>
-        <% end %>
-        </td>
-      </tr>
-    <% end %>
-
-  </table>
-
-  <% if can? :manage_modules_instances, ModuleProject %>
-    <%= submit_tag I18n.t(:label_save), class: "btn btn-mini pull-right" %>
-  <% end %>
-<% end %>
-
-<br>
-
-<% if @guw_type.allow_criteria == true %>
+  <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, @guw_type), class: "btn" %>
+  <%= simple_format(@guw_type.description) %>
 
   <h4>
-    <b><%= I18n.t :label_complexity_attributes %> <%= @guw_type %> </b>
-    <% if can? :manage_modules_instances, ModuleProject %>
-      <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type), class: "btn btn-mini pull-right" %>
-    <% end %>
+    <b>
+      <%= I18n.t(:UO_type_complexity_of, parameter: @guw_type) %>
+    </b>
   </h4>
 
-  <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, @guw_type.id), method: "POST" do %>
-    <table class="table table-bordered">
+  <div class="group_button">
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <%#= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+      <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type), class: "btn" %>
+    <% end %>
+  </div>
+
+  <%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
+    <%= hidden_field_tag :guw_type_id, @guw_type.id %>
+    <table class="table table-bordered table-condensed">
       <tr>
-        <th>
-          Seuils de complexité
-        </th>
-        <% @guw_type.guw_type_complexities.order("display_order DESC").each do |type_complexity| %>
-          <th colspan="2">
-            <%= type_complexity.name %> -
-            <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type, type_complexity) %>
+        <th></th>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+          <th colspan="<%= @guw_outputs.size %>">
+            <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
+            <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx) %>
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
+              - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
             <% end %>
           </th>
         <% end %>
       </tr>
 
       <tr>
-        <th>Attributs</th>
-        <% @guw_type.guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
-          <% if @guw_type.allow_criteria == true %>
-            <th>Prod.</th>
-          <% end %>
-          <th>
-            [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %> (<%= type_complexity.value %>)
+        <th></th>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+          <th colspan="<%= @guw_type.allow_criteria == true ? "#{@guw_outputs.size}" : "#{@guw_outputs.size}" %>" >
+
+            <% if @guw_type.allow_criteria == true %>
+              Calcul. &nbsp;
+            <% end %>
+            <% if @guw_type.allow_criteria == true %>
+              [ &nbsp; ; &nbsp; [ &nbsp; / &nbsp; <%= I18n.t :weight %>
+            <% else %>
+              <%= I18n.t :weight %> - Ordonnée à l'origine
+            <% end %>
           </th>
         <% end %>
       </tr>
 
-      <% @guw_model.guw_attributes.order("name ASC").each do |guw_attribute| %>
+      <tr>
+        <th>Seuils</th>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+          <th class="align-center" colspan="<%= @guw_type.allow_criteria == true ? "#{@guw_outputs.size}" : "#{@guw_outputs.size}" %>">
+            <% if @guw_type.allow_criteria == true %>
+              <%= check_box_tag "enable_value[#{@guw_type.id}][#{guw_cplx.id}]", "enable", guw_cplx.enable_value, class: "input-xmini" %> &nbsp;&nbsp;&nbsp;
+            <% end %>
+            <% if @guw_type.allow_criteria == true %>
+              [ <%= guw_cplx.bottom_range %> ; <%= guw_cplx.top_range %> [ ;
+            <% end %> &nbsp;&nbsp;&nbsp;
+            <%= guw_cplx.weight %> x + <%= guw_cplx.weight_b.nil? ? 0 : guw_cplx.weight_b %>
+          </th>
+        <% end %>
+      </tr>
+
+      <tr>
+        <th><%= link_to "Valeur initiale (Σ)", "#", class: "pull-left" %></th>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
+          <% @guw_outputs.each do |guw_output| %>
+            <th>
+              <%= guw_output.name %>
+            </th>
+          <% end %>
+        <% end %>
+      </tr>
+      <tr>
+        <td>Un (1)</td>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
+          <% @guw_outputs.each do |guw_output| %>
+            <td class="align-center">
+
+              <% oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
+                                                                    guw_output_id: guw_output.id).first %>
+
+              <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "input-mini" %>
+            </td>
+          <% end %>
+        <% end %>
+      </tr>
+      <tr>
+        <td>UO CPLX</td>
+        <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
+          <% @guw_outputs.each do |guw_output| %>
+            <td class="align-center">
+
+              <% oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id,
+                                                      guw_output_id: guw_output.id).first %>
+
+              <%= text_field_tag "value_cplx[#{guw_complexity.id}][#{guw_output.id}]", oc.nil? ? '' : oc.value, class: "input-mini" %>
+            </td>
+          <% end %>
+        <% end %>
+      </tr>
+      <% @guw_outputs.each do |aguw_output| %>
         <tr>
-          <td class="align-center">
-            <%= link_to guw_attribute, guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute) %>
+          <td>
+            <%= aguw_output.name %>
+            <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                                              guw_output_id: aguw_output.id,
+                                              guw_type_id: @guw_type.id).first %>
+            &nbsp;
+            &nbsp;
+            <%= select_tag "display_modif[#{aguw_output.id}]",
+                           options_for_select([["Ne pas afficher", nil],
+                                               ["Afficher sans modification", "display"],
+                                               ["Afficher avec modification", "display_modif"],
+                                               ["Modifier seulement", "modif"]],
+                                              selected: got.nil? ? nil : got.display_type), class: "input-large" %>
           </td>
-          <% @guw_type.guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
+          <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
+            <% @guw_outputs.each do |guw_output| %>
 
-            <% ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id, guw_type_id: @guw_type, guw_type_complexity_id: type_complexity.id).first %>
-
-            <td class="align-center">
-              <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "input-mini" %>
-            </td>
-            <td class="align-center">
-              <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "input-mini" %>
-              <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "input-mini" %>
-              <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? type_complexity.value : ac.value, class: "input-mini" %>
-            </td>
+              <% oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+                                                       guw_output_associated_id: aguw_output.id,
+                                                       guw_output_id: guw_output.id).first %>
+              <td class="align-center">
+                <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "input-mini" %>
+              </td>
+            <% end %>
           <% end %>
         </tr>
       <% end %>
+
+      <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+
+        <% guw_coefficient_elements = guw_coefficient.guw_coefficient_elements %>
+
+        <tr>
+          <th>
+            <b class="pull-left">
+              x <%= link_to guw_coefficient.name, "#" %>
+            </b>
+          </th>
+          <% guw_type_guw_complexities.each do |gc| %>
+            <% @guw_outputs.each do |guw_output| %>
+              <th>
+                <%= guw_output.name %>
+              </th>
+            <% end %>
+          <% end %>
+
+          <% guw_complexity_coefficient_elements = {} %>
+          <% @guw_type.guw_complexity_coefficient_elements.each do |gcce| %>
+            <% guw_complexity_coefficient_elements["#{gcce.guw_complexity_id}_#{gcce.guw_coefficient_element_id}_#{gcce.guw_output_id}"] = (gcce.value.nil? ? nil : gcce.value) %>
+          <% end %>
+
+          <% guw_coefficient_elements.each do |guw_coefficient_element| %>
+            <tr>
+              <td>
+                <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>)
+              </td>
+              <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+                <% @guw_outputs.each do |guw_output| %>
+                  <td class="align-center">
+                    <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
+                  </td>
+                <% end %>
+              <% end %>
+            </tr>
+
+          <% end %>
+          </td>
+          </tr>
+      <% end %>
+
+      <% if @guw_model.allow_technology == true %>
+        <tr>
+          <th colspan="<%= @guw_type.guw_complexities.size * 2 + 1 %>">
+            <b class="pull-left">
+              <%= I18n.t :technology %>
+            </b>
+          </th>
+        </tr>
+      <% end %>
+
+      <% if @guw_model.allow_technology == true %>
+        <% @guw_model.organization.organization_technologies.each do |technology| %>
+          <tr>
+            <td>
+              <%= technology.name %>
+            </td>
+
+            <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+              <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
+                                                            organization_technology_id: technology.id).first %>
+              <td colspan="<%= @guw_outputs.size %>" class="align-center">
+                <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "input-mini" %>
+              </td>
+            <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+
     </table>
 
-    <% unless @guw_model.guw_attributes.empty? %>
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= submit_tag I18n.t(:save), class: "btn btn-mini pull-right" %>
-      <% end %>
-      <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn btn-mini pull-right button_margin_right' %>
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <div class="group_button">
+        <%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <br>
+  <hr>
+
+  <% if @guw_type.allow_criteria == true %>
+
+    <h5><%= I18n.t :label_complexity_attributes %> <%= @guw_type %> </h5>
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <div class="group_button">
+        <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type), class: "btn" %>
+      </div>
     <% end %>
 
-    <br>
+
+    <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, @guw_type.id), method: "POST" do %>
+      <table class="table table-bordered">
+        <tr>
+          <th>
+            Seuils de complexité
+          </th>
+          <% guw_type_guw_type_complexities.order("display_order asc").each do |type_complexity| %>
+            <th colspan="5">
+              <%= type_complexity.name %> (<%= type_complexity.value %>) -
+              <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type, type_complexity) %>
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
+              <% end %>
+            </th>
+          <% end %>
+        </tr>
+
+        <tr>
+          <th>Attributs</th>
+          <th colspan="<%= (guw_type_guw_type_complexities.size) * 5 %>"></th>
+        </tr>
+
+        <tr>
+          <th></th>
+          <% guw_type_guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
+            <th>ax + b</th>
+            <th>Min [</th>
+            <th>Max [</th>
+            <th>a</th>
+            <th>b</th>
+          <% end %>
+        </tr>
+
+        <% guw_model_guw_attributes.order("name ASC").each do |guw_attribute| %>
+          <tr>
+            <td class="align-center">
+
+              <% gat = Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
+                                                   guw_attribute_id: guw_attribute.id).first_or_create %>
+
+              <% if gat.nil? %>
+                <%= link_to guw_attribute, "#" %>
+              <% else %>
+                <%= link_to "#{guw_attribute} (#{gat.default_value})", guw.edit_guw_model_guw_type_guw_attribute_type_path(@guw_model, @guw_type, gat) %>
+              <% end %>
+            </td>
+            <% guw_type_guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
+
+              <% ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id, guw_type_id: @guw_type, guw_type_complexity_id: type_complexity.id).first %>
+
+              <td class="align-center">
+                <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "input-mini" %>
+              </td>
+              <td class="align-center">
+                <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "input-mini" %>
+              </td>
+              <td class="align-center">
+                <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "input-mini" %>
+              </td>
+              <td class="align-center">
+                <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "input-mini" %>
+              </td>
+              <td class="align-center">
+                <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "input-mini" %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+
+      <% unless guw_model_guw_attributes.empty? %>
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn' %>
+      <% end %>
+
+      <br>
+    <% end %>
   <% end %>
-<% end %>
+</div>
