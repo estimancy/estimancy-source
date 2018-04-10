@@ -1004,11 +1004,11 @@ class ProjectsController < ApplicationController
           params["user_securities"].each do |psl|
             params["user_securities"][psl.first].each do |user|
               ps = @project.project_securities.where(user_id: user.first.to_i, project_security_level_id: psl.first,
-                                                     is_model_permission: @project.is_model, is_estimation_permission: true).first
+                                                     is_model_permission: @project.is_model.nil? ? false : true, is_estimation_permission: true).first
               if ps
                 user_securities_a_garder << ps
               else
-                user_securities_to_add << @project.project_securities.create(user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model, is_estimation_permission: true,
+                user_securities_to_add << @project.project_securities.create(user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model.nil? ? false : true, is_estimation_permission: true,
                                                                              originator_id: @current_user.id, event_organization_id: @organization.id)
               end
             end
@@ -1029,12 +1029,12 @@ class ProjectsController < ApplicationController
               owner = User.where(initials: owner_key.value).first
 
               ps = @project.project_securities.where(user_id: owner.id.to_i, project_security_level_id: psl.first,
-                                                      is_model_permission: @project.is_model, is_estimation_permission: false).first
+                                                      is_model_permission: @project.is_model.nil? ? false : true, is_estimation_permission: false).first
               if ps
                 user_from_model_securities_a_garder << ps
               else
                 user_from_model_securities_to_add << @project.project_securities.create(user_id: owner.id.to_i, project_security_level_id: psl.first,
-                                                                                         is_model_permission: @project.is_model, is_estimation_permission: false,
+                                                                                         is_model_permission: @project.is_model.nil? ? false : true, is_estimation_permission: false,
                                                                                          originator_id: @current_user.id, event_organization_id: @organization.id)
               end
             end
