@@ -13,11 +13,11 @@
 
     <div id="tabs-1">
 
-        <%= hidden_field_tag :project_id, @project.id %>
+      <%= hidden_field_tag :project_id, @project.id %>
 
+      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
       <%= f.input :business_need, :label => "#{I18n.t 'business_need'}", :disabled => !(can?(:alter_request_number, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
       <%= f.input :request_number, :label => "#{I18n.t 'request_number'}", :disabled => !(can?(:alter_request_number, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project)), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
 
       <% if @project.new_record? %>
         <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
