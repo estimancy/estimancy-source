@@ -510,6 +510,9 @@ class Project < ActiveRecord::Base
       new_prj.parent_id = old_prj.id
       new_prj.creator_id = current_user.id rescue nil
 
+      # On met à jour ce champs pour la gestion des Trigger
+      new_prj.is_new_created_record = true
+
       new_prj.version_number = version_number  #set_project_version(old_prj)
       # if version_number.blank?
       #   new_prj.version_number = set_project_version(old_prj)

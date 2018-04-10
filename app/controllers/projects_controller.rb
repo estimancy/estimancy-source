@@ -547,8 +547,12 @@ class ProjectsController < ApplicationController
 
     @project_title = params[:project][:title]
     @project = Project.new(params[:project])
+
     if @project.new_record?
       @project.is_model = @is_model
+
+      # On met à jour ce champs pour la gestion des Trigger
+      @project.is_new_created_record = true
     end
 
     if @is_model == true
@@ -696,6 +700,9 @@ class ProjectsController < ApplicationController
               end
             end
           end
+
+          # On remet à jour ce champs pour la gestion des Trigger
+          @project.update_attribute(:is_new_created_record, false)
 
           # Update project's organization estimations counter
           unless @is_model == "true" || @current_user.super_admin == true
@@ -2289,6 +2296,9 @@ public
       new_prj.use_automatic_quotation_number = false
     end
 
+    # On met à jour ce champs pour la gestion des Trigger
+    new_prj.is_new_created_record = true
+
     # new_prj.is_private = old_prj.is_private
 
     #=======
@@ -2555,6 +2565,9 @@ public
             end
           end
         end
+
+        # On remet à jour ce champs pour la gestion des Trigger
+        new_prj.update_attribute(:is_new_created_record, false)
 
         # Update project's organization estimations counter
         unless new_prj.is_model == true || @current_user.super_admin == true
@@ -3133,6 +3146,9 @@ public
     new_project_version = params['new_project_version']
 
     new_prj = old_prj.checkout_project_base(current_user, description, version_number, archive_last_project_version, new_project_version)
+
+    # On remet à jour ce champs pour la gestion des Trigger
+    new_prj.is_new_created_record = false
 
     #begin
       #new_prj.transaction do
