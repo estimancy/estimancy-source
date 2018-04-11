@@ -425,7 +425,7 @@ frsncf:
   event_types: "Types d'évènements"
 
   #events
-  start_date: "Date de début du projet"
+  start_date: "Date de demande du devis"
   end_date: "Date de fin du projet"
   event_type_id: "Event id"
   project_id: "Project id"
@@ -649,7 +649,7 @@ frsncf:
   auth_type: "Authentification de l'utilisateur"
   informations: "Informations sur l'utilisateur"
   user_status: "Statut de l'utilisateur"
-  created_at: "Créer le"
+  created_at: "Créé le"
   updated_at: "Mis à jour le"
   last_login: "Dernière connexion"
   previous_login: "Connexion précédente"

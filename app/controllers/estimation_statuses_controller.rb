@@ -72,7 +72,7 @@ class EstimationStatusesController < ApplicationController
     relations_to_destroy = []
 
     @organization.estimation_statuses.all.each do |status|
-      status.update_attribute(:transaction_id, status.transaction_id.next)
+      status.update_attribute(:transaction_id, status.transaction_id.nil? ? "#{status.id}_1" : (status.transaction_id.next rescue "#{status.id}_1"))
 
       params[:status_group_role][status.id.to_s] ||= {}
       @organization.groups.each do |group|
@@ -130,6 +130,8 @@ class EstimationStatusesController < ApplicationController
     set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('new_estimation_status') => ""
 
     if @estimation_status.save
+      @estimation_status.update_attribute(:transaction_id, "#{@estimation_status.id}_1")
+
       # Create the status self transition
       StatusTransition.create(from_transition_status_id: @estimation_status.id, to_transition_status_id: @estimation_status.id)
       flash[:notice] = I18n.t (:notice_estimation_status_successful_created)
@@ -150,6 +152,9 @@ class EstimationStatusesController < ApplicationController
     set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('estimation_status_edition') => ""
 
     if @estimation_status.update_attributes(params[:estimation_status])
+      @estimation_status.transaction_id = @estimation_status.transaction_id.nil? ? "#{@estimation_status.id}_1" : @estimation_status.transaction_id.next rescue "#{@estimation_status.id}_1"
+      @estimation_status.save
+
       flash[:notice] = I18n.t (:notice_estimation_status_successful_updated)
       redirect_to redirect_apply(edit_estimation_status_path(params[:estimation_status]), nil, organization_setting_path(@organization, :anchor => 'tabs-estimations-statuses'))
     else
