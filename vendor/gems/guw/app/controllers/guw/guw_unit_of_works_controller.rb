@@ -1723,9 +1723,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    #gestion des valeurs intermédiaires
-    @final_value = (@guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
-
     @guw_unit_of_work.quantity = params["hidden_quantity"]["#{@guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{@guw_unit_of_work.id}"].to_f
 
     if @guw_unit_of_work.changed?
@@ -1743,6 +1740,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: @guw_unit_of_work.guw_complexity_id,
                                                           guw_output_id: guw_output.id).first
+
+
+      if @oc.nil?
+        #gestion des valeurs intermédiaires
+        @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
+      else
+        @final_value = (@guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
+      end
 
       coeffs = []
       percents = []
