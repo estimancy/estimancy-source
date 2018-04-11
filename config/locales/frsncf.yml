@@ -425,7 +425,7 @@ frsncf:
   event_types: "Types d'évènements"
 
   #events
-  start_date: "Date de début du projet"
+  start_date: "Date de demande du devis"
   end_date: "Date de fin du projet"
   event_type_id: "Event id"
   project_id: "Project id"
