@@ -551,14 +551,14 @@
                   <h5>
                     <%= I18n.t(:uw_name) %>
                   </h5>
-                  <%= text_field_tag :name, "", class: "input-xlarge" %>
+                  <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
                 </p>
 
                 <p>
                   <h5>
                     <%= I18n.t(:comments) %>
                   </h5>
-                  <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge" %>
+                  <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
                 </p>
 
                 <p>
@@ -569,7 +569,7 @@
                     <%= select_tag :guw_type_id,
                                    options_for_select(@guw_types.map{|i| [i.name, i.id]}.to_a.sort),
                                    include_blank: false,
-                                   class: "input-xlarge" %>
+                                   class: "input-xlarge uo_type" %>
                   <% end %>
                 </p>
 

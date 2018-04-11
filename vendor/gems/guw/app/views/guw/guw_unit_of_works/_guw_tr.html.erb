@@ -485,8 +485,11 @@
 <% end %>
 
 <script>
-  (".new_guw_button").click(function(){
+  $(".new_guw_button").click(function(){
     $(".hidden_position").val($(this).data("position"));
+    $(".uo_name").val("");
+    $(".uo_comment").val("");
+    $('select.uo_type option:first-child').attr("selected", "selected");
   });
 </script>
 
