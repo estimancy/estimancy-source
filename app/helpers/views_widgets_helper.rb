@@ -503,48 +503,92 @@ module ViewsWidgetsHelper
     widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable }
 
     ############################ Get the view_widget size  ############################
-    ft_maxFontSize_without_mm = 50###75
-    ft_maxFontSize_with_mm = 45###60
-    ft_minMax_maxFontSize = 15###20
-    icon_font_size = 1.6###2
 
-    # The widget size with : margin-right = 10px
-    height = (initial_height*view_widget.height.to_i) + 5*(view_widget.height.to_i - 1)   #margin is now 5 unless of 10
-    width = (initial_width*view_widget.width.to_i) + 5*(view_widget.width.to_i - 1)
-    # update size in the results hash
-    widget_data[:width] = width
-    widget_data[:height] = height
+    # Si on affiche une vignette du nom du Ratio
+    if view_widget.estimation_value.pe_attribute.alias == "ratio_name"
+      ft_maxFontSize_without_mm = 50 #75
+      icon_font_size = 1.7 ###2
 
-    case view_widget.height.to_i
-      when 1..2
-        icon_font_size = 1.7###2
-        if view_widget.height.to_i == 3
-          icon_font_size = 2.5###3
-        end
-        ft_maxFontSize_without_mm = 20###30
-        ft_maxFontSize_with_mm = 15###30
-        ft_minMax_minFontSize = 5###6
-        ft_minMax_maxFontSize = 10###12
+      # The widget size with : margin-right = 10px
+      height = (initial_height*view_widget.height.to_i) + 5*(view_widget.height.to_i - 1)   #margin is now 5 unless of 10
+      width = (initial_width*view_widget.width.to_i) + 5*(view_widget.width.to_i - 1)
+      # update size in the results hash
+      widget_data[:width] = width
+      widget_data[:height] = height
 
-        if view_widget.width.to_i <= 1
-          ft_minMax_minFontSize = 4###4.5
+      case view_widget.height.to_i
+        when 1..2
+          icon_font_size = 1.2 ###2
+          if view_widget.height.to_i == 3
+            icon_font_size = 2.6 ###3
+          end
+          ft_maxFontSize_without_mm = 10###20
+          if view_widget.width.to_i <= 1
+            ft_minMax_minFontSize = 3###3.5
+          else
+            ft_minMax_minFontSize = 5###6.5
+          end
+        when 3
+          icon_font_size = 2.5
+          ft_maxFontSize_without_mm = 10###20
         else
-          ft_minMax_minFontSize = 5###7.5
-        end
-      when 3
-        icon_font_size = 2###2.5 #3
-        ft_maxFontSize_without_mm = 20###30
-        ft_maxFontSize_with_mm = 15###30
-        ft_minMax_maxFontSize = 10###12
-      else
-        icon_font_size = ((height+width)/2) * 0.025
-        if icon_font_size > 3 && icon_font_size < 6
-          icon_font_size = 3 #4
-        elsif icon_font_size > 6
-          icon_font_size = 4 #5
-        end
+          icon_font_size = ((height+width)/2) * 0.025
+          if icon_font_size > 3 && icon_font_size < 6
+            icon_font_size = 3
+          elsif icon_font_size > 6
+            icon_font_size = 4
+          end
+      end
+      text_size = ((height+width)/2) * 0.006  # 0.015
+
+    else
+
+      ############################ Get the view_widget size  ############################
+      ft_maxFontSize_without_mm = 50###75
+      ft_maxFontSize_with_mm = 45###60
+      ft_minMax_maxFontSize = 15###20
+      icon_font_size = 1.6###2
+
+      # The widget size with : margin-right = 10px
+      height = (initial_height*view_widget.height.to_i) + 5*(view_widget.height.to_i - 1)   #margin is now 5 unless of 10
+      width = (initial_width*view_widget.width.to_i) + 5*(view_widget.width.to_i - 1)
+      # update size in the results hash
+      widget_data[:width] = width
+      widget_data[:height] = height
+
+      case view_widget.height.to_i
+        when 1..2
+          icon_font_size = 1.7###2
+          if view_widget.height.to_i == 3
+            icon_font_size = 2.5###3
+          end
+          ft_maxFontSize_without_mm = 20###30
+          ft_maxFontSize_with_mm = 15###30
+          ft_minMax_minFontSize = 5###6
+          ft_minMax_maxFontSize = 10###12
+
+          if view_widget.width.to_i <= 1
+            ft_minMax_minFontSize = 4###4.5
+          else
+            ft_minMax_minFontSize = 5###7.5
+          end
+        when 3
+          icon_font_size = 2###2.5 #3
+          ft_maxFontSize_without_mm = 20###30
+          ft_maxFontSize_with_mm = 15###30
+          ft_minMax_maxFontSize = 10###12
+        else
+          icon_font_size = ((height+width)/2) * 0.025
+          if icon_font_size > 3 && icon_font_size < 6
+            icon_font_size = 3 #4
+          elsif icon_font_size > 6
+            icon_font_size = 4 #5
+          end
+      end
+      text_size = ((height+width)/2) * 0.011  #((height+width)/2) * 0.015
     end
-    text_size = ((height+width)/2) * 0.011  #((height+width)/2) * 0.015
+
+
     min_max_size = ((height+width)/2) * 0.005   #((height+width)/2) * 0.009
 
     # get the fitText minFontSize and maxFontSize
