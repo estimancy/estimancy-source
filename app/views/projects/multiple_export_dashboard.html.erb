@@ -46,12 +46,25 @@
            view_widgets.select{|view_widget| view_widget.widget_type == "text" }.each do |view_widget|
              unless view_widget.estimation_value.nil?
                begin
-                 if view_widget.estimation_value.pe_attribute.alias == "cost"
-                   total_cost << view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f
+                 if module_project.wbs_activity.nil?
+                   if view_widget.estimation_value.pe_attribute.alias == "cost"
+                     total_cost << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   else
+                     total_effort << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   end
                  else
-                   total_effort << view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   if view_widget.estimation_value.pe_attribute.alias == "cost"
+                     total_cost << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   else
+                     total_effort << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   end
                  end
                rescue
+                 if view_widget.estimation_value.pe_attribute.alias == "cost"
+                   total_cost << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id].to_f
+                 else
+                   total_effort << view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id].to_f
+                 end
                end
              end
            end
@@ -397,14 +410,14 @@
               <table class="table table-condensed main" style="font-size: 10px;">
                 <tr>
                   <th>
-                        <span class="pull-left">
-                          Nom
-                        </span>
+                    <span class="pull-left">
+                      Nom
+                    </span>
                   </th>
                   <th>
-                        <span class="pull-left">
-                          Type
-                        </span>
+                    <span class="pull-left">
+                      Type
+                    </span>
                   </th>
                   <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                     <% unless i[1].blank? %>
@@ -412,26 +425,26 @@
                         <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
                         <% unless guw_coefficient.nil? %>
                           <th class="span1">
-                                <span class="pull-left">
-                                  <%= i[0] %>
-                                </span>
+                            <span class="pull-left">
+                              <%= i[0] %>
+                            </span>
                           </th>
                         <% end %>
                       <% elsif i[0] == "Coefficient" %>
                         <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
                           <th class="span1">
-                                <span>
-                                  <%= i[0] %>
-                                </span>
+                            <span>
+                              <%= i[0] %>
+                            </span>
                           </th>
                         <% end %>
                       <% elsif i[0] == "Critères" %>
 
                       <% elsif i[0] == "Coeff. de Complexité" %>
                         <% if i[1].blank? %>
-                              <span class="pull-left">
-                                <%= i[0] %>
-                              </span>
+                          <span class="pull-left">
+                            <%= i[0] %>
+                          </span>
                         <% else %>
                           <th class="span1">
                             <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
@@ -443,9 +456,9 @@
                         <% end %>
                       <% else %>
                         <th class="span1">
-                              <span class="pull-left">
-                                <%= i[0] %>
-                              </span>
+                          <span class="pull-left">
+                            <%= i[0] %>
+                          </span>
                         </th>
                       <% end %>
                     <% end %>
@@ -552,7 +565,7 @@
                     </p>
                   <% else %>
                     <p>
-                      <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[current_component.id].to_f.round(user_number_precision),
+                      <%= Guw::GuwModel::display_value(view_widget.estimation_value.string_data_probable[project.pbs_project_elements.first.id].to_f.round(user_number_precision),
                                                        view_widget.estimation_value,
                                                        view_widget,
                                                        current_user) %>
