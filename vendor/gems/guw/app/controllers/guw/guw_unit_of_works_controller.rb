@@ -2821,7 +2821,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
                 unless @guw_type.nil?
-                  if (@guw_type.allow_complexity == true && @guw_type.allow_criteria == false)
+                  if (@guw_type.allow_complexity == true && (@guw_type.allow_criteria == false || @guw_type.allow_criteria == nil))
                     if guw_uow.guw_complexity.nil?
                       array_pert << 0
                     else
