@@ -187,18 +187,18 @@ class PermissionsController < ApplicationController
   def import_permissions
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
         if index > 0 && !row[0].nil?
-          permission = Permission.where(alias: row[2]).first
+          permission = Permission.where(alias: row[2].value).first
           if permission.nil?
-            Permission.create( name: row[0],
-                               description: row[1],
-                               alias: row[2],
-                               object_type: row[3],
-                               category: row[4],
-                               object_associated: row[7])
+            Permission.create( name: row[0].value,
+                               description: row[1].value,
+                               alias: row[2].value,
+                               object_type: row[3].value,
+                               category: row[4].value,
+                               object_associated: row[7].value)
           end
         end
       end

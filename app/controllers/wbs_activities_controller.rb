@@ -1231,8 +1231,8 @@ class WbsActivitiesController < ApplicationController
         first_page << [I18n.t(:advice_ge), ""]
 
         first_page.each_with_index do |row, index|
-          model_worksheet.add_cell(index, 0, row[0])
-          model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+          model_worksheet.add_cell(index, 0, row[0].value)
+          model_worksheet.add_cell(index, 1, row[1].value).change_horizontal_alignment('center')
           ["bottom", "right"].each do |symbole|
             model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
             model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
@@ -1609,7 +1609,7 @@ class WbsActivitiesController < ApplicationController
                 elements_worksheet = workbook[1] ###workbook[I18n.t(:wbs_elements)]
 
                 begin
-                  elements_worksheet_tab = elements_worksheet.extract_data
+                  elements_worksheet_tab = elements_worksheet
                 rescue
                   flash[:error] = "La feuille des éléments de la WBS n'existe pas"
                   redirect_to request.referer + "#tabs-1" #and return
@@ -1619,9 +1619,9 @@ class WbsActivitiesController < ApplicationController
                 elements_worksheet_tab.each_with_index do | row, index |
                   if index != 0 && !row.nil?
                     activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id,
-                                                                 position: row[0].to_f, phase_short_name: row[1],
-                                                                 name: row[2], description: row[3], is_root: row[4])
-                    elements_parents["#{activity_element.id}"] = row[5]
+                                                                 position: row[0].value.to_f, phase_short_name: row[1].value,
+                                                                 name: row[2].value, description: row[3].value, is_root: row[4].value)
+                    elements_parents["#{activity_element.id}"] = row[5].value
                   end
                 end
 
@@ -1655,7 +1655,7 @@ class WbsActivitiesController < ApplicationController
                 ######## Ratios worksheet  ######
                 ratios_worksheet = workbook["Ratios"]
                 begin
-                  ratios_worksheet_tab = ratios_worksheet.extract_data
+                  ratios_worksheet_tab = ratios_worksheet
                 rescue
                   flash[:error] = "La feuille contenant la liste des Ratios n'existe pas"
                   redirect_to request.referer + "#tabs-1" #and return
@@ -1665,8 +1665,8 @@ class WbsActivitiesController < ApplicationController
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
                     begin
-                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id, name: row[0], description: row[1],
-                                              do_not_show_cost: row[2], do_not_show_phases_with_zero_value: row[3], comment_required_if_modifiable: row[4])
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id, name: row[0].value, description: row[1].value,
+                                              do_not_show_cost: row[2].value, do_not_show_phases_with_zero_value: row[3].value, comment_required_if_modifiable: row[4].value)
                     rescue
                       # ignored
                     end
@@ -1687,7 +1687,7 @@ class WbsActivitiesController < ApplicationController
 
                   ratio_elements_worksheet = workbook["#{ratio.name}"]
                   begin
-                    ratio_elements_worksheet_tab = ratio_elements_worksheet.extract_data
+                    ratio_elements_worksheet_tab = ratio_elements_worksheet
                   rescue
                     flash[:error] = "La feuille des éléments du ratio '#{ratio.name}' n'existe pas"
                     redirect_to request.referer + "#tabs-1" #and return
@@ -1701,16 +1701,16 @@ class WbsActivitiesController < ApplicationController
                           # Wbs-activity_ratio-variables
                           when ratio_variables_line+1..ratio_variables_line+4
 
-                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id, name: row[1], percentage_of_input: row[2],
-                                                            is_modifiable: row[3], is_used_in_ratio_calculation: row[4], description: row[5],
+                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id, name: row[1].value, percentage_of_input: row[2].value,
+                                                            is_modifiable: row[3].value, is_used_in_ratio_calculation: row[4].value, description: row[5].value,
                                                             organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
 
                           # Elements formulas
                           when formulas_line+1..formulas_line+@wbs_activity_elements.size
 
-                            wbs_activity_element = @wbs_activity_elements.where(name: row[3]).first
+                            wbs_activity_element = @wbs_activity_elements.where(name: row[3].value).first
                             WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id, wbs_activity_element_id: wbs_activity_element.id,
-                                                           is_optional: row[5], effort_is_modifiable: row[6], cost_is_modifiable: row[7], formula: row[8],
+                                                           is_optional: row[5].value, effort_is_modifiable: row[6].value, cost_is_modifiable: row[7].value, formula: row[8].value,
                                                            organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
 
                           # Ratio-elements par profile
@@ -1718,7 +1718,7 @@ class WbsActivitiesController < ApplicationController
 
                             if index == ratio_profiles_line
                               (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
-                                val = row[j]
+                                val = row[j].value
                                 if !val.blank?
                                   profile = @wbs_activity_profiles.where(name: val).first
                                   unless profile.nil?
@@ -1728,7 +1728,7 @@ class WbsActivitiesController < ApplicationController
                               end
 
                             else
-                              wbs_activity_element = @wbs_activity_elements.where(name: row[2]).first
+                              wbs_activity_element = @wbs_activity_elements.where(name: row[2].value).first
                               ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
 
                               @wbs_activity_profiles.each do |profile|
@@ -1737,7 +1737,7 @@ class WbsActivitiesController < ApplicationController
                                   if row[k].blank?
                                     ratio_value = nil
                                   else
-                                    ratio_value = row[k].to_f
+                                    ratio_value = row[k].value.to_f
                                   end
 
                                   WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)

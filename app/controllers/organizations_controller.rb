@@ -886,15 +886,16 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      # Remove exract data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_app = ProjectArea.new(name: row[0], description: row[1],organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_app = ProjectArea.new(name: row[0].value, description: row[1].value,organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -913,15 +914,15 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_app = ProjectCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_app = ProjectCategory.new(name: row[0].value, description: row[1].value,organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -940,15 +941,15 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_app = PlatformCategory.new(name: row[0], description: row[1],organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_app = PlatformCategory.new(name: row[0].value, description: row[1].value,organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -967,15 +968,15 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_app = AcquisitionCategory.new(name: row[0], description: row[1], organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_app = AcquisitionCategory.new(name: row[0].value, description: row[1].value, organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -995,21 +996,21 @@ class OrganizationsController < ApplicationController
     tab_warning_messages = ""
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
+        if index > 0 && !row[0].value.nil?
 
-          new_profile = OrganizationProfile.where(name: row[0], organization_id: @organization.id).first
+          new_profile = OrganizationProfile.where(name: row[0].value, organization_id: @organization.id).first
           if new_profile
             tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
           else
-            new_profile = OrganizationProfile.new(name: row[0], description: row[1], cost_per_hour: row[2], organization_id: @organization.id)
+            new_profile = OrganizationProfile.new(name: row[0].value, description: row[1].value, cost_per_hour: row[2].value, organization_id: @organization.id)
             unless new_profile.save
               tab_error << index + 1
             end
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -1031,15 +1032,15 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_provider = Provider.new(name: row[0], organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_provider = Provider.new(name: row[0].value, organization_id: @organization.id)
           unless new_provider.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -1172,11 +1173,11 @@ class OrganizationsController < ApplicationController
       flash[:error] = I18n.t(:route_flag_error_17)
     elsif !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
         if index > 0
-          new_app = Application.new(name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0]), organization_id: @organization.id)
+          new_app = Application.new(name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value), organization_id: @organization.id)
           unless new_app.save
             tab_error << index + 1
           end
@@ -1215,15 +1216,15 @@ class OrganizationsController < ApplicationController
     tab_error = []
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       workbook = RubyXL::Parser.parse(params[:file].path)
-      tab = workbook[0].extract_data
+      tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].nil?
-          new_group = Group.new(name: row[0], description: row[1], organization_id: @organization.id)
+        if index > 0 && !row[0].value.nil?
+          new_group = Group.new(name: row[0].value, description: row[1].value, organization_id: @organization.id)
           unless new_group.save
             tab_error << index + 1
           end
-        elsif row[0].nil?
+        elsif row[0].value.nil?
           tab_error << index + 1
         end
       end
@@ -3199,7 +3200,7 @@ class OrganizationsController < ApplicationController
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
-        tab = worksheet.extract_data
+        tab = worksheet
 
         tab.each_with_index do |line, index_line|
         if index_line > 0
@@ -3302,19 +3303,19 @@ class OrganizationsController < ApplicationController
           unless i == 0
             password = SecureRandom.hex(8)
 
-            user = User.where(login_name: row[3]).first
+            user = User.where(login_name: row[3].value).first
             if user.nil?
 
-              u = User.new(first_name: row[0],
-                           last_name: row[1],
-                           email: row[2],
-                           login_name: row[3],
-                           id_connexion: row[3],
+              u = User.new(first_name: row[0].value,
+                           last_name: row[1].value,
+                           email: row[2].value,
+                           login_name: row[3].value,
+                           id_connexion: row[3].value,
                            super_admin: false,
                            password: password,
                            password_confirmation: password,
                            language_id: params[:language_id].to_i,
-                           initials: "#{row[0].first}#{row[1].first}",
+                           initials: "#{row[0].value.first}#{row[1].value.first}",
                            time_zone: "Paris",
                            object_per_page: 50,
                            auth_type: AuthMethod.first.id,

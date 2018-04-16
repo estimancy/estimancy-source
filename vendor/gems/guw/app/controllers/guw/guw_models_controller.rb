@@ -94,7 +94,7 @@ class Guw::GuwModelsController < ApplicationController
       if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
         @workbook = RubyXL::Parser.parse(params[:file].path)
         @workbook.each_with_index do |worksheet, index|
-          tab = worksheet.extract_data
+          tab = worksheet
           if !tab.empty?
             if index == 0
 
@@ -173,8 +173,8 @@ class Guw::GuwModelsController < ApplicationController
 
               tab.each_with_index do |row, i|
                 if i != 0 && !row.nil?
-                  Guw::GuwAttribute.create(name: row[0],
-                                           description: row[1],
+                  Guw::GuwAttribute.create(name: row[0].value,
+                                           description: row[1].value,
                                            guw_model_id: @guw_model.id)
                 end
               end
@@ -183,12 +183,12 @@ class Guw::GuwModelsController < ApplicationController
 
               tab.each_with_index do |row, i|
                 if i != 0 && !row.nil?
-                  Guw::GuwCoefficient.create(name: row[0],
-                                             description: row[1],
-                                             coefficient_type: row[2],
+                  Guw::GuwCoefficient.create(name: row[0].value,
+                                             description: row[1].value,
+                                             coefficient_type: row[2].value,
                                              guw_model_id: @guw_model.id,
-                                             allow_intermediate_value: (row[3] == 0) ? false : true,
-                                             deported: (row[4] == 0) ? false : true)
+                                             allow_intermediate_value: (row[3].value == 0) ? false : true,
+                                             deported: (row[4].value == 0) ? false : true)
                 end
               end
 
@@ -200,16 +200,16 @@ class Guw::GuwModelsController < ApplicationController
 
                 tab.each_with_index do |row, i|
                   if i >= 3 && !row.nil?
-                    gce = Guw::GuwCoefficientElement.new(name: row[1],
-                                                         value: row[3],
-                                                         description: row[2],
-                                                         display_order: row[4],
+                    gce = Guw::GuwCoefficientElement.new(name: row[1].value,
+                                                         value: row[3].value,
+                                                         description: row[2].value,
+                                                         display_order: row[4].value,
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
-                                                         default_value: (row[5].to_s == "true") ? 1 : 0,
-                                                         default: (row[5].to_s == "true") ? 1 : 0,
-                                                         color_code: row[6],
-                                                         color_priority: row[7])
+                                                         default_value: (row[5].value.to_s == "true") ? 1 : 0,
+                                                         default: (row[5].value.to_s == "true") ? 1 : 0,
+                                                         color_code: row[6].value,
+                                                         color_priority: row[7].value)
                     gce.save(validate: false)
                   end
                 end
@@ -220,15 +220,15 @@ class Guw::GuwModelsController < ApplicationController
               tab.each_with_index do |row, i|
                 if i >= 1 && !row.nil?
                   unless row[0].blank?
-                    guw_output = Guw::GuwOutput.create(name: row[0],
-                                                       output_type: row[1],
+                    guw_output = Guw::GuwOutput.create(name: row[0].value,
+                                                       output_type: row[1].value,
                                                        guw_model_id: @guw_model.id,
-                                                       allow_intermediate_value: (row[2] == 0) ? false : true,
-                                                       allow_subtotal: (row[3] == 0) ? false : true,
-                                                       standard_coefficient: row[4],
-                                                       display_order: row[5],
-                                                       unit: row[6],
-                                                       allow_subtotal: row[7])
+                                                       allow_intermediate_value: (row[2].value == 0) ? false : true,
+                                                       allow_subtotal: (row[3].value == 0) ? false : true,
+                                                       standard_coefficient: row[4].value,
+                                                       display_order: row[5].value,
+                                                       unit: row[6].value,
+                                                       allow_subtotal: row[7].value)
 
                     attr = PeAttribute.where(name: guw_output.name,
                                              alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
@@ -403,7 +403,7 @@ class Guw::GuwModelsController < ApplicationController
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
       @workbook = RubyXL::Parser.parse(params[:file].path)
       @workbook.each_with_index do |worksheet, index|
-       tab = worksheet.extract_data
+       tab = worksheet
        if !tab.empty?
           if index == 0
             if worksheet.sheet_name != I18n.t(:is_model)
@@ -438,8 +438,8 @@ class Guw::GuwModelsController < ApplicationController
             end
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-               Guw::GuwAttribute.create(name: row[0],
-                                        description: row[1],
+               Guw::GuwAttribute.create(name: row[0].value,
+                                        description: row[1].value,
                                         guw_model_id: @guw_model.id)
               end
             end
@@ -447,9 +447,9 @@ class Guw::GuwModelsController < ApplicationController
 
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-                 Guw::GuwWorkUnit.create(name:row[0],
-                                         value: row[1],
-                                         display_order: row[2],
+                 Guw::GuwWorkUnit.create(name:row[0].value,
+                                         value: row[1].value,
+                                         display_order: row[2].value,
                                          guw_model_id: @guw_model.id)
               end
             end
@@ -457,9 +457,9 @@ class Guw::GuwModelsController < ApplicationController
 
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-                Guw::GuwWeighting.create(name:row[0],
-                                        value: row[1],
-                                        display_order: row[2],
+                Guw::GuwWeighting.create(name:row[0].value,
+                                        value: row[1].value,
+                                        display_order: row[2].value,
                                         guw_model_id: @guw_model.id)
               end
             end
@@ -467,9 +467,9 @@ class Guw::GuwModelsController < ApplicationController
 
             tab.each_with_index do |row, index|
               if index != 0 && !row.nil?
-                Guw::GuwFactor.create(name: row[0],
-                                      value: row[1],
-                                      display_order: row[2],
+                Guw::GuwFactor.create(name: row[0].value,
+                                      value: row[1].value,
+                                      display_order: row[2].value,
                                       guw_model_id: @guw_model.id)
               end
             end
@@ -712,8 +712,8 @@ class Guw::GuwModelsController < ApplicationController
     workbook.add_worksheet(@guw_model.factors_label.blank? ? 'Facteur sans nom 3' : @guw_model.factors_label)
 
     first_page.each_with_index do |row, index|
-      worksheet.add_cell(index, 0, row[0])
-      worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+      worksheet.add_cell(index, 0, row[0].value)
+      worksheet.add_cell(index, 1, row[1].value).change_horizontal_alignment('center')
       ["bottom", "right"].each do |symbole|
         worksheet[index][0].change_border(symbole.to_sym, 'thin')
         worksheet[index][1].change_border(symbole.to_sym, 'thin')
@@ -1069,8 +1069,8 @@ class Guw::GuwModelsController < ApplicationController
     workbook.add_worksheet(I18n.t(:attribute_description))
 
     first_page.each_with_index do |row, index|
-      worksheet.add_cell(index, 0, row[0])
-      worksheet.add_cell(index, 1, row[1])
+      worksheet.add_cell(index, 0, row[0].value)
+      worksheet.add_cell(index, 1, row[1].value)
     end
 
     worksheet.change_column_bold(0,true)
