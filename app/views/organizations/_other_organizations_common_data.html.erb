@@ -1,0 +1,7 @@
+<% @other_organizations.all.each do |organization| %>
+    <div class="span2">
+      <%= organization.name %> <%= check_box_tag("organizations_list_ids[]", organization.id, false, style: "margin-top: -3px;") %>
+    </div>
+<% end %>
+
+<br>
