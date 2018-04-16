@@ -2777,8 +2777,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
 
+                array_pert = Array.new
+
                 if @guw_type.allow_criteria == true
-                  array_pert = Array.new
 
                   @lows = Array.new
                   @mls = Array.new
