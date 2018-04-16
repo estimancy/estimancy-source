@@ -691,7 +691,7 @@ frsncf:
   wbs_elements: "Élément du WBS (arbre)"
   ratios: "Ratios"
   ratios_elements: "Élément des Ratios"
-  change_ratio: "Changer le ratio"
+  change_ratio: "Changer la localisation"
 
   #wbs activity elements
   edit_wbs_activity_element: "Editer l'élément \"%{value}\" du wbs activités"
