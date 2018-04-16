@@ -1,0 +1,35 @@
+<h4><%= "Integrité du corps commun des Modules de Taille" %></h4>
+<br>
+
+<%= form_tag audit_integrity_common_data_path, method: :post do %>
+    <p>
+      CDS de référence :  <%= select_tag("referenced_organization_id", options_for_select(Organization.all.map{|i| [i.name, i.id]} ),
+                                                   prompt: "sélectionner le CDS de référence",
+                                                   class: "input-xlarge") %>
+    </p>
+    <br>
+    <p> Sélectionner les CDS à soumettre à l'audit :</p>
+
+    <div id="audit_common_data_list_of_organizations">
+      <% Organization.all.each do |organization| %>
+          <div class="span2">
+            <%= organization.name %> <%= check_box_tag("organizations_list_ids[]", organization.id, false, style: "margin-top: -3px;") %>
+          </div>
+      <% end %>
+    </div>
+
+    <br>
+    <%= submit_tag "Lancer l'audit", class: "btn btn-primary", style: "margin-top: 10px;" %>
+<% end %>
+
+
+<script>
+    $("#referenced_organization_id").change(function() {
+        return $.ajax({
+            url: "/update_organizations_for_audit_common_data",
+            method: "GET",
+            data: "referenced_organization_id=" + $(this).val()
+        });
+    });
+
+</script>

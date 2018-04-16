@@ -1,4 +1,4 @@
-<div class="tabs">
+
   <h4><%= "Integrité du corps commun des Modules de Taille" %></h4>
   <br>
 
@@ -6,6 +6,7 @@
   <p> Module de Taille de référence :
     <%= link_to @reference_guw_model.name, guw.edit_guw_model_path(@reference_guw_model, organization_id: @reference_organization.id, anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
   </p>
+
   <div style="margin: 10px;">
 
     <%#= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
@@ -36,6 +37,7 @@
     <%# end %>
   </div>
 
+<div class="tabs">
   <ul>
     <li><a href="#tabs-default_data">Données de base</a></li>
     <li><a href="#tabs-guw_attributes"><%= "Les attibuts" %></a></li>
