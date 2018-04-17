@@ -11,7 +11,6 @@
 $(".selected_of_unit_of_work").html("<%= @selected_of_unit_of_works %>");
 $(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
 
-
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
 var gridster = [];
