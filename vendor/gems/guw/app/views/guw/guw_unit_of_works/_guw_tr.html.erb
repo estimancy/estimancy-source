@@ -6,17 +6,20 @@
    gceuws = @guow_guw_coefficient_element_unit_of_works[guow.id]
    gceuws.each do |gceuw|
      # gce = gceuw.guw_coefficient_element
-     gce = gceuw.guw_coefficient_element
-     unless gce.nil?
-       gce_guw_coefficient = gce.guw_coefficient
-       unless gce_guw_coefficient.nil?
-         unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
+     # gce = gceuw.guw_coefficient_element
+     # unless gce.nil?
+     gce_guw_coefficient = gceuw.guw_coefficient
+     unless gce_guw_coefficient.nil?
+       unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
+         gce = gce_guw_coefficient.guw_coefficient_elements.first
+         unless gce.nil?
            if (gceuw.percent.to_f != gce.value.to_f)
              hash_color_priorities[gce.color_priority.to_i] = gce.color_code
            end
          end
        end
      end
+     # end
    end
 
 

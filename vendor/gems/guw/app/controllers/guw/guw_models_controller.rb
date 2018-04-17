@@ -95,45 +95,45 @@ class Guw::GuwModelsController < ApplicationController
         @workbook = RubyXL::Parser.parse(params[:file].path)
         @workbook.each_with_index do |worksheet, index|
           tab = worksheet
-          if !tab.empty?
+          if !tab.nil?
             if index == 0
 
               if worksheet.sheet_name != I18n.t(:is_model)
                 break
               end
 
-              if tab[0][1].nil? || tab[0][1].empty?
+              if tab[0][1].blank?
                 break
               end
 
-              @guw_model = Guw::GuwModel.where(name: tab[0][1],
+              @guw_model = Guw::GuwModel.where(name: tab[0][1].nil? ? nil : tab[0][1].value,
                                                organization_id: @current_organization.id).first
               if @guw_model.nil?
-                @guw_model = Guw::GuwModel.new( name: tab[0][1],
-                                                description: tab[1][1],
-                                                coefficient_label: tab[2][1],
-                                                weightings_label: tab[3][1],
-                                                factors_label: tab[4][1],
-                                                three_points_estimation: tab[5][1].to_i == 1,
-                                                retained_size_unit: tab[6][1],
-                                                hour_coefficient_conversion: tab[7][1],
-                                                default_display: tab[9][1],
+                @guw_model = Guw::GuwModel.new( name: tab[0][1].nil? ? nil : tab[0][1].value,
+                                                description: tab[1][1].nil? ? nil : tab[1][1].value,
+                                                coefficient_label: tab[2][1].nil? ? nil : tab[2][1].value,
+                                                weightings_label: tab[3][1].nil? ? nil : tab[3][1].value,
+                                                factors_label: tab[4][1].nil? ? nil : tab[4][1].value,
+                                                three_points_estimation: tab[5][1].value.to_i == 1,
+                                                retained_size_unit: tab[6][1].nil? ? nil : tab[6][1].value,
+                                                hour_coefficient_conversion: tab[7][1].nil? ? nil : tab[7][1].value,
+                                                default_display: tab[9][1].nil? ? nil : tab[9][1].value,
                                                 organization_id: @current_organization.id,
                                                 allow_technology: false,
-                                                allow_ml: (tab[8][1] == "false") ? false : true,
+                                                allow_ml: (tab[8][1].value == "false") ? false : true,
                                                 view_data: false)
 
 
                 # Create orders (coeff and outputs orders)
                 orders = Hash.new
                 i = 11
-                order_value_coeff = tab[i][0]
+                order_value_coeff = tab[i][0].value rescue nil
                 jj = 0
                 while order_value_coeff.to_s != I18n.t(:config_type)
                   begin
-                    orders["#{tab[i][0]}"] = tab[i][1]
+                    orders["#{tab[i][0]}"] = tab[i][1].value rescue nil
                     i = i+1
-                    order_value_coeff = tab[i][0]
+                    order_value_coeff = tab[i][0].value rescue nil
                   rescue
                     # ignored
                   end
@@ -145,17 +145,17 @@ class Guw::GuwModelsController < ApplicationController
                 @guw_model.config_type = "new"
 
                 begin
-                  @guw_model.allow_excel = ((tab[i+1][1]) == "false") ? false : true
-                  @guw_model.excel_ml_server = tab[i+2][1]
-                  @guw_model.allow_ml_excel = ((tab[i+3][1]) == "false") ? false : true
+                  @guw_model.allow_excel = ((tab[i+1][1].value) == "false") ? false : true rescue nil
+                  @guw_model.excel_ml_server = tab[i+2][1].value rescue nil
+                  @guw_model.allow_ml_excel = ((tab[i+3][1].value) == "false") ? false : true rescue nil
 
-                  @guw_model.allow_jira = ((tab[i+4][1]) == "false") ? false : true
-                  @guw_model.jira_ml_server = tab[i+5][1]
-                  @guw_model.allow_ml_jira = ((tab[i+6][1]) == "false") ? false : true
+                  @guw_model.allow_jira = ((tab[i+4][1].value) == "false") ? false : true rescue nil
+                  @guw_model.jira_ml_server = tab[i+5][1].value rescue nil
+                  @guw_model.allow_ml_jira = ((tab[i+6][1].value) == "false") ? false : true rescue nil
 
-                  @guw_model.allow_redmine = ((tab[i+7][1]) == "false") ? false : true
-                  @guw_model.redmine_ml_server = tab[i+8][1]
-                  @guw_model.allow_ml_redmine = ((tab[i+9][1]) == "false") ? false : true
+                  @guw_model.allow_redmine = ((tab[i+7][1].value) == "false") ? false : true rescue nil
+                  @guw_model.redmine_ml_server = tab[i+8][1].value rescue nil
+                  @guw_model.allow_ml_redmine = ((tab[i+9][1].value) == "false") ? false : true rescue nil
                 rescue
                   @guw_model.allow_excel = true
                   @guw_model.excel_ml_server = ""
@@ -195,7 +195,7 @@ class Guw::GuwModelsController < ApplicationController
             elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
               unless tab[0].nil?
-                coefficient = Guw::GuwCoefficient.where(name: tab[0][1],
+                coefficient = Guw::GuwCoefficient.where(name: tab[0][1].nil? ? nil : tab[0][1].value,
                                                         guw_model_id: @guw_model.id).first
 
                 tab.each_with_index do |row, i|
@@ -260,28 +260,31 @@ class Guw::GuwModelsController < ApplicationController
             else
 
               @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                              description: tab[1][0],
-                                              allow_quantity: tab[5][1] == 1,
-                                              allow_retained: tab[4][1] == 1,
-                                              allow_complexity: tab[7][1] == 1,
-                                              allow_criteria: tab[2][1] == 1,
-                                              attribute_type: (tab[3][1] == "Pourcentage") ? "Pourcentage" : "Coefficient",
-                                              display_threshold: tab[6][1] == 1,
+                                              description: tab[1][0].nil? ? nil : tab[1][0].value,
+                                              allow_quantity: (tab[5][1].nil? ? nil : tab[5][1].value) == 1,
+                                              allow_retained: (tab[4][1].nil? ? nil : tab[4][1].value) == 1,
+                                              allow_complexity: (tab[7][1].nil? ? nil : tab[7][1].value) == 1,
+                                              allow_criteria: (tab[2][1].nil? ? nil : tab[2][1].value) == 1,
+                                              attribute_type: (tab[3][1].value == "Pourcentage") ? "Pourcentage" : "Coefficient",
+                                              display_threshold: tab[6][1].nil? ? nil : tab[6][1].value == 1,
+                                              color_priority: tab[0][4].nil? ? nil : tab[0][4].value,
+                                              color_code: tab[1][4].nil? ? nil : tab[1][4].value,
+                                              allow_line_color: tab[2][4].value == "true" ? true : false,
                                               guw_model_id: @guw_model.id)
 
               [2,7,12].each do |column_index|
                 name = tab[9][column_index].nil? ? nil : tab[9][column_index]
-                default_value = tab[9][column_index + 1] == "true" ? true : false
+                default_value = (tab[9][column_index + 1].nil? ? nil : tab[9][column_index + 1].value) == "true" ? true : false
 
                 unless name.blank?
                   @guw_complexity = Guw::GuwComplexity.new(name: name,
                                                            default_value: default_value,
                                                            guw_type_id: @guw_type.id,
-                                                           bottom_range: tab[11][column_index + 1],
-                                                           top_range: tab[11][column_index + 2],
-                                                           weight: tab[11][column_index + 3],
-                                                           weight_b: tab[11][column_index + 4],
-                                                           enable_value: (tab[11][column_index] == 0) ? false : true)
+                                                           bottom_range: tab[11][column_index + 1].nil? ? nil : tab[11][column_index + 1].value,
+                                                           top_range: tab[11][column_index + 2].nil? ? nil : tab[11][column_index + 2].value,
+                                                           weight: tab[11][column_index + 3].nil? ? nil : tab[11][column_index + 3].value,
+                                                           weight_b: tab[11][column_index + 4].nil? ? nil : tab[11][column_index + 4].value,
+                                                           enable_value: (tab[11][column_index].value == 0) ? false : true)
 
                   @guw_complexity.save(validate: false)
 
@@ -289,14 +292,14 @@ class Guw::GuwModelsController < ApplicationController
 
                     Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
                                                                   guw_output_id: guw_output.id,
-                                                                  init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i])
+                                                                  init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i].value)
 
                     Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
                                                     guw_output_id: guw_output.id,
-                                                    value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i])
+                                                    value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i].value)
 
                     @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
-                      value = tab[15 + j][column_index + i]
+                      value = tab[15 + j][column_index + i].nil? ? nil : tab[15 + j][column_index + i].value,
 
                       oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
                                                             guw_output_associated_id: aguw_output.id,
@@ -306,7 +309,7 @@ class Guw::GuwModelsController < ApplicationController
                       Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
                                                 guw_output_id: aguw_output.id,
                                                 guw_type_id: @guw_type.id,
-                                                display_type: tab[15 + j][1])
+                                                display_type: tab[15 + j][1].nil? ? nil : tab[15 + j][1].value)
                     end
 
                     nb_output = @guw_model.guw_outputs.order("display_order ASC").size
@@ -360,14 +363,14 @@ class Guw::GuwModelsController < ApplicationController
                     Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
                                                        guw_attribute_id: att.id,
                                                        guw_type_id: @guw_type.id,
-                                                       enable_value: (tab[row_number + j + 2][column_index] == 0) ? false : true,
-                                                       bottom_range: tab[row_number + j + 2][column_index + 1],
-                                                       top_range: tab[row_number + j + 2][column_index + 2],
-                                                       value: tab[row_number + j + 2][column_index + 3],
-                                                       value_b: tab[row_number + j + 2][column_index + 4])
+                                                       enable_value: ((tab[row_number + j + 2][column_index].nil? ? nil : tab[row_number + j + 2][column_index].value) == 0) ? false : true,
+                                                       bottom_range: tab[row_number + j + 2][column_index + 1].nil? ? nil : tab[row_number + j + 2][column_index + 1].value,
+                                                       top_range: tab[row_number + j + 2][column_index + 2].nil? ? nil : tab[row_number + j + 2][column_index + 2].value,
+                                                       value: tab[row_number + j + 2][column_index + 3].nil? ? nil : tab[row_number + j + 2][column_index + 3].value,
+                                                       value_b: tab[row_number + j + 2][column_index + 4].nil? ? nil : tab[row_number + j + 2][column_index + 4].value)
 
                     Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
-                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16])
+                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
 
                   end
                   row_number += 1
@@ -1069,12 +1072,11 @@ class Guw::GuwModelsController < ApplicationController
     workbook.add_worksheet(I18n.t(:attribute_description))
 
     first_page.each_with_index do |row, index|
-      worksheet.add_cell(index, 0, row[0].value)
-      worksheet.add_cell(index, 1, row[1].value)
+      worksheet.add_cell(index, 0, row[0].nil? ? '' : row[0])
+      worksheet.add_cell(index, 1, row[1].nil? ? '' : row[1])
     end
 
     worksheet.change_column_bold(0,true)
-    worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
     worksheet.change_column_width(0, 45)
     worksheet.change_column_width(1, 45)
 
@@ -1182,7 +1184,7 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook.add_worksheet(I18n.t(:outputs))
     outputs_worksheet = workbook[I18n.t(:outputs)]
-    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit", "allow_subtotal"]
+    outputs_attributes = ["name", "output_type", "allow_intermediate_value", "allow_subtotal", "standard_coefficient", "display_order", "unit"]
 
     outputs_attributes.each_with_index do |attr, index|
       outputs_worksheet.add_cell(0, index, I18n.t("#{attr}")).change_horizontal_alignment('center')
@@ -1245,6 +1247,14 @@ class Guw::GuwModelsController < ApplicationController
 
         counter_line += 1
       end
+
+      worksheet.add_cell(0, 3, "Color priority")
+      worksheet.add_cell(1, 3, "Color code")
+      worksheet.add_cell(2, 3, "Allow line color")
+
+      worksheet.add_cell(0, 4, guw_type.color_priority)
+      worksheet.add_cell(1, 4, guw_type.color_code)
+      worksheet.add_cell(2, 4, guw_type.allow_line_color.nil? ? "false" : "true")
 
       unless description.empty?
         description_row_height = description.count("\n") * 15 + 1
