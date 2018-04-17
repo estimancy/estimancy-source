@@ -1501,7 +1501,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
 
-        reorder guw_unit_of_work.guw_unit_of_work_group
+        # reorder guw_unit_of_work.guw_unit_of_work_group
 
         if guw_unit_of_work.changed?
           guw_unit_of_work.save
