@@ -2632,7 +2632,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   module_project_id: module_project.id,
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id,
-                                                  tracking: row[17].value,
+                                                  tracking: row[17].nil? ? 1 : row[17].value,
                                                   quantity: row[12].nil? ? 1 : row[12].value,
                                                   size: nil,
                                                   ajusted_size: nil,
@@ -2664,11 +2664,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 @guw_attributes.each do |gac|
 
                   ((18 + @guw_outputs.size + @guw_coefficients.size)..100).each do |ind|
-                    tmp_val = row[ind]
 
-                    unless tmp_val.nil?
+                    unless row[ind].nil?
 
-                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
+                      tmp_val = row[ind].value
+
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : tmp_val.to_i
 
                       if gac.name == tab[0][ind]
                         unless @guw_type.nil?
@@ -2678,7 +2679,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                           guowa.low = val
                           guowa.most_likely = val
                           guowa.high = val
-                          guowa.comments = row[ind + 1].to_s
+                          guowa.comments = row[ind + 1].value.to_s rescue nil
                           guowa.save
                         end
                       end
@@ -2809,7 +2810,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                           unless ce.nil?
                             ceuw.guw_coefficient_element_id = ce.id
                           else
-                            ceuw.percent = row[k].value.to_f
+                            ceuw.percent = row[k].value.to_f rescue nil
                           end
 
                           unless guw_uow.changed?
@@ -2826,8 +2827,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       unless guw_output.nil?
                         (16..60).to_a.each do |k|
                           if guw_output.name == tab[0][k]
-                            tmp_hash_res["#{guw_output.id}"] = row[k].value
-                            tmp_hash_ares["#{guw_output.id}"] = row[k].value
+                            tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
+                            tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
                           end
                         end
                       end
