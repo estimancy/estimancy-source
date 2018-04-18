@@ -372,18 +372,20 @@ class Guw::GuwModelsController < ApplicationController
 
                   @guw_model.guw_attributes.each_with_index do |att, j|
 
-                    Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
-                                                       guw_attribute_id: att.id,
-                                                       guw_type_id: @guw_type.id,
-                                                       enable_value: ((tab[row_number + j + 2][column_index].nil? ? nil : tab[row_number + j + 2][column_index].value) == 0) ? false : true,
-                                                       bottom_range: tab[row_number + j + 2][column_index + 1].nil? ? nil : tab[row_number + j + 2][column_index + 1].value,
-                                                       top_range: tab[row_number + j + 2][column_index + 2].nil? ? nil : tab[row_number + j + 2][column_index + 2].value,
-                                                       value: tab[row_number + j + 2][column_index + 3].nil? ? nil : tab[row_number + j + 2][column_index + 3].value,
-                                                       value_b: tab[row_number + j + 2][column_index + 4].nil? ? nil : tab[row_number + j + 2][column_index + 4].value)
+                    unless tab[row_number + j + 2].nil?
+                      Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                                                         guw_attribute_id: att.id,
+                                                         guw_type_id: @guw_type.id,
+                                                         enable_value: ((tab[row_number + j + 2][column_index].nil? ? nil : tab[row_number + j + 2][column_index].value) == 0) ? false : true,
+                                                         bottom_range: tab[row_number + j + 2][column_index + 1].nil? ? nil : tab[row_number + j + 2][column_index + 1].value,
+                                                         top_range: tab[row_number + j + 2][column_index + 2].nil? ? nil : tab[row_number + j + 2][column_index + 2].value,
+                                                         value: tab[row_number + j + 2][column_index + 3].nil? ? nil : tab[row_number + j + 2][column_index + 3].value,
+                                                         value_b: tab[row_number + j + 2][column_index + 4].nil? ? nil : tab[row_number + j + 2][column_index + 4].value)
 
-                    Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
-                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
+                      Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
+                                                  guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
 
+                    end
                   end
                   row_number += 1
                 end
