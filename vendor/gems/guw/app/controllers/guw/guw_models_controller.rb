@@ -131,9 +131,14 @@ class Guw::GuwModelsController < ApplicationController
                 jj = 0
                 while order_value_coeff.to_s != I18n.t(:config_type)
                   begin
-                    orders["#{tab[i][0]}"] = tab[i][1].value rescue nil
-                    i = i+1
-                    order_value_coeff = tab[i][0].value rescue nil
+                    unless tab[i].nil?
+                      unless tab[i][0].nil?
+                        k = tab[i][0]
+                        orders["#{k}"] = tab[i][1].value rescue nil
+                        i = i+1
+                        order_value_coeff = tab[i][0].value rescue nil
+                      end
+                    end
                   rescue
                     # ignored
                   end
@@ -273,7 +278,7 @@ class Guw::GuwModelsController < ApplicationController
                                               guw_model_id: @guw_model.id)
 
               [2,7,12].each do |column_index|
-                name = tab[9][column_index].nil? ? nil : tab[9][column_index]
+                name = tab[9][column_index].nil? ? nil : tab[9][column_index].value
                 default_value = (tab[9][column_index + 1].nil? ? nil : tab[9][column_index + 1].value) == "true" ? true : false
 
                 unless name.blank?
@@ -286,7 +291,12 @@ class Guw::GuwModelsController < ApplicationController
                                                            weight_b: tab[11][column_index + 4].nil? ? nil : tab[11][column_index + 4].value,
                                                            enable_value: (tab[11][column_index].value == 0) ? false : true)
 
-                  @guw_complexity.save(validate: false)
+                  # begin
+                    @guw_complexity.save(validate: false)
+                  # rescue
+                  #   @guw_complexity
+                  # end
+
 
                   @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, i|
 
@@ -320,7 +330,7 @@ class Guw::GuwModelsController < ApplicationController
                         next_item = next_item + 1
 
                         begin
-                          value = tab[next_item][column_index + i]
+                          value = tab[next_item][column_index + i].nil? ? nil : tab[next_item][column_index + i].value
                         rescue
                           value = ""
                         end
@@ -344,19 +354,21 @@ class Guw::GuwModelsController < ApplicationController
 
                 (0..9999).each do |i|
                   unless tab[i].nil?
-                    if tab[i][0] == "Seuils de Complexités Attributs"
-                      row_number = i
-                      break
+                    unless tab[i][0].nil?
+                      if tab[i][0].value == "Seuils de Complexités Attributs"
+                        row_number = i
+                        break
+                      end
                     end
                   end
                 end
 
-                name = tab[row_number][column_index].nil? ? nil : tab[row_number][column_index]
+                name = tab[row_number][column_index].nil? ? nil : tab[row_number][column_index].value
 
                 unless name.nil?
                   @guw_att_complexity = Guw::GuwTypeComplexity.create(name: name,
                                                                       guw_type_id: @guw_type.id,
-                                                                      value: tab[row_number][column_index + 1])
+                                                                      value: tab[row_number][column_index + 1].nil? ? nil : tab[row_number][column_index + 1].value)
 
                   @guw_model.guw_attributes.each_with_index do |att, j|
 
