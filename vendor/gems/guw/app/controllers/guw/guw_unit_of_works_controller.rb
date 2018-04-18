@@ -2623,7 +2623,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: (row[12].nil? ? 1 : row[13].value).to_i == 1,
+                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[12].nil? ? true : row[12].value).to_i == 1),
                                                   name: row[13].nil? ? nil : row[13].value,
                                                   comments: row[15].nil? ? nil : row[15].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
@@ -2633,7 +2633,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id,
                                                   tracking: row[17].nil? ? 1 : row[17].value,
-                                                  quantity: row[12].nil? ? 1 : row[12].value,
+                                                  quantity: 1,
                                                   size: nil,
                                                   ajusted_size: nil,
                                                   intermediate_percent: row[19].nil? ? nil : row[19].value,
