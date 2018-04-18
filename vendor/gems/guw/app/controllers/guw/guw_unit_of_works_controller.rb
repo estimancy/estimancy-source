@@ -2623,9 +2623,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: row[12].value.to_i == 1,
-                                                  name: row[13].value,
-                                                  comments: row[15].value,
+                guw_uow = Guw::GuwUnitOfWork.new( selected: (row[12].nil? ? 1 : row[13].value).to_i == 1,
+                                                  name: row[13].nil? ? nil : row[13].value,
+                                                  comments: row[15].nil? ? nil : row[15].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
                                                   organization_id: @organization.id,
                                                   project_id: @project.id,
