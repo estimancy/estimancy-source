@@ -70,25 +70,25 @@ class WbsActivityRatio < ActiveRecord::Base
           begin
             wbs_activity_element = WbsActivityElement.where(organization_id: organization_id,
                                                             wbs_activity_id: wbs_activity_id,
-                                                            name: row[3]).first
+                                                            name: row[3].value).first
             if wbs_activity_element
               @ware = WbsActivityRatioElement.where(organization_id: organization_id,
                                                     wbs_activity_id: wbs_activity_id,
                                                     wbs_activity_ratio_id: wbs_activity_ratio_id,
-                                                    wbs_activity_element_id: wbs_activity_element.id).first #WbsActivityRatioElement.find(row[0])
+                                                    wbs_activity_element_id: wbs_activity_element.id).first #WbsActivityRatioElement.find(row[0].value)
               if @ware.nil?
                 WbsActivityRatioElement.create(organization_id: organization_id,
                                                wbs_activity_id: wbs_activity_id,
                                                wbs_activity_ratio_id: wbs_activity_ratio_id,
                                                wbs_activity_element_id: wbs_activity_element.id,
-                                               description: row[4],
-                                               formula: row[5],
-                                               is_optional: row[6],
-                                               effort_is_modifiable: row[7],
-                                               cost_is_modifiable: row[8])
+                                               description: row[4].value,
+                                               formula: row[5].value,
+                                               is_optional: row[6].value,
+                                               effort_is_modifiable: row[7].value,
+                                               cost_is_modifiable: row[8].value)
               else
                 #@ware.wbs_activity_element.has_children?
-                @ware.update_attributes(formula: row[5], is_optional: row[6], effort_is_modifiable: row[7], cost_is_modifiable: row[8])
+                @ware.update_attributes(formula: row[5].value, is_optional: row[6].value, effort_is_modifiable: row[7].value, cost_is_modifiable: row[8].value)
               end
             end
           rescue

@@ -81,7 +81,7 @@ class WbsActivityElement < ActiveRecord::Base
       @inserts = []
       csv.each_with_index do |row, i|
         unless row.empty? or i == 0
-          @inserts.push("(\"#{Time.now.utc.to_s(:db)}\", \"#{Time.now.utc.to_s(:db)}\", \"#{ !row[2].nil? ? row[2].gsub("\"", "\"\"") : row[2] }\", \"#{ !row[0].nil? ? row[0].gsub("\"", "\"\"") : row[0] }\", \"#{ !row[1].nil? ? row[1].gsub("\"", "\"\"") : row[1] }\", #{@wbs_activity.id})")
+          @inserts.push("(\"#{Time.now.utc.to_s(:db)}\", \"#{Time.now.utc.to_s(:db)}\", \"#{ !row[2].nil? ? row[2].value.gsub("\"", "\"\"") : row[2].value }\", \"#{ !row[0].nil? ? row[0].value.gsub("\"", "\"\"") : row[0].value }\", \"#{ !row[1].nil? ? row[1].value.gsub("\"", "\"\"") : row[1].value }\", #{@wbs_activity.id})")
         end
       end
     end
