@@ -266,7 +266,6 @@ Projestimate::Application.routes.draw do
     get "export_providers" => 'organizations#export_providers'
     get "security_audit_utilities_view" => 'organizations#security_audit_utilities_view'
     get "security_audit_utilities" => 'organizations#security_audit_utilities'
-    get "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
     get "report_management" => 'organizations#report_management'
 
     post "import_project_areas" => 'organizations#import_project_areas'
@@ -293,6 +292,10 @@ Projestimate::Application.routes.draw do
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
   get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities
   get "destroy_all_security_audit_utilities" => 'organizations#destroy_all_security_audit_utilities', as: :destroy_all_security_audit_utilities
+
+  post "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
+  get "audit_integrity_common_data_params" => 'organizations#audit_integrity_common_data_params', as: :audit_integrity_common_data_params
+  get "update_organizations_for_audit_common_data" => 'organizations#update_organizations_for_audit_common_data', as: :update_organizations_for_audit_common_data
 
   resources :subcontractors
 
