@@ -220,15 +220,15 @@ class Guw::GuwModelsController < ApplicationController
               tab.each_with_index do |row, i|
                 if i >= 1 && !row.nil?
                   unless row[0].blank?
-                    guw_output = Guw::GuwOutput.create(name: row[0].value,
-                                                       output_type: row[1].value,
+                    guw_output = Guw::GuwOutput.create(name: row[0].nil? ? nil : row[0].value,
+                                                       output_type: row[1].nil? ? nil : row[1].value,
                                                        guw_model_id: @guw_model.id,
                                                        allow_intermediate_value: (row[2].value == 0) ? false : true,
                                                        allow_subtotal: (row[3].value == 0) ? false : true,
-                                                       standard_coefficient: row[4].value,
-                                                       display_order: row[5].value,
-                                                       unit: row[6].value,
-                                                       allow_subtotal: row[7].value)
+                                                       standard_coefficient: row[4].nil? ? nil : row[4].value,
+                                                       display_order: row[5].nil? ? nil : row[5].value,
+                                                       unit: row[6].nil? ? nil : row[6].value,
+                                                       allow_subtotal: row[7].nil? ? false : row[7].value)
 
                     attr = PeAttribute.where(name: guw_output.name,
                                              alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
