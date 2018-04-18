@@ -133,7 +133,7 @@ class Guw::GuwModelsController < ApplicationController
                   begin
                     unless tab[i].nil?
                       unless tab[i][0].nil?
-                        k = tab[i][0]
+                        k = tab[i][0].value
                         orders["#{k}"] = tab[i][1].value rescue nil
                         i = i+1
                         order_value_coeff = tab[i][0].value rescue nil
