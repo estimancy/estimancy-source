@@ -4,7 +4,7 @@
   </strong>
 </h5>
 
-<% @guw_outputs = @guw_model.guw_outputs %>
+<% @guw_outputs = @guw_model.guw_outputs.order("display_order ASC") %>
 <% guw_type_guw_complexities = @guw_type.guw_complexities %>
 <% guw_type_guw_type_complexities = @guw_type.guw_type_complexities %>
 <% guw_model_guw_attributes = @guw_model.guw_attributes %>
