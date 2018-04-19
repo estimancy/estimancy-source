@@ -1619,9 +1619,12 @@ class WbsActivitiesController < ApplicationController
                 elements_worksheet_tab.each_with_index do | row, index |
                   if index != 0 && !row.nil?
                     activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id,
-                                                                 position: row[0].value.to_f, phase_short_name: row[1].value,
-                                                                 name: row[2].value, description: row[3].value, is_root: row[4].value)
-                    elements_parents["#{activity_element.id}"] = row[5].value
+                                                                 position: row[0].nil? ? 0 : row[0].value.to_f,
+                                                                 phase_short_name: row[1].nil? ? nil : row[1].value,
+                                                                 name: row[2].nil? ? nil : row[2].value,
+                                                                 description: row[3].nil? ? nil : row[3].value,
+                                                                 is_root: row[4].nil? ? nil : row[4].value)
+                    elements_parents["#{activity_element.id}"] = row[5].nil? ? nil : row[5].value
                   end
                 end
 
@@ -1665,8 +1668,13 @@ class WbsActivitiesController < ApplicationController
                 ratios_worksheet_tab.each_with_index do | row, index |
                   if index > 0 && !row.nil?
                     begin
-                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id, name: row[0].value, description: row[1].value,
-                                              do_not_show_cost: row[2].value, do_not_show_phases_with_zero_value: row[3].value, comment_required_if_modifiable: row[4].value)
+                      WbsActivityRatio.create(wbs_activity_id: @wbs_activity.id,
+                                              organization_id: @organization.id,
+                                              name: row[0].nil? ? nil : row[0].value,
+                                              description: row[1].nil? ? nil : row[1].value,
+                                              do_not_show_cost: row[2].nil? ? nil : row[2].value,
+                                              do_not_show_phases_with_zero_value: row[3].nil? ? nil : row[3].value,
+                                              comment_required_if_modifiable: row[4].nil? ? nil : row[4].value)
                     rescue
                       # ignored
                     end
@@ -1701,24 +1709,34 @@ class WbsActivitiesController < ApplicationController
                           # Wbs-activity_ratio-variables
                           when ratio_variables_line+1..ratio_variables_line+4
 
-                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id, name: row[1].value, percentage_of_input: row[2].value,
-                                                            is_modifiable: row[3].value, is_used_in_ratio_calculation: row[4].value, description: row[5].value,
-                                                            organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
+                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
+                                                            name: row[1].nil? ? nil : row[1].value,
+                                                            percentage_of_input: row[2].nil? ? nil : row[2].value,
+                                                            is_modifiable: row[3].nil? ? nil : row[3.value],
+                                                            is_used_in_ratio_calculation: row[4].nil? ? nil : row[4].value,
+                                                            description: row[5].nil? ? nil : row[5].value,
+                                                            organization_id: @organization.id,
+                                                            wbs_activity_id: @wbs_activity.id)
 
                           # Elements formulas
                           when formulas_line+1..formulas_line+@wbs_activity_elements.size
 
-                            wbs_activity_element = @wbs_activity_elements.where(name: row[3].value).first
-                            WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id, wbs_activity_element_id: wbs_activity_element.id,
-                                                           is_optional: row[5].value, effort_is_modifiable: row[6].value, cost_is_modifiable: row[7].value, formula: row[8].value,
-                                                           organization_id: @organization.id, :wbs_activity_id => @wbs_activity.id)
+                            wbs_activity_element = @wbs_activity_elements.where(name: row[3].nil? ? nil : row[3].value).first
+                            WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id,
+                                                           wbs_activity_element_id: wbs_activity_element.id,
+                                                           is_optional: row[5].nil? ? nil : row[5].value,
+                                                           effort_is_modifiable: row[6].nil? ? nil : row[6].value,
+                                                           cost_is_modifiable: row[7].nil? ? nil : row[7].value,
+                                                           formula: row[8].nil? ? nil : row[8].value,
+                                                           organization_id: @organization.id,
+                                                           :wbs_activity_id => @wbs_activity.id)
 
                           # Ratio-elements par profile
                           when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size
 
                             if index == ratio_profiles_line
                               (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
-                                val = row[j].value
+                                val = row[j].nil? ? nil : row[j].value
                                 if !val.blank?
                                   profile = @wbs_activity_profiles.where(name: val).first
                                   unless profile.nil?
@@ -1728,7 +1746,7 @@ class WbsActivitiesController < ApplicationController
                               end
 
                             else
-                              wbs_activity_element = @wbs_activity_elements.where(name: row[2].value).first
+                              wbs_activity_element = @wbs_activity_elements.where(name: row[2].nil? ? nil : row[2].value).first
                               ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
 
                               @wbs_activity_profiles.each do |profile|
