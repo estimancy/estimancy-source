@@ -197,6 +197,11 @@
                 <% @hash_guw_outputs[guw_output.name] = guw_output %>
               <% end %>
 
+              <% @hash_guw_output_types = {} %>
+              <%Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
+                <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
+              <% end %>
+
               <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
               <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
                 <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
