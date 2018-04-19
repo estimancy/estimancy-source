@@ -28,6 +28,16 @@
       <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
     <% end %>
 
+    <% @hash_guw_output_types = {} %>
+    <%Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
+      <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
+    <% end %>
+
+    <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
+    <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
+      <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
+      <% end %>
+
     <% @guw_unit_of_works.each do |guw_unit_of_work| %>
       <% @guw_type = guw_unit_of_work.guw_type %>
       <% unless @guw_type.nil? %>
