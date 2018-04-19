@@ -206,10 +206,10 @@
                 HSUO
               <% else %>
                 <% if guow.guw_complexity_id == nil %>
-
+                  Cot. Nulle
                 <% else %>
                   <% if guow.intermediate_percent.blank? || guow.intermediate_weight.blank? %>
-
+                    Coef. nul
                   <% else %>
                     <% if guow.intermediate_percent.to_f.round(3) != guow.intermediate_weight.to_f.round(3) %>
                       <% color = @guw_type.color_code %>

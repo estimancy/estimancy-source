@@ -2648,9 +2648,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                               name: row[18].value).first
                   end
+                  guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                  guw_uow.save(validate: false)
                 end
-                guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
-                guw_uow.save(validate: false)
 
                 @guw_attributes.each_with_index do |gac, ii|
                   #update attributes complexities
