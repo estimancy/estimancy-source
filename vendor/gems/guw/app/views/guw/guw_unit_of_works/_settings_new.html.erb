@@ -202,6 +202,11 @@
                 <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
               <% end %>
 
+              <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
+              <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
+                <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
+              <% end %>
+
               <% @hash_guw_coefficients = {} %>
               <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
                                            name: @guw_model.orders.map(&:first),
