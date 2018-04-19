@@ -1712,7 +1712,7 @@ class WbsActivitiesController < ApplicationController
                             WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
                                                             name: row[1].nil? ? nil : row[1].value,
                                                             percentage_of_input: row[2].nil? ? nil : row[2].value,
-                                                            is_modifiable: row[3].nil? ? nil : row[3.value],
+                                                            is_modifiable: row[3].nil? ? nil : row[3].value,
                                                             is_used_in_ratio_calculation: row[4].nil? ? nil : row[4].value,
                                                             description: row[5].nil? ? nil : row[5].value,
                                                             organization_id: @organization.id,
