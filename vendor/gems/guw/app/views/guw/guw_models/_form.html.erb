@@ -265,7 +265,7 @@ $(document).ready(function() {
           <% if @guw_model.default_display == "tab" %>
             <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
           <% else %>
-            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(i, organization_id: @current_organization.id) %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id) %>
           <% end %>
         </div>
       <% else %>
