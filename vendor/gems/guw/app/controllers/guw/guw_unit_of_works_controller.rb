@@ -1976,9 +1976,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     jj_size =  @guw_model.orders.size + jj
                     tmp_val = row[15 + jj_size]
                     unless tmp_val.nil?
-                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + jj_size]
+                      val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[15 + jj_size].value
 
-                      if gac.name == tab[0][15 + jj_size]
+                      if gac.name == (tab[0][15 + jj_size].nil? ? '' : tab[0][15 + jj_size].value)
                         unless @guw_type.nil?
                           guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: guw_uow.guw_type_id,
                                                                     guw_attribute_id: gac.id,
@@ -2330,7 +2330,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                         val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : row[ind].to_i
 
-                        if gac.name == tab[0][ind]
+                        if gac.name == (tab[0][ind].nil? ? '' : tab[0][ind].value)
                           unless @guw_type.nil?
                             guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
                                                                       guw_attribute_id: gac.id,
@@ -2494,7 +2494,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if guw_coefficient.class == Guw::GuwCoefficient
 
                   (16..60).to_a.each do |k|
-                    if guw_coefficient.name == tab[0][k]
+                    if guw_coefficient.name == (tab[0][k].nil? ? '' : tab[0][k].value)
 
                       ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
                                                                         guw_coefficient_id: guw_coefficient.id).first_or_create
@@ -2524,9 +2524,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   unless guw_output.nil?
                     (16..60).to_a.each do |k|
-                      if guw_output.name == tab[0][k]
+                      if guw_output.name == tab[0][k].nil? ? '' : tab[0][k].value
                         # tmp_hash_res["#{guw_output.id}"] = row[k].value
-                        tmp_hash_ares["#{guw_output.id}"] = row[k].value
+                        tmp_hash_ares["#{guw_output.id}"] = row[k].nil? ? nil : row[k].value
                       end
                     end
                   end
@@ -2648,9 +2648,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                               name: row[18].value).first
                   end
+                  guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                  guw_uow.save(validate: false)
                 end
-                guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
-                guw_uow.save(validate: false)
 
                 @guw_attributes.each_with_index do |gac, ii|
                   #update attributes complexities
@@ -2670,7 +2670,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                       val = (tmp_val == "N/A" || tmp_val.to_i < 0) ? nil : tmp_val.to_i
 
-                      if gac.name == tab[0][ind]
+                      if gac.name == (tab[0][ind].nil? ? '' : tab[0][ind].value)
                         unless @guw_type.nil?
                           guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
                                                                     guw_attribute_id: gac.id,
@@ -2762,9 +2762,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         end
                       else
                         guw_type_guw_complexities.each do |guw_c|
-                          if @guw_type.allow_complexity == false
+                          # if @guw_type.allow_complexity == false
                             array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
-                          end
+                          # end
                         end
                       end
                     end
@@ -2794,7 +2794,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       default_guw_coefficient_guw_coefficient_element = guw_coefficient_guw_coefficient_elements.where(default: true).first
 
                       (16..60).to_a.each do |k|
-                        if guw_coefficient.name == tab[0][k]
+                        if guw_coefficient.name == tab[0][k].nil? ? '' : tab[0][k].value
 
                           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
                                                                             guw_coefficient_id: guw_coefficient.id).first_or_create
@@ -2825,7 +2825,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                       unless guw_output.nil?
                         (16..60).to_a.each do |k|
-                          if guw_output.name == tab[0][k]
+                          if guw_output.name == (tab[0][k].nil? ? '' : tab[0][k].value)
                             tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
                             tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
                           end
@@ -2851,14 +2851,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
                 if @guw_type.allow_complexity == true
-                  unless row[18].blank?
+                  unless row[18].blank? || row[18].nil?
                     unless @guw_type.nil?
                       guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                                 name: row[18].value).first
                     end
+
+                    guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                    guw_uow.save(validate: false)
                   end
-                  guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
-                  guw_uow.save(validate: false)
                 end
 
               end
