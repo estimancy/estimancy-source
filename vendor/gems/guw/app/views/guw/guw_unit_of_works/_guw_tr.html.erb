@@ -263,19 +263,7 @@
 
         <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements %>
 
-        <% unless @guw_type.nil? %>
-          <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
-        <% else %>
-          <% results = [] %>
-        <% end %>
-        <% default = @guw_coefficient_guw_coefficient_elements.where(default: true).first %>
-        <% if default.nil? %>
-          <% default = results.first %>
-        <% end %>
-
         <% if @guw_coefficient.deported == false %>
-
-          <% unless results.empty? %>
 
             <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
@@ -287,32 +275,39 @@
                                                                      guw_coefficient_element_id: nil).last %>
               <% end %>
 
+              <% default = @guw_coefficient_guw_coefficient_elements.where(default: true).first %>
+
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
                 <%
                    if ceuw.nil?
                      color = ""
                    else
-                     if default.value.to_f == ceuw.percent.to_f
-                       color = ""
-                     else
-                       color = "background-color: ##{default.color_code}"
+                     begin
+                       if default.value.to_f == ceuw.percent.to_f
+                         color = ""
+                       else
+                         color = "background-color: ##{default.color_code}"
+                       end
+                     rescue
+                      color = ""
                      end
                    end
                 %>
+
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                     ceuw.nil? ? results.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                     ceuw.nil? ? @guw_coefficient_guw_coefficient_elements.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
-                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
+                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{@guw_coefficient_guw_coefficient_elements.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
                                      step: 0.001,
                                      guw: guow.id,
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
-                                     coeff_element_id: results.first.id,
+                                     coeff_element_id: @guw_coefficient_guw_coefficient_elements.first.id,
                                      title: ceuw.nil? ? "" : ceuw.comments %>
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                       ceuw.nil? ? results.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                       ceuw.nil? ? @guw_coefficient_guw_coefficient_elements.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                        step: 0.001 %>
@@ -326,7 +321,7 @@
                       var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
                       var currentValue ;
 
-                      $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= results.first.id %>").on("change", function(event){
+                      $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= @guw_coefficient_guw_coefficient_elements.first.id %>").on("change", function(event){
 
                         currentValue = $(this).val();
 
@@ -350,6 +345,24 @@
                 <% end %>
               <% end %>
             <% else %>
+
+              <% unless @guw_type.nil? %>
+                <% results = @guw_coefficient_guw_coefficient_elements.map do |i|
+                  i.guw_complexity_coefficient_elements.where(guw_type_id: @guw_type.id).select do |ct|
+                    ct.value != nil
+                  end.map do |i|
+                    i.guw_coefficient_element
+                  end.uniq
+                end.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+              <% else %>
+                <% results = [] %>
+              <% end %>
+
+              <% default = @guw_coefficient_guw_coefficient_elements.where(default: true).first %>
+              <% if default.nil? %>
+                <% default = results.first %>
+              <% end %>
+
               <% begin %>
                 <% ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
               <% rescue %>
@@ -370,11 +383,6 @@
                 <% end %>
               </td>
             <% end %>
-          <% else %>
-            <td>
-
-            </td>
-          <% end %>
         <% else %>
           <%= hidden_field_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", (ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.id) : default.id) : (ceuw.guw_coefficient_element.nil? ? results.first.id : ceuw.guw_coefficient_element_id)) %>
         <% end %>
