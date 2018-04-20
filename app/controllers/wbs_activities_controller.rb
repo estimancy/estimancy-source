@@ -1755,7 +1755,7 @@ class WbsActivitiesController < ApplicationController
                                   if row[k].blank?
                                     ratio_value = nil
                                   else
-                                    ratio_value = row[k].value.to_f
+                                    ratio_value = (row[k].value.blank?) ? nil : row[k].value.to_f
                                   end
 
                                   WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
