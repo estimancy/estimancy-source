@@ -265,10 +265,21 @@
               <% end %>
             </tr>
 
-           <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
+            <% @hash_guw_complexities = {} %>
+            <% Guw::GuwComplexity.all.each do |guw_complexity| %>
+              <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
+            <% end %>
+
+            <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
+            <% @guw_model.guw_types.each do |guw_type| %>
+              <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
+              <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
+            <% end %>
+
+            <% uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
-                <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
+                <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
               <% end %>
 
               <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
@@ -293,7 +304,7 @@
   </div>
 
   <% if params[:recalculate] == "true" %>
-    <%= hidden_field_tag "modified_guw_line_ids", @unit_of_work_groups.map{|i| i.guw_unit_of_works.map(&:id) }.flatten.join(",") %>
+    <%= hidden_field_tag "modified_guw_line_ids", @current_module_project_guw_unit_of_works.map(&:id).flatten.join(",") %>
   <% else %>
     <%= hidden_field_tag "modified_guw_line_ids", nil %>
   <% end %>
@@ -490,7 +501,7 @@
       </div>
       <div class="modal-body">
         <% begin %>
-            <%= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
+            <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
         <% rescue %>
             Une erreur est survenue lors de l'affichage du modèle de données
         <% end %>

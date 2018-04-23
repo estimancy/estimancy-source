@@ -256,12 +256,17 @@ $(document).ready(function() {
 
       <% unless @guw_model.new_record? %>
         <div class="span3">
-          <%  if @guw_model.config_type == "new" %>
+          <% if @guw_model.config_type == "new" %>
             <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
           <% else %>
-              <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
           <% end %>
-          <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
+
+          <% if @guw_model.default_display == "tab" %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
+          <% else %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn pull-right button_margin_right' %>
+          <% end %>
         </div>
       <% else %>
         <a href="#import" role="button" class="btn pull-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">

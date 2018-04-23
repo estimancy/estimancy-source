@@ -309,12 +309,12 @@ class Guw::GuwModelsController < ApplicationController
                                                     value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i].value)
 
                     @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
-                      value = tab[15 + j][column_index + i].nil? ? nil : tab[15 + j][column_index + i].value,
 
-                      oa = Guw::GuwOutputAssociation.create(guw_complexity_id: @guw_complexity.id,
-                                                            guw_output_associated_id: aguw_output.id,
-                                                            guw_output_id: guw_output.id,
-                                                            value: value)
+                      oa = Guw::GuwOutputAssociation.new(guw_complexity_id: @guw_complexity.id,
+                                                         guw_output_associated_id: aguw_output.id,
+                                                         guw_output_id: guw_output.id,
+                                                         value: tab[15 + j][column_index + i].nil? ? nil : tab[15 + j][column_index + i].value)
+                      oa.save
 
                       Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
                                                 guw_output_id: aguw_output.id,
