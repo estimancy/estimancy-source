@@ -17,10 +17,6 @@
            gce = gce_guw_coefficient.guw_coefficient_elements.first
          end
 
-         if gce.nil?
-           gce = gce_guw_coefficient.guw_coefficient_elements.first
-         end
-
          unless gce.nil?
            if (gceuw.percent.to_f != gce.value.to_f)
              hash_color_priorities[gce.color_priority.to_i] = gce.color_code
