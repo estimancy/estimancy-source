@@ -483,10 +483,13 @@
 
     <% unless hidden_guw_coefficient.nil? %>
       <% hidden_guw_coefficient_guw_coefficient_elements = hidden_guw_coefficient.guw_coefficient_elements %>
-      <% default = hidden_guw_coefficient_guw_coefficient_elements.where(default: true).first %>
+      <% default = hidden_guw_coefficient_guw_coefficient_elements.select{|i| i.default == true}.first %>
+      <% if default.nil? %>
+        <% default = hidden_guw_coefficient_guw_coefficient_elements.first %>
+      <% end %>
 
       <% unless default.nil? %>
-        <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([default.name, default.id],
+        <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([[default.name, default.id]],
                                                                                                        selected: default.value),
                        class: "guw_coefficient guw-#{guow.id}",
                        guw: guow.id,
