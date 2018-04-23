@@ -33,49 +33,49 @@ class EstimationStatusGroupRole < ActiveRecord::Base
   #has_paper_trail
 
   # Hair-Triggers
-  trigger.after(:insert) do
-    <<-SQL
-
-      INSERT INTO autorization_log_events SET
-          event_organization_id = NEW.event_organization_id,
-          transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
-          author_id = NEW.originator_id,
-          item_type = 'EstimationStatusGroupRole',
-          item_id = NEW.estimation_status_id,
-          estimation_status_id = NEW.estimation_status_id,
-          group_id = NEW.group_id,
-          project_security_level_id = NEW.project_security_level_id,
-          object_class_name = 'EstimationStatus',
-          association_class_name = 'EstimationStatusGroupRole',
-          event = 'create',
-          object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
-                                      ' "project_security_level_id": ', NEW.project_security_level_id,
-                                      ' "group_id": ', NEW.group_id,
-                               '}'),
-          created_at = UTC_TIMESTAMP();
-    SQL
-  end
-
-  trigger.after(:delete) do
-    <<-SQL
-      INSERT INTO autorization_log_events SET
-        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
-        transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
-        author_id = OLD.originator_id,
-        item_type = 'EstimationStatusGroupRole',
-        item_id = OLD.estimation_status_id,
-        group_id = OLD.group_id,
-        project_security_level_id = OLD.project_security_level_id,
-        object_class_name = 'EstimationStatus',
-        association_class_name = 'EstimationStatusGroupRole',
-        event = 'delete',
-          object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
-                                      ' "project_security_level_id": ', OLD.project_security_level_id,
-                                      ' "group_id": ', OLD.group_id,
-                               '}'),
-        created_at = UTC_TIMESTAMP();
-    SQL
-  end
+  # trigger.after(:insert) do
+  #   <<-SQL
+  #
+  #     INSERT INTO autorization_log_events SET
+  #         event_organization_id = NEW.event_organization_id,
+  #         transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
+  #         author_id = NEW.originator_id,
+  #         item_type = 'EstimationStatusGroupRole',
+  #         item_id = NEW.estimation_status_id,
+  #         estimation_status_id = NEW.estimation_status_id,
+  #         group_id = NEW.group_id,
+  #         project_security_level_id = NEW.project_security_level_id,
+  #         object_class_name = 'EstimationStatus',
+  #         association_class_name = 'EstimationStatusGroupRole',
+  #         event = 'create',
+  #         object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
+  #                                     ' "project_security_level_id": ', NEW.project_security_level_id,
+  #                                     ' "group_id": ', NEW.group_id,
+  #                              '}'),
+  #         created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
+  #
+  # trigger.after(:delete) do
+  #   <<-SQL
+  #     INSERT INTO autorization_log_events SET
+  #       event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+  #       transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+  #       author_id = OLD.originator_id,
+  #       item_type = 'EstimationStatusGroupRole',
+  #       item_id = OLD.estimation_status_id,
+  #       group_id = OLD.group_id,
+  #       project_security_level_id = OLD.project_security_level_id,
+  #       object_class_name = 'EstimationStatus',
+  #       association_class_name = 'EstimationStatusGroupRole',
+  #       event = 'delete',
+  #         object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
+  #                                     ' "project_security_level_id": ', OLD.project_security_level_id,
+  #                                     ' "group_id": ', OLD.group_id,
+  #                              '}'),
+  #       created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
   # END Hair-Triggers
 
   private

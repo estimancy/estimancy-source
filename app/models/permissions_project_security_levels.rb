@@ -33,42 +33,42 @@ class PermissionsProjectSecurityLevels < ActiveRecord::Base
   #has_paper_trail
 
   # Hair-Triggers
-  trigger.after(:insert) do
-    <<-SQL
-
-      INSERT INTO autorization_log_events SET
-          event_organization_id = NEW.event_organization_id,
-          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
-          author_id = NEW.originator_id,
-          item_type = 'PermissionProjectSecurityLevel',
-          item_id = NEW.project_security_level_id,
-          project_security_level_id = NEW.project_security_level_id,
-          permission_id = NEW.permission_id,
-          object_class_name = 'ProjectSecurityLevel',
-          association_class_name = 'Permission',
-          event = 'create',
-          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
-          created_at = UTC_TIMESTAMP();
-    SQL
-  end
-
-  trigger.after(:delete) do
-    <<-SQL
-      INSERT INTO autorization_log_events SET
-        event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
-        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
-        author_id = OLD.originator_id,
-        item_type = 'PermissionProjectSecurityLevel',
-        item_id = OLD.project_security_level_id,
-        project_security_level_id = OLD.project_security_level_id,
-        permission_id = OLD.permission_id,
-        object_class_name = 'ProjectSecurityLevel',
-        association_class_name = 'Permission',
-        event = 'delete',
-        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
-        created_at = UTC_TIMESTAMP();
-    SQL
-  end
+  # trigger.after(:insert) do
+  #   <<-SQL
+  #
+  #     INSERT INTO autorization_log_events SET
+  #         event_organization_id = NEW.event_organization_id,
+  #         transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+  #         author_id = NEW.originator_id,
+  #         item_type = 'PermissionProjectSecurityLevel',
+  #         item_id = NEW.project_security_level_id,
+  #         project_security_level_id = NEW.project_security_level_id,
+  #         permission_id = NEW.permission_id,
+  #         object_class_name = 'ProjectSecurityLevel',
+  #         association_class_name = 'Permission',
+  #         event = 'create',
+  #         object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+  #         created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
+  #
+  # trigger.after(:delete) do
+  #   <<-SQL
+  #     INSERT INTO autorization_log_events SET
+  #       event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+  #       transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+  #       author_id = OLD.originator_id,
+  #       item_type = 'PermissionProjectSecurityLevel',
+  #       item_id = OLD.project_security_level_id,
+  #       project_security_level_id = OLD.project_security_level_id,
+  #       permission_id = OLD.permission_id,
+  #       object_class_name = 'ProjectSecurityLevel',
+  #       association_class_name = 'Permission',
+  #       event = 'delete',
+  #       object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+  #       created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
   # END Hair-Triggers
 
   private

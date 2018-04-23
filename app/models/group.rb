@@ -45,49 +45,49 @@ class Group < ActiveRecord::Base
 
   # Security Audit management
   # Hair-Triggers
-  trigger.after(:insert) do
-    <<-SQL
-
-      INSERT INTO autorization_log_events SET
-          event_organization_id = NEW.event_organization_id,
-          author_id = NEW.originator_id,
-          item_type = 'Group',
-          item_id = NEW.id,
-          object_class_name = 'Group',
-          event = 'create',
-          object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
-          created_at = UTC_TIMESTAMP();
-      SQL
-  end
-
-  trigger.after(:update).of(:name, :description) do
-    <<-SQL
-
-      INSERT INTO autorization_log_events SET
-        event_organization_id = NEW.event_organization_id,
-        author_id = NEW.originator_id,
-        item_type = 'Group',
-        item_id = OLD.id,
-        object_class_name = 'Group',
-        event = 'update',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-        created_at = UTC_TIMESTAMP();
-    SQL
-  end
-
-  trigger.after(:delete) do
-    <<-SQL
-      INSERT INTO autorization_log_events SET
-        event_organization_id = OLD.event_organization_id,
-        author_id = OLD.originator_id,
-        item_type = 'Group',
-        item_id = OLD.id,
-        object_class_name = 'Group',
-        event = 'delete',
-        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-        created_at = UTC_TIMESTAMP();
-    SQL
-  end
+  # trigger.after(:insert) do
+  #   <<-SQL
+  #
+  #     INSERT INTO autorization_log_events SET
+  #         event_organization_id = NEW.event_organization_id,
+  #         author_id = NEW.originator_id,
+  #         item_type = 'Group',
+  #         item_id = NEW.id,
+  #         object_class_name = 'Group',
+  #         event = 'create',
+  #         object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
+  #         created_at = UTC_TIMESTAMP();
+  #     SQL
+  # end
+  #
+  # trigger.after(:update).of(:name, :description) do
+  #   <<-SQL
+  #
+  #     INSERT INTO autorization_log_events SET
+  #       event_organization_id = NEW.event_organization_id,
+  #       author_id = NEW.originator_id,
+  #       item_type = 'Group',
+  #       item_id = OLD.id,
+  #       object_class_name = 'Group',
+  #       event = 'update',
+  #       object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+  #       created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
+  #
+  # trigger.after(:delete) do
+  #   <<-SQL
+  #     INSERT INTO autorization_log_events SET
+  #       event_organization_id = OLD.event_organization_id,
+  #       author_id = OLD.originator_id,
+  #       item_type = 'Group',
+  #       item_id = OLD.id,
+  #       object_class_name = 'Group',
+  #       event = 'delete',
+  #       object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+  #       created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
 
   #object_changes = JSON_OBJECT( 'name', json_array('', NEW.name), 'description', json_array('', NEW.description)),
   #object_changes = JSON_OBJECT( 'name', json_array(OLD.name, NEW.name), 'description', json_array(OLD.description, NEW.description)),

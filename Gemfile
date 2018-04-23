@@ -241,6 +241,6 @@ gem 'pdfkit'
 
 gem 'paper_trail'
 
-gem "hairtrigger"
+# gem "hairtrigger"
 
 

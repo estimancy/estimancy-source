@@ -29,42 +29,42 @@ class GroupsUsers < ActiveRecord::Base
   before_save :update_transaction_id_for_triggers
 
   # Hair-Triggers
-  trigger.after(:insert) do
-    <<-SQL
-
-      INSERT INTO autorization_log_events SET
-          event_organization_id = NEW.event_organization_id,
-          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
-          author_id = NEW.originator_id,
-          item_type = 'GroupUser',
-          item_id = NEW.user_id,
-          user_id = NEW.user_id,
-          group_id = NEW.group_id,
-          object_class_name = 'User',
-          association_class_name = 'Group',
-          event = 'create',
-          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
-          created_at = UTC_TIMESTAMP();
-    SQL
-  end
-
-  trigger.after(:delete) do
-    <<-SQL
-      INSERT INTO autorization_log_events SET
-        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
-        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
-        author_id = OLD.originator_id,
-        item_type = 'GroupUser',
-        item_id = OLD.user_id,
-        user_id = OLD.user_id,
-        group_id = OLD.group_id,
-        object_class_name = 'User',
-        association_class_name = 'Group',
-        event = 'delete',
-        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
-        created_at = UTC_TIMESTAMP();
-    SQL
-  end
+  # trigger.after(:insert) do
+  #   <<-SQL
+  #
+  #     INSERT INTO autorization_log_events SET
+  #         event_organization_id = NEW.event_organization_id,
+  #         transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+  #         author_id = NEW.originator_id,
+  #         item_type = 'GroupUser',
+  #         item_id = NEW.user_id,
+  #         user_id = NEW.user_id,
+  #         group_id = NEW.group_id,
+  #         object_class_name = 'User',
+  #         association_class_name = 'Group',
+  #         event = 'create',
+  #         object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+  #         created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
+  #
+  # trigger.after(:delete) do
+  #   <<-SQL
+  #     INSERT INTO autorization_log_events SET
+  #       event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+  #       transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+  #       author_id = OLD.originator_id,
+  #       item_type = 'GroupUser',
+  #       item_id = OLD.user_id,
+  #       user_id = OLD.user_id,
+  #       group_id = OLD.group_id,
+  #       object_class_name = 'User',
+  #       association_class_name = 'Group',
+  #       event = 'delete',
+  #       object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+  #       created_at = UTC_TIMESTAMP();
+  #   SQL
+  # end
 
   #object_changes = CONCAT('{ "user_id": ', '["', '', '", "', NEW.user_id, '"],', ' "group_id": ', '["', '', '", "', NEW.group_id, '"]}'),
   #object_changes = CONCAT('{ "user_id": ', '["', '', '", "', OLD.user_id, '"],', ' "group_id": ', '["', '', '", "', OLD.group_id, '"]}'),
