@@ -2794,10 +2794,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       default_guw_coefficient_guw_coefficient_element = guw_coefficient_guw_coefficient_elements.where(default: true).first
 
                       (16..60).to_a.each do |k|
-                        if guw_coefficient.name == tab[0][k].nil? ? '' : tab[0][k].value
+                        if guw_coefficient.name == (tab[0][k].nil? ? '' : tab[0][k].value)
 
                           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_uow.id,
-                                                                            guw_coefficient_id: guw_coefficient.id).first_or_create
+                                                                            guw_coefficient_id: guw_coefficient.id,
+                                                                            module_project_id: module_project.id).first_or_create
 
 
                           if row[k].blank?

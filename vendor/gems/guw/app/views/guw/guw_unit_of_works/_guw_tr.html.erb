@@ -17,6 +17,10 @@
            gce = gce_guw_coefficient.guw_coefficient_elements.first
          end
 
+         if gce.nil?
+           gce = gce_guw_coefficient.guw_coefficient_elements.first
+         end
+
          unless gce.nil?
            if (gceuw.percent.to_f != gce.value.to_f)
              hash_color_priorities[gce.color_priority.to_i] = gce.color_code
@@ -289,7 +293,7 @@
               <% rescue %>
                 <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     guw_coefficient_element_id: nil).last %>
+                                                                     module_project_id: current_module_project.id).last %>
               <% end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
