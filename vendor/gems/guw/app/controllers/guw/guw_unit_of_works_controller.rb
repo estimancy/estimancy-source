@@ -1264,6 +1264,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                     guw_complexity_id: guw_unit_of_work.guw_complexity_id)
                 end
 
+                ceuw.guw_coefficient_element_id = cce.id
+
                 unless cce.value.blank?
                   percents << (pc.to_f / 100)
                   percents << cce.value.to_f
@@ -1341,6 +1343,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                     guw_coefficient_element_id: guw_coefficient_element.id,
                                                                     guw_complexity_id: guw_unit_of_work.guw_complexity_id)
                 end
+
+                ceuw.guw_coefficient_element_id = cce.id
 
                 unless cce.value.blank?
                   coeffs << pc
@@ -1685,6 +1689,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               else
                 percents << 1
               end
+
+              ceuw.guw_coefficient_element_id = guw_coefficient_element.id
+
             end
           end
 
@@ -2811,6 +2818,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                             ceuw.guw_coefficient_element_id = ce.id
                           else
                             ceuw.percent = row[k].value.to_f rescue nil
+                            ceuw.guw_coefficient_element_id = default_guw_coefficient_guw_coefficient_element.nil? ?    guw_coefficient_guw_coefficient_elements.first : default_guw_coefficient_guw_coefficient_element.id
                           end
 
                           unless guw_uow.changed?
