@@ -254,11 +254,11 @@ public
           #   #@user.groups.create(Group.where(id: group_id))
           # end
 
-          user_groups_before = @user.groups.map(&:id)
+          user_groups_before = @user.groups.where(organization_id: @organization.id).map(&:id)
           user_groups_after = params[:groups].keys
           groups_to_delete = user_groups_before - user_groups_after
           groups_to_add = user_groups_after - user_groups_before
-          new_user_group_ids = user_groups_before - groups_to_delete + groups_to_add
+          new_user_group_ids = user_groups_before - groups_to_delete + groups_to_add + @user.groups.where('organization_id <> ?', @organization.id).all.map(&:id)
           @user.group_ids = new_user_group_ids.map(&:to_i).uniq
           @user.save
         end
