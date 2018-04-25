@@ -3272,7 +3272,7 @@ class OrganizationsController < ApplicationController
                                 number_precision: 2,
                                 subscription_end_date: Time.now + 1.year)
 
-                if row[5].upcase == "SAML"
+                if !row[5].nil? && row[5].value.upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
                 end
