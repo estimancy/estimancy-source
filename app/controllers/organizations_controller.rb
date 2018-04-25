@@ -3188,23 +3188,23 @@ class OrganizationsController < ApplicationController
     check_if_organization_is_image(@organization)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
-    first_line = [I18n.t(:first_name_attribute), I18n.t(:last_name_attribute), I18n.t(:initials_attribute),I18n.t(:email_attribute), I18n.t(:login_name_or_email), I18n.t(:authentication),I18n.t(:description), I18n.t(:label_language), I18n.t(:locked_at),I18n.t(:groups)]
-    line = []
+    first_row = [I18n.t(:first_name_attribute), I18n.t(:last_name_attribute), I18n.t(:initials_attribute),I18n.t(:email_attribute), I18n.t(:login_name_or_email), I18n.t(:authentication),I18n.t(:description), I18n.t(:label_language), I18n.t(:locked_at),I18n.t(:groups)]
+    row = []
 
-    first_line.each_with_index do |name, index|
+    first_row.each_with_index do |name, index|
       worksheet.add_cell(0, index, name)
       if can?(:show_groups, Group) || can?(:manage, Group)
-        @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
-          line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
-          line.each_with_index do |my_case, index|
-            worksheet.add_cell(index_line + 1, index, my_case)
+        @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_row|
+          row =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + user.groups.where(organization_id: @organization.id).map(&:name)
+          row.each_with_index do |my_case, index|
+            worksheet.add_cell(index_row + 1, index, my_case)
           end
         end
       else
-        @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_line|
-          line =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + ["####"]
-          line.each_with_index do |my_case, index|
-            worksheet.add_cell(index_line + 1, index, my_case)
+        @organization.users.where('login_name <> ?', 'owner').each_with_index do |user, index_row|
+          row =  [user.first_name, user.last_name, user.initials,user.email, user.login_name, user.auth_method ? user.auth_method.name : "Application" , user.description, user.language, user.locked_at.nil? ? 0 : 1] + ["####"]
+          row.each_with_index do |my_case, index|
+            worksheet.add_cell(index_row + 1, index, my_case)
           end
         end
       end
@@ -3235,32 +3235,32 @@ class OrganizationsController < ApplicationController
         worksheet = workbook[0]
         tab = worksheet
 
-        tab.each_with_index do |line, index_line|
-        if index_line > 0
-          if !line.blank?
-            user = User.find_by_login_name(line[4])
+        tab.each_with_index do |row, index_row|
+        if index_row > 0
+          if !row.blank?
+            user = User.find_by_login_name(row[4].nil? ? '' : row[4].value)
             if user.nil?
               password = SecureRandom.hex(8)
-              if line[0] && line[1] && line[4] && line[3]
-                if line[7]
-                  langue = Language.find_by_name(line[7]) ? Language.find_by_name(line[7]).id : params[:language_id].to_i
+              if row[0] && row[1] && row[4] && row[3]
+                if row[7]
+                  langue = Language.find_by_name(row[7].nil? ? '' : row[7].value) ? Language.find_by_name(row[7].nil? ? '' : row[7].value).id : params[:language_id].to_i
                 else
                   langue = params[:language_id].to_i
                 end
 
-                if line[5]
-                  auth_method = AuthMethod.find_by_name(line[5]) ? AuthMethod.find_by_name(line[5]).id : AuthMethod.first.id
+                if row[5]
+                  auth_method = AuthMethod.find_by_name(row[5].nil? ? '' : row[5].value) ? AuthMethod.find_by_name(row[5].nil? ? '' : row[5].value).id : AuthMethod.first.id
                 else
                   auth_method = AuthMethod.first.id
                 end
 
-                user = User.new(first_name: line[0],
-                                last_name: line[1],
-                                initials: line[2].nil? ? "#{line[0][0]}#{line[1][0]}" : line[2],
-                                email: line[3],
-                                login_name: line[4],
-                                id_connexion: line[4],
-                                description: line[6],
+                user = User.new(first_name: row[0].nil? ? '' : row[0].value,
+                                last_name: row[1].nil? ? '' : row[1].value,
+                                initials: row[2].nil? ? '' : row[2].value,
+                                email: row[3].nil? ? '' : row[3].value,
+                                login_name: row[4].nil? ? '' : row[4].value,
+                                id_connexion: row[4].nil? ? '' : row[4].value,
+                                description: row[6].nil? ? '' : row[6].value,
                                 super_admin: false,
                                 password: password,
                                 password_confirmation: password,
@@ -3268,11 +3268,11 @@ class OrganizationsController < ApplicationController
                                 time_zone: "Paris",
                                 object_per_page: 50,
                                 auth_type: auth_method,
-                                locked_at: line[8] ==  0 ? nil : Time.now,
+                                locked_at: row[8] == 0 ? nil : Time.now,
                                 number_precision: 2,
                                 subscription_end_date: Time.now + 1.year)
 
-                if line[5].upcase == "SAML"
+                if row[5].upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
                 end
@@ -3281,8 +3281,8 @@ class OrganizationsController < ApplicationController
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
                 group_index = 9
                 if can?(:manage, Group, :organization_id => @current_organization.id)
-                   while line[group_index]
-                      group = Group.where(name: line[group_index], organization_id: @current_organization.id).first
+                   while row[group_index]
+                      group = Group.where(name: row[group_index].nil? ? '' : row[group_index].value, organization_id: @current_organization.id).first
                       begin
                         GroupsUsers.create(group_id: group.id, user_id: user.id)
                       rescue
@@ -3295,10 +3295,10 @@ class OrganizationsController < ApplicationController
                   GroupsUsers.create(group_id: @user_group.id, user_id: user.id)
                 end
               else
-                user_with_no_name << index_line
+                user_with_no_name << index_row
               end
             else
-              users_existing << line[4]
+              users_existing << row[4].nil? ? '' : row[4].value
             end
           end
         end
