@@ -518,7 +518,7 @@
 
 <% if can? :execute_estimation_plan, @project %>
   <td class="span3">
-    <% if @guw_model.allow_ml == true %>
+    <% if @guw_model.allow_ml_jira == true || @guw_model.allow_ml_redmine == true %>
       <%= link_to "", guw.ml_trt_path(guw_unit_of_work_id: guow, guw_model_id: @guw_model.id), class: "fa fa-magic", title: "Fast Estimate", method: "POST" %>
     <% end %>
     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>

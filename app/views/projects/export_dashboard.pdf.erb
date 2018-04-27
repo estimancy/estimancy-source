@@ -383,7 +383,7 @@
                                                                            guw_coefficient_id: @guw_coefficient.id,
                                                                            guw_coefficient_element_id: nil).last %>
                       <td class="center">
-                        <%= ceuw.percent %><br><%= ceuw.comments %>
+                        <%= ceuw.nil? ? '-' : ceuw.percent %><br><%= ceuw.nil? ? '-' : ceuw.comments %>
                       </td>
                     <% else %>
                       <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
