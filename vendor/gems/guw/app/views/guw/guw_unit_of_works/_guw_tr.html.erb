@@ -11,9 +11,8 @@
      gce_guw_coefficient = gceuw.guw_coefficient
      unless gce_guw_coefficient.nil?
        unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
-         begin
-           gce = gceuw.guw_coefficient_element
-         rescue
+         gce = gceuw.guw_coefficient_element
+         if gce.nil?
            gce = gce_guw_coefficient.guw_coefficient_elements.first
          end
 
@@ -69,7 +68,6 @@
 <td class="text_field_text_overflow span3">
   <span class="pull-left">
     <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
-    <%= guow.display_order %>
   </span>
 </td>
 
