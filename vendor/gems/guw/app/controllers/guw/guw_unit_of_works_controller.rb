@@ -61,6 +61,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_model.organization
     @project = module_project.project
 
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
+
     @guw_unit_of_work.guw_model_id = @guw_model.id
     @guw_unit_of_work.module_project_id = module_project.id
     @guw_unit_of_work.pbs_project_element_id = current_component.id
@@ -108,6 +110,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @organization = @guw_unit_of_work.organization
     @project = @guw_unit_of_work.project rescue current_module_project.project
 
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
+
     if @guw_unit_of_work.update_attributes(params[:guw_unit_of_work])
       redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}") and return
     else
@@ -121,6 +125,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:id])
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
+
+    expire_fragment "#{@guw_model.organization.id}_#{current_module_project.project.id}_#{current_module_project.project.version_number}"
 
     reorder group
 
@@ -143,6 +149,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
   end
 
   def down
@@ -158,6 +166,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
   end
 
   def load_cplx_comments
@@ -201,6 +211,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project = @module_project.project
     @component = current_component
 
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
+
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
@@ -237,6 +249,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.name = params[:name].values.first
     @guw_unit_of_work.save
 
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
+
+
     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
@@ -254,6 +269,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
 
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:comments].keys.first)
     @guw_unit_of_work.name = params[:name].values.first
@@ -463,6 +480,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model = @guw_unit_of_work.guw_model
     @guw_outputs = @guw_model.guw_outputs
+
+    expire_fragment "#{@guw_model.organization.id}_#{@project.id}_#{@project.version_number}"
   end
 
   def save_guw_unit_of_works
@@ -680,6 +699,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       finder.save
     end
 
+    expire_fragment "#{@guw_model.organization.id}_#{@project.id}_#{@project.version_number}"
 
     technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
     @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
@@ -1032,12 +1052,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   #/!\ NEW METHODS WITH MULTIPLES ATTRIBUTES /!\
   def save_guw_unit_of_works_with_multiple_outputs
+
     @module_project = current_module_project
     @guw_model = @module_project.guw_model
     @organization = @guw_model.organization
     @project = @module_project.project
     @component = current_component
     @reload_partial = true
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
+
 
     if params['commit'].present?
       @modified_guw_line_ids = @module_project.guw_unit_of_work_ids
@@ -1529,6 +1553,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
 
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_unit_of_work.ajusted_size = {}
@@ -2569,6 +2595,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   private def import!(id, title, description, default_group, source, url)
 
+
     module_project = current_module_project
     @guw_model = module_project.guw_model
     @component = current_component
@@ -2578,6 +2605,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_outputs = @guw_model.guw_outputs
     @all_guw_attribute_complexities = Hash.new
+
+    expire_fragment "#{@organization.id}_#{@project.id}_#{@project.version_number}"
 
     results = []
 
