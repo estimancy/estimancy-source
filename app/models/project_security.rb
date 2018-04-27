@@ -37,69 +37,69 @@ class ProjectSecurity < ActiveRecord::Base
   #has_paper_trail
 
   # Hair-Triggers
-  # trigger.after(:insert) do
-  #   <<-SQL
-  #
-  #     IF ((SELECT is_new_created_record FROM projects WHERE id = NEW.project_id) != true) THEN
-  #
-  #       INSERT INTO autorization_log_events SET
-  #           event_organization_id = NEW.event_organization_id,
-  #           transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
-  #           author_id = NEW.originator_id,
-  #           item_type = 'ProjectSecurity',
-  #           item_id = NEW.project_id,
-  #           project_id = NEW.project_id,
-  #           group_id = NEW.group_id,
-  #           user_id = NEW.user_id,
-  #           project_security_level_id = NEW.project_security_level_id,
-  #           is_model_permission = NEW.is_model_permission,
-  #           is_estimation_permission = NEW.is_estimation_permission,
-  #           is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
-  #           object_class_name = 'Project',
-  #           association_class_name = 'EstimationStatusGroupRole',
-  #           event = 'create',
-  #           object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
-  #                                       ' "group_id": ', NEW.group_id,
-  #                                       ' "user_id": ', NEW.user_id,
-  #                                       ' "is_model_permission": ', NEW.is_model_permission,
-  #                                       ' "is_estimation_permission": ', NEW.is_estimation_permission,
-  #                                  '}'),
-  #           created_at = UTC_TIMESTAMP();
-  #     END IF;
-  #   SQL
-  # end
-  #
-  # trigger.after(:delete) do
-  #   <<-SQL
-  #
-  #     IF ((SELECT is_new_created_record FROM projects WHERE id = OLD.project_id) != true) THEN
-  #
-  #       INSERT INTO autorization_log_events SET
-  #         event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
-  #         transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
-  #         author_id = OLD.originator_id,
-  #         item_type = 'ProjectSecurity',
-  #         item_id = OLD.project_id,
-  #         project_id = OLD.project_id,
-  #         group_id = OLD.group_id,
-  #         user_id = OLD.user_id,
-  #         project_security_level_id = OLD.project_security_level_id,
-  #         is_model_permission = OLD.is_model_permission,
-  #         is_estimation_permission = OLD.is_estimation_permission,
-  #         is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
-  #         object_class_name = 'Project',
-  #         association_class_name = 'EstimationStatusGroupRole',
-  #         event = 'delete',
-  #         object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
-  #                                     ' "group_id": ', OLD.group_id,
-  #                                     ' "user_id": ', OLD.user_id,
-  #                                     ' "is_model_permission": ', OLD.is_model_permission,
-  #                                     ' "is_estimation_permission": ', OLD.is_estimation_permission,
-  #                           '}'),
-  #         created_at = UTC_TIMESTAMP();
-  #     END IF;
-  #   SQL
-  # end
+  trigger.after(:insert) do
+    <<-SQL
+
+      IF ((SELECT is_new_created_record FROM projects WHERE id = NEW.project_id) != true) THEN
+
+        INSERT INTO autorization_log_events SET
+            event_organization_id = NEW.event_organization_id,
+            transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
+            author_id = NEW.originator_id,
+            item_type = 'ProjectSecurity',
+            item_id = NEW.project_id,
+            project_id = NEW.project_id,
+            group_id = NEW.group_id,
+            user_id = NEW.user_id,
+            project_security_level_id = NEW.project_security_level_id,
+            is_model_permission = NEW.is_model_permission,
+            is_estimation_permission = NEW.is_estimation_permission,
+            is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
+            object_class_name = 'Project',
+            association_class_name = 'EstimationStatusGroupRole',
+            event = 'create',
+            object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
+                                        ' "group_id": ', NEW.group_id,
+                                        ' "user_id": ', NEW.user_id,
+                                        ' "is_model_permission": ', NEW.is_model_permission,
+                                        ' "is_estimation_permission": ', NEW.is_estimation_permission,
+                                   '}'),
+            created_at = UTC_TIMESTAMP();
+      END IF;
+    SQL
+  end
+
+  trigger.after(:delete) do
+    <<-SQL
+
+      IF ((SELECT is_new_created_record FROM projects WHERE id = OLD.project_id) != true) THEN
+
+        INSERT INTO autorization_log_events SET
+          event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
+          transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
+          author_id = OLD.originator_id,
+          item_type = 'ProjectSecurity',
+          item_id = OLD.project_id,
+          project_id = OLD.project_id,
+          group_id = OLD.group_id,
+          user_id = OLD.user_id,
+          project_security_level_id = OLD.project_security_level_id,
+          is_model_permission = OLD.is_model_permission,
+          is_estimation_permission = OLD.is_estimation_permission,
+          is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
+          object_class_name = 'Project',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'delete',
+          object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                                      ' "user_id": ', OLD.user_id,
+                                      ' "is_model_permission": ', OLD.is_model_permission,
+                                      ' "is_estimation_permission": ', OLD.is_estimation_permission,
+                            '}'),
+          created_at = UTC_TIMESTAMP();
+      END IF;
+    SQL
+  end
   # END Hair-Triggers
 
   #Return level of security project

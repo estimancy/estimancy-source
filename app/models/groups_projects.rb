@@ -25,7 +25,7 @@ class GroupsProjects < ActiveRecord::Base
   belongs_to :project
 
   # Security Audit management
-  ##before_save :update_transaction_id_for_triggers
+  before_save :update_transaction_id_for_triggers
 
   private
   def update_transaction_id_for_triggers
