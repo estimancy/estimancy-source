@@ -87,6 +87,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.save
 
+    reorder @group
+
     current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
     @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
     @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
