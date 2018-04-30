@@ -108,7 +108,9 @@ class ViewsWidget < ActiveRecord::Base
     organization_fields = organization.fields
 
     ###module_project.views_widgets.each do |view_widget|
-    project.views_widgets.where('module_project_id = ? OR is_kpi_widget = ?', module_project.id, true).all.each do |view_widget|
+    project_view_widgets =  project.views_widgets.where('module_project_id = ? OR is_kpi_widget = ?', module_project.id, true).all.sort_by{ |w| w.is_kpi_widget ? 1 : 0 }
+
+    project_view_widgets.each do |view_widget|
 
       pfs = {}
       ProjectField.where(project_id: project.id, views_widget_id: view_widget.id).all.each do |pf|
@@ -122,7 +124,12 @@ class ViewsWidget < ActiveRecord::Base
 
         begin #unless view_widget_estimation_value.nil?
           if set_to_nil == true
-            @value = nil
+            if view_widget.is_kpi_widget?
+              @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)
+            else
+              @value = nil
+            end
+
           else
             if !view_widget_estimation_value.nil?
               if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
