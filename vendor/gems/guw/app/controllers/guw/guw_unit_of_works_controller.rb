@@ -133,7 +133,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     display_order = @guw_unit_of_work.display_order.to_i
 
-    @guw_unit_of_work.display_order = display_order - 2
+    @guw_unit_of_work.display_order = display_order - 1
     @guw_unit_of_work.save
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
