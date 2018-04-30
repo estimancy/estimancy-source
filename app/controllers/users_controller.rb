@@ -429,9 +429,9 @@ public
 
   def send_feedback
     # No authorize required since everyone can send a feedback if the feature have been enabled using the allow_feedback admin settings.
-    latest_record_version = Version.last.nil? ? Version.create(:comment => 'No update data has been save') : Version.last
-    @latest_repo_update = latest_record_version.repository_latest_update #Home::latest_repo_update
-    @latest_local_update = latest_record_version.local_latest_update
+    # latest_record_version = Version.last.nil? ? Version.create(:comment => 'No update data has been save') : Version.last
+    # @latest_repo_update = latest_record_version.repository_latest_update #Home::latest_repo_update
+    # @latest_local_update = latest_record_version.local_latest_update
     @projestimate_version=projestimate_version
     @ruby_version=ruby_version
     @rails_version=rails_version
