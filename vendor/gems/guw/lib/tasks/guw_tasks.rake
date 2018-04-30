@@ -25,11 +25,11 @@
 # end
 
 # find all models and group them on keys which should be common
-grouped = Guw::GuwCoefficientElementUnitOfWork.all.group_by{|model| [model.guw_unit_of_work_id, model.guw_coefficient_element_id, model.guw_coefficient_id] }
-grouped.values.each do |duplicates|
-  # the first one we want to keep right?
-  first_one = duplicates.pop # or pop for last one
-  # if there are any more left, they are duplicates
-  # so delete all of them
-  duplicates.each{|double| double.destroy} # duplicates can now be destroyed
-end
+# grouped = Guw::GuwCoefficientElementUnitOfWork.all.group_by{|model| [model.guw_unit_of_work_id, model.guw_coefficient_element_id, model.guw_coefficient_id] }
+# grouped.values.each do |duplicates|
+#   # the first one we want to keep right?
+#   first_one = duplicates.pop # or pop for last one
+#   # if there are any more left, they are duplicates
+#   # so delete all of them
+#   duplicates.each{|double| double.destroy} # duplicates can now be destroyed
+# end
