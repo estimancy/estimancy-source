@@ -150,17 +150,17 @@ class Guw::GuwModelsController < ApplicationController
                 @guw_model.config_type = "new"
 
                 begin
-                  @guw_model.allow_excel = ((tab[i+1][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_excel = ((tab[i+1][1].value) == "false") ? false : true rescue true
                   @guw_model.excel_ml_server = tab[i+2][1].value rescue nil
-                  @guw_model.allow_ml_excel = ((tab[i+3][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_ml_excel = ((tab[i+3][1].value) == "false") ? false : true rescue false
 
-                  @guw_model.allow_jira = ((tab[i+4][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_jira = ((tab[i+4][1].value) == "false") ? false : true rescue false
                   @guw_model.jira_ml_server = tab[i+5][1].value rescue nil
-                  @guw_model.allow_ml_jira = ((tab[i+6][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_ml_jira = ((tab[i+6][1].value) == "false") ? false : true rescue false
 
-                  @guw_model.allow_redmine = ((tab[i+7][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_redmine = ((tab[i+7][1].value) == "false") ? false : true rescue false
                   @guw_model.redmine_ml_server = tab[i+8][1].value rescue nil
-                  @guw_model.allow_ml_redmine = ((tab[i+9][1].value) == "false") ? false : true rescue nil
+                  @guw_model.allow_ml_redmine = ((tab[i+9][1].value) == "false") ? false : true rescue false
                 rescue
                   @guw_model.allow_excel = true
                   @guw_model.excel_ml_server = ""
