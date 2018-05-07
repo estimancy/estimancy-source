@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180409141420) do
+ActiveRecord::Schema.define(:version => 20180507145719) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -586,6 +586,7 @@ ActiveRecord::Schema.define(:version => 20180409141420) do
     t.datetime "updated_at",                 :null => false
     t.integer  "module_project_id"
     t.text     "comments"
+    t.integer  "copy_id"
   end
 
   add_index "guw_guw_coefficient_element_unit_of_works", ["guw_unit_of_work_id", "guw_coefficient_id", "guw_coefficient_element_id"], :name => "guw_unit_of_work_guw_coefficient_elements"

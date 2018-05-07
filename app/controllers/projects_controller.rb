@@ -2516,6 +2516,14 @@ public
                                         pbs_project_element_id: new_pbs_id,
                                         organization_id: new_prj.organization_id,
                                         project_id: new_prj.id)
+
+              # copy des coefficient-elements-unit-of-works
+              # guw_uow.guw_coefficient_element_unit_of_works.each do |old_guw_coeff_elt_uow|
+              #   new_guw_coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(copy_id: old_guw_coeff_elt_uow.id).first
+              #   new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
+              #   new_guw_coeff_elt_uow.save
+              # end
+              #====
             end
           end
 
@@ -3753,15 +3761,18 @@ public
 
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
         if !next_status.nil? && next_status.create_new_version_when_changing_status == true
-          new_status_name = EstimationStatus.find(new_status_id).name rescue ""
-          archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
-          last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
-          last_status_comments << "___________________________________________________________________________\r\n"
-          new_comments = last_status_comments + new_comments
 
           new_version_number = set_project_version(@project)
           new_project_version = @project.create_new_version_when_changing_status(next_status, new_version_number)
-          puts "test"
+
+          if new_project_version
+            new_status_name = EstimationStatus.find(new_status_id).name rescue ""
+            archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
+            last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
+            last_status_comments << "___________________________________________________________________________\r\n"
+            new_comments = last_status_comments + new_comments
+          end
+
         else
           @project.estimation_status_id = params["project"]["estimation_status_id"]
         end
