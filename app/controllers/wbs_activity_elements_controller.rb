@@ -43,7 +43,7 @@ class WbsActivityElementsController < ApplicationController
 
     set_page_title I18n.t(:wbs_activity_elements)
     @wbs_activity_element = WbsActivityElement.find(params[:id])
-    @organization = @wbs_activity_element.organization
+    @organization = @wbs_activity_element.wbs_activity.organization
 
     if params[:activity_id]
       @wbs_activity = WbsActivity.find(params[:activity_id])
@@ -95,7 +95,7 @@ class WbsActivityElementsController < ApplicationController
   def update
     authorize! :manage_modules_instances, ModuleProject
     @wbs_activity_element = WbsActivityElement.find(params[:id])
-    @organization = @wbs_activity_element.organization
+    @organization = @wbs_activity_element.wbs_activity.organization
 
     @wbs_activity ||= WbsActivity.find_by_id(params[:wbs_activity_element][:wbs_activity_id])
     @potential_parents = @wbs_activity.wbs_activity_elements if @wbs_activity
