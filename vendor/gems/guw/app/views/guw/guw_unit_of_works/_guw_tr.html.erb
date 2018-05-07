@@ -90,11 +90,11 @@
                    style: "width: 90%;",
                    prompt: "",
                    guw: guow.id,
-                   title: @guw_type.name %>
+                   title: '' %>
   <% end %>
 </td>
 
-<% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
+<% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
                                                                         guw_unit_of_work_id: guow.id) %>
 
 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
