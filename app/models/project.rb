@@ -647,6 +647,15 @@ class Project < ActiveRecord::Base
                                           pbs_project_element_id: new_pbs_id,
                                           project_id: new_prj.id)
               end
+
+              # copy des coefficient-elements-unit-of-works
+              guw_uow.guw_coefficient_element_unit_of_works.each do |new_guw_coeff_elt_uow|
+                unless new_guw_coeff_elt_uow.nil?
+                  new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
+                  new_guw_coeff_elt_uow.module_project_id = new_mp.id
+                  new_guw_coeff_elt_uow.save
+                end
+              end
             end
 
             new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes

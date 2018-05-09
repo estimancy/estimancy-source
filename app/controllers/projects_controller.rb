@@ -2519,7 +2519,6 @@ public
 
               # copy des coefficient-elements-unit-of-works
               guw_uow.guw_coefficient_element_unit_of_works.each do |new_guw_coeff_elt_uow|
-                # old = Guw::GuwCoefficientElementUnitOfWork.where(id: new_guw_coeff_elt_uow.copy_id).first
                 unless new_guw_coeff_elt_uow.nil?
                   new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
                   new_guw_coeff_elt_uow.module_project_id = new_mp.id
