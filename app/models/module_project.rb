@@ -267,14 +267,14 @@ class ModuleProject < ActiveRecord::Base
     # Module_project Ratio elements
 
     wbs_activity = wbs_activity_ratio.wbs_activity
-    organization = wbs_activity.organization
+    organization = wbs_activity.nil? ? nil : wbs_activity.organization
 
     ####if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
     #create module_project ratio elements
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
       #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
       mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                     pbs_project_element_id: pbs_project_element.id,
+                                                     pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id,
                                                      module_project_id: self.id,
                                                      wbs_activity_id: wbs_activity.id,
                                                      wbs_activity_ratio_id: wbs_activity_ratio.id,

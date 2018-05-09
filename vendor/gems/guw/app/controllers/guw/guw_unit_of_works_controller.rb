@@ -209,7 +209,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: nil,
                                                        guw_coefficient_id: @guw_coefficient.id,
-                                                       guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create!
+                                                       guw_unit_of_work_id: @guw_unit_of_work.id,
+                                                       module_project_id: @module_project.id).first_or_create!
 
     @ceuw.percent = params["value"].to_f
 
@@ -1232,7 +1233,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if ceuw.nil?
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
                                                                    guw_coefficient_id: guw_coefficient.id,
-                                                                   guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id)
+                                                                   guw_coefficient_element_id: nil)
               end
 
               begin
@@ -1268,7 +1269,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                    guw_complexity_id: guw_unit_of_work.guw_complexity_id)
                 end
 
-                ceuw.guw_coefficient_element_id = guw_coefficient_element.id
+                # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
 
                 unless cce.value.blank?
                   percents << (pc.to_f / 100)
@@ -1295,9 +1296,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               ceuw = ceuws[guw_coefficient.id]
               if ceuw.nil?
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
-                                                                  guw_coefficient_id: guw_coefficient.id,
-                                                                  guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.create(guw_unit_of_work_id: guw_unit_of_work,
+                                                                   guw_coefficient_id: guw_coefficient.id,
+                                                                   guw_coefficient_element_id: nil)
               end
 
               # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work,
@@ -1348,7 +1349,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                    guw_complexity_id: guw_unit_of_work.guw_complexity_id).first_or_create
                 end
 
-                ceuw.guw_coefficient_element_id = guw_coefficient_element.id
+                # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
 
                 unless cce.value.blank?
                   coeffs << pc
@@ -1674,8 +1675,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if guw_coefficient.coefficient_type == "Pourcentage"
 
           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work,
-                                                            guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
-                                                                                                                    guw_coefficient_id: guw_coefficient.id)
+                                                            guw_coefficient_id: guw_coefficient.id,
+                                                            guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
+                                                                                                             guw_coefficient_id: guw_coefficient.id,
+                                                                                                             guw_coefficient_element_id: nil)
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
             cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
@@ -1711,8 +1714,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         elsif guw_coefficient.coefficient_type == "Coefficient"
 
           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work,
-                                                            guw_coefficient_id: guw_coefficient.id).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
-                                                                                                                    guw_coefficient_id: guw_coefficient.id)
+                                                            guw_coefficient_id: guw_coefficient.id,
+                                                            guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
+                                                                                                             guw_coefficient_id: guw_coefficient.id,
+                                                                                                             guw_coefficient_element_id: nil)
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
             cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
@@ -1757,7 +1762,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
                                                               guw_unit_of_work_id: @guw_unit_of_work).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
-                                                                                                                     guw_coefficient_id: guw_coefficient)
+                                                                                                                      guw_coefficient_id: guw_coefficient)
           end
 
           unless ceuw.nil?

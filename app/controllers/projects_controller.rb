@@ -2518,11 +2518,14 @@ public
                                         project_id: new_prj.id)
 
               # copy des coefficient-elements-unit-of-works
-              # guw_uow.guw_coefficient_element_unit_of_works.each do |old_guw_coeff_elt_uow|
-              #   new_guw_coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(copy_id: old_guw_coeff_elt_uow.id).first
-              #   new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
-              #   new_guw_coeff_elt_uow.save
-              # end
+              guw_uow.guw_coefficient_element_unit_of_works.each do |new_guw_coeff_elt_uow|
+                # old = Guw::GuwCoefficientElementUnitOfWork.where(id: new_guw_coeff_elt_uow.copy_id).first
+                unless new_guw_coeff_elt_uow.nil?
+                  new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
+                  new_guw_coeff_elt_uow.module_project_id = new_mp.id
+                  new_guw_coeff_elt_uow.save
+                end
+              end
               #====
             end
           end
