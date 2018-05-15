@@ -101,13 +101,18 @@ class ModuleProject < ActiveRecord::Base
   end
 
 
-  def all_nexts_mp_with_links(all_nexts_mp=[])
+  def all_nexts_mp_with_links(all_nexts_mp=[], i=0)
     current_nexts = self.inverse_associated_module_projects.uniq
     all_nexts_mp << current_nexts
 
     unless current_nexts.blank?
       current_nexts.each do |next_mp|
-        current_mp_link = next_mp.all_nexts_mp_with_links(all_nexts_mp)
+        i = i + 1
+        if i >= self.project.module_projects.size
+          break
+        else
+          current_mp_link = next_mp.all_nexts_mp_with_links(all_nexts_mp, i)
+        end
       end
     end
 
