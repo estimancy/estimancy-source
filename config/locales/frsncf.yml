@@ -1760,7 +1760,7 @@ frsncf:
   error_message_3: "Vous pouvez continuer."
   locked_at: "Bloquer le"
   unlocked: "Non bloqué"
-  user_exist: "Le(s) utilisateurs \"%{parameter}\" existe déjâ"
+  user_exist: "Le(s) utilisateur(s) \"%{parameter}\" existe déjâ"
   user_with_no_name: "la/les ligne(s) suivante contienne des erreurs (nom|prenom|login|email manquant): %{parameter}"
   user_importation_success: "Importation reussi"
   not_confirmed: "Non confirmé"
