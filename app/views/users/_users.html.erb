@@ -1,8 +1,8 @@
 <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
   <thead>
   <tr>
-    <th><%= I18n.t(:last_name) %></th>
     <th><%= I18n.t(:first_name) %></th>
+    <th><%= I18n.t(:last_name) %></th>
     <th><%= I18n.t(:login_name) %></th>
     <th><%= I18n.t(:organization) %></th>
     <th><%= I18n.t(:email) %></th>
@@ -20,8 +20,8 @@
     <% else %>
       <% @users.each do |user| %>
         <tr>
-          <td><%= user.last_name %></td>
           <td><%= user.first_name %></td>
+          <td><%= user.last_name %></td>
           <td><%= user.login_name %></td>
           <td><%= simple_format(user.organizations.join("\n")) %></td>
           <td><%= user.email %></td>

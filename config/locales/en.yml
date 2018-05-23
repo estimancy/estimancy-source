@@ -1746,7 +1746,7 @@ en:
   error_message_3: "You can continue."
   locked_at: "Locked at"
   unlocked: "Unlocked"
-  user_exist: "the following users \"%{parameter}\" already exists"
+  user_exist: "the following user(s) \"%{parameter}\" already exists"
   user_with_no_name: "The following line have some error (first name|last name|login|email are missing): %{parameter}"
   user_importation_success: "Users importation success"
   not_confirmed: "Not confirmed"

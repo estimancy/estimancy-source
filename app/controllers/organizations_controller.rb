@@ -151,26 +151,51 @@ class OrganizationsController < ApplicationController
     end
 
     @reference_organization = Organization.where(id: referenced_organization_id).first
+    @reference_organization_applications = @reference_organization.applications
+    @reference_organization_profiles = @reference_organization.organization_profiles
+    @reference_organization_users = @reference_organization.users
 
     ###@reference_guw_model = @reference_organization.guw_models.where("name like ?", "%abaque%").first
-    #@reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi.").first
-    @reference_guw_model = @reference_organization.guw_models.where(name: "Abaque - Evo et Déploi.").first
+    @reference_guw_model = @reference_organization.guw_models.where("name like ?", "Dénombrement Evolution & Dire d'expert").first
+
+    if @reference_guw_model.nil?
+      flash[:warning] = "Il n'existe pas de module de Taille de référence"
+      redirect_to :back and return
+    end
 
     # Les CDS/ organisations selectionnées pour lancer l'audit
     organizations_list_ids = params[:organizations_list_ids]
     @organizations_to_audit = Organization.where(id: organizations_list_ids).all
 
-    @all_differences = []
-    @default_data_differences = []
-    @attributes_differences = []
-    @outputs_differences = []
-    @coefficients_differences = []
-    @coefficient_elements_differences = []
-    @guw_types_differences = []
-    @guw_types_complexities_differences = []
-    @attributes_type_complexities_differences = []
-    @guw_types_complexities_coefficients_outputs_matrix_differences = []
-    @attributes_type_complexities_matrix_differences = []
+    @all_differences = {}
+    @applications_differences = {}
+    @profiles_differences = {}
+    @default_data_differences = {}
+    @attributes_differences = {}
+    @outputs_differences = {}
+    @coefficients_differences = {}
+    @coefficient_elements_differences = {}
+    @guw_types_differences = {}
+    @guw_types_complexities_differences = {}
+    @attributes_type_complexities_differences = {}
+    @guw_types_complexities_coefficients_outputs_matrix_differences = {}
+    @attributes_type_complexities_matrix_differences = {}
+
+    @organizations_to_audit.each do |organization|
+      @all_differences[organization.id] = []
+      @applications_differences[organization.id] = []
+      @profiles_differences[organization.id] = []
+      @default_data_differences[organization.id] = []
+      @attributes_differences[organization.id] = []
+      @outputs_differences[organization.id] = []
+      @coefficients_differences[organization.id] = []
+      @coefficient_elements_differences[organization.id] = []
+      @guw_types_differences[organization.id] = []
+      @guw_types_complexities_differences[organization.id] = []
+      @attributes_type_complexities_differences[organization.id] = []
+      @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] = []
+      @attributes_type_complexities_matrix_differences[organization.id] = []
+    end
 
     guw_model_columns = Guw::GuwModel.column_names.reject { |column| column.in? ["id", "name", "organization_id", "created_at", "updated_at", "copy_id", "copy_number"]}
     @reference_default_data = HashWithIndifferentAccess.new
@@ -192,7 +217,80 @@ class OrganizationsController < ApplicationController
     #On parcourt toutes les organisations de la liste
     @organizations_to_audit.each do |organization|
 
-      guw_models_with_abaque = Guw::GuwModel.where("name like ? AND organization_id = ?", "%abaque%", organization.id)
+      ###=================================== Comparaison des APPLICATIONS ===================================###
+      organization_applications = organization.applications
+      organization_applications.each do |application|
+        reference_application = @reference_organization_applications.where(name: application.name).first
+        if reference_application.nil?
+          #l'application n'existe pas dans la référence
+          @applications_differences[organization.id] << { organization_id: organization.id,
+                                                          application_id: application.id,
+                                                          reference_id: nil,
+                                                          element_id: application.id,
+                                                          column_name: "Application",
+                                                          column_value: application.name,
+                                                          nature: "Application en trop par rapport à la référence"
+          }
+        end
+      end
+      # Pour voir si s'il ya des applications manquantes dans l'organisation concerné
+      diff_applications_name = @reference_organization_applications.all.map(&:name) - organization_applications.all.map(&:name)
+      unless diff_applications_name.empty?
+        diff_applications = @reference_organization_applications.where(name: diff_applications_name)
+        diff_applications.each do |application|
+          @applications_differences[organization.id] << { organization_id: organization.id,
+                                                          application_id: application.id,
+                                                          reference_id: application.id,
+                                                          element_id: nil,
+                                                          column_name: "Application",
+                                                          column_value: application.name,
+                                                          nature: "Application manquante dans l'organisation'"
+          }
+        end
+      end
+
+
+      ###=================================== Comparaison des PROFILS ===================================###
+      organization_profiles = organization.organization_profiles
+      organization_profiles.each do |profile|
+        reference_profile = @reference_organization_profiles.where(name: profile.name).first
+        if reference_profile.nil?
+          #le profil n'existe pas dans la référence
+          @profiles_differences[organization.id] << { organization_id: organization.id,
+                                                      profile_id: profile.id,
+                                                      reference_id: nil,
+                                                      element_id: profile.id,
+                                                      column_name: "Profils",
+                                                      column_value: profile.name,
+                                                      nature: "Profil en trop par rapport à la référence"
+          }
+        end
+      end
+      # Pour voir si s'il ya des applications manquantes dans l'organisation concerné
+      diff_profiles_name = @reference_organization_profiles.all.map(&:name) - organization_profiles.all.map(&:name)
+      unless diff_profiles_name.empty?
+        diff_profiles = @reference_organization_profiles.where(name: diff_profiles_name)
+        diff_profiles.each do |profile|
+          @profiles_differences[organization.id] << { organization_id: organization.id,
+                                                      profile_id: profile.id,
+                                                      reference_id: profile.id,
+                                                      element_id: nil,
+                                                      column_name: "Profil",
+                                                      column_value: profile.name,
+                                                      nature: "Profil manquant dans l'organisation'"
+          }
+        end
+      end
+
+
+
+
+
+      ###=================================== MODULE DE TAILLES ===================================###
+
+
+      #guw_models_with_abaque = Guw::GuwModel.where("name like ? AND organization_id = ?", "%abaque%", organization.id)
+      guw_models_with_abaque = Guw::GuwModel.where("name like ? AND organization_id = ?", "%Dénombrement%", organization.id)
 
       #Pour chaque modele, il faut vérifier pour chaque type d'UO que les éléments sont identique par rapport à l'organization de référence
       guw_models_with_abaque.each do |guw_model|
@@ -214,7 +312,7 @@ class OrganizationsController < ApplicationController
         #     if (guw_model_orders.to_a <=> column_value.to_a) != 0
         #       different = true
         #       differences = guw_model.send(column_name).diff(column_value)
-        #       @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+        #       @default_data_differences[organization.id] << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
         #                             column_name: column_name, reference_column_value: column_value, column_value: guw_model_orders, nature: ""
         #       }
         #     end
@@ -230,14 +328,14 @@ class OrganizationsController < ApplicationController
         #     if column_value.in?([true, false]) || guw_model_column_value.in?([true, false])
         #       if !column_value != !guw_model_column_value
         #         different = true
-        #         @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+        #         @default_data_differences[organization.id] << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
         #                                        column_name: column_name, reference_column_value: column_value, column_value: guw_model_column_value, nature: ""
         #         }
         #       end
         #     else
         #       if guw_model_column_value != column_value
         #         different = true
-        #         @default_data_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
+        #         @default_data_differences[organization.id] << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id,
         #                                        column_name: column_name, reference_column_value: column_value, column_value: guw_model_column_value, nature: ""
         #         }
         #       end
@@ -254,13 +352,13 @@ class OrganizationsController < ApplicationController
         #
         #     if reference_attribute.name.to_s != attribute.name.to_s || reference_attribute.description.to_s != attribute.description.to_s
         #       # Description differente
-        #       @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
+        #       @attributes_differences[organization.id] << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: reference_attribute.id,
         #                             element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Description différente"
         #       }
         #     end
         #   else
         #     #l'attribut n'existe pas dans la référence
-        #     @attributes_differences << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: nil,
+        #     @attributes_differences[organization.id] << { organization_id: guw_model_organization_id, guw_model_id: guw_model.id, reference_id: nil,
         #                           element_id: attribute.id, column_name: "Attribut", column_value: attribute.name, nature: "Attribut en trop par rapport à la référence"
         #     }
         #   end
@@ -270,7 +368,7 @@ class OrganizationsController < ApplicationController
         # unless diff_attributes_name.empty?
         #   diff_attributes = @reference_guw_model_attributes.where(name: diff_attributes_name)
         #   diff_attributes.each do |attribute|
-        #     @attributes_differences << { organization_id: guw_model_organization_id,
+        #     @attributes_differences[organization.id] << { organization_id: guw_model_organization_id,
         #                                  guw_model_id: guw_model.id,
         #                                  reference_id: attribute.id,
         #                                  element_id: nil,
@@ -302,7 +400,7 @@ class OrganizationsController < ApplicationController
                 reference_output.color_priority != output.color_priority
 
               # Valeurs differentes
-              @outputs_differences << { organization_id: guw_model_organization_id,
+              @outputs_differences[organization.id] << { organization_id: guw_model_organization_id,
                                         guw_model_id: guw_model.id,
                                         reference_id: reference_output.id,
                                         element_id: output.id,
@@ -312,7 +410,7 @@ class OrganizationsController < ApplicationController
             end
           else
             #l'attribut n'existe pas dans la référence
-            @outputs_differences << { organization_id: guw_model_organization_id,
+            @outputs_differences[organization.id] << { organization_id: guw_model_organization_id,
                                       guw_model_id: guw_model.id,
                                       reference_id: nil,
                                       element_id: output.id,
@@ -327,7 +425,7 @@ class OrganizationsController < ApplicationController
         unless diff_outputs_name.empty?
           diff_outputs = @reference_guw_model_outputs.where(name: diff_outputs_name)
           diff_outputs.each do |output|
-            @outputs_differences << { organization_id: guw_model_organization_id,
+            @outputs_differences[organization.id] << { organization_id: guw_model_organization_id,
                                       guw_model_id: guw_model.id,
                                       reference_id: output.id,
                                       element_id: nil,
@@ -476,7 +574,7 @@ class OrganizationsController < ApplicationController
         unless diff_guw_types_name.empty?
           diff_guw_types = @reference_guw_model_types.where(name: diff_guw_types_name)
           diff_guw_types.each do |guw_type|
-            @guw_types_differences << { organization_id: guw_model_organization_id,
+            @guw_types_differences[organization.id] << { organization_id: guw_model_organization_id,
                                         guw_model_id: guw_model.id,
                                         reference_id: guw_type.id,
                                         element_id: nil,
@@ -496,7 +594,7 @@ class OrganizationsController < ApplicationController
 
           if reference_guw_type.nil?
             #l'attribut n'existe pas dans la référence
-            @guw_types_differences << { organization_id: guw_model_organization_id,
+            @guw_types_differences[organization.id] << { organization_id: guw_model_organization_id,
                                         guw_model_id: guw_model.id,
                                         reference_id: nil,
                                         element_id: guw_type.id,
@@ -532,7 +630,7 @@ class OrganizationsController < ApplicationController
                 !reference_guw_type.allow_line_color != !guw_type.allow_line_color
 
               # Valeurs differentes
-              @guw_types_differences << { organization_id: guw_model_organization_id,
+              @guw_types_differences[organization.id] << { organization_id: guw_model_organization_id,
                                           guw_model_id: guw_model.id,
                                           reference_id: reference_guw_type.id,
                                           element_id: guw_type.id,
@@ -558,7 +656,7 @@ class OrganizationsController < ApplicationController
             #   unless diff_guw_type_complexities_name.empty?
             #     diff_guw_type_complexities = reference_guw_type_complexities.where(name: diff_guw_type_complexities_name)
             #     diff_guw_type_complexities.each do |diff_guw_type_cplx|
-            #       @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
+            #       @guw_types_complexities_differences[organization.id] << {organization_id: guw_model_organization_id,
             #                                               guw_model_id: guw_model.id,
             #                                               guw_type_id: guw_type.id,
             #                                               reference_id: diff_guw_type_cplx.id,
@@ -573,7 +671,7 @@ class OrganizationsController < ApplicationController
             #   #=== On verifie s'il existe dans la reference
             #   if reference_guw_cplx.nil?
             #     #la complexite n'existe pas dans la référence
-            #     @guw_types_complexities_differences << {  organization_id: guw_model_organization_id,
+            #     @guw_types_complexities_differences[organization.id] << {  organization_id: guw_model_organization_id,
             #                                               guw_model_id: guw_model.id,
             #                                               guw_type_id: guw_type.id,
             #                                               reference_id: nil,
@@ -603,7 +701,7 @@ class OrganizationsController < ApplicationController
             #         reference_guw_cplx.weight_b != guw_cplx.weight_b
             #
             #       # Valeurs differentes
-            #       @guw_types_complexities_differences << {organization_id: guw_model_organization_id,
+            #       @guw_types_complexities_differences[organization.id] << {organization_id: guw_model_organization_id,
             #                                               guw_model_id: guw_model.id,
             #                                               reference_id: reference_guw_cplx.id,
             #                                               element_id: guw_cplx.id,
@@ -629,7 +727,7 @@ class OrganizationsController < ApplicationController
             #         if !oci.nil? && !reference_oci.nil?
             #           if oci.init_value.to_f != reference_oci.init_value.to_f
             #             # Differences
-            #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+            #             @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                             guw_model_id: guw_model.id,
             #                                                             guw_type_id: guw_type.id,
             #                                                             reference_guw_type_id: reference_guw_type.id,
@@ -658,7 +756,7 @@ class OrganizationsController < ApplicationController
             #         if !oc.nil? && !reference_oc.nil?
             #           if oc.value.to_f != reference_oc.value.to_f
             #             # Differences
-            #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+            #             @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                             guw_model_id: guw_model.id,
             #                                                             guw_type_id: guw_type.id,
             #                                                             reference_guw_type_id: reference_guw_type.id,
@@ -690,7 +788,7 @@ class OrganizationsController < ApplicationController
             #         if !got.nil? && !reference_got.nil?
             #           if got.display_type != reference_got.display_type
             #             # Differences sur le mode d'affichage des resultats
-            #             @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+            #             @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                             guw_model_id: guw_model.id,
             #                                                             guw_type_id: guw_type.id,
             #                                                             reference_guw_type_id: reference_guw_type.id,
@@ -723,7 +821,7 @@ class OrganizationsController < ApplicationController
             #             if oa && reference_oa
             #               if oa.value != reference_oa.value
             #                 # Differences sur le mode d'affichage des resultats
-            #                 @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+            #                 @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                                 guw_model_id: guw_model.id,
             #                                                                 guw_type_id: guw_type.id,
             #                                                                 reference_guw_type_id: reference_guw_type.id,
@@ -768,7 +866,7 @@ class OrganizationsController < ApplicationController
             #             if reference_guw_coefficient_element
             #               if guw_coefficient_element.value != reference_guw_coefficient_element.value
             #                 # Differences entre coefficient element / Sorties
-            #                 @guw_types_complexities_coefficients_outputs_matrix_differences << { organization_id: guw_model_organization_id,
+            #                 @guw_types_complexities_coefficients_outputs_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                                 guw_model_id: guw_model.id,
             #                                                                 guw_type_id: guw_type.id,
             #                                                                 reference_guw_type_id: reference_guw_type.id,
@@ -806,7 +904,7 @@ class OrganizationsController < ApplicationController
             #   unless diff_type_complexities_name.empty?
             #     diff_type_complexities = reference_guw_type_guw_type_complexities.where(name: diff_type_complexities_name)
             #     diff_type_complexities.each do |type_complexity|
-            #       @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+            #       @attributes_type_complexities_differences[organization.id] << {organization_id: guw_model_organization_id,
             #                                                     guw_model_id: guw_model.id,
             #                                                     guw_type_id: guw_type.id,
             #                                                     reference_guw_type_id: reference_guw_type.id,
@@ -825,7 +923,7 @@ class OrganizationsController < ApplicationController
             #
             #     if reference_type_complexity.nil?
             #       #Seuil de complexité des attributs n'existe pas dans la référence
-            #       @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+            #       @attributes_type_complexities_differences[organization.id] << {organization_id: guw_model_organization_id,
             #                                                     guw_model_id: guw_model.id,
             #                                                     reference_id: nil,
             #                                                     element_id: type_complexity.id,
@@ -843,7 +941,7 @@ class OrganizationsController < ApplicationController
             #           reference_type_complexity.display_order != type_complexity.display_order
             #
             #         # Valeurs differentes
-            #         @attributes_type_complexities_differences << {organization_id: guw_model_organization_id,
+            #         @attributes_type_complexities_differences[organization.id] << {organization_id: guw_model_organization_id,
             #                                                       guw_type_id: guw_type.id,
             #                                                       reference_guw_type_id: reference_guw_type.id,
             #                                                       guw_model_id: guw_model.id,
@@ -875,7 +973,7 @@ class OrganizationsController < ApplicationController
             #             if (ac.bottom_range != reference_ac.bottom_range) || (ac.top_range != reference_ac.top_range) ||
             #                (ac.value != reference_ac.value) ||  (ac.value_b != reference_ac.value_b) || (ac.enable_value != reference_ac.enable_value)
             #               # au moins une des valeur est différente
-            #               @attributes_type_complexities_matrix_differences << { organization_id: guw_model_organization_id,
+            #               @attributes_type_complexities_matrix_differences[organization.id] << { organization_id: guw_model_organization_id,
             #                                                               guw_model_id: guw_model.id,
             #                                                               guw_type_id: guw_type.id,
             #                                                               guw_attribute_id: guw_attribute.id,
@@ -1550,199 +1648,201 @@ class OrganizationsController < ApplicationController
 
       module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
 
-      @guw_model = module_project.guw_model
-      @wbs_activity_module_project = module_project.nexts.first
-      unless @wbs_activity_module_project.nil?
-        @wbs_activity = @wbs_activity_module_project.wbs_activity
-      end
-
-      @component = current_component
-      @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
-                                                    guw_model_id: @guw_model)
-
-      hash = @guw_model.orders
-      hash.delete("Critères")
-      hash.delete("Coeff. de Complexité")
-
-      # @guw_unit_of_works.each do |i|
-      #   if i.nil?
-      #     i.destroy
-      #   end
-      # end
-
-      header = [
-          "Nom du CDS",
-          "Nom du fournisseur",
-          "Nom de l'application",
-          "Numéro de devis",
-          "Numéro de demande",
-          "Statut du devis",
-          "Service",
-          "Prestation",
-          "Localisation",
-          I18n.t(:estimation),
-          I18n.t(:version_number),
-          I18n.t(:group),
-          I18n.t(:selected),
-          I18n.t(:name),
-          "Type d'UO",
-          I18n.t(:description),
-          I18n.t(:quantity),
-          I18n.t(:tracability),
-          I18n.t(:cotation),
-          "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } +
-            @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten +
-            (@wbs_activity.nil? ? [] : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) +
-            ["TJM Moyen"]
-
-      header.each_with_index do |val, index|
-        worksheet.add_cell(0, index, val)
-      end
-
-      worksheet.change_row_bold(0,true)
-
-      jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
-
-      @guw_unit_of_works.each_with_index do |guow, i|
-
-        ind = ind + 1
-
-        if guow.off_line
-          cplx = "HSAT"
-        elsif guow.off_line_uo
-          cplx = "HSUO"
-        elsif guow.guw_complexity.nil?
-          cplx = ""
-        else
-          cplx = guow.guw_complexity.name
+      unless module_project.nil?
+        @guw_model = module_project.guw_model
+        @wbs_activity_module_project = module_project.nexts.first
+        unless @wbs_activity_module_project.nil?
+          @wbs_activity = @wbs_activity_module_project.wbs_activity
         end
 
-        worksheet.add_cell(ind, 0, project.organization)
-        worksheet.add_cell(ind, 1, "Fournisseur")
-        worksheet.add_cell(ind, 2, "Demandeur")
-        worksheet.add_cell(ind, 3, project.application)
-        worksheet.add_cell(ind, 4, project.title)
-        worksheet.add_cell(ind, 5, project.estimation_status)
-        worksheet.add_cell(ind, 6, project.project_area)
-        worksheet.add_cell(ind, 7, project.acquisition_category)
-        worksheet.add_cell(ind, 8, project.platform_category)
-        worksheet.add_cell(ind, 9, project.title)
-        worksheet.add_cell(ind, 10, project.version_number)
-        worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
-        worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
-        worksheet.add_cell(ind, 13, guow.name)
-        worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
-        worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-        worksheet.add_cell(ind, 16, guow.quantity)
-        worksheet.add_cell(ind, 17, guow.tracking)
-        worksheet.add_cell(ind, 18, cplx)
-        worksheet.add_cell(ind, 19, guow.intermediate_weight)
+        @component = current_component
+        @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
+                                                      guw_model_id: @guw_model)
 
-        hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
-          if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-            guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-            unless guw_coefficient.nil?
-              unless guw_coefficient.guw_coefficient_elements.empty?
-                unless module_project.nil?
-                  ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                    guw_coefficient_id: guw_coefficient.id,
-                                                                    module_project_id: module_project.id).first
+        hash = @guw_model.orders
+        hash.delete("Critères")
+        hash.delete("Coeff. de Complexité")
 
-                  if guw_coefficient.coefficient_type == "Pourcentage"
-                    worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                  elsif guw_coefficient.coefficient_type == "Coefficient"
-                    worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                  else
-                    worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+        # @guw_unit_of_works.each do |i|
+        #   if i.nil?
+        #     i.destroy
+        #   end
+        # end
+
+        header = [
+            "Nom du CDS",
+            "Nom du fournisseur",
+            "Nom de l'application",
+            "Numéro de devis",
+            "Numéro de demande",
+            "Statut du devis",
+            "Service",
+            "Prestation",
+            "Localisation",
+            I18n.t(:estimation),
+            I18n.t(:version_number),
+            I18n.t(:group),
+            I18n.t(:selected),
+            I18n.t(:name),
+            "Type d'UO",
+            I18n.t(:description),
+            I18n.t(:quantity),
+            I18n.t(:tracability),
+            I18n.t(:cotation),
+            "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } +
+              @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten +
+              (@wbs_activity.nil? ? [] : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) +
+              ["TJM Moyen"]
+
+        header.each_with_index do |val, index|
+          worksheet.add_cell(0, index, val)
+        end
+
+        worksheet.change_row_bold(0,true)
+
+        jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+
+        @guw_unit_of_works.each_with_index do |guow, i|
+
+          ind = ind + 1
+
+          if guow.off_line
+            cplx = "HSAT"
+          elsif guow.off_line_uo
+            cplx = "HSUO"
+          elsif guow.guw_complexity.nil?
+            cplx = ""
+          else
+            cplx = guow.guw_complexity.name
+          end
+
+          worksheet.add_cell(ind, 0, project.organization)
+          worksheet.add_cell(ind, 1, "Fournisseur")
+          worksheet.add_cell(ind, 2, "Demandeur")
+          worksheet.add_cell(ind, 3, project.application)
+          worksheet.add_cell(ind, 4, project.title)
+          worksheet.add_cell(ind, 5, project.estimation_status)
+          worksheet.add_cell(ind, 6, project.project_area)
+          worksheet.add_cell(ind, 7, project.acquisition_category)
+          worksheet.add_cell(ind, 8, project.platform_category)
+          worksheet.add_cell(ind, 9, project.title)
+          worksheet.add_cell(ind, 10, project.version_number)
+          worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+          worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
+          worksheet.add_cell(ind, 13, guow.name)
+          worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+          worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+          worksheet.add_cell(ind, 16, guow.quantity)
+          worksheet.add_cell(ind, 17, guow.tracking)
+          worksheet.add_cell(ind, 18, cplx)
+          worksheet.add_cell(ind, 19, guow.intermediate_weight)
+
+          hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
+            if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+              guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+              unless guw_coefficient.nil?
+                unless guw_coefficient.guw_coefficient_elements.empty?
+                  unless module_project.nil?
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                      guw_coefficient_id: guw_coefficient.id,
+                                                                      module_project_id: module_project.id).first
+
+                    if guw_coefficient.coefficient_type == "Pourcentage"
+                      worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                    elsif guw_coefficient.coefficient_type == "Coefficient"
+                      worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                    else
+                      worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                    end
                   end
                 end
               end
-            end
-          elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-            guw_output = Guw::GuwOutput.where(name: i[0],
-                                              guw_model_id: @guw_model.id).first
-            unless guow.guw_type.nil?
-              unless guw_output.nil?
-                v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
-                worksheet.add_cell(ind, 20 + j, v.to_s)
+            elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+              guw_output = Guw::GuwOutput.where(name: i[0],
+                                                guw_model_id: @guw_model.id).first
+              unless guow.guw_type.nil?
+                unless guw_output.nil?
+                  v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+                  worksheet.add_cell(ind, 20 + j, v.to_s)
+                end
               end
             end
           end
-        end
 
-        ii = 0
-        @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
-          guw_type = guow.guw_type
-          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
-                                                    guw_attribute_id: guw_attribute.id,
-                                                    guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+          ii = 0
+          @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
+            guw_type = guow.guw_type
+            guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+                                                      guw_attribute_id: guw_attribute.id,
+                                                      guw_type_id: guw_type.nil? ? nil : guw_type.id).first
 
-          unless guowa.nil?
-            gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
-                                              guw_attribute_id: guowa.guw_attribute_id).first
-            worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
-            worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
-          else
-            p "GUOWA is nil"
-          end
-          ii = ii + 2
-        end
-
-        ii = 0
-        @guw_model.guw_attributes.each do |guw_attribute|
-          worksheet.add_cell(0, jj + ii, guw_attribute.name)
-          worksheet.add_cell(0, jj + ii + 1, "Commentaires")
-          ii = ii + 2
-        end
-
-        kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
-        @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
-        unless @wbs_activity_module_project.nil?
-          @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
-          @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
-
-          tjm_array = []
-
-          calculator = Dentaku::Calculator.new
-
-          @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
-
-            guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
-
-            if guw_output_effort.nil?
-              guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
+            unless guowa.nil?
+              gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                                guw_attribute_id: guowa.guw_attribute_id).first
+              worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+              worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
+            else
+              p "GUOWA is nil"
             end
-            guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
-
-            mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
-
-            begin
-              guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
-              guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
-
-              corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
-
-              final_formula = corresponding_ratio_elt.formula
-                                  .gsub("RTU", guw_output_effort_value.to_s)
-                                  .gsub("TEST", guw_output_test_value.to_s)
-                                  .gsub('%', ' * 0.01 ')
-
-              value = calculator.evaluate(final_formula).to_f.round(3)
-            rescue
-              value = 0
-            end
-
-            value_cost = value * mp_ratio_element.tjm.to_f
-
-            tjm_array << mp_ratio_element.tjm.to_f
-
-            worksheet.add_cell(ind, kk + ii, value.round(3))
-            worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
             ii = ii + 2
           end
 
-          unless tjm_array.empty?
-            worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
+          ii = 0
+          @guw_model.guw_attributes.each do |guw_attribute|
+            worksheet.add_cell(0, jj + ii, guw_attribute.name)
+            worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+            ii = ii + 2
+          end
+
+          kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+          @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
+          unless @wbs_activity_module_project.nil?
+            @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
+            @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
+
+            tjm_array = []
+
+            calculator = Dentaku::Calculator.new
+
+            @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+
+              guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+
+              if guw_output_effort.nil?
+                guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
+              end
+              guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
+
+              mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+
+              begin
+                guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+                guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+
+                corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+                final_formula = corresponding_ratio_elt.formula
+                                    .gsub("RTU", guw_output_effort_value.to_s)
+                                    .gsub("TEST", guw_output_test_value.to_s)
+                                    .gsub('%', ' * 0.01 ')
+
+                value = calculator.evaluate(final_formula).to_f.round(3)
+              rescue
+                value = 0
+              end
+
+              value_cost = value * mp_ratio_element.tjm.to_f
+
+              tjm_array << mp_ratio_element.tjm.to_f
+
+              worksheet.add_cell(ind, kk + ii, value.round(3))
+              worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+              ii = ii + 2
+            end
+
+            unless tjm_array.empty?
+              worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
+            end
           end
         end
       end
@@ -3223,6 +3323,7 @@ class OrganizationsController < ApplicationController
 =end
   end
 
+  # On importe/crée les utilisateurs contenus dans le fichier, mais lorsqu'il y a en un qui existe déjà, il faudra le rattacher à l'organisation et aux groupes du fichier
   def import_user
 
     authorize! :manage, User
@@ -3238,10 +3339,13 @@ class OrganizationsController < ApplicationController
         tab.each_with_index do |row, index_row|
         if index_row > 0
           if !row.blank?
-            user = User.find_by_login_name(row[4].nil? ? '' : row[4].value)
-            if user.nil?
-              password = SecureRandom.hex(8)
-              if row[0] && row[1] && row[4] && row[3]
+
+            password = SecureRandom.hex(8)
+            if row[0] && row[1] && row[4] && row[3]
+
+              user = User.find_by_login_name(row[4].nil? ? '' : row[4].value)
+              if user.nil?
+
                 if row[7]
                   langue = Language.find_by_name(row[7].nil? ? '' : row[7].value) ? Language.find_by_name(row[7].nil? ? '' : row[7].value).id : params[:language_id].to_i
                 else
@@ -3278,7 +3382,13 @@ class OrganizationsController < ApplicationController
                 end
                 user.subscription_end_date = Time.now + 1.year
                 user.save
+              end
+
+              organization_user = OrganizationsUsers.where(organization_id: @current_organization.id, user_id: user.id).first
+              if organization_user.nil?
+
                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
+
                 group_index = 9
                 if can?(:manage, Group, :organization_id => @current_organization.id)
                    while row[group_index]
@@ -3295,10 +3405,11 @@ class OrganizationsController < ApplicationController
                   GroupsUsers.create(group_id: @user_group.id, user_id: user.id)
                 end
               else
-                user_with_no_name << index_row
+                # L'utilisateur existe dejà et est déjà rattaché à l'organisation
+                users_existing << (row[4].nil? ? '' : row[4].value)
               end
             else
-              users_existing << row[4].nil? ? '' : row[4].value
+              user_with_no_name << index_row
             end
           end
         end
@@ -3323,59 +3434,167 @@ class OrganizationsController < ApplicationController
     end
 
     redirect_to organization_users_path(@current_organization) and return
-
-=begin
-    sep = "#{params[:separator].blank? ? I18n.t(:general_csv_separator) : params[:separator]}"
-    error_count = 0
-    file = params[:file]
-    encoding = params[:encoding]
-
-    #begin
-      CSV.open(file.path, 'r', :quote_char => "\"", :row_sep => :auto, :col_sep => sep, :encoding => "ISO-8859-1:utf-8") do |csv|
-        csv.each_with_index do |row, i|
-          unless i == 0
-            password = SecureRandom.hex(8)
-
-            user = User.where(login_name: row[3].value).first
-            if user.nil?
-
-              u = User.new(first_name: row[0].value,
-                           last_name: row[1].value,
-                           email: row[2].value,
-                           login_name: row[3].value,
-                           id_connexion: row[3].value,
-                           super_admin: false,
-                           password: password,
-                           password_confirmation: password,
-                           language_id: params[:language_id].to_i,
-                           initials: "#{row[0].value.first}#{row[1].value.first}",
-                           time_zone: "Paris",
-                           object_per_page: 50,
-                           auth_type: AuthMethod.first.id,
-                           number_precision: 2)
-
-              u.save(validate: false)
-
-              OrganizationsUsers.create(organization_id: @current_organization.id,
-                                        user_id: u.id)
-              (row.size - 4).times do |i|
-                group = Group.where(name: row[4 + i], organization_id: @current_organization.id).first
-                begin
-                  GroupsUsers.create(group_id: group.id,
-                                     user_id: u.id)
-                rescue
-                  # nothing
-                end
-              end
-            end
-          end
-        end
-      end
-    #rescue
-    #  flash[:error] = "Une erreur est survenue durant l'import du fichier. Vérifier l'encodage du fichier (ISO-8859-1 pour Windows, utf-8 pour Mac) ou le caractère de séparateur du fichier"
-    #end
-=end
   end
+
+
+#   def import_user_SAVE
+#
+#     authorize! :manage, User
+#
+#     users_existing = []
+#     user_with_no_name = []
+#
+#     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+#       workbook = RubyXL::Parser.parse(params[:file].path)
+#       worksheet = workbook[0]
+#       tab = worksheet
+#
+#       tab.each_with_index do |row, index_row|
+#         if index_row > 0
+#           if !row.blank?
+#             user = User.find_by_login_name(row[4].nil? ? '' : row[4].value)
+#
+#             if user.nil?
+#               password = SecureRandom.hex(8)
+#               if row[0] && row[1] && row[4] && row[3]
+#                 if row[7]
+#                   langue = Language.find_by_name(row[7].nil? ? '' : row[7].value) ? Language.find_by_name(row[7].nil? ? '' : row[7].value).id : params[:language_id].to_i
+#                 else
+#                   langue = params[:language_id].to_i
+#                 end
+#
+#                 if row[5]
+#                   auth_method = AuthMethod.find_by_name(row[5].nil? ? '' : row[5].value) ? AuthMethod.find_by_name(row[5].nil? ? '' : row[5].value).id : AuthMethod.first.id
+#                 else
+#                   auth_method = AuthMethod.first.id
+#                 end
+#
+#                 user = User.new(first_name: row[0].nil? ? '' : row[0].value,
+#                                 last_name: row[1].nil? ? '' : row[1].value,
+#                                 initials: row[2].nil? ? '' : row[2].value,
+#                                 email: row[3].nil? ? '' : row[3].value,
+#                                 login_name: row[4].nil? ? '' : row[4].value,
+#                                 id_connexion: row[4].nil? ? '' : row[4].value,
+#                                 description: row[6].nil? ? '' : row[6].value,
+#                                 super_admin: false,
+#                                 password: password,
+#                                 password_confirmation: password,
+#                                 language_id: langue,
+#                                 time_zone: "Paris",
+#                                 object_per_page: 50,
+#                                 auth_type: auth_method,
+#                                 locked_at: row[8] == 0 ? nil : Time.now,
+#                                 number_precision: 2,
+#                                 subscription_end_date: Time.now + 1.year)
+#
+#                 if !row[5].nil? && row[5].value.upcase == "SAML"
+#                   user.skip_confirmation_notification!
+#                   user.skip_confirmation!
+#                 end
+#                 user.subscription_end_date = Time.now + 1.year
+#                 user.save
+#
+#                 OrganizationsUsers.create(organization_id: @current_organization.id, user_id: user.id)
+#                 group_index = 9
+#                 if can?(:manage, Group, :organization_id => @current_organization.id)
+#                   while row[group_index]
+#                     group = Group.where(name: row[group_index].nil? ? '' : row[group_index].value, organization_id: @current_organization.id).first
+#                     begin
+#                       GroupsUsers.create(group_id: group.id, user_id: user.id)
+#                     rescue
+#                       #rien
+#                     end
+#                     group_index += 1
+#                   end
+#                 else
+#                   @user_group = @current_organization.groups.where(name: '*USER').first_or_create(organization_id: @current_organization.id, name: "*USER")
+#                   GroupsUsers.create(group_id: @user_group.id, user_id: user.id)
+#                 end
+#               else
+#                 user_with_no_name << index_row
+#               end
+#             else
+#               users_existing << (row[4].nil? ? '' : row[4].value)
+#
+#               # On doit rattacher l'utilisateur à l'organisation et aux groupes du fichier
+#             end
+#           end
+#         end
+#       end
+#       final_error = []
+#       flash_err = false
+#       unless users_existing.empty?
+#         final_error <<  I18n.t(:user_exist, parameter: users_existing.join(", "))
+#       end
+#       unless user_with_no_name.empty?
+#         final_error << I18n.t(:user_with_no_name, parameter: user_with_no_name.join(", "))
+#       end
+#       unless final_error.empty?
+#         flash[:error] = final_error.join("<br/>").html_safe
+#         flash_err = true
+#       end
+#       if final_error.empty? && flash_err==false
+#         flash[:notice] = I18n.t(:user_importation_success)
+#       end
+#     else
+#       flash[:error] = I18n.t(:route_flag_error_4)
+#     end
+#
+#     redirect_to organization_users_path(@current_organization) and return
+#
+# =begin
+#     sep = "#{params[:separator].blank? ? I18n.t(:general_csv_separator) : params[:separator]}"
+#     error_count = 0
+#     file = params[:file]
+#     encoding = params[:encoding]
+#
+#     #begin
+#       CSV.open(file.path, 'r', :quote_char => "\"", :row_sep => :auto, :col_sep => sep, :encoding => "ISO-8859-1:utf-8") do |csv|
+#         csv.each_with_index do |row, i|
+#           unless i == 0
+#             password = SecureRandom.hex(8)
+#
+#             user = User.where(login_name: row[3].value).first
+#             if user.nil?
+#
+#               u = User.new(first_name: row[0].value,
+#                            last_name: row[1].value,
+#                            email: row[2].value,
+#                            login_name: row[3].value,
+#                            id_connexion: row[3].value,
+#                            super_admin: false,
+#                            password: password,
+#                            password_confirmation: password,
+#                            language_id: params[:language_id].to_i,
+#                            initials: "#{row[0].value.first}#{row[1].value.first}",
+#                            time_zone: "Paris",
+#                            object_per_page: 50,
+#                            auth_type: AuthMethod.first.id,
+#                            number_precision: 2)
+#
+#               u.save(validate: false)
+#
+#               OrganizationsUsers.create(organization_id: @current_organization.id,
+#                                         user_id: u.id)
+#               (row.size - 4).times do |i|
+#                 group = Group.where(name: row[4 + i], organization_id: @current_organization.id).first
+#                 begin
+#                   GroupsUsers.create(group_id: group.id,
+#                                      user_id: u.id)
+#                 rescue
+#                   # nothing
+#                 end
+#               end
+#             end
+#           end
+#         end
+#       end
+#     #rescue
+#     #  flash[:error] = "Une erreur est survenue durant l'import du fichier. Vérifier l'encodage du fichier (ISO-8859-1 pour Windows, utf-8 pour Mac) ou le caractère de séparateur du fichier"
+#     #end
+# =end
+#   end
+
 
   # Update the organization's projects available inline columns
   def set_available_inline_columns

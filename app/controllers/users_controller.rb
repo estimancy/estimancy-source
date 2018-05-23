@@ -85,6 +85,7 @@ public
     @organizations = current_user.organizations
   end
 
+
   def create
     authorize! :manage, User
 
@@ -109,8 +110,18 @@ public
       @user.skip_confirmation!
     end
 
+
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
+
+      # On teste si l'utlisateur existe déjà (mais pas rattaché à cette organization)
+      @existed_user = User.find_by_login_name(params[:user][:login_name]) rescue nil
+      if !@existed_user.nil?
+        @user = @existed_user
+
+        # On teste si l'utilisateur est déjà rattaché à l'organisation
+        @existed_organization_user = OrganizationsUsers.where(organization_id: @organization.id, user_id: @user.id).first
+      end
     else
       @organization = @current_organization
     end
@@ -120,10 +131,17 @@ public
 
       if @organization
         @organization_id = @organization.id
-        OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
 
-        @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
-        @user.groups << @user_group
+        if @existed_organization_user.nil?
+          OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+
+          @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
+          @user.groups << @user_group
+        else
+          flash[:warning] = I18n.t(:user_exist, parameter: @existed_user.login_name)
+          redirect_to organization_users_path(@organization) and return
+        end
+
       else
         if params[:organizations]
           params[:organizations].keys.each do |organization_id|
@@ -163,6 +181,87 @@ public
       end
     # end
   end
+
+
+  # def create_SAVE
+  #   authorize! :manage, User
+  #
+  #   set_page_title I18n.t(:new_user)
+  #   set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
+  #
+  #   auth_type = AuthMethod.find(params[:user][:auth_type])
+  #
+  #   @user = User.new(params[:user])
+  #   @user.auth_type = params[:user][:auth_type]
+  #   @user.language_id = params[:user][:language_id]
+  #   @user.project_ids = params[:user][:project_ids]
+  #   @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
+  #   @generated_password = SecureRandom.hex(4)
+  #
+  #   # for Trigger
+  #   @user.event_organization_id = @current_organization.id #params[:organization_id]
+  #   @user.originator_id = @current_user.id
+  #   # end for Trigger
+  #
+  #   if auth_type.name == "SAML"
+  #     @user.skip_confirmation!
+  #   end
+  #
+  #   if params[:organization_id].present?
+  #     @organization = Organization.find(params[:organization_id])
+  #   else
+  #     @organization = @current_organization
+  #   end
+  #
+  #   # @user.transaction do
+  #   @user.save #@user.save(validate: false)
+  #
+  #   if @organization
+  #     @organization_id = @organization.id
+  #     OrganizationsUsers.create(user_id: @user.id, organization_id: @organization.id)
+  #
+  #     @user_group = @organization.groups.where(name: '*USER').first_or_create(organization_id: @organization.id, name: "*USER")
+  #     @user.groups << @user_group
+  #   else
+  #     if params[:organizations]
+  #       params[:organizations].keys.each do |organization_id|
+  #         OrganizationsUsers.create(user_id: @user.id, organization_id: organization_id)
+  #       end
+  #     end
+  #   end
+  #
+  #   if can?(:manage, Group, :organization_id => @organization.id)
+  #     unless params[:groups].nil?
+  #       @user.group_ids = params[:groups].keys
+  #       @user.save
+  #     end
+  #   end
+  #
+  #   if @user.save
+  #     flash[:notice] = I18n.t(:notice_account_successful_created)
+  #
+  #     tab_name = "tabs-1"
+  #     if params['tabs-5']
+  #       tab_name = "tabs-5"
+  #     elsif params['tabs-groups']
+  #       tab_name = "tabs-groups"
+  #     elsif params['tabs-organizations']
+  #       tab_name = "tabs-organizations"
+  #     end
+  #     params[:commit] = params["#{tab_name}"]
+  #
+  #     if @organization.nil?
+  #       redirect_to(redirect_apply(edit_user_path(@user, :anchor => tab_name), users_path, users_path)) and return
+  #     else
+  #       redirect_to redirect_apply(edit_organization_user_path(@organization, @user, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name), organization_users_path(@organization, :anchor => tab_name)) and return
+  #     end
+  #
+  #   else
+  #     render(:new, organization_id: @organization_id)
+  #   end
+  #   # end
+  # end
+
 
   def edit
 
