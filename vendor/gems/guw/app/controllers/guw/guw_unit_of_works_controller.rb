@@ -1266,7 +1266,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if cce.nil?
                   cce = Guw::GuwComplexityCoefficientElement.where(guw_output_id: guw_output.id,
                                                                    guw_coefficient_element_id: guw_coefficient_element.id,
-                                                                   guw_complexity_id: guw_unit_of_work.guw_complexity_id)
+                                                                   guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
                 end
 
                 # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
