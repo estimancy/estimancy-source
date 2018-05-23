@@ -1271,7 +1271,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
 
-                unless cce.value.blank?
+                unless cce.blank?
                   percents << (pc.to_f / 100)
                   percents << cce.value.to_f
 
