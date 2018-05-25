@@ -1789,7 +1789,7 @@ frsncf:
   users_env: "Environnement utilisateur"
   report: "Rapport"
   import_uo_from_excel: "Importation de Composant Fonctionnel depuis excel"
-  private_estimation: "Devis privée"
+  private_estimation: "Devis privé"
   launch_calculation: "Lancer le calcul"
   reinitialize_delay_staffing: "Réinitialiser le délai et le staffing"
   private: "Privée"
