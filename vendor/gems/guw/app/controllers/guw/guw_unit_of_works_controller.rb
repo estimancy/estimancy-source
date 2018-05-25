@@ -2844,8 +2844,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       unless guw_output.nil?
                         (16..60).to_a.each do |k|
                           if guw_output.name == (tab[0][k].nil? ? '' : tab[0][k].value)
-                            tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
-                            tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
+                            if @guw_type.allow_criteria == false
+                              tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
+                              tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
+                            end
                           end
                         end
                       end
