@@ -118,32 +118,34 @@
     <% @guw_output = @hash_guw_outputs[i[0]] %>
 
     <% if i[0] == "Coefficient" %>
-      <% unless @deported_guw_coefficients.map(&:id).empty? %>
-        <%
-           elmnts = []
-           has_element = false
-           @deported_guw_coefficients.each do |guw_coefficient|
-             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                               guw_coefficient_id: guw_coefficient.id).first
-             unless ceuw.nil?
-               elm = ceuw.guw_coefficient_element
-               has_element = false
-               unless elm.nil?
-                 has_element = true
-                 elmnts << elm.value
+      <% unless @deported_guw_coefficients.nil? %>
+        <% unless @deported_guw_coefficients.map(&:id).empty? %>
+          <%
+             elmnts = []
+             has_element = false
+             @deported_guw_coefficients.each do |guw_coefficient|
+               ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                 guw_coefficient_id: guw_coefficient.id).first
+               unless ceuw.nil?
+                 elm = ceuw.guw_coefficient_element
+                 has_element = false
+                 unless elm.nil?
+                   has_element = true
+                   elmnts << elm.value
+                 end
                end
              end
-           end
-        %>
+          %>
 
-        <td class="span2">
-          <%# if has_element == true %>
-          <% v = elmnts.flatten.compact.inject(&:*) %>
-          <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-          <%# else %>
-          <%# end %>
-        </td>
+          <td class="span2">
+            <%# if has_element == true %>
+            <% v = elmnts.flatten.compact.inject(&:*) %>
+            <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
+            <%# else %>
+            <%# end %>
+          </td>
 
+        <% end %>
       <% end %>
     <% elsif i[0] == "Critères" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
