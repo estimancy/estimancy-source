@@ -3372,7 +3372,7 @@ class OrganizationsController < ApplicationController
                                 time_zone: "Paris",
                                 object_per_page: 50,
                                 auth_type: auth_method,
-                                locked_at: row[8] == 0 ? nil : Time.now,
+                                locked_at: ((row[8].value == 0 ? nil : Time.now) rescue nil),
                                 number_precision: 2,
                                 subscription_end_date: Time.now + 1.year)
 
