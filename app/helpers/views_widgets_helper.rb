@@ -505,6 +505,11 @@ module ViewsWidgetsHelper
 
     ############################ Get the view_widget size  ############################
 
+    if view_widget.estimation_value.pe_attribute.nil?
+      value_to_show = {}
+      return value_to_show
+    end
+
     # Si on affiche une vignette du nom du Ratio
     if view_widget.estimation_value.pe_attribute.alias == "ratio_name"
       ft_maxFontSize_without_mm = 50 #75

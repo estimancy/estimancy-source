@@ -7,19 +7,21 @@
                                                    prompt: "sélectionner le CDS de référence",
                                                    class: "input-xlarge") %>
     </p>
-    <br>
+    <br />
     <p> Sélectionner les CDS à soumettre à l'audit :</p>
 
     <div id="audit_common_data_list_of_organizations">
       <% Organization.all.each do |organization| %>
-          <div class="span2">
+          <div class="span2" style="margin-left: 0;">
             <%= organization.name %> <%= check_box_tag("organizations_list_ids[]", organization.id, false, style: "margin-top: -3px;") %>
           </div>
       <% end %>
+
+      <br/>
     </div>
 
-    <br>
-    <%= submit_tag "Lancer l'audit", class: "btn btn-primary", style: "margin-top: 10px;" %>
+    <BR>
+    <p><%= submit_tag "Lancer l'audit", class: "btn btn-primary float-left", style: "margin-top: 10px;" %></p>
 <% end %>
 
 
