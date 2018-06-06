@@ -1271,7 +1271,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
 
-                unless cce.value.blank?
+                unless cce.blank?
                   percents << (pc.to_f / 100)
                   percents << cce.value.to_f
 
@@ -2639,7 +2639,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[12].nil? ? true : row[12].value).to_i == 1),
+                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[12].nil? ? nil : row[12].value).to_i == 1),
                                                   name: row[13].nil? ? nil : row[13].value,
                                                   comments: row[15].nil? ? nil : row[15].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
@@ -2844,8 +2844,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       unless guw_output.nil?
                         (16..60).to_a.each do |k|
                           if guw_output.name == (tab[0][k].nil? ? '' : tab[0][k].value)
-                            tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
-                            tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
+                            if @guw_type.allow_criteria == false
+                              tmp_hash_res["#{guw_output.id}"] = row[k].value rescue nil
+                              tmp_hash_ares["#{guw_output.id}"] = row[k].value rescue nil
+                            end
                           end
                         end
                       end
