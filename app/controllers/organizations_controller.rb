@@ -3123,7 +3123,7 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
 
     @attributes = PeAttribute.all
-    @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
+    @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
 
     @ot = @organization.organization_technologies.first
 
@@ -3203,7 +3203,7 @@ class OrganizationsController < ApplicationController
       redirect_to redirect_apply(edit_organization_path(@organization), nil, '/organizationals_params')
     else
       @attributes = PeAttribute.all
-      @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
+      @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
       @ot = @organization.organization_technologies.first
       @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles

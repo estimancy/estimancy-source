@@ -1,14 +1,16 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.22'
+# gem 'rails', '3.2.22'
+gem 'rails', '~> 4.2.10'
+
 gem 'jquery-rails', '~> 2.0.2'
-gem 'i18n', '~> 0.6.0'
-gem 'builder', '3.0.0'
+gem 'i18n'
+gem 'builder'
 gem 'cookies_eu'
 
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', :require => 'bcrypt'
-gem "useragent"
+gem 'useragent'
 
 # Include database gems for the adapters found in the database
 # configuration file
@@ -46,7 +48,7 @@ gem 'curb'
 gem 'cancancan', '~> 1.10'
 
 #Authentication for tests
-gem "warden"
+gem 'warden'
 
 #Tree
 gem 'ancestry'
@@ -84,7 +86,7 @@ gem 'rb-readline'
 gem 'cache_digests'
 
 #Databases data translations
-gem 'globalize', '~> 3.1.0'
+gem 'globalize'
 
 #Dumping and restoring data :
 gem 'yaml_db'
@@ -150,7 +152,7 @@ gem 'slim'
 
 # For chart generation
 gem 'chartkick'
-gem "highcharts-rails"
+gem 'highcharts-rails'
 gem 'groupdate'
 
 #Dentaku is a parser and evaluator for mathematical formulas
@@ -162,7 +164,7 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 
 gem 'passenger'
 
-gem "delocalize"
+gem 'delocalize'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -239,8 +241,12 @@ gem 'rack-reverse-proxy', :require => 'rack/reverse_proxy'
 gem 'grit'
 gem 'pdfkit'
 
-gem 'paper_trail'
+# gem 'paper_trail'
 
 gem "hairtrigger"
 
-
+gem 'protected_attributes' # https://github.com/rails/protected_attributes
+# gem 'active_resource' # https://github.com/rails/activeresource
+gem 'actionpack-action_caching' # https://github.com/rails/actionpack-action_caching
+gem 'activerecord-session_store' # https://github.com/rails/activerecord-session_store
+gem 'rails-observers' # https://github.com/rails/rails-observers

@@ -69,7 +69,7 @@ class ModuleProject < ActiveRecord::Base
   has_many :staffing_custom_data, class_name: "Staffing::StaffingCustomDatum", :dependent => :destroy
   has_many :ge_model_factor_descriptions, class_name: "Ge::GeModelFactorDescription", dependent: :destroy
 
-  default_scope :order => 'position_x ASC, position_y ASC'
+  default_scope { order('position_x ASC, position_y ASC') }
 
   amoeba do
     enable

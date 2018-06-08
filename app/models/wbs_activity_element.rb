@@ -34,8 +34,10 @@ class WbsActivityElement < ActiveRecord::Base
   has_many :wbs_project_elements
 
   #default_scope order("id asc")
-  default_scope order("dotted_id asc")
-  scope :elements_root, where(:is_root => true)
+  default_scope { order("dotted_id asc") }
+  scope :elements_root, -> {
+    where(:is_root => true)
+  }
 
   validates :name, :presence => true, :uniqueness => {:scope => [:wbs_activity_id, :ancestry], :case_sensitive => false}
 

@@ -33,6 +33,6 @@ Kb::Engine.routes.draw do
     post "save_filters"
   end
 
-  match 'kb_models/import_kb_model' => 'kb_models#import', as: "import_kb_model"
+  post 'kb_models/import_kb_model' => 'kb_models#import', as: "import_kb_model"
 
 end

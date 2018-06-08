@@ -61,7 +61,7 @@ class Project < ActiveRecord::Base
   has_many :pbs_project_elements, :through => :pe_wbs_projects
   has_many :wbs_project_elements, :through => :pe_wbs_projects
 
-  default_scope order('title ASC, version_number ASC')
+  default_scope { order('title ASC, version_number ASC') }
 
   serialize :included_wbs_activities, Array
 

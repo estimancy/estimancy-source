@@ -28,7 +28,7 @@ class ProjectCategory < ActiveRecord::Base
 
   validates :name, :presence => true
 
-  default_scope order('name ASC')
+  default_scope {order('name ASC')}
 
   amoeba do
     enable

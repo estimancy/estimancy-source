@@ -421,7 +421,7 @@ class ViewsWidgetsController < ApplicationController
         if @module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
           if @pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS.reject{|e| e == "retained_size"})
             @views_widget_types = Projestimate::Application::BREAKDOWN_EFFORT_WIDGETS_TYPE
-          elsif @pe_attribute.alias.in?("cost", "retained_cost", "theoretical_cost")
+          elsif @pe_attribute.alias.in?(["cost", "retained_cost", "theoretical_cost"])
             @views_widget_types = Projestimate::Application::BREAKDOWN_COST_WIDGETS_TYPE
           else
             @views_widget_types = Projestimate::Application::GLOBAL_WIDGETS_TYPE

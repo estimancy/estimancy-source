@@ -1622,7 +1622,7 @@ class ProjectsController < ApplicationController
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
       @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
-      if @pemodule.alias.in?("guw", "operation")
+      if @pemodule.alias.in?(["guw", "operation"])
         #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
         #guw_outputs = guw_model.guw_outputs
 

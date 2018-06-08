@@ -31,7 +31,7 @@ class ProjectArea < ActiveRecord::Base
   #Search fields
   scoped_search :on => [:name, :description, :created_at, :updated_at]
 
-  default_scope order('name ASC')
+  default_scope { order('name ASC')}
 
   amoeba do
     enable

@@ -47,7 +47,7 @@ class EstimationStatus < ActiveRecord::Base
   validates :is_new_status, uniqueness: { scope: :organization_id, case_sensitive: false, message: I18n.t(:only_one_new_status_possible), :if => Proc.new { |status| status.is_new_status == true} }
   validate  :check_status_alias
 
-  default_scope order('status_number ASC')
+  default_scope {order('status_number ASC')}
 
   #Search fields
   scoped_search :on => [:name, :description, :status_alias]

@@ -1214,7 +1214,7 @@ module ProjectsHelper
     elsif est_val_pe_attribute.alias == "staffing" || est_val_pe_attribute.alias == "duration"
       "#{convert_with_precision(value, precision, true)}"
     #elsif est_val_pe_attribute.alias == "cost"
-    elsif est_val_pe_attribute.alias.in?("cost", "theoretical_cost")
+    elsif est_val_pe_attribute.alias.in?(["cost", "theoretical_cost"])
       unless value.class == Hash
         "#{convert_with_precision(value, precision, true)} #{get_attribute_unit(est_val_pe_attribute)}"
         end

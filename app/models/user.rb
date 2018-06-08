@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
 
   #For user without group
   has_many :organizations_users, class_name: 'OrganizationsUsers'
-  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true
+  has_many :organizations, through: :organizations_users, :source => :organization#, uniq: true
 
   #Master and Special Data Tables
   # has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'
@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
   serialize :ten_latest_projects, Array
 
   # Security Audit management
-  has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
+  # has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
 
   validates_presence_of :last_name, :first_name
   validates :login_name, :presence => true, :uniqueness => { case_sensitive: false }
@@ -118,8 +118,8 @@ class User < ActiveRecord::Base
 
   #Search fields
   scoped_search :on => [:last_name, :first_name, :login_name, :created_at, :updated_at]
-  scoped_search :in => :groups, :on => :name
-  scoped_search :in => :organizations, :on => :name
+  scoped_search :relation => :groups, :on => :name
+  scoped_search :relation => :organizations, :on => :name
 
   scope :exists, lambda { |login|
     where('email >= ? OR login_name < ?', login, login)

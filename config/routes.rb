@@ -75,6 +75,7 @@ Projestimate::Application.routes.draw do
   #end
   #==========
   devise_for :users, :controllers => {:registrations => "registrations", :omniauth_callbacks => "omniauth_callbacks", sessions: 'sessions'}, :skip => [:registrations]
+
   devise_scope :user do
     #get "metadata",   :to => "sessions#metadata"
     get "sign_in",   :to => "devise/sessions#new"
@@ -96,7 +97,7 @@ Projestimate::Application.routes.draw do
 
   resources :users
 
-  get 'dashboard' => 'users#show', :as => 'dashboard'
+  # get 'dashboard' => 'users#show', :as => 'dashboard'
   get 'validate' => 'users#validate', :as => 'validate'
   post 'create_inactive_user' => 'users#create_inactive_user', :as => 'create_inactive_user'
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
@@ -109,7 +110,7 @@ Projestimate::Application.routes.draw do
 
   post 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
   post 'export_dashboard' => 'projects#export_dashboard', :as => 'export_dashboard'
-  match 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
+  post 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'
 
@@ -146,15 +147,15 @@ Projestimate::Application.routes.draw do
 
   resources :reference_values
   resources :wbs_project_elements
-  match 'projects/:project_id/wbs_project_elements/:wbs_project_id/change_wbs_project_ratio' => 'wbs_project_elements#change_wbs_project_ratio', :as => 'change_wbs_project_ratio'
-  match 'wbs_project_elements/update_wbs_project_ratio_value' => 'wbs_project_elements#update_wbs_project_ratio_value', :as => 'update_wbs_project_ratio_value'
+  post 'projects/:project_id/wbs_project_elements/:wbs_project_id/change_wbs_project_ratio' => 'wbs_project_elements#change_wbs_project_ratio', :as => 'change_wbs_project_ratio'
+  post 'wbs_project_elements/update_wbs_project_ratio_value' => 'wbs_project_elements#update_wbs_project_ratio_value', :as => 'update_wbs_project_ratio_value'
 
   resources :wbs_activity_ratios do
-    collection { match 'wbs_activity_ratios/:wbs_activity_ratio_id/export' => 'wbs_activity_ratios#export', :as => 'export' }
-    collection { match 'wbs_activity_ratios/import' => 'wbs_activity_ratios#import', :as => 'import' }
+    collection { post 'wbs_activity_ratios/:wbs_activity_ratio_id/export' => 'wbs_activity_ratios#export', :as => 'export' }
+    collection { post 'wbs_activity_ratios/import' => 'wbs_activity_ratios#import', :as => 'import' }
   end
-  match 'wbs_activity_ratios/:ratio_id/validate_ratio' => 'wbs_activity_ratios#validate_ratio', :as => 'validate_ratio'
-  match 'wbs_activity_ratios/:wbs_activity_ratio_id/duplicate_wbs_activity_ratio' => 'wbs_activity_ratios#duplicate_wbs_activity_ratio', :as => 'duplicate_wbs_activity_ratio'
+  post 'wbs_activity_ratios/:ratio_id/validate_ratio' => 'wbs_activity_ratios#validate_ratio', :as => 'validate_ratio'
+  post 'wbs_activity_ratios/:wbs_activity_ratio_id/duplicate_wbs_activity_ratio' => 'wbs_activity_ratios#duplicate_wbs_activity_ratio', :as => 'duplicate_wbs_activity_ratio'
   get 'refresh_ratio_elements' => 'wbs_activities#refresh_ratio_elements', :as => 'refresh_ratio_elements'
   get 'update_mp_ratio_element_changed_value' => 'wbs_activities#update_mp_ratio_element_changed_value', :as => 'update_mp_ratio_element_changed_value'
 
@@ -164,7 +165,7 @@ Projestimate::Application.routes.draw do
   post 'save_percentage_of_input_values' => 'wbs_activity_ratio_elements#save_percentage_of_input_values', :as => 'save_percentage_of_input_values'
 
   resources :wbs_activity_elements
-  match 'wbs_activities/:wbs_activity_id/duplicate_wbs_activity' => 'wbs_activities#duplicate_wbs_activity', :as => :duplicate_wbs_activity
+  post 'wbs_activities/:wbs_activity_id/duplicate_wbs_activity' => 'wbs_activities#duplicate_wbs_activity', :as => :duplicate_wbs_activity
   get 'update_status_collection' => 'wbs_activity_elements#update_status_collection', :as => 'update_status_collection'
 
   resources :wbs_activities do
@@ -172,7 +173,7 @@ Projestimate::Application.routes.draw do
   end
   post "import_wbs_from_xl" => "wbs_activities#import_wbs_from_xl", as: 'import_wbs_from_xl'
 
-  match 'homes/update_install' => 'homes#update_install', :as => 'update_install'
+  post 'homes/update_install' => 'homes#update_install', :as => 'update_install'
 
   resources :auth_methods
 
@@ -181,23 +182,23 @@ Projestimate::Application.routes.draw do
   # searches controller routes
   # post 'searches/results'
   # get 'searches/results' => 'searches#results', :as => 'searches/results'
-  # match 'searches/results' => 'searches#results', :as => 'search_results'
+  # post 'searches/results' => 'searches#results', :as => 'search_results'
 
   resources :estimation_values
-  match 'estimation_values/:type/convert' => 'estimation_values#convert', :as => 'convert'
+  post 'estimation_values/:type/convert' => 'estimation_values#convert', :as => 'convert'
 
   resources :attribute_modules
 
   resources :module_projects
-  match 'module_projects/:project_id/module_projects_matrix' => 'module_projects#module_projects_matrix', :as => 'module_projects_matrix'
-  match 'module_projects/associate_modules_projects' => 'module_projects#associate_modules_projects', :as => 'associate_modules_projects'
-  match 'module_projects/associate_module_project_to_ratios' => 'module_projects#associate_module_project_to_ratios', :as => 'associate_module_project_to_ratios'
+  post 'module_projects/:project_id/module_projects_matrix' => 'module_projects#module_projects_matrix', :as => 'module_projects_matrix'
+  post 'module_projects/associate_modules_projects' => 'module_projects#associate_modules_projects', :as => 'associate_modules_projects'
+  post 'module_projects/associate_module_project_to_ratios' => 'module_projects#associate_module_project_to_ratios', :as => 'associate_module_project_to_ratios'
   post 'module_projects/associate'
-  match 'module_projects/:module_project_id/activate_module_project' => 'module_projects#activate_module_project', :as => 'activate_module_project'
+  get 'module_projects/:module_project_id/activate_module_project' => 'module_projects#activate_module_project', :as => 'activate_module_project'
   get 'selected_balancing_attribute' => 'module_projects#selected_balancing_attribute', :as => 'selected_balancing_attribute'
   get 'show_module_project_results_view' => 'module_projects#show_module_project_results_view', :as => 'show_module_project_results_view'
   get 'edit_module_project_view_config' => 'module_projects#edit_module_project_view_config', as: 'edit_module_project_view_config'
-  match 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
+  post 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
   post 'module_projects_reassign' => 'module_projects#module_projects_reassign', as: 'module_projects_reassign'
   post 'associate_module_projects_inputs_outputs' => 'module_projects#associate_module_projects_inputs_outputs', as: 'associate_module_projects_inputs_outputs'
   get 'update_module_project_dynamic_connections' => 'module_projects#update_module_project_dynamic_connections', as: 'update_module_project_dynamic_connections'
@@ -282,12 +283,12 @@ Projestimate::Application.routes.draw do
 
   get 'organizationals_params' => 'organizations#organizationals_params', :as => 'organizationals_params'
   post '/organizations/:organization_id/export' => 'organizations#export', :as => 'export_organization'
-  match 'organizations/:organization_id/duplicate_organization' => 'organizations#duplicate_organization', :as => :duplicate_organization
+  post 'organizations/:organization_id/duplicate_organization' => 'organizations#duplicate_organization', :as => :duplicate_organization
   get 'new_organization_from_image' => 'organizations#new_organization_from_image', as: 'new_organization_from_image'
-  match 'create_organization_from_image' => 'organizations#create_organization_from_image', as: 'create_organization_from_image'
+  post 'create_organization_from_image' => 'organizations#create_organization_from_image', as: 'create_organization_from_image'
   get 'update_available_inline_columns' => 'organizations#update_available_inline_columns', as: 'update_available_inline_columns'
   get 'set_available_inline_columns' => 'organizations#set_available_inline_columns', as: 'set_available_inline_columns'
-  match 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
+  post 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
   get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities
@@ -315,10 +316,10 @@ Projestimate::Application.routes.draw do
   post 'update_selected_projects' => 'groups#update_selected_projects'
 
   resources :pemodules
-  match 'pemodules/:module_id/pemodules_down' => 'pemodules#pemodules_down', :as => 'pemodules_down'
-  match 'pemodules/:module_id/pemodules_up' => 'pemodules#pemodules_up', :as => 'pemodules_up'
-  match 'pemodules/:module_id/pemodules_left' => 'pemodules#pemodules_left', :as => 'pemodules_left'
-  match 'pemodules/:module_id/pemodules_right' => 'pemodules#pemodules_right', :as => 'pemodules_right'
+  post 'pemodules/:module_id/pemodules_down' => 'pemodules#pemodules_down', :as => 'pemodules_down'
+  post 'pemodules/:module_id/pemodules_up' => 'pemodules#pemodules_up', :as => 'pemodules_up'
+  post 'pemodules/:module_id/pemodules_left' => 'pemodules#pemodules_left', :as => 'pemodules_left'
+  post 'pemodules/:module_id/pemodules_right' => 'pemodules#pemodules_right', :as => 'pemodules_right'
 
   get 'list_attributes' => 'pemodules#list_attributes'
   get 'update_selected_attributes' => 'pemodules#update_selected_attributes'
@@ -339,7 +340,7 @@ Projestimate::Application.routes.draw do
   resources :pe_wbs_projects
 
   resources :projects
-  match 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
+  get 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
   get 'search' => 'projects#search', :as => 'search'
 
   get 'append_pemodule' => 'projects#append_pemodule'
@@ -353,28 +354,28 @@ Projestimate::Application.routes.draw do
   get 'results_with_activities_by_profile' => 'projects#results_with_activities_by_profile', :as => 'results_with_activities_by_profile'
   get 'load_security_for_selected_user' => 'projects#load_security_for_selected_user', :as => 'load_security_for_selected_user'
   get 'load_security_for_selected_group' => 'projects#load_security_for_selected_group', :as => 'load_security_for_selected_group'
-  get 'update_project_security_level' => 'projects#update_project_security_level', :as => 'update_project_security_level'
-  get 'update_project_security_level_group' => 'projects#update_project_security_level_group', :as => 'update_project_security_level_group'
+  # get 'update_project_security_level' => 'projects#update_project_security_level', :as => 'update_project_security_level'
+  # get 'update_project_security_level_group' => 'projects#update_project_security_level_group', :as => 'update_project_security_level_group'
   get 'projects_global_params' => 'projects#projects_global_params', :as => 'projects_global_params'
   get 'commit' => 'projects#commit', :as => 'commit'
   get 'activate' => 'projects#activate', :as => 'activate'
   get 'activate_project' => 'projects#activate', :as => 'activate_project'
-  match 'projects/:project_id/choose_project' => 'projects#choose_project', :as => 'choose_project'
+  post 'projects/:project_id/choose_project' => 'projects#choose_project', :as => 'choose_project'
   get 'find_use_project' => 'projects#find_use_project', :as => 'find_use_project'
   get 'find_use_estimation_model' => 'projects#find_use_estimation_model', :as => 'find_use_estimation_model'
   get 'check_in' => 'projects#check_in', :as => 'check_in'
   get 'check_out' => 'projects#check_out', :as => 'check_out'
   get 'select_pbs_project_elements' => 'projects#select_pbs_project_elements', :as => 'select_pbs_project_elements'
   get 'add_filter_on_project_version' => 'projects#add_filter_on_project_version', :as => 'add_filter_on_project_version'
-  match 'checkout' => 'projects#checkout', :as => 'checkout'
+  post 'checkout' => 'projects#checkout', :as => 'checkout'
   get 'collapse_project_version' => 'projects#collapse_project_version', :as => 'collapse_project_version'
   get 'update_organization_estimation_statuses' => 'projects#update_organization_estimation_statuses', as: 'update_organization_estimation_statuses'
   get 'add_comment_on_status_change' => 'projects#add_comment_on_status_change', as: 'add_comment_on_status_change'
   get 'change_new_estimation_data' => 'projects#change_new_estimation_data', as: 'change_new_estimation_data'
   get 'set_checkout_version' => 'projects#set_checkout_version', as: 'set_checkout_version'
-  match 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
+  post 'destroy_multiple_project' => 'projects#destroy_multiple_project', as: 'destroy_multiple_project'
 
-  match 'update_comments_status_change' => 'projects#update_comments_status_change', as: 'update_comments_status_change'
+  post 'update_comments_status_change' => 'projects#update_comments_status_change', as: 'update_comments_status_change'
   post 'add_wbs_activity_to_project' => 'projects#add_wbs_activity_to_project',  :as => 'add_wbs_activity_to_project'
   post 'update_project_security_level_group' => 'projects#update_project_security_level_group',  :as => 'update_project_security_level_group'
   post 'update_project_security_level' => 'projects#update_project_security_level',  :as => 'update_project_security_level'
@@ -383,10 +384,10 @@ Projestimate::Application.routes.draw do
   get 'refresh_wbs_activity_ratios' => 'projects#refresh_wbs_activity_ratios',   :as => 'refresh_wbs_activity_ratios'
   get 'generate_wbs_project_elt_tree' => 'projects#generate_wbs_project_elt_tree', :as => 'generate_wbs_project_elt_tree'
   get 'render_selected_wbs_activity_elements' => 'projects#render_selected_wbs_activity_elements', as: 'render_selected_wbs_activity_elements'
-  match 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
+  post 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
-  match 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
-  match 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
+  post 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
+  post 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
   get 'confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
 
@@ -394,10 +395,10 @@ Projestimate::Application.routes.draw do
   post 'load_setting_module/:module_project_id' => 'projects#load_setting_module', :as => 'load_setting_module'
 
   #Master Data validation and restoration routes
-  match ':controller/:id/validate_change' => ':controller#validate_change', :as => 'validate_change'
-  match ':controller/:id/restore_change' => ':controller#restore_change', :as => 'restore_change'
+  # post ':controller/:id/validate_change' => ':controller#validate_change', :as => 'validate_change'
+  # post ':controller/:id/restore_change' => ':controller#restore_change', :as => 'restore_change'
 
-  match 'wbs_activities/:id/validate_change_with_children' => 'wbs_activities#validate_change_with_children', :as => 'validate_change_with_children'
+  post 'wbs_activities/:id/validate_change_with_children' => 'wbs_activities#validate_change_with_children', :as => 'validate_change_with_children'
   post 'save_wbs_activity_ratio_per_profile' => 'wbs_activity_ratio_elements#save_wbs_activity_ratio_per_profile', :as => 'save_wbs_activity_ratio_per_profile'
   post "execute_estimation" => "projects#execute_estimation"
   get "export_my_project_xl/:project_id" => "projects#export_my_project_xl" , :as => 'export_my_project_xl'
