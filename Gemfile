@@ -217,7 +217,7 @@ end
 gem 'jbuilder', '~> 1.2'
 gem 'remotipart', '~> 1.2'
 
-# gem 'yaml_db'
+gem 'yaml_db'
 
 gem 'test-unit'
 # gem 'bullet', group: :development
