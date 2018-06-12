@@ -160,7 +160,7 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 #Faker
 #gem 'faker'
 
-gem 'passenger'
+gem 'passenger', '5.2.3'
 
 gem "delocalize"
 
