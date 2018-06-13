@@ -95,9 +95,9 @@ class Guw::GuwModelsController < ApplicationController
         @workbook = RubyXL::Parser.parse(params[:file].path)
         @workbook.each_with_index do |worksheet, index|
           tab = worksheet
-          if !tab.nil?
             if index == 0
 
+              if !tab.nil?
               if worksheet.sheet_name != I18n.t(:is_model)
                 break
               end
@@ -174,6 +174,7 @@ class Guw::GuwModelsController < ApplicationController
                 redirect_to main_app.organization_module_estimation_path(@current_organization.id, anchor: "taille") and return
               end
 
+
             elsif index == 1
 
               tab.each_with_index do |row, i|
@@ -205,16 +206,16 @@ class Guw::GuwModelsController < ApplicationController
 
                 tab.each_with_index do |row, i|
                   if i >= 3 && !row.nil?
-                    gce = Guw::GuwCoefficientElement.new(name: row[1].value,
-                                                         value: row[3].value,
-                                                         description: row[2].value,
-                                                         display_order: row[4].value,
+                    gce = Guw::GuwCoefficientElement.new(name: row[1].nil? ? nil : row[1].value,
+                                                         value: row[3].nil? ? nil : row[3].value,
+                                                         description: row[2].nil? ? nil : row[2].value,
+                                                         display_order: row[4].nil? ? nil : row[4].value,
                                                          guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                          guw_model_id: @guw_model.id,
                                                          default_value: (row[5].value.to_s == "true") ? 1 : 0,
                                                          default: (row[5].value.to_s == "true") ? 1 : 0,
-                                                         color_code: row[6].value,
-                                                         color_priority: row[7].value)
+                                                         color_code: row[6].nil? ? nil : row[6].value,
+                                                         color_priority: row[7].nil? ? nil : row[7].value)
                     gce.save(validate: false)
                   end
                 end

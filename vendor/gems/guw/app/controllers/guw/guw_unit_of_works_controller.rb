@@ -1079,7 +1079,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
           guw_unit_of_work.selected = true
         else
-          guw_unit_of_work.selected = false
+          # guw_unit_of_work.selected = false
         end
 
         #reorder to keep good order

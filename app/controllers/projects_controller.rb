@@ -613,7 +613,7 @@ class ProjectsController < ApplicationController
     current_user_ps.save
 
     #For group
-    defaut_group = AdminSetting.where(key: "Groupe using estimatiodef editn").first_or_create!(value: "*USER")
+    defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
     defaut_group_ps.group_id = Group.where(name: defaut_group.value,
                                            organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
@@ -748,7 +748,7 @@ class ProjectsController < ApplicationController
 
     #set_breadcrumbs  I18n.t(:estimate) => projects_path, @project => edit_project_path(@project)
     if @project.is_model
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), @project => edit_project_path(@project), "<span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
         unless can_show_estimation?(@project)
