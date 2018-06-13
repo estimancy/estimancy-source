@@ -7,6 +7,8 @@
     <% end %>
   </ul>
 
+  <% can_add_user_to_group = @group.is_protected_group != true || ( @group.is_protected_group == true && ( @current_user.super_admin || @current_user.groups.include?(@group)) ) %>
+
   <div id="tabs-1">
     <%= simple_form_for(@group) do |f| %>
 
@@ -18,7 +20,17 @@
         <% end %>
 
         <div class="div_tabs_to_disable">
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+          <div class="row-fluid">
+            <div class="span2">
+              <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+            </div>
+
+            <div class="span2">
+              <label class="checkbox"></label>
+              <%= f.input :is_protected_group, :label => I18n.t('is_protected_group') %>
+            </div>
+          </div>
+
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
         </div>
@@ -64,7 +76,13 @@
                     <span class="hidden">
                       <%= @group.users.map(&:id).include?(group_user.id).to_s.humanize %>
                     </span>
-                    <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}") %>
+
+                    <% if can_add_user_to_group %>
+                        <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}") %>
+                    <% else %>
+                        <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}", :style => 'visibility: hidden') %>
+                        <%= check_box_tag('show_readonly_group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), disabled: true, :id => nil, :class => "group_#{group_user.id}", :style => 'margin-left: -15px;') %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

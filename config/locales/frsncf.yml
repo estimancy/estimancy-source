@@ -2131,4 +2131,5 @@ frsncf:
   create_new_version_when_status_changed: "Créer une nouvelle version lors du changement de statut"
   change_before: "avant changement de statut"
   change_after: "après changement de statut"
+  is_protected_group: "Est un groupe protégé ?"
 

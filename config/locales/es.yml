@@ -2034,5 +2034,6 @@ es:
   create_new_version_when_status_changed: "Create new version when status changed"
   change_before: "before changing status"
   change_after: "after changing status"
+  is_protected_group: "Is a protected group ?"
 
 
