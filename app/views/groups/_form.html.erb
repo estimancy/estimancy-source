@@ -20,12 +20,12 @@
         <% end %>
 
         <div class="div_tabs_to_disable">
-          <div class="row-fluid">
-            <div class="span2">
+
+          <div class="row-fluid input-xxlarge">
+            <div class="span7">
               <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
             </div>
-
-            <div class="span2">
+            <div class="span5">
               <label class="checkbox"></label>
               <%= f.input :is_protected_group, :label => I18n.t('is_protected_group') %>
             </div>
