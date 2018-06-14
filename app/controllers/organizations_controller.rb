@@ -1669,12 +1669,12 @@ class OrganizationsController < ApplicationController
         # end
 
         header = [
+            "",
             "Nom du CDS",
             "Nom du fournisseur",
             "Nom de l'application",
-            "Numéro de devis",
-            "Numéro de demande",
             "Statut du devis",
+            "Numéro de demande",
             "Service",
             "Prestation",
             "Localisation",
@@ -1715,18 +1715,17 @@ class OrganizationsController < ApplicationController
             cplx = guow.guw_complexity.name
           end
 
-          worksheet.add_cell(ind, 0, project.organization)
-          worksheet.add_cell(ind, 1, "Fournisseur")
-          worksheet.add_cell(ind, 2, "Demandeur")
-          worksheet.add_cell(ind, 3, project.application)
-          worksheet.add_cell(ind, 4, project.title)
-          worksheet.add_cell(ind, 5, project.estimation_status)
-          worksheet.add_cell(ind, 6, project.project_area)
-          worksheet.add_cell(ind, 7, project.acquisition_category)
-          worksheet.add_cell(ind, 8, project.platform_category)
-          worksheet.add_cell(ind, 9, project.title)
-          worksheet.add_cell(ind, 10, project.version_number)
-          worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+          worksheet.add_cell(ind, 1, mp.project.organization)
+          worksheet.add_cell(ind, 2, mp.project.provider)
+          worksheet.add_cell(ind, 3, mp.project.application)
+          worksheet.add_cell(ind, 4, mp.project.estimation_status)
+          worksheet.add_cell(ind, 5, mp.project.request_number)
+          worksheet.add_cell(ind, 6, mp.project.project_area)
+          worksheet.add_cell(ind, 7, mp.project.acquisition_category)
+          worksheet.add_cell(ind, 8, mp.project.platform_category)
+          worksheet.add_cell(ind, 9, mp.project.title)
+          worksheet.add_cell(ind, 10, mp.project.version_number)
+          worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.name)
           worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
           worksheet.add_cell(ind, 13, guow.name)
           worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
