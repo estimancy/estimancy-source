@@ -1715,10 +1715,10 @@ class OrganizationsController < ApplicationController
             cplx = guow.guw_complexity.name
           end
 
-          worksheet.add_cell(ind, 1, project.organization)
-          worksheet.add_cell(ind, 2, project.provider)
-          worksheet.add_cell(ind, 3, project.application)
-          worksheet.add_cell(ind, 4, project.estimation_status)
+          worksheet.add_cell(ind, 1, project.organization.nil? ? '' : project.organization.name)
+          worksheet.add_cell(ind, 2, project.provider.nil? ? '' : project.provider.name)
+          worksheet.add_cell(ind, 3, project.application.nil? ? '' : project.application.name)
+          worksheet.add_cell(ind, 4, project.estimation_status.nil? ? '' : project.estimation_status.name)
           worksheet.add_cell(ind, 5, project.request_number)
           worksheet.add_cell(ind, 6, project.project_area)
           worksheet.add_cell(ind, 7, project.acquisition_category)
