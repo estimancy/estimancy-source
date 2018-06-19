@@ -1869,6 +1869,10 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
+
+    vals = RubyXL::DataValidations.new
+    worksheet.data_validations = vals
+
     tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
                 I18n.t(:group).length, I18n.t(:selected).length,
                 I18n.t(:name).length, I18n.t(:description).length,
@@ -1955,9 +1959,11 @@ class Guw::GuwModelsController < ApplicationController
                                                                 module_project_id: current_module_project.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                cell = worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
               elsif guw_coefficient.coefficient_type == "Coefficient"
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
               else
                 worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
