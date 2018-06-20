@@ -184,6 +184,78 @@ module OrganizationsHelper
     end
   end
 
+  def column_content_without_content_tag(pfs, column, project, fields_coefficients)
+    if column.field_id
+      value = column.project_field_value(pfs, project, fields_coefficients)
+    else
+      value = column.value_object(project)
+    end
+
+    if value.is_a?(Array)
+      val = value.collect {|v| column_value(column, project, v)}.compact.join(', ')
+      if val.nil?
+        ''
+      else
+        val.to_s.html_safe
+      end
+    else
+      column_value_without_content_tag(column, project, value)
+    end
+  end
+
+  def column_value_without_content_tag(column, project, value)
+    case column.name
+      when :application
+        if value.blank?
+          project.application_name
+        else
+          if project.application.nil?
+            nil
+          else
+            project.application.name
+          end
+        end
+      when :title
+        value
+      when :original_model
+        value
+      when :version_number
+        value
+      when :request_number
+        value
+      when :business_need
+        value
+      when :status_name
+        project.status_name
+      when :description
+        value
+      when :private
+        # mettre un truncate sinon ca plante sous ie8
+
+        value ? I18n.t(:private) : I18n.t(:unprivate)
+      when :start_date, :created_at, :updated_at
+        if value.nil?
+          value
+        else
+          I18n.l(value)
+        end
+      else
+        if column.field_id
+          if value == "-" or is_number?(value)
+            if is_number?(value)
+              convert_with_precision(value, user_number_precision)
+            else
+              value
+            end
+          else
+            value
+          end
+        else
+          value
+        end
+    end
+  end
+
   def column_value(column, project, value)
     case column.name
       when :application

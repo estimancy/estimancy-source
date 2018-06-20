@@ -379,7 +379,7 @@
           <% @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where( organization_id: current_organization.id,
                                                                            project_id: project.id,
                                                                            module_project_id: module_project.id,
-                                                                           pbs_project_element_id: pbs_project_element.id).all %>
+                                                                           pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id).all %>
 
           <h3>
             Financier Détails - <%= @guw_model.name %>
