@@ -22,7 +22,7 @@
     <% else %>
       <% results = [] %>
     <% end %>
-    $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(<%= results.first.nil? ? '' : results.first.value %>);
+    $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(<%= results.first.nil? ? '' : results.first.default_display_value %>);
   <% end %>
 <% end %>
 
