@@ -2171,3 +2171,5 @@ fr:
   hide_all: "Masquer l'entête de la WBS"
   show_all: "Afficher l'entête de la WBS"
   is_protected_group: "Est un groupe protégé ?"
+  is_ignored: "Ignorer l'application"
+  ignored_application: "Application ignorée"
