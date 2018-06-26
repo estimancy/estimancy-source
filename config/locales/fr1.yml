@@ -1773,4 +1773,6 @@ fr1:
   change_before: "avant changement de statut"
   change_after: "après changement de statut"
   is_protected_group: "Est un groupe protégé ?"
+  is_ignored: "Ignorer l'application"
+  ignored_application: "Application ignorée"
 

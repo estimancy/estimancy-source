@@ -2035,5 +2035,8 @@ es:
   change_before: "before changing status"
   change_after: "after changing status"
   is_protected_group: "Is a protected group ?"
+  is_ignored: "Ignore the application"
+  ignored_application: "Ignored application"
+  estimation_status: "Estimation status"
 
 
