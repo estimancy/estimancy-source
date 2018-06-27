@@ -498,6 +498,36 @@ public
     end
   end
 
+
+  # Supprimer un utilisateur d'une organisation
+  def destroy_user_from_organization
+    begin
+      @user = User.find(params[:user_id])
+      if @user.estimations.where(organization_id: params[:organization_id].to_i).empty?
+        organization_id = params[:organization_id].to_i
+
+        # Detach user from all groups of the current organization
+        current_orga_user_group_ids = @user.groups.where(organization_id: @current_organization.id)#.map(&:id)
+        @user.groups.delete(current_orga_user_group_ids) ####GroupsUsers.where(user_id: @user.id, group_id: current_orga_user_group_ids).delete_all
+
+        # Detach user from the current organization
+        OrganizationsUsers.where(organization_id: organization_id, user_id: @user.id).delete_all
+
+        flash[:success] = "L'utilisateur a bien été supprimé"
+      else
+        flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations dans cette organisation (#{@user.estimations.where(organization_id: params[:organization_id]).join(', ')})"
+      end
+
+      redirect_to organization_users_path(organization_id: organization_id) and return
+
+    rescue
+      flash[:error] = "Erreur lors de la suppression de l'utilisateur"
+      redirect_to organization_users_path(organization_id: organization_id) and return
+    end
+
+  end
+
+
   def find_use_user
     # No authorize required since everyone can find use for a user
     @user = User.find(params[:user_id])

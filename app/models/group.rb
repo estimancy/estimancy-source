@@ -25,7 +25,7 @@
 class Group < ActiveRecord::Base
 
   attr_accessible :name, :description, :for_global_permission, :for_project_security, :organization_id,
-                  :originator_id, :event_organization_id, :transaction_id
+                  :originator_id, :event_organization_id, :transaction_id, :is_protected_group
 
   has_and_belongs_to_many :users
   has_and_belongs_to_many :projects

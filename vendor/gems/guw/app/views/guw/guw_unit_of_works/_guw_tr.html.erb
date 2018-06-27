@@ -306,7 +306,7 @@
                    end
                 %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                     ceuw.nil? ? results.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                     ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
@@ -318,7 +318,7 @@
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                       ceuw.nil? ? results.first.value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                       ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                        step: 0.001 %>
@@ -328,7 +328,7 @@
                 <% if can? :execute_estimation_plan, @project %>
                   <script>
                     $(document).ready(function(){
-                      var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.value.to_f %>;
+                      var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
                       var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
                       var currentValue ;
 
