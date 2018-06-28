@@ -1958,12 +1958,14 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_coefficient_id: guw_coefficient.id,
                                                                 module_project_id: current_module_project.id).first
 
-              if guw_coefficient.coefficient_type == "Pourcentage"
-                cell = worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
-              elsif guw_coefficient.coefficient_type == "Coefficient"
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
+              if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
+
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                  guw_coefficient_id: guw_coefficient.id,
+                                                                  module_project_id: current_module_project.id).where("guw_coefficient_element_id IS NOT NULL").first
+
+                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
                 worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end

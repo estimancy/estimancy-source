@@ -869,7 +869,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     if guw_type_attributes_complexities.nil?
       @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(guw_type_id: (guw_type.nil? ? nil : guw_type.id),
-                                                                    guw_attribute_id: guowa.guw_attribute_id).all
+                                                                      guw_attribute_id: guowa.guw_attribute_id).all
     else
       @guw_attribute_complexities = guw_type_attributes_complexities[guowa.guw_attribute_id]
     end
