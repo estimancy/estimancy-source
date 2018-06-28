@@ -221,7 +221,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     # end
 
     @ceuw.save
-    @guw_unit_of_work.save
+    @guw_unit_of_work.save(validate: false)
 
     # redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
