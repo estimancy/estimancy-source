@@ -306,7 +306,7 @@
                      end
                    end
                 %>
-                <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
+                <%# number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                      ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
@@ -316,11 +316,9 @@
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                      coeff_element_id: results.first.id,
                                      title: ceuw.nil? ? "" : ceuw.comments %>
-                <%= ceuw.comments %>
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
-                  <%= ceuw.comments %>
-                  <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
+                  <%# number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                        ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
