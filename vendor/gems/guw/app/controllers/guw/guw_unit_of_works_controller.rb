@@ -214,11 +214,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @ceuw.percent = params["value"].to_f
 
-    if @ceuw.percent == @guw_coefficient_element.value
-      @ceuw.comments = nil
-    else
-      @ceuw.comments = (params["comments"].blank? ? nil : params["comments"])
-    end
+    # if @ceuw.percent == @guw_coefficient_element.value
+    #   @ceuw.comments = params["comments"].to_s
+    # else
+      @ceuw.comments = params["comments"].to_s
+    # end
 
     @ceuw.save
     @guw_unit_of_work.save
