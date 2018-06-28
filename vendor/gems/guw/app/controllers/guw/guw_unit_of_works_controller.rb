@@ -214,14 +214,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @ceuw.percent = params["value"].to_f
 
-    # if @ceuw.percent == @guw_coefficient_element.value
-    #   @ceuw.comments = params["comments"].to_s
-    # else
+    if @ceuw.percent == @guw_coefficient_element.value
+      @ceuw.comments = nil
+    else
       @ceuw.comments = params["comments"].to_s
-    # end
+    end
 
     @ceuw.save
-    @guw_unit_of_work.save(validate: false)
+    @guw_unit_of_work.save
 
     # redirect_to main_app.dashboard_path(@project, recalculate: true)
   end
