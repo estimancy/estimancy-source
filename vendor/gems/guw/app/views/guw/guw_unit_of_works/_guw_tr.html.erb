@@ -286,13 +286,13 @@
 
             <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
-              <% begin %>
-                <% ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
-              <% rescue %>
+              <%# begin %>
+                <%# ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
+              <%# rescue %>
                 <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     module_project_id: current_module_project.id).last %>
-              <% end %>
+                                                                     module_project_id: current_module_project.id).where("guw_coefficient_element_id IS NOT NULL").first %>
+              <%# end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
                 <%
@@ -306,8 +306,6 @@
                      end
                    end
                 %>
-                <%= ceuw %>
-                <%= ceuw.comments %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                      ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
