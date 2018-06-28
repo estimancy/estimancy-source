@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180621074140) do
+ActiveRecord::Schema.define(:version => 20180621081326) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -628,8 +628,8 @@ ActiveRecord::Schema.define(:version => 20180621074140) do
     t.float    "value"
     t.integer  "display_order"
     t.integer  "guw_model_id"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.float    "min_value"
     t.float    "max_value"
     t.float    "default_value"
@@ -637,6 +637,7 @@ ActiveRecord::Schema.define(:version => 20180621074140) do
     t.boolean  "default"
     t.string   "color_code"
     t.integer  "color_priority"
+    t.float    "default_display_value"
   end
 
   add_index "guw_guw_coefficient_elements", ["guw_model_id", "guw_coefficient_id", "default"], :name => "guw_coefficient_elements"
@@ -1137,6 +1138,12 @@ ActiveRecord::Schema.define(:version => 20180621074140) do
     t.integer  "owner_id"
     t.text     "change_comment"
     t.string   "reference_uuid"
+  end
+
+  create_table "machine_learnings", :force => true do |t|
+    t.string   "username"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
@@ -2381,7 +2388,7 @@ BEGIN
             old_value = OLD.id,
             new_value = NEW.id;
 
-          -- Pour le super_admin
+          
           IF (OLD.super_admin != NEW.super_admin) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2394,7 +2401,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          -- Pour le mot de passe
+          
           IF (OLD.encrypted_password != NEW.encrypted_password) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2407,7 +2414,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          -- Pour le mot de passe
+          
           IF (OLD.email != NEW.email) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
