@@ -347,6 +347,11 @@ class WbsActivitiesController < ApplicationController
     module_project_attributes = @module_project.pemodule.pe_attributes
     number_precision = user_number_precision
 
+    if @wbs_activity.nil?
+      flash[:warning] = "Merci d'activer le module WBS pour effectuer le calcul"
+      redirect_to :back and return
+    end
+
     # Get selected Ratio
     @ratio_reference = WbsActivityRatio.find(params[:ratio])
 
