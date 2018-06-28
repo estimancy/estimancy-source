@@ -316,8 +316,10 @@
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                      coeff_element_id: results.first.id,
                                      title: ceuw.nil? ? "" : ceuw.comments %>
+                <%= ceuw.comments %>
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
+                  <%= ceuw.comments %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                        ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
@@ -481,8 +483,7 @@
               <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                    step: 0.001,
                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;",
-                                   title: ceuw.nil? ? "" : ceuw.comments %>
+                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;" %>
             </span>
           </td>
         <% end %>
