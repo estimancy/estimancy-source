@@ -273,7 +273,9 @@
             <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
             <% @guw_model.guw_types.each do |guw_type| %>
               <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
-              <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
+              <% unless guw_complexity.nil? %>
+                <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
+              <% end %>
             <% end %>
 
             <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
