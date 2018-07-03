@@ -267,6 +267,16 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
       cplx.save
     end
 
+    # Attention
+    Guw::GuwOutputAssociation.where(value: nil).each do |goa|
+      goa.delete
+    end
+
+    Guw::GuwComplexityCoefficientElement.where(value: nil).each do |gcce|
+      gcce.delete
+    end
+
+
     if @guw_type.nil?
       redirect_to :back
     else

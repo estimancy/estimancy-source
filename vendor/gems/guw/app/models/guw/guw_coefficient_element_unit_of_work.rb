@@ -5,7 +5,7 @@ module Guw
     belongs_to :guw_unit_of_work
     belongs_to :guw_coefficient
 
-    # validates :guw_unit_of_work_id, uniqueness: {scope: [:guw_coefficient_element_id, :guw_coefficient_id]}
+    validates :guw_unit_of_work_id, uniqueness: {scope: [:guw_coefficient_element_id, :guw_coefficient_id]}
 
     amoeba do
       enable

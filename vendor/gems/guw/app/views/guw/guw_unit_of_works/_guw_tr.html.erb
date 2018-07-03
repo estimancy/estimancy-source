@@ -286,13 +286,13 @@
 
             <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
-              <% begin %>
-                <% ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
-              <% rescue %>
+              <%# begin %>
+                <%# ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
+              <%# rescue %>
                 <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     module_project_id: current_module_project.id).last %>
-              <% end %>
+                                                                     module_project_id: current_module_project.id).where("guw_coefficient_element_id IS NOT NULL").first %>
+              <%# end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
                 <%
@@ -384,7 +384,7 @@
               <% end %>
               <td class="span2">
                 <% unless @guw_type.nil? %>
-                  <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                  <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.flatten.map{|i| i.guw_coefficient_element }.flatten.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                   <% unless results.empty? %>
                     <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                              selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
@@ -481,8 +481,7 @@
               <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                    step: 0.001,
                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;",
-                                   title: ceuw.nil? ? "" : ceuw.comments %>
+                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;" %>
             </span>
           </td>
         <% end %>
