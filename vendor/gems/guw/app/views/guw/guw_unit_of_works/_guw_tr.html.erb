@@ -308,7 +308,7 @@
                 %>
                 <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                     ceuw.nil? ? (ddv.nil? ? ceuw.percent.to_f : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
+                                     ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
