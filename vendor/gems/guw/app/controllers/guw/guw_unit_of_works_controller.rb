@@ -1231,9 +1231,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               ceuw = ceuws[guw_coefficient.id]
               if ceuw.nil?
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work.id,
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
                                                                   guw_coefficient_id: guw_coefficient.id,
-                                                                  guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: @guw_unit_of_work.id,
+                                                                  guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work.id,
                                                                                                                    guw_coefficient_id: guw_coefficient.id,
                                                                                                                    guw_coefficient_element_id: nil)
 
