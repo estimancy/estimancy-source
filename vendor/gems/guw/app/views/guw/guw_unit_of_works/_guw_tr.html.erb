@@ -288,11 +288,11 @@
             <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
               <%# begin %>
-                <%# ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
+                <% ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
               <%# rescue %>
-                <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                <%# ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     module_project_id: current_module_project.id).where("guw_coefficient_element_id IS NOT NULL").first %>
+                                                                     module_project_id: current_module_project.id).first %>
               <%# end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
@@ -307,8 +307,9 @@
                      end
                    end
                 %>
+                <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                     ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                     ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
                                      style: "width: 60%; #{color}; text-align: right;",
                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
@@ -320,7 +321,7 @@
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
-                                       ceuw.nil? ? results.first.default_display_value.to_f.round(2) : ceuw.percent.to_f.round(2),
+                                       ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                        step: 0.001,

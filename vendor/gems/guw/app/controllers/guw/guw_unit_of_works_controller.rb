@@ -1237,7 +1237,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               if ceuw.nil?
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
                                                                   guw_coefficient_id: guw_coefficient.id,
-                                                                  guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
+                                                                  guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: guw_unit_of_work.id,
+                                                                                                                   guw_coefficient_id: guw_coefficient.id,
+                                                                                                                   guw_coefficient_element_id: nil)
+
+                # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
+                #                                                   guw_coefficient_id: guw_coefficient.id,
+                #                                                   module_project_id: current_module_project.id,
+                #                                                   guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
               end
 
               begin
@@ -1679,9 +1686,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_model.guw_coefficients.each do |guw_coefficient|
         if guw_coefficient.coefficient_type == "Pourcentage"
 
-          ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work,
+          ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work.id,
                                                             guw_coefficient_id: guw_coefficient.id,
-                                                            guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: @guw_unit_of_work,
+                                                            guw_coefficient_element_id: nil).first_or_create(guw_unit_of_work_id: @guw_unit_of_work.id,
                                                                                                              guw_coefficient_id: guw_coefficient.id,
                                                                                                              guw_coefficient_element_id: nil)
 
