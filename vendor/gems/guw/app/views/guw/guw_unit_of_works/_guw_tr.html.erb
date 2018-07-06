@@ -287,11 +287,11 @@
             <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
 
               <%# begin %>
-                <%# ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
+                <% ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"] %>
               <%# rescue %>
-                <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                <%# ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     module_project_id: current_module_project.id).first_or_create %>
+                                                                     module_project_id: current_module_project.id).first %>
               <%# end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
