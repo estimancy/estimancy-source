@@ -691,6 +691,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = nil
     @guw_unit_of_work.guw_complexity_id = nil
     @guw_unit_of_work.save
+
+    #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
+    @guw_types = @guw_model.guw_types.includes(:guw_complexities)
+    @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
   end
 
   def change_work_unit
@@ -3254,6 +3258,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       u.save
     end
   end
+
 
 end
 

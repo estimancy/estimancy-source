@@ -83,7 +83,7 @@
                    style: "width: 90%",
                    prompt: "",
                    guw: guow.id,
-                   title: @guw_type.name %>
+                   title: (@guw_type.description.blank? ? @guw_type.name : @guw_type.description) %>
   <% else %>
     <%= select_tag "guw_type[#{guow.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                    class: "guw_type",
@@ -92,6 +92,7 @@
                    guw: guow.id,
                    title: '' %>
   <% end %>
+
 </td>
 
 <% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
