@@ -2839,12 +2839,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                             ceuw.guw_coefficient_element_id = ce.id
                           else
                             ceuw.percent = row[k].value.to_f rescue nil
-                            worksheet.data_validations.each do |dv|
-                              if dv.sqref.first.col_range.first == k
-                                ceuw.comments = dv.prompt.to_s
+                            unless worksheet.data_validations.nil?
+                              worksheet.data_validations.each do |dv|
+                                if dv.sqref.first.col_range.first == k
+                                  ceuw.comments = dv.prompt.to_s
+                                end
                               end
                             end
-                            ceuw.guw_coefficient_element_id = default_guw_coefficient_guw_coefficient_element.nil? ?    guw_coefficient_guw_coefficient_elements.first : default_guw_coefficient_guw_coefficient_element.id
+                            ceuw.guw_coefficient_element_id = default_guw_coefficient_guw_coefficient_element.nil? ? guw_coefficient_guw_coefficient_elements.first : default_guw_coefficient_guw_coefficient_element.id
                           end
 
                           unless guw_uow.changed?
