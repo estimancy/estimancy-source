@@ -292,7 +292,7 @@
               <% rescue %>
                 <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                      guw_coefficient_id: @guw_coefficient.id,
-                                                                     module_project_id: current_module_project.id).first %>
+                                                                     module_project_id: current_module_project.id).order("updated_at ASC").last %>
               <% end %>
 
               <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
