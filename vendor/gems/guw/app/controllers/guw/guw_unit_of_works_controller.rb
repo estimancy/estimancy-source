@@ -1130,7 +1130,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         tmp_hash_ares = Hash.new
 
         @ocs_hash = {}
-        Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id, value: 1).each do |oc|
+        Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id).where("value IS NOT NULL").each do |oc|
           @ocs_hash[oc.guw_output_id] = oc
         end
 
