@@ -277,8 +277,10 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
     end
 
     Guw::GuwCoefficientElement.all.each do |gce|
-      gce.default_display_value = gce.value
-      gce.save
+      if gce.default_display_value.nil?
+        gce.default_display_value = gce.value
+        gce.save
+      end
     end
 
     if @guw_type.nil?
