@@ -1724,8 +1724,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.organization)
-      worksheet.add_cell(ind, 1, "Fournisseur")
-      worksheet.add_cell(ind, 2, "Demandeur")
+      worksheet.add_cell(ind, 1, current_module_project.project.provider)
+      worksheet.add_cell(ind, 2, current_module_project.project.application)
       worksheet.add_cell(ind, 3, current_module_project.project.application)
       worksheet.add_cell(ind, 4, current_module_project.project.title)
       worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
@@ -1928,8 +1928,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.organization)
-      worksheet.add_cell(ind, 1, "Fournisseur")
-      worksheet.add_cell(ind, 2, "Demandeur")
+      worksheet.add_cell(ind, 1, current_module_project.project.provider)
+      worksheet.add_cell(ind, 2, current_module_project.project.application)
       worksheet.add_cell(ind, 3, current_module_project.project.application)
       worksheet.add_cell(ind, 4, current_module_project.project.title)
       worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
@@ -1962,7 +1962,7 @@ class Guw::GuwModelsController < ApplicationController
 
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                   guw_coefficient_id: guw_coefficient.id,
-                                                                  module_project_id: current_module_project.id).where("guw_coefficient_element_id IS NOT NULL").first
+                                                                  module_project_id: current_module_project.id).order("updated_at ASC").last
 
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
                 worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)

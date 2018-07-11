@@ -276,6 +276,10 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
       gcce.delete
     end
 
+    Guw::GuwCoefficientElement.all.each do |gce|
+      gce.default_display_value = gce.value
+      gce.save
+    end
 
     if @guw_type.nil?
       redirect_to :back
