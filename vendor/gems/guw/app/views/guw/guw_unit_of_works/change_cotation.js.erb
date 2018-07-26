@@ -1,8 +1,7 @@
-
 $("#guw_type_<%= @guw_unit_of_work.id %>").prop('title', '<%= @new_popup_title %>');
 
 <% unless @guw_type.nil? %>
-    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map do |i|
+    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j (select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map do |i|
                                                             [i.name, i.id]
                                                           end,
                                                       selected: @guw_type.id),
