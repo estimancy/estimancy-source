@@ -2041,6 +2041,9 @@ class OrganizationsController < ApplicationController
 
     @search_column = session[:search_column]
     @search_value = session[:search_value]
+    @search_string = ""
+    @search_hash = {}
+    final_results = []
 
     # Pour garder le tri même lors du raffraichissement de la page
     if (@sort_action == "true" && @sort_column != "" && @sort_order != "")
@@ -2057,6 +2060,34 @@ class OrganizationsController < ApplicationController
       if !@search_column.blank? && !@search_value.blank?
         projects = @organization.projects.where(:is_model => [nil, false])
         organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
+
+        ##test
+        unless params['search'].blank?
+          params['search'].each do |k,v|
+            val = params['search'][k]
+
+            @search_column = k
+            @search_value = val
+
+            @search_hash[k] = val
+            @search_string << "&search[#{k}]=#{val}"
+
+            results = get_search_results(@organization.id, projects, k, val).all.map(&:id)
+
+            a = results.flatten
+            b = final_results.flatten
+
+            if b.empty?
+              final_results << a
+            else
+              final_results << a & b
+            end
+          end
+
+          organization_projects = @organization.organization_estimations.where(project_id: final_results.inject(&:&)).all
+        end
+        ##fin test
+
         res = []
         organization_projects.each do |p|
           if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
@@ -2098,6 +2129,7 @@ class OrganizationsController < ApplicationController
     session[:is_last_page] = @is_last_page
     session[:search_column] = @search_column
     session[:search_value] = @search_value
+    session[:search_hash] = @search_hash
 
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)

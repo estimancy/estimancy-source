@@ -18,9 +18,10 @@
   <tr style="background-color: #eeeeee;">
     <% selected_inline_columns.each do |column| %>
       <td>
-        <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) %>
-            <% search_value = params[column.name] || params['search_value'] %>
-            <% search_value = search_value.blank? ? session['search_value'] : search_value %>
+        <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) | (session['search_hash'].keys.include?(column.name.to_s))%>
+            <% search_value = params[column.name] || params['search'][column.name.to_s] %>
+            <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
+            <% search_value = search_value.blank? ? session['search_hash'][column.name.to_s] : search_value %>
         <% else %>
             <% search_value = params[column.name] %>
         <% end %>

@@ -2945,6 +2945,8 @@ public
     @sort_column = params[:sort_column]
     @sort_order = params[:sort_order]
     @sort_action = params[:sort_action]
+    @search_hash = {}
+    @search_string = ""
 
     @search_column = ""
     @search_value = ""
@@ -2978,6 +2980,9 @@ public
 
         @search_column = k
         @search_value = val
+
+        @search_hash[k] = val
+        @search_string << "&search[#{k}]=#{val}"
 
         results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
 
@@ -3025,6 +3030,7 @@ public
     session[:is_last_page] = @is_last_page
     session[:search_column] = @search_column
     session[:search_value] = @search_value
+    session[:search_hash] = @search_hash
 
     build_footer
   end

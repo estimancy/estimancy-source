@@ -8,7 +8,7 @@ require ::File.expand_path('../config/environment',  __FILE__)
 # Test To call wordpress
 
 use Rack::ReverseProxy do
-  reverse_proxy /^\/support(\/.*)$/, 'https://estimancy-themes.com/', :username => '', :password => '', :timeout => 500, :preserve_host => true
+  reverse_proxy /^\/support(\/.*)$/, 'https://estimancy.com/', :username => '', :password => '', :timeout => 500, :preserve_host => true
 end
 
 # End Test To call wordpress
