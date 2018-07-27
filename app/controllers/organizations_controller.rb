@@ -2041,8 +2041,8 @@ class OrganizationsController < ApplicationController
 
     @search_column = session[:search_column]
     @search_value = session[:search_value]
+    @search_hash = session[:search_hash] || {}
     @search_string = ""
-    @search_hash = {}
     final_results = []
 
     # Pour garder le tri même lors du raffraichissement de la page
@@ -2062,9 +2062,13 @@ class OrganizationsController < ApplicationController
         organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
 
         ##test
-        unless params['search'].blank?
-          params['search'].each do |k,v|
-            val = params['search'][k]
+        search_elements = params['search'] || session[:search_hash]
+        unless search_elements.blank? #params['search'].blank?
+          #params['search'].each do |k,v|
+            #val = params['search'][k]
+
+          search_elements.each do |k,v|
+            val = search_elements[k]
 
             @search_column = k
             @search_value = val
