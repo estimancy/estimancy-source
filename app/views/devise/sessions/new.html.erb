@@ -1,5 +1,9 @@
 <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
 
+    <%# if devise_mapping.confirmable? && !resource.confirmed? %>
+        <!--<p style="color: red"> <%#= I18n.t('devise.failure.unconfirmed') %></p>-->
+    <%# end %>
+
   <div class="login_input">
       <div class="input-prepend">
         <span class="add-on"><img src="/assets/man.png" /></span>
