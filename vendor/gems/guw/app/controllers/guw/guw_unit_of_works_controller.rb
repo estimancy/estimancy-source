@@ -1284,7 +1284,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 unless cce.blank?
                   percents << (pc.to_f / 100)
-                  percents << cce.value.to_f
+                  percents << (cce.value.nil? ? 1 : cce.value.to_f)
 
                   v = (guw_coefficient_element.value.nil? ? 1 : guw_coefficient_element.value).to_f
                   selected_coefficient_values["#{guw_output.id}"] << (v / 100)
