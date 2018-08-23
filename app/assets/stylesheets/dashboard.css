@@ -272,7 +272,7 @@ input::-webkit-inner-spin-button {
 
 .login_window {
     border: 1px solid lightgrey;
-    height: 370px;
+    height: 330px;
     width: 679px;
 }
 
@@ -280,7 +280,7 @@ input::-webkit-inner-spin-button {
     background: url(/assets/Estimancy_Logo_Base-Line_RVB.png) no-repeat;
     background-size: 538px;
     width: 568px;
-    height: 150px;
+    height: 130px;
     margin-left: 84px;
 }
 
