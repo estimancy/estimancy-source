@@ -1,10 +1,6 @@
-<%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
-
-    <%# if devise_mapping.confirmable? && !resource.confirmed? %>
-        <!--<p style="color: red"> <%#= I18n.t('devise.failure.unconfirmed') %></p>-->
-    <%# end %>
-
-  <div class="login_input">
+<div class="span5">
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
+    <div class="login_input">
       <div class="input-prepend">
         <span class="add-on"><img src="/assets/man.png" /></span>
         <%= f.text_field :id_connexion, required: false, autofocus: true, :label => I18n.t('login_name'), :class => 'login_username', :placeholder => I18n.t('login_name_or_email') %>
@@ -19,10 +15,9 @@
         <%= f.check_box :remember_me, :label => I18n.t(:remember_me), as: :boolean if devise_mapping.rememberable? %>
         <%= I18n.t(:remember_me ) %>
       </label>
-  </div>
 
- <div>
-    <%= f.button :submit, I18n.t('connect'), :class => "btn btn-danger" %>
- </div>
-<% end %>
+      <%= f.button :submit, I18n.t('connect'), :class => "btn btn-danger" %>
+    </div>
+  <% end %>
+</div>
 <%= render "devise/shared/links" %>
