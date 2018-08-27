@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180621081326) do
+ActiveRecord::Schema.define(:version => 20180827072208) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -887,6 +887,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "color_code"
     t.integer  "color_priority"
     t.boolean  "allow_line_color"
+    t.boolean  "mandatory_comments",         :default => true
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], :name => "guw_model_default_guw_types"
@@ -1140,6 +1141,14 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "logs", :force => true do |t|
+    t.string   "action",     :limit => 4
+    t.string   "from_value"
+    t.string   "to_value"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
   end
 
   create_table "machine_learnings", :force => true do |t|
