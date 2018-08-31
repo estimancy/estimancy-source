@@ -2436,17 +2436,22 @@ public
 
         # For ModuleProject associations
         old_prj.module_projects.group(:id).each do |old_mp|
+
+          old_mp_associated_module_projects = old_mp.associated_module_projects
+          old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements
+
+
           new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
           # ModuleProject Associations for the new project
-          old_mp.associated_module_projects.each do |associated_mp|
+          old_mp_associated_module_projects.each do |associated_mp|
             new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
             new_mp.associated_module_projects << new_associated_mp
           end
 
           ### Wbs activity
           #create module_project ratio elements
-          old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+          old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
             mp_ratio_element = old_mp_ratio_elt.dup
             mp_ratio_element.module_project_id = new_mp.id
             mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2542,7 +2547,7 @@ public
 
             new_mp_pemodule_pe_attributes.each do |attr|
 
-              ev = hash_nmpevs["#{attr.id}_#{io}"]
+                ev = hash_nmpevs["#{attr.id}_#{io}"]
 
               unless ev.nil?
                 new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
@@ -2940,6 +2945,8 @@ public
     @sort_column = params[:sort_column]
     @sort_order = params[:sort_order]
     @sort_action = params[:sort_action]
+    @search_hash = {}
+    @search_string = ""
 
     @search_column = ""
     @search_value = ""
@@ -2973,6 +2980,9 @@ public
 
         @search_column = k
         @search_value = val
+
+        @search_hash[k] = val
+        @search_string << "&search[#{k}]=#{val}"
 
         results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
 
@@ -3020,6 +3030,7 @@ public
     session[:is_last_page] = @is_last_page
     session[:search_column] = @search_column
     session[:search_value] = @search_value
+    session[:search_hash] = @search_hash
 
     build_footer
   end

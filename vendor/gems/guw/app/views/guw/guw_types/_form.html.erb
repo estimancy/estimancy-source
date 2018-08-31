@@ -30,10 +30,11 @@
 
         <%= f.input :display_threshold, label: "Afficher le seuil" %>
         <%= f.input :allow_complexity, label: I18n.t(:Changing_the_complexity_enter) %>
+        <%= f.input :mandatory_comments, label: "Commentaire sur critères obligatoire" %>
 
-        <%= f.input :color_code, input_html: {class: 'color'} %>
-        <%= f.input :color_priority %>
-        <%= f.input :allow_line_color %>
+        <%= f.input :color_code, label: "Code couleur", input_html: {class: 'color'} %>
+        <%= f.input :color_priority, label: "Priorité de la couleur" %>
+        <%= f.input :allow_line_color, label: "Activez la couleur sur une ligne" %>
 
         <%= f.input :is_default, label: "Type d'UO par défaut" %>
       </div>

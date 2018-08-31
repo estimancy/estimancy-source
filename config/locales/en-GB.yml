@@ -1720,7 +1720,7 @@ en-gb:
   audit_estimations_permissions: "Estimation autorizations"
   audit_UserGroups: "Group / Users"
   audit_UserOrganizations: "Organization / Users"
-
+  estimation_status: "Estimation status"
   audit_OrganizationUser: "User / Organizations"
   audit_GroupUser: "User / Groups"
   create_event: "Adding"
@@ -1734,3 +1734,7 @@ en-gb:
   create_new_version_when_status_changed: "Create new version when status changed"
   change_before: "before changing status"
   change_after: "after changing status"
+  is_protected_group: "Is a protected group ?"
+  is_ignored: "Ignore the application"
+  ignored_application: "Ignored application"
+
