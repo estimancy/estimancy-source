@@ -25,13 +25,13 @@
 
   </div>
   <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:cancel) %></button>
     <% if can? :execute_estimation_plan, @project %>
-      <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:cancel) %></button>
-        <button type="submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></>" class="btn btn-default btn-primary submit_comments" <%= guw_unit_of_work.comments.blank? ? 'disabled' : '' %>>
+      <button type="submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></>" class="btn btn-default btn-primary submit_comments" <%= guw_unit_of_work.comments.blank? ? 'disabled' : '' %>>
           <%= I18n.t(:save) %>
-        </button>
-      </div>
+      </button>
     <% end %>
+  </div>
 <% end %>
 
 <script>

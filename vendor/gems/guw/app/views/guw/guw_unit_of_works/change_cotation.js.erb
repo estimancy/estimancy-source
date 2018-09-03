@@ -1,3 +1,26 @@
+$("#guw_type_<%= @guw_unit_of_work.id %>").prop('title', '<%= @new_popup_title %>');
+
+<% unless @guw_type.nil? %>
+    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j (select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map do |i|
+                                                            [i.name, i.id]
+                                                          end,
+                                                      selected: @guw_type.id),
+               class: "guw_type",
+               style: "width: 90%",
+               prompt: "",
+               guw: @guw_unit_of_work.id,
+               title: @new_popup_title) %>");
+
+<% else %>
+    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+               class: "guw_type",
+               style: "width: 90%;",
+               prompt: "",
+               guw: @guw_unit_of_work.id,
+               title: '' ) %>");
+
+<% end %>
+
 <% if @guw_unit_of_work.guw_type.display_threshold == true %>
   $(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_complexity_#{@guw_unit_of_work.id}", options_for_select(@guw_unit_of_work.guw_type.guw_complexities.map{|i| [i.name, i.id] }, selected: nil), class: "input-small", style: "width: 70px;", prompt: "", disabled: !@guw_unit_of_work.guw_type.allow_complexity) %>")
 <% else %>

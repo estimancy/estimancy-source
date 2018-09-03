@@ -161,8 +161,14 @@ class Ge::GeModelsController < ApplicationController
                   [I18n.t(:advice_ge), ""]]
 
     first_page.each_with_index do |row, index|
-      model_worksheet.add_cell(index, 0, row[0].value)
-      model_worksheet.add_cell(index, 1, row[1].value).change_horizontal_alignment('center')
+      begin
+        model_worksheet.add_cell(index, 0, row[0].value)
+        model_worksheet.add_cell(index, 1, row[1].value).change_horizontal_alignment('center')
+      rescue
+        model_worksheet.add_cell(index, 0, row[0])
+        model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+      end
+
       ["bottom", "right"].each do |symbole|
         model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
         model_worksheet[index][1].change_border(symbole.to_sym, 'thin')

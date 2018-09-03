@@ -188,12 +188,12 @@ class Guw::GuwModelsController < ApplicationController
 
             tab.each_with_index do |row, i|
               if i != 0 && !row.nil?
-                Guw::GuwCoefficient.create(name: row[0].value,
-                                           description: row[1].value,
-                                           coefficient_type: row[2].value,
+                Guw::GuwCoefficient.create(name: row[0].nil? ? nil : row[0].value,
+                                           description: row[1].nil? ? nil : row[1].value,
+                                           coefficient_type: row[2].nil? ? nil : row[2].value,
                                            guw_model_id: @guw_model.id,
-                                           allow_intermediate_value: (row[3].value == 0) ? false : true,
-                                           deported: (row[4].value == 0) ? false : true)
+                                           allow_intermediate_value: ((row[3].nil? ? nil : row[3].value) == 0) ? false : true,
+                                           deported: ((row[4].nil? ? nil : row[4].value) == 0) ? false : true)
               end
             end
 
@@ -1724,8 +1724,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.organization)
-      worksheet.add_cell(ind, 1, "Fournisseur")
-      worksheet.add_cell(ind, 2, "Demandeur")
+      worksheet.add_cell(ind, 1, current_module_project.project.provider)
+      worksheet.add_cell(ind, 2, current_module_project.project.application)
       worksheet.add_cell(ind, 3, current_module_project.project.application)
       worksheet.add_cell(ind, 4, current_module_project.project.title)
       worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
@@ -1928,8 +1928,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       worksheet.add_cell(ind, 0, current_module_project.project.organization)
-      worksheet.add_cell(ind, 1, "Fournisseur")
-      worksheet.add_cell(ind, 2, "Demandeur")
+      worksheet.add_cell(ind, 1, current_module_project.project.provider)
+      worksheet.add_cell(ind, 2, current_module_project.project.application)
       worksheet.add_cell(ind, 3, current_module_project.project.application)
       worksheet.add_cell(ind, 4, current_module_project.project.title)
       worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
@@ -1958,12 +1958,14 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_coefficient_id: guw_coefficient.id,
                                                                 module_project_id: current_module_project.id).first
 
-              if guw_coefficient.coefficient_type == "Pourcentage"
-                cell = worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
-              elsif guw_coefficient.coefficient_type == "Coefficient"
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.comments)
+              if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
+
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                  guw_coefficient_id: guw_coefficient.id,
+                                                                  module_project_id: current_module_project.id).order("updated_at ASC").last
+
+                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
                 worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end

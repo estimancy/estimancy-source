@@ -262,33 +262,35 @@ input::-webkit-inner-spin-button {
     background-color: #eee;
 }
 
-.login_background{
+.login_background {
     margin: 125px auto;
-    width: 572px;
+    width: 680px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
     background-color: white;
 }
 
-.login_window{
+.login_window {
     border: 1px solid lightgrey;
+    height: 330px;
+    width: 679px;
     /*height: 360px;*/
 }
 
-.login_wrapper{
-    background: url('/assets/login_bg22.png') no-repeat;
-    background-size: 568px 148px;
+.login_wrapper {
+    background: url(/assets/Estimancy_Logo_Base-Line_RVB.png) no-repeat;
+    background-size: 538px;
     width: 568px;
-    height: 148px;
-    margin-left: 22px;
+    height: 130px;
+    margin-left: 84px;
 }
 
-.login_information{
+.login_information {
     position: relative;
     top: 0;
     margin: 0 auto;
-    /*border: 4px solid #DAD7D5;*/
-    /*width: 526px;*/
+    /* border: 4px solid #DAD7D5; */
+    /* width: 526px; */
     padding: 19px;
     background-color: white;
 }
