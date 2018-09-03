@@ -242,6 +242,7 @@ gem 'grit'
 gem 'pdfkit'
 
 # gem 'paper_trail'
+gem 'protected_attributes'
 
 gem "hairtrigger"
 
