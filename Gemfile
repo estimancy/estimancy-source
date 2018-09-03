@@ -83,7 +83,7 @@ gem 'amoeba', '~> 3.0.0'
 gem 'rb-readline'
 
 #Cache management
-gem 'cache_digests'
+# gem 'cache_digests'
 
 #Databases data translations
 gem 'globalize'
