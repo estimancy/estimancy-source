@@ -21,6 +21,9 @@
 
 module Guw
   class GuwTypeComplexity < ActiveRecord::Base
+
+    attr_accessible :name, :description, :value, :guw_type_id, :copy_id, :display_order
+
     belongs_to :guw_type
     has_many :guw_attribute_complexities, dependent: :delete_all
 
