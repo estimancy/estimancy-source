@@ -8,8 +8,16 @@ class Application < ActiveRecord::Base
 
   default_scope { order('name ASC') }
 
-  scope :active, where(is_ignored: [false, nil])
-  scope :ignored, where(is_ignored: true)
+  # scope :active, where(is_ignored: [false, nil])
+  # scope :ignored, where(is_ignored: true)
+
+  scope :active, -> {
+    where(:is_ignored => [false, nil])
+  }
+
+  scope :ignored, -> {
+    where(:is_ignored => true)
+  }
 
   def to_s
     self.nil? ? '' : self.name
