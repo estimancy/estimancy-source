@@ -24,7 +24,7 @@
       Seul les devis sélectionnés seront exportés dans un fichier Excel récapitulatif.
     </p>
 
-    <%= form_tag "generate_report_excel", method: "post" do %>
+      <%= form_tag "generate_report_excel_estimations", method: "post" do %>
 
       <%= hidden_field_tag "organization_id", params[:organization_id] %>
 

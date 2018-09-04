@@ -55,14 +55,18 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
             oa = Guw::GuwOutputAssociation.where( guw_complexity_id: cplx.id,
                                                   guw_output_associated_id: a_output.id,
                                                   guw_output_id: output.id).first
-            if oa.nil?
-              Guw::GuwOutputAssociation.create(guw_complexity_id: cplx.id,
-                                               guw_output_associated_id: a_output.id,
-                                               guw_output_id: output.id,
-                                               value: params[:config]["#{cplx.id}"]["#{output.id}"]["#{a_output.id}"])
 
+            value = params[:config]["#{cplx.id}"]["#{output.id}"]["#{a_output.id}"]
+
+            if oa.nil?
+              unless value.blank?
+                Guw::GuwOutputAssociation.create(guw_complexity_id: cplx.id,
+                                                 guw_output_associated_id: a_output.id,
+                                                 guw_output_id: output.id,
+                                                 value: value)
+              end
             else
-              oa.value = params[:config]["#{cplx.id}"]["#{output.id}"]["#{a_output.id}"]
+              oa.value = value
               oa.save
             end
           end
@@ -79,7 +83,10 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
             output = Guw::GuwOutput.find(k.first.to_i)
 
             oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: cplx.id,
-                                                              guw_output_id: output.id).first
+                                                               guw_output_id: output.id).first
+
+            # Pour GuwOutputComplexityInitialization ? Tester que init_value.blank? ??!!
+
             if oci.nil?
               Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: cplx.id,
                                                             guw_output_id: output.id,
@@ -130,12 +137,16 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
             cwu = Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: cplx.id,
                                                              guw_coefficient_element_id: ce.id,
                                                              guw_output_id: output.id).first
+
+            value = params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"]
             if cwu.nil?
-              Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: cplx.id,
-                                                          guw_coefficient_element_id: ce.id,
-                                                          guw_output_id: output.id,
-                                                          value: params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"],
-                                                          guw_type_id: @guw_type.id)
+              unless value.blank?
+                Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: cplx.id,
+                                                            guw_coefficient_element_id: ce.id,
+                                                            guw_output_id: output.id,
+                                                            value: params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"],
+                                                            guw_type_id: @guw_type.id)
+              end
             else
               cwu.value = params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"]
               cwu.guw_type_id = @guw_type.id
@@ -254,6 +265,22 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
         cplx.enable_value = false
       end
       cplx.save
+    end
+
+    # Attention
+    Guw::GuwOutputAssociation.where(value: nil).each do |goa|
+      goa.delete
+    end
+
+    Guw::GuwComplexityCoefficientElement.where(value: nil).each do |gcce|
+      gcce.delete
+    end
+
+    Guw::GuwCoefficientElement.all.each do |gce|
+      if gce.default_display_value.nil?
+        gce.default_display_value = gce.value
+        gce.save
+      end
     end
 
     if @guw_type.nil?

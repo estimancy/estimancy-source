@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180507145719) do
+ActiveRecord::Schema.define(:version => 20180827072208) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -132,6 +132,7 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.integer  "organization_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.boolean  "is_ignored"
   end
 
   create_table "applications_projects", :id => false, :force => true do |t|
@@ -544,6 +545,7 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.integer  "originator_id"
     t.integer  "event_organization_id"
     t.text     "transaction_id"
+    t.boolean  "is_protected_group"
   end
 
   create_table "groups_permissions", :force => true do |t|
@@ -628,8 +630,8 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.float    "value"
     t.integer  "display_order"
     t.integer  "guw_model_id"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.float    "min_value"
     t.float    "max_value"
     t.float    "default_value"
@@ -637,6 +639,7 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.boolean  "default"
     t.string   "color_code"
     t.integer  "color_priority"
+    t.float    "default_display_value"
   end
 
   add_index "guw_guw_coefficient_elements", ["guw_model_id", "guw_coefficient_id", "default"], :name => "guw_coefficient_elements"
@@ -884,6 +887,7 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.string   "color_code"
     t.integer  "color_priority"
     t.boolean  "allow_line_color"
+    t.boolean  "mandatory_comments",         :default => true
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], :name => "guw_model_default_guw_types"
@@ -1137,6 +1141,14 @@ ActiveRecord::Schema.define(:version => 20180507145719) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "logs", :force => true do |t|
+    t.string   "action",     :limit => 4
+    t.string   "from_value"
+    t.string   "to_value"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
   end
 
   create_table "machine_learnings", :force => true do |t|

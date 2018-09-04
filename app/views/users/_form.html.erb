@@ -288,12 +288,17 @@
                 <% else %>
                     <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
                 <% end %>
+
                 <td class="center">
-                  <% if can?(:manage, User) && can?(:manage, Group) %>
+                  <% if can?(:manage, User) && can?(:manage, Group) &&
+                          ( group.is_protected_group != true ||
+                          ( group.is_protected_group == true && (@current_user.super_admin || @current_user.groups.include?(group)) )) %>
+
                     <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
+
                   <% else %>
                     <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
-                    <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true %>
+                    <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true, :style => 'margin-left: -15px;' %>
                   <% end %>
                 </td>
 

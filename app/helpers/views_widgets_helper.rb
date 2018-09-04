@@ -57,7 +57,7 @@ module ViewsWidgetsHelper
     begin
       if correct_syntax?(formula)
         result_value = eval(formula).round(user_number_precision)
-        if result_value.nan?
+        if result_value.is_a?(Float) && result_value.nan?
           '-'
         else
           "#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{view_widget.kpi_unit.to_s}"
@@ -107,7 +107,7 @@ module ViewsWidgetsHelper
     begin
       if correct_syntax?(formula)
         result_value = eval(formula) #.round(current_user.number_precision)
-        if result_value.nan?
+        if result_value.is_a?(Float) && result_value.nan?
           '-'
         else
           #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: current_user.number_precision.nil? ? 2 : current_user.number_precision, locale: (current_user.language.locale rescue "fr"))}"
@@ -504,6 +504,11 @@ module ViewsWidgetsHelper
     widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable }
 
     ############################ Get the view_widget size  ############################
+
+    if view_widget.estimation_value.pe_attribute.nil?
+      value_to_show = {}
+      return value_to_show
+    end
 
     # Si on affiche une vignette du nom du Ratio
     if view_widget.estimation_value.pe_attribute.alias == "ratio_name"

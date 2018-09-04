@@ -102,6 +102,7 @@ Projestimate::Application.routes.draw do
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
   get 'about' => 'users#about', :as => 'about'
   get 'contactsupport' => 'users#contactsupport', :as => 'contactsupport'
+  delete 'destroy_user_from_organization' => 'users#destroy_user_from_organization', as: 'destroy_user_from_organization'
 
   # Page de support qui redirige vers le site Estimancy
   get '/support' => redirect("https://estimancy-themes.com/en/support/")
@@ -232,7 +233,7 @@ Projestimate::Application.routes.draw do
     resources :fields
     resources :wbs_activities
     resources :groups
-    resources :users, only: [:new, :create, :show, :edit, :update, :destroy]
+    resources :users, only: [:new, :create, :show, :edit, :update, :destroy, :destroy_user_from_organization]
     resources :project_categories
     resources :platform_categories
     resources :acquisition_categories
@@ -251,6 +252,7 @@ Projestimate::Application.routes.draw do
     get "report" => 'organizations#report'
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'
+    post "generate_report_excel_estimations" => 'organizations#generate_report_excel_estimations'
     post "generate_report_excel_detail" => 'organizations#generate_report_excel_detail'
     post "generate_report_excel_from_file" => 'organizations#generate_report_excel_from_file'
     post "import_user" => 'organizations#import_user'

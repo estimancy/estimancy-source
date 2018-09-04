@@ -1789,7 +1789,7 @@ frsncf:
   users_env: "Environnement utilisateur"
   report: "Rapport"
   import_uo_from_excel: "Importation de Composant Fonctionnel depuis excel"
-  private_estimation: "Devis privée"
+  private_estimation: "Devis privé"
   launch_calculation: "Lancer le calcul"
   reinitialize_delay_staffing: "Réinitialiser le délai et le staffing"
   private: "Privée"
@@ -2131,4 +2131,7 @@ frsncf:
   create_new_version_when_status_changed: "Créer une nouvelle version lors du changement de statut"
   change_before: "avant changement de statut"
   change_after: "après changement de statut"
+  is_protected_group: "Est un groupe protégé ?"
+  is_ignored: "Ignorer l'application"
+  ignored_application: "Application ignorée"
 

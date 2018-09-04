@@ -28,7 +28,9 @@ class Guw::GuwTypesController < ApplicationController
     @organization = @guw_model.organization
 
     set_page_title "#{@guw_type}"
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}",
+                    I18n.t(:uo_model) => main_app.organization_module_estimation_path(@organization.id),
+                    @organization => ""
   end
 
   def new
@@ -62,7 +64,8 @@ class Guw::GuwTypesController < ApplicationController
     if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
     else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+      #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
     end
   end
 
@@ -73,7 +76,8 @@ class Guw::GuwTypesController < ApplicationController
     if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
     else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+      #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
     end
   end
 
@@ -85,7 +89,7 @@ class Guw::GuwTypesController < ApplicationController
     if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
     else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
     end
   end
 end

@@ -2105,3 +2105,6 @@ frsncf_amoa_infra:
   change_after: "après changement de statut"
   only_numeric: "Seul les valeurs numériques sont autorisées"
   current_estimation_does_not_exists: "Il n'y a pas de devis courant"
+  is_protected_group: "Est un groupe protégé ?"
+  is_ignored: "Ignorer l'application"
+  ignored_application: "Application ignorée"

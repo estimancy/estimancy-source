@@ -32,9 +32,11 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:cancel) %></button>
-    <button type="submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>" class="btn btn-primary submit_comments" <%= ceuw.nil? ? 'disabled' : (ceuw.comments.blank? ? 'disabled' : '') %>>
-      <%= I18n.t(:save) %>
-    </button>
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>" class="btn btn-primary submit_comments" <%= ceuw.nil? ? 'disabled' : (ceuw.comments.blank? ? 'disabled' : '') %>>
+        <%= I18n.t(:save) %>
+      </button>
+    <% end %>
   </div>
 <% end %>
 

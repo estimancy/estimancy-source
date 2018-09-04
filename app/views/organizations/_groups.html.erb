@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:is_protected_group) %></th>
       <th><%= I18n.t(:description) %></th>
       <th class="action"><%= I18n.t(:actions) %></th>
     </tr>
@@ -13,6 +14,7 @@
     <% @groups.each do |group| %>
       <tr>
         <td><%= link_to group.name, edit_organization_group_path(@organization, group), :title => I18n.t('edit')  %></td>
+        <td class="center"><%= group.is_protected_group == true ? I18n.t(:yes) : I18n.t(:no) %></td>
         <td><%= group.description %></td>
         <td class="center">
           <%= link_to '', edit_organization_group_path(@organization, group), :class => 'icon-pencil', :title => I18n.t('edit') %>
