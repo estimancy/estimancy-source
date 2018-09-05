@@ -22,7 +22,7 @@
 module Guw
   class GuwModel < ActiveRecord::Base
 
-    attr_accesible :name, :description, :organization_id,
+    attr_accessible :name, :description, :organization_id,
                    :three_points_estimation, :retained_size_unit, :one_level_model,
                    :copy_id, :copy_number, :coefficient_label,
                    :hour_coefficient_conversion, :default_display, :weightings_label,
