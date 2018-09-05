@@ -22,6 +22,20 @@
 module Guw
   class GuwModel < ActiveRecord::Base
 
+    attr_accesible :name, :description, :organization_id,
+                   :three_points_estimation, :retained_size_unit, :one_level_model,
+                   :copy_id, :copy_number, :coefficient_label,
+                   :hour_coefficient_conversion, :default_display, :weightings_label,
+                   :factors_label, :effort_unit, :cost_unit,
+                   :allow_technology, :work_unit_type, :weighting_type,
+                   :factor_type, :work_unit_min, :work_unit_max,
+                   :factor_min, :factor_max, :weighting_min,
+                   :weighting_max, :orders, :config_type,
+                   :allow_ml, :allow_excel, :allow_jira,
+                   :allow_redmine, :excel_ml_server, :jira_ml_server,
+                   :redmine_ml_server, :allow_ml_excel, :allow_ml_jira,
+                   :allow_ml_redmine, :view_data
+
     has_many :guw_types, dependent: :destroy
     has_many :guw_unit_of_works, dependent: :destroy
     has_many :guw_attributes, dependent: :destroy
