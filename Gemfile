@@ -249,5 +249,4 @@ gem 'protected_attributes' # https://github.com/rails/protected_attributes
 # gem 'active_resource' # https://github.com/rails/activeresource
 gem 'actionpack-action_caching' # https://github.com/rails/actionpack-action_caching
 gem 'activerecord-session_store' # https://github.com/rails/activerecord-session_store
-# gem 'rails-observers' # https://github.com/rails/rails-observers
 gem "rails-observers", "0.1.5"
