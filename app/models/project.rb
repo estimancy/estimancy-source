@@ -529,6 +529,9 @@ class Project < ActiveRecord::Base
 
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: (current_user.name rescue nil))}. \r\n"
 
+      # Copier la zone de commentaire de l'ancienne version
+      new_prj.status_comment << "\r\n #{old_prj.status_comment} \r\n"
+
       new_prj.transaction do
 
         if new_prj.save
