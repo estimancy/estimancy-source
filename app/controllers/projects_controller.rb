@@ -2882,6 +2882,7 @@ public
     @search_value = session[:search_value]
 
     organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_column, @search_value)
+    @search_string = session[:search_string]
 
     res = []
     organization_projects.each do |p|
