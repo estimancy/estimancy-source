@@ -78,10 +78,10 @@ module OrganizationsHelper
     filter_version = @filter_version.blank? ? params[:filter_version] : @filter_version
     filter_version = filter_version.blank? ? '4' : filter_version
 
-    # if sort_column.blank? || sort_order.blank?
-    #   sort_column = session[:sort_column]
-    #   sort_order = session[:sort_order]
-    # end
+    if sort_column.blank? || sort_order.blank?
+      sort_column = session[:sort_column]
+      sort_order = session[:sort_order]
+    end
 
     search_column = session[:search_column]
     search_order = session[:search_order]
@@ -109,8 +109,8 @@ module OrganizationsHelper
         end
     end
 
-    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
-    ###if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && sort_column.blank?)
+    ###if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
+    if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && sort_column.blank?)
       column_chevron_icon = ""
       case sort_order
         when "desc"
