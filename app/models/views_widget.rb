@@ -63,44 +63,38 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
+    @mpids ||= []
     module_project.all_nexts_mp_with_links.each do |mp|
 
-      mp.estimation_values.where(in_out: "output").each do |ev|
-        ["low", "most_likely", "high"].each do |level|
-          ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
-        end
-        ev.send("string_data_probable=", { pbs_project_element.id => nil })
-        # unless ev.changed?
-          ev.save
-        # end
-      end
+      if !@mpids.include?(mp.id)
 
-      # reset module_project_ratio_elements for EffortBreakdown module
-      if mp.pemodule.alias == "effort_breakdown"
-        mp.module_project_ratio_elements.each do |mp_ratio_elt|
-          ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
-            ["low", "most_likely", "high", "probable"].each do |level|
-              mp_ratio_elt.send("#{attribute}_#{level}=", nil)
-            end
+        @mpids << mp.id
+
+        mp.estimation_values.where(in_out: "output").each do |ev|
+          ["low", "most_likely", "high"].each do |level|
+            ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
           end
-          # unless mp_ratio_elt.changed?
-            mp_ratio_elt.save
+          ev.send("string_data_probable=", { pbs_project_element.id => nil })
+          # unless ev.changed?
+          ev.save
           # end
+        end
+
+        # reset module_project_ratio_elements for EffortBreakdown module
+        if mp.pemodule.alias == "effort_breakdown"
+          mp.module_project_ratio_elements.each do |mp_ratio_elt|
+            ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
+              ["low", "most_likely", "high", "probable"].each do |level|
+                mp_ratio_elt.send("#{attribute}_#{level}=", nil)
+              end
+            end
+            # unless mp_ratio_elt.changed?
+            mp_ratio_elt.save
+            # end
+          end
         end
       end
     end
-
-
-    # Cette methode remplace le code ci-dessous dans chaque methode de sauvegarde des estimations ==> A supprimer apres validation des tests
-    # current_module_project.nexts.each do |n|
-    #   ModuleProject::common_attributes(current_module_project, n).each do |ca|
-    #     ["low", "most_likely", "high"].each do |level|
-    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_#{level}", { current_component.id => nil } )
-    #       EstimationValue.where(:module_project_id => n.id, :pe_attribute_id => ca.id).first.update_attribute(:"string_data_probable", { current_component.id => nil } )
-    #     end
-    #   end
-    # end
-
   end
 
 
