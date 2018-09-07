@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20180621081326) do
+ActiveRecord::Schema.define(:version => 20180827072208) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -856,6 +856,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "color_code"
     t.integer  "color_priority"
     t.boolean  "allow_line_color"
+    t.boolean  "mandatory_comments",         :default => true
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], :name => "guw_model_default_guw_types"
@@ -889,7 +890,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.integer  "organization_technology_id"
   end
 
-  add_index "guw_guw_unit_of_work_groups", ["module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
+  add_index "guw_guw_unit_of_work_groups", ["organization_id", "project_id", "module_project_id", "pbs_project_element_id", "name"], :name => "module_project_guw_groups"
 
   create_table "guw_guw_unit_of_works", :force => true do |t|
     t.integer  "organization_id"
@@ -936,7 +937,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.text     "cplx_comments"
   end
 
-  add_index "guw_guw_unit_of_works", ["guw_model_id", "module_project_id", "pbs_project_element_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], :name => "module_project_guw_unit_of_works"
+  add_index "guw_guw_unit_of_works", ["organization_id", "project_id", "module_project_id", "pbs_project_element_id", "guw_model_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], :name => "module_project_guw_unit_of_works"
 
   create_table "guw_guw_weightings", :force => true do |t|
     t.integer  "guw_model_id"
@@ -1091,6 +1092,14 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "logs", :force => true do |t|
+    t.string   "action",     :limit => 4
+    t.string   "from_value"
+    t.string   "to_value"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
   end
 
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
@@ -1305,13 +1314,13 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
   add_index "operation_operation_models", ["organization_id", "name"], :name => "index_operation_operation_models_on_organization_id_and_name", :unique => true
 
   create_table "organization_estimations", :id => false, :force => true do |t|
-    t.integer  "current_organization_id",                      :default => 0,     :null => false
+    t.integer  "current_organization_id",               :default => 0,     :null => false
     t.string   "organization_name"
     t.datetime "project_created_date"
-    t.integer  "project_id",                                   :default => 0,     :null => false
-    t.integer  "id",                                           :default => 0,     :null => false
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
     t.string   "title"
-    t.string   "version_number",                 :limit => 64, :default => "1.0"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"
@@ -1339,16 +1348,8 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
-    t.boolean  "private",                                      :default => false
+    t.boolean  "private",                               :default => false
     t.boolean  "is_historicized"
-    t.integer  "provider_id"
-    t.string   "request_number"
-    t.boolean  "use_automatic_quotation_number"
-    t.string   "business_need"
-    t.integer  "originator_id"
-    t.integer  "event_organization_id"
-    t.text     "transaction_id"
-    t.boolean  "is_new_created_record"
   end
 
   create_table "organization_profiles", :force => true do |t|
@@ -1718,6 +1719,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], :name => "organization_projects_title_uniqueness", :unique => true
   add_index "projects", ["organization_id", "is_model"], :name => "index_projects_on_organization_id_and_is_model"
   add_index "projects", ["organization_id", "is_model"], :name => "organization_estimation_models"
 
@@ -2144,7 +2146,7 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "name"
     t.text     "description"
     t.string   "ancestry"
-    t.integer  "ancestry_depth",     :default => 0
+    t.integer  "ancestry_depth",   :default => 0
     t.integer  "record_status_id"
     t.string   "custom_value"
     t.text     "change_comment"
@@ -2154,12 +2156,10 @@ ActiveRecord::Schema.define(:version => 20180621081326) do
     t.string   "dotted_id"
     t.boolean  "is_root"
     t.string   "master_ancestry"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.float    "position"
     t.string   "phase_short_name"
-    t.boolean  "allow_modif_effort"
-    t.boolean  "allow_modif_cost"
   end
 
   add_index "wbs_activity_elements", ["ancestry"], :name => "index_wbs_activity_elements_on_ancestry"
