@@ -585,11 +585,12 @@ class ApplicationController < ActionController::Base
     final_results = []
 
     if search_elements.blank?
-      search_elements = params['search'] || session[:search_hash]
+      search_elements = (params['search'].blank? ? session[:search_hash] : params['search'])
     end
 
     if search_elements.blank?
-      organization_projects = projects
+      #organization_projects = projects
+      organization_projects = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
     else
       search_elements.each do |column_name, val|
         #val = search_elements[column_name]
@@ -687,17 +688,20 @@ class ApplicationController < ActionController::Base
   end
 
 
-  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_column="", search_value="")
+  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_hash={})
     # @projects = @organization.organization_estimations
 
     k = sort_column #params[:f]
     s = sort_order  #params[:s]
 
     # Execution de la recherche avant le Tri
-    unless search_column.blank? || search_value.blank?
+    #unless search_column.blank? || search_value.blank? || search_hash.blank?
+    unless search_hash.blank?
       ###projects = get_search_results(organization_id, projects, search_column, search_value)
-      projects = get_multiple_search_results(organization_id, projects)
+      organization_projects = get_multiple_search_results(organization_id, projects, search_hash)
+      projects = Project.where(id: organization_projects.map(&:id))
     end
+
     project_ids = projects.map(&:id)
 
     case k
@@ -758,8 +762,11 @@ class ApplicationController < ActionController::Base
     end
 
     projects = projects.where(:is_model => [nil, false])
+    sort_project_ids = projects.all.map(&:id)
 
-    projects
+    #projects
+    #organization_estimations = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
+    @organization.organization_estimations.find(sort_project_ids).index_by(&:id).values_at(*sort_project_ids)
 
     # res = []
     # projects.each do |p|

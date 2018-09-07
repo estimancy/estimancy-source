@@ -2048,7 +2048,7 @@ class OrganizationsController < ApplicationController
     # Pour garder le tri même lors du raffraichissement de la page
     if (@sort_action.to_s == "true" && @sort_column != "" && @sort_order != "")
       projects = @organization.projects.where(:is_model => [nil, false])
-      organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_column, @search_value)
+      organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
 
       res = []
       organization_projects.each do |p|
@@ -2061,7 +2061,6 @@ class OrganizationsController < ApplicationController
         projects = @organization.projects.where(:is_model => [nil, false])
         organization_projects = get_search_results(@organization.id, projects, @search_column, @search_value)
 
-        ##test
         search_elements = params['search'] || session[:search_hash]
         unless search_elements.blank? #params['search'].blank?
           #params['search'].each do |k,v|
@@ -2090,7 +2089,6 @@ class OrganizationsController < ApplicationController
 
           organization_projects = @organization.organization_estimations.where(project_id: final_results.inject(&:&)).all
         end
-        ##fin test
 
         res = []
         organization_projects.each do |p|
