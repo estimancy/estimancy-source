@@ -243,7 +243,7 @@ gem 'pdfkit'
 
 # gem 'paper_trail'
 
-gem "hairtrigger"
+gem 'hairtrigger'
 
 gem 'protected_attributes' # https://github.com/rails/protected_attributes
 # gem 'active_resource' # https://github.com/rails/activeresource
