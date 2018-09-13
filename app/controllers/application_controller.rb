@@ -704,61 +704,65 @@ class ApplicationController < ActionController::Base
 
     project_ids = projects.map(&:id)
 
-    case k
-      when "title" , "request_number", "business_need", "version_number",  "description", "private", "start_date", "updated_at", "created_at"
-        projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
+    if k.blank?
+      projects =  projects.reorder("start_date desc")
+    else
+      case k
+        when "start_date", "title" , "request_number", "business_need", "version_number",  "description", "private", "updated_at", "created_at"
+          projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
 
-      when "application"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("applications.name #{s}")
+        when "application"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("applications.name #{s}")
 
-      when "original_model"
-        #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
-        #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
-        #projects = Project.unscoped
-        #                 .includes(:original_model)
-        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
-        #                 .where(organization_id: organization_id)
-        #                 .order("original_model.title #{s}")
-      when "project_area"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("project_areas.name #{s}")
-      when "project_category"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("project_categories.name #{s}")
-      when "platform_category"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("platform_categories.name #{s}")
-      when "acquisition_category"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("acquisition_categories.name #{s}")
-      when "status_name"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id, id: project_ids)
-                        .order("estimation_statuses.name #{s}")
-      when "creator"
-        projects = Project.unscoped
-                        .joins("LEFT JOIN users ON projects.creator_id = users.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("users.first_name #{s}, users.last_name #{s}")
-      when "provider"
-        projects = Project.unscoped
-                       .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
-                       .where(organization_id: organization_id, id: project_ids)
-                       .order("providers.name #{s}")
-      else
-        projects = projects.order(k + ' ' + s)
+        when "original_model"
+          #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+          #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+          #projects = Project.unscoped
+          #                 .includes(:original_model)
+          #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+          #                 .where(organization_id: organization_id)
+          #                 .order("original_model.title #{s}")
+        when "project_area"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("project_areas.name #{s}")
+        when "project_category"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("project_categories.name #{s}")
+        when "platform_category"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("platform_categories.name #{s}")
+        when "acquisition_category"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("acquisition_categories.name #{s}")
+        when "status_name"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                          .where(organization_id: @organization.id, id: project_ids)
+                          .order("estimation_statuses.name #{s}")
+        when "creator"
+          projects = Project.unscoped
+                          .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                          .where(organization_id: organization_id, id: project_ids)
+                          .order("users.first_name #{s}, users.last_name #{s}")
+        when "provider"
+          projects = Project.unscoped
+                         .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("providers.name #{s}")
+        else
+          projects = projects.order(k + ' ' + s)
+      end
     end
 
     projects = projects.where(:is_model => [nil, false])
