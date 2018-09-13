@@ -97,44 +97,43 @@ class ProjectsController < ApplicationController
     worksheet = workbook[0]
     str = ""
 
+    worksheet.add_cell(0, 0, "Composant fonctionnel")
+    worksheet.add_cell(0, 1, "Type de composant")
+    worksheet.add_cell(0, 2, "Complexité théorique")
+    worksheet.add_cell(0, 3, "Complexité calculée")
+    worksheet.add_cell(0, 4, "% DEV théorique")
+    worksheet.add_cell(0, 5, "% DEV calculé")
+    worksheet.add_cell(0, 6, "% TEST théorique")
+    worksheet.add_cell(0, 7, "% TEST calculé")
+
     @organization.projects.each do |project|
 
       project_module_projects = project.module_projects
       project_module_projects.map(&:guw_unit_of_works).flatten.each_with_index do |guow, i|
 
-        worksheet.add_cell(i, 0, guow.name)
-        worksheet.add_cell(i, 1, guow.guw_type.name)
-        worksheet.add_cell(i, 2, guow.intermediate_percent)
-        worksheet.add_cell(i, 3, guow.intermediate_weight)
+        worksheet.add_cell(i+1, 0, guow.name)
+        worksheet.add_cell(i+1, 1, guow.guw_type.name)
+        worksheet.add_cell(i+1, 2, guow.intermediate_percent)
+        worksheet.add_cell(i+1, 3, guow.intermediate_weight)
 
         @guw_model = guow.guw_model
 
-        @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i|
-          if i[0] == "Coefficient"
+        @guw_coefficients = @guw_model.guw_coefficients
 
-            @hash_guw_coefficients = {}
-            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                      name: @guw_model.orders.map(&:first)).each do |guw_coef|
-              @hash_guw_coefficients[guw_coef.name] = guw_coef
-            end
+        j = 0
+        @guw_coefficients.each do |gc|
+          if gc.coefficient_type == "Pourcentage"
 
-            p @hash_guw_coefficients
-            @guw_coefficient = @hash_guw_coefficients[i[0]]
-            unless @guw_coefficient.nil?
-              @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements
+            @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
+            default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
 
-              default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
-              begin
-                ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"]
-              rescue
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                  guw_coefficient_id: @guw_coefficient.id,
-                                                                  module_project_id: current_module_project.id).order("updated_at ASC").last
-              end
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                              guw_coefficient_id: gc.id,
+                                                              module_project_id: current_module_project.id).order("updated_at ASC").last
 
-              worksheet.add_cell(i, 4, default.value.to_f)
-              worksheet.add_cell(i, 5, ceuw.percent.to_f)
-            end
+            worksheet.add_cell(i+1, 4 + j, default.nil? ? 100 : default.value.to_f)
+            worksheet.add_cell(i+1, 4 + j + 1, ceuw.nil? ? '--' : ceuw.percent.to_f)
+            j = j + 2
           end
         end
       end
