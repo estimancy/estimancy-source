@@ -1,4 +1,4 @@
-<%= simple_form_for @project, :url => update_comments_status_change_path(params[:id]) do |f| %>
+<%= simple_form_for @project, :url => update_comments_status_change_path(params[:id]), :method => 'post' do |f| %>
 
   <% if @project.private == false || current_user.super_admin == true || can?(:manage, @project) %>
     <%= hidden_field_tag :project_id, params[:project_id] %>

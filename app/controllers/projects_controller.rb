@@ -90,6 +90,60 @@ class ProjectsController < ApplicationController
     render :layout => false
   end
 
+  def raw_data_extraction
+    workbook = RubyXL::Workbook.new
+
+    @organization = Organization.where(id: params[:organization_id]).first
+    worksheet = workbook[0]
+    str = ""
+
+    @organization.projects.each do |project|
+
+      project_module_projects = project.module_projects
+      project_module_projects.map(&:guw_unit_of_works).flatten.each_with_index do |guow, i|
+
+        worksheet.add_cell(i, 0, guow.name)
+        worksheet.add_cell(i, 1, guow.guw_type.name)
+        worksheet.add_cell(i, 2, guow.intermediate_percent)
+        worksheet.add_cell(i, 3, guow.intermediate_weight)
+
+        @guw_model = guow.guw_model
+
+        @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i|
+          if i[0] == "Coefficient"
+
+            @hash_guw_coefficients = {}
+            Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                      name: @guw_model.orders.map(&:first)).each do |guw_coef|
+              @hash_guw_coefficients[guw_coef.name] = guw_coef
+            end
+
+            p @hash_guw_coefficients
+            @guw_coefficient = @hash_guw_coefficients[i[0]]
+            unless @guw_coefficient.nil?
+              @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements
+
+              default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
+              begin
+                ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"]
+              rescue
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                  guw_coefficient_id: @guw_coefficient.id,
+                                                                  module_project_id: current_module_project.id).order("updated_at ASC").last
+              end
+
+              worksheet.add_cell(i, 4, default.value.to_f)
+              worksheet.add_cell(i, 5, ceuw.percent.to_f)
+            end
+          end
+        end
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
+
+  end
+
   def build_rapport
     pdf = WickedPdf.new.pdf_from_url(rapport_url)
     save_path = Rails.root.join('pdfs','filename.pdf')

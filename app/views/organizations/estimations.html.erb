@@ -25,6 +25,9 @@
               <% if can? :create_project_from_scratch, Project %>
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
+
+              <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+
             </td>
 
           </tr>

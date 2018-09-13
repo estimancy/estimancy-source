@@ -23,7 +23,7 @@ class ModuleProjectObserver < ActiveRecord::Observer
   observe ModuleProject
 
   def before_destroy(module_project)
-    attr_prj_ids = EstimationValue.find_all_by_module_project_id(module_project.id).map(&:id).join(",")
+    attr_prj_ids = EstimationValue.where(:module_project_id => module_project.id).all.map(&:id).join(",")
     unless attr_prj_ids.blank?
       EstimationValue.delete_all("id IN (#{attr_prj_ids})")
     end
