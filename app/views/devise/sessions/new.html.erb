@@ -1,5 +1,5 @@
 <div class="span5">
-  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
     <div class="login_input">
       <div class="input-prepend">
         <span class="add-on"><img src="/assets/man.png" /></span>

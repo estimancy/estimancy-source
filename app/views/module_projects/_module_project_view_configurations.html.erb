@@ -1,5 +1,5 @@
 <%#= simple_form_for(@module_project) do |f| %>
-<%= simple_form_for @module_project, :url => update_module_project_view_config_path, remote: true do |f| %>
+<%= simple_form_for @module_project, :url => update_module_project_view_config_path, :method => :post, remote: true do |f| %>
 
     <% if @module_project.errors.any? %>
         <div id="error_explanation" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">

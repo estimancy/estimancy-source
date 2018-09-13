@@ -2,7 +2,7 @@
   <%= I18n.t(:button_ask_account ) %>
 </h3>
 
-<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), :method => :post) do |f| %>
   <%= f.error_notification %>
 
   <div class="form-inputs">
