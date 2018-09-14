@@ -106,18 +106,18 @@ class ProjectsController < ApplicationController
     worksheet.add_cell(0, 6, "% TEST théorique")
     worksheet.add_cell(0, 7, "% TEST calculé")
 
+    i = 1
     @organization.projects.each do |project|
+      project.guw_unit_of_works.each do |guow|
 
-      project_module_projects = project.module_projects
-      project_module_projects.map(&:guw_unit_of_works).flatten.each_with_index do |guow, i|
+        worksheet.add_cell(i, 0, project.title)
+        worksheet.add_cell(i, 1, guow.name)
+        worksheet.add_cell(i, 2, guow.guw_type.name)
+        worksheet.add_cell(i, 3, guow.intermediate_percent)
+        worksheet.add_cell(i, 4, guow.intermediate_weight)
 
-        worksheet.add_cell(i+1, 0, guow.name)
-        worksheet.add_cell(i+1, 1, guow.guw_type.name)
-        worksheet.add_cell(i+1, 2, guow.intermediate_percent)
-        worksheet.add_cell(i+1, 3, guow.intermediate_weight)
 
         @guw_model = guow.guw_model
-
         @guw_coefficients = @guw_model.guw_coefficients
 
         j = 0
@@ -129,13 +129,31 @@ class ProjectsController < ApplicationController
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                               guw_coefficient_id: gc.id,
-                                                              module_project_id: current_module_project.id).order("updated_at ASC").last
+                                                              module_project_id: guow.module_project_id).order("updated_at ASC").last
 
-            worksheet.add_cell(i+1, 4 + j, default.nil? ? 100 : default.value.to_f)
-            worksheet.add_cell(i+1, 4 + j + 1, ceuw.nil? ? '--' : ceuw.percent.to_f)
+            worksheet.add_cell(i, 5 + j, default.nil? ? 100 : default.value.to_f)
+            worksheet.add_cell(i, 5 + j + 1, ceuw.nil? ? '--' : ceuw.percent.to_f)
             j = j + 2
           end
         end
+
+
+        guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
+          gat = Guw::GuwAttributeType.where(guw_type_id: guow.guw_type.id,
+                                            guw_attribute_id: uowa.guw_attribute_id).first
+
+          worksheet.add_cell(i, 7 + j + 1, gat.nil? ? '-' : gat.default_value)
+          worksheet.add_cell(i, 10 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
+        end
+
+        # if j == 0
+          @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
+            worksheet.add_cell(0, 8+ii, guw_attribute.name)
+          end
+        # end
+
+        i = i + 1
+
       end
     end
 
