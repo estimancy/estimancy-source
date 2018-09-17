@@ -55,14 +55,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                guw_type_id: params[:guw_type_id],
                                                project_id: params[:project_id],
                                                organization_id: params[:organization_id],
+                                               module_project_id: params[:module_project_id],
                                                guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
 
-    module_project = current_module_project
-    @organization = @guw_model.organization
+    module_project = ModuleProject.find(params[:module_project_id])
     @project = module_project.project
 
+    @organization = @guw_model.organization
+
     @guw_unit_of_work.guw_model_id = @guw_model.id
-    @guw_unit_of_work.module_project_id = module_project.id
     @guw_unit_of_work.pbs_project_element_id = current_component.id
     @guw_unit_of_work.selected = true
 
@@ -89,7 +90,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     reorder @group
 
-    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+    current_module_project_guw_unit_of_works = module_project.guw_unit_of_works
     @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
     @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
                                                                                          selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
