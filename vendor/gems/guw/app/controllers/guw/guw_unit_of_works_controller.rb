@@ -2934,8 +2934,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         title = "##{id} - #{title}"
       end
 
+      p "=================================="
+      p title
+      p description
+      p url
+      p "=================================="
+
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
-                                          name: title,
+                                          name: title.truncate(254),
                                           comments: description,
                                           tracking: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
