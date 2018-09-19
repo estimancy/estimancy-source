@@ -84,6 +84,12 @@ class ProjectsController < ApplicationController
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
 
+  def rapport
+    @project
+    @current_organization = @project.organization
+    render :layout => false
+  end
+
   def raw_data_extraction
     workbook = RubyXL::Workbook.new
 
@@ -153,12 +159,6 @@ class ProjectsController < ApplicationController
 
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
-  end
-
-  def rapport
-    @project
-    @current_organization = @project.organization
-    render :layout => false
   end
 
   def build_rapport
