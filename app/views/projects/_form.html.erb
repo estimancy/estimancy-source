@@ -233,7 +233,7 @@
     </div>
 
     <% if action_name.in?(%w(edit update)) %>
-      <div id="tabs-2">
+      <div id="tabs-2" class="hide">
         <div class="component_tree" id="project_wbs_product_section">
           <div class="tab-pane active">
             <% unless @project.nil? || @pe_wbs_project_product.nil? %>
