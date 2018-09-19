@@ -84,6 +84,77 @@ class ProjectsController < ApplicationController
     @module_project = ModuleProject.find_by_project_id(@project.id)
   end
 
+  def raw_data_extraction
+    workbook = RubyXL::Workbook.new
+
+    @organization = Organization.where(id: params[:organization_id]).first
+    worksheet = workbook[0]
+    str = ""
+
+    worksheet.add_cell(0, 0, "Composant fonctionnel")
+    worksheet.add_cell(0, 1, "Type de composant")
+    worksheet.add_cell(0, 2, "Complexité théorique")
+    worksheet.add_cell(0, 3, "Complexité calculée")
+    worksheet.add_cell(0, 4, "% DEV théorique")
+    worksheet.add_cell(0, 5, "% DEV calculé")
+    worksheet.add_cell(0, 6, "% TEST théorique")
+    worksheet.add_cell(0, 7, "% TEST calculé")
+
+    i = 1
+    @organization.projects.each do |project|
+      project.guw_unit_of_works.each do |guow|
+
+        worksheet.add_cell(i, 0, project.title)
+        worksheet.add_cell(i, 1, guow.name)
+        worksheet.add_cell(i, 2, guow.guw_type.name)
+        worksheet.add_cell(i, 3, guow.intermediate_percent)
+        worksheet.add_cell(i, 4, guow.intermediate_weight)
+
+
+        @guw_model = guow.guw_model
+        @guw_coefficients = @guw_model.guw_coefficients
+
+        j = 0
+        @guw_coefficients.each do |gc|
+          if gc.coefficient_type == "Pourcentage"
+
+            @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
+            default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
+
+            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                              guw_coefficient_id: gc.id,
+                                                              module_project_id: guow.module_project_id).order("updated_at ASC").last
+
+            worksheet.add_cell(i, 5 + j, default.nil? ? 100 : default.value.to_f)
+            worksheet.add_cell(i, 5 + j + 1, ceuw.nil? ? '--' : ceuw.percent.to_f)
+            j = j + 2
+          end
+        end
+
+
+        guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
+          gat = Guw::GuwAttributeType.where(guw_type_id: guow.guw_type.id,
+                                            guw_attribute_id: uowa.guw_attribute_id).first
+
+          worksheet.add_cell(i, 7 + j + 1, gat.nil? ? '-' : gat.default_value)
+          worksheet.add_cell(i, 10 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
+        end
+
+        # if j == 0
+        @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
+          worksheet.add_cell(0, 8+ii, guw_attribute.name)
+        end
+        # end
+
+        i = i + 1
+
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
+
+  end
+
   def rapport
     @project
     @current_organization = @project.organization
