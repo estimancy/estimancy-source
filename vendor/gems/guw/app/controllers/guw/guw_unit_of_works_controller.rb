@@ -2925,7 +2925,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    name: default_group).first_or_create
       end
 
-      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                     is_default: true).first
+
       if @guw_type.nil?
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
@@ -2940,6 +2942,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       p url
       p "=================================="
 
+
+      @guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                 default_value: true).first
+
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
                                           name: title.truncate(254),
                                           comments: description,
@@ -2951,6 +2957,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           pbs_project_element_id: @component.id,
                                           guw_model_id: @guw_model.id,
                                           guw_type_id: @guw_type.id,
+                                          guw_complexity_id:  @guw_complexity.nil? ? nil : @guw_complexity.id,
                                           url: url)
 
       guw_uow.save(validate: false)

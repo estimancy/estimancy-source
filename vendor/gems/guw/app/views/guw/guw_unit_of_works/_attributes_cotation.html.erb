@@ -252,7 +252,7 @@
       <%= I18n.t(:close_without_calculate) %>
     </button>
     <% if can? :execute_estimation_plan, @project %>
-      <button type="submit" id="submit_cotation", class="btn btn-primary submit_cotation" data-disable-with="Veuillez patienter... <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
+      <button type="submit" id="submit_cotation", class="btn btn-primary submit_cotation" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
     <% end %>
   </div>
 
