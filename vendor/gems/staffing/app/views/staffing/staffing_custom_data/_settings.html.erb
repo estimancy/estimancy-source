@@ -235,7 +235,7 @@
               <span class="percent_trapeze pull-right">
                 <% unless @staffing_custom_data.max_staffing.nil? %>
                   <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %> %
-                  <% end %>
+                <% end %>
               </span>
           </td>
         </tr>
