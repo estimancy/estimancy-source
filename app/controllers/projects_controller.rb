@@ -94,17 +94,23 @@ class ProjectsController < ApplicationController
     workbook = RubyXL::Workbook.new
 
     @organization = Organization.where(id: params[:organization_id]).first
-    worksheet = workbook[0]
+
+    worksheet = workbook.worksheets[0]
+    worksheet.sheet_name = 'Composants Fonctionnels'
+
+    worksheet_wbs = workbook.add_worksheet('Activités')
+
     str = ""
 
-    worksheet.add_cell(0, 0, "Composant fonctionnel")
-    worksheet.add_cell(0, 1, "Type de composant")
-    worksheet.add_cell(0, 2, "Complexité théorique")
-    worksheet.add_cell(0, 3, "Complexité calculée")
-    worksheet.add_cell(0, 4, "% DEV théorique")
-    worksheet.add_cell(0, 5, "% DEV calculé")
-    worksheet.add_cell(0, 6, "% TEST théorique")
-    worksheet.add_cell(0, 7, "% TEST calculé")
+    worksheet.add_cell(0, 0, "Devis")
+    worksheet.add_cell(0, 1, "Composant fonctionnel")
+    worksheet.add_cell(0, 2, "Type de composant")
+    worksheet.add_cell(0, 3, "Complexité théorique")
+    worksheet.add_cell(0, 4, "Complexité calculée")
+    worksheet.add_cell(0, 5, "% DEV théorique")
+    worksheet.add_cell(0, 6, "% DEV calculé")
+    worksheet.add_cell(0, 7, "% TEST théorique")
+    worksheet.add_cell(0, 8, "% TEST calculé")
 
     i = 1
     @organization.projects.each do |project|
@@ -153,6 +159,31 @@ class ProjectsController < ApplicationController
         # end
 
         i = i + 1
+
+      end
+
+      worksheet_wbs.add_cell(0, 0, "Devis")
+      worksheet_wbs.add_cell(0, 1, "Application")
+      worksheet_wbs.add_cell(0, 2, "Ratio")
+      worksheet_wbs.add_cell(0, 3, "Phase")
+      worksheet_wbs.add_cell(0, 4, "TJM")
+      worksheet_wbs.add_cell(0, 5, "Charge calculée")
+      worksheet_wbs.add_cell(0, 6, "Charge retenue")
+      worksheet_wbs.add_cell(0, 7, "Coût calculé")
+      worksheet_wbs.add_cell(0, 8, "Coût théorique")
+
+      ModuleProjectRatioElement.where(organization_id: @organization.id).each_with_index do |mpre, iii|
+        project = mpre.module_project.project
+
+        worksheet.add_cell(iii+1, 0, project.title)
+        worksheet.add_cell(iii+1, 1, project.application)
+        worksheet.add_cell(iii+1, 2, mpre.wbs_activity_ratio.name)
+        worksheet.add_cell(iii+1, 3, mpre.name)
+        worksheet.add_cell(iii+1, 4, mpre.tjm)
+        worksheet.add_cell(iii+1, 5, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+        worksheet.add_cell(iii+1, 6, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+        worksheet.add_cell(iii+1, 7, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+        worksheet.add_cell(iii+1, 8, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
       end
     end
