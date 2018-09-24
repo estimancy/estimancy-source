@@ -165,13 +165,13 @@ class ProjectsController < ApplicationController
           gat = Guw::GuwAttributeType.where(guw_type_id: guow.guw_type.id,
                                             guw_attribute_id: uowa.guw_attribute_id).first
 
-          worksheet_cf.add_cell(i, 13 + j + 1, gat.nil? ? '-' : gat.default_value)
-          worksheet_cf.add_cell(i, 16 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
+          worksheet_cf.add_cell(i, 14 + j + 1, gat.nil? ? '-' : gat.default_value)
+          worksheet_cf.add_cell(i, 17 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
         end
 
         # if j == 0
         @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
-          worksheet_cf.add_cell(0, 17+ii, guw_attribute.name)
+          worksheet_cf.add_cell(0, 18+ii, guw_attribute.name)
         end
         # end
 
