@@ -210,12 +210,7 @@ class ProjectsController < ApplicationController
       worksheet_wbs.add_cell(0, 14, "Coût calculé")
       worksheet_wbs.add_cell(0, 15, "Coût théorique")
 
-      ModuleProjectRatioElement.where(organization_id: @organization.id, module_project_id: project.module_projects.map(&:id)).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
-
-        if mpre.wbs_activity_element.is_root?
-          @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
-          @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
-        end
+      ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
         project = mpre.module_project.project
 
@@ -235,6 +230,13 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 13, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 15  , mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
+
+        if mpre.module_project_id.in?(project.module_projects.map(&:id))
+          if mpre.wbs_activity_element.is_root?
+            @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
+            @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+          end
+        end
 
       end
 
