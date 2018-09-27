@@ -123,10 +123,15 @@ class ProjectsController < ApplicationController
 
     i = 1
 
+    pemodule_wbs = PeModule.where(alias: "wbs").first
+
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
     @organization.projects.each do |project|
+
+      module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
+
       project.guw_unit_of_works.each do |guow|
         worksheet_cf.add_cell(i, 0, project.title)
         worksheet_cf.add_cell(i, 1, project.application_name)
@@ -210,7 +215,8 @@ class ProjectsController < ApplicationController
       worksheet_wbs.add_cell(0, 14, "Coût calculé")
       worksheet_wbs.add_cell(0, 15, "Coût théorique")
 
-      ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
+      ModuleProjectRatioElement.where(organization_id: @organization.id,
+                                      wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
         mpre_project = mpre.module_project.project
 
@@ -229,7 +235,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 12, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 13, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-        worksheet_wbs.add_cell(iii+1, 15  , mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
+        worksheet_wbs.add_cell(iii+1, 15, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
         if mpre.module_project_id.in?(project.module_projects.map(&:id))
           if mpre.wbs_activity_element.is_root?
