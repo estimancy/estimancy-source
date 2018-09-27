@@ -253,7 +253,8 @@ class ProjectsController < ApplicationController
 
     pi = 0
     @total_effort.each do |k,v|
-      worksheet_synt.add_cell(pi, 0, Project.find(k).title)
+      project = Project.find(k)
+      worksheet_synt.add_cell(pi, 0, project.title)
       worksheet_synt.add_cell(pi, 1, project.application_name)
       worksheet_synt.add_cell(pi, 2, project.business_need)
       worksheet_synt.add_cell(pi, 3, project.request_number)
