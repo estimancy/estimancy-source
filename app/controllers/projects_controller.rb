@@ -241,12 +241,10 @@ class ProjectsController < ApplicationController
 
     end
 
-
     worksheet_synt.add_cell(0, 0, "Devis")
     worksheet_synt.add_cell(0, 1, "Charge totale")
     worksheet_synt.add_cell(0, 2, "Coût total")
     worksheet_synt.add_cell(0, 3, "Prix moyen pondéré")
-
 
 
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
