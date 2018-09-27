@@ -212,17 +212,17 @@ class ProjectsController < ApplicationController
 
       ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
-        project = mpre.module_project.project
+        mpre_project = mpre.module_project.project
 
-        worksheet_wbs.add_cell(iii+1, 0, project.title)
-        worksheet_wbs.add_cell(iii+1, 1, project.application_name)
-        worksheet_wbs.add_cell(iii+1, 2, project.business_need)
-        worksheet_wbs.add_cell(iii+1, 3, project.request_number)
-        worksheet_wbs.add_cell(iii+1, 4, project.project_area.nil? ? '' : project.project_area.name)
-        worksheet_wbs.add_cell(iii+1, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
-        worksheet_wbs.add_cell(iii+1, 6, project.project_category.nil? ? '' : project.project_category.name)
-        worksheet_wbs.add_cell(iii+1, 7, project.platform_category.nil? ? '' : project.platform_category.name)
-        worksheet_wbs.add_cell(iii+1, 8, project.provider.nil? ? '' : project.provider.name)
+        worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
+        worksheet_wbs.add_cell(iii+1, 1, mpre_project.application_name)
+        worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
+        worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
+        worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
+        worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
+        worksheet_wbs.add_cell(iii+1, 6, mpre_project.project_category.nil? ? '' : mpre_project.project_category.name)
+        worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
+        worksheet_wbs.add_cell(iii+1, 8, mpre_project.provider.nil? ? '' : mpre_project.provider.name)
         worksheet_wbs.add_cell(iii+1, 9, mpre.wbs_activity_ratio.name)
         worksheet_wbs.add_cell(iii+1, 10, mpre.name)
         worksheet_wbs.add_cell(iii+1, 11, mpre.tjm)
