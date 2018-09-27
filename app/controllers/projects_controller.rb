@@ -210,9 +210,7 @@ class ProjectsController < ApplicationController
       worksheet_wbs.add_cell(0, 14, "Coût calculé")
       worksheet_wbs.add_cell(0, 15, "Coût théorique")
 
-      ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
-
-        project = mpre.module_project.project
+      ModuleProjectRatioElement.where(organization_id: @organization.id, module_project_id: project.module_projects.map(&:id)).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
         worksheet_wbs.add_cell(iii+1, 0, project.title)
         worksheet_wbs.add_cell(iii+1, 1, project.application_name)
