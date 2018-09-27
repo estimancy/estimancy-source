@@ -123,7 +123,7 @@ class ProjectsController < ApplicationController
 
     i = 1
 
-    pemodule_wbs = PeModule.where(alias: "wbs").first
+    pemodule_wbs = Pemodule.where(alias: "wbs").first
 
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
