@@ -178,7 +178,7 @@ class ProjectsController < ApplicationController
         end
 
         i = i + 1
-        guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charges T (jh)"], guw_model_id: @guw_model.id).first
+        guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
         unless guw_output_effort.nil?
@@ -239,18 +239,34 @@ class ProjectsController < ApplicationController
     end
 
     worksheet_synt.add_cell(0, 0, "Devis")
-    worksheet_synt.add_cell(0, 1, "Charge totale")
-    worksheet_synt.add_cell(0, 2, "Coût t otal")
-    worksheet_synt.add_cell(0, 3, "Prix moyen pondéré")
+    worksheet_synt.add_cell(0, 1, "Application")
+    worksheet_synt.add_cell(0, 2, "Besoin Métier")
+    worksheet_synt.add_cell(0, 3, "Numero de demande")
+    worksheet_synt.add_cell(0, 4, "Domaine")
+    worksheet_synt.add_cell(0, 5, "Service")
+    worksheet_synt.add_cell(0, 6, "Localisation")
+    worksheet_synt.add_cell(0, 7, "Catégorie")
+    worksheet_synt.add_cell(0, 8, "Fournisseur")
+    worksheet_synt.add_cell(0, 9, "Charge totale")
+    worksheet_synt.add_cell(0, 10, "Coût total")
+    worksheet_synt.add_cell(0, 11, "Prix moyen pondéré")
 
     pi = 0
     @total_effort.each do |k,v|
       worksheet_synt.add_cell(pi, 0, Project.find(k).title)
-      worksheet_synt.add_cell(pi, 1, @total_effort[k].sum.to_f.round(2) )
-      worksheet_synt.add_cell(pi, 2, @total_cost[k].sum.to_f.round(2) )
+      worksheet_synt.add_cell(pi, 1, project.application_name)
+      worksheet_synt.add_cell(pi, 2, project.business_need)
+      worksheet_synt.add_cell(pi, 3, project.request_number)
+      worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
+      worksheet_synt.add_cell(pi, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
+      worksheet_synt.add_cell(pi, 6, project.project_category.nil? ? '' : project.project_category.name)
+      worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
+      worksheet_synt.add_cell(pi, 8, project.provider.nil? ? '' : project.provider.name)
+      worksheet_synt.add_cell(pi, 9, @total_effort[k].sum.to_f.round(2) )
+      worksheet_synt.add_cell(pi, 10, @total_cost[k].sum.to_f.round(2) )
 
       unless @total_effort[k].sum == 0
-        worksheet_synt.add_cell(pi, 3, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
+        worksheet_synt.add_cell(pi, 11, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
       end
 
       pi = pi + 1
