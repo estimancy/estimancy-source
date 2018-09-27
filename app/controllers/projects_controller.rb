@@ -122,7 +122,12 @@ class ProjectsController < ApplicationController
     worksheet_cf.add_cell(0, 16, "% TEST calculé")
 
     i = 1
-    @organization.projects.each do |project|
+
+    @organization.projects.each_with_index do |project, pi|
+
+      total_cost = 0
+      total_effort = 0
+
       project.guw_unit_of_works.each do |guow|
 
         worksheet_cf.add_cell(i, 0, project.title)
@@ -138,7 +143,6 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(i, 10, guow.guw_type.name)
         worksheet_cf.add_cell(i, 11, guow.intermediate_percent)
         worksheet_cf.add_cell(i, 12, guow.intermediate_weight)
-
 
         @guw_model = guow.guw_model
         @guw_coefficients = @guw_model.guw_coefficients
@@ -169,14 +173,21 @@ class ProjectsController < ApplicationController
           worksheet_cf.add_cell(i, 17 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
         end
 
-        # if j == 0
-        @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
-          worksheet_cf.add_cell(0, 17+ii, guw_attribute.name)
+        if j == 0
+          @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
+            worksheet_cf.add_cell(0, 17+ii, guw_attribute.name)
+          end
         end
-        # end
 
         i = i + 1
+        guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charges T (jh)"], guw_model_id: @guw_model.id).first
+        guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
+        guw_output_effort_value = guow.size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
+        guw_output_cost_value = guow.cost.nil? ? 0 : guow.cost["#{guw_output_cost.id}"].to_f.round(2)
+
+        total_effort = total_effort + guw_output_effort_value.to_f
+        total_cost = total_cost + guw_output_cost_value.to_f
       end
 
       worksheet_wbs.add_cell(0, 0, "Devis")
@@ -217,15 +228,26 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 15, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
+
+        total_effort = total_effort + mpre.retained_effort_most_likely.to_f
+        total_cost = total_cost + mpre.retained_cost_most_likely.to_f
+
       end
+
+      worksheet_synt.add_cell(pi, 0, project.title)
+      worksheet_synt.add_cell(pi, 1, total_effort)
+      worksheet_synt.add_cell(pi, 2, total_cost)
+      worksheet_synt.add_cell(pi, 3, (total_cost / total_effort).to_f)
+
     end
 
 
     worksheet_synt.add_cell(0, 0, "Devis")
-    worksheet_synt.add_cell(0, 0, "Devis")
     worksheet_synt.add_cell(0, 1, "Charge totale")
-    worksheet_synt.add_cell(0, 1, "Coût total")
-    worksheet_synt.add_cell(0, 2, "Prix moyen pondéré")
+    worksheet_synt.add_cell(0, 2, "Coût total")
+    worksheet_synt.add_cell(0, 3, "Prix moyen pondéré")
+
+
 
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
