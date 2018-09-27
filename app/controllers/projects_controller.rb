@@ -246,11 +246,11 @@ class ProjectsController < ApplicationController
     pi = 0
     @total_effort.each do |k,v|
       worksheet_synt.add_cell(pi, 0, Project.find(k).title)
-      worksheet_synt.add_cell(pi, 1, @total_effort[k].sum.to_f )
-      worksheet_synt.add_cell(pi, 2, @total_cost[k].sum.to_f )
+      worksheet_synt.add_cell(pi, 1, @total_effort[k].sum.to_f.round(2) )
+      worksheet_synt.add_cell(pi, 2, @total_cost[k].sum.to_f.round(2) )
 
       unless @total_effort[k].sum == 0
-        worksheet_synt.add_cell(pi, 3, @total_cost[k].sum.to_f / @total_effort[k].sum.to_f )
+        worksheet_synt.add_cell(pi, 3, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
       end
 
       pi = pi + 1
