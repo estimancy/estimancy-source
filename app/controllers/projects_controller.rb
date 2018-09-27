@@ -182,11 +182,11 @@ class ProjectsController < ApplicationController
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
         unless guw_output_effort.nil?
-          guw_output_effort_value = guow.size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
+          guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
         end
 
         unless guw_output_cost.nil?
-          guw_output_cost_value = guow.cost.nil? ? 0 : guow.cost["#{guw_output_cost.id}"].to_f.round(2)
+          guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
         end
 
         @total_effort[project.id] << guw_output_effort_value.to_f
