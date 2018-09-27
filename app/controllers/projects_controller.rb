@@ -231,8 +231,10 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 15, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
-        @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
-        @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+        if mpre.wbs_activity_element.is_root?
+          @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
+          @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+        end
 
       end
 
@@ -251,7 +253,7 @@ class ProjectsController < ApplicationController
     worksheet_synt.add_cell(0, 10, "Coût total")
     worksheet_synt.add_cell(0, 11, "Prix moyen pondéré")
 
-    pi = 0
+    pi = 1
     @total_effort.each do |k,v|
       project = Project.find(k)
       worksheet_synt.add_cell(pi, 0, project.title)
@@ -263,8 +265,8 @@ class ProjectsController < ApplicationController
       worksheet_synt.add_cell(pi, 6, project.project_category.nil? ? '' : project.project_category.name)
       worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
       worksheet_synt.add_cell(pi, 8, project.provider.nil? ? '' : project.provider.name)
-      worksheet_synt.add_cell(pi, 9, @total_effort[k].sum.to_f.round(2) )
-      worksheet_synt.add_cell(pi, 10, @total_cost[k].sum.to_f.round(2) )
+      worksheet_synt.add_cell(pi, 9, @total_effort[k].sum.to_f.round(2))
+      worksheet_synt.add_cell(pi, 10, @total_cost[k].sum.to_f.round(2))
 
       unless @total_effort[k].sum == 0
         worksheet_synt.add_cell(pi, 11, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
