@@ -232,7 +232,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 15, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
         if mpre.wbs_activity_element.is_root?
-          @total_effort[project.id] << mpre.retained_effort_most_likely.to_f / 8
+          @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
           @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
         end
 
