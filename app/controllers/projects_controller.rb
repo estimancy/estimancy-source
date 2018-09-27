@@ -123,13 +123,11 @@ class ProjectsController < ApplicationController
 
     i = 1
 
-    @organization.projects.each_with_index do |project, pi|
+    @total_cost = {}
+    @total_effort = {}
 
-      total_cost = 0
-      total_effort = 0
-
+    @organization.projects.each do |project|
       project.guw_unit_of_works.each do |guow|
-
         worksheet_cf.add_cell(i, 0, project.title)
         worksheet_cf.add_cell(i, 1, project.application_name)
         worksheet_cf.add_cell(i, 2, project.business_need)
@@ -191,8 +189,8 @@ class ProjectsController < ApplicationController
           guw_output_cost_value = guow.cost.nil? ? 0 : guow.cost["#{guw_output_cost.id}"].to_f.round(2)
         end
 
-        total_effort = total_effort + guw_output_effort_value.to_f
-        total_cost = total_cost + guw_output_cost_value.to_f
+        @total_effort[project.id] = guw_output_effort_value.to_f
+        @total_cost[project.id] = guw_output_cost_value.to_f
       end
 
       worksheet_wbs.add_cell(0, 0, "Devis")
@@ -233,16 +231,13 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
         worksheet_wbs.add_cell(iii+1, 15, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
 
-
-        total_effort = total_effort + mpre.retained_effort_most_likely.to_f
-        total_cost = total_cost + mpre.retained_cost_most_likely.to_f
+        @total_effort[project.id] = mpre.retained_cost_most_likely.to_f
+        @total_cost[project.id] = mpre.retained_effort_most_likely.to_f
 
       end
 
-      worksheet_synt.add_cell(pi, 0, project.title)
-      worksheet_synt.add_cell(pi, 1, total_effort)
-      worksheet_synt.add_cell(pi, 2, total_cost)
-      worksheet_synt.add_cell(pi, 3, (total_cost / total_effort).to_f)
+      @total_effort[project.id] = @total_effort.to_f
+      @total_cost[project.id] = @total_cost.to_f
 
     end
 
@@ -251,6 +246,16 @@ class ProjectsController < ApplicationController
     worksheet_synt.add_cell(0, 2, "Coût total")
     worksheet_synt.add_cell(0, 3, "Prix moyen pondéré")
 
+    @total_effort.each do |k,v|
+      pi = 0
+
+      worksheet_synt.add_cell(pi, 0, Project.find(k).title)
+      worksheet_synt.add_cell(pi, 1, @total_effort[k].sum.to_f )
+      worksheet_synt.add_cell(pi, 2, @total_cost[k].sum.to_f )
+      worksheet_synt.add_cell(pi, 3, @total_cost[k].sum.to_f / @total_effort[k].sum.to_f )
+
+      pi = pi + 1
+    end
 
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
