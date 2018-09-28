@@ -2108,3 +2108,5 @@ frsncf_amoa_infra:
   is_protected_group: "Est un groupe protégé ?"
   is_ignored: "Ignorer l'application"
   ignored_application: "Application ignorée"
+
+  please_wait: "Veuillez patienter..."

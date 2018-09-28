@@ -55,14 +55,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                guw_type_id: params[:guw_type_id],
                                                project_id: params[:project_id],
                                                organization_id: params[:organization_id],
+                                               module_project_id: params[:module_project_id],
                                                guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
 
-    module_project = current_module_project
-    @organization = @guw_model.organization
+    module_project = ModuleProject.find(params[:module_project_id])
     @project = module_project.project
 
+    @organization = @guw_model.organization
+
     @guw_unit_of_work.guw_model_id = @guw_model.id
-    @guw_unit_of_work.module_project_id = module_project.id
     @guw_unit_of_work.pbs_project_element_id = current_component.id
     @guw_unit_of_work.selected = true
 
@@ -89,7 +90,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     reorder @group
 
-    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+    current_module_project_guw_unit_of_works = module_project.guw_unit_of_works
     @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
     @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
                                                                                          selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
@@ -2924,7 +2925,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    name: default_group).first_or_create
       end
 
-      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+      @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
+                                     is_default: true).first
+
       if @guw_type.nil?
         @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
       end
@@ -2933,8 +2936,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         title = "##{id} - #{title}"
       end
 
+      p "=================================="
+      p title
+      p description
+      p url
+      p "=================================="
+
+
+      @guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
+                                                 default_value: true).first
+
       guw_uow = Guw::GuwUnitOfWork.create(selected: true,
-                                          name: title,
+                                          name: title.truncate(254),
                                           comments: description,
                                           tracking: "",
                                           guw_unit_of_work_group_id: @guw_group.id,
@@ -2944,6 +2957,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           pbs_project_element_id: @component.id,
                                           guw_model_id: @guw_model.id,
                                           guw_type_id: @guw_type.id,
+                                          guw_complexity_id:  @guw_complexity.nil? ? nil : @guw_complexity.id,
                                           url: url)
 
       guw_uow.save(validate: false)
@@ -3228,9 +3242,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     :"string_data_high" => { component.id => tmp_prbl[2].to_f },
                     :"string_data_probable" => { component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) }
                 }
-                unless ev.changed?
+                # unless ev.changed?
                   ev.update_attributes(h)
-                end
+                # end
               end
             end
           end

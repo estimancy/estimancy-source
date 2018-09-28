@@ -67,7 +67,7 @@
 
 <td class="text_field_text_overflow span3">
   <span class="pull-left">
-    <%= link_to guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
+    <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
   </span>
 </td>
 

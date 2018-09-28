@@ -1976,7 +1976,7 @@ class Guw::GuwModelsController < ApplicationController
                                             guw_model_id: @guw_model.id).first
           unless guow.guw_type.nil?
             unless guw_output.nil?
-              v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+              v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f))
               worksheet.add_cell(ind, 20 + j, v.to_s)
             end
           end
