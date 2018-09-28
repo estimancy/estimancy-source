@@ -49,7 +49,7 @@
        end
    end
 
-   @md_duration = @staffing_model.mc_donell_coef * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
+   @md_duration = @staffing_model.mc_donell_coef.to_f * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit.to_f) ** @staffing_model.puissance_n.to_f
    # else
    #   ev = EstimationValue.where(:pe_attribute_id => attribute.id,
    #                              :module_project_id => current_module_project.id,

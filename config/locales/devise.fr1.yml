@@ -48,6 +48,8 @@ fr1:
       user:
         success: Vous êtes connecté(e) avec succès.
         failure: Erreur de connection.
+        unconfirmed: "Vous devez confirmer votre compte par courriel."
+        locked: "Votre compte est verrouillé."
     unlocks:
       send_instructions: Vous allez recevoir sous quelques minutes un courriel comportant des instructions pour déverrouiller votre compte.
       send_paranoid_instructions: Si votre courriel existe sur notre base de données, vous recevrez sous quelques minutes un message avec des instructions pour déverrouiller votre compte.

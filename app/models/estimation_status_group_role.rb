@@ -30,7 +30,6 @@ class EstimationStatusGroupRole < ActiveRecord::Base
 
   # Security Audit management
   before_save :update_transaction_id_for_triggers
-  #has_paper_trail
 
   # Hair-Triggers
   trigger.after(:insert) do
