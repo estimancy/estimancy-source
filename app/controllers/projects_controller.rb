@@ -171,11 +171,11 @@ class ProjectsController < ApplicationController
           worksheet_cf.add_cell(i, 17 + j + 1, uowa.nil? ? '-' : uowa.most_likely)
         end
 
-        if j == 0
+        # if j == 0
           @guw_model.guw_attributes.each_with_index do |guw_attribute, ii|
             worksheet_cf.add_cell(0, 17+ii, guw_attribute.name)
           end
-        end
+        # end
 
         i = i + 1
         guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
