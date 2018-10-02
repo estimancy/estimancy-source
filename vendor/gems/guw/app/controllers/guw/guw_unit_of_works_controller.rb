@@ -1546,7 +1546,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project = @module_project.project
     @guw_model = @module_project.guw_model
     @component = current_component
-    @organization = @guw_model.organization
+
+    begin
+      @organization = @guw_model.organization
+    rescue
+      @organization = current_organization
+    end
 
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_unit_of_work.ajusted_size = {}
