@@ -270,32 +270,6 @@ class ModuleProjectsController < ApplicationController
     end
   end
 
-  # Function to activate the current/selected module_project
-  def activate_module_project
-    session[:module_project_id] = params[:module_project_id]
-    @module_project = ModuleProject.find(params[:module_project_id])
-    @project = @module_project.project
-
-    authorize! :show_project, @project
-
-    @module_projects ||= @project.module_projects
-    @pbs_project_element = current_component
-
-    #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
-
-    # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
-
-    @results = nil
-
-    expire_fragment "guw"
-
-    redirect_to main_app.dashboard_path(@project)
-  end
-
-
   # Set the current balancing attribute for the Balancing-Module
   def selected_balancing_attribute
     session[:balancing_attribute_id] = params[:attribute_id]
