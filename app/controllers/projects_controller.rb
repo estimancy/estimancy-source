@@ -205,7 +205,7 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 12, "Charge calculée")
     worksheet_wbs.add_cell(0, 13, "Charge retenue")
     worksheet_wbs.add_cell(0, 14, "Coût calculé")
-    worksheet_wbs.add_cell(0, 15, "Coût théorique")
+    worksheet_wbs.add_cell(0, 15, "Coût retenu")
 
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
       mpre_project = mpre.module_project.project
