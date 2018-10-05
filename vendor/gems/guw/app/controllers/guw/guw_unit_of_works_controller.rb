@@ -120,8 +120,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def destroy
-    @guw_model = current_module_project.guw_model
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:id])
+    @guw_model = @guw_unit_of_work.guw_model
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
 
@@ -141,7 +141,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
 
-    @module_project = current_module_project
+    @module_project = @guw_unit_of_work.module_project
     @project = @module_project.project
     @guw_model = @module_project.guw_model
     @component = current_component
@@ -156,7 +156,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
 
-    @module_project = current_module_project
+    @module_project = @guw_unit_of_work.module_project
     @project = @module_project.project
     @guw_model = @module_project.guw_model
     @component = current_component
@@ -170,13 +170,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_cplx_comments
-    @module_project = current_module_project
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
+    @module_project = @guw_unit_of_work.module_project
+
     @guw_model = @module_project.guw_model
     @organization = @guw_model.organization
     @project = @module_project.project
     @component = current_component
 
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @value = params[:value].blank? ? @guw_unit_of_work.intermediate_weight : params[:value]
 
     @guw_unit_of_work.cplx_comments = params[:cplx_comments]
@@ -198,13 +200,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def save_coefficient_comments
 
-    @module_project = current_module_project
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @module_project = @guw_unit_of_work.module_project
+
     @guw_model = @module_project.guw_model
     @organization = @guw_model.organization
     @project = @module_project.project
     @component = current_component
 
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:guw_coefficient_element_id])
 
@@ -253,13 +256,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_comments
-    @module_project = current_module_project
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:comments].keys.first)
+
+    @module_project = @guw_unit_of_work.module_project
     @project = @module_project.project
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
 
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:comments].keys.first)
     @guw_unit_of_work.name = params[:name].values.first
     @guw_unit_of_work.comments = params[:comments].values.first
     @guw_unit_of_work.tracking = params[:trackings].values.first
@@ -268,11 +272,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_uo
-    @module_project = current_module_project
+
+    guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @module_project = guw_unit_of_work.module_project
+
     @project = @module_project.project
     @guw_model = @module_project.guw_model
     @component = current_component
-    guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
     begin
       guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
     rescue
@@ -794,11 +801,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def change_selected_state
     authorize! :execute_estimation_plan, @project
 
-    @module_project = current_module_project
-    @organization = current_module_project.organization
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @module_project = @guw_unit_of_work.module_project
+
+    @organization = @module_project.organization
     @guw_model = @module_project.guw_model
     @component = current_component
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @group = @guw_unit_of_work.guw_unit_of_work_group
 
     if @guw_unit_of_work.selected == false
@@ -2248,7 +2256,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def deported
     @guw_unit_of_work = Guw::GuwUnitOfWork.where(id: params[:guw_unit_of_work_id]).first
     @guw_type = @guw_unit_of_work.guw_type
-    @guw_model = current_module_project.guw_model
+    @guw_model = @guw_unit_of_work.guw_model
   end
 
   def old_import_guw
