@@ -1542,18 +1542,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def save_uo_with_multiple_outputs
-    @module_project = current_module_project
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
+    @organization = @guw_unit_of_work.organization
+    @module_project = @guw_unit_of_work.module_project
+    @guw_model = @guw_unit_of_work.guw_model
     @project = @module_project.project
-    @guw_model = @module_project.guw_model
+
     @component = current_component
 
-    begin
-      @organization = @guw_model.organization
-    rescue
-      @organization = current_organization
-    end
-
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_unit_of_work.ajusted_size = {}
     @guw_unit_of_work.size = {}
     @guw_unit_of_work.effort = {}
@@ -3064,9 +3061,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   private
   def update_estimation_values
     #we save the effort now in estimation values
-    @module_project = current_module_project
+    # @module_project = current_module_project
+    # @guw_model = @module_project.guw_model
+
     component = current_component
-    @guw_model = @module_project.guw_model
 
     if @guw_model.config_type == "old"
       @module_project.guw_model_id = @guw_model.id
