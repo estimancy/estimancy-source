@@ -1040,10 +1040,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   #/!\ NEW METHODS WITH MULTIPLES ATTRIBUTES /!\
   def save_guw_unit_of_works_with_multiple_outputs
-    @module_project = current_module_project
+    @module_project = ModuleProject.find_by_id(params[:module_project_id])
+
     @guw_model = @module_project.guw_model
-    @organization = @guw_model.organization
     @project = @module_project.project
+
+    @organization = @guw_model.organization
     @component = current_component
     @reload_partial = true
 
