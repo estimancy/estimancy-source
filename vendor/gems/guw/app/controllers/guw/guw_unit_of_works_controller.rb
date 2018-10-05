@@ -673,9 +673,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def change_cotation
     authorize! :execute_estimation_plan, @project
 
-    @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.find(params[:guw_type_id])
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @guw_model = @guw_unit_of_work.guw_model
+    @guw_type = Guw::GuwType.find(params[:guw_type_id])
 
     @guw_model.guw_attributes.all.each do |gac|
       finder = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: @guw_type.id,
