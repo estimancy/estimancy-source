@@ -576,54 +576,6 @@ class ApplicationController < ActionController::Base
   end
 
 
-
-  # effectue une recherche multiple
-  def get_multiple_search_results(organization_id, projects, search_elements={})
-
-    search_hash = session[:search_hash] || {}
-    search_string = ""
-    final_results = []
-
-    if search_elements.blank?
-      search_elements = (params['search'].blank? ? session[:search_hash] : params['search'])
-    end
-
-    if search_elements.blank?
-      #organization_projects = projects
-      organization_projects = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
-    else
-      search_elements.each do |column_name, val|
-        #val = search_elements[column_name]
-
-        search_column = column_name
-        search_value = val
-
-        search_hash[column_name] = val
-        search_string << "&search[#{column_name}]=#{val}"
-
-        results = get_search_results(@organization.id, projects, column_name, val).all.map(&:id)
-
-        a = results.flatten
-        b = final_results.flatten
-
-        if b.blank?
-          final_results << a
-        else
-          final_results << a & b
-        end
-      end
-
-      organization_projects = @organization.organization_estimations.where(project_id: final_results.inject(&:&))
-    end
-
-    session[:search_hash] = search_hash
-    session[:search_string] = search_string
-
-    organization_projects
-  end
-
-
-  # effectue une recherche avec nom de la colonne et sa valeur
   def get_search_results(organization_id, projects, search_column, search_value)
 
     k = search_column
@@ -640,8 +592,6 @@ class ApplicationController < ActionController::Base
           results = projects.where(creator_id: creator_ids)
         when "version_number"
           results = projects.where("version_number LIKE ?", "%#{val}%")
-        when "business_need"
-          results = projects.where("business_need LIKE ?", "%#{val}%")
         when "application"
           ids = Application.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = projects.where(application_id: ids)
@@ -688,89 +638,76 @@ class ApplicationController < ActionController::Base
   end
 
 
-  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_hash={})
+  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_column="", search_value="")
     # @projects = @organization.organization_estimations
 
     k = sort_column #params[:f]
     s = sort_order  #params[:s]
 
-    # Execution de la recherche avant le Tri
-    #unless search_column.blank? || search_value.blank? || search_hash.blank?
-    unless search_hash.blank?
-      ###projects = get_search_results(organization_id, projects, search_column, search_value)
-      organization_projects = get_multiple_search_results(organization_id, projects, search_hash)
-      projects = Project.where(id: organization_projects.map(&:id))
-    end
+    case k
+      when "title" , "request_number", "version_number",  "description", "private", "start_date", "updated_at", "created_at"
+        projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
 
-    project_ids = projects.map(&:id)
+      when "application"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                        .where(organization_id: organization_id)
+                        .order("applications.name #{s}")
 
-    if k.blank?
-      projects =  projects.reorder("start_date desc")
-    else
-      case k
-        when "start_date", "title" , "request_number", "business_need", "version_number",  "description", "private", "updated_at", "created_at"
-          projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
-
-        when "application"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN applications ON projects.application_id = applications.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("applications.name #{s}")
-
-        when "original_model"
-          #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
-          #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
-          #projects = Project.unscoped
-          #                 .includes(:original_model)
-          #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
-          #                 .where(organization_id: organization_id)
-          #                 .order("original_model.title #{s}")
-        when "project_area"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("project_areas.name #{s}")
-        when "project_category"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("project_categories.name #{s}")
-        when "platform_category"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("platform_categories.name #{s}")
-        when "acquisition_category"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("acquisition_categories.name #{s}")
-        when "status_name"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                          .where(organization_id: @organization.id, id: project_ids)
-                          .order("estimation_statuses.name #{s}")
-        when "creator"
-          projects = Project.unscoped
-                          .joins("LEFT JOIN users ON projects.creator_id = users.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("users.first_name #{s}, users.last_name #{s}")
-        when "provider"
-          projects = Project.unscoped
-                         .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
-                         .where(organization_id: organization_id, id: project_ids)
-                         .order("providers.name #{s}")
-        else
-          projects = projects.order(k + ' ' + s)
-      end
+      when "original_model"
+        #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+        #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+        #projects = Project.unscoped
+        #                 .includes(:original_model)
+        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+        #                 .where(organization_id: organization_id)
+        #                 .order("original_model.title #{s}")
+      when "project_area"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: organization_id)
+                        .order("project_areas.name #{s}")
+      when "project_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("project_categories.name #{s}")
+      when "platform_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("platform_categories.name #{s}")
+      when "acquisition_category"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: organization_id)
+                        .order("acquisition_categories.name #{s}")
+      when "status_name"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: @organization.id)
+                        .order("estimation_statuses.name #{s}")
+      when "creator"
+        projects = Project.unscoped
+                        .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                        .where(organization_id: organization_id)
+                        .order("users.first_name #{s}, users.last_name #{s}")
+      when "provider"
+        projects = Project.unscoped
+                       .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
+                       .where(organization_id: organization_id)
+                       .order("providers.name #{s}")
+      else
+        projects = projects.order(k + ' ' + s)
     end
 
     projects = projects.where(:is_model => [nil, false])
-    sort_project_ids = projects.all.map(&:id)
 
-    #projects
-    #organization_estimations = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
-    @organization.organization_estimations.find(sort_project_ids).index_by(&:id).values_at(*sort_project_ids)
+    unless search_column.blank? || search_value.blank?
+      projects = get_search_results(organization_id, projects, search_column, search_value)
+    end
+
+    projects
 
     # res = []
     # projects.each do |p|
