@@ -575,8 +575,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-
   # effectue une recherche multiple
   def get_multiple_search_results(organization_id, projects, search_elements={})
 
@@ -713,9 +711,9 @@ class ApplicationController < ActionController::Base
 
         when "application"
           projects = Project.unscoped
-                          .joins("LEFT JOIN applications ON projects.application_id = applications.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("applications.name #{s}")
+                         .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("applications.name #{s}")
 
         when "original_model"
           #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
@@ -727,34 +725,34 @@ class ApplicationController < ActionController::Base
           #                 .order("original_model.title #{s}")
         when "project_area"
           projects = Project.unscoped
-                          .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("project_areas.name #{s}")
+                         .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("project_areas.name #{s}")
         when "project_category"
           projects = Project.unscoped
-                          .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("project_categories.name #{s}")
+                         .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("project_categories.name #{s}")
         when "platform_category"
           projects = Project.unscoped
-                          .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("platform_categories.name #{s}")
+                         .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("platform_categories.name #{s}")
         when "acquisition_category"
           projects = Project.unscoped
-                          .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("acquisition_categories.name #{s}")
+                         .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("acquisition_categories.name #{s}")
         when "status_name"
           projects = Project.unscoped
-                          .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                          .where(organization_id: @organization.id, id: project_ids)
-                          .order("estimation_statuses.name #{s}")
+                         .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                         .where(organization_id: @organization.id, id: project_ids)
+                         .order("estimation_statuses.name #{s}")
         when "creator"
           projects = Project.unscoped
-                          .joins("LEFT JOIN users ON projects.creator_id = users.id")
-                          .where(organization_id: organization_id, id: project_ids)
-                          .order("users.first_name #{s}, users.last_name #{s}")
+                         .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                         .where(organization_id: organization_id, id: project_ids)
+                         .order("users.first_name #{s}, users.last_name #{s}")
         when "provider"
           projects = Project.unscoped
                          .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
