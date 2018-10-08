@@ -34,8 +34,6 @@ class Permission < ActiveRecord::Base
 
   validates :name, :description, :alias, :presence => true
 
-  # has_paper_trail
-
   def to_s
     self.nil? ? '' : self.name
   end

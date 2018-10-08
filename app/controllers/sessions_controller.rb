@@ -23,9 +23,22 @@ class SessionsController < Devise::SessionsController
         #set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
       end
     else
+      if params['user']
+        user = User.where(login_name: params['user']['id_connexion']).first
+
+        if user
+          if devise_mapping.confirmable? && !user.confirmed?
+            set_flash_message(:warning, :unconfirmed, :kind => "Compte non confirme")  #.devise.sessions.user.test
+          elsif user.access_locked?
+            set_flash_message(:warning, :locked, :kind => "Compte bloque")
+          end
+        end
+      end
+
       super
     end
   end
+
 
   # POST /resource/sign_in
   def create

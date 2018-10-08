@@ -1776,3 +1776,5 @@ fr1:
   is_ignored: "Ignorer l'application"
   ignored_application: "Application ignorée"
 
+  please_wait: "Veuillez patienter..."
+
