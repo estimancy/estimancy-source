@@ -34,6 +34,8 @@ class OrganizationsController < ApplicationController
   def report_management
   end
 
+
+  
   # Export PDF de la liste des changements
   def export_to_pdf_security_audit_utilities
     @organization = @current_organization  #Organization.find(params[:organization_id])
@@ -2098,7 +2100,6 @@ class OrganizationsController < ApplicationController
     session[:search_column] = @search_column
     session[:search_value] = @search_value
     session[:search_hash] = @search_hash
-
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)
 
@@ -3503,7 +3504,7 @@ class OrganizationsController < ApplicationController
       @organizations = Organization.all
     elsif can?(:manage, :all)
       @organizations = Organization.all.reject{|org| org.is_image_organization}
-    else
+     else
       @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
     end
 
@@ -3876,6 +3877,7 @@ class OrganizationsController < ApplicationController
     authorize! :show_organizations, Organization
   end
 
+
   def export_organization_reference
     cn = {}
     Dir.foreach("#{Rails.root}/app/models") do |model_path|
@@ -3911,6 +3913,19 @@ class OrganizationsController < ApplicationController
 
   end
 
+  def projects_quantity
+    @organizations = Organization.all
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "projects_quantity",
+               #template: "organizations/export_to_pdf_projects_quantity.pdf.erb"
+               encoding: "UTF-8"
+      end
+    end
+  end
+
+
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
@@ -3920,6 +3935,10 @@ class OrganizationsController < ApplicationController
                   }) and return
     end
   end
+
+
+
+
 
 
 end

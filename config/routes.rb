@@ -420,4 +420,6 @@ Projestimate::Application.routes.draw do
   get "/500" => "errors#internal_server_error"
 
   root :to => 'organizations#organizationals_params'
+
+  get 'projects_quantity' => 'organizations#projects_quantity'
 end

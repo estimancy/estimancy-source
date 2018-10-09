@@ -115,6 +115,9 @@ class ProjectsController < ApplicationController
         worksheet.add_cell(i, 2, guow.guw_type.name)
         worksheet.add_cell(i, 3, guow.intermediate_percent)
         worksheet.add_cell(i, 4, guow.intermediate_weight)
+        worksheet.get_row_font_color(0)
+        worksheet.sheet_data[0][0].change_font_bold(true)
+        worksheet.change_row_italics(0,true)
 
 
         @guw_model = guow.guw_model
@@ -136,7 +139,6 @@ class ProjectsController < ApplicationController
             j = j + 2
           end
         end
-
 
         guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
           gat = Guw::GuwAttributeType.where(guw_type_id: guow.guw_type.id,

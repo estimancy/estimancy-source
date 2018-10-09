@@ -5,6 +5,21 @@
         <%= @organization.blank? ? "Nouvelle organisation" : @organization %>
       </a>
     </li>
+    <li>
+      <a href="#tabs-2">
+        Organisations et nombre de devis
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-3">
+        Onglet 3
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-4">
+        Onglet 4
+      </a>
+    </li>
   </ul>
 
   <%= simple_form_for(@organization) do |f| %>
@@ -15,6 +30,7 @@
           <div class="accordion-heading">
             <h5>
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+
                 <i class="fa fa-caret-down"></i>
                 <b><%= I18n.t(:label_definition) %></b>
               </a>
@@ -116,5 +132,26 @@
         </div>
       </div>
     </div>
-  <% end %>
+
+    <div id="tabs-2">
+      <div id="accordion2" class="accordion">
+        <div class="accordion-group accordion-caret well-rounded">
+            <h5>
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                <%= link_to 'Organisations et nombre de devis', '/projects_quantity', :class => 'ui-tabs-panel ui-widget-content ui-corner-bottom' %>
+              </a>
+            </h5>
+        </div>
+      </div>
+    </div>
+
+    <% end %>
+
+    <div id="tabs-3">
+    </div>
+
+
+    <div id="tabs-4">
+    </div>
+
 </div>
