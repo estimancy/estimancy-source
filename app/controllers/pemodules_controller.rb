@@ -331,6 +331,8 @@ class PemodulesController < ApplicationController
             @instance_model = Skb::SkbModel.find(params[:instance_model_id])
           when "expert_judgement_instance_id"
             @instance_model = ExpertJudgement::Instance.find(params[:instance_model_id])
+          when "operation_model_id"
+            @instance_model = Operation::OperationModel.find(params[:instance_model_id])
           else
             # ignored
             # type code here
