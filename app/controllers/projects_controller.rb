@@ -3088,7 +3088,7 @@ public
     end
 
     # Filtre sur les versions des estimations
-    if !params[:filter_version].in?(['2', ''])
+    if !params[:filter_version].in?(['4', ''])
       res = filter_estimation_versions(res, params[:filter_version])
     end
 
@@ -3214,7 +3214,7 @@ public
     end
 
     # filtre sur la version des estimations
-    if !@filter_version.to_s.in?(['2', ''])
+    if !@filter_version.to_s.in?(['4', ''])
       @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
     end
 
