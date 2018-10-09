@@ -212,8 +212,7 @@
 
               <% current_inputs_evs.each do |ev| %>
 
-                  <% is_modifiable = current_module_project.ge_model.send("#{ev.pe_attribute.alias}_is_modifiable")
-                  %>
+                  <% is_modifiable = current_module_project.ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                   <%# coeff = ev.pe_attribute.alias=="effort" ? current_module_project.ge_model.input_effort_standard_unit_coefficient : 1 %>
                   <% coeff = get_ge_model_effort_standard_coefficient(@ge_model, ev) %>
                   <% if coeff.nil? || coeff==0
@@ -383,7 +382,8 @@
         <% attr = @ge_model.output_pe_attribute %>
       <% end %>
 
-      <% begin
+      <%
+         begin
             ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first
          rescue
            ev = nil
