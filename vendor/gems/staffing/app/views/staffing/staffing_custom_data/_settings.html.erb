@@ -48,7 +48,7 @@
 
    end
 
-   @md_duration = @staffing_model.mc_donell_coef * (effort * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit) ** @staffing_model.puissance_n
+   @md_duration = @staffing_model.mc_donell_coef.to_f * (effort.to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit.to_f) ** @staffing_model.puissance_n.to_f
 
    x0 = @staffing_model.trapeze_default_values[:x0].to_f / 100
    x1 = @staffing_model.trapeze_default_values[:x1].to_f / 100
@@ -214,7 +214,7 @@
                 &nbsp; pers.
               </span>
               <span class="reference_staffing_trapeze pull-right">
-                <%= staffing_trapeze.to_f.round(user_number_precision) %>
+                <%= staffing_trapeze.to_f.round(user_number_precision) rescue 0 %>
               </span>
           </td>
           <td>
@@ -235,7 +235,7 @@
               <span class="percent_trapeze pull-right">
                 <% unless @staffing_custom_data.max_staffing.nil? %>
                   <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %> %
-                  <% end %>
+                <% end %>
               </span>
           </td>
         </tr>
@@ -341,7 +341,7 @@
         if (value > 0) {
           return value;
         } else if (value < 0) {
-          return "-" + value;
+          return value;
         } else {
           return value;
         }

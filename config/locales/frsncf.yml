@@ -1048,10 +1048,10 @@ frsncf:
 
   label_Project: "Projet"
   label_filter_on_projects_version: "Filtre sur les versions des devis"
-  label_filter_on_project_version_1: "Afficher seulement les feuilles "
+  label_filter_on_project_version_1: "Afficher uniquement les feuilles"
   label_filter_on_project_version_2: "Afficher toutes les versions"
-  label_filter_on_project_version_3: "Afficher seulement la racine"
-  label_filter_on_project_version_4: "Afficher seulement la plus récente"
+  label_filter_on_project_version_3: "Afficher uniquement la racine"
+  label_filter_on_project_version_4: "Afficher uniquement la feuille la plus récente"
   label_ProjectArea: "Domaine"
   label_PlatformCategory: "Localisation"
   label_ProjectCategory: "Catégorie Projet"
@@ -2134,4 +2134,7 @@ frsncf:
   is_protected_group: "Est un groupe protégé ?"
   is_ignored: "Ignorer l'application"
   ignored_application: "Application ignorée"
+  number_of_uw_selected_lines: "Nombre de ligne d'UO sélectionnées"
+
+  please_wait: "Veuillez patienter..."
 

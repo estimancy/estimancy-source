@@ -3,7 +3,7 @@ module ApplicationsHelper
     if value > 0
       "#{value}"
     elsif value < 0
-      "-#{value}"
+      "#{value}"
     else
       value
     end

@@ -57,7 +57,7 @@
 
     <div class="actions-tabs">
       <% if can? :create_project_from_template, Project %>
-          <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "Veuillez patienter..." %>
+          <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
           <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
       <% end %>
     </div>

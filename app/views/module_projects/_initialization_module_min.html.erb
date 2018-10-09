@@ -9,7 +9,7 @@
       <!--<div class="<%#= select_pemodule %> module_project_min <%#= "#{@initialization_module.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center">-->
       <div class="<%= select_pemodule %> module_project_min <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" style="background-color: <%= "#{pmod.color}" %>">
 
-        <%= link_to pmod, activate_module_project_path(pmod) %>
+        <%= link_to pmod, activate_module_project_path(pmod), remote: true %>
 
         <% if pmod.show_results_view %>
             <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white blue", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
