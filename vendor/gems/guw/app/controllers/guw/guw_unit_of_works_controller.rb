@@ -3071,8 +3071,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   private
   def update_estimation_values
     #we save the effort now in estimation values
-    # @module_project = current_module_project
-    # @guw_model = @module_project.guw_model
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
 
     component = current_component
 
