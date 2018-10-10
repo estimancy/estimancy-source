@@ -2075,9 +2075,9 @@ class OrganizationsController < ApplicationController
     end
 
     # Filtre sur les versions des estimations
-    if !@filter_version.in?(['4', ''])
+    # if !@filter_version.in?(['4', ''])
       res = filter_estimation_versions(res, @filter_version)
-    end
+    # end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
@@ -2235,9 +2235,9 @@ class OrganizationsController < ApplicationController
     end
 
     # Filtre sur les versions des estimations
-    if !@filter_version.in?(['4', ''])
+    # if !@filter_version.in?(['4', ''])
       res = filter_estimation_versions(res, @filter_version)
-    end
+    # end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
