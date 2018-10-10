@@ -2018,7 +2018,7 @@ class OrganizationsController < ApplicationController
     if params[:filter_version].present?
       @filter_version = params[:filter_version]
     else
-      @filter_version = '4'
+      @filter_version = '2'
     end
 
     @object_per_page = (current_user.object_per_page || 10)
@@ -2111,7 +2111,7 @@ class OrganizationsController < ApplicationController
     end
 
     # Filtre sur les versions des estimations
-    if !@filter_version.in?(['4', ''])
+    if !@filter_version.in?(['2', ''])
       res = filter_estimation_versions(res, @filter_version)
     end
 
