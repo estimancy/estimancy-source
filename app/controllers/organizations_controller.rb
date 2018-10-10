@@ -2065,7 +2065,7 @@ class OrganizationsController < ApplicationController
 
     res = []
     organization_projects.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
         res << p
       end
 
