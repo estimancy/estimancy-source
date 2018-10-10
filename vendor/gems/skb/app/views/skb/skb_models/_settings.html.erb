@@ -60,7 +60,7 @@
   </h3>
 
   <div class="row-fluid">
-    <div class="span12">
+    <div class="span4">
       <h5>
         <strong>
           Nombre de projets sélectionnée :
@@ -70,11 +70,20 @@
         </strong>
       </h5>
     </div>
+
+    <div class="span4 pull-right">
+      <% if can? :execute_estimation_plan, @project %>
+        <button type="submit" class="btn btn-default btn-primary pull-right">
+          <%= I18n.t(:update) %>
+        </button>
+      <% end %>
+    </div>
+
   </div>
 
-  <% unless @skb_model.date_min.nil? %>
-    <div class="row-fluid">
-      <div class="span12">
+  <div class="row-fluid">
+    <% unless @skb_model.date_min.nil? %>
+      <div class="span4">
         <h5>
           <strong>
             Date Min :
@@ -84,12 +93,10 @@
           </strong>
         </h5>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% unless @skb_model.date_max.nil? %>
-    <div class="row-fluid">
-      <div class="span12">
+    <% unless @skb_model.date_max.nil? %>
+      <div class="span4">
         <h5>
           <strong>
             Date Max :
@@ -99,62 +106,70 @@
           </strong>
         </h5>
       </div>
-    </div>
-  <% end %>
-
-  <div class="row-fluid">
-    <div class="span12">
-      <% unless @skb_model.skb_datas.empty? %>
-        <p>
-          <% arr = ["a", "b", "c", "d"] %>
-          <% @skb_model.skb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
-          <div class="input string required project_title">
-            <label class="string required control-label">
-              <strong>
-                <%= @skb_model.send("filter_#{arr[i]}") %>
-              </strong>
-            </label>
-            <%= select_tag "filters[#{key}]",
-                           options_for_select(@skb_model.skb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
-                                              selected: @filters.nil? ? convert_project_category(@project, @skb_model.send("filter_#{arr[i]}")) : @filters[key]),
-                           class: "string required input-xlarge filters",
-                           prompt: I18n.t(:Indifferent),
-                           disabled: !@skb_model.enabled_input %>
-
-            <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, @skb_model.send("filter_#{arr[i]}")) : @filters[key] %>" />
-          </div>
-        <% end %>
-        </p>
-      <% end %>
-    </div>
+    <% end %>
   </div>
 
-  <h5>
-    <%= @skb_model.label_x || 'Données' %>
-  </h5>
-  <p>
-    <span class="skb_input_data">
-      <%= @skb_input.data.nil? ? '-' : @skb_input.data %>
-    </span>
-  </p>
+  <div class="row-fluid">
 
-  <h5>
-    <%= @skb_model.label_y || 'Traitements' %>
-  </h5>
-  <p>
-    <span class="skb_input_processing">
-      <%= @skb_input.processing.nil? ? '-' : @skb_input.processing %>
-    </span>
-  </p>
+    <div class="span3">
+      <% unless @skb_model.skb_datas.empty? %>
+          <p>
+            <% arr = ["a", "b", "c", "d"] %>
+            <% @skb_model.skb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
+            <div class="input string required project_title">
+              <label class="string required control-label">
+                <strong>
+                  <%= @skb_model.send("filter_#{arr[i]}") %>
+                </strong>
+              </label>
+              <%= select_tag "filters[#{key}]",
+                             options_for_select(@skb_model.skb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
+                                                selected: @skb_input.filters[key]),
+                             class: "string required input-xlarge filters",
+                             prompt: I18n.t(:Indifferent),
+                             disabled: !@skb_model.enabled_input %>
 
-  <h5>
-    <%= I18n.t :total_size %>
-  </h5>
-  <p>
-    <span class="skb_input_total">
-      <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
-    </span>
-  </p>
+            </div>
+          <% end %>
+          </p>
+      <% end %>
+    </div>
+
+    <div class="span2">
+      <h5>
+        <%= @skb_model.label_x %>
+      </h5>
+      <p>
+        <span class="skb_input_data">
+          <%= @skb_input.data.nil? ? '-' : @skb_input.data %>
+        </span>
+      </p>
+    </div>
+
+    <% unless @skb_model.label_y.blank? %>
+      <div class="span2">
+        <h5>
+          <%= @skb_model.label_y %>
+        </h5>
+        <p>
+          <span class="skb_input_processing">
+            <%= @skb_input.processing.nil? ? '-' : @skb_input.processing %>
+          </span>
+        </p>
+      </div>
+    <% end %>
+
+    <div class="span2">
+      <h5>
+        <%= I18n.t :total_size %>
+      </h5>
+      <p>
+        <span class="skb_input_total">
+          <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
+        </span>
+      </p>
+    </div>
+  </div>
 
   <p>
     <%= I18n.t :move_your_cursor %>. You can also <a id="button2" href="#!">reset zoom</a>

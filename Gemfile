@@ -8,7 +8,7 @@ gem 'cookies_eu'
 
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', :require => 'bcrypt'
-gem "useragent"
+gem 'useragent'
 
 # Include database gems for the adapters found in the database
 # configuration file

@@ -1,5 +1,14 @@
 <div class="span5">
   <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
+
+      <%# flash.each do |key, value| %>
+          <!--<div class="flash <%#= key %>"><p style="color: red"><%#= value %></p></div>-->
+      <%# end %>
+
+      <% if params['user'] %>
+        <%= devise_error_messages! %>
+      <% end %>
+
     <div class="login_input">
       <div class="input-prepend">
         <span class="add-on"><img src="/assets/man.png" /></span>
