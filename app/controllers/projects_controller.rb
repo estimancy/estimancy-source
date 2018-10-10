@@ -346,6 +346,7 @@ class ProjectsController < ApplicationController
     session[:module_project_id] = params[:module_project_id]
     @module_project = ModuleProject.find(params[:module_project_id])
     @project = @module_project.project
+    @project_organization = @project.organization
 
     authorize! :show_project, @project
 

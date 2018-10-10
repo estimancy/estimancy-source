@@ -58,7 +58,7 @@
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= link_to "#{current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project}", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF' %>
+          - <%= link_to "#{current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project}", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
         </h5>
 
         <div class="buttons">
@@ -108,7 +108,7 @@
   </div>
 </div>
 
-<% unless current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+<%# unless current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
   <div class="row-fluid">
     <div class="span12">
       <div class="widget-box collapsible">
@@ -130,7 +130,7 @@
       </div>
     </div>
   </div>
-<% end %>
+<%# end %>
 
 <!-- show selected view for each module project -->
 <!-- The results boxes will be arranged as in the estimation plan -->

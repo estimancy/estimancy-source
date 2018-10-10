@@ -21,9 +21,9 @@
 
 Staffing::Engine.routes.draw do
 
-  resources :staffing_custom_data
+  post 'save_data' => "staffing_custom_data#save_data", as: "save_data"
+
   resources :staffing_custom_data do
-    post 'save_staffing_custom_data'
     post 'old_save_staffing_custom_data'
   end
 

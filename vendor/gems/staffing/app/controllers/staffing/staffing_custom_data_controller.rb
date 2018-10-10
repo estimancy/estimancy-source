@@ -104,7 +104,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
   end
 
   #Save Team/Staffing custom data
-  def save_staffing_custom_data
+  def save_data
     authorize! :execute_estimation_plan, @project
 
     # begin
@@ -122,6 +122,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.max_staffing_rayleigh = params[:new_staffing_rayleigh]
     @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
     @staffing_custom_data.percent = params[:percents]
+
+    @staffing_custom_data.save
 
     if @staffing_custom_data.standard_effort == 0
       @staffing_custom_data.global_effort_value = nil
