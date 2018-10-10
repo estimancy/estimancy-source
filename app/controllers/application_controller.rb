@@ -798,7 +798,7 @@ class ApplicationController < ActionController::Base
           #@projects = @projects.reorder('updated_at DESC').uniq_by(&:title)
           filtered_projects = projects_list.sort{ |x,y| y.updated_at <=> x.updated_at }.uniq(&:title)
         else
-          #filtered_projects = projects_list
+          filtered_projects = projects_list
       end
     end
 

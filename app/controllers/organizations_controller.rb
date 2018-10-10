@@ -2015,10 +2015,10 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    if params[:filter_version].present?
-      @filter_version = params[:filter_version]
-    else
+    if params[:filter_version].blank?
       @filter_version = '4'
+    else
+      @filter_version = params[:filter_version]
     end
 
     @object_per_page = (current_user.object_per_page || 10)
