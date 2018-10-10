@@ -145,7 +145,6 @@
     <% end %>
 <% end %>
 
-
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
   <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
@@ -469,8 +468,8 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %></span>
-    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
+    <%= submit_tag "Yolo", name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
+    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
   <% end %>
 
 <% end %>
