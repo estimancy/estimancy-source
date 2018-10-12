@@ -8,8 +8,8 @@
         <table>
           <tr>
             <td colspan=2 style="text-align:right;">
-              <%# I18n.t(:label_filter_on_projects_version) %>
-              <%# select_tag 'filter_organization_projects_version',
+              <%= I18n.t(:label_filter_on_projects_version) %>
+              <%= select_tag 'filter_organization_projects_version',
                               options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
                                                  [I18n.t(:label_filter_on_project_version_1),1],
                                                  [I18n.t(:label_filter_on_project_version_3),3],
