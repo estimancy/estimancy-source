@@ -2061,8 +2061,8 @@ class OrganizationsController < ApplicationController
     final_results = []
 
     # Pour garder le tri même lors du raffraichissement de la page
-    organization_projects = @organization.projects.where(:is_model => [nil, false])
-    # organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
+    projects = @organization.projects.where(:is_model => [nil, false])
+    organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
 
     res = []
     organization_projects.each do |p|
