@@ -50,12 +50,15 @@
             <div class="span3"> <%= f.input :x2, label: "x2", input_html: { value: @staffing_model.trapeze_default_values['x2'] || 80 } %></div>
           </div>
 
-
           <div class="row-fluid">
             <div class="span3"><%= f.input :x3, label: "x3", input_html: { value: @staffing_model.trapeze_default_values['x3'] || 100 } %></div>
             <div class="span3"><%= f.input :y3, label: "y3", input_html: { value: @staffing_model.trapeze_default_values['y3'] || 20 } %></div>
           </div>
 
+          <div class="row-fluid">
+            <div class="span3"><%= f.input :min_range, label: "Borne min", input_html: { value: @staffing_model.trapeze_default_values['min_range'] } %></div>
+            <div class="span3"><%= f.input :max_range, label: "Borne max", input_html: { value: @staffing_model.trapeze_default_values['max_range'] } %></div>
+          </div>
         </div>
 
         <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>

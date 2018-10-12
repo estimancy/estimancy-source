@@ -30,7 +30,9 @@
         </h5>
         <div class="buttons">
           <span>
-              <%= link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
+              <% if @project.allow_export_pdf == true %>
+                <%= link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
+              <% end %>
           </span>
         </div>
       </div>

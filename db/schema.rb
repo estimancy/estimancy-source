@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181010121906) do
+ActiveRecord::Schema.define(version: 20181011145615) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1885,6 +1885,8 @@ ActiveRecord::Schema.define(version: 20181010121906) do
     t.string   "staffing_method",           limit: 255
     t.integer  "effort_week_unit",          limit: 4
     t.string   "config_type",               limit: 255
+    t.integer  "min_range",                 limit: 4
+    t.integer  "max_range",                 limit: 4
   end
 
   add_index "staffing_staffing_models", ["organization_id", "name"], name: "index_staffing_staffing_models_on_organization_id_and_name", unique: true, using: :btree
