@@ -709,7 +709,7 @@ class ApplicationController < ActionController::Base
     else
       case k
         when "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
-          projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
+          projects = projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
 
         when "application"
           projects = Project.unscoped

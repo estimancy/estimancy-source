@@ -1,15 +1,17 @@
-$("#organization_projects").html("");
-$("#organization_projects").html("<%= j(render :partial => 'organizations/organization_projects', object: [@organization, @projects], locals: {sort_action: true, sort_column: @sort_column, sort_order: @sort_order, is_last_page: @is_last_page }) %>");
+//$("#organization_projects").html("");
+//$("#organization_projects").html("<%#raw j(render :partial => 'organizations/organization_projects', object: [@organization, @projects], locals: { sort_action: true, sort_column: @sort_column, sort_order: @sort_order, is_last_page: @is_last_page }) %>");
 
-$("#sort_action").val('true');
-$("#sort_column").val('<%= @sort_column %>');
-$("#sort_order").val('<%= @sort_order %>');
-$("#min").val('<%= @min %>');
-$("#max").val('<%= @max %>');
+//$("#sort_action").val('true');
+//$("#sort_column").val('<%# @sort_column %>');
+//$("#sort_order").val('<%# @sort_order %>');
+//$("#min").val('<%# @min %>');
+//$("#max").val('<%# @max %>');
 
 //Mettre à jour l'url sans recharger la page
 if (history.pushState) {
-    //var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?filter_version=<%#= @filter_version %>&min=<%#= @min %>&max=<%#= @max %>&sort_column=<%#= @sort_column %>&sort_order=<%#= @sort_order %>&sort_action=true&is_last_page=<%#= @is_last_page %>&search_column=<%#= @search_column %>&search_value=<%#= @search_value %>';
+    //    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?filter_version=<%#= @filter_version %>&min=<%#= @min %>&max=<%#= @max %>&sort_column=<%#= @sort_column %>&sort_order=<%#= @sort_order %>&sort_action=true&is_last_page=<%#= @is_last_page %>&search_column=<%#= @search_column %>&search_value=<%#= @search_value %>';
     var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?filter_version=<%= @filter_version %>&min=<%= @min %>&max=<%= @max %>&sort_column=<%= @sort_column %>&sort_order=<%= @sort_order %>&sort_action=true&is_last_page=<%= @is_last_page %>&search_column=<%= @search_column %>&search_value=<%= @search_value %><%= @search_string.html_safe %>';
-    window.history.pushState({path:newurl},'',newurl);
+        window.history.pushState({path:newurl},'',newurl);
+
 }
+
