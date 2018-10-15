@@ -1,5 +1,4 @@
 <%= simple_form_for(@project) do |f| %>
-
   <div class="tabs-project">
     <ul>
       <li><a href="#tabs-1"><%= I18n.t(:global_properties) %></a></li>
@@ -29,6 +28,11 @@
         <% end %>
         <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
         <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !(can?(:alter_private_estimation_setup, @project) || can_alter_model) %>
+
+        <%= check_box_tag 'allow_export_pdf', 'allowed', @project.allow_export_pdf %>
+        Allow Export To PDF
+
+        <br/>
 
         <table>
           <tr>
@@ -231,6 +235,8 @@
         <% end %>
       </div>
     </div>
+
+
 
     <% if action_name.in?(%w(edit update)) %>
       <div id="tabs-2" class="hide">
@@ -526,6 +532,7 @@
           </div>
         <% end %>
       </div>
+
 
       <div id="tabs-history">
         <%= hidden_field_tag "current_showed_project_id", @project.id %>

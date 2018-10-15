@@ -1100,6 +1100,10 @@ class ProjectsController < ApplicationController
         end
       end
 
+      # remplir le champs allow_export_pdf
+      @project.allow_export_pdf = params['allow_export_pdf']
+
+
       @project.save
 
       project_root = @project.root_component
