@@ -117,33 +117,32 @@ module OrganizationsHelper
           # lk_text = content_tag(:span, I18n.t(column.caption))
           # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-down chevron_up_down')
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
+          # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "asc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-down fa-lg chevron_up_down', remote: true)
+          lk = link_to(content_tag(:b, I18n.t(column.caption), style: "padding: 5px;"), sort_path(f: column.name, s: "asc", filter_version: filter_version), class: 'fa fa-sort-down', remote: true)
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
           # lk_text << content_tag(:i, nil, class: 'btn btn-mini icon-chevron-up chevron_up_down')
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
+          # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+          lk = link_to(content_tag(:b, I18n.t(column.caption), style: "padding: 5px;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'fa fa-sort-up', remote: true)
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
           # lk_text << content_tag(:i, nil, class: 'btn btn-mini fa fa-chevron-up chevron_up_down')
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
+          # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = content_tag(:span, I18n.t(column.caption))
-          lk << link_to("", sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'btn btn-mini fa fa-sort-up fa-lg chevron_up_down', remote: true)
+          lk = link_to(content_tag(:b, I18n.t(column.caption), style: "padding: 5px;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), class: 'fa fa-sort-up', remote: true)
 
       end
 
     else
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
-      lk = content_tag(:span, I18n.t(column.caption))
-      lk << link_to("", sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), class: 'btn btn-mini fa fa-unsorted fa-lg chevron_up_down', remote: true)
+      lk = link_to(content_tag(:b, I18n.t(column.caption), style: "padding: 5px;"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), class: 'fa fa-unsorted', remote: true)
     end
 
 
