@@ -3162,7 +3162,6 @@ public
 
   def search
     @organization = @current_organization
-    final_results = []
 
     @object_per_page = (current_user.object_per_page || 10)
     @min = 0
@@ -3210,33 +3209,6 @@ public
       @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
     end
 
-
-    # unless params.blank?
-    #   params.each do |k,v|
-    #     val = params[k]
-    #
-    #     @search_column = k
-    #     @search_value = val
-    #
-    #     @search_hash[k] = val
-    #     @search_string << "&search[#{k}]=#{val}"
-    #
-    #     results = get_search_results(@organization.id, @projects, k, val).all.map(&:id)
-    #
-    #     a = results.flatten
-    #     b = final_results.flatten
-    #
-    #     if b.empty?
-    #       final_results << a
-    #     else
-    #       final_results << a & b
-    #     end
-    #   end
-    #
-    #   #@organization_estimations = OrganizationEstimation.where(project_id: final_results.inject(&:&)).order("created_at ASC").all
-    #   @organization_estimations = @organization.organization_estimations.where(project_id: final_results.inject(&:&)).all
-    # end
-
     if @organization_estimations.nil? || @organization_estimations.blank?
       @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
     end
@@ -3248,8 +3220,8 @@ public
 
     res = []
     @organization_estimations.each do |p|
-      if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
-        res << p.project
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
       end
     end
 

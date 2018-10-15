@@ -1,6 +1,6 @@
 
 <% if @related_projects.nil? || @related_projects.empty? %>
-    <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_pemodule_finduse_no_project, :value => @pemodule)}" %></div><br>
+    <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_pemodule_finduse_no_project, :value => @pemodule_title)}" %></div><br>
 <% else %>
     <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
       <tr>

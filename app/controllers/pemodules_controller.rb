@@ -325,19 +325,23 @@ class PemodulesController < ApplicationController
             @instance_model = Ge::GeModel.find(params[:instance_model_id])
           when "wbs_activity_id"
             @instance_model = WbsActivity.find(params[:instance_model_id])
+          when "kb_model_id"
+            @instance_model = Kb::KbModel.find(params[:instance_model_id])
+          when "skb_model_id"
+            @instance_model = Skb::SkbModel.find(params[:instance_model_id])
           when "expert_judgement_instance_id"
             @instance_model = ExpertJudgement::Instance.find(params[:instance_model_id])
+          when "operation_model_id"
+            @instance_model = Operation::OperationModel.find(params[:instance_model_id])
           else
             # ignored
             # type code here
         end
 
-        unless @instance_model
-          @pemodule_title = @instance_model.nil? ? '-' : @instance_model.name
-        end
-
+        @pemodule_title = @instance_model.nil? ? '-' : @instance_model.name
         @organization = @instance_model.nil? ? '-' : @instance_model.organization
-        @related_projects = ModuleProject.where("#{params[:instance_model_name]}" => params[:instance_model_id]).uniq
+
+        @related_projects = ModuleProject.where(params[:instance_model_name] => params[:instance_model_id].to_i).uniq
       end
     end
   end

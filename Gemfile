@@ -192,7 +192,8 @@ group :development do
 end
 
 group :test do
-  gem 'factory_girl_rails', '~> 4.0'
+  gem 'factory_girl_rails'
+  # gem 'factory_bot'
   # gem 'capybara'
   # rspec goodies
   #gem 'rspec-rails', :group => [:test, :development]

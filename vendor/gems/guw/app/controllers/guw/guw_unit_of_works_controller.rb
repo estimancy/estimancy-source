@@ -1270,7 +1270,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                      ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                            guw_model_id: @guw_model.id).first
                   end
-                  pc = ce.value
+
+                  if ce.nil?
+                    pc = 100
+                  else
+                    pc = ce.value
+                  end
+
                 else
                   pc = ceuw.percent.to_f
                 end
@@ -3071,8 +3077,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   private
   def update_estimation_values
     #we save the effort now in estimation values
-    # @module_project = current_module_project
-    # @guw_model = @module_project.guw_model
+    @module_project = current_module_project
+    @guw_model = @module_project.guw_model
 
     component = current_component
 

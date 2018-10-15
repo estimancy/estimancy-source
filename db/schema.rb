@@ -1094,6 +1094,14 @@ ActiveRecord::Schema.define(:version => 20180827072208) do
     t.datetime "updated_at"
   end
 
+  create_table "logs", :force => true do |t|
+    t.string   "action",     :limit => 4
+    t.string   "from_value"
+    t.string   "to_value"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
     t.integer  "uow_organization_id",                           :default => 0, :null => false
     t.string   "organization_name"
