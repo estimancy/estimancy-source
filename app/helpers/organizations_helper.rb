@@ -117,7 +117,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "asc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)} &and;"), sort_path(f: column.name, s: "asc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -125,7 +125,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)} &or;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -133,14 +133,14 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)} &or;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
 
       end
 
     else
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
-      lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), style: "font-weight: normal;", remote: true)
+      lk = link_to(raw("#{I18n.t(column.caption)} &and;&or;"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), style: "font-weight: normal;", remote: true)
     end
 
 

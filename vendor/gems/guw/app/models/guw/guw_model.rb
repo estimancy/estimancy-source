@@ -297,7 +297,11 @@ module Guw
       guw_model = module_project.guw_model
       pe_attribute = estimation_value.pe_attribute
 
-      guw_output = guw_model.guw_outputs.where(name: pe_attribute.name).first
+      begin
+        guw_output = guw_model.guw_outputs.where(name: pe_attribute.name).first
+      rescue
+        guw_output = nil
+      end
 
       unless guw_output.nil?
         conv = guw_output.standard_coefficient

@@ -303,7 +303,6 @@ class PemodulesController < ApplicationController
 
 
   def find_use_pemodule
-    #TODO Authorize #saly
     authorize! :manage_modules_instances, ModuleProject
 
     if params[:pemodule_id]

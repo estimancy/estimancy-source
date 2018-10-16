@@ -708,8 +708,8 @@ class ApplicationController < ActionController::Base
       projects =  projects.reorder("start_date desc")
     else
       case k
-        when "start_date", "title" , "request_number", "business_need", "version_number",  "description", "private", "updated_at", "created_at"
-          projects =  projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
+        when "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
+          projects = projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
 
         when "application"
           projects = Project.unscoped
@@ -766,11 +766,12 @@ class ApplicationController < ActionController::Base
     end
 
     projects = projects.where(:is_model => [nil, false])
-    sort_project_ids = projects.all.map(&:id)
 
     #projects
     #organization_estimations = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
-    @organization.organization_estimations.find(sort_project_ids).index_by(&:id).values_at(*sort_project_ids)
+    # sort_project_ids = projects.all.map(&:id)
+    # @organization.organization_estimations.find(sort_project_ids).index_by(&:id).values_at(*sort_project_ids)
+    projects
 
     # res = []
     # projects.each do |p|
