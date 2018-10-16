@@ -7,19 +7,34 @@
   </ul>
 
   <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <p>
+      Extraction des données brutes comprises dans une fourchette de dates
+    </p>
 
     <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
-      <h4> Extraction de données brutes </h4>
-      <%= label_tag "Date 1" %>
-      <%= date_field_tag 'name' %>
+      <div class="row-fluid">
+        <div class="span12">
+          <%= label_tag 'Date min' %>
+          <%= date_field_tag 'date_min' %>
+        </div>
+      </div>
+
       <br>
+
+      <div class="row-fluid">
+        <div class="span12">
+          <%= label_tag 'Date max' %>
+          <%= date_field_tag 'date_max' %>
+        </div>
+      </div>
+
       <br>
-      <%= label_tag "Date 2" %>
-      <%= date_field_tag 'name' %>
-      <br>
-      <br>
-      <div><%= submit_tag 'Extraire' %></div>
-      <br>
+
+      <div class="row-fluid">
+        <div class="span12">
+          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+        </div>
+      </div>
     <% end %>
 
   </div>
@@ -178,7 +193,7 @@
             </p>
           </div>
 
-          <%= submit_tag "Exporter en PDF", :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
 
         <% end %>
       </div>

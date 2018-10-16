@@ -126,7 +126,7 @@ class ProjectsController < ApplicationController
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
-    @organization.projects.each do |project|
+    @organization.projects.where(created_at: (params[:date_min]..params[:date_max])).each do |project|
       project.guw_unit_of_works.each do |guow|
         worksheet_cf.add_cell(i, 0, project.title)
         worksheet_cf.add_cell(i, 1, project.application_name)
