@@ -87,6 +87,7 @@
     <% v_high = nil %>
 
 <% else %>
+  <% begin %>
     <% if cev.string_data_low[component_id].blank? %>
       <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
     <% else %>
@@ -104,6 +105,11 @@
     <% else %>
       <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
     <% end %>
+  <% rescue %>
+    <% v_low = nil %>
+    <% v_most_likely = nil %>
+    <% v_high = nil %>
+  <% end %>
 <% end %>
 
 <% effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
