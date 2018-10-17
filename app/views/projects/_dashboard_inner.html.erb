@@ -1,31 +1,11 @@
 <div class="row-fluid">
   <div class="span3 pbs">
 
-    <div class="widget-box collapsible" style="display:none;">
-      <div class="widget-title" >
-        <!--<a href="#collapseProduct" data-toggle="collapse">-->
-          <!--<span class="icon">-->
-            <!--<i class="icon-eye-open"></i>-->
-          <!--</span>-->
-        <!--</a>-->
-        <h5><%= I18n.t(:wbs_product) %>
-          <span class="component_name">
-            <%# current_component %>
-          </span>
-          </h5>
-      </div>
-      <div class="collapse in" id="collapseProduct">
-        <div class="widget-content resizableProduct">
-          <%# render :partial => 'pe_wbs', :object => @project_default_ratio %>
-        </div>
-      </div>
-    </div>
-
     <div class="widget-box collapsible" >
       <div class="widget-title" >
-        <h5><%= I18n.t(:wbs_product) %>
+        <h5>
           <span class="component_name">
-            <%= current_component %>
+            <%= @project.title %>
           </span>
         </h5>
         <div class="buttons">
@@ -34,13 +14,10 @@
           <% end %>
         </div>
       </div>
-      <div class="collapse in" id="collapseProduct">
+      <div class="collapse in" id="collapseProduct" style="height: 217px;">
         <div class="widget-content resizableProduct">
-          <h5>
-            <%= @project.title %>
-          </h5>
           <p>
-            <%= raw(@project.description.to_s.truncate(400)) %>
+            <%= raw(@project.description.to_s.truncate(440)) %>
           </p>
         </div>
       </div>
@@ -58,7 +35,7 @@
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= link_to "#{current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project}", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
+          - <%= link_to "Désélectionner tous les modules", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
         </h5>
 
         <div class="buttons">
