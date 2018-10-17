@@ -138,14 +138,22 @@
 
             <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[component_id] %>
 
-            <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
+            <% begin %>
+              <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
                 <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-            <% else %>
+              <% else %>
                 <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+              <% end %>
+            <% rescue %>
+              <% entry_values["#{level}"][ev.id] = nil %>
             <% end %>
 
             <!-- Les valeurs d'entree initiales -->
-            <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+            <% begin %>
+              <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+            <% rescue %>
+              <% initial_entry_values["#{level}"][ev.id] = nil %>
+            <% end %>
 
         <% end %>
     <% end %>
