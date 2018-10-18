@@ -1771,9 +1771,9 @@ class OrganizationsController < ApplicationController
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
-          @guw_unit_of_works.each_with_index do |guow, i|
+          if can_see_estimation?(project)
 
-            if can?(:show_project, project)
+            @guw_unit_of_works.each_with_index do |guow, i|
 
               ind = ind + 1
 
