@@ -1775,7 +1775,7 @@ class OrganizationsController < ApplicationController
 
             if can_see_estimation?(project) || can_show_estimation?(project)
 
-                ind = ind + 1
+              ind = ind + 1
 
               if guow.off_line
                 cplx = "HSAT"
