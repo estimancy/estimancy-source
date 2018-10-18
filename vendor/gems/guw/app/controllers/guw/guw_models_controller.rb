@@ -1970,7 +1970,7 @@ class Guw::GuwModelsController < ApplicationController
                 rescue
                   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                     guw_coefficient_id: @guw_coefficient.id,
-                                                                    module_project_id: current_module_project.id).order("updated_at ASC").last
+                                                                    module_project_id: guow.module_project.id).order("updated_at ASC").last
                 end
 
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
