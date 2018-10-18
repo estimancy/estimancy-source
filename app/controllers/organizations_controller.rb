@@ -1773,7 +1773,7 @@ class OrganizationsController < ApplicationController
 
           @guw_unit_of_works.each_with_index do |guow, i|
 
-            if can_see_estimation?(project)
+            if can_see_estimation?(project) || can_show_estimation?(project)
 
                 ind = ind + 1
 
