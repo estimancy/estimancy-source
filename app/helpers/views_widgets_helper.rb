@@ -1070,7 +1070,7 @@ module ViewsWidgetsHelper
               stacked_chart_data = get_chart_data_by_phase_and_profile(pbs_project_elt, module_project, estimation_value, view_widget, ratio_reference)
               ###value_to_show = column_chart(stacked_chart_data, stacked: true, height: "#{chart_height}px", library: {backgroundColor: "transparent", title: chart_title, vAxis: {title: chart_vAxis}})
 
-              if view_widget.widget_type.in?("stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles")
+              if view_widget.widget_type.in?(["stacked_bar_chart_effort_per_phases_profiles", "stacked_bar_chart_cost_per_phases_profiles"])
                 value_to_show = raw(render :partial => 'views_widgets/g_stacked_bar_chart',
                                          :locals => { level_values: stacked_chart_data,
                                                       widget_id: view_widget.id,
@@ -1080,7 +1080,7 @@ module ViewsWidgetsHelper
                                                       chart_vAxis_title: chart_vAxis,
                                                       wbs_activity_elements: wbs_activity_elements
                                          })
-              elsif view_widget.widget_type.in?("stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles")
+              elsif view_widget.widget_type.in?(["stacked_grouped_bar_chart_effort_per_phases_profiles", "stacked_grouped_bar_chart_cost_per_phases_profiles"])
                 value_to_show = raw(render :partial => 'views_widgets/g_stacked_grouped_bar_chart',
                                            :locals => { level_values: stacked_chart_data,
                                                         widget_id: view_widget.id,

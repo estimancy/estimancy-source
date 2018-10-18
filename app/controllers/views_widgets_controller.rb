@@ -457,7 +457,7 @@ class ViewsWidgetsController < ApplicationController
     worksheet.change_column_width(3, current_component.to_s.length < I18n.t(:Product_Name).length ? I18n.t(:Product_Name).length : current_component.to_s.length)
     worksheet.add_cell(0, 4, I18n.t(:phases))
 
-    if widget.widget_type.in?("table_effort_per_phase", "table_effort_per_phase_without_zero")
+    if widget.widget_type.in?(["table_effort_per_phase", "table_effort_per_phase_without_zero"])
       unless widget.estimation_value.string_data_probable.empty?
         worksheet.add_cell(0, 5, I18n.t(:effort_import))
         worksheet.add_cell(0, 6, I18n.t(:unit_value))
@@ -487,7 +487,7 @@ class ViewsWidgetsController < ApplicationController
           ind_y += 1
         end
       end
-    elsif widget.widget_type.in?("effort_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero")
+    elsif widget.widget_type.in?(["effort_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero"])
       unless widget.estimation_value.string_data_probable.empty?
         worksheet.add_cell(0, 5, I18n.t(:profile))
         worksheet.add_cell(0, 6, I18n.t(:effort_import))
