@@ -1773,9 +1773,6 @@ class OrganizationsController < ApplicationController
 
           @guw_unit_of_works.each_with_index do |guow, i|
 
-            project = guow.project
-            estimation_status = project.estimation_status
-
             if can_see_estimation?(project)
 
                 ind = ind + 1
