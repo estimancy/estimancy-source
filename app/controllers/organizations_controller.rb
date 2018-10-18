@@ -1712,7 +1712,7 @@ class OrganizationsController < ApplicationController
     worksheet = workbook.worksheets[0]
     ind = 0
 
-    @current_organization.projects.each do |project|
+    @current_organization.projects.where(is_model: [false, nil]).each do |project|
 
       module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
 
