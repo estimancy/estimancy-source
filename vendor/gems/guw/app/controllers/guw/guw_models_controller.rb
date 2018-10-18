@@ -1969,7 +1969,7 @@ class Guw::GuwModelsController < ApplicationController
                   ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"]
                 rescue
                   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                    guw_coefficient_id: @guw_coefficient.id,
+                                                                    guw_coefficient_id: guw_coefficient.id,
                                                                     module_project_id: guow.module_project.id).order("updated_at ASC").last
                 end
 
