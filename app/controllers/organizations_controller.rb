@@ -1797,7 +1797,7 @@ class OrganizationsController < ApplicationController
               worksheet.add_cell(ind, 8, project.platform_category)
               worksheet.add_cell(ind, 9, project.title)
               worksheet.add_cell(ind, 10, project.version_number)
-              worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.name)
+              worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
               worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
               worksheet.add_cell(ind, 13, guow.name)
               worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
