@@ -43,6 +43,8 @@ Projestimate::Application.routes.draw do
   get 'show_widget_effort_display_unit' => 'views_widgets#show_widget_effort_display_unit', :as => 'show_widget_effort_display_unit'
   get 'export_vignette' => 'views_widgets#export_vignette' , :as => 'export_vignette'
 
+  post 'save_budget/:organization_id' => 'budgets#save_budget', as: 'save_budget'
+
   resources :widgets
 
   resources :views

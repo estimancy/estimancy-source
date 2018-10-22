@@ -1,0 +1,16 @@
+<table class="table table-bordered">
+  <tr>
+    <th>ORGANISATIONS</th>
+    <th>NOMBRE DE DEVIS</th>
+  </tr>
+
+  <% @organizations.each do |organization| %>
+    <tr>
+      <td> <%= organization %></td>
+      <td> <%= organization.projects.size %></td>
+    </tr>
+  <% end %>
+
+</table>
+
+<%= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>

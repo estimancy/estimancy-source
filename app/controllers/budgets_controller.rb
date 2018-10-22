@@ -1,5 +1,5 @@
 #encoding: utf-8
-#############################################################################
+##########################################################################
 #
 # Estimancy, Open Source project estimation web application
 # Copyright (c) 2014 Estimancy (http://www.estimancy.com)
@@ -17,28 +17,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#############################################################################
+##########################################################################
 
-#Master Table
-class AcquisitionCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :custom_value, :change_comment, :organization_id
+class BudgetsController < ApplicationController
 
-  validates :name, :presence => true
-
-  has_many :projects
-
-  amoeba do
-    enable
-    exclude_association [:projects]
-    customize(lambda { |original_acquisition_category, new_acquisition_category|
-                new_acquisition_category.copy_id = original_acquisition_category.id
-              })
+  def save_budget
+    params[:value].each do |k|
+      Budget.where(application_id: params[:value])
+    end
   end
 
-  #Search fields
-  scoped_search :on => [:name, :description, :created_at, :updated_at]
-
-  def to_s
-    self.nil? ? '' : self.name
-  end
 end

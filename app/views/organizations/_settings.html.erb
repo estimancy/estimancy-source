@@ -1,5 +1,6 @@
 <div class="tabs">
   <ul>
+    <li><a href="#tabs-budget">Gestion des bugdets</a></li>
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
@@ -17,6 +18,35 @@
     <% end %>
     <li><a href="#tabs-select-columns-list"><%= I18n.t(:select_columns_list) %></a></li>
   </ul>
+
+  <div id="tabs-budget">
+    <%= form_tag save_budget_path(@organization), method: "POST" do %>
+
+      <%= submit_tag I18n.t(:save) %>
+      <table class="table table-condensed table-striped">
+        <tr>
+          <th><%= I18n.t(:applications) %></th>
+          <th><%= I18n.t(:project_areas) %></th>
+          <th>Valeur</th>
+        </tr>
+        <% @organization.applications.each do |application| %>
+          <% @organization.project_areas.each do |project_area| %>
+            <tr>
+              <td>
+                <%= application.name %>
+              </td>
+              <td>
+                <%= project_area.name %>
+              </td>
+              <td>
+                <%= text_field_tag "value[#{application.id}][#{project_area.id}]", "" %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+    <% end %>
+  </div>
 
   <div id="tabs-applications">
     <% if can? :show_applications, Application %>
