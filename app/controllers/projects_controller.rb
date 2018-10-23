@@ -138,7 +138,7 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(i, 7, project.platform_category.nil? ? '' : project.platform_category.name)
         worksheet_cf.add_cell(i, 8, project.provider.nil? ? '' : project.provider.name)
         worksheet_cf.add_cell(i, 9, guow.name)
-        worksheet_cf.add_cell(i, 10, guow.guw_type.name)
+        worksheet_cf.add_cell(i, 10, guow.guw_type.nil? ? '-' : guow.guw_type.name)
         worksheet_cf.add_cell(i, 11, guow.intermediate_percent)
         worksheet_cf.add_cell(i, 12, guow.intermediate_weight)
 
