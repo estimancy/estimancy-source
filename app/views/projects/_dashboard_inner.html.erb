@@ -6,13 +6,15 @@
         <h5>
           <span class="component_name">
             <%= @project.title %>
-          </span>
+          </span>F
         </h5>
+        <!--
         <div class="buttons">
-          <% if @project.allow_export_pdf == true %>
-            <%= link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
-          <% end %>
+             if @project.allow_export_pdf == true %>
+              link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
+          end %>
         </div>
+        -->
       </div>
       <div class="collapse in" id="collapseProduct" style="height: 217px;">
         <div class="widget-content resizableProduct">

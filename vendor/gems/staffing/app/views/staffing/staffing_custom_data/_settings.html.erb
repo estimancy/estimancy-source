@@ -324,16 +324,16 @@
       });
 
       $('#percent').ionRangeSlider({
-        min: 70,
-        max: 150,
-        from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
-        grid: true,
-        postfix: "%",
+          min: <%= @staffing_model.min_range %>,
+          max: <%= @staffing_model.max_range %>,
+          from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
+          grid: true,
+          postfix: "%",
 
-        onChange: function (data) {
-          set_staffing_values(data);
-          $("#submit_staffing").off("click");
-        }
+          onChange: function (data) {
+              set_staffing_values(data);
+              $("#submit_staffing").off("click");
+          }
       });
 
 
