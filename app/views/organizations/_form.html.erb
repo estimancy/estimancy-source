@@ -2,17 +2,17 @@
   <ul>
     <li>
       <a href="#tabs-1">
-        Propriété globale
+        <%= I18n.t(:global_properties) %>
       </a>
     </li>
     <li>
       <a href="#tabs-2">
-        Informations techniques
+        <%= I18n.t(:technical_informations) %>
       </a>
     </li>
     <li>
       <a href="#tabs-3">
-        Impression et extraction
+        <%= I18n.t(:printing_extraction) %>
       </a>
     </li>
   </ul>
@@ -81,6 +81,7 @@
             <%= f.input :cost_per_hour, :label => I18n.t('cost_per_hour'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
 
             <hr>
+              Sélectionnez le module de taille
             <br>
 
             <table class="table">
@@ -116,14 +117,14 @@
                 <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
                 <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
               </tr>
-            </table>
+            </table>Extraire les organizations et leur nombre de devis'
           </div>
         </div>
       </div>
     </div>
 
     <div id="tabs-3">
-      <%= link_to 'Extraire les organizations et leur nombre de devis', '/projects_quantity', :class => 'btn' %>
+      <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn' %>
     </div>
 
   <% end %>

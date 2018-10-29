@@ -37,7 +37,7 @@
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= link_to "Désélectionner tous les modules", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
+          - <%= link_to I18n.t(:deselect_all_modules), activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
         </h5>
 
         <div class="buttons">
