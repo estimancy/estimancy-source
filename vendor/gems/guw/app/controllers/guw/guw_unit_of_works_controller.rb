@@ -2916,6 +2916,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     end
 
                     guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
+                    guw_uow.off_line = false
                     guw_uow.save(validate: false)
                   end
                 end
@@ -2953,13 +2954,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       unless id.blank?
         title = "##{id} - #{title}"
       end
-
-      p "=================================="
-      p title
-      p description
-      p url
-      p "=================================="
-
 
       @guw_complexity = Guw::GuwComplexity.where(guw_type_id: @guw_type.id,
                                                  default_value: true).first
