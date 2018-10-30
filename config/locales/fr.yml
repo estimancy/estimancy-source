@@ -2199,3 +2199,10 @@ fr:
   extracting_organizations_and_their_numbers_of_quotations: "Extraire les organisations et leur nombres de devis"
 
   deselect_all_modules: "Désélectionner tous les modules"
+
+  calculation_phases: "Calcul des phases"
+
+  #organizations/estimations
+  pdf_save: "Enregistrer en PDF"
+
+

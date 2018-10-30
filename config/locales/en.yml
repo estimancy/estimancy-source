@@ -2042,7 +2042,7 @@ en:
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
 
-  liste_des_estimations: "Liste des estimations"
+  liste_des_estimations: "Estimations list"
   copy_in_progress: "Copy in progress..."
   is_new_status: "Is the default status of new estimation version "
   warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
@@ -2152,4 +2152,8 @@ en:
 
   deselect_all_modules: "Deselect all modules"
 
+  calculation_phases: "Calculation of phases"
 
+  #organizations/estimations
+  contact_us: "Contact Us"
+  pdf_save: "Save as PDF"
