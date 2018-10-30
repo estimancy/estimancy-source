@@ -363,7 +363,7 @@ en:
   acquisition_categories: "Acquisition categories"
   platform_categories: "Platform categories"
   project_categories: "Project categories"
-  project_areas: "Project Areas"
+  project_areas: "Project areas"
   acquisition_category: "Acquisition category"
   platform_category: "Platform category"
   project_category: "Project category"
@@ -2157,3 +2157,7 @@ en:
   #organizations/estimations
   contact_us: "Contact Us"
   pdf_save: "Save as PDF"
+
+  recalculate_all: "Recalculate all"
+
+  budget_management: "Budget management"

@@ -2205,4 +2205,6 @@ fr:
   #organizations/estimations
   pdf_save: "Enregistrer en PDF"
 
+  recalculate_all: "Tout recalculer"
 
+  budget_management: "Gestion des bugdets"
