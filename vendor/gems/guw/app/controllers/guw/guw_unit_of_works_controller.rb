@@ -2181,6 +2181,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     results = []
 
+    p @http
+    p "===="
+    p @http.body_str
+
     JSON.parse(@http.body_str).each do |output|
 
       if default_group == ""
