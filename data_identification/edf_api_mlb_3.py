@@ -27,7 +27,7 @@ def estimate_trt():
 @app.route("/estimate_data", methods=['GET', 'POST'])
 def estimate_data():
     txt = request.form['txt']
-    print txt
+    print(txt)
     file_us = open("concord.txt", "w")
     file_us.write(request.form['txt'])
     file_us.close()
@@ -57,11 +57,11 @@ def mlb_estimate(userStory, mlb_model_url):
 
 def tranform_userStory (userStory, model_feature, vectorizer):
     words= clean_text(userStory).split()
-    print words
+    print(words)
     #Remove stop words from "words"
     stops = set(stopwords.words("french"))
     meaningful_words = ' '.join([w for w in words if not w in stops])
-    print meaningful_words
+    print(meaningful_words)
     vector=vectorizer.transform([meaningful_words])
     vector_features=model_feature.transform(vector).toarray()
     return vector_features
