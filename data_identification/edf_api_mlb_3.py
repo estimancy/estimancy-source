@@ -5,6 +5,7 @@ import pickle
 import json
 from random import *
 from nltk.corpus import stopwords
+from importlib import reload
 
 reload(sys)
 sys.setdefaultencoding('utf8')
