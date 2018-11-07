@@ -8,7 +8,7 @@ from nltk.corpus import stopwords
 from importlib import reload
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+### sys.setdefaultencoding('utf8')
 
 stop_words = stopwords.words('french')
 
