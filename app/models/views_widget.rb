@@ -63,12 +63,16 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
-    @mpids ||= []
-    module_project.all_nexts_mp_with_links.each do |mp|
+    module_project_all_nexts_mp_with_links = module_project.all_nexts_mp_with_links
 
-      if !@mpids.include?(mp.id)
+    # @mpids = []
+    # @mpids << module_project_all_nexts_mp_with_links.first
 
-        @mpids << mp.id
+    module_project_all_nexts_mp_with_links.each do |mp|
+
+      # if !@mpids.include?(mp.id)
+
+        # @mpids << mp.id
 
         mp.estimation_values.where(in_out: "output").each do |ev|
           ["low", "most_likely", "high"].each do |level|
@@ -93,7 +97,7 @@ class ViewsWidget < ActiveRecord::Base
             # end
           end
         end
-      end
+      # end
     end
   end
 

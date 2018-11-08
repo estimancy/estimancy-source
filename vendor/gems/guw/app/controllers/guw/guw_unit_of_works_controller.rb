@@ -1546,13 +1546,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      # update_estimation_values
-      # update_view_widgets_and_project_fields
+      update_estimation_values
+      update_view_widgets_and_project_fields
 
     end
 
-    update_estimation_values
-    update_view_widgets_and_project_fields
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
 
     # if @guw_unit_of_works.last.nil?
     #   redirect_to main_app.dashboard_path(@project)
