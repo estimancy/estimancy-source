@@ -1056,10 +1056,10 @@ fr:
 
   label_Project: "Projet"
   label_filter_on_projects_version: "Filtre sur les versions des devis"
-  label_filter_on_project_version_1: "Afficher uniquement les feuilles"
+  label_filter_on_project_version_1: "Afficher uniquement les dernières versions"
   label_filter_on_project_version_2: "Afficher toutes les versions"
-  label_filter_on_project_version_3: "Afficher uniquement la racine"
-  label_filter_on_project_version_4: "Afficher uniquement la feuille la plus récente"
+  label_filter_on_project_version_3: "Afficher uniquement les racines"
+  label_filter_on_project_version_4: "Afficher uniquement les estimations récemment crées"
   label_ProjectArea: "Secteur Projet"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Projet"
