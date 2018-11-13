@@ -2208,3 +2208,9 @@ fr:
   recalculate_all: "Tout recalculer"
 
   budget_management: "Gestion des bugdets"
+
+  date_min: Date min
+  date_max: Date max
+
+  val_min: "Valeur min"
+  val_max: "Valeur max"

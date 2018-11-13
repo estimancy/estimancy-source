@@ -39,6 +39,8 @@ class ViewsWidgetsController < ApplicationController
     authorize! :manage_estimation_widgets, @project
 
     @views_widget = ViewsWidget.new(params[:views_widget])
+    @min_value = @views_widget.min_value
+    @max_value = @views_widget.max_value
     @view_id = params[:view_id]
     @position_x = 1; @position_y = 1
     @module_project = ModuleProject.find(params[:module_project_id])
@@ -59,6 +61,10 @@ class ViewsWidgetsController < ApplicationController
     authorize! :manage_estimation_widgets, @project
 
     @views_widget = ViewsWidget.find(params[:id])
+
+    @min_value = @views_widget.min_value
+    @max_value = @views_widget.max_value
+
     @view_id = @views_widget.view_id
     @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x
     @position_y = (@views_widget.position_y.nil? || @views_widget.position_y.downcase.eql?("nan")) ? 1 : @views_widget.position_y
@@ -96,6 +102,7 @@ class ViewsWidgetsController < ApplicationController
       #get the current view
       current_view = View.find(params[:views_widget][:view_id])
     end
+
 
     # Add the position_x and position_y to params
     position_x = 1
@@ -141,7 +148,10 @@ class ViewsWidgetsController < ApplicationController
     #   rescue
     #   end
     # end
+    #
 
+    @views_widget.min_value = params[:views_widget][:min_value]
+    @views_widget.max_value = params[:views_widget][:max_value]
 
     if params[:views_widget][:is_kpi_widget].present?
       equation = Hash.new
@@ -155,6 +165,7 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.equation = equation
       @views_widget.kpi_unit = params[:views_widget][:kpi_unit]
       @views_widget.is_kpi_widget = true
+
       ###@views_widget.module_project_id = @module_project.id
       ###end
 
@@ -168,12 +179,13 @@ class ViewsWidgetsController < ApplicationController
 
     respond_to do |format|
       if @views_widget.save
-        unless params["field"].blank?
+        unless params["field"].blank?# && @views_widget.min_value < @views_widget.max_value
           ProjectField.create( project_id: @project.id,
                                field_id: params["field"],
                                views_widget_id: @views_widget.id,
                                value: get_view_widget_data(@views_widget.module_project, @views_widget.id)[:value_to_show])
         end
+
 
         begin
           format.js { render(:js => "window.location.replace('#{dashboard_path(@module_project.project)}');")}
@@ -212,7 +224,12 @@ class ViewsWidgetsController < ApplicationController
 
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
-    project = @project
+
+      @views_widget.min_value = params[:views_widget][:min_value]
+      @views_widget.max_value = params[:views_widget][:max_value]
+
+      project = @project
+
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -267,6 +284,7 @@ class ViewsWidgetsController < ApplicationController
             end
           end
 
+          #if @views_widget.min_value < @value and @views_widget.max_value > @value
           if pf.nil?
             pf = ProjectField.new(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
             if !pf.save
@@ -278,6 +296,7 @@ class ViewsWidgetsController < ApplicationController
           else
             flash[:error] = I18n.t(:identical_project_field_exists)
           end
+          #end
         end
 
         if @views_widget.module_project
@@ -292,6 +311,8 @@ class ViewsWidgetsController < ApplicationController
 
         @position_x = (@views_widget.position_x.nil? || @views_widget.position_x.downcase.eql?("nan")) ? 1 : @views_widget.position_x
         @position_y = (@views_widget.position_y.nil? || @views_widget.position_y.downcase.eql?("nan")) ? 1 : @views_widget.position_y
+
+
 
         @module_project = ModuleProject.find(params[:views_widget][:module_project_id])
         @module_project_box = @module_project

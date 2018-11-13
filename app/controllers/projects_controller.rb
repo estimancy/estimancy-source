@@ -4073,10 +4073,12 @@ public
     conditions[:request_number] = params[:request_number] unless params[:request_number].blank?
     conditions[:title] = params[:title] unless params[:title].blank?
     conditions[:business_need] = params[:business_need] unless params[:business_need].blank?
+    #conditions[:date_min] = params[:date_min] unless params[:date_min].blank?
+    #conditions[:date_max] = params[:date_max] unless params[:date_max].blank?
 
     @projects = {}
     tmp = Hash.new {|h,k| h[k] = [] }
-    Project.where(conditions).each do |project|
+    Project.where(conditions).where(start_date: params[:date_min] .. params[:date_max]).each do |project|
       tmp[project.request_number.to_s] << project
       @projects[project.business_need.to_s] = tmp
     end

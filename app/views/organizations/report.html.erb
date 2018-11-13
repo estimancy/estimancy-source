@@ -191,6 +191,27 @@
             </label>
             <%= text_field_tag :title %>
             </p>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_min %></b>
+                </label>
+                <%= date_field_tag :date_min %>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_max %></b>
+                </label>
+                <%= date_field_tag :date_max %>
+              </div>
+            </div>
+
           </div>
 
           <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
