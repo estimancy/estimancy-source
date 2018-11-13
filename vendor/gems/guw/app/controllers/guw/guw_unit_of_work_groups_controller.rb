@@ -61,6 +61,24 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     redirect_to main_app.dashboard_path(@project)
   end
 
+  def create_group
+    @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.new
+
+    module_project = current_module_project
+    @organization = @project.organization
+
+    @guw_unit_of_work_group.name = params[:name]
+    @guw_unit_of_work_group.comments = params[:comments]
+    @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.organization_id = params[:organization_id]
+    @guw_unit_of_work_group.project_id = params[:project_id]
+    @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.pbs_project_element_id = current_component.id
+
+    @guw_unit_of_work_group.save
+
+  end
+
   def update
     authorize! :execute_estimation_plan, @project
 
