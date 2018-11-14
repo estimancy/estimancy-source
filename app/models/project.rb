@@ -416,6 +416,8 @@ class Project < ActiveRecord::Base
                                               height: old_view_widget.height,
                                               position: old_view_widget.position,
                                               position_x: old_view_widget.position_x,
+                                              min_value: old_view_widget.min_value,
+                                              max_value: old_view_widget.max_value,
                                               position_y: old_view_widget.position_y)
 
             #Update KPI Widget aquation
@@ -482,7 +484,9 @@ class Project < ActiveRecord::Base
                                                 height: old_view_widget.height,
                                                 position: old_view_widget.position,
                                                 position_x: old_view_widget.position_x,
-                                                position_y: old_view_widget.position_y)
+                                                position_y: old_view_widget.position_y,
+                                                min_value: old_view_widget.min_value,
+                                                max_value: old_view_widget.max_value)
               if new_view_widget.save
                 #Update the copied project_fields
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first
