@@ -230,7 +230,6 @@ class ViewsWidgetsController < ApplicationController
 
       project = @project
 
-
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
       equation = Hash.new
@@ -254,7 +253,7 @@ class ViewsWidgetsController < ApplicationController
         #Update the widget's pe_attribute
         #widget_attribute_id = @views_widget.estimation_value.pe_attribute_id
         #if  widget_attribute_id != @views_widget.pe_attribute_id
-        #  @views_widget.update_attribute(:pe_attribute_id, widget_attribute_id)
+        #@views_widget.update_attribute(:pe_attribute_id, widget_attribute_id)
         #end
 
         if params["field"].blank?
@@ -263,6 +262,7 @@ class ViewsWidgetsController < ApplicationController
         else
           #pf = ProjectField.where(views_widget_id: @views_widget.id).last
           pf = ProjectField.where(project_id: project.id, field_id: params["field"].to_i).last
+
 
           if params[:views_widget][:is_kpi_widget].present?
             @value = get_kpi_value_without_unit(@views_widget)    #@value = get_kpi_value(@views_widget)
