@@ -535,6 +535,10 @@ class Project < ActiveRecord::Base
       new_prj.status_comment << "___________________________________________________________________________"
       new_prj.status_comment << "\r\n #{old_prj.status_comment} \r\n"
 
+
+      new_prj.change_date = Time.now
+      new_prj.time_count = Time.now
+
       new_prj.transaction do
 
         if new_prj.save
