@@ -150,8 +150,15 @@ class ViewsWidgetsController < ApplicationController
     # end
     #
 
-    @views_widget.min_value = params[:views_widget][:min_value]
-    @views_widget.max_value = params[:views_widget][:max_value]
+    min_value = params[:views_widget][:min_value].to_f
+    max_value = params[:views_widget][:max_value].to_f
+
+    if min_value < max_value
+      @views_widget.min_value = params[:views_widget][:min_value]
+      @views_widget.max_value = params[:views_widget][:max_value]
+    else
+      flash[:warning] = "Attention, la valeur minimum doit être inférieure à la valeur maximale."
+    end
 
     if params[:views_widget][:is_kpi_widget].present?
       equation = Hash.new
@@ -225,11 +232,7 @@ class ViewsWidgetsController < ApplicationController
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
 
-      @views_widget.min_value = params[:views_widget][:min_value]
-      @views_widget.max_value = params[:views_widget][:max_value]
-
-      project = @project
-
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -284,7 +287,6 @@ class ViewsWidgetsController < ApplicationController
             end
           end
 
-          #if @views_widget.min_value < @value and @views_widget.max_value > @value
           if pf.nil?
             pf = ProjectField.new(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
             if !pf.save
@@ -296,7 +298,16 @@ class ViewsWidgetsController < ApplicationController
           else
             flash[:error] = I18n.t(:identical_project_field_exists)
           end
-          #end
+        end
+
+        min_value = params[:views_widget][:min_value].to_f
+        max_value = params[:views_widget][:max_value].to_f
+
+        if min_value < max_value
+          @views_widget.min_value = params[:views_widget][:min_value]
+          @views_widget.max_value = params[:views_widget][:max_value]
+        else
+          flash[:warning] = "Attention, la valeur minimum doit être inférieure à la valeur maximale."
         end
 
         if @views_widget.module_project
