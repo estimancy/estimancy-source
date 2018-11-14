@@ -117,7 +117,7 @@ class ViewsWidget < ActiveRecord::Base
 
         pf = pfs[field.id]
 
-        begin #unless view_widget_estimation_value.nil?
+        #begin #unless view_widget_estimation_value.nil?
           if set_to_nil == true
             if view_widget.is_kpi_widget?
               @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)
@@ -129,6 +129,7 @@ class ViewsWidget < ActiveRecord::Base
             if !view_widget_estimation_value.nil?
               if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
                 begin
+                  @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
                   @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
                 rescue
                   @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
@@ -150,18 +151,45 @@ class ViewsWidget < ActiveRecord::Base
             pf.field_id = field.id
             pf.project_id = project.id
 
+
             # pf ce sont les ProjectField, ce sont les valeurs qui remontent au niveau de la lise des estimations
             # Il faut sauvegarder cet objet (pf) sous 2 conditions :
             # si la vignette contient une borne et max
-            # si la valeur @valeur est comprise entre les bornes de la vignette view_widget (min et max)
+            # si la valeur @valeur est view_widgetcomprise entre les bornes de la vignette view_widget (min et max)
             # Donc je te laisse réflchir, ya juste 2 test à faire.
 
-            pf.save
+            borne_min = view_widget.min_value
+            borne_max = view_widget.max_value
+
+            p "======================================="
+            p view_widget.name
+            p @value
+            p borne_min
+            p borne_max
+            p "======================================="
+
+
+            unless borne_min.nil? || borne_max.nil?
+              p "a"
+              if @value > borne_min && @value < borne_max
+                p "b"
+                pf.save
+              end
+            else
+              #flash[:warning] = "Impossible de sauvegarder la vignette"
+            end
+
+            #if borne_min.nil? && borne_max.nil?
+              #flash[:notice] = "Errrror"
+            #else
+              #flash[:notice] = "Succès"
+              #pf.save
+            #end
 
           end
-        rescue
+        #rescue
           # nothing
-        end
+        #end
       end
     end
   end
