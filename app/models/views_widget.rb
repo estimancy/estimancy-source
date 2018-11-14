@@ -150,9 +150,14 @@ class ViewsWidget < ActiveRecord::Base
             pf.field_id = field.id
             pf.project_id = project.id
 
-            # if pf.changed?
+            # pf ce sont les ProjectField, ce sont les valeurs qui remontent au niveau de la lise des estimations
+            # Il faut sauvegarder cet objet (pf) sous 2 conditions :
+            # si la vignette contient une borne et max
+            # si la valeur @valeur est comprise entre les bornes de la vignette view_widget (min et max)
+            # Donc je te laisse réflchir, ya juste 2 test à faire.
+
             pf.save
-            # end
+
           end
         rescue
           # nothing
