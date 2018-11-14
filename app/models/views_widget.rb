@@ -41,6 +41,7 @@ class ViewsWidget < ActiveRecord::Base
   has_many :project_fields, dependent: :delete_all
 
   validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? }}
+
   validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true
   validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true
 
