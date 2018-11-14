@@ -142,8 +142,19 @@ class ViewsWidget < ActiveRecord::Base
                 @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)  # get_kpi_value_without_unit
               end
             end
-
           end
+
+        borne_min = view_widget.min_value
+        borne_max = view_widget.max_value
+
+        unless borne_min.nil? || borne_max.nil?
+          if @value < borne_min || @value > borne_max
+            project.is_locked = true
+          else
+            project.is_locked = false
+          end
+          project.save
+        end
 
           unless pf.nil?
             pf.value = @value
@@ -151,40 +162,7 @@ class ViewsWidget < ActiveRecord::Base
             pf.field_id = field.id
             pf.project_id = project.id
 
-
-            # pf ce sont les ProjectField, ce sont les valeurs qui remontent au niveau de la lise des estimations
-            # Il faut sauvegarder cet objet (pf) sous 2 conditions :
-            # si la vignette contient une borne et max
-            # si la valeur @valeur est view_widgetcomprise entre les bornes de la vignette view_widget (min et max)
-            # Donc je te laisse réflchir, ya juste 2 test à faire.
-
-            borne_min = view_widget.min_value
-            borne_max = view_widget.max_value
-
-            p "======================================="
-            p view_widget.name
-            p @value
-            p borne_min
-            p borne_max
-            p "======================================="
-
-
-            unless borne_min.nil? || borne_max.nil?
-              p "a"
-              if @value > borne_min && @value < borne_max
-                p "b"
-                pf.save
-              end
-            else
-              #flash[:warning] = "Impossible de sauvegarder la vignette"
-            end
-
-            #if borne_min.nil? && borne_max.nil?
-              #flash[:notice] = "Errrror"
-            #else
-              #flash[:notice] = "Succès"
-              #pf.save
-            #end
+            pf.save
 
           end
         #rescue

@@ -13,8 +13,14 @@
                   label: I18n.t(:change_estimation_status),
                   as: :select,
                   collection: @project.project_estimation_statuses(@organization),
-                  input_html: {:class => 'input-xlarge'},
+                  input_html: { :class => 'input-xlarge', disabled: @project.is_locked },
                   include_blank: false %>
+
+      <% if @project.is_locked == true %>
+        <p>
+          Le total RTU doit être <= 7j RTU pour utiliser ce modèle
+        </p>
+      <% end %>
     <% end %>
 
     <div class="modal-footer-left">
