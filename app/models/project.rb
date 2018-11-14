@@ -24,7 +24,7 @@ class Project < ActiveRecord::Base
   attr_accessible :title, :description, :version_number, :alias, :state, :estimation_status_id, :status_comment,
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
-                  :private, :provider_id, :request_number, :use_automatic_quotation_number, :business_need, :transaction_id, :allow_export_pdf
+                  :private, :provider_id, :request_number, :use_automatic_quotation_number, :business_need, :transaction_id, :allow_export_pdf, :is_locked
 
   attr_accessor :project_organization_statuses, :new_status_comment, :available_inline_columns
 
