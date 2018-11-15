@@ -42,6 +42,9 @@ class ViewsWidget < ActiveRecord::Base
 
   validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? }}
 
+  validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true
+  validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true
+
   amoeba do
     enable
     include_association [:project_fields]
@@ -65,14 +68,7 @@ class ViewsWidget < ActiveRecord::Base
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
     module_project_all_nexts_mp_with_links = module_project.all_nexts_mp_with_links
 
-    # @mpids = []
-    # @mpids << module_project_all_nexts_mp_with_links.first
-
     module_project_all_nexts_mp_with_links.each do |mp|
-
-      # if !@mpids.include?(mp.id)
-
-        # @mpids << mp.id
 
         mp.estimation_values.where(in_out: "output").each do |ev|
           ["low", "most_likely", "high"].each do |level|
@@ -92,12 +88,9 @@ class ViewsWidget < ActiveRecord::Base
                 mp_ratio_elt.send("#{attribute}_#{level}=", nil)
               end
             end
-            # unless mp_ratio_elt.changed?
             mp_ratio_elt.save
-            # end
           end
         end
-      # end
     end
   end
 
@@ -120,46 +113,57 @@ class ViewsWidget < ActiveRecord::Base
 
         pf = pfs[field.id]
 
-        begin #unless view_widget_estimation_value.nil?
-          if set_to_nil == true
-            if view_widget.is_kpi_widget?
-              @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)
-            else
-              @value = nil
-            end
-
+        #begin #unless view_widget_estimation_value.nil?
+        if set_to_nil == true
+          if view_widget.is_kpi_widget?
+            @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)
           else
-            if !view_widget_estimation_value.nil?
-              if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
-                begin
-                  @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
-                rescue
-                  @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
-                end
-              else
-                @value = view_widget_estimation_value.string_data_probable[component.id]
+            @value = nil
+          end
+
+        else
+          if !view_widget_estimation_value.nil?
+            if view_widget_estimation_value.module_project.pemodule.alias == "effort_breakdown"
+              begin
+                @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                @value = view_widget_estimation_value.string_data_probable[component.id][view_widget_estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+              rescue
+                @value = view_widget_estimation_value.string_data_probable[project.root_component.id]
               end
             else
-              if view_widget.is_kpi_widget?
-                @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)  # get_kpi_value_without_unit
-              end
+              @value = view_widget_estimation_value.string_data_probable[component.id]
             end
-
+          else
+            if view_widget.is_kpi_widget?
+              @value = ApplicationController.helpers.get_kpi_value_without_unit(view_widget, component)  # get_kpi_value_without_unit
+            end
           end
-
-          unless pf.nil?
-            pf.value = @value
-            pf.views_widget_id = view_widget.id
-            pf.field_id = field.id
-            pf.project_id = project.id
-
-            # if pf.changed?
-            pf.save
-            # end
-          end
-        rescue
-          # nothing
         end
+
+        borne_min = view_widget.min_value
+        borne_max = view_widget.max_value
+
+        unless borne_min.nil? || borne_max.nil?
+          if @value < borne_min || @value > borne_max
+            project.is_locked = true
+          else
+            project.is_locked = false
+          end
+          project.save
+        end
+
+        unless pf.nil?
+          pf.value = @value
+          pf.views_widget_id = view_widget.id
+          pf.field_id = field.id
+          pf.project_id = project.id
+
+          pf.save
+
+        end
+        #rescue
+        # nothing
+        #end
       end
     end
   end

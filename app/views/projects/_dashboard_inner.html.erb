@@ -1,46 +1,25 @@
 <div class="row-fluid">
   <div class="span3 pbs">
 
-    <div class="widget-box collapsible" style="display:none;">
-      <div class="widget-title" >
-        <!--<a href="#collapseProduct" data-toggle="collapse">-->
-          <!--<span class="icon">-->
-            <!--<i class="icon-eye-open"></i>-->
-          <!--</span>-->
-        <!--</a>-->
-        <h5><%= I18n.t(:wbs_product) %>
-          <span class="component_name">
-            <%# current_component %>
-          </span>
-          </h5>
-      </div>
-      <div class="collapse in" id="collapseProduct">
-        <div class="widget-content resizableProduct">
-          <%# render :partial => 'pe_wbs', :object => @project_default_ratio %>
-        </div>
-      </div>
-    </div>
-
     <div class="widget-box collapsible" >
       <div class="widget-title" >
-        <h5><%= I18n.t(:wbs_product) %>
+        <h5>
           <span class="component_name">
-            <%= current_component %>
+            <%= @project.title %>
           </span>
         </h5>
+        <!--
         <div class="buttons">
-          <span>
-              <%= link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
-          </span>
+             if @project.allow_export_pdf == true %>
+              link_to "Exporter en PDF", export_dashboard_path(format: "pdf", project_id: @project.id), class: "btn btn-mini", target: "_blank", method: "POST" %>
+          end %>
         </div>
+        -->
       </div>
-      <div class="collapse in" id="collapseProduct">
+      <div class="collapse in" id="collapseProduct" style="height: 217px;">
         <div class="widget-content resizableProduct">
-          <h5>
-            <%= @project.title %>
-          </h5>
           <p>
-            <%= raw(@project.description.to_s.truncate(400)) %>
+            <%= raw(@project.description.to_s.truncate(440)) %>
           </p>
         </div>
       </div>
@@ -52,35 +31,35 @@
     <div class="widget-box collapsible">
       <div class="widget-title">
         <!--<a href="#collapseActivity" data-toggle="collapse">-->
-          <!--<span class="icon">-->
-            <!--<i class="icon-list"></i>-->
-          <!--</span>-->
+        <!--<span class="icon">-->
+        <!--<i class="icon-list"></i>-->
+        <!--</span>-->
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= link_to "#{current_module_project.nil? ? I18n.t(:notice_no_active_module) : current_module_project}", activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF' %>
+          - <%= link_to I18n.t(:deselect_all_modules), activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', remote: true %>
         </h5>
 
         <div class="buttons">
 
           <% if can?(:execute_estimation_plan, @project) %>
-           <span>
-                <% if @initialization_module_project.show_results_view %>
-                     <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview a_white",  :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
-                        <!--<i class="icon-eye-open" style="color: inherit"></i>-->
-                        <button name="hide_view" type="submit" class="btn btn-mini">
-                          <%= I18n.t(:hide_results_global_view) %>
-                        </button>
+            <span>
+              <% if @initialization_module_project.show_results_view %>
+                 <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview a_white",  :title => I18n.t(:title_hide_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
+                    <!--<i class="icon-eye-open" style="color: inherit"></i>-->
+                    <button name="hide_view" type="submit" class="btn btn-mini">
+                      <%= I18n.t(:hide_results_global_view) %>
+                    </button>
 
-                     <% end %>
-                <% else %>
-                     <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview a_white", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
-                         <!--<i class="icon-eye-close" style="color: inherit"></i>-->
-                         <button name="hide_view" type="submit" class="btn btn-mini">
-                           <%= I18n.t(:show_results_global_view) %>
-                         </button>
-                     <% end %>
-                <% end %>
+                 <% end %>
+              <% else %>
+                 <%= link_to show_module_project_results_view_path(module_project_id: @initialization_module_project.id), id: "show_results_view", class: "show_hide_project_overview a_white", :title => I18n.t(:title_show_results_view, :value => "#{@initialization_module_project.pemodule.title}"), remote: true do %>
+                     <!--<i class="icon-eye-close" style="color: inherit"></i>-->
+                     <button name="hide_view" type="submit" class="btn btn-mini">
+                       <%= I18n.t(:show_results_global_view) %>
+                     </button>
+                 <% end %>
+              <% end %>
             </span>
 
           <% end %>
@@ -108,29 +87,29 @@
   </div>
 </div>
 
-<% unless current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-  <div class="row-fluid">
-    <div class="span12">
-      <div class="widget-box collapsible">
-        <div class="widget-title">
-          <h5>
-            <%= I18n.t(:label_input_data) %> - <%= current_component %> - <%= "#{current_module_project}" %>
-          </h5>
-        </div>
+<%# unless current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+<div class="row-fluid">
+  <div class="span12">
+    <div class="widget-box collapsible">
+      <div class="widget-title">
+        <h5>
+          <%= I18n.t(:label_input_data) %> - <%= current_component %> - <%= "#{current_module_project}" %>
+        </h5>
+      </div>
 
-        <div class="collapse in" id="collapseIn">
-          <div class="widget-content tab-content">
-            <div class="input">
-              <div class="input_data">
-                <%= render :partial => 'projects/setting_module', object: @wbs_activity_ratio %>
-              </div>
+      <div class="collapse in" id="collapseIn">
+        <div class="widget-content tab-content">
+          <div class="input">
+            <div class="input_data">
+              <%= render :partial => 'projects/setting_module', object: @wbs_activity_ratio %>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-<% end %>
+</div>
+<%# end %>
 
 <!-- show selected view for each module project -->
 <!-- The results boxes will be arranged as in the estimation plan -->
@@ -143,27 +122,25 @@
 <!--</div>-->
 
 <script>
-    $(document).ready(function () {
-        $(".date-picker").datepicker({
-            language: '<%= set_user_language %>',
-            autoclose: true,
-            todayHighlight: true,
-            todayBtn: true
-        }).on("hide", function (e) {
-            $.ajax({
-                url: "check_attribute",
-                type: 'POST',
-                data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + this.className.split(/\s/)[2]
-            })
-         });
-
+  $(document).ready(function () {
+    $(".date-picker").datepicker({
+      language: '<%= set_user_language %>',
+      autoclose: true,
+      todayHighlight: true,
+      todayBtn: true
+    }).on("hide", function (e) {
+      $.ajax({
+        url: "check_attribute",
+        type: 'POST',
+        data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + this.className.split(/\s/)[2]
+      })
     });
+  });
 </script>
 
 
 <!--Load the AJAX API-->
 <script type="text/javascript">
-    // Load the Visualization API and the corechart package.
-    google.charts.load('current', {'packages':['corechart']});
+  // Load the Visualization API and the corechart package.
+  google.charts.load('current', {'packages':['corechart']});
 </script>
-
