@@ -1274,7 +1274,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   if ce.nil?
                     pc = 100
                   else
-                    pc = ce.value
+                    pc = ce.value.to_f
                   end
 
                 else
@@ -1311,7 +1311,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
               end
 
-              ceuw.percent = pc
+              ceuw.percent = pc.to_f
               ceuw.guw_coefficient_id = guw_coefficient.id
               ceuw.guw_unit_of_work_id = guw_unit_of_work.id
               ceuw.module_project_id = @module_project.id
