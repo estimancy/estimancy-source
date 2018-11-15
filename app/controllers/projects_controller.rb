@@ -3967,6 +3967,27 @@ public
   def update_comments_status_change
     @project = Project.find(params[:project_id])
 
+    StatusHistory.create(organization: @project.organization.name,
+                         project: @project.title,
+                         version_number: @project.version_number,
+                         change_date: Time.now,
+                         action: "Changement de statut",
+                         comments: params["project"]["new_status_comment"].to_s,
+                         origin: @project.estimation_status.name,
+                         target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+                         user: current_user.name)
+
+
+    Biz.configure do |config|
+      config.hours = {
+          mon: {'09:00' => '12:00', '13:00' => '17:00'},
+          tue: {'09:00' => '12:00', '13:00' => '17:00'},
+          wed: {'09:00' => '12:00', '13:00' => '17:00'},
+          thu: {'09:00' => '12:00', '13:00' => '17:00'},
+          fri: {'09:00' => '12:00', '13:00' => '17:00'}
+      }
+    end
+
     new_comments = ""
     auto_updated_comments = ""
     # Add and update comments on estimation status change

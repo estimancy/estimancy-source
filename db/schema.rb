@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20181114152321) do
+ActiveRecord::Schema.define(:version => 20181114155557) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -1852,6 +1852,20 @@ ActiveRecord::Schema.define(:version => 20181114152321) do
   end
 
   add_index "staffing_staffing_models", ["organization_id", "name"], :name => "index_staffing_staffing_models_on_organization_id_and_name", :unique => true
+
+  create_table "status_histories", :force => true do |t|
+    t.string   "organization"
+    t.string   "project"
+    t.string   "version_number"
+    t.datetime "change_date"
+    t.string   "action"
+    t.text     "comments"
+    t.string   "origin"
+    t.string   "target"
+    t.string   "user"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
 
   create_table "status_transitions", :force => true do |t|
     t.integer  "from_transition_status_id"

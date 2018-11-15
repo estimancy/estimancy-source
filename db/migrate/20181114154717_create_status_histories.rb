@@ -4,7 +4,7 @@ class CreateStatusHistories < ActiveRecord::Migration
       t.string :organization
       t.string :project
       t.string :version_number
-      t.date :change_date
+      t.datetime :change_date
       t.string :action
       t.text :comments
       t.string :origin
