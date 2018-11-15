@@ -9,7 +9,7 @@
    view_widget = ViewsWidget.find(view_widget_id)
    pe_attribute_alias = estimation_value.pe_attribute.alias
 
-   if pe_attribute_alias.in?("cost", "effort")
+   if pe_attribute_alias.in?(["cost", "effort"])
      effort_attribute_alias = "effort" #"retained_effort"
      cost_attribute_alias = "cost" #"retained_cost"
    else

@@ -1056,10 +1056,10 @@ fr:
 
   label_Project: "Projet"
   label_filter_on_projects_version: "Filtre sur les versions des devis"
-  label_filter_on_project_version_1: "Afficher uniquement les dernières versions"
+  label_filter_on_project_version_1: "Afficher uniquement les feuilles"
   label_filter_on_project_version_2: "Afficher toutes les versions"
-  label_filter_on_project_version_3: "Afficher uniquement les racines"
-  label_filter_on_project_version_4: "Afficher uniquement les estimations récemment crées"
+  label_filter_on_project_version_3: "Afficher uniquement la racine"
+  label_filter_on_project_version_4: "Afficher uniquement la feuille la plus récente"
   label_ProjectArea: "Secteur Projet"
   label_PlatformCategory: "Catégorie Plate-forme"
   label_ProjectCategory: "Catégorie Projet"
@@ -2175,3 +2175,42 @@ fr:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+
+  raw_data_extract: "Extraction de données brutes"
+
+  #organizations/report
+  filtered_excel_report: "Rapport Excel filtré"
+  detailed_excel_report: "Rapport Excel détaillé"
+  detailed_pdf_report: "Rapport PDF détaillé"
+  generate_filtered_excel_report: "Générer un rapport Excel filtré"
+  selected_quotation_export: "Seuls les devis sélectionnés seront exportés dans un fichier Excel récapitulatif."
+  counting_details: "Détails de dénombrements"
+  module_size_select: "Sélectionner le module de taille"
+  generate_excel_report_all_quotations: "Générer un rapport Excel de tous les devis"
+  Abaque_Wbs_quotation_export: "Tous les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif."
+  quotation_PDF_export: "Exporter tous les devis en PDF"
+  raw_data_range_dates: "Extraction des données brutes comprises dans une fourchette de dates:"
+
+
+  #organizations/edit
+  technical_informations: "Informations techniques"
+  printing_extraction: "Impression et extraction"
+
+  extracting_organizations_and_their_numbers_of_quotations: "Extraire les organisations et leur nombres de devis"
+
+  deselect_all_modules: "Désélectionner tous les modules"
+
+  calculation_phases: "Calcul des phases"
+
+  #organizations/estimations
+  pdf_save: "Enregistrer en PDF"
+
+  recalculate_all: "Tout recalculer"
+
+  budget_management: "Gestion des bugdets"
+
+  date_min: Date min
+  date_max: Date max
+
+  val_min: "Valeur min"
+  val_max: "Valeur max"

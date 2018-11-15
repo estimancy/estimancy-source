@@ -43,6 +43,8 @@ Projestimate::Application.routes.draw do
   get 'show_widget_effort_display_unit' => 'views_widgets#show_widget_effort_display_unit', :as => 'show_widget_effort_display_unit'
   get 'export_vignette' => 'views_widgets#export_vignette' , :as => 'export_vignette'
 
+  post 'save_budget/:organization_id' => 'budgets#save_budget', as: 'save_budget'
+
   resources :widgets
 
   resources :views
@@ -75,6 +77,7 @@ Projestimate::Application.routes.draw do
   #end
   #==========
   devise_for :users, :controllers => {:registrations => "registrations", :omniauth_callbacks => "omniauth_callbacks", sessions: 'sessions'}, :skip => [:registrations]
+
   devise_scope :user do
     #get "metadata",   :to => "sessions#metadata"
     get "sign_in",   :to => "devise/sessions#new"
@@ -96,7 +99,7 @@ Projestimate::Application.routes.draw do
 
   resources :users
 
-  get 'dashboard' => 'users#show', :as => 'dashboard'
+  # get 'dashboard' => 'users#show', :as => 'dashboard'
   get 'validate' => 'users#validate', :as => 'validate'
   post 'create_inactive_user' => 'users#create_inactive_user', :as => 'create_inactive_user'
   get 'find_use_user' => 'users#find_use_user', :as => 'find_use_user'
@@ -341,9 +344,9 @@ Projestimate::Application.routes.draw do
   resources :pe_wbs_projects
 
   resources :projects
-  match 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
-  get 'search' => 'projects#search', :as => 'search'
 
+  get 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
+  get 'search' => 'projects#search', :as => 'search'
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'
   post 'raw_data_extraction' => 'projects#raw_data_extraction', :as => 'raw_data_extraction'
@@ -357,8 +360,8 @@ Projestimate::Application.routes.draw do
   get 'results_with_activities_by_profile' => 'projects#results_with_activities_by_profile', :as => 'results_with_activities_by_profile'
   get 'load_security_for_selected_user' => 'projects#load_security_for_selected_user', :as => 'load_security_for_selected_user'
   get 'load_security_for_selected_group' => 'projects#load_security_for_selected_group', :as => 'load_security_for_selected_group'
-  get 'update_project_security_level' => 'projects#update_project_security_level', :as => 'update_project_security_level'
-  get 'update_project_security_level_group' => 'projects#update_project_security_level_group', :as => 'update_project_security_level_group'
+  # get 'update_project_security_level' => 'projects#update_project_security_level', :as => 'update_project_security_level'
+  # get 'update_project_security_level_group' => 'projects#update_project_security_level_group', :as => 'update_project_security_level_group'
   get 'projects_global_params' => 'projects#projects_global_params', :as => 'projects_global_params'
   get 'commit' => 'projects#commit', :as => 'commit'
   get 'activate' => 'projects#activate', :as => 'activate'
@@ -419,4 +422,6 @@ Projestimate::Application.routes.draw do
   get "/500" => "errors#internal_server_error"
 
   root :to => 'organizations#organizationals_params'
+
+  get 'projects_quantity' => 'organizations#projects_quantity'
 end

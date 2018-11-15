@@ -191,7 +191,7 @@ class ApplicationController < ActionController::Base
       if current_user.organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations", "sort", "search", "add_filter_on_project_version", "generate_report_excel_detail"
+          when "estimations", "sort", "search", "add_filter_on_project_version"
             @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
           when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)

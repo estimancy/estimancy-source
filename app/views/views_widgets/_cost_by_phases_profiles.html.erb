@@ -2,7 +2,7 @@
   <% wbs_activity = ratio_reference.wbs_activity  %>
   <% effort_unit_coefficient = wbs_activity.effort_unit_coefficient.to_f || 1
 
-     if pe_attribute_alias.in?("cost", "effort")
+     if pe_attribute_alias.in?(["cost", "effort"])
        effort_attribute_alias = "retained_effort"
        cost_attribute_alias = "retained_cost"
      else

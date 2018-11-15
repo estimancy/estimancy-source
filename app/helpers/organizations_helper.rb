@@ -41,7 +41,6 @@ module OrganizationsHelper
   end
 
   def query_available_inline_columns_options(query)
-
     selected_inline_columns = update_selected_inline_columns(query)
     #(query.available_inline_columns - selected_inline_columns).collect {|column| [I18n.t(column.caption), column.name]}
     (query.available_inline_columns - selected_inline_columns).collect do |column|
@@ -66,7 +65,6 @@ module OrganizationsHelper
   end
 
   def column_header(column)
-
     # lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: (params[:s] == "desc" ? "asc" : "desc")), remote: true)
 
     column_chevron_icon = ""

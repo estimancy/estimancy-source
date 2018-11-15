@@ -1335,7 +1335,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               #                                                                                                    guw_coefficient_id: guw_coefficient.id,
               #                                                                                                    guw_coefficient_element_id: nil)
               begin
-                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
               rescue
                 if ceuw.percent.nil?
                   # ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
@@ -1346,7 +1346,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                           guw_model_id: @guw_model.id).first
                   end
-                  pc = ce.value.to_f
+                  pc = ce.value
                 else
                   pc = ceuw.percent.to_f
                 end
@@ -1380,7 +1380,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 # ceuw.guw_coefficient_element_id = guw_coefficient_element.id
 
                 unless cce.value.blank?
-                  coeffs << pc.to_f
+                  coeffs << pc
                   coeffs << cce.value.to_f
 
                   v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
@@ -1548,11 +1548,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       update_estimation_values
       update_view_widgets_and_project_fields
-
     end
-
-    # update_estimation_values
-    # update_view_widgets_and_project_fields
 
     # if @guw_unit_of_works.last.nil?
     #   redirect_to main_app.dashboard_path(@project)

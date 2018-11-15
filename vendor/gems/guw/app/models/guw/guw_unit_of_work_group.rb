@@ -22,6 +22,8 @@
 module Guw
   class GuwUnitOfWorkGroup < ActiveRecord::Base
 
+    attr_accessible :organization_id, :project_id, :name, :comments, :module_project_id, :pbs_project_element_id, :organization_technology_id
+
     has_many :guw_unit_of_works, dependent: :destroy
     # la Vue
     has_many :module_project_guw_unit_of_works, class_name: 'ModuleProjectGuwUnitOfWork'

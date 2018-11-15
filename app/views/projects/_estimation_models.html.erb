@@ -52,7 +52,11 @@
             <td style="min-width:130px;">
 
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication_model"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
+                <%= link_to('',
+                            main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'),
+                            :class => 'icon-copy pull-left',
+                            :title => I18n.t('button_duplicate_project'),
+                            :method => "POST") %>
               <% end %>
 
               <% if can? :create_project_from_template, Project %>

@@ -1,15 +1,50 @@
 <div class="tabs">
   <ul>
-    <li><a href="#tabs-report">Rapport Excel filtré</a></li>
-    <li><a href="#tabs-report-all">Rapport Excel détaillé</a></li>
-    <li><a href="#tabs-pdf-all">Rapport PDF détaillé</a></li>
+    <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
+    <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
+    <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
+    <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
   </ul>
 
+  <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <p>
+      <%= I18n.t(:raw_data_range_dates) %>
+    </p>
+
+    <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
+      <div class="row-fluid">
+        <div class="span12">
+          <%= label_tag 'Date min' %>
+          <%= date_field_tag 'date_min' %>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row-fluid">
+        <div class="span12">
+          <%= label_tag 'Date max' %>
+          <%= date_field_tag 'date_max' %>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row-fluid">
+        <div class="span12">
+          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+
+
   <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <%= form_tag "generate_report_excel_detail", method: "post" do %>
-      <h4>Générer un rapport Excel de tous les devis</h4>
+   <%= form_tag "generate_report_excel_detail", method: "post" do %>
+      <h4><%= I18n.t(:generate_excel_report_all_quotations) %></h4>
       <p>
-        Tout les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif.
+        <%= I18n.t(:Abaque_Wbs_quotation_export) %>
       </p>
       <br>
       <%= hidden_field_tag "organization_id", params[:organization_id] %>
@@ -19,9 +54,9 @@
 
   <div id="tabs-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
-    <h4>Générer un rapport Excel filtré</h4>
+    <h4><%= I18n.t(:generate_filtered_excel_report) %></h4>
     <p>
-      Seul les devis sélectionnés seront exportés dans un fichier Excel récapitulatif.
+      <%= I18n.t(:selected_quotation_export) %>
     </p>
 
       <%= form_tag "generate_report_excel_estimations", method: "post" do %>
@@ -99,7 +134,7 @@
         <div class="span4 well well-rounded">
           <div class="row-fluid">
             <div class="span12">
-              <%= label_tag "Détails de dénombrements" %>
+              <%= label_tag I18n.t(:counting_details) %>
               <%= check_box_tag "detail", "checked", true %>
             </div>
           </div>
@@ -108,7 +143,7 @@
 
           <div class="row-fluid">
             <div class="span12">
-              <%= label_tag "Sélectionnez le module de taille" %>
+              <%= label_tag I18n.t(:module_size_select) %>
               <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]} ) %>
             </div>
           </div>
@@ -127,7 +162,7 @@
 
   <div id="tabs-pdf-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
     <h4>
-      Exporter les devis sous format PDF
+      <%= I18n.t(:quotation_PDF_export) %>
     </h4>
 
     <div class="row-fluid">
@@ -138,7 +173,7 @@
 
             <p>
               <label>
-                <b>Besoin métier</b>
+                <b> <%= I18n.t :business_need %></b>
               </label>
               <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact) %>
             </p>
@@ -156,9 +191,30 @@
             </label>
             <%= text_field_tag :title %>
             </p>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_min %></b>
+                </label>
+                <%= date_field_tag :date_min %>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_max %></b>
+                </label>
+                <%= date_field_tag :date_max %>
+              </div>
+            </div>
+
           </div>
 
-          <%= submit_tag "Exporter en PDF", :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
 
         <% end %>
       </div>

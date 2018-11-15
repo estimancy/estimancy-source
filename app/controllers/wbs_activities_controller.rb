@@ -697,8 +697,8 @@ class WbsActivitiesController < ApplicationController
           ratio_name = @ratio_reference.name
           est_val.update_attribute(:"string_data_probable", { current_component_id => ratio_name })
 
-        elsif est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4")
-          if (est_val.in_out == 'output') && (est_val.pe_attribute.alias.in?("theoretical_effort", "theoretical_cost", "effort", "cost"))
+        elsif est_val.pe_attribute.alias.in?(["theoretical_effort", "theoretical_cost", "effort", "cost", "E1", "E2", "E3", "E4"])
+          if (est_val.in_out == 'output') && (est_val.pe_attribute.alias.in?(["theoretical_effort", "theoretical_cost", "effort", "cost"]))
 
             @results = Hash.new
             tmp_prbl = Array.new
@@ -707,7 +707,7 @@ class WbsActivitiesController < ApplicationController
             pe_attribute_alias = est_val.pe_attribute.alias
 
             mp_pe_attribute_alias = pe_attribute_alias
-            if pe_attribute_alias.in?("effort", "cost")
+            if pe_attribute_alias.in?(["effort", "cost"])
               mp_pe_attribute_alias = "retained_#{pe_attribute_alias}"
             end
 
@@ -835,7 +835,7 @@ class WbsActivitiesController < ApplicationController
                   unless corresponding_ratio_profile_value.nil?
 
                     #If est_val.pe_attribute.alias == "cost" or "theoretical_cost"
-                    if est_val.pe_attribute.alias.in?("theoretical_cost", "cost")
+                    if est_val.pe_attribute.alias.in?(["theoretical_cost", "cost"])
                       effort_man_month_attribute = "retained_effort"
                       if est_val.pe_attribute.alias == "theoretical_cost"
                         effort_man_month_attribute = "theoretical_effort"
@@ -1033,7 +1033,7 @@ class WbsActivitiesController < ApplicationController
 
           ###elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
           #elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("theoretical_effort", "effort", "E1", "E2", "E3", "E4")
-          elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?("E1", "E2", "E3", "E4")
+          elsif est_val.in_out == 'input' && est_val.pe_attribute.alias.in?(["E1", "E2", "E3", "E4"])
             in_result = Hash.new
             tmp_prbl = Array.new
             ['low', 'most_likely', 'high'].each do |level|
@@ -1041,7 +1041,7 @@ class WbsActivitiesController < ApplicationController
 
               entry_level_value = nil
               if @wbs_activity.three_points_estimation?
-                if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+                if est_val.pe_attribute.alias.in?(["theoretical_effort", "effort"])
                   entry_level_value = params[:values][level].first.last
                 else
                   entry_level_value = params[:values][level]["#{est_val.id}"]
@@ -1055,7 +1055,7 @@ class WbsActivitiesController < ApplicationController
                 in_result["string_data_#{level}"] = level_estimation_value
 
               else
-                if est_val.pe_attribute.alias.in?("theoretical_effort", "effort")
+                if est_val.pe_attribute.alias.in?(["theoretical_effort", "effort"])
                   entry_level_value = params[:values]["most_likely"].first.last
                 else
                   entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]
@@ -1949,7 +1949,7 @@ class WbsActivitiesController < ApplicationController
             #result_with_consistency[wbs_project_elt_id] = {:value => est_value}
 
             #if pe_attribute_alias.in?("retained_effort", "retained_cost")
-            if pe_attribute_alias.in?("effort", "cost")
+            if pe_attribute_alias.in?(["effort", "cost"])
               mp_retained_attribute = "retained_#{pe_attribute_alias}_#{level}"
 
               @module_project_ratio_elements.reject{ |mp_elt| mp_elt.wbs_activity_element_id.nil? }.each_with_index do |mp_ratio_element, i|

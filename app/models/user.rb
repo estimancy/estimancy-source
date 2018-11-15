@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
   serialize :ten_latest_projects, Array
 
   # Security Audit management
-  has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
+  # has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
 
   validates_presence_of :last_name, :first_name
   validates :login_name, :presence => true, :uniqueness => { case_sensitive: false }

@@ -43,6 +43,8 @@ Guw::Engine.routes.draw do
   get "load_cplx_comments" => "guw_unit_of_works#load_cplx_comments"
 
   resources :guw_unit_of_work_groups
+  post "create_group" => "guw_unit_of_work_groups#create_group", as: "create_group"
+
 
   resources :guw_work_units
   resources :guw_work_units do

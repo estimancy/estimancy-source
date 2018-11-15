@@ -123,6 +123,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.max_staffing = params[:new_staffing_trapeze]
     @staffing_custom_data.percent = params[:percents]
 
+    @staffing_custom_data.save
+
     if @staffing_custom_data.standard_effort == 0
       @staffing_custom_data.global_effort_value = nil
       @staffing_custom_data.duration = nil

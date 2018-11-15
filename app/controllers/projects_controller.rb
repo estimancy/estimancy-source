@@ -126,7 +126,7 @@ class ProjectsController < ApplicationController
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
-    @organization.projects.each do |project|
+    @organization.projects.where(created_at: (params[:date_min]..params[:date_max])).each do |project|
       project.guw_unit_of_works.each do |guow|
         worksheet_cf.add_cell(i, 0, project.title)
         worksheet_cf.add_cell(i, 1, project.application_name)
@@ -138,7 +138,7 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(i, 7, project.platform_category.nil? ? '' : project.platform_category.name)
         worksheet_cf.add_cell(i, 8, project.provider.nil? ? '' : project.provider.name)
         worksheet_cf.add_cell(i, 9, guow.name)
-        worksheet_cf.add_cell(i, 10, guow.guw_type.nil? ? '-' : guow.guw_type.name)
+        worksheet_cf.add_cell(i, 10, guow.guw_type.name)
         worksheet_cf.add_cell(i, 11, guow.intermediate_percent)
         worksheet_cf.add_cell(i, 12, guow.intermediate_weight)
 
@@ -338,6 +338,34 @@ class ProjectsController < ApplicationController
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 
+    check_module_project
+  end
+
+  # Function to activate the current/selected module_project
+  def activate_module_project
+    session[:module_project_id] = params[:module_project_id]
+    @module_project = ModuleProject.find(params[:module_project_id])
+    @project = @module_project.project
+    @project_organization = @project.organization
+
+    authorize! :show_project, @project
+
+    @module_projects ||= @project.module_projects
+    @pbs_project_element = current_component
+
+    #Get the initialization module_project
+    @initialization_module_project ||= ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
+
+    # Get the max X and Y positions of modules
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+
+    @results = nil
+
+    check_module_project
+  end
+
+  def check_module_project
     if @module_project.pemodule.alias == "expert_judgement"
       if @module_project.expert_judgement_instance.nil?
         @expert_judgement_instance = ExpertJudgement::Instance.first
@@ -384,8 +412,8 @@ class ProjectsController < ApplicationController
     elsif @module_project.pemodule.alias == "skb"
       @skb_model = @module_project.skb_model
       @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
-                                      organization_id: @project_organization.id,
-                                      skb_model_id: @skb_model.id).first_or_create
+                                       organization_id: @project_organization.id,
+                                       skb_model_id: @skb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
@@ -445,7 +473,7 @@ class ProjectsController < ApplicationController
       #if @module_project.guw_model.nil?
       #  @guw_model = Guw::GuwModel.first
       #else
-        @guw_model = @module_project.guw_model
+      @guw_model = @module_project.guw_model
       # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
       # Uitilisation de la vue ModuleProjectGuwUnitOfWorkGroup
@@ -463,10 +491,10 @@ class ProjectsController < ApplicationController
       @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).first
       if @staffing_custom_data.nil?
         @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
-                                staffing_method: 'trapeze',
-                                period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
-                                trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
-                                trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
+                                                                     staffing_method: 'trapeze',
+                                                                     period_unit: 'week', global_effort_type: 'probable', mc_donell_coef: 6, puissance_n: 0.33,
+                                                                     trapeze_default_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] },
+                                                                     trapeze_parameter_values: { :x0 => trapeze_default_values['x0'], :y0 => trapeze_default_values['y0'], :x1 => trapeze_default_values['x1'], :x2 => trapeze_default_values['x2'], :x3 => trapeze_default_values['x3'], :y3 => trapeze_default_values['y3'] } )
       end
 
     elsif @module_project.pemodule.alias == "effort_breakdown"
@@ -1072,6 +1100,8 @@ class ProjectsController < ApplicationController
         end
       end
 
+      # remplir le champs allow_export_pdf
+      @project.allow_export_pdf = params['allow_export_pdf']
       @project.save
 
       project_root = @project.root_component
@@ -1817,7 +1847,7 @@ class ProjectsController < ApplicationController
       @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
       @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
-      if @pemodule.alias.in?("guw", "operation")
+      if @pemodule.alias.in?(["guw", "operation"])
         #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
         #guw_outputs = guw_model.guw_outputs
 
@@ -3088,7 +3118,7 @@ public
     end
 
     # Filtre sur les versions des estimations
-    if !params[:filter_version].in?(['2', ''])
+    if !params[:filter_version].in?(['4', ''])
       res = filter_estimation_versions(res, params[:filter_version])
     end
 
@@ -3186,7 +3216,7 @@ public
     end
 
     # filtre sur la version des estimations
-    if !@filter_version.to_s.in?(['2', ''])
+    if !@filter_version.to_s.in?(['4', ''])
       @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
     end
 
@@ -4043,10 +4073,12 @@ public
     conditions[:request_number] = params[:request_number] unless params[:request_number].blank?
     conditions[:title] = params[:title] unless params[:title].blank?
     conditions[:business_need] = params[:business_need] unless params[:business_need].blank?
+    #conditions[:date_min] = params[:date_min] unless params[:date_min].blank?
+    #conditions[:date_max] = params[:date_max] unless params[:date_max].blank?
 
     @projects = {}
     tmp = Hash.new {|h,k| h[k] = [] }
-    Project.where(conditions).each do |project|
+    Project.where(conditions).where(start_date: params[:date_min] .. params[:date_max]).each do |project|
       tmp[project.request_number.to_s] << project
       @projects[project.business_need.to_s] = tmp
     end

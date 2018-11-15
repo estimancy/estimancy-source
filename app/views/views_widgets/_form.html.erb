@@ -4,6 +4,7 @@
     <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
     <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
     <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+
     <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
     <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
@@ -55,6 +56,21 @@
         </tr>
 
         <tr>
+          <td colspan="2">
+            <b>
+              La valeur minmale doit être inférieure à la valeur maximale.
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <%= f.input :min_value, as: :integer, label: I18n.t(:val_min), :input_html => { value: @min_value, placeholder: "Valeur min. autorisée" } %>
+          </td>
+          <td>
+            <%= f.input :max_value, as: :integer, label: I18n.t(:val_max), :input_html => { value: @max_value, placeholder: "Valeur max. autorisée" } %>
+          </td>
+        </tr>
+        <tr>
           <td>
             <label class="checkbox"></label>
             <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
@@ -68,7 +84,7 @@
   </div>
   
   <div class="actions-tabs">
-    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? ) %>
+    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? && (@views_widget.min_value < @views_widget.max_value)) %>
         <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
     <% end %>
     <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>

@@ -274,6 +274,7 @@ input::-webkit-inner-spin-button {
     border: 1px solid lightgrey;
     height: 330px;
     width: 679px;
+    /*height: 360px;*/
 }
 
 .login_wrapper {

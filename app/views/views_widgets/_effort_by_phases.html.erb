@@ -61,14 +61,14 @@
                 if wbs_activity_elt.is_root?
                   begin
                     #if estimation_value.pe_attribute.alias == "cost"
-                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                    if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                       @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
                     else
                       @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
                     end
                   rescue
                     #if estimation_value.pe_attribute.alias == "cost"
-                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                    if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                       @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
                     else
                       @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
@@ -78,7 +78,7 @@
 
                 begin
                   #if estimation_value.pe_attribute.alias == "cost"
-                  if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                  if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                     if pbs_estimation_values.nil?
                       "-"
                     else
@@ -89,7 +89,7 @@
                   end
                 rescue
                   #if estimation_value.pe_attribute.alias == "cost"
-                  if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+                  if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                     if pbs_estimation_values.nil?
                       "-"
                     else

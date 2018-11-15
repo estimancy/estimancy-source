@@ -2,7 +2,17 @@
   <ul>
     <li>
       <a href="#tabs-1">
-        <%= @organization.blank? ? "Nouvelle organisation" : @organization %>
+        <%= I18n.t(:global_properties) %>
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-2">
+        <%= I18n.t(:technical_informations) %>
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-3">
+        <%= I18n.t(:printing_extraction) %>
       </a>
     </li>
   </ul>
@@ -15,6 +25,7 @@
           <div class="accordion-heading">
             <h5>
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+
                 <i class="fa fa-caret-down"></i>
                 <b><%= I18n.t(:label_definition) %></b>
               </a>
@@ -32,78 +43,14 @@
                 </div>
               </div>
 
-              <%= f.input :automatic_quotation_number, :label => I18n.t('automatic_quotation_number'), :input_html => {:class => 'input-xlarge'} %>
               <%= f.input :headband_title, :label => I18n.t('headband_title'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
               <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
 
-              <fieldset style="width: 40%">
-                <legend><h5 class="blue"><%= I18n.t('estimations_counter') %></h5></legend>
-                <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge'}, readonly: !current_user.super_admin %>
-                <%= f.input :estimations_counter_history, :label => I18n.t('actions_history'), :input_html => {:class => 'input-xxlarge', :rows => 7}, readonly: !current_user.super_admin %>
-              </fieldset>
             </div>
           </div>
         </div>
 
         <br>
-
-        <div class="accordion-group accordion-caret well-rounded">
-          <div class="accordion-heading">
-            <h5>
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:text_measuring_units) %></b>
-              </a>
-            </h5>
-          </div>
-          <div id="collapseTwo" class="accordion-body in collapse">
-            <div class="accordion-inner">
-              <%# f.input :number_hours_per_day, :label => I18n.t('number_hours_per_day'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-              <%= f.input :number_hours_per_month, :label => I18n.t('number_hours_per_month'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-              <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => I18n.t(:currency), :required => true %>
-              <%= f.input :cost_per_hour, :label => I18n.t('cost_per_hour'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-              <%# f.input :inflation_rate, :label => I18n.t('inflation_rate'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-
-              <hr>
-              <br>
-
-              <table class="table">
-                <tr>
-                  <th><%= I18n.t(:threshold_min_value)%></th>
-                  <th><%= I18n.t(:threshold_max_value)%></th>
-                  <th><%= I18n.t(:convertion_coef_stand)%></th>
-                  <th><%= I18n.t(:effort_unit)%></th>
-                </tr>
-
-                <tr>
-                  <td class="center"><%= text_field_tag "", 0, disabled: true %></td>
-                  <td class="center"><%= text_field_tag "organization[limit1]", @organization.limit1.nil? ? 100000 : @organization.limit1 %></td>
-                  <td class="center"><%= text_field_tag "organization[limit1_coef]", @organization.limit1_coef %></td>
-                  <td class="center"><%= text_field_tag "organization[limit1_unit]", @organization.limit1_unit %></td>
-                </tr>
-
-                <tr>
-                  <td class="center"><%= text_field_tag "", @organization.limit1.nil? ? 100000 : @organization.limit1, disabled: true %></td>
-                  <td class="center"><%= text_field_tag "organization[limit2]", @organization.limit2 %></td>
-                  <td class="center"><%= text_field_tag "organization[limit2_coef]", @organization.limit2_coef %></td>
-                  <td class="center"><%= text_field_tag "organization[limit2_unit]", @organization.limit2_unit %></td>
-                </tr>
-                <tr>
-                  <td class="center"><%= text_field_tag "", @organization.limit2.nil? ? 100000 : @organization.limit2, disabled: true %></td>
-                  <td class="center"><%= text_field_tag "organization[limit3]", @organization.limit3 %></td>
-                  <td class="center"><%= text_field_tag "organization[limit3_coef]", @organization.limit3_coef %></td>
-                  <td class="center"><%= text_field_tag "organization[limit3_unit]", @organization.limit3_unit %></td>
-                </tr>
-                <tr>
-                  <td class="center"><%= text_field_tag "", @organization.limit3.nil? ? 100000 : @organization.limit3, disabled: true %></td>
-                  <td class="center"><%= text_field_tag "organization[limit4]", @organization.limit4 %></td>
-                  <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
-                  <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </div>
 
         <div class="actions-tabs">
           <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
@@ -116,5 +63,70 @@
         </div>
       </div>
     </div>
+
+    <div id="tabs-2">
+      <div class="accordion-group accordion-caret well-rounded">
+        <div id="collapseTwo" class="accordion-body in collapse">
+          <div class="accordion-inner">
+
+            <h5 class="blue">
+              <%= I18n.t('estimations_counter') %>
+            </h5>
+            <%= f.input :automatic_quotation_number, :label => I18n.t('automatic_quotation_number'), :input_html => {:class => 'input-xlarge'} %>
+            <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge'}, readonly: !current_user.super_admin %>
+            <%= f.input :estimations_counter_history, :label => I18n.t('actions_history'), :input_html => {:class => 'input-xxlarge', :rows => 7}, readonly: !current_user.super_admin %>
+
+            <%= f.input :number_hours_per_month, :label => I18n.t('number_hours_per_month'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
+            <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => I18n.t(:currency), :required => true %>
+            <%= f.input :cost_per_hour, :label => I18n.t('cost_per_hour'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
+
+            <hr>
+              Sélectionnez le module de taille
+            <br>
+
+            <table class="table">
+              <tr>
+                <th><%= I18n.t(:threshold_min_value)%></th>
+                <th><%= I18n.t(:threshold_max_value)%></th>
+                <th><%= I18n.t(:convertion_coef_stand)%></th>
+                <th><%= I18n.t(:effort_unit)%></th>
+              </tr>
+
+              <tr>
+                <td class="center"><%= text_field_tag "", 0, disabled: true %></td>
+                <td class="center"><%= text_field_tag "organization[limit1]", @organization.limit1.nil? ? 100000 : @organization.limit1 %></td>
+                <td class="center"><%= text_field_tag "organization[limit1_coef]", @organization.limit1_coef %></td>
+                <td class="center"><%= text_field_tag "organization[limit1_unit]", @organization.limit1_unit %></td>
+              </tr>
+
+              <tr>
+                <td class="center"><%= text_field_tag "", @organization.limit1.nil? ? 100000 : @organization.limit1, disabled: true %></td>
+                <td class="center"><%= text_field_tag "organization[limit2]", @organization.limit2 %></td>
+                <td class="center"><%= text_field_tag "organization[limit2_coef]", @organization.limit2_coef %></td>
+                <td class="center"><%= text_field_tag "organization[limit2_unit]", @organization.limit2_unit %></td>
+              </tr>
+              <tr>
+                <td class="center"><%= text_field_tag "", @organization.limit2.nil? ? 100000 : @organization.limit2, disabled: true %></td>
+                <td class="center"><%= text_field_tag "organization[limit3]", @organization.limit3 %></td>
+                <td class="center"><%= text_field_tag "organization[limit3_coef]", @organization.limit3_coef %></td>
+                <td class="center"><%= text_field_tag "organization[limit3_unit]", @organization.limit3_unit %></td>
+              </tr>
+              <tr>
+                <td class="center"><%= text_field_tag "", @organization.limit3.nil? ? 100000 : @organization.limit3, disabled: true %></td>
+                <td class="center"><%= text_field_tag "organization[limit4]", @organization.limit4 %></td>
+                <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
+                <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
+              </tr>
+            </table>Extraire les organizations et leur nombre de devis'
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tabs-3">
+      <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn' %>
+    </div>
+
   <% end %>
+
 </div>

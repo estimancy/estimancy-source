@@ -17,7 +17,7 @@
    end
 
    pe_attribute_alias = estimation_value.pe_attribute.alias
-   if pe_attribute_alias.in?("cost", "effort")
+   if pe_attribute_alias.in?(["cost", "effort"])
      effort_attribute_alias = "retained_effort"
      cost_attribute_alias = "retained_cost"
    else
@@ -25,7 +25,7 @@
      cost_attribute_alias = "theoretical_cost"
    end
 
-   unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+   unless estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
      if view_widget.use_organization_effort_unit == true
         min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{effort_attribute_alias}_probable")
         organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, project.organization)

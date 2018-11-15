@@ -363,7 +363,7 @@ en:
   acquisition_categories: "Acquisition categories"
   platform_categories: "Platform categories"
   project_categories: "Project categories"
-  project_areas: "Project Areas"
+  project_areas: "Project areas"
   acquisition_category: "Acquisition category"
   platform_category: "Platform category"
   project_category: "Project category"
@@ -1562,7 +1562,7 @@ en:
   Platform_Categorie_organization: "Platform Category"
   Project_Category: "Project Category "
   Category_acquistion: "Category acquistion"
-  Estimating_Status: " Estimating Status "
+  Estimating_Status: "Estimating Status "
   with_header: "with header"
   Generate_Report: "Generate Report"
   Actualize: "Actualize"
@@ -2042,7 +2042,7 @@ en:
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
 
-  liste_des_estimations: "Liste des estimations"
+  liste_des_estimations: "Estimations list"
   copy_in_progress: "Copy in progress..."
   is_new_status: "Is the default status of new estimation version "
   warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
@@ -2075,7 +2075,7 @@ en:
   provider_edition: "Edit provider"
   notice_cannot_view_providers: "You don't have the rights to view the providers"
   request_number: "Request number"
-  business_need: "Besoin métier"
+  business_need: "Business need"
   notice_provider_successful_created: "Provider was successfully created"
   notice_provider_successful_updated: "Provider was successfully updated"
   notice_provider_successful_deleted: "Provider was successfully deleted"
@@ -2129,5 +2129,38 @@ en:
 
   please_wait: "Please wait..."
 
+  raw_data_extract: "Extract raw data"
 
+  #organizations/report
+  filtered_excel_report: "Filtered Excel report"
+  detailed_excel_report: "Detailed Excel report"
+  detailed_pdf_report: "Detailed PDF report"
+  generate_filtered_excel_report: "Generate a filtered Excel report"
+  selected_quotation_export: "Only the selected quotations will be exported in a summary Excel file."
+  counting_details: "Counting details"
+  module_size_select: "Select the module of size"
+  generate_excel_report_all_quotations: "Generate an Excel report of all quotations"
+  Abaque_Wbs_quotation_export: "All Abaque + WBS quotations will be exported to a summary Excel file."
+  quotation_PDF_export: "Export quotations as PDF"
+  raw_data_range_dates: "Extract the raw data in a range of dates:"
 
+  #organizations/edit
+  technical_informations: "Technical informations"
+  printing_extraction: "Printing and extraction"
+
+  extracting_organizations_and_their_numbers_of_quotations: "Extract organizations and their numbers of quotations"
+
+  deselect_all_modules: "Deselect all modules"
+
+  calculation_phases: "Calculation of phases"
+
+  #organizations/estimations
+  contact_us: "Contact Us"
+  pdf_save: "Save as PDF"
+
+  recalculate_all: "Recalculate all"
+
+  budget_management: "Budget management"
+
+  date_min: Date min
+  date_max: Date max

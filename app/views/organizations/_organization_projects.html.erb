@@ -60,7 +60,11 @@
           <%# link_to('', {:controller => 'projects', :action => 'find_use_project', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'fa fa-map-marker pull-left', style: "color: black; margin-top:4px;", :id => 'find_use_projects', :title => I18n.t('button_find_use')) %>
 
           <% if can? :copy_project, project %>
-            <%= link_to('', main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"), :class => 'icon-copy pull-left', :title => I18n.t('button_duplicate_project')) %>
+            <%= link_to('',
+                        main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"),
+                        :class => 'icon-copy pull-left',
+                        :title => I18n.t('button_duplicate_project'),
+                        :method => "POST") %>
           <% end %>
 
           <% if (can? :delete_project, project) || (can? :manage, project) %>

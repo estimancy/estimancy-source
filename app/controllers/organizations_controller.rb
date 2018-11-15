@@ -1712,7 +1712,7 @@ class OrganizationsController < ApplicationController
     worksheet = workbook.worksheets[0]
     ind = 0
 
-    @current_organization.projects.where(is_model: [false, nil]).each do |project|
+    @current_organization.projects.each do |project|
 
       module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
 
@@ -1771,148 +1771,145 @@ class OrganizationsController < ApplicationController
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
-          if can_see_estimation?(project)
+          @guw_unit_of_works.each_with_index do |guow, i|
 
-            @guw_unit_of_works.each_with_index do |guow, i|
+            ind = ind + 1
 
-              ind = ind + 1
+            if guow.off_line
+              cplx = "HSAT"
+            elsif guow.off_line_uo
+              cplx = "HSUO"
+            elsif guow.guw_complexity.nil?
+              cplx = ""
+            else
+              cplx = guow.guw_complexity.name
+            end
 
-              if guow.off_line
-                cplx = "HSAT"
-              elsif guow.off_line_uo
-                cplx = "HSUO"
-              elsif guow.guw_complexity.nil?
-                cplx = ""
-              else
-                cplx = guow.guw_complexity.name
-              end
+            worksheet.add_cell(ind, 1, project.organization.nil? ? '' : project.organization.name)
+            worksheet.add_cell(ind, 2, project.provider.nil? ? '' : project.provider.name)
+            worksheet.add_cell(ind, 3, project.application.nil? ? '' : project.application.name)
+            worksheet.add_cell(ind, 4, project.estimation_status.nil? ? '' : project.estimation_status.name)
+            worksheet.add_cell(ind, 5, project.request_number)
+            worksheet.add_cell(ind, 6, project.project_area)
+            worksheet.add_cell(ind, 7, project.acquisition_category)
+            worksheet.add_cell(ind, 8, project.platform_category)
+            worksheet.add_cell(ind, 9, project.title)
+            worksheet.add_cell(ind, 10, project.version_number)
+            worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+            worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
+            worksheet.add_cell(ind, 13, guow.name)
+            worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+            worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+            worksheet.add_cell(ind, 16, guow.quantity)
+            worksheet.add_cell(ind, 17, guow.tracking)
+            worksheet.add_cell(ind, 18, cplx)
+            worksheet.add_cell(ind, 19, guow.intermediate_weight)
 
-              worksheet.add_cell(ind, 1, project.organization.nil? ? '' : project.organization.name)
-              worksheet.add_cell(ind, 2, project.provider.nil? ? '' : project.provider.name)
-              worksheet.add_cell(ind, 3, project.application.nil? ? '' : project.application.name)
-              worksheet.add_cell(ind, 4, project.estimation_status.nil? ? '' : project.estimation_status.name)
-              worksheet.add_cell(ind, 5, project.request_number)
-              worksheet.add_cell(ind, 6, project.project_area)
-              worksheet.add_cell(ind, 7, project.acquisition_category)
-              worksheet.add_cell(ind, 8, project.platform_category)
-              worksheet.add_cell(ind, 9, project.title)
-              worksheet.add_cell(ind, 10, project.version_number)
-              worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
-              worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
-              worksheet.add_cell(ind, 13, guow.name)
-              worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
-              worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-              worksheet.add_cell(ind, 16, guow.quantity)
-              worksheet.add_cell(ind, 17, guow.tracking)
-              worksheet.add_cell(ind, 18, cplx)
-              worksheet.add_cell(ind, 19, guow.intermediate_weight)
+            hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
+              if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
+                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                unless guw_coefficient.nil?
+                  unless guw_coefficient.guw_coefficient_elements.empty?
+                    unless module_project.nil?
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                        guw_coefficient_id: guw_coefficient.id,
+                                                                        module_project_id: module_project.id).first
 
-              hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
-                if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                  guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
-                  unless guw_coefficient.nil?
-                    unless guw_coefficient.guw_coefficient_elements.empty?
-                      unless module_project.nil?
-                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                          guw_coefficient_id: guw_coefficient.id,
-                                                                          module_project_id: module_project.id).first
-
-                        if guw_coefficient.coefficient_type == "Pourcentage"
-                          worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                        elsif guw_coefficient.coefficient_type == "Coefficient"
-                          worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
-                        else
-                          worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
-                        end
+                      if guw_coefficient.coefficient_type == "Pourcentage"
+                        worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                      elsif guw_coefficient.coefficient_type == "Coefficient"
+                        worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                      else
+                        worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
                       end
                     end
                   end
-                elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-                  guw_output = Guw::GuwOutput.where(name: i[0],
-                                                    guw_model_id: @guw_model.id).first
-                  unless guow.guw_type.nil?
-                    unless guw_output.nil?
-                      v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
-                      worksheet.add_cell(ind, 20 + j, v.to_s)
-                    end
+                end
+              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(name: i[0],
+                                                  guw_model_id: @guw_model.id).first
+                unless guow.guw_type.nil?
+                  unless guw_output.nil?
+                    v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
+                    worksheet.add_cell(ind, 20 + j, v.to_s)
                   end
                 end
               end
+            end
 
-              ii = 0
-              @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
-                guw_type = guow.guw_type
-                guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
-                                                          guw_attribute_id: guw_attribute.id,
-                                                          guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+            ii = 0
+            @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
+              guw_type = guow.guw_type
+              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+                                                        guw_attribute_id: guw_attribute.id,
+                                                        guw_type_id: guw_type.nil? ? nil : guw_type.id).first
 
-                unless guowa.nil?
-                  gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
-                                                    guw_attribute_id: guowa.guw_attribute_id).first
-                  worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
-                  worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
-                else
-                  p "GUOWA is nil"
+              unless guowa.nil?
+                gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                                                  guw_attribute_id: guowa.guw_attribute_id).first
+                worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+                worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
+              else
+                p "GUOWA is nil"
+              end
+              ii = ii + 2
+            end
+
+            ii = 0
+            @guw_model.guw_attributes.each do |guw_attribute|
+              worksheet.add_cell(0, jj + ii, guw_attribute.name)
+              worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+              ii = ii + 2
+            end
+
+            kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
+            @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
+            unless @wbs_activity_module_project.nil?
+              @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
+              @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
+
+              tjm_array = []
+
+              calculator = Dentaku::Calculator.new
+
+              @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+
+                guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+
+                if guw_output_effort.nil?
+                  guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
                 end
+                guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
+
+                mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+
+                begin
+                  guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+                  guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+
+                  corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+                  final_formula = corresponding_ratio_elt.formula
+                                      .gsub("RTU", guw_output_effort_value.to_s)
+                                      .gsub("TEST", guw_output_test_value.to_s)
+                                      .gsub('%', ' * 0.01 ')
+
+                  value = calculator.evaluate(final_formula).to_f.round(3)
+                rescue
+                  value = 0
+                end
+
+                value_cost = value * mp_ratio_element.tjm.to_f
+
+                tjm_array << mp_ratio_element.tjm.to_f
+
+                worksheet.add_cell(ind, kk + ii, value.round(3))
+                worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
                 ii = ii + 2
               end
 
-              ii = 0
-              @guw_model.guw_attributes.each do |guw_attribute|
-                worksheet.add_cell(0, jj + ii, guw_attribute.name)
-                worksheet.add_cell(0, jj + ii + 1, "Commentaires")
-                ii = ii + 2
-              end
-
-              kk = header.size - (@guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
-              @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.first
-              unless @wbs_activity_module_project.nil?
-                @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
-                @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
-
-                tjm_array = []
-
-                calculator = Dentaku::Calculator.new
-
-                @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
-
-                  guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
-
-                  if guw_output_effort.nil?
-                    guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
-                  end
-                  guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
-
-                  mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
-
-                  begin
-                    guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
-                    guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
-
-                    corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
-
-                    final_formula = corresponding_ratio_elt.formula
-                                        .gsub("RTU", guw_output_effort_value.to_s)
-                                        .gsub("TEST", guw_output_test_value.to_s)
-                                        .gsub('%', ' * 0.01 ')
-
-                    value = calculator.evaluate(final_formula).to_f.round(3)
-                  rescue
-                    value = 0
-                  end
-
-                  value_cost = value * mp_ratio_element.tjm.to_f
-
-                  tjm_array << mp_ratio_element.tjm.to_f
-
-                  worksheet.add_cell(ind, kk + ii, value.round(3))
-                  worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
-                  ii = ii + 2
-                end
-
-                unless tjm_array.empty?
-                  worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
-                end
+              unless tjm_array.empty?
+                worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
               end
             end
           end
@@ -2018,12 +2015,11 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
-    # if params[:
-    # _version].blank?
-    #   @filter_version = '4'
-    # else
-    #   @filter_version = params[:filter_version]
-    # end
+    if params[:filter_version].present?
+      @filter_version = params[:filter_version]
+    else
+      @filter_version = '4'
+    end
 
     @object_per_page = (current_user.object_per_page || 10)
 
@@ -3914,6 +3910,19 @@ class OrganizationsController < ApplicationController
     send_data(workbook.stream.string, filename: "reference.xlsx", type: "application/vnd.ms-excel")
 
   end
+
+  def projects_quantity
+    @organizations = Organization.all
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "projects_quantity",
+               #template: "organizations/export_to_pdf_projects_quantity.pdf.erb"
+               encoding: "UTF-8"
+      end
+    end
+  end
+
 
   private
   def check_if_organization_is_image(organization)

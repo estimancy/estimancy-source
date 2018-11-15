@@ -18,8 +18,9 @@
 <% wbs_activity = module_project.wbs_activity %>
 
 <!--Attributes-->
-<% effort = module_project.pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
-<% theoretical_effort = module_project.pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
+<% module_project_pemodule = module_project.pemodule%>
+<% effort = module_project_pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
+<% theoretical_effort = module_project_pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
 <% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
 
 <!-- RATIO -->
@@ -87,6 +88,7 @@
     <% v_high = nil %>
 
 <% else %>
+  <% begin %>
     <% if cev.string_data_low[component_id].blank? %>
       <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
     <% else %>
@@ -100,13 +102,18 @@
     <% end %>
 
     <% if cev.string_data_low[component_id].blank? %>
-      <% v_high = pev.nil? ? nil : (pev.string_data_high[component_id].to_f / coeff) %>
+      <% v_high = pev.nil? ? nil : (pev.string_data _high[component_id].to_f / coeff) %>
     <% else %>
       <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
     <% end %>
+  <% rescue %>
+    <% v_low = nil %>
+    <% v_most_likely = nil %>
+    <% v_high = nil %>
+  <% end %>
 <% end %>
 
-<% effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+<% effort_ids = PeAttribute.where(alias: WbsActivity::  INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
 <% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
 <% initial_entry_values = {} %>
@@ -132,19 +139,38 @@
 
             <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[component_id] %>
 
-            <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank?  %>
-                <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-            <% else %>
-                <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+            <% begin %>
+              <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank? %>
+                <% if previous_ev.is_a?(Hash) %>
+                  <% entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+                <% else %>
+                  <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                <% end %>
+              <% else %>
+                <% if previous_ev.is_a?(Hash) %>
+                  <% entry_values["#{level}"][ev.id] = current_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+                <% else %>
+                  <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+                <% end %>
+              <% end %>
+            <% rescue %>
+              <% entry_values["#{level}"][ev.id] = nil %>
             <% end %>
 
             <!-- Les valeurs d'entree initiales -->
-            <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+            <% begin %>
+              <% if previous_ev.is_a?(Hash) %>
+                <% initial_entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+              <% else %>
+                <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+              <% end %>
+            <% rescue %>
+              <% initial_entry_values["#{level}"][ev.id] = nil %>
+            <% end %>
 
         <% end %>
     <% end %>
 <% end %>
-
 
 <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
@@ -469,8 +495,8 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <span><%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %></span>
-    <span style="margin-right: 10px"><%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %></span>
+    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
+    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
   <% end %>
 
 <% end %>

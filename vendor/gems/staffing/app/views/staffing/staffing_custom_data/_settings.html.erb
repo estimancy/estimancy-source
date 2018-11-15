@@ -324,18 +324,17 @@
       });
 
       $('#percent').ionRangeSlider({
-        min: 70,
-        max: 150,
-        from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
-        grid: true,
-        postfix: "%",
+          min: <%= @staffing_model.min_range %>,
+          max: <%= @staffing_model.max_range %>,
+          from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
+          grid: true,
+          postfix: "%",
 
-        onChange: function (data) {
-          set_staffing_values(data);
-          $("#submit_staffing").off("click");
-        }
+          onChange: function (data) {
+              set_staffing_values(data);
+              $("#submit_staffing").off("click");
+          }
       });
-
 
       function sign(value){
         if (value > 0) {
@@ -453,16 +452,16 @@
         name: "Répartition en Trapèze Optimal",
         type: 'column',
         color: '#AC6A35',
-        data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>
+        data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
         name: "Répartition en Trapèze Ajusté",
         type: 'column',
         color: '#AA3538',
-        data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>
+        data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
         type: 'spline',
         name: "Répartition Rayleigh Ajusté",
-        data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>,
+        data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
         color: '#2F3EAF',
         marker: {
           enabled: false
@@ -470,7 +469,7 @@
       },{
         type: 'spline',
         name: "Répartition Rayleigh Optimal",
-        data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>,
+        data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
         color: '#2077A1',
         marker: {
           enabled: false

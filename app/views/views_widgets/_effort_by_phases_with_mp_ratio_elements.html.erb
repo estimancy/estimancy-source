@@ -3,7 +3,7 @@
    colspan = 1
    rowspan = 1
 
-   if pe_attribute_alias.in?("cost", "effort")
+   if pe_attribute_alias.in?(["cost", "effort"])
      effort_attribute_alias = "retained_effort"
      cost_attribute_alias = "retained_cost"
    else
@@ -26,7 +26,7 @@
 
    #module_project_ratio_elementss = ModuleProjectRatioElement.sort_by_ancestry(module_project_ratio_elements.arrange(:order => :position))
 
-   unless estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")
+   unless estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
      if view_widget.use_organization_effort_unit == true
         min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, "#{pe_attribute_alias}_probable")
         organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, project.organization)
@@ -99,7 +99,7 @@
             <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
             <%=
                 if mp_ratio_element.selected
-                    if estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost")  # if estimation_value.pe_attribute.alias == "cost"
+                    if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])  # if estimation_value.pe_attribute.alias == "cost"
                         level_value.nil? ? "-" : "#{convert_with_precision(level_value, number_precision, true)} #{wbs_unit}"
                     else
                       # for Effort attribute
