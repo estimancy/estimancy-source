@@ -3992,18 +3992,19 @@ public
       gap = Biz.within(status_history.change_date, time_now).in_seconds
     end
 
-    StatusHistory.create(organization: @project.organization.name,
-                         project_id: @project.id,
-                         project: @project.title,
-                         version_number: @project.version_number,
-                         change_date: time_now,
-                         action: "Changement de statut",
-                         comments: params["project"]["new_status_comment"].to_s,
-                         origin: @project.estimation_status.name,
-                         target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
-                         user: current_user.name,
-                         gap: gap)
-
+    unless params[:project][:estimation_status_id].nil?
+      StatusHistory.create(organization: @project.organization.name,
+                           project_id: @project.id,
+                           project: @project.title,
+                           version_number: @project.version_number,
+                           change_date: time_now,
+                           action: "Changement de statut",
+                           comments: params["project"]["new_status_comment"].to_s,
+                           origin: @project.estimation_status.name,
+                           target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+                           user: current_user.name,
+                           gap: gap)
+    end
 
     new_comments = ""
     auto_updated_comments = ""
