@@ -3182,10 +3182,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     #
     # flagged_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
     #                                                      pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
-      component = current_component
-      @module_project = component.module_projects.first
+      @module_project = current_module_project
       @guw_model = @module_project.guw_model
-      @module_project.guw_model_id = @guw_model.id
+      component = current_component
 
       @guw_outputs = @guw_model.guw_outputs
 
