@@ -69,9 +69,11 @@
           }
         end
 
-        from = status_histories.first.change_date
-        to = status_histories.last.change_date
-        gap = Biz.within(from, to).in_minutes
+        from = status_histories.first
+        to = status_histories.last
+        unless from.nil? || to.nil?
+          gap = Biz.within(from, to).in_minutes
+        end
      %>
 
       <p>
