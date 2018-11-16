@@ -57,7 +57,7 @@
     <!--<div class="span12">-->
 
       <!--<h4>-->
-        <!--<%=# I18n.t(:comment_history) %>-->
+        <!--<%# I18n.t(:comment_history) %>-->
       <!--</h4>-->
 
       <!--<%# ptitle = @project.title %>-->
@@ -67,13 +67,13 @@
                                                 version_number: @project.version_number).all %>
       <!--<%# status_histories.each do |sh| %>-->
         <!--<p>-->
-          <!--<b><%=# sh.change_date.strftime("Le %d/%m/%Y à %H:%M") %></b>-->
+          <!--<b><%# sh.change_date.strftime("Le %d/%m/%Y à %H:%M") %></b>-->
           <!--<br>-->
-          <!--<b><%=# sh.action %></b> : <b><%=# sh.origin %></b> à <b><%=# sh.target %></b> par <b><%=# sh.user %></b>-->
+          <!--<b><%# sh.action %></b> : <b><%# sh.origin %></b> à <b><%# sh.target %></b> par <b><%# sh.user %></b>-->
           <!--<br>-->
-          <!--<i><%=# sh.comments %></i>-->
+          <!--<i><%# sh.comments %></i>-->
           <!--<br>-->
-          <!--Ecart : <%=# sh.gap %> secondes-->
+          <!--Ecart : <%# sh.gap %> secondes-->
         <!--</p>-->
 
         <!--<br>-->
