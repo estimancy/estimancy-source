@@ -16,10 +16,15 @@
                   input_html: { :class => 'input-xlarge', disabled: @project.is_locked },
                   include_blank: false %>
 
+
       <% if @project.is_locked == true %>
-        <p>
-          Le total RTU doit être <= 7j RTU pour utiliser ce modèle
-        </p>
+        <% @project.view_widgets.each do |view_widget| %>
+          <% if view_widget.min_value != nil || view_widget.max_value != nil %>
+            <p>
+              <%= view_widget.name %> : >= <%= view_widget.min_value %> et <= <%= view_widget.max_value %>
+            </p>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
 
@@ -32,6 +37,12 @@
   <% end %>
 
   <hr>
+
+  <div class="collapse in" id="collapseIn">
+    <div class="widget-content tab-content">
+      <%= simple_format(@text_comments.to_s) %>
+    </div>
+  </div>
 
   <div class="row-fluid">
     <div class="span12">
@@ -61,13 +72,5 @@
     <% end %>
     </div>
   </div>
-
-  <!--<div class="collapse in" id="collapseIn">-->
-    <!--<div class="widget-content tab-content">-->
-      <!--<%# simple_format(@text_comments.to_s) %>-->
-    <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--</div>-->
 
 <% end %>
