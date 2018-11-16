@@ -18,11 +18,13 @@
 
 
       <% if @project.is_locked == true %>
-        <% @project.view_widgets.each do |view_widget| %>
-          <% if view_widget.min_value != nil || view_widget.max_value != nil %>
-            <p>
-              <%= view_widget.name %> : >= <%= view_widget.min_value %> et <= <%= view_widget.max_value %>
-            </p>
+        <% @project.module_projects.each do |module_project| %>
+          <% module_project.views_widgets.each do |view_widget| %>
+            <% if view_widget.min_value != nil || view_widget.max_value != nil %>
+              <p>
+                <%= view_widget.name %> : >= <%= view_widget.min_value %> et <= <%= view_widget.max_value %>
+              </p>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
