@@ -3986,7 +3986,7 @@ public
     time_now = Time.now
 
     unless status_history.nil?
-      gap = Biz.within(status_history.change_date, time_now).in_minutes
+      gap = Biz.within(status_history.change_date, time_now).in_seconds
     end
 
 
@@ -4000,6 +4000,7 @@ public
                          target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
                          user: current_user.name,
                          gap: gap)
+
 
 
     new_comments = ""

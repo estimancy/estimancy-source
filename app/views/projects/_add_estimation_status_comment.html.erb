@@ -52,33 +52,13 @@
           <b><%= sh.action %></b> : <b><%= sh.origin %></b> à <b><%= sh.target %></b> par <b><%= sh.user %></b>
           <br>
           <i><%= sh.comments %></i>
+          <br>
+          Ecart : <%= sh.gap %> secondes
         </p>
 
         <br>
 
     <% end %>
-
-     <%
-        Biz.configure do |config|
-          config.hours = {
-                  mon: {'09:00' => '12:00', '13:00' => '17:00'},
-                  tue: {'09:00' => '12:00', '13:00' => '17:00'},
-                  wed: {'09:00' => '12:00', '13:00' => '17:00'},
-                  thu: {'09:00' => '12:00', '13:00' => '17:00'},
-                  fri: {'09:00' => '12:00', '13:00' => '17:00'}
-          }
-        end
-
-        from = status_histories.first
-        to = status_histories.last
-        unless from.nil? || to.nil?
-          gap = Biz.within(from, to).in_minutes
-        end
-     %>
-
-      <p>
-        Ecart : <%= gap %> minutes
-      </p>
     </div>
   </div>
 
