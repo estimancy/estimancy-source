@@ -26,13 +26,14 @@
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
 
-              <!-- #link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %> -->
-              <%= link_to I18n.t('raw_data_extract'), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+              <% unless "saas".in?(request.original_url) %>
+                <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+              <% end %>
+
             </td>
 
           </tr>
         </table>
-
 
         <div id="organization_projects">
           <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>

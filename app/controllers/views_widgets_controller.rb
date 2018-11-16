@@ -230,7 +230,6 @@ class ViewsWidgetsController < ApplicationController
 
       project = @project
 
-
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
       equation = Hash.new
@@ -284,7 +283,6 @@ class ViewsWidgetsController < ApplicationController
             end
           end
 
-          #if @views_widget.min_value < @value and @views_widget.max_value > @value
           if pf.nil?
             pf = ProjectField.new(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
             if !pf.save
@@ -296,7 +294,6 @@ class ViewsWidgetsController < ApplicationController
           else
             flash[:error] = I18n.t(:identical_project_field_exists)
           end
-          #end
         end
 
         if @views_widget.module_project

@@ -1857,6 +1857,11 @@ class Guw::GuwModelsController < ApplicationController
                                                   pbs_project_element_id: @component.id,
                                                   guw_model_id: @guw_model.id).order("display_order ASC")
 
+     @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} 
+     Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).order("updated_at ASC").each do |gceuw| 
+       @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw 
+     end 
+
     hash = @guw_model.orders
     hash.delete("Critères")
     hash.delete("Coeff. de Complexité")
@@ -1960,9 +1965,13 @@ class Guw::GuwModelsController < ApplicationController
 
               if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
 
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                  guw_coefficient_id: guw_coefficient.id,
-                                                                  module_project_id: current_module_project.id).order("updated_at ASC").last
+                begin
+                  ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"]
+                rescue
+                  ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                                                                    guw_coefficient_id: guw_coefficient.id,
+                                                                    module_project_id: guow.module_project.id).order("updated_at ASC").last
+                end
 
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
                 worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
