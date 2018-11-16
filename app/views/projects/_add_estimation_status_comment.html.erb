@@ -69,7 +69,9 @@
           }
         end
 
-        gap = Biz.within(status_histories.first.change_date, status_histories.last.change_date).in_minutes
+        from = status_histories.first.change_date
+        to = status_histories.last.change_date
+        gap = Biz.within(from, to).in_minutes
      %>
 
       <p>
