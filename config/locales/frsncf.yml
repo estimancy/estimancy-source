@@ -2137,4 +2137,6 @@ frsncf:
   number_of_uw_selected_lines: "Nombre de ligne d'UO sélectionnées"
 
   please_wait: "Veuillez patienter..."
+  val_max: "Valeur maximale"
+  val_min: "Valeur minimal"
 

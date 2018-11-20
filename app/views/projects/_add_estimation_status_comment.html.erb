@@ -16,10 +16,17 @@
                   input_html: { :class => 'input-xlarge', disabled: @project.is_locked },
                   include_blank: false %>
 
+
       <% if @project.is_locked == true %>
-        <p>
-          Le total RTU doit être <= 7j RTU pour utiliser ce modèle
-        </p>
+        <% @project.module_projects.each do |module_project| %>
+          <% module_project.views_widgets.each do |view_widget| %>
+            <% if view_widget.min_value != nil || view_widget.max_value != nil %>
+              <p>
+                <%= view_widget.validation_text %>
+              </p>
+            <% end %>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
 
@@ -33,57 +40,48 @@
 
   <hr>
 
-  <div class="row-fluid">
-    <div class="span12">
+  <div class="widget-box collapsible">
+    <div class="widget-title">
+      <a href="#collapseIn" data-toggle="collapse"> <span class="icon"> <i class="icon-align-left"></i> </span>  </a>
+      <h5> <%= I18n.t(:comment_history) %> </h5>
+    </div>
 
-      <h4>
-        <%= I18n.t(:comment_history) %>
-      </h4>
-
-      <% ptitle = @project.title %>
-      <% oname = @project.organization.name %>
-      <% status_histories = StatusHistory.where(organization: oname,
-                                                project: ptitle,
-                                                version_number: @project.version_number).all %>
-      <% status_histories.each do |sh| %>
-        <p>
-          <b><%= sh.change_date.strftime("Le %d/%m/%Y à %H:%M") %></b>
-          <br>
-          <b><%= sh.action %></b> : <b><%= sh.origin %></b> à <b><%= sh.target %></b> par <b><%= sh.user %></b>
-          <br>
-          <i><%= sh.comments %></i>
-        </p>
-
-        <br>
-
-    <% end %>
-
-     <%
-        Biz.configure do |config|
-          config.hours = {
-                  mon: {'09:00' => '12:00', '13:00' => '17:00'},
-                  tue: {'09:00' => '12:00', '13:00' => '17:00'},
-                  wed: {'09:00' => '12:00', '13:00' => '17:00'},
-                  thu: {'09:00' => '12:00', '13:00' => '17:00'},
-                  fri: {'09:00' => '12:00', '13:00' => '17:00'}
-          }
-        end
-
-        gap = Biz.within(status_histories.first.change_date, status_histories.last.change_date).in_minutes
-     %>
-
-      <p>
-        Ecart : <%= gap %> minutes
-      </p>
+    <div class="collapse in" id="collapseIn">
+      <div class="widget-content tab-content">
+        <%= simple_format(@text_comments.to_s) %>
+      </div>
     </div>
   </div>
 
-  <!--<div class="collapse in" id="collapseIn">-->
-    <!--<div class="widget-content tab-content">-->
-      <!--<%# simple_format(@text_comments.to_s) %>-->
+  <!--<hr>-->
+
+  <!--<div class="row-fluid">-->
+    <!--<div class="span12">-->
+
+      <!--<h4>-->
+        <!--<%# I18n.t(:comment_history) %>-->
+      <!--</h4>-->
+
+      <!--<%# ptitle = @project.title %>-->
+      <!--<%# oname = @project.organization.name %>-->
+      <%# status_histories = StatusHistory.where(organization: oname,
+#                                                 project: ptitle,
+                                                version_number: @project.version_number).all %>
+      <!--<%# status_histories.each do |sh| %>-->
+        <!--<p>-->
+          <!--<b><%# sh.change_date.strftime("Le %d/%m/%Y à %H:%M") %></b>-->
+          <!--<br>-->
+          <!--<b><%# sh.action %></b> : <b><%# sh.origin %></b> à <b><%# sh.target %></b> par <b><%# sh.user %></b>-->
+          <!--<br>-->
+          <!--<i><%# sh.comments %></i>-->
+          <!--<br>-->
+          <!--Ecart : <%# sh.gap %> secondes-->
+        <!--</p>-->
+
+        <!--<br>-->
+
+    <!--<%# end %>-->
     <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
   <!--</div>-->
 
 <% end %>
