@@ -22,7 +22,7 @@
           <% module_project.views_widgets.each do |view_widget| %>
             <% if view_widget.min_value != nil || view_widget.max_value != nil %>
               <p>
-                <%= view_widget.name %> : >= <%= view_widget.min_value %> et <= <%= view_widget.max_value %>
+                <%= view_widget.validation_text %>
               </p>
             <% end %>
           <% end %>

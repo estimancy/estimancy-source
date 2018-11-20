@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20181116143208) do
+ActiveRecord::Schema.define(:version => 20181120144254) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -2028,6 +2028,7 @@ ActiveRecord::Schema.define(:version => 20181116143208) do
     t.boolean  "show_tjm"
     t.integer  "min_value"
     t.integer  "max_value"
+    t.string   "validation_text"
   end
 
   add_index "views_widgets", ["module_project_id", "pe_attribute_id", "estimation_value_id"], :name => "module_project_views_widgets"

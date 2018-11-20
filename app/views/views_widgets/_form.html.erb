@@ -71,6 +71,11 @@
           </td>
         </tr>
         <tr>
+          <td colspan="2">
+            <%= f.input :validation_text, as: :string, label: "Texte de validation" %>
+          </td>
+        </tr>
+        <tr>
           <td>
             <label class="checkbox"></label>
             <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
