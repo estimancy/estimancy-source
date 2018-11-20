@@ -324,8 +324,8 @@
       });
 
       $('#percent').ionRangeSlider({
-          min: <%= @staffing_model.min_range %>,
-          max: <%= @staffing_model.max_range %>,
+          min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
+          max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>,
           from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
           grid: true,
           postfix: "%",

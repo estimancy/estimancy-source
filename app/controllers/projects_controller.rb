@@ -2537,6 +2537,19 @@ public
       #Update some params with the form input data
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: @user.name)} \r\n"
 
+      # time_now = Time.now
+      # StatusHistory.create(organization: new_prj.organization.name,
+      #                      project_id: new_prj.id,
+      #                      project: new_prj.title,
+      #                      version_number: old_prj.version_number,
+      #                      change_date: time_now,
+      #                      action: "Création",
+      #                      comments: nil,
+      #                      origin: nil,
+      #                      target: new_prj.estimation_status.name,
+      #                      user: current_user.name,
+      #                      gap: nil)
+
       if params['project']['application_id'].present?
         new_prj.application_id = params['project']['application_id']
       else
@@ -3965,28 +3978,44 @@ public
 
   # update comments on estimation status changes
   def update_comments_status_change
+
+    # Biz.configure do |config|
+    #   config.hours = {
+    #       mon: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       tue: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       wed: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       thu: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       fri: {'09:00' => '12:00', '13:00' => '17:00'}
+    #   }
+    # end
+
     @project = Project.find(params[:project_id])
 
-    StatusHistory.create(organization: @project.organization.name,
-                         project: @project.title,
-                         version_number: @project.version_number,
-                         change_date: Time.now,
-                         action: "Changement de statut",
-                         comments: params["project"]["new_status_comment"].to_s,
-                         origin: @project.estimation_status.name,
-                         target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
-                         user: current_user.name)
-
-
-    Biz.configure do |config|
-      config.hours = {
-          mon: {'09:00' => '12:00', '13:00' => '17:00'},
-          tue: {'09:00' => '12:00', '13:00' => '17:00'},
-          wed: {'09:00' => '12:00', '13:00' => '17:00'},
-          thu: {'09:00' => '12:00', '13:00' => '17:00'},
-          fri: {'09:00' => '12:00', '13:00' => '17:00'}
-      }
-    end
+    # ptitle = @project.title
+    # oname = @project.organization.name
+    # status_history = StatusHistory.where(organization: oname,
+    #                                      project: ptitle,
+    #                                      version_number: @project.version_number).last
+    #
+    # time_now = Time.now
+    #
+    # unless status_history.nil?
+    #   gap = Biz.within(status_history.change_date, time_now).in_seconds
+    # end
+    #
+    # unless params[:project][:estimation_status_id].nil?
+    #   StatusHistory.create(organization: @project.organization.name,
+    #                        project_id: @project.id,
+    #                        project: @project.title,
+    #                        version_number: @project.version_number,
+    #                        change_date: time_now,
+    #                        action: "Changement de statut",
+    #                        comments: params["project"]["new_status_comment"].to_s,
+    #                        origin: @project.estimation_status.name,
+    #                        target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+    #                        user: current_user.name,
+    #                        gap: gap)
+    # end
 
     new_comments = ""
     auto_updated_comments = ""
@@ -3999,6 +4028,7 @@ public
     if params[:project][:estimation_status_id]
       new_status_id = params[:project][:estimation_status_id].to_i
       if @project.estimation_status_id != new_status_id
+
         auto_updated_comments << auto_update_status_comment(params[:project_id], new_status_id)
         new_comments = auto_updated_comments + new_comments
         #update estimation status
@@ -4008,14 +4038,45 @@ public
         if !next_status.nil? && next_status.create_new_version_when_changing_status == true
 
           new_version_number = set_project_version(@project)
-          new_project_version = @project.create_new_version_when_changing_status(next_status, new_version_number)
+          new_project = @project.create_new_version_when_changing_status(next_status, new_version_number)
 
-          if new_project_version
+          if new_project
             new_status_name = EstimationStatus.find(new_status_id).name rescue ""
             archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
             last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
             last_status_comments << "___________________________________________________________________________\r\n"
             new_comments = last_status_comments + new_comments
+
+          #   ptitle = @project.title
+          #   oname = @project.organization.name
+          #
+          #   time_now = Time.now
+          #
+          #   @project.status_histories.each do |sh|
+          #     StatusHistory.create(organization: sh.organization,
+          #                          project_id: sh.project_id,
+          #                          project: sh.project,
+          #                          version_number: sh.version_number,
+          #                          change_date: sh.change_date,
+          #                          action: sh.action,
+          #                          comments: sh.comments,
+          #                          origin: sh.origin,
+          #                          target: sh.target,
+          #                          user: sh.user,
+          #                          gap: sh.gap)
+          #   end
+          #
+          #   StatusHistory.create(organization: new_project.organization.name,
+          #                        project_id: new_project.id,
+          #                        project: new_project.title,
+          #                        version_number: new_project.version_number,
+          #                        change_date: time_now,
+          #                        action: "Création",
+          #                        comments: params["project"]["new_status_comment"].to_s,
+          #                        origin: @project.estimation_status.name,
+          #                        target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+          #                        user: current_user.name,
+          #                        gap: gap)
           end
 
         else
@@ -4045,25 +4106,22 @@ public
   # Display comments about estimation status changes
   def show_status_change_comments(new_comments, current_note_length = 0)
     user_infos = ""
-    #current_comments = @project.status_comment.nil? ? "" : @project.status_comment
-    #appended_text = new_comments.sub(current_comments, '')
-
     user_infos << "#{I18n.l(Time.now)} : #{I18n.t(:notes_updated_by)}  #{current_user.name}\r\n"
     user_infos << "#{new_comments} \r\n"
     user_infos << "___________________________________________________________________________\r\n"
-    #user_infos << "#{current_comments} \r\n"
   end
 
   # Automatically update the project's comment when estimation_status has changed
   def auto_update_status_comment(project_id, new_status_id)
     project = Project.find(project_id)
     if project
+
       # Get the project status before updating the value
       last_estimation_status_name = project.estimation_status_id.nil? ? "" : project.estimation_status.name
+
       # Get changes on the project estimation_status_id after the update (to be compra with the last one)
       new_estimation_status_name = new_status_id.nil? ? "" : EstimationStatus.find(new_status_id).name
 
-      #current_comments = project.status_comment.to_s
       new_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"
       new_comments << "___________________________________________________________________________\r\n"
       #new_comments << current_comments
