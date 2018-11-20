@@ -2541,7 +2541,7 @@ public
       StatusHistory.create(organization: new_prj.organization.name,
                            project_id: new_prj.id,
                            project: new_prj.title,
-                           version_number: project.version_number,
+                           version_number: old_prj.version_number,
                            change_date: time_now,
                            action: "Création",
                            comments: nil,
