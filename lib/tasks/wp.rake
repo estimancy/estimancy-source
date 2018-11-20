@@ -5,27 +5,28 @@ namespace :wp do
     comments = last_project.status_comment
 
     if /(\w)*___________________________________________________________________________/ =~ comments  #projects avec plusieurs actions
-      arr_tab = comments.split(". \r\n___________________________________________________________________________\r\n")
+      comments_array = comments.split(". \r\n___________________________________________________________________________\r\n")
 
-      tab2 = Array.new
-      for elem in arr_tab
-        tab2 << Array.new(1, elem)
+      ss_array = Array.new
+      for elem in comments_array
+        ss_array << Array.new(1, elem)        #chaque devis élément est un tableau
       end
 
-      for elt in tab2 #elt est un tableau seul élément;  elt[0]: chaine de ce tableau
-        p elt[0]
+      for elt in ss_array #elt est un tableau seul élément;  elt[0]: chaine de ce tableau
+        elem = elt[0].split (" \r\n")
+        p elem
 
-        date = elt[0][0..15]
+        date = elem[0][0..15]
         p "date"
         p date
 
-        intro = elt[0][19..32]
-        #p intro
+        intro = elt[0][19..34]
+        p intro
 
-        if /Status changé(\w)*/.match(intro) then
-          de_ind = elt[0].index("d")
-          par_ind = elt[0].index("p")
-          a_par_tab = Array.new(1, elt[0][de_ind..par_ind+3])
+        if /Status changé(\w)*/.match(intro) or /Status changed(\w)*/.match(intro)
+          de_ind = elem[0].index("d")
+          par_ind = elem[0].index("p")
+          a_par_tab = Array.new(1, elem[0][de_ind..par_ind+3])
           ss_apar_tab = a_par_tab.join("")
           origine = Array.new(1, ss_apar_tab[4..ss_apar_tab.index("à")-3])
           p "origine: "
@@ -35,8 +36,19 @@ namespace :wp do
           p target[0]
         end
 
-        if /Estimation(\w)*/.match(intro) then
-          rev = elt[0].reverse.split("")
+        if /Estimation crea(\w)*/.match(intro)
+          rev = elem[0].reverse.split("").compact
+
+          p rev
+          y_ind = rev.index("y") # yb
+          user =  rev[2..y_ind-3].reverse
+          p "user: "
+          p user.join("")
+        end
+
+        if /Estimation créée(\w)*/.match(intro)
+          rev = elem[0].reverse.split("")
+          p rev
           y_ind = rev.index("y") # yb
           user =  rev[8..y_ind-3].reverse
           p "user: "
@@ -48,10 +60,9 @@ namespace :wp do
     else # projects avec une seule action
       p comments
 
-      uniq =  comments.split("")
-
-      uniq2 = Array.new()
-      uniq2 << uniq[19..35]
+      uniq = Array.new()
+      uniq << uniq[19..35]
+      p uniq
 
       date = uniq[0..15].join("")
       p "date: "
@@ -60,24 +71,65 @@ namespace :wp do
       intro = uniq.join("")
       #p intro
 
-      if /Estimation créée (\w)*/.match(intro) then
+      if /Estimation créée(\w)*/.match(intro)
         rev = comments.reverse.split("")
+        p rev
         e_ind = rev.index('é') # créée
         user =  rev[5..e_ind-8].reverse
         p "user: "
         p user.join("")
       end
 
-      if /Estimation create(\w)*/.match(intro) then
-        rev = elt[0].reverse.split("")
+      if /Estimation created(\w)*/.match(intro)
+        rev = elt[0].reverse.split("\r\n")
+        p rev
         y_ind = rev.index("y") # yb
         user =  rev[8..y_ind-3].reverse
         p "user: "
         p user.join("")
       end
 
-
     end
+
+
+    # Code d'exemeple
+=begin
+    Project.take(4).each do |project|
+      comments = project.status_comment
+      comments_array = comments.split("\r\n")
+
+      comments_array.each do |comment|*
+
+        ####### DATE #######
+        date = comment[0..15]
+
+        ####### USER #######
+        user = comment.revserse[0..10]
+
+        ####### ORIGIN #######
+        origin = ""
+
+        ####### ORIGIN #######
+        target = ""
+
+
+        StatusHistory.create(organization: project.organization.name,
+                             project: project.title,
+                             version_number: project.version_number,
+                             change_date: date,
+                             origin: origin,
+                             target: target,
+                             user: user,
+                             action: "",
+                             )
+
+      #pour action
+      # si origin != target action = "changement de statut"
+      # si origin == target action = "Nouvelle notes"
+      # si origin ou target == nil alors action = "Creation"
+    end
+
+=end
   end
 end
 
