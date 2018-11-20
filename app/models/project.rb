@@ -307,7 +307,7 @@ class Project < ActiveRecord::Base
     new_project_version = self.checkout_project_base(current_user, self.description, new_version_number, automatic_change_old_versions)
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n"
+    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n" + "___________________________________________________________________________\r\n" + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end

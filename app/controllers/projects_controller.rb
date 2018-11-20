@@ -4028,6 +4028,7 @@ public
     if params[:project][:estimation_status_id]
       new_status_id = params[:project][:estimation_status_id].to_i
       if @project.estimation_status_id != new_status_id
+
         auto_updated_comments << auto_update_status_comment(params[:project_id], new_status_id)
         new_comments = auto_updated_comments + new_comments
         #update estimation status
@@ -4105,25 +4106,22 @@ public
   # Display comments about estimation status changes
   def show_status_change_comments(new_comments, current_note_length = 0)
     user_infos = ""
-    #current_comments = @project.status_comment.nil? ? "" : @project.status_comment
-    #appended_text = new_comments.sub(current_comments, '')
-
     user_infos << "#{I18n.l(Time.now)} : #{I18n.t(:notes_updated_by)}  #{current_user.name}\r\n"
     user_infos << "#{new_comments} \r\n"
     user_infos << "___________________________________________________________________________\r\n"
-    #user_infos << "#{current_comments} \r\n"
   end
 
   # Automatically update the project's comment when estimation_status has changed
   def auto_update_status_comment(project_id, new_status_id)
     project = Project.find(project_id)
     if project
+
       # Get the project status before updating the value
       last_estimation_status_name = project.estimation_status_id.nil? ? "" : project.estimation_status.name
+
       # Get changes on the project estimation_status_id after the update (to be compra with the last one)
       new_estimation_status_name = new_status_id.nil? ? "" : EstimationStatus.find(new_status_id).name
 
-      #current_comments = project.status_comment.to_s
       new_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"
       new_comments << "___________________________________________________________________________\r\n"
       #new_comments << current_comments
