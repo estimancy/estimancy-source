@@ -3979,43 +3979,43 @@ public
   # update comments on estimation status changes
   def update_comments_status_change
 
-    Biz.configure do |config|
-      config.hours = {
-          mon: {'09:00' => '12:00', '13:00' => '17:00'},
-          tue: {'09:00' => '12:00', '13:00' => '17:00'},
-          wed: {'09:00' => '12:00', '13:00' => '17:00'},
-          thu: {'09:00' => '12:00', '13:00' => '17:00'},
-          fri: {'09:00' => '12:00', '13:00' => '17:00'}
-      }
-    end
+    # Biz.configure do |config|
+    #   config.hours = {
+    #       mon: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       tue: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       wed: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       thu: {'09:00' => '12:00', '13:00' => '17:00'},
+    #       fri: {'09:00' => '12:00', '13:00' => '17:00'}
+    #   }
+    # end
 
     @project = Project.find(params[:project_id])
 
-    ptitle = @project.title
-    oname = @project.organization.name
-    status_history = StatusHistory.where(organization: oname,
-                                         project: ptitle,
-                                         version_number: @project.version_number).last
-
-    time_now = Time.now
-
-    unless status_history.nil?
-      gap = Biz.within(status_history.change_date, time_now).in_seconds
-    end
-
-    unless params[:project][:estimation_status_id].nil?
-      StatusHistory.create(organization: @project.organization.name,
-                           project_id: @project.id,
-                           project: @project.title,
-                           version_number: @project.version_number,
-                           change_date: time_now,
-                           action: "Changement de statut",
-                           comments: params["project"]["new_status_comment"].to_s,
-                           origin: @project.estimation_status.name,
-                           target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
-                           user: current_user.name,
-                           gap: gap)
-    end
+    # ptitle = @project.title
+    # oname = @project.organization.name
+    # status_history = StatusHistory.where(organization: oname,
+    #                                      project: ptitle,
+    #                                      version_number: @project.version_number).last
+    #
+    # time_now = Time.now
+    #
+    # unless status_history.nil?
+    #   gap = Biz.within(status_history.change_date, time_now).in_seconds
+    # end
+    #
+    # unless params[:project][:estimation_status_id].nil?
+    #   StatusHistory.create(organization: @project.organization.name,
+    #                        project_id: @project.id,
+    #                        project: @project.title,
+    #                        version_number: @project.version_number,
+    #                        change_date: time_now,
+    #                        action: "Changement de statut",
+    #                        comments: params["project"]["new_status_comment"].to_s,
+    #                        origin: @project.estimation_status.name,
+    #                        target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+    #                        user: current_user.name,
+    #                        gap: gap)
+    # end
 
     new_comments = ""
     auto_updated_comments = ""
@@ -4046,36 +4046,36 @@ public
             last_status_comments << "___________________________________________________________________________\r\n"
             new_comments = last_status_comments + new_comments
 
-            ptitle = @project.title
-            oname = @project.organization.name
-
-            time_now = Time.now
-
-            @project.status_histories.each do |sh|
-              StatusHistory.create(organization: sh.organization,
-                                   project_id: sh.project_id,
-                                   project: sh.project,
-                                   version_number: sh.version_number,
-                                   change_date: sh.change_date,
-                                   action: sh.action,
-                                   comments: sh.comments,
-                                   origin: sh.origin,
-                                   target: sh.target,
-                                   user: sh.user,
-                                   gap: sh.gap)
-            end
-
-            StatusHistory.create(organization: new_project.organization.name,
-                                 project_id: new_project.id,
-                                 project: new_project.title,
-                                 version_number: new_project.version_number,
-                                 change_date: time_now,
-                                 action: "Création",
-                                 comments: params["project"]["new_status_comment"].to_s,
-                                 origin: @project.estimation_status.name,
-                                 target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
-                                 user: current_user.name,
-                                 gap: gap)
+          #   ptitle = @project.title
+          #   oname = @project.organization.name
+          #
+          #   time_now = Time.now
+          #
+          #   @project.status_histories.each do |sh|
+          #     StatusHistory.create(organization: sh.organization,
+          #                          project_id: sh.project_id,
+          #                          project: sh.project,
+          #                          version_number: sh.version_number,
+          #                          change_date: sh.change_date,
+          #                          action: sh.action,
+          #                          comments: sh.comments,
+          #                          origin: sh.origin,
+          #                          target: sh.target,
+          #                          user: sh.user,
+          #                          gap: sh.gap)
+          #   end
+          #
+          #   StatusHistory.create(organization: new_project.organization.name,
+          #                        project_id: new_project.id,
+          #                        project: new_project.title,
+          #                        version_number: new_project.version_number,
+          #                        change_date: time_now,
+          #                        action: "Création",
+          #                        comments: params["project"]["new_status_comment"].to_s,
+          #                        origin: @project.estimation_status.name,
+          #                        target: EstimationStatus.find(params[:project][:estimation_status_id].to_i).name,
+          #                        user: current_user.name,
+          #                        gap: gap)
           end
 
         else
