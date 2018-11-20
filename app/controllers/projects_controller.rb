@@ -3978,6 +3978,17 @@ public
 
   # update comments on estimation status changes
   def update_comments_status_change
+
+    Biz.configure do |config|
+      config.hours = {
+          mon: {'09:00' => '12:00', '13:00' => '17:00'},
+          tue: {'09:00' => '12:00', '13:00' => '17:00'},
+          wed: {'09:00' => '12:00', '13:00' => '17:00'},
+          thu: {'09:00' => '12:00', '13:00' => '17:00'},
+          fri: {'09:00' => '12:00', '13:00' => '17:00'}
+      }
+    end
+
     @project = Project.find(params[:project_id])
 
     ptitle = @project.title
