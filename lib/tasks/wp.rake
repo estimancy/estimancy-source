@@ -88,13 +88,10 @@ namespace :wp do
         p "user: "
         p user.join("")
       end
-
     end
 
-
     # Code d'exemeple
-=begin
-    Project.take(4).each do |project|
+      Project.take(4).each do |project|
       comments = project.status_comment
       comments_array = comments.split("\r\n")
 
@@ -103,15 +100,21 @@ namespace :wp do
         ####### DATE #######
         date = comment[0..15]
 
+        # intro
+        intro = elt[0][19..34]
+
         ####### USER #######
-        user = comment.revserse[0..10]
+        if /Estimation créée(\w)*/.match(intro)
+          rev = comments.reverse.split("")
+          e_ind = rev.index('é') # créée
+          user = rev[5..e_ind-8].reverse
+        end
 
         ####### ORIGIN #######
         origin = ""
 
         ####### ORIGIN #######
         target = ""
-
 
         StatusHistory.create(organization: project.organization.name,
                              project: project.title,
@@ -120,16 +123,14 @@ namespace :wp do
                              origin: origin,
                              target: target,
                              user: user,
-                             action: "",
-                             )
+                             action: "")
 
       #pour action
       # si origin != target action = "changement de statut"
       # si origin == target action = "Nouvelle notes"
       # si origin ou target == nil alors action = "Creation"
-    end
+      end
 
-=end
   end
 end
 

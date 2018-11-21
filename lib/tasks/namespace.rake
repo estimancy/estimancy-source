@@ -24,16 +24,14 @@ namespace :namespace do
           p date
 
           intro = elt[0][19..34]
-
+          p intro
 
           if /Status changé(\w)*/.match(intro) or /Status changed(\w)*/.match(intro)
             de_ind = elem[0].index("d")
             #par_ind = elem[0].index("p")
             a_par_tab = Array.new(1, elem[0][de_ind..elem[0].length-1])
 
-
             ss_apar_tab = a_par_tab.join("")
-
 
             ori = Array.new(1, ss_apar_tab[4..ss_apar_tab.index("à")-3])
             p "origine: "
@@ -41,7 +39,6 @@ namespace :namespace do
             p origine
 
             sss_apar_tab = ss_apar_tab.split("")
-
 
             par_ind = sss_apar_tab.index {|x| x=="p"; sss_apar_tab[sss_apar_tab.index(x)+1] == "a"}
 
@@ -96,15 +93,17 @@ namespace :namespace do
 
         action = "Création"
 
-        if /Estimation créée (\w)*/.match(intro) then
+        if /Estimation créée(\w)*/.match(intro)
           rev = comments.reverse.split("")
+          p "comment dans "
+          p rev
           e_ind = rev.index('é') # créée
           user =  rev[5..e_ind-8].reverse
           p "user: "
           p user.join("")
         end
 
-        if /Estimation created(\w)*/.match(intro) then
+        if /Estimation crea(\w)*/.match(intro)
           rev = elt[0].reverse.split("\r\n")
           y_ind = rev.index("y") # yb
           user =  rev[8..y_ind-3].reverse
