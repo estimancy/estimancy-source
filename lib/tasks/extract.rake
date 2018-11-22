@@ -1,11 +1,12 @@
 namespace :estimancy do
   desc "TODO"
   task extract: :environment do
-    Project.take(10).each do |project|
+    Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
       status_comments.each do |sc|
+        p sc
         date = sc[0..15]
 
         if "créée par".in?(sc)
@@ -14,24 +15,30 @@ namespace :estimancy do
           target = ""
           origin = ""
           user = sc[41..(sc.length-4)]
-        elsif "created by".in?(sc)
-          # 06/12/2017 15:17 : Estimation created from the " Prestations Projet Cycle en V - P1 Centre de Service + WBS  - 1.0" estimation by "Adm Administrateur"
-          action = "Création"
-          target = ""
-          origin = ""
-          user = sc[41..(sc.length-4)]
+
+        elsif "à partir".in?(sc)
+          action = "Création à partir d'un modèle"
+          user = sc[sc.index('" par "')+7..sc.length-2]
 
         elsif "created from".in?(sc)
           # 10/11/2017 13:53 : Estimation created from the "Prestations Dire Expert - Etudes P1 PARIS - 1.0" estimation by "Eric BELLET"
           action = "Création à partir d'un modèle"
-          target = ""
-          origin = ""
           user = sc[(sc.index('by')+4)..(sc.length-4)]
 
-        # elsif blablabla
-        #   11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
-        end
 
+        #   11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
+        elsif "Status changé".in?(sc)
+          action = "Changement de status"
+          origin = sc[sc.index('de')+4..(sc.index('à'))-3]
+          target = sc[sc.index('à')+3..(sc.index('par'))-3]
+          user = sc[sc.index('par')+4..(sc.length-4)]
+
+        elsif "Notes modifiées".in?(sc)
+          user = sc[sc.index('par')+5..(sc.length)]
+
+        else #Notes modifiées par ...
+          comment = sc
+        end
 
         StatusHistory.create(organization: project.organization.name,
                              project_id: project.id,
@@ -39,6 +46,8 @@ namespace :estimancy do
                              version_number: project.version_number,
                              change_date: date,
                              action: action,
+                             comments: comment,
+                             origin: origin,
                              target: target,
                              user: user)
       end
