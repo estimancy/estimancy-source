@@ -1,59 +1,94 @@
 namespace :estimancy do
   desc "TODO"
   task extract: :environment do
-    Project.all.each do |project|
+
+    StatusHistory.delete_all
+
+    Project.where(id: 5232).each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
       status_comments.each do |sc|
-        p sc
         date = sc[0..15]
 
         if "créée par".in?(sc)
           # 21/11/2017 16:11 : Estimation créée par "Adm Administrateur"
           action = "Création"
-          target = ""
-          origin = ""
+          target = nil
+          origin = nil
           user = sc[41..(sc.length-4)]
+          comment = nil
+
+          create_history(project, date, action, comment, origin, target, user)
 
         elsif "à partir".in?(sc)
           action = "Création à partir d'un modèle"
-          user = sc[sc.index('" par "')+7..sc.length-2]
+          user = clean(sc[sc.index('" par "')+7..sc.length])
+          comment = nil
+
+          create_history(project, date, action, comment, origin, target, user)
 
         elsif "created from".in?(sc)
           # 10/11/2017 13:53 : Estimation created from the "Prestations Dire Expert - Etudes P1 PARIS - 1.0" estimation by "Eric BELLET"
           action = "Création à partir d'un modèle"
-          user = sc[(sc.index('by')+4)..(sc.length-4)]
+          user = clean(sc[(sc.index('by')+4)..(sc.length)])
+          comment = nil
 
+          create_history(project, date, action, comment, origin, target, user)
 
-        #   11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
         elsif "Status changé".in?(sc)
+          #   11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
           action = "Changement de status"
           origin = sc[sc.index('de')+4..(sc.index('à'))-3]
           target = sc[sc.index('à')+3..(sc.index('par'))-3]
-          user = sc[sc.index('par')+4..(sc.length-4)]
+          user = clean(sc[sc.index('par')+4..(sc.length)])
+          comment = nil
+
+          create_history(project, date, action, comment, origin, target, user)
+
+        # elsif version changé in?(sc)
+
+        # elsif changement automatique de statut des anciennes versions lors du passage de la version 1.0 à TOTO par...
+          # target => Abandonnée
+
 
         elsif "Notes modifiées".in?(sc)
-          user = sc[sc.index('par')+5..(sc.length)]
 
-        else #Notes modifiées par ...
+          @user = sc[sc.index('par')+5..(sc.length)]
+          @date = sc[0..15]
+
+        else
+          action = "Commentaire"
           comment = sc
+
+          unless comment.blank?
+            create_history(project, @date, action, comment, origin, target, @user)
+            @user = nil
+            @date = nil
+          end
         end
-
-        StatusHistory.create(organization: project.organization.name,
-                             project_id: project.id,
-                             project: project.title,
-                             version_number: project.version_number,
-                             change_date: date,
-                             action: action,
-                             comments: comment,
-                             origin: origin,
-                             target: target,
-                             user: user)
       end
-
     end
+
   end
+
+  def create_history(project, date, action, comment, origin, target, user)
+    StatusHistory.create(organization: project.organization.name,
+                         project_id: project.id,
+                         project: project.title,
+                         version_number: project.version_number,
+                         change_date: date,
+                         action: action,
+                         comments: comment,
+                         origin: origin,
+                         target: target,
+                         user: user)
+  end
+
+  def clean(str)
+    str.gsub('.','').gsub(/"/, '')
+  end
+
 end
 
 #     last_project = Project.last
