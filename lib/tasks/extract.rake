@@ -4,7 +4,7 @@ namespace :estimancy do
 
     StatusHistory.delete_all
 
-    Project.where(id: 5232).each do |project|
+    Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
@@ -18,42 +18,68 @@ namespace :estimancy do
           origin = nil
           user = sc[41..(sc.length-4)]
           comment = nil
+          old_ver = nil
+          new_ver = nil
 
-          create_history(project, date, action, comment, origin, target, user)
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "à partir".in?(sc)
           action = "Création à partir d'un modèle"
           user = clean(sc[sc.index('" par "')+7..sc.length])
           comment = nil
+          origin = nil
+          target = nil
 
-          create_history(project, date, action, comment, origin, target, user)
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "created from".in?(sc)
           # 10/11/2017 13:53 : Estimation created from the "Prestations Dire Expert - Etudes P1 PARIS - 1.0" estimation by "Eric BELLET"
           action = "Création à partir d'un modèle"
           user = clean(sc[(sc.index('by')+4)..(sc.length)])
           comment = nil
+          origin = nil
+          target = nil
+          #old_ver = nil
+          #new_ver = nil
 
-          create_history(project, date, action, comment, origin, target, user)
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "Status changé".in?(sc)
-          #   11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
+          # 11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
           action = "Changement de status"
           origin = sc[sc.index('de')+4..(sc.index('à'))-3]
           target = sc[sc.index('à')+3..(sc.index('par'))-3]
           user = clean(sc[sc.index('par')+4..(sc.length)])
           comment = nil
+          old_ver = nil
+          new_ver = nil
 
-          create_history(project, date, action, comment, origin, target, user)
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
-        # elsif version changé in?(sc)
+        elsif "Version changée".in?(sc)
+          old_ver = sc[sc.index('de')+4..sc.index('à')-3]
+          new_ver = sc[sc.index('à')+3..sc.index('par')-3]
+          user = clean(sc[sc.index('par')+4..(sc.length)])
+          action = nil
+          comment = nil
+          origin = nil
+          target = nil
 
-        # elsif changement automatique de statut des anciennes versions lors du passage de la version 1.0 à TOTO par...
-          # target => Abandonnée
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
+        elsif "Changement automatique".in?(sc)
+          action = nil
+          old_ver = sc[sc.index('de la version')+14..sc.index('à')-2]
+          new_ver =  sc[sc.index('à')+2..sc.index('par')-2]
+          user = clean(sc[sc.index('par')+4..sc.index('Nouveau')])
+          comment = sc[sc.index('Changement')..sc.index('versions')+7]
+          p comment
+          target = "Abandonnée"
+          origin = nil
+
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "Notes modifiées".in?(sc)
-
           @user = sc[sc.index('par')+5..(sc.length)]
           @date = sc[0..15]
 
@@ -62,21 +88,24 @@ namespace :estimancy do
           comment = sc
 
           unless comment.blank?
-            create_history(project, @date, action, comment, origin, target, @user)
+
+            origin = nil
+            target = nil
+            create_history(project, old_ver, new_ver, @date, action, comment, origin, target, @user)
             @user = nil
             @date = nil
           end
         end
       end
     end
-
   end
 
-  def create_history(project, date, action, comment, origin, target, user)
+  def create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
     StatusHistory.create(organization: project.organization.name,
                          project_id: project.id,
                          project: project.title,
-                         version_number: project.version_number,
+                         old_version_number: old_ver,
+                         new_version_number: new_ver,
                          change_date: date,
                          action: action,
                          comments: comment,
