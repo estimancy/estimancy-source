@@ -2,9 +2,19 @@ namespace :estimancy do
   desc "TODO"
   task extract: :environment do
 
+    Biz.configure do |config|
+      config.hours = {
+          mon: {'09:00' => '12:00', '13:00' => '17:00'},
+          tue: {'09:00' => '12:00', '13:00' => '17:00'},
+          wed: {'09:00' => '12:00', '13:00' => '17:00'},
+          thu: {'09:00' => '12:00', '13:00' => '17:00'},
+          fri: {'09:00' => '12:00', '13:00' => '17:00'}
+      }
+    end
+
     StatusHistory.delete_all
 
-    Project.all.each do |project|
+    Project.where(id: 1896).all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
@@ -73,7 +83,6 @@ namespace :estimancy do
           new_ver =  sc[sc.index('à')+2..sc.index('par')-2]
           user = clean(sc[sc.index('par')+4..sc.index('Nouveau')])
           comment = sc[sc.index('Changement')..sc.index('versions')+7]
-          p comment
           target = "Abandonnée"
           origin = nil
 
@@ -101,17 +110,34 @@ namespace :estimancy do
   end
 
   def create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
-    StatusHistory.create(organization: project.organization.name,
-                         project_id: project.id,
-                         project: project.title,
-                         old_version_number: old_ver,
-                         new_version_number: new_ver,
-                         change_date: date,
-                         action: action,
-                         comments: comment,
-                         origin: origin,
-                         target: target,
-                         user: user)
+    # Calculer l'écart de date en secondes entre la dernière ligne SH crée pour le project et le nouveau SH
+
+    sh = StatusHistory.where(project_id: project.id).first
+
+    new_sh = StatusHistory.new(organization: project.organization.name,
+                               project_id: project.id,
+                               project: project.title,
+                               old_version_number: old_ver,
+                               new_version_number: new_ver,
+                               change_date: date,
+                               action: action,
+                               comments: comment,
+                               origin: origin,
+                               target: target,
+                               user: user)
+    unless sh.nil?
+      unless sh.change_date.nil? || date.nil?
+
+        p Time.parse(date).class
+        p sh.change_date.to_time.class
+
+        gap = Biz.within(Time.parse(date), sh.change_date.to_time).in_minutes
+        new_sh.gap = gap
+      end
+    end
+
+    new_sh.save
+
   end
 
   def clean(str)
