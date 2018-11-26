@@ -518,11 +518,11 @@ public
         flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations dans cette organisation (#{@user.estimations.where(organization_id: params[:organization_id]).join(', ')})"
       end
 
-      redirect_to organization_users_path(organization_id: organization_id) and return
+      redirect_to :back and return
 
     rescue
       flash[:error] = "Erreur lors de la suppression de l'utilisateur"
-      redirect_to organization_users_path(organization_id: organization_id) and return
+      redirect_to :back and return
     end
 
   end
