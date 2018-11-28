@@ -252,6 +252,32 @@ class ProjectsController < ApplicationController
       end
     end
 
+    @organization.projects.where(is_model: false).each do |project|
+
+      fe = Field.where(organization_id: project.organization_id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
+      fc = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
+
+      project.module_projects.each do |mp|
+        ViewsWidget.where(module_project_id: mp.id).each do |vw|
+          vw_project_fields = vw.project_fields
+          unless vw_project_fields.empty?
+
+            unless fe.nil?
+              vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
+                @total_effort[project.id] << pf.value.to_f
+              end
+            end
+
+            unless fc.nil?
+              vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
+                @total_cost[project.id] << pf.value.to_f
+              end
+            end
+          end
+        end
+      end
+    end
+
     worksheet_synt.add_cell(0, 0, "Devis")
     worksheet_synt.add_cell(0, 1, "Application")
     worksheet_synt.add_cell(0, 2, "Besoin Métier")
@@ -268,7 +294,7 @@ class ProjectsController < ApplicationController
     worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
 
     pi = 1
-    @total_effort.each do |k,v|
+    @total_effort.each do |k, value|
       project = Project.find(k)
 
       worksheet_synt.add_cell(pi, 0, project.title)
