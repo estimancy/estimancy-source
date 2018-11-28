@@ -252,6 +252,9 @@ class ProjectsController < ApplicationController
       end
     end
 
+
+    # SI on trouve 0 dan effrto ou cost, faire comme ça,
+    # sinon faire comme c'est fait en haut...
     @organization.projects.where(is_model: false).each do |project|
 
       fe = Field.where(organization_id: project.organization_id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first

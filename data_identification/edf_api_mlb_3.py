@@ -5,6 +5,7 @@ import pickle
 import json
 from random import *
 from nltk.corpus import stopwords
+from sklearn.feature_selection import SelectFromModel
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -12,7 +13,7 @@ sys.setdefaultencoding('utf8')
 stop_words = stopwords.words('french')
 
 from treetagger import TreeTagger
-tt = TreeTagger(language='french')
+tt = TreeTagger(path_to_treetagger='/root/treetagger/', language='french')
 seed(942)
 
 from flask import Flask
@@ -31,7 +32,7 @@ def estimate_data():
     file_us = open("concord.txt", "w")
     file_us.write(request.form['txt'])
     file_us.close()
-    os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
+    os.system('python2.7 do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
     try:
         lines = tuple(open('demo-vision.txt', 'r'))
     except:
@@ -65,8 +66,6 @@ def tranform_userStory (userStory, model_feature, vectorizer):
     vector=vectorizer.transform([meaningful_words])
     vector_features=model_feature.transform(vector).toarray()
     return vector_features
-
-
 
 def clean_text(line):
     line = re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '').replace('|','').replace('\r', '').replace('\n', '')).lower()
