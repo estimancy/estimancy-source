@@ -268,7 +268,9 @@ class ProjectsController < ApplicationController
 
               unless fc.nil?
                 vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
-                  @total_cost[project.id] << pf.value.to_f
+                  unless pf.field.coefficient.nil?
+                    @total_cost[project.id] << (pf.value.to_f / pf.field.coefficient.to_f)
+                  end
                 end
               end
             end
@@ -321,6 +323,7 @@ class ProjectsController < ApplicationController
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
   end
+
 
   def build_rapport
     pdf = WickedPdf.new.pdf_from_url(rapport_url)
