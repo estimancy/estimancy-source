@@ -14,7 +14,7 @@ namespace :estimancy do
 
     StatusHistory.delete_all
 
-    Project.where(id: 1896).all.each do |project|
+    Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
@@ -95,6 +95,11 @@ namespace :estimancy do
         else
           action = "Commentaire"
           comment = sc
+
+          # si date est nulle
+          # @status_history = StatusHistory.where(project_id: project.id).last #receuperer le dernier
+          # #mettre a jour avec la suite du commentare
+          # sinon, faire la suite...
 
           unless comment.blank?
 
