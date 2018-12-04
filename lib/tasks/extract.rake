@@ -102,13 +102,25 @@ namespace :estimancy do
           # sinon, faire la suite...
 
           unless comment.blank?
+            tmpdate = DateTime.parse date rescue nil
 
-            origin = nil
-            target = nil
-            create_history(project, old_ver, new_ver, @date, action, comment, origin, target, @user)
-            @user = nil
-            @date = nil
+            if tmpdate.nil?
+              @status_history = StatusHistory.where(project_id: project.id).last
+              new_comment = @status_history.comments.to_s + comment
+              @status_history.comments = new_comment
+              @status_history.save
+
+            else
+
+              origin = nil
+              target = nil
+              create_history(project, old_ver, new_ver, @date, action, comment, origin, target, @user)
+              @user = nil
+              @date = nil
+            end
           end
+
+
         end
       end
     end
@@ -130,17 +142,18 @@ namespace :estimancy do
                                origin: origin,
                                target: target,
                                user: user)
+=begin
     unless sh.nil?
       unless sh.change_date.nil? || date.nil?
 
-        p Time.parse(date).class
-        p sh.change_date.to_time.class
+        #p Time.parse(date).class
+        #p sh.change_date.to_time.class
 
         gap = Biz.within(Time.parse(date), sh.change_date.to_time).in_minutes
         new_sh.gap = gap
       end
     end
-
+=end
     new_sh.save
 
   end
