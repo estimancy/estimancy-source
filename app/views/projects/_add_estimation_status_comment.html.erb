@@ -58,7 +58,7 @@
                 <% @model = Project.find(@model_id) %>
                 "<%= @model %>"
                 <%= history.comments %> par <%= history.user %>
-              <% elsif "Changement de statut".in?(history.action)%>
+              <% elsif "Changement de status".in?(history.action)%>
                   de
                   "<%= history.origin %>"
                   à
@@ -76,7 +76,6 @@
             <% end %>
         </div>
       </div>
-
   </div>
 
   <!--<hr>-->
