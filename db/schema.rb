@@ -206,6 +206,18 @@ ActiveRecord::Schema.define(version: 20181122142835) do
     t.boolean  "from_direct_trigger"
   end
 
+  create_table "budgets", force: :cascade do |t|
+    t.integer  "organization_id",         limit: 4
+    t.integer  "application_id",          limit: 4
+    t.integer  "project_area_id",         limit: 4
+    t.integer  "acquisition_category_id", limit: 4
+    t.integer  "platform_category_id",    limit: 4
+    t.integer  "project_category_id",     limit: 4
+    t.integer  "provider_id",             limit: 4
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+  end
+
   create_table "currencies", force: :cascade do |t|
     t.string   "name",            limit: 255
     t.string   "alias",           limit: 255
@@ -1287,50 +1299,42 @@ ActiveRecord::Schema.define(version: 20181122142835) do
   add_index "operation_operation_models", ["organization_id", "name"], name: "index_operation_operation_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "organization_estimations", id: false, force: :cascade do |t|
-    t.integer  "current_organization_id",        limit: 4,     default: 0,     null: false
-    t.string   "organization_name",              limit: 255
+    t.integer  "current_organization_id", limit: 4,     default: 0,     null: false
+    t.string   "organization_name",       limit: 255
     t.datetime "project_created_date"
-    t.integer  "project_id",                     limit: 4,     default: 0,     null: false
-    t.integer  "id",                             limit: 4,     default: 0,     null: false
-    t.string   "title",                          limit: 255
-    t.string   "version_number",                 limit: 64,    default: "1.0"
-    t.string   "alias",                          limit: 255
-    t.string   "ancestry",                       limit: 255
-    t.text     "description",                    limit: 65535
-    t.integer  "estimation_status_id",           limit: 4
-    t.string   "state",                          limit: 255
+    t.integer  "project_id",              limit: 4,     default: 0,     null: false
+    t.integer  "id",                      limit: 4,     default: 0,     null: false
+    t.string   "title",                   limit: 255
+    t.string   "version_number",          limit: 64,    default: "1.0"
+    t.string   "alias",                   limit: 255
+    t.string   "ancestry",                limit: 255
+    t.text     "description",             limit: 65535
+    t.integer  "estimation_status_id",    limit: 4
+    t.string   "state",                   limit: 255
     t.date     "start_date"
-    t.integer  "organization_id",                limit: 4
-    t.integer  "original_model_id",              limit: 4
-    t.integer  "project_area_id",                limit: 4
-    t.integer  "project_category_id",            limit: 4
-    t.integer  "platform_category_id",           limit: 4
-    t.integer  "acquisition_category_id",        limit: 4
+    t.integer  "organization_id",         limit: 4
+    t.integer  "original_model_id",       limit: 4
+    t.integer  "project_area_id",         limit: 4
+    t.integer  "project_category_id",     limit: 4
+    t.integer  "platform_category_id",    limit: 4
+    t.integer  "acquisition_category_id", limit: 4
     t.boolean  "is_model"
-    t.integer  "master_anscestry",               limit: 4
-    t.integer  "creator_id",                     limit: 4
-    t.text     "purpose",                        limit: 65535
-    t.text     "level_of_detail",                limit: 65535
-    t.text     "scope",                          limit: 65535
-    t.integer  "copy_number",                    limit: 4
-    t.integer  "copy_id",                        limit: 4
-    t.text     "included_wbs_activities",        limit: 65535
+    t.integer  "master_anscestry",        limit: 4
+    t.integer  "creator_id",              limit: 4
+    t.text     "purpose",                 limit: 65535
+    t.text     "level_of_detail",         limit: 65535
+    t.text     "scope",                   limit: 65535
+    t.integer  "copy_number",             limit: 4
+    t.integer  "copy_id",                 limit: 4
+    t.text     "included_wbs_activities", limit: 65535
     t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "status_comment",                 limit: 65535
-    t.integer  "application_id",                 limit: 4
-    t.string   "application_name",               limit: 255
-    t.boolean  "private",                                      default: false
+    t.text     "status_comment",          limit: 65535
+    t.integer  "application_id",          limit: 4
+    t.string   "application_name",        limit: 255
+    t.boolean  "private",                               default: false
     t.boolean  "is_historicized"
-    t.integer  "provider_id",                    limit: 4
-    t.string   "request_number",                 limit: 255
-    t.boolean  "use_automatic_quotation_number"
-    t.string   "business_need",                  limit: 255
-    t.integer  "originator_id",                  limit: 4
-    t.integer  "event_organization_id",          limit: 4
-    t.text     "transaction_id",                 limit: 65535
-    t.boolean  "is_new_created_record"
   end
 
   create_table "organization_labor_categories", force: :cascade do |t|
@@ -1671,6 +1675,8 @@ ActiveRecord::Schema.define(version: 20181122142835) do
     t.text     "transaction_id",                 limit: 65535
     t.boolean  "is_new_created_record"
     t.boolean  "allow_export_pdf"
+    t.datetime "change_date"
+    t.integer  "time_count",                     limit: 4
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
@@ -1865,8 +1871,8 @@ ActiveRecord::Schema.define(version: 20181122142835) do
     t.string   "origin",             limit: 255
     t.string   "target",             limit: 255
     t.string   "user",               limit: 255
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "gap",                limit: 4
   end
 

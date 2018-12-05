@@ -14,12 +14,14 @@ namespace :estimancy do
 
     StatusHistory.delete_all
 
-    # Project.where(id: 4866).all.each do |project|
-    Project.all.each do |project|
+    Project.where(id: 4275).all.each do |project|
+    # Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
 
       status_comments.each do |sc|
+
+        # déplacer cette varibale dans chaque condition et modifier en fonction de la langue pour prendre en compte le 'PM'
         date = sc[0..15]
 
         if "créée par".in?(sc)
@@ -135,7 +137,11 @@ namespace :estimancy do
   end
 
   def create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
-    # Calculer l'écart de date en secondes entre la dernière ligne SH crée pour le project et le nouveau SH
+
+    # Vérifier la validité de la date :
+    # Transformer le String date en object DateTime avec la fonction strptime("le 15 Mars 2018", "%m/%d/%Y") voir doc pour plus d'infos
+    # https://ruby-doc.org/stdlib-2.3.1/libdoc/date/rdoc/DateTime.html
+    # http://strftimer.com/
 
     sh = StatusHistory.where(project_id: project.id).first
 
