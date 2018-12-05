@@ -46,9 +46,14 @@
                             <% elsif values.length > 1 %>
                               <% ge_factor = values[0].ge_factor %>
                               <div class="span12">
-                                <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
-                                  <%= key.humanize.upcase %>
-                                </span>
+
+                                <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
+                                  <%= link_to 'Aide en ligne', ge_factor.description, target: "_blank" %>
+                                <% else %>
+                                  <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
+                                    <%= key.humanize.upcase %>
+                                  </span>
+                                <% end %>
 
                                 <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, module_project_id: @module_project.id , project_id: @project.id, organization_id: @ge_model.organization_id).first_or_create %>
 
