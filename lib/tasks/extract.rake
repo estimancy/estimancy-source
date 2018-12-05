@@ -14,7 +14,7 @@ namespace :estimancy do
 
     StatusHistory.delete_all
 
-    Project.where(id: 4275).all.each do |project|
+    Project.all.each do |project|
     # Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
@@ -22,10 +22,12 @@ namespace :estimancy do
       status_comments.each do |sc|
 
         # déplacer cette varibale dans chaque condition et modifier en fonction de la langue pour prendre en compte le 'PM'
-        date = sc[0..15]
+
+        #date = sc[0..15]
 
         if "créée par".in?(sc)
           # 21/11/2017 16:11 : Estimation créée par "Adm Administrateur"
+          date = sc[0..15]
           action = "Création"
           target = nil
           origin = nil
@@ -37,6 +39,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "à partir".in?(sc)
+          date = sc[0..15]
           action = "Création à partir du modèle"
           user = clean(sc[sc.index('" par "')+7..sc.length])
           comment = nil
@@ -46,7 +49,27 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "created from".in?(sc)
-          # 10/11/2017 13:53 : Estimation created from the "Prestations Dire Expert - Etudes P1 PARIS - 1.0" estimation by "Eric BELLET"
+
+
+          # Vérifier la validité de la date:
+          # Transformer le String date en object DateTime avec la fonction strptime("le 15 Mars 2018", "%m/%d/%Y") voir doc pour plus d'infos
+          # https://ruby-doc.org/stdlib-2.3.1/libdoc/date/rdoc/DateTime.html
+          # http://strftimer.com/
+
+          # 09/14/2018 04:45 PM : Estimation created from the
+          date = sc[0.. sc.index('Estimation')-3]
+          if "M".in?(date)
+            date = sc[0..18]
+            p date
+            unless date.blank?
+              date = DateTime.strptime(date, "%m/%d/%Y %H:%M %p")
+              p date
+            end
+          else
+            # 10/11/2017 13:53 : Estimation created from the
+            date = sc[0..15]
+            p date
+          end
           action = "Création à partir du modèle"
           user = clean(sc[(sc.index('by')+4)..(sc.length)])
           comment = nil
@@ -57,8 +80,24 @@ namespace :estimancy do
 
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
+        elsif "changed from".in?(sc)
+          date = sc[0..18]
+          unless date.blank?
+            date = DateTime.strptime(date, "%m/%d/%Y %H:%M %p")
+          end
+          action = "Changement de statut"
+          origin = sc[sc.index('from')+6..(sc.index('to'))-3]
+          target = sc[sc.index('to')+4..(sc.index('by'))-3]
+          user = clean(sc[sc.index('by')+3..(sc.length)])
+          comment = nil
+          old_ver = nil
+          new_ver = nil
+
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
+
         elsif "Status changé".in?(sc)
           # 11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
+          date = sc[0..15]
           action = "Changement de statut"
           origin = sc[sc.index('de')+4..(sc.index('à'))-3]
           target = sc[sc.index('à')+3..(sc.index('par'))-3]
@@ -70,6 +109,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "Version changée".in?(sc)
+          date = sc[0..15]
           old_ver = sc[sc.index('de')+4..sc.index('à')-3]
           new_ver = sc[sc.index('à')+3..sc.index('par')-3]
           user = clean(sc[sc.index('par')+4..(sc.length)])
@@ -81,6 +121,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "Changement automatique".in?(sc)
+          date = sc[0..15]
           action = nil
           old_ver = sc[sc.index('de la version')+14..sc.index('à')-2]
           new_ver =  sc[sc.index('à')+2..sc.index('par')-2]
@@ -92,6 +133,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "automatisme".in?(sc)
+          date = sc[0..15]
           action = "Version créée automatiquement par l'automatisme de changement de version"
           old_ver = nil
           new_ver =  nil
@@ -103,6 +145,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "Notes modifiées".in?(sc)
+          date = sc[0..15]
           @user = sc[sc.index('par')+5..(sc.length)]
           @date = sc[0..15]
 
@@ -130,7 +173,6 @@ namespace :estimancy do
             end
           end
 
-
         end
       end
     end
@@ -138,7 +180,7 @@ namespace :estimancy do
 
   def create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
-    # Vérifier la validité de la date :
+    # Vérifier la validité de la date:
     # Transformer le String date en object DateTime avec la fonction strptime("le 15 Mars 2018", "%m/%d/%Y") voir doc pour plus d'infos
     # https://ruby-doc.org/stdlib-2.3.1/libdoc/date/rdoc/DateTime.html
     # http://strftimer.com/
