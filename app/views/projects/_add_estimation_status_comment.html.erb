@@ -46,43 +46,37 @@
       <h5> <%= I18n.t(:comment_history) %> </h5>
     </div>
 
-    <div class="collapse in" id="collapseIn">
-      <div class="widget-content tab-content">
-        <%#= simple_format(@text_comments.to_s) %>
-
-        <table class="table table-bordered table-condensed">
-
-          <tr>
-            <th>Organisation</th>
-            <th>Date</th>
-            <th>Ancienne Version</th>
-            <th>Nouvelle Version</th>
-            <th>Action</th>
-            <th>Commentaires</th>
-            <th>Origin</th>
-            <th>Target</th>
-            <th>Utilisateur</th>
-          </tr>
-
-          <% StatusHistory.where(project_id: @project_id).each do |history| %>
-            <tr>
-              <td>
-                <%= history.organization %>
-              </td>
-              <td><%= history.change_date %></td>
-              <td><%= history.old_version_number %></td>
-              <td><%= history.new_version_number %></td>
-              <td><%= history.action %></td>
-              <td><%= history.comments %></td>
-              <td><%= history.origin %></td>
-              <td><%= history.target %></td>
-              <td><%= history.user %></td>
-            </tr>
-        <% end %>
-
-        </table>
+      <div class="collapse in" id="collapseIn">
+        <div class="widget-content tab-content">
+          <% unless @project.nil? %>
+            <% @project_id = @project.id %>
+            <% StatusHistory.where(project_id: @project.id).each do |history| %>
+                  <%= history.change_date.strftime("%d/%m/%Y à %H:%M") %> :
+                  <%= history.action %>
+                    <% if "à partir".in?(history.action) %>
+                      <% @model_id = @project.original_model_id %>
+                      <% @model = Project.find(@model_id) %>
+                      "<%= @model %>"
+                    <% elsif "Changement de status".in?(history.action)%>
+                        de
+                        "<%= history.origin %>"
+                        à
+                        "<%= history.target %>"
+                    <% elsif "Version changée".in?(history.action)%>
+                      de
+                      "<%= history.old_version_number %>"
+                      à
+                      <%= history.new_version_number %>
+                    <% end %>
+                  <%= history.comments %>
+                  par
+                  <%= history.user %>
+              <hr>
+              <% end %>
+            <% end %>
+        </div>
       </div>
-    </div>
+
   </div>
 
   <!--<hr>-->

@@ -106,12 +106,13 @@ namespace :estimancy do
 
             if tmpdate.nil?
               @status_history = StatusHistory.where(project_id: project.id).last
-              new_comment = @status_history.comments.to_s + comment
-              @status_history.comments = new_comment
-              @status_history.save
+              unless @status_history.nil?
+                new_comment = @status_history.comments.to_s + comment
+                @status_history.comments = new_comment
+                @status_history.save
+              end
 
             else
-
               origin = nil
               target = nil
               create_history(project, old_ver, new_ver, @date, action, comment, origin, target, @user)
