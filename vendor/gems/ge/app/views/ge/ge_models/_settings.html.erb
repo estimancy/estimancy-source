@@ -48,7 +48,7 @@
                               <div class="span12">
 
                                 <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
-                                  <%= link_to 'Aide en ligne', ge_factor.description, target: "_blank" %>
+                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank" %>
                                 <% else %>
                                   <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
                                     <%= key.humanize.upcase %>
