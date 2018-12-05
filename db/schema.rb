@@ -1859,7 +1859,7 @@ ActiveRecord::Schema.define(version: 20181122142835) do
     t.string   "project",            limit: 255
     t.string   "old_version_number", limit: 255
     t.string   "new_version_number", limit: 255
-    t.date     "change_date"
+    t.datetime "change_date"
     t.string   "action",             limit: 255
     t.text     "comments",           limit: 65535
     t.string   "origin",             limit: 255

@@ -14,6 +14,7 @@ namespace :estimancy do
 
     StatusHistory.delete_all
 
+    # Project.where(id: 4866).all.each do |project|
     Project.all.each do |project|
 
       status_comments = project.status_comment.split("\r\n").delete_if{ |i| i == "___________________________________________________________________________" } #Array
@@ -34,7 +35,7 @@ namespace :estimancy do
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
         elsif "à partir".in?(sc)
-          action = "Création à partir d'un modèle"
+          action = "Création à partir du modèle"
           user = clean(sc[sc.index('" par "')+7..sc.length])
           comment = nil
           origin = nil
@@ -44,7 +45,7 @@ namespace :estimancy do
 
         elsif "created from".in?(sc)
           # 10/11/2017 13:53 : Estimation created from the "Prestations Dire Expert - Etudes P1 PARIS - 1.0" estimation by "Eric BELLET"
-          action = "Création à partir d'un modèle"
+          action = "Création à partir du modèle"
           user = clean(sc[(sc.index('by')+4)..(sc.length)])
           comment = nil
           origin = nil
@@ -56,7 +57,7 @@ namespace :estimancy do
 
         elsif "Status changé".in?(sc)
           # 11/02/2018 15:50 : Status changé de "En cours" à "Brouillon" par Eric BELLET_ADM.
-          action = "Changement de status"
+          action = "Changement de statut"
           origin = sc[sc.index('de')+4..(sc.index('à'))-3]
           target = sc[sc.index('à')+3..(sc.index('par'))-3]
           user = clean(sc[sc.index('par')+4..(sc.length)])
@@ -88,6 +89,17 @@ namespace :estimancy do
 
           create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
 
+        elsif "automatisme".in?(sc)
+          action = "Version créée automatiquement par l'automatisme de changement de version"
+          old_ver = nil
+          new_ver =  nil
+          user = nil
+          comment = nil
+          target = nil
+          origin = nil
+
+          create_history(project, old_ver, new_ver, date, action, comment, origin, target, user)
+
         elsif "Notes modifiées".in?(sc)
           @user = sc[sc.index('par')+5..(sc.length)]
           @date = sc[0..15]
@@ -95,11 +107,6 @@ namespace :estimancy do
         else
           action = "Commentaire"
           comment = sc
-
-          # si date est nulle
-          # @status_history = StatusHistory.where(project_id: project.id).last #receuperer le dernier
-          # #mettre a jour avec la suite du commentare
-          # sinon, faire la suite...
 
           unless comment.blank?
             tmpdate = DateTime.parse date rescue nil
