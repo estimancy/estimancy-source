@@ -1174,7 +1174,7 @@ fr:
   sloc: "sloc (Taille en Kilo Lignes de Code)"
   sloc: "SLOC (Taille en nombre de lignes de code"
   size: "Taille"
-  cost: "coût"
+  cost: "Coût"
   delay: "délai"
   hours: "heures"
   months: "mois"
@@ -2214,3 +2214,7 @@ fr:
 
   val_min: "Valeur min"
   val_max: "Valeur max"
+
+
+  #demands
+  description: Description

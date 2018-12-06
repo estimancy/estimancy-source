@@ -2164,3 +2164,6 @@ en:
 
   date_min: Date min
   date_max: Date max
+
+  #demands
+  description: Description
