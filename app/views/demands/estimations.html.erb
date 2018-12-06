@@ -1,0 +1,37 @@
+<%= form_tag search_path, method: "GET", remote: true do %>
+  <div class="tabs">
+    <ul>
+      <li>
+        <a href="#tabs-group">
+          Liste des devis de la demande <%= @demand %>
+        </a>
+      </li>
+    </ul>
+
+    <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+        <table>
+          <tr>
+            <td colspan=2 style="text-align:right;">
+
+              <% if can? :create_project_from_template, Project %>
+                <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+              <% end %>
+
+              <% if can? :create_project_from_scratch, Project %>
+                <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+              <% end %>
+
+            </td>
+
+          </tr>
+        </table>
+
+        <div id="organization_projects">
+          <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+        </div>
+    </div>
+  </div>
+
+  <%= submit_tag "", class: "invisible_button" %>
+
+<% end %>

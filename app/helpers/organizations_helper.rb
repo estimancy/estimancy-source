@@ -219,7 +219,11 @@ module OrganizationsHelper
       when :version_number
         value
       when :request_number
-        value
+        if project.demand_id.nil?
+          value
+        else
+          project.demand
+        end
       when :business_need
         value
       when :status_name

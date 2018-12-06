@@ -23,7 +23,7 @@
             Description
           </th>
           <th>
-
+            Actions
           </th>
         </tr>
       </thead>
@@ -31,8 +31,12 @@
       <tbody>
         <% @demands.each do |demand| %>
           <tr>
-            <td><%= demand.name %></td>
+            <td><%= link_to demand.name, organization_demand_estimations_path(@organization, demand) %></td>
             <td><%= demand.description %></td>
+            <td>
+              <%= link_to '', edit_organization_demand_path(@organization, demand), class: 'fa fa-pencil' %>
+              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
           </tr>
         <% end %>
       </tbody>

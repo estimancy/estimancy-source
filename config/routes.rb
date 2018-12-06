@@ -233,6 +233,10 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
+    resources :demands do
+      get 'estimations' => 'demands#estimations'
+    end
+
     resources :demands
     resources :demand_types
 

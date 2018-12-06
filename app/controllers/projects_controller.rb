@@ -755,6 +755,7 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
     @providers = @organization.providers
+    @demand = Demand.find(params[:demand_id])
   end
 
   #Create a new project
@@ -793,6 +794,8 @@ class ProjectsController < ApplicationController
         @project.application_name = params[:project][:application_name]
       end
     end
+
+    @project.demand_id = params[:project][:demand_id]
 
     @project.creator_id = current_user.id
     @project.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_by, username: current_user.name)} \r\n"
@@ -966,6 +969,7 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
     @providers = @organization.providers
+    @demand = @project.demand
 
     #generate_dashboard
 
