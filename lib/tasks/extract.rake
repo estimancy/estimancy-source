@@ -60,15 +60,12 @@ namespace :estimancy do
           date = sc[0.. sc.index('Estimation')-3]
           if "M".in?(date)
             date = sc[0..18]
-            p date
             unless date.blank?
               date = DateTime.strptime(date, "%m/%d/%Y %H:%M %p")
-              p date
             end
           else
             # 10/11/2017 13:53 : Estimation created from the
             date = sc[0..15]
-            p date
           end
           action = "Création à partir du modèle"
           user = clean(sc[(sc.index('by')+4)..(sc.length)])
