@@ -16,10 +16,10 @@
       <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
       <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
       <%= f.input :cost, :label => I18n.t('cost'), :input_html => {:class => 'input-xxlarge' } %>
-      <%= f.input :demande_type_id, as: :select, collection: @organization.demand_types, :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, :input_html => {:class => 'input-xxlarge'} %>
+      <%#= f.input :demand_id, as: :select, collection: @organization.demands, :input_html => {:class => 'input-xxlarge'} %>
 
-
-      <%# f.input :application_id, as: :hidden, input_html: { :value => @demand.application_id } %>
+      <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: {:class => 'input-xxlarge'} %>
       <%# f.input :demand_status_id, as: :hidden, input_html: { :value => @demand.demand_status_id } %>
 
       <div class="actions-tabs">
