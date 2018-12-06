@@ -11,10 +11,10 @@ class DemandTypesController < ApplicationController
   end
 
   def create
-    @demand = DemandType.new(params[:demand])
+    @demand_type = DemandType.new(params[:demand_type])
     @organization = Organization.find(params[:organization_id])
 
-    if @demand.save
+    if @demand_type.save
       flash[:notice] = "Demande créee avec succès"
       redirect_to organization_demands_path(@organization)
     else
