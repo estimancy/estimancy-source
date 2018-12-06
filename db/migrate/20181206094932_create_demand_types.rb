@@ -6,6 +6,8 @@ class CreateDemandTypes < ActiveRecord::Migration
       t.boolean :fixed_billing
       t.boolean :deadlined_billing
 
+      t.integer :organization_id
+
       t.timestamps null: false
     end
   end

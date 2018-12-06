@@ -234,6 +234,7 @@ Projestimate::Application.routes.draw do
   resources :organizations do
 
     resources :demands
+    resources :demand_types
 
     resources :applications
     resources :fields

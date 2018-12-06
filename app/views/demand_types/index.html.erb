@@ -1,0 +1,37 @@
+<div class="tabs">
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        Listes des types de demandes
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <div class="group_button">
+      <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
+    </div>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @demand_types.each do |dt| %>
+          <tr>
+            <td><%= dt.name %></td>
+            <td><%= dt.description %></td>
+          </tr>
+        <% end %>
+      </tbody>
+
+      <%= render :partial => 'layouts/footer_table' %>
+    </table>
+
+  </div>
+</div>

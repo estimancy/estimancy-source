@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 20181206095053) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "is_ignored"
+    t.integer  "criticality",     limit: 4
   end
 
   create_table "applications_projects", id: false, force: :cascade do |t|
@@ -239,6 +240,7 @@ ActiveRecord::Schema.define(version: 20181206095053) do
     t.text     "description",       limit: 65535
     t.boolean  "fixed_billing"
     t.boolean  "deadlined_billing"
+    t.integer  "organization_id",   limit: 4
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
   end
