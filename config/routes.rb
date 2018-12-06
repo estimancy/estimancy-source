@@ -232,6 +232,9 @@ Projestimate::Application.routes.draw do
   resources :currencies
 
   resources :organizations do
+
+    resources :demands
+
     resources :applications
     resources :fields
     resources :wbs_activities
