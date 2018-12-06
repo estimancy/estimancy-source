@@ -110,7 +110,7 @@ namespace :estimancy do
           old_ver = sc[sc.index('de')+4..sc.index('à')-3]
           new_ver = sc[sc.index('à')+3..sc.index('par')-3]
           user = clean(sc[sc.index('par')+4..(sc.length)])
-          action = nil
+          action = "Changement de version"
           comment = nil
           origin = nil
           target = nil

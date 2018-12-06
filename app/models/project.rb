@@ -540,6 +540,20 @@ class Project < ActiveRecord::Base
       new_prj.status_comment << "___________________________________________________________________________"
       new_prj.status_comment << "\r\n #{old_prj.status_comment} \r\n"
 
+      # Faire le changement de statut
+      StatusHistory.create(organization: new_prj.organization.name,
+                           project_id: new_prj.id,
+                           project: new_prj.title,
+                           old_version_number: old_prj.version_number,
+                           new_version_number: new_prj.version_number,
+                           change_date: Time.now,
+                           action: "Changement de version",
+                           comments: nil,
+                           origin: nil,
+                           target: nil,
+                           user: current_user.name,
+                           gap: nil)
+
       new_prj.transaction do
 
         if new_prj.save
