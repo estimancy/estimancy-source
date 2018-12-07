@@ -23,7 +23,6 @@
 
 Projestimate::Application.routes.draw do
 
-  #resources :livrables
   resources :autorization_log_events
 
 
@@ -234,13 +233,14 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
+    resources :livrables
+
     resources :demands do
       get 'estimations' => 'demands#estimations'
     end
 
     resources :demands
     resources :demand_types
-    resources :livrables
 
     resources :applications
     resources :fields
