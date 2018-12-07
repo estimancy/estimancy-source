@@ -2221,7 +2221,9 @@ fr:
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"
+
+  # setting_demand
   demands: "Demandes"
   demands_types: "Demandes Types"
-  livrable: "Livrable"
+  livrable: "Livrables"
   demands_statuses: "Demandes Statuts"
