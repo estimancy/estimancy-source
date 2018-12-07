@@ -1,0 +1,106 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#demandes"><%= I18n.t(:demands) %></a></li>
+    <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
+    <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
+  </ul>
+
+  <div id="demandes">
+    <div id="tabs-1">
+
+      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            Business Need
+          </th>
+          <th>
+            Cost
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+    <% @demands.each do |demand| %>
+      <tr>
+        <td><%= link_to demand.name, organization_demand_path(@organization, demand) %></td>
+        <td><%= demand.description %></td>
+        <td><%= demand.business_need %></td>
+        <td><%= demand.cost %></td>
+      </tr>
+    <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="demandes_types">
+    <div id="tabs-1">
+
+      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            Fixed Billing
+          </th>
+          <th>
+            Deadlines Billing
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="livrables">
+    <div id="tabs-1">
+
+      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            State
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <% @livrables.each do |livrable| %>
+          <tr>
+            <td><%= link_to livrable.name, organization_livrable_path(@organization, livrable) %></td>
+            <td><%= livrable.description %></td>
+            <td>
+              <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
+              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+        </tbody>
+
+        <%= render :partial => 'layouts/footer_table' %>
+      </table>
+
+    </div>
+  </div>
+
+</div>
