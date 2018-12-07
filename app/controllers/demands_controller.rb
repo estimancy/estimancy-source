@@ -72,7 +72,7 @@ class DemandsController < ApplicationController
     end
 
     if session[:sort_order].blank?
-      session[:sort_order] ="desc"
+      session[:sort_order] = "desc"
     end
 
     @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]

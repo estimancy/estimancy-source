@@ -260,6 +260,7 @@ Projestimate::Application.routes.draw do
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
+    get "setting_demand" => 'organizations#setting_demand'
     get "module_estimation" => 'organizations#module_estimation'
     get "users" => 'organizations#users', as: 'organization_users'
     get "estimations" => 'organizations#estimations'
