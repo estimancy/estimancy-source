@@ -1,10 +1,24 @@
 <ul class="nav">
 
   <li class="dropdown">
-    <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-      <i class="fa fa-list-ul fa-lg pull-left"></i>&nbsp;
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t(:config_and_setting)%>">
+      <i class="fa fa-list-ul fa-lg pull-left"></i></b>
     </a>
+    <ul class="dropdown-menu">
+      <li class="dropdown">
+        <a href="<%= main_app.organization_demands_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
+          Liste des demandes
+        </a>
+      </li>
+      <li class="dropdown">
+        <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
+          Liste des devis
+        </a>
+      </li>
+    </ul>
   </li>
+
+  <li class="divider-vertical"></li>
 
   <li class="dropdown">
     <% begin %>
