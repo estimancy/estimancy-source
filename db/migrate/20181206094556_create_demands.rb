@@ -4,7 +4,7 @@ class CreateDemands < ActiveRecord::Migration
       t.string :name
       t.text :description
       t.string :business_need
-      t.integer :demande_type_id
+      t.integer :demand_type_id
       t.integer :application_id
       t.integer :demand_status_id
       t.integer :organization_id
