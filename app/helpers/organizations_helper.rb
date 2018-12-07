@@ -284,7 +284,11 @@ module OrganizationsHelper
       when :version_number
         content_tag("td class='center'", value)
       when :request_number
-        content_tag("td", value)
+        if project.demand_id.nil?
+          content_tag("td", value)
+        else
+          content_tag("td", project.demand)
+        end
       when :business_need
         content_tag("td", value)
       when :status_name

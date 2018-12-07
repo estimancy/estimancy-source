@@ -234,6 +234,7 @@ Projestimate::Application.routes.draw do
   resources :organizations do
 
     resources :livrables
+    resources :demand_statuses
 
     resources :demands do
       get 'estimations' => 'demands#estimations'

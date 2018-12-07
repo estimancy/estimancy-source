@@ -85,6 +85,7 @@ class Organization < ActiveRecord::Base
 
   has_many :demands
   has_many :demand_types
+  has_many :demand_statuses
   has_many :livrables
 
   belongs_to :currency

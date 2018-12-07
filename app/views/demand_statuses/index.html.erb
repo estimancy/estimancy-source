@@ -1,0 +1,39 @@
+<div class="tabs">
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        Listes des statuts des demandes
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <div class="group_button">
+      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
+    </div>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @demand_statuses.each do |ds| %>
+          <tr>
+            <td><%= ds.name %></td>
+            <td>
+              <%= link_to '', edit_organization_demand_status_path(@organization, ds), class: 'fa fa-pencil' %>
+              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+
+      <%= render :partial => 'layouts/footer_table' %>
+    </table>
+
+  </div>
+</div>

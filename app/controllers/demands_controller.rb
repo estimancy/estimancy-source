@@ -5,6 +5,13 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
   end
 
+  def edit
+    @demand = Demand.find(params[:id])
+    @organization = Organization.find(params[:organization_id])
+
+    get_estimations
+  end
+
   def new
     @demand = Demand.new
     @organization = Organization.find(params[:organization_id])
@@ -22,10 +29,21 @@ class DemandsController < ApplicationController
     end
   end
 
+  def update
+    @demand = Demand.find(params[:id])
+    @demand.update(params[:demand])
+
+    redirect_to :back
+  end
+
   def estimations
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])
 
+    get_estimations
+  end
+
+  private def get_estimations
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 

@@ -7,31 +7,45 @@
     </li>
   </ul>
   <div id="tabs-1">
-    <%= simple_form_for([@organization, @demand]) do |f| %>
-      <%= f.error_notification %>
-      <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+    <div class="row-fluid">
+      <div class="span9">
+        <%= simple_form_for([@organization, @demand]) do |f| %>
+          <%= f.error_notification %>
+          <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
-      <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
-      <%= f.input :cost, :label => I18n.t('cost'), :input_html => {:class => 'input-xxlarge' } %>
-      <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, :input_html => {:class => 'input-xxlarge'} %>
-      <%#= f.input :demand_id, as: :select, collection: @organization.demands, :input_html => {:class => 'input-xxlarge'} %>
+          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
+          <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
+          <%= f.input :cost, :label => I18n.t('cost'), :input_html => {:class => 'input-xxlarge' } %>
+          <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, input_html: { class: 'input-xxlarge' } %>
+          <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+          <%= f.input :demand_status_id, as: :select, collection: @organization.demand_statuses, input_html: { class: 'input-xxlarge' }  %>
 
-      <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: {:class => 'input-xxlarge'} %>
-      <%# f.input :demand_status_id, as: :hidden, input_html: { :value => @demand.demand_status_id } %>
+          <div class="actions-tabs">
+            <% if action_name == 'new' || action_name=="create" %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=="update" %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn' %>
+          </div>
 
-      <div class="actions-tabs">
-        <% if action_name == 'new' || action_name=="create" %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <hr>
+
         <% end %>
-        <%= link_to I18n.t('back'), :back, :class => 'btn' %>
       </div>
-    <% end %>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <h4>
+          Liste des devis de la demande <%= @demand %>
+        </h4>
+        <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+      </div>
+    </div>
   </div>
 </div>
+
