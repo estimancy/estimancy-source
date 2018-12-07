@@ -5,10 +5,6 @@ class LivrablesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
   end
 
-  def show
-    @livrable = Livrable.find(params[:id])
-  end
-
   def new
     @livrable = Livrable.new
     @organization = Organization.find(params[:organization_id])
@@ -17,6 +13,7 @@ class LivrablesController < ApplicationController
   # GET /livrables/1/edit
   def edit
     @livrable = Livrable.find(params[:id])
+    @organization = Organization.find(params[:organization_id])
   end
 
   # POST /livrables
@@ -56,7 +53,7 @@ class LivrablesController < ApplicationController
     @livrable = Livrable.find(params[:id])
     @livrable.destroy
     respond_to do |format|
-      format.html { redirect_to livrables_url }
+      format.html { redirect_to organization_livrables_path(@organization) }
       format.json { head :no_content }
     end
   end

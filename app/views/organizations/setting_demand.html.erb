@@ -87,11 +87,11 @@
         <tbody>
         <% @livrables.each do |livrable| %>
           <tr>
-            <td><%= link_to livrable.name, organization_livrable_path(@organization, livrable) %></td>
+            <td><%= livrable.name %></td>
             <td><%= livrable.description %></td>
             <td>
               <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
-              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
             </td>
           </tr>
         <% end %>
