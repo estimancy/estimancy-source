@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @livrable.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @livrable.description %>
+</p>
+
+<p>
+  <strong>State:</strong>
+  <%= @livrable.state %>
+</p>
+
+<p>
+  <strong>Organization:</strong>
+  <%= @livrable.organization_id %>
+</p>
+
+<%= link_to 'Edit', edit_livrable_path(@livrable) %> |
+<%= link_to 'Back', livrables_path %>
