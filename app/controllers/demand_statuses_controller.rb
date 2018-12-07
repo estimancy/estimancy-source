@@ -26,4 +26,21 @@ class DemandStatusesController < ApplicationController
       render action: 'new'
     end
   end
+
+  def set_demand_status_workflow
+    @organization = Organization.find(params[:organization_id])
+
+    if params[:commit] == I18n.t('cancel')
+      redirect_to :back
+    else
+      @organization.demand_statuses.each do |status|
+        if params[:status_workflow].nil?
+          status.update_attribute('to_transition_status_ids', status.id)
+        else
+          status.update_attribute('to_transition_status_ids', params[:status_workflow][status.id.to_s])
+        end
+      end
+      redirect_to organization_setting_demand_path(@organization, anchor: 'tabs-demand-statuses'), :notice => "OK"
+    end
+  end
 end
