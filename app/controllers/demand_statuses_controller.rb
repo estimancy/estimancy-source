@@ -21,7 +21,7 @@ class DemandStatusesController < ApplicationController
 
     if @demand_status.save
       flash[:notice] = "DemandStatuse créee avec succès"
-      redirect_to organization_demand_statuses_path(@organization)
+      redirect_to organization_setting_demand_path(@organization)
     else
       render action: 'new'
     end

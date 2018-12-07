@@ -55,6 +55,7 @@ Projestimate::Application.routes.draw do
   post '/set_estimation_status_workflow' => 'estimation_statuses#set_estimation_status_workflow', as: 'set_estimation_status_workflow'
   post '/set_estimation_status_group_roles' => 'estimation_statuses#set_estimation_status_group_roles', as: 'set_estimation_status_group_roles'
 
+  post '/set_demand_status_workflow' => 'demand_statuses#set_demand_status_workflow', as: 'set_demand_status_workflow'
 
   resources :organization_profiles
   get 'refresh_organization_profiles' => 'organization_profiles#refresh_organization_profiles', as: 'refresh_organization_profiles'
