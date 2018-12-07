@@ -1,11 +1,11 @@
 <div class="tabs">
   <ul>
-    <li><a href="#demandes"><%= I18n.t(:demands) %></a></li>
+    <li><a href="#demands_statuses"><%= I18n.t(:demands_statuses) %></a></li>
     <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
     <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
   </ul>
 
-  <div id="demandes">
+  <div id="demands_statuses">
     <div id="tabs-1">
 
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
@@ -15,23 +15,23 @@
             Name
           </th>
           <th>
-            Description
+            Status Number
           </th>
           <th>
-            Business Need
+            Status Number
           </th>
           <th>
-            Cost
+            Status Color
           </th>
         </tr>
         </thead>
         <tbody>
-    <% @demands.each do |demand| %>
+    <% @demands_statuses.each do |demand_status| %>
       <tr>
-        <td><%= link_to demand.name, organization_demand_path(@organization, demand) %></td>
-        <td><%= demand.description %></td>
-        <td><%= demand.business_need %></td>
-        <td><%= demand.cost %></td>
+        <td><%= link_to demand_status.name, organization_demand_path(@organization, demand) %></td>
+        <td><%= demand_status.status_number %></td>
+        <td><%= demand_status.status_alias %></td>
+        <td><%= demand_status.status_color %></td>
       </tr>
     <% end %>
         </tbody>
