@@ -1987,6 +1987,14 @@ class OrganizationsController < ApplicationController
 
   end
 
+  def setting_demand
+    @organization = Organization.find(params[:organization_id])
+    @demands = Demand.where(organization_id: @organization.id).all
+    @demands_type = DemandType.where(organization_id: @organization.id).all
+    @livrables = Livrable.where(organization_id: @organization.id).all
+    @livrable = Livrable.where(organization_id: @organization.id)
+  end
+
   def module_estimation
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)

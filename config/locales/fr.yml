@@ -2209,12 +2209,18 @@ fr:
 
   budget_management: "Gestion des bugdets"
 
-  date_min: Date min
-  date_max: Date max
+  date_min: "Date min"
+  date_max: "Date max"
 
   val_min: "Valeur min"
   val_max: "Valeur max"
 
 
   #demands
-  description: Description
+  description: "Description"
+
+  #_user_account.html.erb
+  setting_demands: "Paramétrage demandes"
+  demands: "Demandes"
+  demands_types: "Demandes Types"
+  livrable: "Livrable"

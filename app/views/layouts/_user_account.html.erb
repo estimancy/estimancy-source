@@ -74,10 +74,16 @@
             </a>
           </li>
           <li class="dropdown">
+            <a href="<%= main_app.organization_setting_demand_path(@current_organization)%>">
+              <%= I18n.t(:setting_demands)%>
+            </a>
+          </li>
+          <li class="dropdown">
             <a href="<%= main_app.organization_module_estimation_path(@current_organization)%>">
               <%= I18n.t(:projestimate_module)%>
             </a>
           </li>
+
       <% end %>
     </ul>
   </li>

@@ -2162,8 +2162,15 @@ en:
 
   budget_management: "Budget management"
 
-  date_min: Date min
-  date_max: Date max
+  date_min: "Date min"
+  date_max: "Date max"
 
   #demands
-  description: Description
+  description: "Description"
+
+  #_user_account.html.erb
+  setting_demands: "Demands Settings"
+
+  demands: "Demands"
+  demands_types: "Demands Types"
+  livrable: "Livrable"
