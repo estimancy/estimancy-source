@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181210145204) do
+ActiveRecord::Schema.define(version: 20181210154152) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1768,6 +1768,15 @@ ActiveRecord::Schema.define(version: 20181210145204) do
     t.boolean  "delayed"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "livrable_id",     limit: 4
+    t.string   "name",            limit: 255
+    t.text     "description",     limit: 65535
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   create_table "size_unit_type_complexities", force: :cascade do |t|

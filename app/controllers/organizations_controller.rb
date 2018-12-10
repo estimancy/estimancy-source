@@ -1993,6 +1993,7 @@ class OrganizationsController < ApplicationController
     @demands_statuses = DemandStatus.where(organization_id: @organization.id).all
     @demand_types = DemandType.where(organization_id: @organization.id).all
     @livrables = Livrable.where(organization_id: @organization.id).all
+    @services = Service.where(organization_id: @organization.id).all
   end
 
   def module_estimation
