@@ -23,6 +23,14 @@
 
 Projestimate::Application.routes.draw do
 
+ # get 'file_uploaders/index'
+
+  #get 'file_uploaders/new'
+
+  #get 'file_uploaders/create'
+
+  #get 'file_uploaders/destroy'
+
   resources :autorization_log_events
 
 
@@ -437,4 +445,10 @@ Projestimate::Application.routes.draw do
   root :to => 'organizations#organizationals_params'
 
   get 'projects_quantity' => 'organizations#projects_quantity'
+
+  # CarrierWave::Application.routes.draw do
+   # resources :file_uploaders, only: [:index, :new, :create, :destroy]
+   # get 'file_uploaders' => 'file_uploaders#index'
+  #end
+
 end

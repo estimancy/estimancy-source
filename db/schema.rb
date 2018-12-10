@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181207132500) do
+ActiveRecord::Schema.define(version: 20181210135704) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -374,6 +374,13 @@ ActiveRecord::Schema.define(version: 20181207132500) do
     t.datetime "updated_at",                  null: false
     t.float    "coefficient",     limit: 24
     t.integer  "copy_id",         limit: 4
+  end
+
+  create_table "file_uploaders", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "attachment", limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "ge_ge_factor_values", force: :cascade do |t|

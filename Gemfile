@@ -253,3 +253,6 @@ gem 'activerecord-session_store' # https://github.com/rails/activerecord-session
 gem "rails-observers", "0.1.5"
 
 gem 'biz'
+
+gem 'carrierwave', '~> 1.2.3'
+gem 'bootstrap-sass', '~> 3.3.7'
