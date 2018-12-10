@@ -10,7 +10,6 @@
   <div id="tabs-1">
     <div class="group_button">
       <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn" %>
-      <%= link_to "Créer un type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
     </div>
 
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
@@ -23,6 +22,18 @@
             Description
           </th>
           <th>
+            Besoin Métier
+          </th>
+          <th>
+            Application
+          </th>
+          <th>
+            Statut
+          </th>
+          <th>
+            Coût
+          </th>
+          <th>
             Actions
           </th>
         </tr>
@@ -32,7 +43,11 @@
         <% @demands.each do |demand| %>
           <tr>
             <td><%= link_to demand.name, organization_demand_estimations_path(@organization, demand) %></td>
-            <td><%= demand.description %></td>
+            <td><%= demand.description.to_s.truncate(50) %></td>
+            <td><%= demand.business_need %></td>
+            <td><%= demand.application %></td>
+            <td><%= demand.demand_status %></td>
+            <td><%= demand.cost %></td>
             <td>
               <%= link_to '', edit_organization_demand_path(@organization, demand), class: 'fa fa-pencil' %>
               <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>

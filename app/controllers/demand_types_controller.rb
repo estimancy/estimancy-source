@@ -22,7 +22,16 @@ class DemandTypesController < ApplicationController
     end
   end
 
+  def update
+    @demand_type = DemandType.find(params[:id])
+    @demand_type.update(params[:demand_type])
+
+    redirect_to :back
+  end
+
   def edit
+    @demand_type = DemandType.find(params[:id])
+    @organization = Organization.find(params[:organization_id])
   end
 
   def destroy

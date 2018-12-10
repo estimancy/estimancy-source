@@ -87,26 +87,30 @@
   <div id="demandes_types">
     <div id="tabs-1">
 
-      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+      <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
+      <hr>
+      <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
         <thead>
         <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Description
-          </th>
-          <th>
-            Fixed Billing
-          </th>
-          <th>
-            Deadlines Billing
-          </th>
+          <th>Nom</th>
+          <th>Description</th>
+          <th></th>
         </tr>
         </thead>
-        <tbody>
 
+        <tbody>
+          <% @demand_types.each do |dt| %>
+            <tr>
+              <td><%= dt.name %></td>
+              <td><%= dt.description %></td>
+              <td>
+                <%= link_to '', edit_organization_demand_type_path(@organization, dt), class: 'fa fa-pencil' %>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
+
+        <%= render :partial => 'layouts/footer_table' %>
       </table>
     </div>
   </div>
@@ -114,32 +118,35 @@
   <div id="livrables">
     <div id="tabs-1">
 
+      <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn" %>
+      <hr>
+
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
         <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Description
-          </th>
-          <th>
-            State
-          </th>
-        </tr>
+          <tr>
+            <th>
+              Name
+            </th>
+            <th>
+              Description
+            </th>
+            <th>
+              State
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <% @livrables.each do |livrable| %>
-          <tr>
-            <td><%= livrable.name %></td>
-            <td><%= livrable.description %></td>
-            <td>
-              <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
-              <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-        <% end %>
+          <% @livrables.each do |livrable| %>
+            <tr>
+              <td><%= livrable.name %></td>
+              <td><%= livrable.description %></td>
+              <td>
+                <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
+                <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
 
         <%= render :partial => 'layouts/footer_table' %>

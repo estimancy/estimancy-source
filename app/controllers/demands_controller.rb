@@ -21,6 +21,16 @@ class DemandsController < ApplicationController
     @demand = Demand.new(params[:demand])
     @organization = Organization.find(params[:organization_id])
 
+    @organization.livrables.each do |livrable|
+      ServiceDemandLivrable.create(organization_id: @organization.id,
+                                   service_id: nil,
+                                   demand_id: @demand.id,
+                                   livrable_id: livrable.id,
+                                   delivered: "red",
+                                   delayed: nil)
+    end
+
+
     if @demand.save
       flash[:notice] = "Demande créee avec succès"
       redirect_to organization_demands_path(@organization)
