@@ -8,18 +8,33 @@ class DemandsController < ApplicationController
   def edit
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+    @file = @demand.attachment
+    @file.save
 
     get_estimations
+      end
   end
 
   def new
     @demand = Demand.new
     @organization = Organization.find(params[:organization_id])
+    @demand.attachment = params[:attachment]
+    @uploader = AttachmentUploader.new
+    @uploader.store!(@file)
   end
 
   def create
     @demand = Demand.new(params[:demand])
     @organization = Organization.find(params[:organization_id])
+
+   #  @organization.livrables.each do |livrable|
+   #    ServiceDemandLivrable.create(organization_id: @organization.id,
+   #                                  service_id: nil,
+   #                                  demand_id: @demand.id,
+   #                                  livrable_id: livrable.id,
+   #                                  delivered: "red",
+   #                                  delayed: nil)
+   # end
 
     if @demand.save
       flash[:notice] = "Demande créee avec succès"
@@ -30,10 +45,17 @@ class DemandsController < ApplicationController
   end
 
   def update
+    @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
     @demand.update(params[:demand])
+    @demand.attachment = params[:attachment]
+    @uploader = AttachmentUploader.new
+    @uploader.store!(@file)
+    if @demand.save
+      flash[:notice] = "Demande créée avec succès"
+      redirect_to organization_demands_path(@organization)
+    end
 
-    redirect_to :back
   end
 
   def estimations
@@ -150,6 +172,5 @@ class DemandsController < ApplicationController
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
-  end
 
-end
+  end

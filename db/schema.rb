@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181210135704) do
+ActiveRecord::Schema.define(version: 20181210160133) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -257,6 +257,7 @@ ActiveRecord::Schema.define(version: 20181210135704) do
     t.float    "cost",             limit: 24
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.string   "attachment",       limit: 255
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|
@@ -1720,6 +1721,30 @@ ActiveRecord::Schema.define(version: 20181210135704) do
   add_index "record_statuses", ["record_status_id"], name: "index_record_statuses_on_record_status_id", using: :btree
   add_index "record_statuses", ["reference_id"], name: "index_record_statuses_on_parent_id", using: :btree
   add_index "record_statuses", ["uuid"], name: "index_record_statuses_on_uuid", unique: true, using: :btree
+
+  create_table "service_demand_livrables", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "service_id",      limit: 4
+    t.integer  "demand_id",       limit: 4
+    t.integer  "livrable_id",     limit: 4
+    t.datetime "contract_date"
+    t.datetime "expected_date"
+    t.datetime "actual_date"
+    t.string   "state",           limit: 255
+    t.string   "delivered",       limit: 255
+    t.boolean  "delayed"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "livrable_id",     limit: 4
+    t.string   "name",            limit: 255
+    t.text     "description",     limit: 65535
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
 
   create_table "size_unit_type_complexities", force: :cascade do |t|
     t.integer  "size_unit_type_id",              limit: 4

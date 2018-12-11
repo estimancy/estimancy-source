@@ -8,4 +8,8 @@ class DemandStatus < ActiveRecord::Base
   has_many :from_transition_statuses, :through => :to_transitions
 
   has_many :demands
+
+  def to_s
+    name
+  end
 end

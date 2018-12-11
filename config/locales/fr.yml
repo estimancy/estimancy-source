@@ -2218,6 +2218,7 @@ fr:
 
   #demands
   description: "Description"
+  attachment: "Fichier joint"
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"

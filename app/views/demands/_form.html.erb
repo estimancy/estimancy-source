@@ -6,6 +6,7 @@
       </a>
     </li>
   </ul>
+
   <div id="tabs-1">
     <div class="row-fluid">
       <div class="span9">
@@ -21,6 +22,8 @@
           <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, input_html: { class: 'input-xxlarge' } %>
           <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
           <%= f.input :demand_status_id, as: :select, collection: @organization.demand_statuses, input_html: { class: 'input-xxlarge' }  %>
+
+          <%= f.input :attachment, :label => I18n.t('attachment'), as: :file, input_html: { class: 'input-xxlarge' }  %>
 
           <div class="actions-tabs">
             <% if action_name == 'new' || action_name=="create" %>
@@ -38,14 +41,47 @@
         <% end %>
       </div>
     </div>
+
     <div class="row-fluid">
       <div class="span12">
-        <h4>
-          Liste des devis de la demande <%= @demand %>
-        </h4>
-        <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+        <table class="table">
+          <tr>
+            <th>Services</th>
+            <th>Demandes liée</th>
+            <th>Livrables</th>
+            <th>Date contractuelle</th>
+            <th>Date attendue</th>
+            <th>Date réelle</th>
+            <th>Etat</th>
+            <th>Retard</th>
+          </tr>
+          <tr>
+            <% ServiceDemandLivrable.where(organization_id: @organization.id).each do |sdl| %>
+              <td>
+                <%= sdl.service_id %>
+              </td>
+              <td>
+                <%= sdl.demand_id %>
+              </td>
+              <td>
+                <%= sdl.livrable_id %>
+              </td>
+            <% end %>
+          </tr>
+        </table>
       </div>
     </div>
+
+    <% unless @projects.nil? %>
+      <div class="row-fluid">
+        <div class="span12">
+          <h4>
+            Liste des devis de la demande <%= @demand %>
+          </h4>
+          <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
 

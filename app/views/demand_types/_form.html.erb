@@ -11,6 +11,10 @@
       <%= f.error_notification %>
 
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :description, :as => :text, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge'} %>
+
+      <%= f.input :fixed_billing, :label => I18n.t('fixed_billing'), :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.input :deadlined_billing, :label => I18n.t('deadlined_billing'), :input_html => {:class => 'input-xxlarge'} %>
 
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
