@@ -3,6 +3,7 @@
     <li><a href="#demands_statuses"><%= I18n.t(:demands_statuses) %></a></li>
     <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
     <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
+    <li><a href="#services"><%= I18n.t(:services) %></a></li>
   </ul>
 
   <div id="demands_statuses">
@@ -117,10 +118,8 @@
 
   <div id="livrables">
     <div id="tabs-1">
-
       <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn" %>
       <hr>
-
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
         <thead>
           <tr>
@@ -147,6 +146,44 @@
               </td>
             </tr>
           <% end %>
+        </tbody>
+        <%= render :partial => 'layouts/footer_table' %>
+      </table>
+    </div>
+  </div>
+
+  <div id="services">
+    <div id="tabs-1">
+
+      <%= link_to "Créer un service", new_organization_service_path(@organization), class: "btn" %>
+      <hr>
+
+      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            State
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <% @services.each do |service| %>
+          <tr>
+            <td><%= service.name %></td>
+            <td><%= service.description %></td>
+            <td>
+              <%= link_to '', edit_organization_service_path(@organization, service), class: 'fa fa-pencil' %>
+              <%= link_to '', organization_service_path(@organization, service), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
         </tbody>
 
         <%= render :partial => 'layouts/footer_table' %>
