@@ -75,6 +75,12 @@ class DemandsController < ApplicationController
 
   end
 
+  def delete
+    @demand = Demand.find(params[:demand_id])
+    @demand.remove_attachment!
+    @demand.save
+  end
+
   def estimations
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])

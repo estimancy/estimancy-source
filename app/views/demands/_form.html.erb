@@ -27,7 +27,8 @@
           <% if @demand.attachment.nil? || controller.action_name == "new" %>
             <p>Il n'y a aucun document attaché à cette demande.</p>
           <% else %>
-            <%= link_to 'Fichiers', @demand.attachment.to_s %>
+            <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s %>
+            <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
           <% end %>
 
           <div class="actions-tabs">
