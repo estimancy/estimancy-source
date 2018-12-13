@@ -24,9 +24,10 @@
 
           <%= f.input :attachment, :label => I18n.t('attachment'), as: :file, input_html: { class: 'input-xxlarge' }  %>
 
-          <% unless @file.nil? %>
-            <% lien = '/uploads/demand/attachment/'+ @demand.id.to_s + '/' + @file.to_s %>
-            <%= link_to 'Fichiers', lien %>
+          <% if @demand.attachment.nil? || controller.action_name == "new" %>
+            <p>Il n'y a aucun document attaché à cette demande.</p>
+          <% else %>
+            <%= link_to 'Fichiers', @demand.attachment.to_s %>
           <% end %>
 
           <div class="actions-tabs">

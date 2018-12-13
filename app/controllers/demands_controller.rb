@@ -8,15 +8,7 @@ class DemandsController < ApplicationController
   def edit
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
-    @file = @demand.attachment
     @uploader = AttachmentUploader.new
-
-    if @file.nil?
-      @file = params[:attachment]
-      #@uploader.store!(@file)
-    #else
-      #@uploader.retrieve!(@file)
-    end
   end
 
   def new
@@ -50,9 +42,10 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
     @demand.update(params[:demand])
-    @demand.attachment = params[:attachment]
+
     @uploader = AttachmentUploader.new
-    @uploader.store!(@demand.attachment)
+    @uploader.store!(params[:attachment])
+
     if @demand.save
       flash[:notice] = "Demande mise à jour avec succès"
       redirect_to organization_demands_path(@organization)
