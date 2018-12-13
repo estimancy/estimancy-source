@@ -29,9 +29,9 @@ class DemandsController < ApplicationController
         ServiceDemandLivrable.create(organization_id: @organization.id,
                                      service_id: s.id,
                                      demand_id: @demand.id,
-                                     livrable_id: params[:livrable][s.id],
+                                     livrable_id: params["livrable"]["#{s.id}"].to_i,
                                      contract_date: nil,
-                                     delivered: "red",
+                                     delivered: true,
                                      delayed: nil)
       end
 
