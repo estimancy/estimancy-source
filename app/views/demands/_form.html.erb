@@ -6,11 +6,10 @@
       </a>
     </li>
   </ul>
-
   <div id="tabs-1">
-    <div class="row-fluid">
-      <div class="span9">
-        <%= simple_form_for([@organization, @demand]) do |f| %>
+    <%= simple_form_for([@organization, @demand]) do |f| %>
+      <div class="row-fluid">
+        <div class="span9">
           <%= f.error_notification %>
           <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
@@ -20,7 +19,8 @@
           <%= f.input :cost, :label => I18n.t('cost'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, input_html: { class: 'input-xxlarge' } %>
           <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
-          <%= f.input :demand_status_id, as: :select, collection: @organization.demand_statuses, input_html: { class: 'input-xxlarge' }  %>
+
+          <%= f.input :demand_status_id, as: :select, collection: @demand.get_demand_statuses(@organization), input_html: { class: 'input-xxlarge' }  %>
 
           <%= f.input :attachment, :label => I18n.t('attachment'), as: :file, input_html: { class: 'input-xxlarge' }  %>
 
@@ -42,40 +42,63 @@
           </div>
 
           <hr>
-
-        <% end %>
+        </div>
       </div>
-    </div>
 
-    <div class="row-fluid">
-      <div class="span12">
-        <table class="table">
-          <tr>
-            <th>Services</th>
-            <th>Demandes liée</th>
-            <th>Livrables</th>
-            <th>Date contractuelle</th>
-            <th>Date attendue</th>
-            <th>Date réelle</th>
-            <th>Etat</th>
-            <th>Retard</th>
-          </tr>
-          <tr>
-            <% ServiceDemandLivrable.where(organization_id: @organization.id).each do |sdl| %>
-              <td>
-                <%= sdl.service_id %>
-              </td>
-              <td>
-                <%= sdl.demand_id %>
-              </td>
-              <td>
-                <%= sdl.livrable_id %>
-              </td>
+      <div class="row-fluid">
+        <div class="span12">
+          <table class="table">
+            <tr>
+              <th>Services</th>
+              <th>Demandes liée</th>
+              <th>Livrables</th>
+              <th>Date contractuelle</th>
+              <th>Date attendue</th>
+              <th>Date réelle</th>
+              <th>Etat</th>
+              <th>Délivré</th>
+              <th>Retard</th>
+            </tr>
+            <% @organization.services.each do |service| %>
+              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
+              <tr>
+                <td>
+                  <%= link_to service.name, "#" %>
+                  <%= hidden_field_tag "service_#{service.id}", service.id %>
+                </td>
+                <td>
+                  -
+                </td>
+                <td>
+                  <span class="span2">
+                    <%= select_tag "livrable[#{service.id}]", options_for_select(@organization.livrables.map{|i| [i.name, i.id]}, selected: sdl.livrable_id), prompt: "Aucun", style: "width: 130px" %>
+                  </span>
+                </td>
+                <td>
+                  <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date, class: "date-picker", style: "width: 80px" %>
+                </td>
+                <td>
+                  <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date, class: "date-picker", style: "width: 80px" %>
+                </td>
+                <td>
+                  <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date, class: "date-picker", style: "width: 80px" %>
+                </td>
+                <td class="span2">
+                  <%= select_tag "state[#{service.id}]", options_for_select(["En cours", "Accepté", "Refusé"], selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                </td>
+                <td class="span2">
+                  <%= select_tag "delivered[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delivered), prompt: "Aucun", style: "width: 80px" %>
+                </td>
+                <td class="span2">
+                  <span class="fa fa-dot-circle-o green"></span>
+                </td>
+              </tr>
             <% end %>
-          </tr>
-        </table>
+          </table>
+        </div>
       </div>
-    </div>
+    <% end %>
+    <hr>
 
     <% unless @projects.nil? %>
       <div class="row-fluid">
@@ -89,4 +112,15 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $(".date-picker").datepicker({
+      language: '<%= set_user_language %>',
+      autoclose: true,
+      todayHighlight: true,
+      todayBtn: true
+    });
+  });
+</script>
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181210154152) do
+ActiveRecord::Schema.define(version: 20181213151321) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -266,6 +266,7 @@ ActiveRecord::Schema.define(version: 20181210154152) do
     t.float    "cost",             limit: 24
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.string   "attachment",       limit: 255
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|
@@ -405,6 +406,13 @@ ActiveRecord::Schema.define(version: 20181210154152) do
     t.datetime "updated_at",                  null: false
     t.float    "coefficient",     limit: 24
     t.integer  "copy_id",         limit: 4
+  end
+
+  create_table "file_uploaders", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "attachment", limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "ge_ge_factor_values", force: :cascade do |t|
@@ -1945,10 +1953,12 @@ ActiveRecord::Schema.define(version: 20181210154152) do
   end
 
   create_table "status_transitions", force: :cascade do |t|
-    t.integer  "from_transition_status_id", limit: 4
-    t.integer  "to_transition_status_id",   limit: 4
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.integer  "from_transition_status_id",        limit: 4
+    t.integer  "to_transition_status_id",          limit: 4
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+    t.integer  "demand_from_transition_status_id", limit: 4
+    t.integer  "demand_to_transition_status_id",   limit: 4
   end
 
   create_table "technologies", force: :cascade do |t|

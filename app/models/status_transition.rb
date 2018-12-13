@@ -25,8 +25,8 @@ class StatusTransition < ActiveRecord::Base
   belongs_to :from_transition_status, class_name: "EstimationStatus"
   belongs_to :to_transition_status, class_name: "EstimationStatus"
 
-  belongs_to :from_transition_status, class_name: "DemandStatus"
-  belongs_to :to_transition_status, class_name: "DemandStatus"
+  belongs_to :demand_from_transition_status, class_name: "DemandStatus"
+  belongs_to :demand_to_transition_status, class_name: "DemandStatus"
 
   #validates :from_transition_status_id, :to_transition_status_id, presence: true
 

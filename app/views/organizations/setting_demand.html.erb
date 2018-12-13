@@ -62,14 +62,14 @@
               <% @organization.demand_statuses.each do |demand_status| %>
                 <tr>
                   <td><%= demand_status.name %></td>
-                  <% @organization.demand_statuses.includes(:to_transition_statuses).each do |status| %>
+                  <% @organization.demand_statuses.includes(:demand_to_transition_statuses).each do |status| %>
                     <% if demand_status == status %>
                       <td class="center">
                         <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
                       </td>
                     <% else %>
                       <td class="center">
-                        <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.to_transition_statuses.map(&:id).include? demand_status.id)) %>
+                        <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
                       </td>
                     <% end %>
                   <% end %>

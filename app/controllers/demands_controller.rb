@@ -9,6 +9,8 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @uploader = AttachmentUploader.new
+
+    get_estimations
   end
 
   def new
@@ -21,16 +23,18 @@ class DemandsController < ApplicationController
     @demand = Demand.new(params[:demand])
     @organization = Organization.find(params[:organization_id])
 
-   #  @organization.livrables.each do |livrable|
-   #    ServiceDemandLivrable.create(organization_id: @organization.id,
-   #                                  service_id: nil,
-   #                                  demand_id: @demand.id,
-   #                                  livrable_id: livrable.id,
-   #                                  delivered: "red",
-   #                                  delayed: nil)
-   # end
-
     if @demand.save
+
+      @organization.services.each do |s|
+        ServiceDemandLivrable.create(organization_id: @organization.id,
+                                     service_id: s.id,
+                                     demand_id: @demand.id,
+                                     livrable_id: params[:livrable][s.id],
+                                     contract_date: nil,
+                                     delivered: "red",
+                                     delayed: nil)
+      end
+
       flash[:notice] = "Demande créee avec succès"
       redirect_to organization_demands_path(@organization)
     else
@@ -47,6 +51,24 @@ class DemandsController < ApplicationController
     @uploader.store!(params[:attachment])
 
     if @demand.save
+
+      @organization.services.each do |s|
+
+        sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
+                                          service_id: params["service_#{s.id}"].to_i,
+                                          demand_id: @demand.id,
+                                          livrable_id: params["livrable"]["#{s.id}"].to_i).first
+
+        sdl.contract_date = params["contract_date"]["#{s.id}"]
+        sdl.expected_date = params["expected_date"]["#{s.id}"]
+        sdl.actual_date = params["actual_date"]["#{s.id}"]
+        sdl.state = params["state"]["#{s.id}"]
+        sdl.delivered = params["delivered"]["#{s.id}"]
+        sdl.delayed = params["delayed"]["#{s.id}"]
+
+        sdl.save
+      end
+
       flash[:notice] = "Demande mise à jour avec succès"
       redirect_to organization_demands_path(@organization)
     end
