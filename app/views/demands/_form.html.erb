@@ -14,7 +14,6 @@
           <%= f.error_notification %>
           <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
-
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
@@ -25,6 +24,11 @@
 
           <%= f.input :attachment, :label => I18n.t('attachment'), as: :file, input_html: { class: 'input-xxlarge' }  %>
 
+          <% unless @file.nil? %>
+            <% lien = '/uploads/demand/attachment/'+ @demand.id.to_s + '/' + @file.to_s %>
+            <%= link_to 'Fichiers', lien %>
+          <% end %>
+
           <div class="actions-tabs">
             <% if action_name == 'new' || action_name=="create" %>
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
@@ -33,7 +37,7 @@
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
               <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
             <% end %>
-            <%= link_to I18n.t('back'), :back, :class => 'btn' %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
           </div>
 
           <hr>

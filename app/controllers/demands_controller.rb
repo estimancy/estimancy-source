@@ -9,18 +9,20 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @file = @demand.attachment
-    @file.save
+    @uploader = AttachmentUploader.new
 
-    get_estimations
-      end
+    if @file.nil?
+      @file = params[:attachment]
+      #@uploader.store!(@file)
+    #else
+      #@uploader.retrieve!(@file)
+    end
   end
 
   def new
     @demand = Demand.new
     @organization = Organization.find(params[:organization_id])
     @demand.attachment = params[:attachment]
-    @uploader = AttachmentUploader.new
-    @uploader.store!(@file)
   end
 
   def create
@@ -50,9 +52,9 @@ class DemandsController < ApplicationController
     @demand.update(params[:demand])
     @demand.attachment = params[:attachment]
     @uploader = AttachmentUploader.new
-    @uploader.store!(@file)
+    @uploader.store!(@demand.attachment)
     if @demand.save
-      flash[:notice] = "Demande créée avec succès"
+      flash[:notice] = "Demande mise à jour avec succès"
       redirect_to organization_demands_path(@organization)
     end
 
@@ -174,3 +176,4 @@ class DemandsController < ApplicationController
     end
 
   end
+end

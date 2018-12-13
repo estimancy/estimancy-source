@@ -452,4 +452,6 @@ Projestimate::Application.routes.draw do
    # get 'file_uploaders' => 'file_uploaders#index'
   #end
 
+  #get 'attachment' => 'public/uploads/demand/attachment/'
+
 end
