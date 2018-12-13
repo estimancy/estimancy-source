@@ -1,7 +1,7 @@
 class DemandsController < ApplicationController
 
   def index
-
+    set_page_title "Liste des demandes"
 
     @demands = Demand.where(organization_id: params[:organization_id]).all
     @organization = Organization.find(params[:organization_id])
@@ -84,6 +84,8 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:demand_id])
     @demand.remove_attachment!
     @demand.save
+
+    redirect_to :back
   end
 
   def estimations

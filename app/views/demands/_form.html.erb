@@ -22,15 +22,6 @@
 
           <%= f.input :demand_status_id, as: :select, collection: @demand.get_demand_statuses(@organization), input_html: { class: 'input-xxlarge' }  %>
 
-          <%= f.input :attachment, :label => I18n.t('attachment'), as: :file, input_html: { class: 'input-xxlarge' }  %>
-
-          <% if @demand.attachment.nil? || controller.action_name == "new" %>
-            <p>Il n'y a aucun document attaché à cette demande.</p>
-          <% else %>
-            <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s %>
-            <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-          <% end %>
-
           <div class="actions-tabs">
             <% if action_name == 'new' || action_name=="create" %>
               <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
@@ -41,10 +32,22 @@
             <% end %>
             <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
           </div>
+        </div>
 
-          <hr>
+        <div class="span3">
+          <%= f.input :attachment, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
+
+          <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
+            <p>Il n'y a aucun document attaché à cette demande.</p>
+          <% else %>
+            Pièces jointes à la demande <br>
+            <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
+            <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+          <% end %>
         </div>
       </div>
+
+      <hr>
 
       <div class="row-fluid">
         <div class="span12">
@@ -59,6 +62,7 @@
               <th>Etat</th>
               <th>Délivré</th>
               <th>Retard</th>
+              <th></th>
             </tr>
             <% @organization.services.each do |service| %>
               <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
@@ -89,6 +93,9 @@
                 </td>
                 <td class="span2">
                   <%= select_tag "delivered[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delivered), prompt: "Aucun", style: "width: 80px" %>
+                </td>
+                <td class="span2">
+                  <%= select_tag "delayed[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delayed), prompt: "Aucun", style: "width: 80px" %>
                 </td>
                 <td class="span2">
                   <span class="fa fa-dot-circle-o green"></span>
