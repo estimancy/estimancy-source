@@ -9,6 +9,7 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @uploader = AttachmentUploader.new
+    @uploader.store!(params[:attachment])
   end
 
   def new
@@ -51,6 +52,12 @@ class DemandsController < ApplicationController
       redirect_to organization_demands_path(@organization)
     end
 
+  end
+
+  def delete
+    @demand = Demand.find(params[:demand_id])
+    @demand.remove_attachment!
+    @demand.save
   end
 
   def estimations

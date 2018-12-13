@@ -447,11 +447,6 @@ Projestimate::Application.routes.draw do
 
   get 'projects_quantity' => 'organizations#projects_quantity'
 
-  # CarrierWave::Application.routes.draw do
-   # resources :file_uploaders, only: [:index, :new, :create, :destroy]
-   # get 'file_uploaders' => 'file_uploaders#index'
-  #end
-
-  #get 'attachment' => 'public/uploads/demand/attachment/'
+  post 'delete' => 'demands#delete'
 
 end
