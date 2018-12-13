@@ -1988,7 +1988,7 @@ class OrganizationsController < ApplicationController
   end
 
   def setting_demand
-    set_page_title "Salut toto"
+    set_page_title (I18n.t('setting_demands'))
 
     @organization = Organization.find(params[:organization_id])
     @demands = Demand.where(organization_id: @organization.id).all

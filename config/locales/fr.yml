@@ -2219,6 +2219,25 @@ fr:
   #demands
   description: "Description"
   attachment: "Fichier joint"
+  edit_demand: "Modification d'une demande"
+  create_demand: "Création d'une demande"
+  new_demand: "Création d'une demande"
+
+  #paramétrage demandes
+  setting_demands: "Paramétrage des demandes"
+  edit_demand_statuses: "Paramétrage de la demande statut"
+  new_demand_statuses: "Création d'une demande statut"
+  create_demand_statuses: "Création d'une demande statut"
+  edit_demand_types: "Paramétrage de la demande type"
+  new_demand_types: "Création d'une demande type"
+  create_demand_types: "Création d'une demande type"
+  edit_livrable: "Paramétrage du livrable"
+  new_livrable: "Création d'un livrable"
+  create_livrable: "Création d'un livrable"
+  edit_service: "Paramétrage du service"
+  new_service: "Création d'un service"
+  create_service: "Création d'un service"
+
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"
@@ -2228,3 +2247,4 @@ fr:
   demands_types: "Demandes Types"
   livrable: "Livrables"
   demands_statuses: "Demandes Statuts"
+

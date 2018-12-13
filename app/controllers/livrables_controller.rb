@@ -6,12 +6,14 @@ class LivrablesController < ApplicationController
   end
 
   def new
+    set_page_title (I18n.t('new_livrable'))
     @livrable = Livrable.new
     @organization = Organization.find(params[:organization_id])
   end
 
   # GET /livrables/1/edit
   def edit
+    set_page_title (I18n.t('edit_livrable'))
     @livrable = Livrable.find(params[:id])
     @organization = Organization.find(params[:organization_id])
   end
@@ -19,6 +21,7 @@ class LivrablesController < ApplicationController
   # POST /livrables
   # POST /livrables.json
   def create
+    set_page_title (I18n.t('create_livrable'))
     @livrable = Livrable.new(params[:livrable])
 
     respond_to do |format|

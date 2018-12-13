@@ -6,12 +6,14 @@ class ServicesController < ApplicationController
   end
 
   def new
+    set_page_title (I18n.t('new_service'))
     @service = Service.new
     @organization = Organization.find(params[:organization_id])
   end
 
   # GET /services/1/edit
   def edit
+    set_page_title (I18n.t('edit_service'))
     @service = Service.find(params[:id])
     @organization = Organization.find(params[:organization_id])
   end
@@ -19,6 +21,7 @@ class ServicesController < ApplicationController
   # POST /services
   # POST /services.json
   def create
+    set_page_title (I18n.t('create_service'))
     @service = Service.new(params[:service])
     @organization = Organization.find(params[:organization_id])
 

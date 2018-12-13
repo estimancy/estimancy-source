@@ -6,16 +6,19 @@ class DemandStatusesController < ApplicationController
   end
 
   def edit
+    set_page_title (I18n.t('edit_demand_statuses'))
     @demand_status = DemandStatus.find(params[:id])
     @organization = Organization.find(params[:organization_id])
   end
 
   def new
+    set_page_title (I18n.t('new_demand_statuses'))
     @demand_status = DemandStatus.new
     @organization = Organization.find(params[:organization_id])
   end
 
   def create
+    set_page_title (I18n.t('create_demand_statuses'))
     @demand_status = DemandStatus.new(params[:demand_status])
     @organization = Organization.find(params[:organization_id])
 

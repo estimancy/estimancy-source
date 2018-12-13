@@ -1,11 +1,14 @@
 class DemandsController < ApplicationController
 
   def index
+
+
     @demands = Demand.where(organization_id: params[:organization_id]).all
     @organization = Organization.find(params[:organization_id])
   end
 
   def edit
+    set_page_title (I18n.t('edit_demand'))
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @uploader = AttachmentUploader.new
@@ -14,12 +17,14 @@ class DemandsController < ApplicationController
   end
 
   def new
+    set_page_title (I18n.t('new_demand'))
     @demand = Demand.new
     @organization = Organization.find(params[:organization_id])
     @demand.attachment = params[:attachment]
   end
 
   def create
+    set_page_title (I18n.t('create_demand'))
     @demand = Demand.new(params[:demand])
     @organization = Organization.find(params[:organization_id])
 

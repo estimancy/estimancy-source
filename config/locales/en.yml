@@ -2168,6 +2168,24 @@ en:
   #demands
   description: "Description"
   attachment: "Attached Files"
+  edit_demand: "Edit Demand"
+  create_demand: "Create Demand"
+  new_demand: "Create Demand"
+
+  #paramétrage demande
+  setting_demands: "Demands Settings"
+  edit_demand_statuses: "Edit Demand Status"
+  new_demand_statuses: "New Demand Status"
+  create_demand_statuses: "New Demand Status"
+  edit_demand_types: "Edit Demand Types"
+  new_demand_types: "New Demand Types"
+  create_demand_types: "New Demand Types"
+  edit_livrable: "Edit Livrable"
+  new_livrable: "New Livrable"
+  create_livrable: "New Livrable"
+  edit_service: "Edit Service"
+  new_service: "New Service"
+  create_service: "New Service"
 
   #_user_account.html.erb
   setting_demands: "Demands Settings"
