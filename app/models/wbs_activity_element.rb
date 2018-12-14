@@ -21,7 +21,7 @@
 
 class WbsActivityElement < ActiveRecord::Base
   attr_accessible :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name,
-                  :organization_id
+                  :organization_id, :service_id
 
   has_ancestry :cache_depth => true
 

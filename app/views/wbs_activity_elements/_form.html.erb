@@ -15,6 +15,8 @@
       <%= hidden_field_tag :selected_parent_id, params[:selected_parent_id] %>
       <%= f.input :position, :label => 'Position', :input_html => {:class => 'input-large'} %>
       <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 3} %>
+      <%= f.input :service_id, :label => I18n.t('service_id'), :as => :select, :collection => @services, :selected => @wbs_activity_element.service_id, :input_html => {:class => 'input-xxlarge'} %>
+
       <div class="actions-tabs">
         <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <%= link_to I18n.t('back'), edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), :class => 'btn' %>

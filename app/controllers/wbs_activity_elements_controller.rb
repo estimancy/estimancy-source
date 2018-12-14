@@ -36,6 +36,8 @@ class WbsActivityElementsController < ApplicationController
     end
 
     @selected_parent ||= WbsActivityElement.find(params[:selected_parent_id])
+
+    @services = Service.all
   end
 
   def edit
@@ -44,6 +46,7 @@ class WbsActivityElementsController < ApplicationController
     set_page_title I18n.t(:wbs_activity_elements)
     @wbs_activity_element = WbsActivityElement.find(params[:id])
     @organization = @wbs_activity_element.wbs_activity.organization
+    @services = @organization.services
 
     if params[:activity_id]
       @wbs_activity = WbsActivity.find(params[:activity_id])
@@ -54,7 +57,6 @@ class WbsActivityElementsController < ApplicationController
       end
     end
 
-    @selected_parent = @wbs_activity_element.parent
   end
 
   def create
@@ -69,6 +71,10 @@ class WbsActivityElementsController < ApplicationController
     #update phase short name
     phases_short_name_number = @wbs_activity.phases_short_name_number+1
     @wbs_activity_element.phase_short_name = "P#{phases_short_name_number}"
+
+    @wbs_activity_element.service_id = params[:service_id]
+
+    #@services = Service.all
 
     if @wbs_activity_element.save
       unless @wbs_activity_element.is_root?
@@ -101,6 +107,8 @@ class WbsActivityElementsController < ApplicationController
     @potential_parents = @wbs_activity.wbs_activity_elements if @wbs_activity
     @selected_parent = @wbs_activity_element.parent
 
+    @services = params[:service_id]
+
     if params[:wbs_activity_element][:wbs_activity_id]
       @wbs_activity = WbsActivity.find(params[:wbs_activity_element][:wbs_activity_id])
     end
@@ -115,12 +123,13 @@ class WbsActivityElementsController < ApplicationController
     end
 
     if @wbs_activity_element.update_attributes(params[:wbs_activity_element].merge(phase_short_name: element_phases_short_name_number))
-      @wbs_activity.save
 
+      @wbs_activity.save
       redirect_to edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), :notice => "#{I18n.t (:notice_wbs_activity_element_successful_updated)}"
     else
       render action: 'edit'
     end
+
   end
 
   def destroy

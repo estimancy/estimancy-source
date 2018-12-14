@@ -37,6 +37,7 @@
         <%= f.input :allow_line_color, label: "Activez la couleur sur une ligne" %>
 
         <%= f.input :is_default, label: "Type d'UO par défaut" %>
+        <%= f.input :service_id, :label => I18n.t('service_id'), :as => :select, :collection => @services, :selected => @guw_type.service_id, :input_html => {:class => 'input-xxlarge'} %>
       </div>
 
       <div class="actions-tabs">

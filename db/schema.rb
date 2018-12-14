@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181213151321) do
+ActiveRecord::Schema.define(version: 20181214092154) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -850,6 +850,7 @@ ActiveRecord::Schema.define(version: 20181213151321) do
     t.integer  "color_priority",             limit: 4
     t.boolean  "allow_line_color"
     t.boolean  "mandatory_comments",                       default: true
+    t.integer  "service_id",                 limit: 4
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], name: "guw_model_default_guw_types", using: :btree
@@ -2131,6 +2132,7 @@ ActiveRecord::Schema.define(version: 20181213151321) do
     t.string   "phase_short_name",   limit: 255
     t.boolean  "allow_modif_effort"
     t.boolean  "allow_modif_cost"
+    t.integer  "service_id",         limit: 4
   end
 
   add_index "wbs_activity_elements", ["ancestry"], name: "index_wbs_activity_elements_on_ancestry", using: :btree

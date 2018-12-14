@@ -491,6 +491,7 @@
                       <tr>
                         <th><%= I18n.t(:group_name)%></th>
                         <% @organization.project_security_levels.each do |prj_level| %>
+
                             <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
                         <% end %>
                       </tr>

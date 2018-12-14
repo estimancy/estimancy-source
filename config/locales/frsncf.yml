@@ -2171,3 +2171,5 @@ frsncf:
   demands_types: "Demandes Types"
   livrable: "Livrables"
   demands_statuses: "Demandes Statuts"
+
+  service_id: "Services"

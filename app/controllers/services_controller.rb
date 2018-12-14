@@ -24,15 +24,8 @@ class ServicesController < ApplicationController
     set_page_title (I18n.t('create_service'))
     @service = Service.new(params[:service])
     @organization = Organization.find(params[:organization_id])
-
-    respond_to do |format|
-      if @service.save
-        flash[:notice] = "Service créé avec succès"
-        redirect_to organization_services_path(@organization)
-      else
-        render action: 'new'
-      end
-    end
+    @service.save
+    redirect_to :back
   end
 
   # PATCH/PUT /services/1
@@ -40,6 +33,7 @@ class ServicesController < ApplicationController
   def update
     @service = Service.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+
 
     respond_to do |format|
       if @service.update(params[:service])

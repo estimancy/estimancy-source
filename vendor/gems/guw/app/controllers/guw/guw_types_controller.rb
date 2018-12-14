@@ -40,6 +40,8 @@ class Guw::GuwTypesController < ApplicationController
 
     set_page_title I18n.t(:add_unit_of_work)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
+
+    @services = Service.all
   end
 
   def edit
@@ -50,6 +52,9 @@ class Guw::GuwTypesController < ApplicationController
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_type.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
+
+    @services = @organization.services
+
   end
 
   def create
@@ -58,6 +63,7 @@ class Guw::GuwTypesController < ApplicationController
     @guw_type.save
     @guw_model = @guw_type.guw_model
     @organization = @guw_model.organization
+
 
     set_page_title I18n.t(:new_complexity)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
@@ -71,8 +77,13 @@ class Guw::GuwTypesController < ApplicationController
 
   def update
     @guw_type = Guw::GuwType.find(params[:id])
+    @organization = @guw_type.guw_model.organization
+    @services = @organization.services
     @guw_type.update_attributes(params[:guw_type])
     @guw_model = @guw_type.guw_model
+
+    @guw_type.save
+
     if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
     else
