@@ -1,7 +1,7 @@
 class DemandsController < ApplicationController
 
   def index
-
+    set_page_title "Liste des demandes"
 
     @demands = Demand.where(organization_id: params[:organization_id]).all
     @organization = Organization.find(params[:organization_id])
@@ -70,12 +70,13 @@ class DemandsController < ApplicationController
         sdl.state = params["state"]["#{s.id}"]
         sdl.delivered = params["delivered"]["#{s.id}"]
         sdl.delayed = params["delayed"]["#{s.id}"]
+        sdl.selected = params["selected"]["#{s.id}"]
 
         sdl.save
       end
 
       flash[:notice] = "Demande mise à jour avec succès"
-      redirect_to organization_demands_path(@organization)
+      redirect_to :back
     end
 
   end
@@ -84,6 +85,8 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:demand_id])
     @demand.remove_attachment!
     @demand.save
+
+    redirect_to :back
   end
 
   def estimations

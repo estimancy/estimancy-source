@@ -30,6 +30,13 @@ class DemandStatusesController < ApplicationController
     end
   end
 
+  def update
+    @demand_status = DemandStatus.find(params[:id])
+    @organization = Organization.find(params[:organization_id])
+    @demand_status.update(params[:demand_status])
+    redirect_to organization_setting_demand_path(@organization)
+  end
+
   def set_demand_status_workflow
     @organization = Organization.find(params[:organization_id])
 

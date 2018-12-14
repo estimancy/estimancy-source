@@ -30,12 +30,6 @@
           <th>
             Statut
           </th>
-          <th>
-            Coût
-          </th>
-          <th>
-            Fichier joint
-          </th>
         </tr>
       </thead>
 
@@ -47,8 +41,6 @@
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
             <td><%= demand.demand_status %></td>
-            <td><%= demand.cost %></td>
-            <td><%= demand.attachment %></td>
             <td>
               <%= link_to '', edit_organization_demand_path(@organization, demand), class: 'fa fa-pencil' %>
               <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>

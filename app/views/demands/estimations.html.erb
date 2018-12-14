@@ -12,15 +12,15 @@
         <table>
           <tr>
             <td colspan=2 style="text-align:right;">
+              <% if @demand.demand_status.to_s == "En chiffrage" %>
+                <% if can? :create_project_from_template, Project %>
+                  <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                <% end %>
 
-              <% if can? :create_project_from_template, Project %>
-                <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                <% if can? :create_project_from_scratch, Project %>
+                  <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                <% end %>
               <% end %>
-
-              <% if can? :create_project_from_scratch, Project %>
-                <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
-              <% end %>
-
             </td>
 
           </tr>

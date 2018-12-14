@@ -30,9 +30,9 @@
           </tr>
         </thead>
         <tbody>
-          <% @demands_statuses.each do |demand_status| %>
+          <% @demand_statuses.each do |demand_status| %>
             <tr>
-              <td><%= link_to demand_status.name, organization_demand_path(@organization, demand_status) %></td>
+              <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
               <td><%= demand_status.status_number %></td>
               <td><%= demand_status.status_alias %></td>
               <td><%= demand_status.status_color %></td>
