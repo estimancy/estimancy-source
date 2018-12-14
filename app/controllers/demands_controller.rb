@@ -70,12 +70,13 @@ class DemandsController < ApplicationController
         sdl.state = params["state"]["#{s.id}"]
         sdl.delivered = params["delivered"]["#{s.id}"]
         sdl.delayed = params["delayed"]["#{s.id}"]
+        sdl.selected = params["selected"]["#{s.id}"]
 
         sdl.save
       end
 
       flash[:notice] = "Demande mise à jour avec succès"
-      redirect_to organization_demands_path(@organization)
+      redirect_to :back
     end
 
   end

@@ -10,7 +10,10 @@
     <%= simple_form_for([@organization, @demand_status]) do |f| %>
       <%= f.error_notification %>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :status_number, :label => I18n.t('status_number'), :input_html => { :class => 'input-xxlarge' } %>
+      <%= f.input :status_alias, :label => I18n.t('status_alias'), :input_html => { :class => 'input-xxlarge' } %>
+      <%= f.input :status_color, :label => I18n.t('status_color'), :input_html => { :class => 'input-xxlarge' } %>
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
       <div class="actions-tabs">

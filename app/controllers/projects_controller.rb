@@ -2530,8 +2530,6 @@ public
     # On met à jour ce champs pour la gestion des Trigger
     new_prj.is_new_created_record = true
 
-    # new_prj.is_private = old_prj.is_private
-
     #=======
     #if creation from template
     if !params[:create_project_from_template].nil?
@@ -2558,6 +2556,10 @@ public
         new_prj.application_id = params['project']['application_id']
       else
         new_prj.application_name = params['project']['application_name']
+      end
+
+      if params[:demand_id].present?
+        new_prj.demand_id = params[:demand_id].to_i
       end
 
       new_prj.title = params['project']['title']

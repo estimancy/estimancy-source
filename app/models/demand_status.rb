@@ -9,6 +9,8 @@ class DemandStatus < ActiveRecord::Base
 
   has_many :demands
 
+  default_scope { order(status_number: :asc) }
+
   def to_s
     name
   end

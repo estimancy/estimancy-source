@@ -1,5 +1,5 @@
 class Demand < ActiveRecord::Base
-  attr_accessible :name, :description, :business_need, :demand_type_id, :application_id, :demand_status_id, :organization_id, :cost, :attachment
+  attr_accessible :name, :description, :business_need, :demand_type_id, :application_id, :demand_status_id, :organization_id, :cost, :attachment, :selected
 
   mount_uploader :attachment, AttachmentUploader
   belongs_to :demand_type

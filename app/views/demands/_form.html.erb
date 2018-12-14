@@ -51,22 +51,43 @@
 
       <div class="row-fluid">
         <div class="span12">
-          <table class="table">
+          <table class="table table-striped table-bordered table-condensed">
             <tr>
-              <th>Services</th>
-              <th>Demandes liée</th>
-              <th>Livrables</th>
-              <th>Date contractuelle</th>
-              <th>Date attendue</th>
-              <th>Date réelle</th>
-              <th>Etat</th>
-              <th>Délivré</th>
-              <th>Retard</th>
-              <th></th>
+              <th class="center">Sélect.</th>
+              <th class="center">
+                <%= link_to raw("Services &and;"), "#", style: "font-weight: bold; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Demandes &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Livrables &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Date contract. &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Date attendue &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Date réelle &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Etat &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Délivré &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
+              <th class="center">
+                <%= link_to raw("Retard &and;&or;"), "#", style: "font-weight: normal; " %>
+              </th>
             </tr>
             <% @organization.services.each do |service| %>
               <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
               <tr>
+                <td>
+                  <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
+                </td>
                 <td>
                   <%= link_to service.name, "#" %>
                   <%= hidden_field_tag "service_#{service.id}", service.id %>
@@ -97,15 +118,25 @@
                 <td class="span2">
                   <%= select_tag "delayed[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delayed), prompt: "Aucun", style: "width: 80px" %>
                 </td>
-                <td class="span2">
-                  <span class="fa fa-dot-circle-o green"></span>
-                </td>
               </tr>
             <% end %>
           </table>
+
+          <div class="actions-tabs">
+            <% if action_name == 'new' || action_name=="create" %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=="update" %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+          </div>
+
         </div>
       </div>
     <% end %>
+
     <hr>
 
     <% unless @projects.nil? %>
@@ -114,6 +145,17 @@
           <h4>
             Liste des devis de la demande <%= @demand %>
           </h4>
+          <hr>
+          <% if @demand.demand_status.to_s == "En chiffrage" %>
+            <% if can? :create_project_from_template, Project %>
+              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+            <% end %>
+
+            <% if can? :create_project_from_scratch, Project %>
+              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+            <% end %>
+          <% end %>
+          <hr>
           <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
         </div>
       </div>

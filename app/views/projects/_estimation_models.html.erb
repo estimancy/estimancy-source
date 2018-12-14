@@ -11,7 +11,7 @@
       <th class="center">Vers.</th>
       <th class="center">Description</th>
       <th class="center"><%= I18n.t(:created_at) %></th>
-      <th style="width: 50px" class="filter-select"> <%= I18n.t(:state) %></th>
+      <th style="width: 50px" class="filter-select"><%= I18n.t(:state) %></th>
       <th><%= I18n.t(:project_area)%></th>
       <th><%= I18n.t(:category)%></th>
       <th><%= I18n.t(:label_platform)%></th>
@@ -29,6 +29,7 @@
               <% if can?(:create_project_from_template, Project) %>
                   <%= link_to(project.title, change_new_estimation_data_path(template_id: project.id,
                                                                              organization_id: project.organization_id,
+                                                                             demand_id: params[:demand_id],
                                                                              action_name: "create_project_from_template"),
                                                                              title: I18n.t('button_duplicate_model'),
                                                                              remote: true) %>
