@@ -13,8 +13,10 @@
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
       <%= f.input :description, :as => :text, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :fixed_billing, :label => I18n.t('fixed_billing'), :input_html => {:class => 'input-xxlarge'} %>
-      <%= f.input :deadlined_billing, :label => I18n.t('deadlined_billing'), :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => "Provenance coût à facturer", :input_html => {:class => 'input-xxlarge'} %>
+
+      <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xxlarge'} %>
 
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 

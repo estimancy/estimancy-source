@@ -40,8 +40,8 @@ class LivrablesController < ApplicationController
     @livrable = Livrable.find(params[:id])
 
     respond_to do |format|
-      if @livrable.update(livrable_params)
-        format.html { redirect_to @livrable, notice: 'Livrable was successfully updated.' }
+      if @livrable.update(params[:livrable])
+        format.html { redirect_to :back, notice: 'Livrable was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

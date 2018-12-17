@@ -13,7 +13,10 @@
 
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
       <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
+      <%= f.input :service_id, as: :select, collection: @organization.services{|i| [i.name, i.id]} , :label => "Service associé", :input_html => {:class => 'input-xxlarge' } %>
+
       <%= f.input :state, :label => I18n.t('state'), :input_html => {:class => 'input-xxlarge' } %>
+
 
       <div class="actions-tabs">
         <% if action_name == 'new' || action_name=="create" %>

@@ -2,8 +2,8 @@
   <ul>
     <li><a href="#demands_statuses"><%= I18n.t(:demands_statuses) %></a></li>
     <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
-    <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
     <li><a href="#services"><%= I18n.t(:services) %></a></li>
+    <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
   </ul>
 
   <div id="demands_statuses">
@@ -95,7 +95,7 @@
         <tr>
           <th>Nom</th>
           <th>Description</th>
-          <th></th>
+          <th>Actions</th>
         </tr>
         </thead>
 
@@ -130,7 +130,10 @@
               Description
             </th>
             <th>
-              State
+              Etats
+            </th>
+            <th>
+              Service associé
             </th>
           </tr>
         </thead>
@@ -140,6 +143,8 @@
             <tr>
               <td><%= livrable.name %></td>
               <td><%= livrable.description %></td>
+              <td><%= livrable.state %></td>
+              <td><%= livrable.service %></td>
               <td>
                 <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
                 <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
@@ -168,7 +173,7 @@
             Description
           </th>
           <th>
-            State
+            Livrable
           </th>
         </tr>
         </thead>
@@ -178,6 +183,7 @@
           <tr>
             <td><%= service.name %></td>
             <td><%= service.description %></td>
+            <td><%= service.livrable %></td>
             <td>
               <%= link_to '', edit_organization_service_path(@organization, service), class: 'fa fa-pencil' %>
               <%= link_to '', organization_service_path(@organization, service), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>

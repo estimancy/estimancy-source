@@ -9,14 +9,12 @@
   <div id="tabs-1">
     <%= simple_form_for([@organization, @demand]) do |f| %>
       <div class="row-fluid">
-        <div class="span9">
+        <div class="span6">
           <%= f.error_notification %>
           <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
-          <%= f.input :cost, :label => I18n.t('cost'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, input_html: { class: 'input-xxlarge' } %>
           <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
 
@@ -34,15 +32,22 @@
           </div>
         </div>
 
-        <div class="span3">
+        <div class="span6">
           <%= f.input :attachment, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
-
           <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
             <p>Il n'y a aucun document attaché à cette demande.</p>
           <% else %>
             Pièces jointes à la demande <br>
             <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
             <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+          <% end %>
+
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
+
+          <% if @demand.demand_type.cost_from == "Projet" %>
+            <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+          <% else %>
+            <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge', disabled: true } %>
           <% end %>
         </div>
       </div>
@@ -51,6 +56,12 @@
 
       <div class="row-fluid">
         <div class="span12">
+
+          <h4>
+            Liste des livrables de la demande <%= @demand %>
+          </h4>
+          <hr>
+
           <table class="table table-striped table-bordered table-condensed">
             <tr>
               <th class="center">Sélect.</th>
@@ -84,41 +95,54 @@
             </tr>
             <% @organization.services.each do |service| %>
               <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
-              <tr>
-                <td>
-                  <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
-                </td>
-                <td>
-                  <%= link_to service.name, "#" %>
-                  <%= hidden_field_tag "service_#{service.id}", service.id %>
-                </td>
-                <td>
-                  -
-                </td>
-                <td>
-                  <span class="span2">
-                    <%= select_tag "livrable[#{service.id}]", options_for_select(@organization.livrables.map{|i| [i.name, i.id]}, selected: sdl.livrable_id), prompt: "Aucun", style: "width: 130px" %>
-                  </span>
-                </td>
-                <td>
-                  <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date, class: "date-picker", style: "width: 80px" %>
-                </td>
-                <td>
-                  <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date, class: "date-picker", style: "width: 80px" %>
-                </td>
-                <td>
-                  <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date, class: "date-picker", style: "width: 80px" %>
-                </td>
-                <td class="span2">
-                  <%= select_tag "state[#{service.id}]", options_for_select(["En cours", "Accepté", "Refusé"], selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
-                </td>
-                <td class="span2">
-                  <%= select_tag "delivered[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delivered), prompt: "Aucun", style: "width: 80px" %>
-                </td>
-                <td class="span2">
-                  <%= select_tag "delayed[#{service.id}]", options_for_select(["Oui", "Non"], selected: sdl.delayed), prompt: "Aucun", style: "width: 80px" %>
-                </td>
-              </tr>
+              <% unless sdl.nil? %>
+                <% unless sdl.service.nil? %>
+                  <% sdl_service_livrable = sdl.service.livrable %>
+                  <tr>
+                    <td>
+                      <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
+                    </td>
+                    <td>
+                      <%= link_to service.name, "#" %>
+                      <%= hidden_field_tag "service_#{service.id}", service.id %>
+                    </td>
+                    <td>
+                      -
+                    </td>
+                    <td>
+                      <span class="span2">
+                        <%= sdl_service_livrable %>
+                      </span>
+                    </td>
+                    <td>
+                      <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date, class: "date-picker", style: "width: 80px" %>
+                    </td>
+                    <td>
+                      <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date, class: "date-picker", style: "width: 80px" %>
+                    </td>
+                    <td>
+                      <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date, class: "date-picker", style: "width: 80px" %>
+                    </td>
+                    <td class="span2">
+                      <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                    </td>
+                    <td class="span2">
+                      <span class="fa fa-circle red"></span>
+                    </td>
+                    <td class="span2">
+                      <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
+                        <% if sdl.actual_date > sdl.expected_date %>
+                          <span class="fa fa-circle red"></span>
+                        <% else %>
+                          <span class="fa fa-circle green"></span>
+                        <% end %>
+                      <% else %>
+                        <span class="fa fa-circle"></span>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
             <% end %>
           </table>
 
@@ -154,8 +178,8 @@
             <% if can? :create_project_from_scratch, Project %>
               <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
             <% end %>
+            <hr>
           <% end %>
-          <hr>
           <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
         </div>
       </div>

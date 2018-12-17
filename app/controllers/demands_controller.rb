@@ -34,7 +34,7 @@ class DemandsController < ApplicationController
         ServiceDemandLivrable.create(organization_id: @organization.id,
                                      service_id: s.id,
                                      demand_id: @demand.id,
-                                     livrable_id: params["livrable"]["#{s.id}"].to_i,
+                                     livrable_id: s.livrable.id,
                                      contract_date: nil,
                                      delivered: true,
                                      delayed: nil)
@@ -62,14 +62,14 @@ class DemandsController < ApplicationController
         sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                           service_id: params["service_#{s.id}"].to_i,
                                           demand_id: @demand.id,
-                                          livrable_id: params["livrable"]["#{s.id}"].to_i).first
+                                          livrable_id: s.livrable.id).first
 
         sdl.contract_date = params["contract_date"]["#{s.id}"]
         sdl.expected_date = params["expected_date"]["#{s.id}"]
         sdl.actual_date = params["actual_date"]["#{s.id}"]
         sdl.state = params["state"]["#{s.id}"]
-        sdl.delivered = params["delivered"]["#{s.id}"]
-        sdl.delayed = params["delayed"]["#{s.id}"]
+        # sdl.delivered = params["delivered"]["#{s.id}"]
+        # sdl.delayed = params["delayed"]["#{s.id}"]
         sdl.selected = params["selected"]["#{s.id}"]
 
         sdl.save
