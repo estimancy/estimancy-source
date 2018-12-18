@@ -95,6 +95,8 @@
         <tr>
           <th>Nom</th>
           <th>Description</th>
+          <th>Provenance des coûts</th>
+          <th>Statut de départ</th>
           <th>Actions</th>
         </tr>
         </thead>
@@ -104,6 +106,8 @@
             <tr>
               <td><%= dt.name %></td>
               <td><%= dt.description %></td>
+              <td><%= dt.cost_from %></td>
+              <td><%= dt.demand_status %></td>
               <td>
                 <%= link_to '', edit_organization_demand_type_path(@organization, dt), class: 'fa fa-pencil' %>
               </td>

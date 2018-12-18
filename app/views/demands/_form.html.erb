@@ -15,10 +15,25 @@
 
           <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
           <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
-          <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, input_html: { class: 'input-xxlarge' } %>
-          <%= f.input :application_id, as: :select, collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+          <%= f.input :demand_type_id, as: :select, label: "Type de demande", collection: @organization.demand_types, input_html: { class: 'input-xxlarge', disabled: (controller.action_name == "edit") } %>
 
-          <%= f.input :demand_status_id, as: :select, collection: @demand.get_demand_statuses(@organization), input_html: { class: 'input-xxlarge' }  %>
+          <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+
+          <% if controller.action_name == "edit" %>
+            <% if @demand.demand_status.nil? %>
+              <%= f.input :demand_status_id,
+                          as: :select,
+                          label: "Statut de la demande",
+                          collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
+                          input_html: { class: 'input-xxlarge' } %>
+            <% else %>
+              <%= f.input :demand_status_id,
+                          as: :select,
+                          label: "Statut de la demande",
+                          collection: @demand.get_demand_statuses(@organization),
+                          input_html: { class: 'input-xxlarge' } %>
+            <% end %>
+          <% end %>
 
           <div class="actions-tabs">
             <% if action_name == 'new' || action_name=="create" %>
@@ -44,10 +59,12 @@
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
 
-          <% if @demand.demand_type.cost_from == "Projet" %>
-            <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
-          <% else %>
-            <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge', disabled: true } %>
+          <% unless @demand.new_record? %>
+            <% if @demand.demand_type.cost_from == "Projet" %>
+              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+            <% else %>
+              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge', disabled: true } %>
+            <% end %>
           <% end %>
         </div>
       </div>
