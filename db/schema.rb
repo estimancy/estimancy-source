@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20181120144254) do
+ActiveRecord::Schema.define(:version => 20181218091106) do
 
   create_table "abacus_organizations", :force => true do |t|
     t.float    "value"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.boolean  "is_ignored"
+    t.integer  "criticality"
   end
 
   create_table "applications_projects", :id => false, :force => true do |t|
@@ -206,6 +207,18 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.boolean  "from_direct_trigger"
   end
 
+  create_table "budgets", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "application_id"
+    t.integer  "project_area_id"
+    t.integer  "acquisition_category_id"
+    t.integer  "platform_category_id"
+    t.integer  "project_category_id"
+    t.integer  "provider_id"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
   create_table "currencies", :force => true do |t|
     t.string   "name"
     t.string   "alias"
@@ -220,6 +233,42 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.string   "reference_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "demand_statuses", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "status_number"
+    t.string   "status_alias"
+    t.string   "name"
+    t.string   "status_color"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  create_table "demand_types", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "fixed_billing"
+    t.boolean  "deadlined_billing"
+    t.integer  "organization_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.string   "cost_from"
+    t.integer  "demand_status_id"
+  end
+
+  create_table "demands", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.string   "business_need"
+    t.integer  "demand_type_id"
+    t.integer  "application_id"
+    t.integer  "demand_status_id"
+    t.integer  "organization_id"
+    t.float    "cost"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.string   "attachment"
   end
 
   create_table "estimation_status_group_roles", :force => true do |t|
@@ -359,6 +408,13 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.datetime "updated_at",      :null => false
     t.float    "coefficient"
     t.integer  "copy_id"
+  end
+
+  create_table "file_uploaders", :force => true do |t|
+    t.string   "name"
+    t.string   "attachment"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "ge_ge_factor_values", :force => true do |t|
@@ -1075,6 +1131,16 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.datetime "updated_at"
   end
 
+  create_table "livrables", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.string   "state"
+    t.integer  "organization_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.integer  "service_id"
+  end
+
   create_table "module_project_guw_unit_of_work_groups", :id => false, :force => true do |t|
     t.integer  "uow_organization_id",                           :default => 0, :null => false
     t.string   "organization_name"
@@ -1287,13 +1353,13 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
   add_index "operation_operation_models", ["organization_id", "name"], :name => "index_operation_operation_models_on_organization_id_and_name", :unique => true
 
   create_table "organization_estimations", :id => false, :force => true do |t|
-    t.integer  "current_organization_id",                      :default => 0,     :null => false
+    t.integer  "current_organization_id",               :default => 0,     :null => false
     t.string   "organization_name"
     t.datetime "project_created_date"
-    t.integer  "project_id",                                   :default => 0,     :null => false
-    t.integer  "id",                                           :default => 0,     :null => false
+    t.integer  "project_id",                            :default => 0,     :null => false
+    t.integer  "id",                                    :default => 0,     :null => false
     t.string   "title"
-    t.string   "version_number",                 :limit => 64, :default => "1.0"
+    t.string   "version_number",          :limit => 64, :default => "1.0"
     t.string   "alias"
     t.string   "ancestry"
     t.text     "description"
@@ -1321,16 +1387,8 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.text     "status_comment"
     t.integer  "application_id"
     t.string   "application_name"
-    t.boolean  "private",                                      :default => false
+    t.boolean  "private",                               :default => false
     t.boolean  "is_historicized"
-    t.integer  "provider_id"
-    t.string   "request_number"
-    t.boolean  "use_automatic_quotation_number"
-    t.string   "business_need"
-    t.integer  "originator_id"
-    t.integer  "event_organization_id"
-    t.text     "transaction_id"
-    t.boolean  "is_new_created_record"
   end
 
   create_table "organization_labor_categories", :force => true do |t|
@@ -1671,6 +1729,9 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.text     "transaction_id"
     t.boolean  "is_new_created_record"
     t.boolean  "allow_export_pdf"
+    t.datetime "change_date"
+    t.integer  "time_count"
+    t.integer  "demand_id"
   end
 
   add_index "projects", ["ancestry"], :name => "index_projects_on_ancestry"
@@ -1703,6 +1764,31 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.datetime "updated_at",             :null => false
     t.float    "value_most_likely"
     t.float    "value_high"
+  end
+
+  create_table "service_demand_livrables", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "service_id"
+    t.integer  "demand_id"
+    t.integer  "livrable_id"
+    t.datetime "contract_date"
+    t.datetime "expected_date"
+    t.datetime "actual_date"
+    t.string   "state"
+    t.string   "delivered"
+    t.boolean  "delayed"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.boolean  "selected"
+  end
+
+  create_table "services", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "livrable_id"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "size_unit_type_complexities", :force => true do |t|
@@ -1840,15 +1926,15 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.boolean  "enabled_input"
     t.integer  "copy_id"
     t.integer  "copy_number"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.float    "standard_unit_coefficient"
     t.string   "effort_unit"
     t.string   "staffing_method"
     t.integer  "effort_week_unit"
     t.string   "config_type"
-    t.integer  "min_range"
-    t.integer  "max_range"
+    t.integer  "min_range",                 :default => 70
+    t.integer  "max_range",                 :default => 150
   end
 
   add_index "staffing_staffing_models", ["organization_id", "name"], :name => "index_staffing_staffing_models_on_organization_id_and_name", :unique => true
@@ -1857,23 +1943,26 @@ ActiveRecord::Schema.define(:version => 20181120144254) do
     t.string   "organization"
     t.integer  "project_id"
     t.string   "project"
-    t.string   "version_number"
+    t.string   "old_version_number"
+    t.string   "new_version_number"
     t.datetime "change_date"
     t.string   "action"
     t.text     "comments"
     t.string   "origin"
     t.string   "target"
     t.string   "user"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "gap"
   end
 
   create_table "status_transitions", :force => true do |t|
     t.integer  "from_transition_status_id"
     t.integer  "to_transition_status_id"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+    t.integer  "demand_from_transition_status_id"
+    t.integer  "demand_to_transition_status_id"
   end
 
   create_table "technologies", :force => true do |t|
