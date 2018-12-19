@@ -131,7 +131,7 @@ class ProjectsController < ApplicationController
     @organization.projects.each do |project|
       project.guw_unit_of_works.each do |guow|
         worksheet_cf.add_cell(i, 0, project.title)
-        worksheet_cf.add_cell(i, 1, project.application_name)
+        worksheet_cf.add_cell(i, 1, project.application.nil? ? project.application_name : project.application.name)
         worksheet_cf.add_cell(i, 2, project.business_need)
         worksheet_cf.add_cell(i, 3, project.request_number)
         worksheet_cf.add_cell(i, 4, project.project_area.nil? ? '' : project.project_area.name)
@@ -216,7 +216,7 @@ class ProjectsController < ApplicationController
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
       mpre_project = mpre.module_project.project
       worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
-      worksheet_wbs.add_cell(iii+1, 1, mpre_project.application_name)
+      worksheet_wbs.add_cell(i, 1, mpre_project.application.nil? ? mpre_project.application_name : mpre_project.application.name)
       worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
       worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
       worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
@@ -299,7 +299,7 @@ class ProjectsController < ApplicationController
       project = Project.find(k)
 
       worksheet_synt.add_cell(pi, 0, project.title)
-      worksheet_synt.add_cell(pi, 1, project.application_name)
+      worksheet_synt.add_cell(i, 1, project.application.nil? ? project.application_name : project.application.name)
       worksheet_synt.add_cell(pi, 2, project.business_need)
       worksheet_synt.add_cell(pi, 3, project.request_number)
       worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
