@@ -37,7 +37,7 @@ class WbsActivityElementsController < ApplicationController
 
     @selected_parent ||= WbsActivityElement.find(params[:selected_parent_id])
 
-    @services = Service.all
+    @services = @organization.services
   end
 
   def edit

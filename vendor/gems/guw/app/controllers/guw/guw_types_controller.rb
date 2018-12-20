@@ -41,7 +41,7 @@ class Guw::GuwTypesController < ApplicationController
     set_page_title I18n.t(:add_unit_of_work)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
 
-    @services = Service.all
+    @services = @organization.services
   end
 
   def edit
