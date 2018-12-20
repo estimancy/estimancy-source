@@ -141,7 +141,9 @@
                       <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date, class: "date-picker", style: "width: 80px" %>
                     </td>
                     <td class="span2">
-                      <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                      <% unless sdl_service_livrable.nil? || sdl.nil? %>
+                        <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                        <% end %>
                     </td>
                     <td class="span2">
                       <span class="fa fa-circle red"></span>

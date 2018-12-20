@@ -66,15 +66,16 @@ class DemandsController < ApplicationController
                                           demand_id: @demand.id,
                                           livrable_id: s.livrable.id).first
 
-        sdl.contract_date = params["contract_date"]["#{s.id}"]
-        sdl.expected_date = params["expected_date"]["#{s.id}"]
-        sdl.actual_date = params["actual_date"]["#{s.id}"]
-        sdl.state = params["state"]["#{s.id}"]
-        # sdl.delivered = params["delivered"]["#{s.id}"]
-        # sdl.delayed = params["delayed"]["#{s.id}"]
-        sdl.selected = params["selected"]["#{s.id}"]
-
-        sdl.save
+        unless sdl.nil?
+          sdl.contract_date = params["contract_date"]["#{s.id}"]
+          sdl.expected_date = params["expected_date"]["#{s.id}"]
+          sdl.actual_date = params["actual_date"]["#{s.id}"]
+          sdl.state = params["state"]["#{s.id}"]
+          # sdl.delivered = params["delivered"]["#{s.id}"]
+          # sdl.delayed = params["delayed"]["#{s.id}"]
+          sdl.selected = params["selected"]["#{s.id}"]
+          sdl.save
+        end
       end
 
       flash[:notice] = "Demande mise à jour avec succès"
