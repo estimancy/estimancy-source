@@ -31,13 +31,15 @@ class DemandsController < ApplicationController
     if @demand.save
 
       @organization.services.each do |s|
-        ServiceDemandLivrable.create(organization_id: @organization.id,
-                                     service_id: s.id,
-                                     demand_id: @demand.id,
-                                     livrable_id: s.livrable.id,
-                                     contract_date: nil,
-                                     delivered: true,
-                                     delayed: nil)
+        unless s.livrable.nil?
+          ServiceDemandLivrable.create(organization_id: @organization.id,
+                                       service_id: s.id,
+                                       demand_id: @demand.id,
+                                       livrable_id: s.livrable.id,
+                                       contract_date: nil,
+                                       delivered: true,
+                                       delayed: nil)
+        end
       end
 
       flash[:notice] = "Demande créee avec succès"
