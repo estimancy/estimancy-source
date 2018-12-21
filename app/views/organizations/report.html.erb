@@ -125,7 +125,7 @@
           <br>
           <div class="row-fluid">
             <div class="span12">
-              <%= label_tag I18n.t(:Estimating_Status) %>
+              Estimation Status
               <%= select_tag "report[estimation_status_id]", options_for_select(@organization.estimation_statuses.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
             </div>
           </div>
