@@ -3283,6 +3283,7 @@ class OrganizationsController < ApplicationController
 
       render action: 'edit'
     end
+
   end
 
   def confirm_organization_deletion

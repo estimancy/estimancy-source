@@ -2173,3 +2173,7 @@ frsncf:
   demands_statuses: "Demandes Statuts"
 
   service_id: "Services"
+
+  manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
+
+  text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
