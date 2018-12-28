@@ -143,7 +143,7 @@ class ViewsWidget < ActiveRecord::Base
         borne_min = view_widget.min_value
         borne_max = view_widget.max_value
 
-        unless borne_min.nil? || borne_max.nil?
+        unless borne_min.nil? || borne_max.nil? || @value.nil?
           if @value < borne_min || @value > borne_max
             project.is_locked = true
           else
