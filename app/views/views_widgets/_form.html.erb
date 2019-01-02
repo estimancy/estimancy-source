@@ -72,7 +72,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <%= f.input :validation_text, as: :string, label: "Texte de validation" %>
+            <%= f.input :validation_text, as: :string, label: "Texte de validation", :input_html => { value: @views_widget.validation_text } %>
           </td>
         </tr>
         <tr>
