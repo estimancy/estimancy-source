@@ -22,13 +22,19 @@ class DemandTypesController < ApplicationController
     else
       render action: 'new'
     end
+
   end
 
   def update
     @demand_type = DemandType.find(params[:id])
     @demand_type.update(params[:demand_type])
 
+    if @demand_type.save
+      flash[:notice] = "Demande mise à jour avec succès"
+    end
+
     redirect_to :back
+
   end
 
   def edit
@@ -38,6 +44,11 @@ class DemandTypesController < ApplicationController
   end
 
   def destroy
+    @demand_type = DemandType.find(params[:id])
+    @demand_type.destroy
+    respond_to do |format|
+      format.html { redirect_to :back }
+      format.json { head :no_content }
+    end
   end
-
 end

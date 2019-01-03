@@ -110,6 +110,7 @@
               <td><%= dt.demand_status %></td>
               <td>
                 <%= link_to '', edit_organization_demand_type_path(@organization, dt), class: 'fa fa-pencil' %>
+                <%= link_to '', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
               </td>
             </tr>
           <% end %>

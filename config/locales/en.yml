@@ -2196,3 +2196,7 @@ en:
   demands_statuses: "Demands Statuses"
 
   service_id: "Services"
+
+  manage_demands_statuses_workflow: "Manage demand statuses workflow"
+
+  text_explain_demand_status_workflow: "Text explanation demand statuses workflow"
