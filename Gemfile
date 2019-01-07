@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.22'
+gem 'rails', '4.2.11'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'i18n', '~> 0.6.0'
 gem 'builder', '3.0.0'
