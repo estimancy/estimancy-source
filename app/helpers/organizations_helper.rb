@@ -259,6 +259,8 @@ module OrganizationsHelper
 
   def column_value(column, project, value)
     case column.name
+      when :urgent_project
+        content_tag('td', project.urgent_project)
       when :application
         if value.blank?
           content_tag('td', project.application_name)

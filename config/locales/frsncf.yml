@@ -2176,4 +2176,6 @@ frsncf:
 
   manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
 
-  text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
+  text_explain_demand_status_workflow:
+
+  urgent_project: "Devis urgent"

@@ -65,6 +65,8 @@ class Project < ActiveRecord::Base
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
 
+  #has_and_belongs_to_many :estimation_statuses
+
   default_scope { order('title ASC, version_number ASC') }
 
   serialize :included_wbs_activities, Array
@@ -117,7 +119,8 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:creator, :sortable => "#{User.table_name}.first_name", :caption => "author"),
       QueryColumn.new(:created_at, :sortable => "#{Project.table_name}.created_at", :caption => "created_at"),
       QueryColumn.new(:updated_at, :sortable => "#{Project.table_name}.updated_at", :caption => "updated_at"),
-      QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation")
+      QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation"),
+      QueryColumn.new(:urgent_project, :sortable => "#{Project.table_name}.urgent_project", :caption => "urgent_project")
     ]
 
   class_attribute :default_selected_columns

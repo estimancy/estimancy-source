@@ -755,7 +755,7 @@ class ProjectsController < ApplicationController
     @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
     @providers = @organization.providers
-    @demand = Demand.find(params[:demand_id])
+    #@demand = Demand.find(params[:demand_id])
   end
 
   #Create a new project
@@ -869,6 +869,7 @@ class ProjectsController < ApplicationController
     end
 
     @project.is_historicized = false
+    @project.urgent_project = params[:project][:urgent_project]
 
     if @project.start_date.nil? or @project.start_date.blank?
       @project.start_date = Time.now.to_date
@@ -4085,6 +4086,11 @@ public
     @project.status_comment = new_comments
 
     if @project.save
+
+      EstimationStatusesProject.create(estimation_status_id: @project.estimation_status_id,
+                                       project_id: @project.id,
+                                       transition_date: Time.now)
+
       flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
     else
       flash[:error] = I18n.t('errors.messages.not_saved')

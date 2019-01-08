@@ -106,7 +106,7 @@ gem 'axlsx'
 gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
 gem 'rubyXL'
-gem 'nokogiri'
+gem 'nokogiri' , '~>1.9.1'
 gem 'mechanize'
 
 # Including
