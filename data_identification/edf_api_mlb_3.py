@@ -13,7 +13,7 @@ sys.setdefaultencoding('utf8')
 stop_words = stopwords.words('french')
 
 from treetagger import TreeTagger
-tt = TreeTagger(path_to_treetagger='/root/treetagger/', language='french')
+tt = TreeTagger(path_to_treetagger='/usr/lib/treetagger-python/', language='french')
 seed(942)
 
 from flask import Flask
