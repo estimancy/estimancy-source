@@ -4031,6 +4031,7 @@ public
         ###@project.estimation_status_id = params["project"]["estimation_status_id"]
 
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
+
         if !next_status.nil? && next_status.create_new_version_when_changing_status == true
 
           new_version_number = set_project_version(@project)
@@ -4082,6 +4083,7 @@ public
 
     #add the last comments to the new comments
     new_comments << "#{@project.status_comment} \r\n"
+
     #update project's comments
     @project.status_comment = new_comments
 
