@@ -1,0 +1,1 @@
+Rails.application.config.assets.precompile += %w( print.css chartkick.js projestimate_script.js )

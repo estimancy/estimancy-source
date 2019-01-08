@@ -2986,7 +2986,8 @@ public
         end
 
         #add some additional information for leaf element customization
-        added_wbs_project_elements = WbsProjectElement.find_all_by_wbs_activity_id_and_pe_wbs_project_id(wbs_project_element.wbs_activity_id, @pe_wbs_project_activity.id)
+        added_wbs_project_elements = WbsProjectElement.where(wbs_activity_id: wbs_project_element.wbs_activity_id,
+                                                             pe_wbs_project_id: @pe_wbs_project_activity.id).all
         added_wbs_project_elements.each do |project_elt|
           if project_elt.has_children?
             project_elt.can_get_new_child = false
@@ -3918,7 +3919,7 @@ public
 
   #Function for collapsing project version_number
   def collapse_project_version
-    projects = Project.find_all_by_id(params[:project_ids])
+    projects = Project.where(params[:project_ids]).all
     flash_error = ""
     Project.transaction do
       projects.each do |project|

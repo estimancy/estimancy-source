@@ -1,9 +1,11 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
-gem 'rails', '4.2.11'
+# gem 'rails', '3.2.22'
+gem 'rails', '~> 4.2.11'
+
 gem 'jquery-rails', '~> 2.0.2'
-gem 'i18n', '~> 0.6.0'
-gem 'builder', '3.0.0'
+gem 'i18n'
+gem 'builder'
 gem 'cookies_eu'
 
 # To use ActiveModel has_secure_password
@@ -24,7 +26,7 @@ if File.exist?(database_file)
         when 'mysql2'
           gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
         when /postgres/
-           gem 'pg'
+          gem 'pg'
         else
           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
@@ -37,7 +39,7 @@ else
 end
 
 #For PostgreSQL database
- #gem 'pg'
+#gem 'pg'
 
 gem 'curb'
 
@@ -46,7 +48,7 @@ gem 'curb'
 gem 'cancancan', '~> 1.10'
 
 #Authentication for tests
-gem "warden"
+gem 'warden'
 
 #Tree
 gem 'ancestry'
@@ -81,10 +83,10 @@ gem 'amoeba', '~> 3.0.0'
 gem 'rb-readline'
 
 #Cache management
-gem 'cache_digests'
+# gem 'cache_digests'
 
 #Databases data translations
-gem 'globalize', '~> 3.1.0'
+gem 'globalize'
 
 #Dumping and restoring data :
 gem 'yaml_db'
@@ -150,7 +152,7 @@ gem 'slim'
 
 # For chart generation
 gem 'chartkick'
-gem "highcharts-rails"
+gem 'highcharts-rails'
 gem 'groupdate'
 
 #Dentaku is a parser and evaluator for mathematical formulas
@@ -162,7 +164,7 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 
 gem 'passenger'
 
-gem "delocalize"
+gem 'delocalize'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -218,7 +220,7 @@ end
 gem 'jbuilder', '~> 1.2'
 gem 'remotipart', '~> 1.2'
 
-# gem 'yaml_db'
+gem 'yaml_db'
 
 gem 'test-unit'
 # gem 'bullet', group: :development
@@ -240,12 +242,17 @@ gem 'rack-reverse-proxy', :require => 'rack/reverse_proxy'
 gem 'grit'
 gem 'pdfkit'
 
-gem 'paper_trail'
+# gem 'paper_trail'
 
 gem 'hairtrigger'
 
-gem 'factory_bot_rails'
+gem 'protected_attributes' # https://github.com/rails/protected_attributes
+# gem 'active_resource' # https://github.com/rails/activeresource
+gem 'actionpack-action_caching' # https://github.com/rails/actionpack-action_caching
+gem 'activerecord-session_store' # https://github.com/rails/activerecord-session_store
+gem "rails-observers", "0.1.5"
 
 gem 'biz'
 
-
+gem 'carrierwave', '~> 1.2.3'
+gem 'bootstrap-sass', '~> 3.3.7'

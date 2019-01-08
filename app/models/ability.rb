@@ -113,7 +113,9 @@ class Ability
         @array_owners = Array.new
 
         #Specfic project security loading
-        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(user.id, false, true)
+        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(user_id: user.id,
+                                                                                      is_model_permission: false,
+                                                                                      is_estimation_permission: true).all
         unless prj_scrts.empty?
           specific_permissions_array = []
           prj_scrts.each do |prj_scrt|
@@ -160,7 +162,9 @@ class Ability
         end
 
         if owner
-          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_user_id_and_is_model_permission_and_is_estimation_permission(owner.id, false, true)
+          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(user_id: owner.id,
+                                                                                        is_model_permission: false,
+                                                                                        is_estimation_permission: true).all
         end
 
         unless prj_scrts.empty?
@@ -193,7 +197,9 @@ class Ability
         end
 
         user_groups.where(organization_id: organization.id).each do |grp|
-          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).find_all_by_group_id_and_is_model_permission_and_is_estimation_permission(grp.id, false, true)
+          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(group_id: grp.id,
+                                                                                        is_model_permission: false,
+                                                                                        is_estimation_permission: true).all
           unless prj_scrts.empty?
             specific_permissions_array = []
             prj_scrts.each do |prj_scrt|

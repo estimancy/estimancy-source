@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
 
   #For user without group
   has_many :organizations_users, class_name: 'OrganizationsUsers'
-  has_many :organizations, through: :organizations_users, :source => :organization, uniq: true
+  has_many :organizations, through: :organizations_users, :source => :organization#, uniq: true
 
   #Master and Special Data Tables
   # has_many :change_on_acquisition_categories, :foreign_key => 'owner_id', :class_name => 'AcquisitionCategory'

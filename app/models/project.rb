@@ -64,7 +64,7 @@ class Project < ActiveRecord::Base
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
 
-  default_scope order('title ASC, version_number ASC')
+  default_scope { order('title ASC, version_number ASC') }
 
   serialize :included_wbs_activities, Array
 

@@ -6,10 +6,10 @@ class Application < ActiveRecord::Base
 
   validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 
-  default_scope order('name ASC')
+  default_scope { order('name ASC') }
 
-  scope :active, where(is_ignored: [false, nil])
-  scope :ignored, where(is_ignored: true)
+  scope :active, -> { where(is_ignored: [false, nil]) }
+  scope :ignored, -> { where(is_ignored: true) }
 
   def to_s
     self.nil? ? '' : self.name

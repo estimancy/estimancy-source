@@ -30,7 +30,7 @@ class ProjectSecurity < ActiveRecord::Base
   belongs_to :project_security_level
 
   # Security Audit management
-  has_paper_trail
+  # has_paper_trail
 
   # Security Audit management
   before_save :update_transaction_id_for_triggers

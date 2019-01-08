@@ -96,7 +96,7 @@ class Group < ActiveRecord::Base
 
   validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 
-  default_scope order('name ASC')
+  default_scope { order('name ASC') }
 
   #Search fields
   scoped_search :on => [:name, :description, :created_at, :updated_at]

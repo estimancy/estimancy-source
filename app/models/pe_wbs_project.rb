@@ -30,8 +30,8 @@ class PeWbsProject < ActiveRecord::Base
 
   belongs_to :project, :touch => true
 
-  scope :products_wbs, where(:wbs_type => 'Product')
-  scope :activities_wbs, where(:wbs_type => 'Activity')
+  scope :products_wbs, -> { where(:wbs_type => 'Product') }
+  scope :activities_wbs, -> {  where(:wbs_type => 'Activity') }
 
   #Enable the amoeba gem for deep copy/clone (dup with associations)
   amoeba do

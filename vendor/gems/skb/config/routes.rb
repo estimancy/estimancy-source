@@ -32,6 +32,6 @@ Skb::Engine.routes.draw do
     post "update_size"
   end
 
-  match 'skb_models/import_skb_model' => 'skb_models#import', as: "import_skb_model"
+  post 'skb_models/import_skb_model' => 'skb_models#import', as: "import_skb_model"
 
 end
