@@ -1,5 +1,4 @@
 class CreateServices < ActiveRecord::Migration
-=begin
   def change
     create_table :services do |t|
       t.integer :organization_id
@@ -11,5 +10,4 @@ class CreateServices < ActiveRecord::Migration
       t.timestamps null: false
     end
   end
-=end
 end
