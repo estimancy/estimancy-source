@@ -2229,6 +2229,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
                                                     guw_attribute_id: gac.id,
                                                     guw_unit_of_work_id: uo.id).first_or_create
+
+          if gac.name == "DET"
+            guowa.low = 10
+            guowa.most_likely = 10
+            guowa.high = 10
+            guowa.comments = "-"
+          elsif gac.name == "FTR"
+            guowa.low = 2
+            guowa.most_likely = 2
+            guowa.high = 2
+          else
+            guowa.low = 0
+            guowa.most_likely = 0
+            guowa.high = 0
+          end
+
+          guowa.save
         end
       end
 
