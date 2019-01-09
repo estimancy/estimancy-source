@@ -188,8 +188,8 @@
         <span class="cotation_label_<%= guow.id %>">
           <% unless @guw_type.nil? %>
             <% if @guw_type.display_threshold == true %>
+              <% @default_complexity = @guw_complexities.where(default_value: true).first %>
               <% if guow.off_line == true %>
-                <% @default_complexity = @guw_complexities.where(default_value: true).first %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
                                class: "guw_complexity",
