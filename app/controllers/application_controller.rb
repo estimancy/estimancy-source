@@ -176,7 +176,6 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-
   end
 
   def current_ability
