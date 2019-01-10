@@ -3,7 +3,7 @@ class DemandsController < ApplicationController
   def index
     set_page_title "Liste des demandes"
 
-    @demands = Demand.where(organization_id: params[:organization_id]).all
+    @demands = Demand.where(organization_id: params[:organization_id]).order("created_at ASC")
     @organization = Organization.find(params[:organization_id])
   end
 
@@ -67,13 +67,29 @@ class DemandsController < ApplicationController
                                           livrable_id: s.livrable.id).first
 
         unless sdl.nil?
-          sdl.contract_date = params["contract_date"]["#{s.id}"]
-          sdl.expected_date = params["expected_date"]["#{s.id}"]
-          sdl.actual_date = params["actual_date"]["#{s.id}"]
-          sdl.state = params["state"]["#{s.id}"]
+
+          unless params["contract_date"].nil?
+            sdl.contract_date = params["contract_date"]["#{s.id}"]
+          end
+
+          unless params["expected_date"].nil?
+            sdl.expected_date = params["expected_date"]["#{s.id}"]
+          end
+
+          unless params["actual_date"].nil?
+            sdl.actual_date = params["actual_date"]["#{s.id}"]
+          end
+
+          unless params["state"].nil?
+            sdl.state = params["state"]["#{s.id}"]
+          end
+
+          unless params["selected"].nil?
+            sdl.selected = params["selected"]["#{s.id}"]
+          end
+
           # sdl.delivered = params["delivered"]["#{s.id}"]
           # sdl.delayed = params["delayed"]["#{s.id}"]
-          sdl.selected = params["selected"]["#{s.id}"]
           sdl.save
         end
       end

@@ -1,5 +1,4 @@
 class CreateServiceDemandLivrables < ActiveRecord::Migration
-=begin
   def change
     create_table :service_demand_livrables do |t|
       t.integer :organization_id
@@ -16,5 +15,4 @@ class CreateServiceDemandLivrables < ActiveRecord::Migration
       t.timestamps null: false
     end
   end
-=end
 end

@@ -17,7 +17,15 @@
           <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :demand_type_id, as: :select, label: "Type de demande", collection: @organization.demand_types, input_html: { class: 'input-xxlarge', disabled: (controller.action_name == "edit") } %>
 
-          <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+          <% unless @demand.demand_status.nil? %>
+            <% if @demand.demand_status.name == "En instruction" || @demand.demand_status.name == "En qualification" %>
+              <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+            <% else %>
+              <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge', disabled: true } %>
+            <% end %>
+          <% else %>
+            <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+          <% end %>
 
           <% if controller.action_name == "edit" %>
             <% if @demand.demand_status.nil? %>
@@ -25,13 +33,23 @@
                           as: :select,
                           label: "Statut de la demande",
                           collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
+                          selected: @demand.demand_type.demand_status,
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
-              <%= f.input :demand_status_id,
-                          as: :select,
-                          label: "Statut de la demande",
-                          collection: @demand.get_demand_statuses(@organization),
-                          input_html: { class: 'input-xxlarge' } %>
+              <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
+                <%= f.input :demand_status_id,
+                            as: :select,
+                            label: "Statut de la demande",
+                            collection: @demand.get_demand_statuses(@organization),
+                            disabled: true,
+                            input_html: { class: 'input-xxlarge' } %>
+              <% else %>
+                <%= f.input :demand_status_id,
+                            as: :select,
+                            label: "Statut de la demande",
+                            collection: @demand.get_demand_statuses(@organization),
+                            input_html: { class: 'input-xxlarge' } %>
+              <% end %>
             <% end %>
           <% end %>
 
@@ -57,15 +75,71 @@
             <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
           <% end %>
 
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
-
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
           <% unless @demand.new_record? %>
-            <% if @demand.demand_type.cost_from == "Projet" %>
-              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
-            <% else %>
-              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge', disabled: true } %>
+              <% if @demand.demand_type.cost_from == "Projet" %>
+                <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+              <% else %>
+                <span>
+                  Coût (€) :
+                </span>
+                <% if "Accepté".in?@demand.projects.map(&:estimation_status).map(&:name) %>
+                  <%
+                     es = EstimationStatus.where(name: "Accepté",organization_id: @demand.organization_id).first
+                     project = @demand.projects.where(estimation_status: es.id).first
+
+                     unless project.nil?
+                       @fields_coefficients = {}
+                       @pfs = {}
+
+                       fields = @organization.fields
+                       ProjectField.where(project_id: [project.id]).each do |pf|
+                         begin
+                           if pf.field_id.in?(fields.map(&:id))
+                             if pf.project && pf.views_widget
+                               if pf.project_id == pf.views_widget.module_project.project_id
+                                 @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+                               else
+                                 # pf.delete
+                               end
+                             else
+                               # pf.delete
+                             end
+                           else
+                             # pf.delete
+                           end
+                         rescue
+                           #puts "erreur"
+                         end
+                       end
+
+                       fields.each do |f|
+                         @fields_coefficients[f.id] = f.coefficient
+                       end
+
+                       field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
+                       column = QueryColumn.new(field.name.to_sym,
+                                                sortable: "",
+                                                caption: "efefef",
+                                                field_id: field.id,
+                                                organization_id: @current_organization.id)
+
+                       value = column_content(@pfs, column, project, @fields_coefficients)
+                     end
+                  %>
+                  <br>
+                  <span class="pull-left" style="font-weight: bold;">
+                    <span class="pull-right">
+                      &nbsp;k€
+                    </span>
+                    <%= value %>
+                  </span>
+                <% else %>
+                <br>
+                  -
+                <% end %>
+              <% end %>
             <% end %>
-          <% end %>
         </div>
       </div>
 
@@ -79,87 +153,111 @@
           </h4>
           <hr>
 
-          <table class="table table-striped table-bordered table-condensed">
-            <tr>
-              <th class="center">Sélect.</th>
-              <th class="center">
-                <%= link_to raw("Services &and;"), "#", style: "font-weight: bold; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Demandes &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Livrables &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Date contract. &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Date attendue &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Date réelle &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Etat &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Délivré &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-              <th class="center">
-                <%= link_to raw("Retard &and;&or;"), "#", style: "font-weight: normal; " %>
-              </th>
-            </tr>
+          <table class="table tablesorter table-striped table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th class="center">Sélect.</th>
+                <th class="center">
+                  Services
+                </th>
+                <th class="center">
+                  Demandes
+                </th>
+                <th class="center">
+                  Livrables
+                </th>
+                <th class="center">
+                  Date contract.
+                </th>
+                <th class="center">
+                  Date attendue
+                </th>
+                <th class="center">
+                  Date de livraison
+                </th>
+                <th class="center">
+                  Etat
+                </th>
+                <th class="center">
+                  Délivré
+                </th>
+                <th class="center">
+                  Retard
+                </th>
+              </tr>
+            </thead>
             <% @organization.services.each do |service| %>
-              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
+              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
               <% unless sdl.nil? %>
                 <% unless sdl.service.nil? %>
                   <% sdl_service_livrable = sdl.service.livrable %>
-                  <tr>
-                    <td>
-                      <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
-                    </td>
-                    <td>
-                      <%= link_to service.name, "#" %>
-                      <%= hidden_field_tag "service_#{service.id}", service.id %>
-                    </td>
-                    <td>
-                      -
-                    </td>
-                    <td>
-                      <span class="span2">
-                        <%= sdl_service_livrable %>
-                      </span>
-                    </td>
-                    <td>
-                      <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date, class: "date-picker", style: "width: 80px" %>
-                    </td>
-                    <td>
-                      <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date, class: "date-picker", style: "width: 80px" %>
-                    </td>
-                    <td>
-                      <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date, class: "date-picker", style: "width: 80px" %>
-                    </td>
-                    <td class="span2">
-                      <% unless sdl_service_livrable.nil? || sdl.nil? %>
-                        <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
+                      </td>
+                      <td>
+                        <%= link_to service.name, "#", title: service.description %>
+                        <%= hidden_field_tag "service_#{service.id}", service.id %>
+                      </td>
+                      <td>
+                        <% if "Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name)) %>
+                        bullet rouge ou verte
                         <% end %>
-                    </td>
-                    <td class="span2">
-                      <span class="fa fa-circle red"></span>
-                    </td>
-                    <td class="span2">
-                      <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
-                        <% if sdl.actual_date > sdl.expected_date %>
+                      </td>
+                      <td>
+                        <%= link_to sdl_service_livrable, "#", title: sdl_service_livrable.description %>
+                      </td>
+                      <td class="center">
+                        <% unless sdl.actual_date.nil? %>
+                          <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                        <% else %>
+                          <%= text_field_tag "contract_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
+                        <% end %>
+                      </td>
+                      <td class="center">
+                        <% unless sdl.actual_date.nil? %>
+                          <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                        <% else %>
+                          <%= text_field_tag "expected_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
+                        <% end %>
+                      </td>
+                      <td class="center">
+                        <% unless sdl.actual_date.nil? %>
+                          <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                        <% else %>
+                          <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
+                        <% end %>
+                      </td>
+                      <td class="span2 center">
+                        <% unless sdl_service_livrable.nil? || sdl.nil? %>
+                          <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                          <% end %>
+                      </td>
+                      <td class="span2 center">
+                        <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
                           <span class="fa fa-circle red"></span>
                         <% else %>
-                          <span class="fa fa-circle green"></span>
+                          <% if sdl.state == sdl_service_livrable.state.split(',').first && sdl.actual_date <= sdl.expected_date %>
+                            <span class="fa fa-circle green"></span>
+                          <% else %>
+                            <span class="fa fa-circle red"></span>
+                          <% end %>
                         <% end %>
-                      <% else %>
-                        <span class="fa fa-circle"></span>
-                      <% end %>
-                    </td>
-                  </tr>
+                      </td>
+                      <td class="span2 center">
+                        <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
+                          <% if sdl.actual_date > sdl.expected_date %>
+                            <span class="fa fa-circle red"></span>
+                          <% else %>
+                            <span class="fa fa-circle green"></span>
+                          <% end %>
+                        <% else %>
+                          <span class="fa fa-circle"></span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  </tbody>
                 <% end %>
               <% end %>
             <% end %>
@@ -203,7 +301,14 @@
         </div>
       </div>
     <% end %>
+
+    <div class="row-fluid">
+      <div class="span12">
+        <%= link_to 'Supprimer la demande', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'btn btn-danger pull-right', :title => I18n.t('delete') %>
+      </div>
+    </div>
   </div>
+
 </div>
 
 <script>
