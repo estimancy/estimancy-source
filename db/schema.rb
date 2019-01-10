@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190108141735) do
+ActiveRecord::Schema.define(version: 20190109143920) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1397,6 +1397,14 @@ ActiveRecord::Schema.define(version: 20190108141735) do
     t.integer "module_project_id",      limit: 4
     t.integer "pbs_project_element_id", limit: 4
     t.integer "copy_id",                limit: 4
+  end
+
+  create_table "monitorings", force: :cascade do |t|
+    t.integer  "user",       limit: 4
+    t.text     "action",     limit: 65535
+    t.datetime "action_at"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "operation_operation_inputs", force: :cascade do |t|
