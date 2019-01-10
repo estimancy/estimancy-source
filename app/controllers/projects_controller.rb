@@ -305,6 +305,11 @@ class ProjectsController < ApplicationController
       end
     end
 
+    if user_signed_in?
+      project_name = @project.title
+      Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now)
+    end
+
     @current_organization = @project.organization
     @pbs_project_element = current_component
 
