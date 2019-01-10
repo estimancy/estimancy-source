@@ -697,6 +697,10 @@ input[type="color"],
     color: green;
 }
 
+.orange{
+    color: #ff9a1f;
+}
+
 .blue{
     color: #0088cc;
 }

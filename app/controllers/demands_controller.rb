@@ -13,6 +13,18 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @uploader = AttachmentUploader.new
 
+
+    @organization.services.each do |s|
+      unless s.livrable.nil?
+        ServiceDemandLivrable.where(organization_id: @organization.id,
+                                    service_id: s.id,
+                                    demand_id: @demand.id,
+                                    livrable_id: s.livrable.id).first_or_create(contract_date: nil,
+                                                                                delivered: true,
+                                                                                delayed: nil)
+      end
+    end
+
     get_estimations
   end
 
