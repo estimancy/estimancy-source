@@ -187,9 +187,12 @@
               </tr>
             </thead>
             <% @organization.services.each do |service| %>
-              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
+              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
+                                                   service_id: service.id,
+                                                   demand: @demand.id).first %>
               <% unless sdl.nil? %>
                 <% unless sdl.service.nil? %>
+                  <% sdl_service = sdl.service %>
                   <% sdl_service_livrable = sdl.service.livrable %>
                   <tbody>
                     <tr>
@@ -200,9 +203,35 @@
                         <%= link_to service.name, "#", title: service.description %>
                         <%= hidden_field_tag "service_#{service.id}", service.id %>
                       </td>
-                      <td>
+                      <td class="center span1">
                         <% if "Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name)) %>
-                        bullet rouge ou verte
+                          <% project = @demand.projects.first %>
+                          <% project.module_projects.each do |mp| %>
+                            <% if mp.pemodule.alias == "guw" %>
+                              <% @guw_types = mp.guw_unit_of_works.map(&:guw_type).select{|i| i.service_id == sdl_service.id } %>
+                              <% if sdl.selected == true %>
+                                <% if @guw_types.size >= 1 %>
+                                  <span class="fa fa-circle green"></span>
+                                <% end %>
+                              <% else %>
+                                <% if @guw_types.size >= 1 %>
+                                  <span class="fa fa-circle orange"></span>
+                                <% end %>
+                              <% end %>
+                            <% elsif mp.pemodule.alias == "effort_breakdown" %>
+
+                              <% @mp_wbs_activity_wbs_activity_elements = mp.wbs_activity.wbs_activity_elements.select{|i| i.service_id == sdl_service.id } %>
+                              <% if sdl.selected == true %>
+                                <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
+                                  <span class="fa fa-circle green"></span>
+                                <% end %>
+                              <% else %>
+                                <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
+                                  <span class="fa fa-circle orange"></span>
+                                <% end %>
+                              <% end %>
+                            <% end %>
+                          <% end %>
                         <% end %>
                       </td>
                       <td>
@@ -229,12 +258,12 @@
                           <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
                         <% end %>
                       </td>
-                      <td class="span2 center">
+                      <td class="span1 center">
                         <% unless sdl_service_livrable.nil? || sdl.nil? %>
                           <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
                           <% end %>
                       </td>
-                      <td class="span2 center">
+                      <td class="span1 center">
                         <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
                           <span class="fa fa-circle red"></span>
                         <% else %>
@@ -245,7 +274,7 @@
                           <% end %>
                         <% end %>
                       </td>
-                      <td class="span2 center">
+                      <td class="span1 center">
                         <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
                           <% if sdl.actual_date > sdl.expected_date %>
                             <span class="fa fa-circle red"></span>

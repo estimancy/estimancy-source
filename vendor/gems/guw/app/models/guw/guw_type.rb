@@ -27,9 +27,10 @@ module Guw
                     :allow_retained, :allow_complexity, :allow_quantity,
                     :guw_model_id, :copy_id, :allow_criteria,
                     :display_threshold, :attribute_type, :is_default,
-                    :color_code, :color_priority, :allow_line_color, :mandatory_comments
+                    :color_code, :color_priority, :allow_line_color, :mandatory_comments, :service_id
 
     belongs_to :guw_model
+    belongs_to :service
 
     has_many :guw_unit_of_work_attributes, dependent: :destroy
     has_many :guw_attribute_complexities, dependent: :destroy
