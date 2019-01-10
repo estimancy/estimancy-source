@@ -36,14 +36,13 @@
       <tbody>
         <% @demands.each do |demand| %>
           <tr>
-            <td><%= link_to demand.name, organization_demand_estimations_path(@organization, demand) %></td>
+            <td><%= link_to demand.name, edit_organization_demand_path(@organization, demand) %></td>
             <td><%= demand.description.to_s.truncate(50) %></td>
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
             <td><%= demand.demand_status %></td>
             <td>
-              <%= link_to '', edit_organization_demand_path(@organization, demand), class: 'fa fa-pencil' %>
-              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              <%= link_to '', organization_demand_estimations_path(@organization, demand), class: 'fa fa-list' %>
             </td>
           </tr>
         <% end %>

@@ -27,11 +27,20 @@
                           collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
-              <%= f.input :demand_status_id,
-                          as: :select,
-                          label: "Statut de la demande",
-                          collection: @demand.get_demand_statuses(@organization),
-                          input_html: { class: 'input-xxlarge' } %>
+              <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
+                <%= f.input :demand_status_id,
+                            as: :select,
+                            label: "Statut de la demande",
+                            collection: @demand.get_demand_statuses(@organization),
+                            disabled: true,
+                            input_html: { class: 'input-xxlarge' } %>
+              <% else %>
+                <%= f.input :demand_status_id,
+                            as: :select,
+                            label: "Statut de la demande",
+                            collection: @demand.get_demand_statuses(@organization),
+                            input_html: { class: 'input-xxlarge' } %>
+              <% end %>
             <% end %>
           <% end %>
 
@@ -111,7 +120,7 @@
               </th>
             </tr>
             <% @organization.services.each do |service| %>
-              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id).first %>
+              <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
               <% unless sdl.nil? %>
                 <% unless sdl.service.nil? %>
                   <% sdl_service_livrable = sdl.service.livrable %>
@@ -132,16 +141,22 @@
                     <td class="center">
                       <% unless sdl.actual_date.nil? %>
                         <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                      <% else %>
+                        <%= text_field_tag "contract_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
                       <% end %>
                     </td>
                     <td class="center">
                       <% unless sdl.actual_date.nil? %>
                         <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                      <% else %>
+                        <%= text_field_tag "expected_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
                       <% end %>
                     </td>
                     <td class="center">
                       <% unless sdl.actual_date.nil? %>
                         <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                      <% else %>
+                        <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
                       <% end %>
                     </td>
                     <td class="span2 center">
@@ -150,7 +165,15 @@
                         <% end %>
                     </td>
                     <td class="span2 center">
-                      <span class="fa fa-circle red"></span>
+                      <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
+                        <span class="fa fa-circle red"></span>
+                      <% else %>
+                        <% if sdl.state == sdl_service_livrable.state.split(',').first && sdl.actual_date <= sdl.expected_date %>
+                          <span class="fa fa-circle green"></span>
+                        <% else %>
+                          <span class="fa fa-circle red"></span>
+                        <% end %>
+                      <% end %>
                     </td>
                     <td class="span2 center">
                       <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
@@ -207,7 +230,14 @@
         </div>
       </div>
     <% end %>
+
+    <div class="row-fluid">
+      <div class="span12">
+        <%= link_to 'Supprimer la demande', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'btn btn-danger pull-right', :title => I18n.t('delete') %>
+      </div>
+    </div>
   </div>
+
 </div>
 
 <script>
