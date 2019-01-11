@@ -205,17 +205,22 @@
                       </td>
                       <td class="center span1">
                         <% if "Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name)) %>
+                          <% color = "" %>
                           <% project = @demand.projects.first %>
                           <% project.module_projects.each do |mp| %>
                             <% if mp.pemodule.alias == "guw" %>
                               <% @guw_types = mp.guw_unit_of_works.map(&:guw_type).select{|i| i.service_id == sdl_service.id } %>
                               <% if sdl.selected == true %>
                                 <% if @guw_types.size >= 1 %>
-                                  <span class="fa fa-circle green"></span>
+                                  <% color = "green" %>
+                                <% else %>
+                                  <% unless color == "green" %>
+                                    <% color = "red" %>
+                                  <% end %>
                                 <% end %>
                               <% else %>
                                 <% if @guw_types.size >= 1 %>
-                                  <span class="fa fa-circle orange"></span>
+                                  <% color = "orange" %>
                                 <% end %>
                               <% end %>
                             <% elsif mp.pemodule.alias == "effort_breakdown" %>
@@ -223,15 +228,20 @@
                               <% @mp_wbs_activity_wbs_activity_elements = mp.wbs_activity.wbs_activity_elements.select{|i| i.service_id == sdl_service.id } %>
                               <% if sdl.selected == true %>
                                 <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
-                                  <span class="fa fa-circle green"></span>
+                                  <% color = "green" %>
+                                <% else %>
+                                  <% unless color == "green" %>
+                                    <% color = "red" %>
+                                  <% end %>
                                 <% end %>
                               <% else %>
                                 <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
-                                  <span class="fa fa-circle orange"></span>
+                                  <% color = "orange" %>
                                 <% end %>
                               <% end %>
                             <% end %>
                           <% end %>
+                          <span class="fa fa-circle <%= color %>"></span>
                         <% end %>
                       </td>
                       <td>
@@ -333,7 +343,10 @@
 
     <div class="row-fluid">
       <div class="span12">
-        <%= link_to 'Supprimer la demande', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'btn btn-danger pull-right', :title => I18n.t('delete') %>
+        <%= link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
+                    method: :delete,
+                    :class => 'btn btn-danger pull-right',
+                    :title => I18n.t('delete') %>
       </div>
     </div>
   </div>
