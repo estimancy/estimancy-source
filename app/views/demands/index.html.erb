@@ -30,6 +30,9 @@
           <th>
             Statut
           </th>
+          <th>
+            Date
+          </th>
         </tr>
       </thead>
 
@@ -41,6 +44,7 @@
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
             <td><%= demand.demand_status %></td>
+            <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
             <td>
               <%= link_to '', organization_demand_estimations_path(@organization, demand), class: 'fa fa-list' %>
             </td>

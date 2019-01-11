@@ -120,6 +120,16 @@ class DemandsController < ApplicationController
     redirect_to :back
   end
 
+  def destroy
+    @demand = Demand.find(params[:id])
+    @demand.remove_attachment!
+    @demand.save
+
+    @demand.delete
+
+    redirect_to root_url
+  end
+
   def estimations
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])
