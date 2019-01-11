@@ -307,7 +307,7 @@ class ProjectsController < ApplicationController
 
     if user_signed_in?
       project_name = @project.title
-      Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now)
+      Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now + 3600)
     end
 
     @current_organization = @project.organization
