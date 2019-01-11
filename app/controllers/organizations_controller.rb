@@ -2129,6 +2129,11 @@ class OrganizationsController < ApplicationController
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+
+    if user_signed_in?
+      Monitoring.create(user: User.current, action: "Accéder à la liste des estimations", action_at: Time.now)
+    end
+
   end
 
   private def check_for_projects(start_number, desired_size)
