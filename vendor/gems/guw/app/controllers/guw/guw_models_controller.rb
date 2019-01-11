@@ -1683,8 +1683,7 @@ class Guw::GuwModelsController < ApplicationController
         "Nom du CDS",
         "Nom du fournisseur",
         "Nom de l'application",
-        "Numéro de devis",
-        "Numéro de demande",
+        "Besoin métier",
         "Statut du devis",
         "Service",
         "Prestation",
@@ -1723,26 +1722,25 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_module_project.project.organization)
-      worksheet.add_cell(ind, 1, current_module_project.project.provider)
-      worksheet.add_cell(ind, 2, current_module_project.project.application)
-      worksheet.add_cell(ind, 3, current_module_project.project.application)
-      worksheet.add_cell(ind, 4, current_module_project.project.title)
-      worksheet.add_cell(ind, 5, current_module_project.project.estimation_status)
-      worksheet.add_cell(ind, 6, current_module_project.project.project_area)
-      worksheet.add_cell(ind, 7, current_module_project.project.acquisition_category)
-      worksheet.add_cell(ind, 8, current_module_project.project.platform_category)
-      worksheet.add_cell(ind, 9, current_module_project.project.title)
-      worksheet.add_cell(ind, 10, current_module_project.project.version_number)
-      worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
-      worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
-      worksheet.add_cell(ind, 13, guow.name)
-      worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
-      worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-      worksheet.add_cell(ind, 16, guow.quantity)
-      worksheet.add_cell(ind, 17, guow.tracking)
-      worksheet.add_cell(ind, 18, cplx)
-      worksheet.add_cell(ind, 19, guow.intermediate_weight)
+      worksheet.add_cell(ind, 0, current_module_project.project.organization.name)
+      worksheet.add_cell(ind, 1, current_module_project.project.provider.name)
+      worksheet.add_cell(ind, 2, current_module_project.project.application.name)
+      worksheet.add_cell(ind, 3, current_module_project.project.business_need)
+      worksheet.add_cell(ind, 4, current_module_project.project.estimation_status.nil? ? nil : current_module_project.project.estimation_status.name)
+      worksheet.add_cell(ind, 5, current_module_project.project.project_area.nil? ? nil : current_module_project.project.project_area.name)
+      worksheet.add_cell(ind, 6, current_module_project.project.acquisition_category.nil? ? nil : current_module_project.project.acquisition_category.name)
+      worksheet.add_cell(ind, 7, current_module_project.project.platform_category.nil? ? nil : current_module_project.project.platform_category.name)
+      worksheet.add_cell(ind, 8, current_module_project.project.title)
+      worksheet.add_cell(ind, 9, current_module_project.project.version_number)
+      worksheet.add_cell(ind, 10, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+      worksheet.add_cell(ind, 11, guow.selected ? 1 : 0)
+      worksheet.add_cell(ind, 12, guow.name)
+      worksheet.add_cell(ind, 13, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+      worksheet.add_cell(ind, 14, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 15, guow.quantity)
+      worksheet.add_cell(ind, 16, guow.tracking)
+      worksheet.add_cell(ind, 17, cplx)
+      worksheet.add_cell(ind, 18, guow.intermediate_weight)
 
       hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
@@ -1754,11 +1752,11 @@ class Guw::GuwModelsController < ApplicationController
                                                                 module_project_id: current_module_project.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               elsif guw_coefficient.coefficient_type == "Coefficient"
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
+                worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
               else
-                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 19+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -1768,7 +1766,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
-              worksheet.add_cell(ind, 20 + j, v.to_s)
+              worksheet.add_cell(ind, 19 + j, v.to_s)
             end
           end
         end
