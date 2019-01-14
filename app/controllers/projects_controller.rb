@@ -4182,7 +4182,7 @@ public
     respond_to do |format|
       format.html
       format.pdf do
-        render pdf: "Test",
+        render pdf: @project.to_s,
                encoding: "UTF-8",
                page_size: 'A4',
                orientation: :landscape
