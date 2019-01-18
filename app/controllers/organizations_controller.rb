@@ -1658,7 +1658,7 @@ class OrganizationsController < ApplicationController
       @organization = @current_organization
       check_if_organization_is_image(@organization)
 
-      @projects = @organization.projects.where(is_model: false)
+      @projects = @organization.projects.where(is_model: false).where("title like ?", "%#{params[:title]}%").all
 
       @fields_coefficients = {}
       @pfs = {}
@@ -1694,9 +1694,13 @@ class OrganizationsController < ApplicationController
 
       selected_inline_columns = update_selected_inline_columns(Project)
 
+      selected_inline_columns.each_with_index do |sic, i|
+        worksheet.add_cell(0, i, I18n.t(sic.name))
+      end
+
       @projects.each_with_index do |project, i|
         selected_inline_columns.each_with_index do |column, j|
-          worksheet.add_cell(i, j, column_content_without_content_tag(@pfs, column, project, @fields_coefficients))
+          worksheet.add_cell(i+1, j, column_content_without_content_tag(@pfs, column, project, @fields_coefficients))
         end
       end
 
@@ -2461,7 +2465,12 @@ class OrganizationsController < ApplicationController
                                                  icon_class: view_widget.icon_class, color: view_widget.color,
                                                  show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
                                                  width: view_widget.width, height: view_widget.height, position: view_widget.position,
-                                                 position_x: view_widget.position_x, position_y: view_widget.position_y)
+                                                 position_x: view_widget.position_x,
+                                                 position_y: view_widget.position_y,
+                                                 min_value: view_widget.min_value,
+                                                 max_value: view_widget.max_value,
+                                                 validation_text: view_widget.validation_text
+                )
                 #===
 
                 # #Update KPI Widget aquation

@@ -22,7 +22,6 @@
             <% search_value = (params[column.name] || params['search'][column.name.to_s]) rescue "" %>
             <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
             <% search_value = search_value.blank? ? session['search_hash'][column.name.to_s] : search_value %>
-
         <% else %>
             <% search_value = params[column.name] %>
         <% end %>
@@ -37,7 +36,6 @@
       <tr>
         <% selected_inline_columns.each do |column| %>
           <%= column_content(@pfs, column, project, @fields_coefficients) %>
-
         <% end %>
 
         <td style="min-width: 145px;">
@@ -45,7 +43,6 @@
             <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
             <%= link_to '', export_dashboard_path(format: "pdf", project_id: project.id), class: 'fa fa-file-pdf-o pull-left', style: "color: black; margin-top:4px;", :title => 'Exporter en PDF', target: "_blank", method: "POST" %>
             <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
-
           <% end %>
 
           <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
@@ -80,11 +77,9 @@
     <% end %>
 
   <tr>
-
     <% sort_column = sort_column.blank? ? params[:sort_column] : sort_column %>
     <% sort_order = sort_order.blank? ? params[:sort_order] : sort_order %>
     <% is_last_page = is_last_page.blank? ? params[:is_last_page] : is_last_page %>
-
     <% if is_last_page != "true" %>
         <% is_last_page = @is_last_page rescue false %>
     <% end %>
@@ -100,7 +95,6 @@
         <% else %>
             <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-md fa fa-fast-backward prev_next" %>
             <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-mini prev_next" %>
-
         <% end %>
       <% end %>
 

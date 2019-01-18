@@ -160,29 +160,27 @@
               </th>
             <% end %>
           <% end %>
+        </tr>
 
-          <% guw_complexity_coefficient_elements = {} %>
-          <% @guw_type.guw_complexity_coefficient_elements.each do |gcce| %>
-            <% guw_complexity_coefficient_elements["#{gcce.guw_complexity_id}_#{gcce.guw_coefficient_element_id}_#{gcce.guw_output_id}"] = (gcce.value.nil? ? nil : gcce.value) %>
-          <% end %>
+        <% guw_complexity_coefficient_elements = {} %>
+        <% @guw_type.guw_complexity_coefficient_elements.each do |gcce| %>
+          <% guw_complexity_coefficient_elements["#{gcce.guw_complexity_id}_#{gcce.guw_coefficient_element_id}_#{gcce.guw_output_id}"] = (gcce.value.nil? ? nil : gcce.value) %>
+        <% end %>
 
-          <% guw_coefficient_elements.each do |guw_coefficient_element| %>
-            <tr>
-              <td>
-                <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>) (<%= guw_coefficient_element.default_display_value %>)
-              </td>
-              <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                <% @guw_outputs.each do |guw_output| %>
-                  <td class="align-center">
-                    <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
-                  </td>
-                <% end %>
+        <% guw_coefficient_elements.each do |guw_coefficient_element| %>
+          <tr>
+            <td style="font-weight: <%= (guw_coefficient_element.default == true) ? 'bolder' : '' %>">
+              <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>) (<%= guw_coefficient_element.default_display_value %>)
+            </td>
+            <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
+              <% @guw_outputs.each do |guw_output| %>
+                <td class="align-center">
+                  <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
+                </td>
               <% end %>
-            </tr>
-
-          <% end %>
-          </td>
+            <% end %>
           </tr>
+        <% end %>
       <% end %>
 
       <% if @guw_model.allow_technology == true %>

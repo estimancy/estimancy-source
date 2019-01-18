@@ -17,32 +17,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#############################################################################
+##############################################################################
 
-#Master Data
-class ProjectCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :organization_id
+module PaperTrail
+  class Version < ActiveRecord::Base
+    # include PaperTrail::VersionConcern
+    attr_accessible :comment, :local_latest_update, :repository_latest_update, :organization_id, :is_model,
+                    :is_group_security, :is_user_security, :is_security_on_model, :is_security_on_created_from_model
 
-
-  has_many :projects
-
-  validates :name, :presence => true
-
-  default_scope { order('name ASC') }
-
-  amoeba do
-    enable
-    exclude_association [:projects]
-    customize(lambda { |original_project_category, new_project_category|
-                new_project_category.copy_id = original_project_category.id
-              })
-  end
-
-  #Search fields
-  scoped_search :on => [:name, :description, :created_at, :updated_at]
-
-  #Override
-  def to_s
-    self.nil? ? '' : self.name
+    belongs_to :organization
   end
 end

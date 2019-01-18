@@ -32,7 +32,7 @@ def estimate_data():
     file_us = open("concord.txt", "w")
     file_us.write(request.form['txt'])
     file_us.close()
-    os.system('python2.7 do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
+    os.system('python do-concord.py -c unitex-fr.yaml -g patterns/motif_data_global.fst2 concord.txt')
     try:
         lines = tuple(open('demo-vision.txt', 'r'))
     except:
@@ -66,6 +66,8 @@ def tranform_userStory (userStory, model_feature, vectorizer):
     vector=vectorizer.transform([meaningful_words])
     vector_features=model_feature.transform(vector).toarray()
     return vector_features
+
+
 
 def clean_text(line):
     line = re.sub("[0-9]", " ", line.replace(",", "").replace("\\","").replace('"', '').replace('|','').replace('\r', '').replace('\n', '')).lower()

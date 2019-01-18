@@ -32,6 +32,7 @@ class View < ActiveRecord::Base
   validates :name, presence: true, uniqueness: { scope: [:organization_id, :pemodule_id], case_sensitive: false }
   validates :organization_id, :pemodule_id, presence: true
 
+  scope :referenced_views, -> { where(is_reference_view: true) }
   scope :activities_wbs, -> {
     where(is_reference_view: true)
   }

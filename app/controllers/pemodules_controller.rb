@@ -308,7 +308,7 @@ class PemodulesController < ApplicationController
     if params[:pemodule_id]
       @pemodule = Pemodule.find(params[:pemodule_id])
       @pemodule_title = @pemodule.title
-      @related_projects = ModuleProject.find_all_by_pemodule_id(@pemodule.id)
+      @related_projects = ModuleProject.where(pemodule_id: @pemodule.id).all
 
     #elsif params[:guw_model_id]
     #  @guw_model = Guw::GuwModel.find(params[:guw_model_id])
@@ -350,7 +350,7 @@ class PemodulesController < ApplicationController
     authorize! :manage_master_data, :all
 
     @pemodule = Pemodule.find(params[:pemodule_id])
-    @related_projects = ModuleProject.find_all_by_pemodule_id(@pemodule.id)
+    @related_projects = ModuleProject.where(pemodule_id: @pemodule.id).all
   end
 
 end

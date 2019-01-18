@@ -64,9 +64,7 @@ class Project < ActiveRecord::Base
   has_many :wbs_project_elements, :through => :pe_wbs_projects
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
-
-  #has_and_belongs_to_many :estimation_statuses
-
+  
   default_scope { order('title ASC, version_number ASC') }
 
   serialize :included_wbs_activities, Array
@@ -423,6 +421,7 @@ class Project < ActiveRecord::Base
                                               position_x: old_view_widget.position_x,
                                               min_value: old_view_widget.min_value,
                                               max_value: old_view_widget.max_value,
+                                              validation_text: old_view_widget.validation_text,
                                               position_y: old_view_widget.position_y)
 
             #Update KPI Widget aquation
@@ -491,7 +490,8 @@ class Project < ActiveRecord::Base
                                                 position_x: old_view_widget.position_x,
                                                 position_y: old_view_widget.position_y,
                                                 min_value: old_view_widget.min_value,
-                                                max_value: old_view_widget.max_value)
+                                                max_value: old_view_widget.max_value,
+                                                validation_text: old_view_widget.validation_text)
               if new_view_widget.save
                 #Update the copied project_fields
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: old_view_widget.id).first

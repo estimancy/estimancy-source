@@ -115,8 +115,8 @@ class PeAttributesController < ApplicationController
     authorize! :manage_master_data, :all
 
     @pe_attribute = PeAttribute.find(params[:pe_attribute_id])
-    @attribute_modules = AttributeModule.find_all_by_pe_attribute_id(@pe_attribute.id)
-    @attribute_organizations = AttributeOrganization.find_all_by_pe_attribute_id(@pe_attribute.id)
+    @attribute_modules = AttributeModule.where(pe_attribute_id: @pe_attribute.id).all
+    @attribute_organizations = AttributeOrganization.where(pe_attribute_id: @pe_attribute.id).all
   end
 
 end

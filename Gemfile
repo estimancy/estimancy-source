@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # gem 'rails', '3.2.22'
-gem 'rails', '~> 4.2.10'
+gem 'rails', '~> 4.2.11'
 
 gem 'jquery-rails', '~> 2.0.2'
 gem 'i18n'
@@ -26,7 +26,7 @@ if File.exist?(database_file)
         when 'mysql2'
           gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
         when /postgres/
-           gem 'pg'
+          gem 'pg'
         else
           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
       end
@@ -39,7 +39,7 @@ else
 end
 
 #For PostgreSQL database
- #gem 'pg'
+#gem 'pg'
 
 gem 'curb'
 
