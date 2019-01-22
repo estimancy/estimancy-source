@@ -435,6 +435,15 @@ public
     redirect_to :back
   end
 
+  def confirm_user
+    @user = User.find(params[:id])
+    if @user.confirmed_at.nil?
+      @user.confirmed_at = DateTime.now
+      @user.save
+    end
+    redirect_to :back
+  end
+
   #Create a inactive user if the demand is ok.
   def create_inactive_user
     #No authorize required since everyone can ask for new account which will be validated by an Admin

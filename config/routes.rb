@@ -122,9 +122,10 @@ Projestimate::Application.routes.draw do
 
   post 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
   post 'export_dashboard' => 'projects#export_dashboard', :as => 'export_dashboard'
-  post 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
+  get 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'
+
 
   resources :password_resets
 
@@ -448,6 +449,8 @@ Projestimate::Application.routes.draw do
   get 'projects_quantity' => 'organizations#projects_quantity'
 
   post 'delete' => 'demands#delete'
+
+  get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
 end
 
