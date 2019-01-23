@@ -2227,6 +2227,7 @@ fr:
   edit_demand: "Modification d'une demande"
   create_demand: "Création d'une demande"
   new_demand: "Création d'une demande"
+  demands_list : "Liste de demandes"
 
   #paramétrage demandes
   setting_demands: "Paramétrage des demandes"

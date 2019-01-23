@@ -2000,6 +2000,8 @@ class OrganizationsController < ApplicationController
     @demand_types = DemandType.where(organization_id: @organization.id).all
     @livrables = Livrable.where(organization_id: @organization.id).all
     @services = Service.where(organization_id: @organization.id).all
+    @allow_demand = Organization.find(params[:allow_demand])
+
   end
 
   def module_estimation

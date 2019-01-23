@@ -45,10 +45,10 @@
             <th><%= I18n.t(:first_name) %></th>
             <th><%= I18n.t(:last_name) %></th>
             <th><%= I18n.t(:login_name) %></th>
+            <th><%= I18n.t(:email) %></th>
             <th><%= I18n.t(:groups) %></th>
 
             <% if current_user.super_admin? %>
-              <th><%= I18n.t(:is_super_admin) %></th>
               <th><%= I18n.t(:Confirmed_at) %></th>
               <th><%= I18n.t(:locked_at)%></th>
             <% end %>
@@ -67,13 +67,19 @@
 
         <% @organization_users.each do |user| %>
           <tr>
-            <td><%= user.first_name %></td>
-            <td><%= user.last_name %></td>
-            <td><%= user.login_name %></td>
+            <% if user.super_admin? %>
+              <td><strong><%= user.first_name %></strong></td>
+              <td><strong><%= user.last_name %></strong></td>
+            <% else %>
+              <td><%= user.first_name %></td>
+              <td><%= user.last_name %></td>
+            <% end %>
+
+            <td><%= user.login_name %>
+            <td><%= user.email %></td>
             <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
 
             <% if current_user.super_admin? %>
-              <td class="center"><%= check_box_tag "is_super_admin", user.super_admin, user.super_admin, disabled: true %></td>
               <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
               <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
             <% end %>

@@ -2171,6 +2171,7 @@ en:
   edit_demand: "Edit Demand"
   create_demand: "Create Demand"
   new_demand: "Create Demand"
+  demands_list : "Demands List"
 
   #paramétrage demande
   setting_demands: "Demands Settings"
