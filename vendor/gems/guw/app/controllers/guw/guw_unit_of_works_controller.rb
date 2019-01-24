@@ -2051,6 +2051,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
   end
 
+
+  def yolo
+    project = Project.where(id: params[:project_id]).first
+    content = params[:content]
+    title = content.truncate(50)
+    url = "localhost:5001"
+    group_name = params[:group_name].to_s
+
+    get_trt_from_chrome(nil, title, content, url, group_name )
+  end
+
   private def get_data(id, title, description, url, default_group, data_type, j)
 
     results = []
@@ -2159,15 +2170,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return results.sort! { |a, b|  b.name <=> a.name }
   end
 
-  def yolo
-    project = Project.where(id: params[:project_id]).first
-    content = params[:content]
-    title = content.truncate(50)
-    url = "localhost:5001"
-    group_name = params[:group_name].to_s
-
-    get_trt_from_chrome(nil, title, content, url, group_name )
-  end
 
   private def get_trt_from_chrome(project, title, content, url, group_name)
 
