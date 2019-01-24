@@ -2174,6 +2174,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     results = []
 
+    module_project = nil
     project.module_projects.each do |mp|
       if mp.guw_model.nil?
         next
