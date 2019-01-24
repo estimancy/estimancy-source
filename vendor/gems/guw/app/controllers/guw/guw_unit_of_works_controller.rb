@@ -2159,6 +2159,94 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     return results.sort! { |a, b|  b.name <=> a.name }
   end
 
+  def yolo
+    project = Project.where(id: params[:project_id]).first
+    content = params[:content]
+    title = content.truncate(50)
+    url = "localhost:5001"
+    group_name = params[:group_name].to_s
+
+    get_trt_from_chrome(nil, title, content, url, group_name )
+  end
+
+  private def get_trt_from_chrome(project, title, content, url, group_name)
+
+    results = []
+
+    module_project = project.module_projects[1]
+    component = current_component
+    guw_model = module_project.guw_model
+    guw_model_guw_attributes = guw_model.guw_attributes
+    organization = guw_model.organization
+    url_server = url
+
+    http = Curl.post("http://#{url_server}/estimate_trt", { us: content } )
+
+    JSON.parse(http.body_str).each do |output|
+
+
+      guw_group = Guw::GuwUnitOfWorkGroup.where(organization_id: organization.id,
+                                                project_id: project.id,
+                                                module_project_id: module_project.id,
+                                                pbs_project_element_id: component.id,
+                                                name: group_name).first_or_create
+
+      unless output.blank? || output == "NULL"
+        guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+      else
+        guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+        if guw_type.nil?
+          guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+        end
+      end
+
+      results << Guw::GuwUnitOfWork.create(name: title.blank? ? description.truncate(50) : title,
+                                           comments: description,
+                                           guw_unit_of_work_group_id: @guw_group.id,
+                                           organization_id: @organization.id,
+                                           project_id: @project.id,
+                                           module_project_id: module_project.id,
+                                           pbs_project_element_id: component.id,
+                                           guw_model_id: @guw_model.id,
+                                           display_order: nil,
+                                           tracking: "",
+                                           quantity: 1,
+                                           selected: true,
+                                           guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                           url: url)
+
+      results.each do |uo|
+        guw_model_guw_attributes.all.each do |gac|
+          guowa = Guw::GuwUnitOfWorkAttribute.where(guw_type_id: uo.guw_type_id,
+                                                    guw_attribute_id: gac.id,
+                                                    guw_unit_of_work_id: uo.id).first_or_create
+
+          if gac.name == "DET"
+            guowa.low = 10
+            guowa.most_likely = 10
+            guowa.high = 10
+            guowa.comments = "-"
+          elsif gac.name == "FTR"
+            guowa.low = 2
+            guowa.most_likely = 2
+            guowa.high = 2
+          else
+            guowa.low = 0
+            guowa.most_likely = 0
+            guowa.high = 0
+          end
+
+          guowa.save
+        end
+      end
+
+    end
+
+    return results.sort! { |a, b|  b.name <=> a.name }
+
+  end
+
+
   private def get_trt(id, title, description, url, default_group, trt_type)
     module_project = current_module_project
     component = current_component

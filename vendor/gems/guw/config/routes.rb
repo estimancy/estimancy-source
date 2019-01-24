@@ -113,6 +113,8 @@ Guw::Engine.routes.draw do
   post "ml_data" => "guw_unit_of_works#ml_data", as: "ml_data"
   post "extract_from_url" => "guw_unit_of_works#extract_from_url", as: "extract_from_url"
 
+  post "yolo" => "guw_unit_of_works#yolo", as: "yolo"
+
   post "save_uo" => "guw_unit_of_works#save_uo", as: "save_uo"
   post "save_uo_with_multiple_outputs" => "guw_unit_of_works#save_uo_with_multiple_outputs", as: "save_uo_with_multiple_outputs"
 
