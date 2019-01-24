@@ -2178,15 +2178,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
     module_project = project.module_projects[0]
-    if module_project.nil?
-      module_project = project.module_projects[1]
-      if module_project.nil?
-        module_project = project.module_projects[2]
-      end
-    end
-
     component = current_component
-    guw_model = module_project.guw_model
+
+    # guw_model = module_project.guw_model
+    guw_model = Guw::GuwModel.find(153)
+
     guw_model_guw_attributes = guw_model.guw_attributes
     organization = guw_model.organization
     url_server = url
