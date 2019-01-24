@@ -2160,13 +2160,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def yolo
-    project = Project.find(2187)
+    project = Project.find(params[:project_id].to_i)
     content = params[:content]
     title = content.truncate(50)
     url = "localhost:5001"
     group_name = params[:group_name].to_s
 
-    get_trt_from_chrome(nil, title, content, url, group_name )
+    get_trt_from_chrome(project, title, content, url, group_name )
   end
 
   private def get_trt_from_chrome(project, title, content, url, group_name)
