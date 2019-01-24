@@ -2168,21 +2168,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     get_trt_from_chrome(project, title, content, url, group_name)
 
-    redirect_to root_url
   end
 
   private def get_trt_from_chrome(project, title, content, url, group_name)
 
     results = []
 
+    project.module_projects.each do |mp|
+      if mp.guw_model.nil?
+        next
+      else
+        module_project = mp
+        break
+      end
+    end
 
-
-    module_project = project.module_projects[0]
-    component = current_component
-
-    # guw_model = module_project.guw_model
-    guw_model = Guw::GuwModel.find(153)
-
+    guw_model = module_project.guw_model
+    component = project.pbs_project_elements.first
     guw_model_guw_attributes = guw_model.guw_attributes
     organization = guw_model.organization
     url_server = url
