@@ -2160,7 +2160,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   def yolo
-    project = Project.find(params[:project_id].to_i)
+    project = Project.find(2187)
     content = params[:content]
     title = content.truncate(50)
     url = "localhost:5001"
