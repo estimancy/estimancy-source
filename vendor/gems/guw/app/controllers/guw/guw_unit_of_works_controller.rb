@@ -2202,8 +2202,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      results << Guw::GuwUnitOfWork.create(name: title.blank? ? description.truncate(50) : title,
-                                           comments: description,
+      results << Guw::GuwUnitOfWork.create(name: title.blank? ? content.truncate(50) : title,
+                                           comments: content,
                                            guw_unit_of_work_group_id: guw_group.id,
                                            organization_id: organization.id,
                                            project_id: project.id,
