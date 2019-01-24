@@ -256,3 +256,5 @@ gem 'biz'
 
 gem 'carrierwave', '~> 1.2.3'
 gem 'bootstrap-sass', '~> 3.3.7'
+
+gem 'rack-cors', require: 'rack/cors'

@@ -86,4 +86,12 @@ Projestimate::Application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default :charset => "utf-8"
 
+  config.middleware.insert_before 0, "Rack::Cors" do
+    allow do
+      origins '*'
+      resource '*', headers: :any, methods: [:get, :post, :options]
+    end
+  end
+
+
 end
