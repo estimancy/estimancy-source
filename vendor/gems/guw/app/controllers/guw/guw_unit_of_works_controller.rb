@@ -2166,7 +2166,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     url = "localhost:5001"
     group_name = params[:group_name].to_s
 
-    get_trt_from_chrome(project, title, content, url, group_name )
+    get_trt_from_chrome(project, title, content, url, group_name)
+
+    redirect_to root_url
   end
 
   private def get_trt_from_chrome(project, title, content, url, group_name)
@@ -2192,27 +2194,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                 name: group_name).first_or_create
 
       unless output.blank? || output == "NULL"
-        guw_type = Guw::GuwType.where(name: output, guw_model_id: @guw_model.id).first
+        guw_type = Guw::GuwType.where(name: output, guw_model_id: guw_model.id).first
       else
-        guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id, is_default: true).first
+        guw_type = Guw::GuwType.where(guw_model_id: guw_model.id, is_default: true).first
         if guw_type.nil?
-          guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
+          guw_type = Guw::GuwType.where(guw_model_id: guw_model.id).last
         end
       end
 
       results << Guw::GuwUnitOfWork.create(name: title.blank? ? description.truncate(50) : title,
                                            comments: description,
-                                           guw_unit_of_work_group_id: @guw_group.id,
-                                           organization_id: @organization.id,
-                                           project_id: @project.id,
+                                           guw_unit_of_work_group_id: guw_group.id,
+                                           organization_id: organization.id,
+                                           project_id: project.id,
                                            module_project_id: module_project.id,
                                            pbs_project_element_id: component.id,
-                                           guw_model_id: @guw_model.id,
+                                           guw_model_id: guw_model.id,
                                            display_order: nil,
                                            tracking: "",
                                            quantity: 1,
                                            selected: true,
-                                           guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                           guw_type_id: guw_type.nil? ? nil : guw_type.id,
                                            url: url)
 
       results.each do |uo|
