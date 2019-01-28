@@ -206,7 +206,7 @@
                   <td>
                     <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
                   </td>
-                  <td>
+                  <td class="center span1">
                     <%= link_to service.name, "#", title: service.description %>
                     <%= hidden_field_tag "service_#{service.id}", service.id %>
                   </td>
@@ -251,7 +251,7 @@
                       <span class="fa fa-circle <%= color %>"></span>
                     <% end %>
                   </td>
-                  <td>
+                  <td class="center span3">
                     <%= link_to sdl_service_livrable, "#", title: sdl_service_livrable.description %>
                   </td>
                   <td class="center">
