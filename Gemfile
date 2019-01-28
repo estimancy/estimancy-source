@@ -261,4 +261,4 @@ gem 'rack-cors', require: 'rack/cors'
 
 
 #AppSignal
-gem 'appsignal'
+# gem 'appsignal'

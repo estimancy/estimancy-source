@@ -148,7 +148,7 @@
 
     <div class="row-fluid">
       <div class="span12">
-        <%= link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
+        <%# link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
                     method: :delete,
                     :class => 'btn btn-danger pull-right',
                     :title => I18n.t('delete') %>
@@ -193,7 +193,12 @@
             </th>
           </tr>
           </thead>
-          <% @organization.services.each do |service| %>
+          <% if @demand.demand_type == "ANO" %>
+            <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
+          <% else %>
+            <% @organization_services = @organization.services %>
+          <% end %>
+          <% @organization_services.each do |service| %>
             <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                                  service_id: service.id,
                                                  demand: @demand.id).first %>
@@ -206,7 +211,7 @@
                   <td>
                     <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
                   </td>
-                  <td>
+                  <td class="center span1">
                     <%= link_to service.name, "#", title: service.description %>
                     <%= hidden_field_tag "service_#{service.id}", service.id %>
                   </td>
@@ -251,7 +256,7 @@
                       <span class="fa fa-circle <%= color %>"></span>
                     <% end %>
                   </td>
-                  <td>
+                  <td class="center span3">
                     <%= link_to sdl_service_livrable, "#", title: sdl_service_livrable.description %>
                   </td>
                   <td class="center">
