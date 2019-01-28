@@ -2142,6 +2142,7 @@ class OrganizationsController < ApplicationController
 
   end
 
+
   private def check_for_projects(start_number, desired_size)
 
     organization_estimations = @organization.organization_estimations
@@ -3788,6 +3789,5 @@ class OrganizationsController < ApplicationController
                   }) and return
     end
   end
-
 
 end
