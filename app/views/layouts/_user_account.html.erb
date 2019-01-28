@@ -19,9 +19,9 @@
         </ul>
     </li>
     <% else %>
-    <li class="navbar-item">
-      <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-        Liste des devis
+    <li class="navbar-item ">
+      <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %> ">
+        <i class="icon-list" ></i>
       </a>
     </li>
     <% end %>
