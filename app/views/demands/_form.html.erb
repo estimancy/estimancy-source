@@ -193,7 +193,12 @@
             </th>
           </tr>
           </thead>
-          <% @organization.services.each do |service| %>
+          <% if @demand.demand_type == "ANO" %>
+            <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
+          <% else %>
+            <% @organization_services = @organization.services %>
+          <% end %>
+          <% @organization_services.each do |service| %>
             <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                                  service_id: service.id,
                                                  demand: @demand.id).first %>
