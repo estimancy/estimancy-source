@@ -13,7 +13,11 @@
 
       <div id="display_copy_message" style="display: none; text-align: center">
           <p id="syncStarted" style="display:none">
-            <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
+            <strong>
+              <h4 style="color: green">
+                La copie de l'organisation a démaré, merci de patienter...
+              </h4>
+            </strong>
           </p>
       </div>
     <% end %>
@@ -52,7 +56,6 @@
                     <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
 
                     <% if can? :manage, Organization %>
-                      <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window_copy_organization"}  %>
                       <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST") %>
                     <% end %>
                 <% else %>
