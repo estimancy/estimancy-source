@@ -48,7 +48,7 @@ class Ability
       organization_projects = projects.compact
 
       organization_estimation_statuses = organization.estimation_statuses
-      user_groups = user.groups
+      user_groups = user.groups.where(organization_id: organization.id)
 
       # Add Action Aliases, for example:  alias_action :edit, :to => :update
 
@@ -78,10 +78,10 @@ class Ability
       alias_action :show_modules_instances, :to => :manage_modules_instances
 
       #Load user groups permissions
-      if user && !user_groups.where(organization_id: organization.id).empty?
+      if user && !user_groups.empty?
         permissions_array = []
 
-        user_groups.where(organization_id: organization.id).includes(:permissions).map do |grp|
+        user_groups.includes(:permissions).map do |grp|
           grp.permissions.map do |i|
             if i.object_associated.blank?
               permissions_array << [i.alias.to_sym, :all]
@@ -196,7 +196,7 @@ class Ability
           end
         end
 
-        user_groups.where(organization_id: organization.id).each do |grp|
+        user_groups.each do |grp|
           prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(group_id: grp.id,
                                                                                         is_model_permission: false,
                                                                                         is_estimation_permission: true).all

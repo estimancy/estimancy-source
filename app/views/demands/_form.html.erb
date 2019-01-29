@@ -148,10 +148,13 @@
 
     <div class="row-fluid">
       <div class="span12">
-        <%# link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
-                    method: :delete,
-                    :class => 'btn btn-danger pull-right',
-                    :title => I18n.t('delete') %>
+        <% begin %>
+          <%= link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
+                      method: :delete,
+                      :class => 'btn btn-danger pull-right',
+                      :title => I18n.t('delete') %>
+        <% rescue %>
+        <% end %>
       </div>
     </div>
   </div>
@@ -169,12 +172,6 @@
             </th>
             <th class="center">
               Demandes
-            </th>
-            <th class="center">
-              Livrables
-            </th>
-            <th class="center">
-              Date contract.
             </th>
             <th class="center">
               Date attendue
@@ -208,14 +205,14 @@
                 <% sdl_service_livrable = sdl.service.livrable %>
                 <tbody>
                 <tr>
-                  <td>
+                  <td class="center">
                     <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
                   </td>
-                  <td class="center span1">
+                  <td class="center">
                     <%= link_to service.name, "#", title: service.description %>
                     <%= hidden_field_tag "service_#{service.id}", service.id %>
                   </td>
-                  <td class="center span1">
+                  <td class="center">
                     <% if "Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name)) %>
                       <% color = "" %>
                       <% project = @demand.projects.first %>
@@ -256,16 +253,6 @@
                       <span class="fa fa-circle <%= color %>"></span>
                     <% end %>
                   </td>
-                  <td class="center span3">
-                    <%= link_to sdl_service_livrable, "#", title: sdl_service_livrable.description %>
-                  </td>
-                  <td class="center">
-                    <% unless sdl.actual_date.nil? %>
-                      <%= text_field_tag "contract_date[#{service.id}]", sdl.contract_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
-                    <% else %>
-                      <%= text_field_tag "contract_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
-                    <% end %>
-                  </td>
                   <td class="center">
                     <% unless sdl.actual_date.nil? %>
                       <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
@@ -280,12 +267,12 @@
                       <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
                     <% end %>
                   </td>
-                  <td class="span1 center">
+                  <td class="center">
                     <% unless sdl_service_livrable.nil? || sdl.nil? %>
                       <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
                     <% end %>
                   </td>
-                  <td class="span1 center">
+                  <td class="center">
                     <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
                       <span class="fa fa-circle red"></span>
                     <% else %>
@@ -296,7 +283,7 @@
                       <% end %>
                     <% end %>
                   </td>
-                  <td class="span1 center">
+                  <td class="center">
                     <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
                       <% if sdl.actual_date > sdl.expected_date %>
                         <span class="fa fa-circle red"></span>
