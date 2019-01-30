@@ -1103,6 +1103,7 @@ class ProjectsController < ApplicationController
     @project_categories = @organization.project_categories
     @providers = @organization.providers
 
+
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
