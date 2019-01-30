@@ -1617,7 +1617,7 @@ module ViewsWidgetsHelper
 
     res << "<th colspan='#{colspan}'>
               <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?("cost", "theoretical_cost") ? "(#{@project.organization.currency})" : ''}
+                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"]) ? "(#{@project.organization.currency})" : ''}
               </span>
             </th>"
 
