@@ -88,11 +88,11 @@
         <%= I18n.t(:number_of_uw_selected_lines) %> :
         <span class="selected_of_unit_of_work">
           <%
-             @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
-             @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups
+            @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+            @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups
           %>
           <%=
-              "#{@current_module_project_guw_unit_of_works.where(selected: true).size} /
+            "#{@current_module_project_guw_unit_of_works.where(selected: true).size} /
               #{@current_module_project_guw_unit_of_works.size}"
           %>
         </span>
@@ -178,9 +178,9 @@
                   Total <%= guw_output.name %> R. :
                   <span>
                     <%= [
-                          @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
-                            i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
-                          end
+                            @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
+                              i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
+                            end
                         ].flatten.compact.sum.to_f.round(3) %>
                   </span>
                 </span>
@@ -191,9 +191,9 @@
                   Total <%= guw_output.name %> T. :
                   <span>
                     <%= [
-                          @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
-                            i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
-                          end
+                            @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
+                              i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
+                            end
                         ].flatten.compact.sum.to_f.round(3) %>
                   </span>
                 </span>
@@ -220,7 +220,7 @@
               <th></th>
               <th>#</th>
               <th><%= I18n.t :name %></th>
-              <th>Composant</th>
+              <th><% I18n.t(:component) %></th>
 
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
@@ -248,9 +248,9 @@
                     <% else %>
                       <th>
                         <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          Coeff. de complexité
+                          <% I18n.t(:cplx_coeff) %>
                         <% else %>
-                          Complexité
+                          <% I18n.t(:complexity) %>
                         <% end %>
                       </th>
                     <% end %>
@@ -290,7 +290,7 @@
                 <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
               </tr>
 
-           <% end %>
+            <% end %>
           </table>
           <% if can? :execute_estimation_plan, @project %>
             <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
@@ -314,25 +314,25 @@
   <% end %>
 
   <script>
-    var my_array = [];
-    $(document).ready(function(){
-      $(".new_guw_button").on('click', function(e){
-        $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
-        $("#hidden_position").val($(this).data("display-order"));
-      });
+      var my_array = [];
+      $(document).ready(function(){
+          $(".new_guw_button").on('click', function(e){
+              $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
+              $("#hidden_position").val($(this).data("display-order"));
+          });
 
-      $("table#guw input").keyup(function(e) {
-        var new_line = $(this).closest("tr").data("guw-id");
-        my_array.push(new_line);
-        $("#modified_guw_line_ids").val(my_array);
-      });
+          $("table#guw input").keyup(function(e) {
+              var new_line = $(this).closest("tr").data("guw-id");
+              my_array.push(new_line);
+              $("#modified_guw_line_ids").val(my_array);
+          });
 
-      $("table#guw select").on("change", function(e) {
-        var new_line = $(this).closest("tr").data("guw-id");
-        my_array.push(new_line);
-        $("#modified_guw_line_ids").val(my_array);
+          $("table#guw select").on("change", function(e) {
+              var new_line = $(this).closest("tr").data("guw-id");
+              my_array.push(new_line);
+              $("#modified_guw_line_ids").val(my_array);
+          });
       });
-    });
   </script>
 
 <% end %>
@@ -368,70 +368,70 @@
 </style>
 
 <script>
-  function raz(group){
-    $('.retained-gp-' + group).val('');
-    return false; // prevent default click action from happening!
-    e.preventDefault();
-  }
-
-  function raz_line(uo){
-    $('.retained-guw-' + uo).val('');
-    return false; // prevent default click action from happening!
-    e.preventDefault();
-  }
-
-  function multiraz(uo){
-    $('.retained').val('');
-    return false; // prevent default click action from happening!
-    e.preventDefault();
-  }
-
-  function reset(uo){
-    $('.guw-' + uo).val('');
-    return false; // prevent default click action from happening!
-    e.preventDefault();
-  }
-
-  function toggle_group(group_id){
-    var number_of_checked = 0;
-    var number_of_line = 0;
-
-    $(".checkbox_" + group_id).each(function() {
-      if (this.checked)
-        number_of_checked = number_of_checked + 1;
-      number_of_line = number_of_line + 1
-    });
-    if (number_of_checked < number_of_line){
-      $(".checkbox_" + group_id).attr("checked", true);
+    function raz(group){
+        $('.retained-gp-' + group).val('');
+        return false; // prevent default click action from happening!
+        e.preventDefault();
     }
-    else if (number_of_checked == number_of_line){
-      $(".checkbox_" + group_id).attr("checked", false);
+"Coefficient"
+    function raz_line(uo){
+        $('.retained-guw-' + uo).val('');
+        return false; // prevent default click action from happening!
+        e.preventDefault();
     }
-  }
 
-  $(document).ready(function () {
+    function multiraz(uo){
+        $('.retained').val('');
+        return false; // prevent default click action from happening!
+        e.preventDefault();
+    }
 
-    $('.selected').change(function(){
-      $.ajax({
-        url: "<%= guw.change_selected_state_path %>",
-        data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
-      });
-    });
+    function reset(uo){
+        $('.guw-' + uo).val('');
+        return false; // prevent default click action from happening!
+        e.preventDefault();
+    }
 
-    $('.guw_type').change(function(){
-      reset($(this).attr("guw"));
+    function toggle_group(group_id){
+        var number_of_checked = 0;
+        var number_of_line = 0;
 
-      $.ajax({
-        url: "<%= guw.change_cotation_path %>",
-        data: {
-          guw_type_id: this.value,
-          guw_unit_of_work_id: $(this).attr("guw")
+        $(".checkbox_" + group_id).each(function() {
+            if (this.checked)
+                number_of_checked = number_of_checked + 1;
+            number_of_line = number_of_line + 1
+        });
+        if (number_of_checked < number_of_line){
+            $(".checkbox_" + group_id).attr("checked", true);
         }
-      });
+        else if (number_of_checked == number_of_line){
+            $(".checkbox_" + group_id).attr("checked", false);
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('.selected').change(function(){
+            $.ajax({
+                url: "<%= guw.change_selected_state_path %>",
+                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
+            });
+        });
+
+        $('.guw_type').change(function(){
+            reset($(this).attr("guw"));
+
+            $.ajax({
+                url: "<%= guw.change_cotation_path %>",
+                data: {
+                    guw_type_id: this.value,
+                    guw_unit_of_work_id: $(this).attr("guw")
+                }
+            });
+        });
+
+
     });
-
-
-  });
 </script>
 
 <div class="modal hide fade" id="modal_cotation" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
@@ -478,24 +478,24 @@
 </div>
 
 <!--<div class="modal hide fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel">-->
-  <!--<div class="modal-dialog" role="document">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header modal-drag">-->
-        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-        <!--<h4 class="modal-title">Statistiques détaillés</h4>-->
-      <!--</div>-->
-      <!--<div class="modal-body">-->
-        <%# begin %>
-          <%# render partial: "guw/guw_unit_of_works/details" %>
-        <%# rescue %>
-          <!--Une erreur est survenue lors de l'affichage des statistiques détaillées-->
-        <%# end %>
-      <!--</div>-->
-      <!--<div class="modal-footer">-->
-        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
+<!--<div class="modal-dialog" role="document">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header modal-drag">-->
+<!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+<!--<h4 class="modal-title">Statistiques détaillés</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<%# begin %>
+<%# render partial: "guw/guw_unit_of_works/details" %>
+<%# rescue %>
+<!--Une erreur est survenue lors de l'affichage des statistiques détaillées-->
+<%# end %>
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 
 <%#= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
@@ -506,17 +506,17 @@
     <div class="modal-content">
       <div class="modal-header modal-drag">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modèle de données</h4>
+        <h4 class="modal-title"><% I18n.t(:data_model) %></h4>
       </div>
       <div class="modal-body">
         <% begin %>
-            <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
+          <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
         <% rescue %>
-            Une erreur est survenue lors de l'affichage du modèle de données
+          <% I18n.t(:data_model_display_error) %>
         <% end %>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
       </div>
     </div>
   </div>
@@ -531,7 +531,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Importer les traitements
+            <% I18n.t(:treatments_import) %>
           </h4>
         </div>
 
@@ -540,13 +540,14 @@
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-            Importer un fichier Excel (xlsx uniquement)
+            <% I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %>
+          </button>
           <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
         </div>
 
@@ -563,7 +564,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Création d'un composant ou service
+            <% I18n.t(:component_serv_creation) %>
           </h4>
         </div>
 
@@ -580,38 +581,38 @@
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
                 <p>
-                  <h5>
-                    <%= I18n.t(:uw_name) %>
-                  </h5>
-                  <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
+                <h5>
+                  <%= I18n.t(:uw_name) %>
+                </h5>
+                <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
                 </p>
 
                 <p>
-                  <h5>
-                    <%= I18n.t(:comments) %>
-                  </h5>
-                  <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
+                <h5>
+                  <%= I18n.t(:comments) %>
+                </h5>
+                <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
                 </p>
 
                 <p>
-                  <h5>
-                    <%= I18n.t(:type) %>
-                  </h5>
-                  <% unless @guw_types.nil? %>
-                    <%= select_tag :guw_type_id,
-                                   options_for_select(@guw_types.map{|i| [i.name, i.id]}),
-                                   include_blank: false,
-                                   class: "input-xlarge uo_type" %>
-                  <% end %>
+                <h5>
+                  <%= I18n.t(:type) %>
+                </h5>
+                <% unless @guw_types.nil? %>
+                  <%= select_tag :guw_type_id,
+                                 options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+                                 include_blank: false,
+                                 class: "input-xlarge uo_type" %>
+                <% end %>
                 </p>
 
                 <p>
-                  <h5>
-                    <%= I18n.t(:group) %>
-                  </h5>
-                  <%= select_tag :guw_unit_of_work_group_id,
-                                 options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
-                                 class: "input-xlarge" %>
+                <h5>
+                  <%= I18n.t(:group) %>
+                </h5>
+                <%= select_tag :guw_unit_of_work_group_id,
+                               options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
+                               class: "input-xlarge" %>
                 </p>
               </div>
             </div>
@@ -681,22 +682,22 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            Importer les données
+
           </h4>
         </div>
 
         <div class="modal-body" style="height: inherit;">
 
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
-
+          <% I18n.t(:data_import) %>
           <h5>
-            Importer un fichier Excel (xlsx uniquement)
+            <% I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
           <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
         </div>
 
@@ -711,94 +712,94 @@
     <div class="modal-content">
       <%= form_tag guw.extract_from_url_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
-          <div class="modal-header modal-drag">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">
-              Importer les exigences
-            </h4>
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">
+            <% I18n.t(:requirements_import) %>
+          </h4>
+        </div>
+
+        <div class="modal-body" style="height: inherit;">
+
+          <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+
+          <h5><% I18n.t(:import_type) %></h5>
+          <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
+
+          <h5><% I18n.t(:source_type) %></h5>
+
+          <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+            <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+            <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+            <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
+            <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+            <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+            <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+            <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% else %>
+            <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
+          <% end %>
+
+          <div class ="hide" id="file-block" >
+            <h5>
+              <% I18n.t(:excel_file_import) %>
+            </h5>
+            <%= file_field_tag :file %>
+          </div >
+
+          <div class="hide" id="url-block">
+            <h5>
+              <% I18n.t(:request_list_links) %>
+            </h5>
+            <%= text_field_tag :url, "", class: "span8" %>
           </div>
 
-          <div class="modal-body" style="height: inherit;">
+          <div class="hide" id="type-block">
+            <h5><% I18n.t(:component_type_identified_by_AI) %></h5>
 
-            <%= hidden_field_tag "guw_model_id", @guw_model.id %>
-
-            <h5>Type d'import</h5>
-            <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
-
-            <h5>Type de source</h5>
-
-            <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% else %>
-              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% end %>
-
-            <div class ="hide" id="file-block" >
-              <h5>
-                Importer un fichier Excel (xlsx uniquement)
-              </h5>
-              <%= file_field_tag :file %>
-            </div >
-
-            <div class="hide" id="url-block">
-              <h5>
-                Liens de la liste des demandes
-              </h5>
-              <%= text_field_tag :url, "", class: "span8" %>
+            <div id="excel-type-block">
+              <% if @guw_model.allow_ml_excel == false %>
+                <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+              <% else %>
+                <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+              <% end %>
             </div>
 
-            <div class="hide" id="type-block">
-              <h5>Types de composant à identifier par l'IA</h5>
-
-              <div id="excel-type-block">
-                <% if @guw_model.allow_ml_excel == false %>
-                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
-              </div>
-
-              <div id="jira-type-block">
-                <% if @guw_model.allow_ml_jira == false %>
-                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
-              </div>
-
-              <div id="redmine-type-block">
-                <% if @guw_model.allow_ml_redmine == false %>
-                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
-              </div>
-
+            <div id="jira-type-block">
+              <% if @guw_model.allow_ml_jira == false %>
+                <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+              <% else %>
+                <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+              <% end %>
             </div>
-            <div id ="groups-block" class="hide">
-              <h5>
-                Groupe d'accueil
-              </h5>
-              <%= text_field_tag :group_name, "", class: "span8" %>
+
+            <div id="redmine-type-block">
+              <% if @guw_model.allow_ml_redmine == false %>
+                <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+              <% else %>
+                <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+              <% end %>
             </div>
+
           </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+          <div id ="groups-block" class="hide">
+            <h5>
+              <% I18n.t(:host_group) %>
+            </h5>
+            <%= text_field_tag :group_name, "", class: "span8" %>
           </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+        </div>
 
       <% end %>
 
@@ -815,77 +816,77 @@
 //              }
 //            });
 
-            $(".up,.down").click(function() {
-              var row = $(this).parents("tr.movable:first");
+              $(".up,.down").click(function() {
+                  var row = $(this).parents("tr.movable:first");
 
-              var firstrow = $('table tr.movable:first');
+                  var firstrow = $('table tr.movable:first');
 
-              if ($(this).is(".up") && row.prevAll().length > 1) {
-                row.insertBefore(row.prev());
-              }
-              else if ($(this).is(".down") && row.nextAll().length > 0) {
-                row.insertAfter(row.next());
-              }
-              else {
-                return false;
-              }
-            });
+                  if ($(this).is(".up") && row.prevAll().length > 1) {
+                      row.insertBefore(row.prev());
+                  }
+                  else if ($(this).is(".down") && row.nextAll().length > 0) {
+                      row.insertAfter(row.next());
+                  }
+                  else {
+                      return false;
+                  }
+              });
 
-            $("#from").on("change",function(){
-                if (this.value == "") {
-                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#groups-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
+              $("#from").on("change",function(){
+                  if (this.value == "") {
+                      $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
-                }
+                  }
 
-                else if (this.value == "Excel") {
-                    $("#file-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#excel-type-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                  else if (this.value == "Excel") {
+                      $("#file-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#excel-type-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
-                  <% if !@guw_model.excel_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                } else if (this.value == "Jira") {
-                  $("#url-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#jira-type-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      <% if !@guw_model.excel_ml_server.blank? %>
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
+                      <% else %>
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      <% end %>
+                  } else if (this.value == "Jira") {
+                      $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#jira-type-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
 
 
-                  <% if !@guw_model.jira_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                } else if (this.value == "Redmine") {
+                      <% if !@guw_model.jira_ml_server.blank? %>
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
+                      <% else %>
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      <% end %>
+                  } else if (this.value == "Redmine") {
 
-                  $("#url-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#redmine-type-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#url-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
+                      $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      $("#redmine-type-block").show().find('input, textarea, select').prop('disabled', false);
 
-                  <% if !@guw_model.redmine_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                }
-            });
+                      <% if !@guw_model.redmine_ml_server.blank? %>
+                      $("#type-block").show().find('input, textarea, select').prop('disabled', false);
+                      <% else %>
+                      $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
+                      <% end %>
+                  }
+              });
           });
       </script>
 
@@ -895,23 +896,23 @@
 
 <div id="import_guw" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <%= form_tag guw.import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-      <div class="modal-header modal-drag">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
-      </div>
-      <div class="modal-body">
-        <%= file_field_tag :file %>
+    <div class="modal-header modal-drag">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
+    </div>
+    <div class="modal-body">
+      <%= file_field_tag :file %>
 
-        <div class="loading span11 hide">
-          <h4>
-            <%= I18n.t(:please_wait_import) %>
-            <%= image_tag 'ajax-loader.gif' %>
-          </h4>
-        </div>
+      <div class="loading span11 hide">
+        <h4>
+          <%= I18n.t(:please_wait_import) %>
+          <%= image_tag 'ajax-loader.gif' %>
+        </h4>
       </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer !</button>
-        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true"><% I18n.t(:close) %></button>
+      <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+    </div>
   <% end %>
 </div>

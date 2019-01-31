@@ -19,6 +19,8 @@
       <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xxlarge'} %>
       <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xxlarge'} %>
 
+      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" , :input_html => {:class => 'input-xlarge'} %>
+
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
       <div class="actions-tabs">

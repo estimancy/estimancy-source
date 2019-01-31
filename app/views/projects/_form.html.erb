@@ -210,8 +210,7 @@
       <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
       <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_categories, @project))  || can_alter_model) %>
       <%= f.association :provider, :label => "#{I18n.t 'provider'}", :as => :select, :collection => @providers, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
-      <%= f.input :private, :label => I18n.t(:urgent_project) %>
-
+      <%= f.input :urgent_project, :label => I18n.t(:urgent_project) %>
 
 
       <div class="actions-tabs">
