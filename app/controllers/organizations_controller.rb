@@ -2063,7 +2063,7 @@ class OrganizationsController < ApplicationController
     @search_string = ""
     final_results = []
 
-    # Pour garder le tri même lors du raffraichissement de la page
+    # Pour garder le tri même lors du rafraichissement de la page
     projects = @organization.projects.where(:is_model => [nil, false])
     organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
 
