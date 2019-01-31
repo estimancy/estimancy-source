@@ -8,12 +8,12 @@
         <ul class="dropdown-menu">
           <li class="dropdown">
             <a href="<%= main_app.organization_demands_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-              Liste des demandes
+              <%= I18n.t(:liste_des_demandes) %>
             </a>
           </li>
           <li class="dropdown">
             <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-              Liste des devis
+              <%= I18n.t(:liste_des_estimations) %>
             </a>
           </li>
         </ul>
@@ -93,19 +93,19 @@
           </li>
           <li class="dropdown">
             <a href="<%= main_app.organization_setting_path(@current_organization)%>">
-              Paramétrage des devis
+              <%= I18n.t(:setting_estimations) %>
             </a>
           </li>
           <% if @current_organization.allow_demand == true %>
             <li class="dropdown">
               <a href="<%= main_app.organization_setting_demand_path(@current_organization)%>">
-                <%= I18n.t(:setting_demands)%>
+                <%= I18n.t(:setting_demands) %>
               </a>
             </li>
           <% end %>
           <li class="dropdown">
             <a href="<%= main_app.organization_module_estimation_path(@current_organization)%>">
-              <%= I18n.t(:projestimate_module)%>
+              <%= I18n.t(:projestimate_module) %>
             </a>
           </li>
 

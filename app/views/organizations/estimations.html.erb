@@ -27,7 +27,7 @@
               <% end %>
 
               <% unless "saas".in?(request.original_url) %>
-                <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+                <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
               <% end %>
 
             </td>
