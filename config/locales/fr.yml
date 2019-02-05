@@ -2276,7 +2276,7 @@ fr:
   data_import: "Importer les données"
   requirements_import: "Importer les exigences"
   import_type: "Type d'import"
-  source_type: "Typde de source"
+  source_type: "Type de de source"
   request_list_links: "Liens de la liste des demandes"
   component_type_identified_by_AI: "Types de composant à identifier par l'IA"
   host_group: "Groupe d'accueil"

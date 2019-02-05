@@ -540,7 +540,7 @@
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-            <% I18n.t(:excel_file_import) %>
+            <%= I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
@@ -564,7 +564,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            <% I18n.t(:component_serv_creation) %>
+            <%= I18n.t(:component_serv_creation) %>
           </h4>
         </div>
 
@@ -689,9 +689,9 @@
         <div class="modal-body" style="height: inherit;">
 
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
-          <% I18n.t(:data_import) %>
+          <%= I18n.t(:data_import) %>
           <h5>
-            <% I18n.t(:excel_file_import) %>
+            <%= I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
@@ -715,7 +715,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            <% I18n.t(:requirements_import) %>
+            <%= I18n.t(:requirements_import) %>
           </h4>
         </div>
 
@@ -723,10 +723,10 @@
 
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
-          <h5><% I18n.t(:import_type) %></h5>
+          <h5><%= I18n.t(:import_type) %></h5>
           <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
 
-          <h5><% I18n.t(:source_type) %></h5>
+          <h5><%= I18n.t(:source_type) %></h5>
 
           <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
             <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
@@ -748,20 +748,22 @@
 
           <div class ="hide" id="file-block" >
             <h5>
-              <% I18n.t(:excel_file_import) %>
+              <%= I18n.t(:excel_file_import) %>
             </h5>
             <%= file_field_tag :file %>
           </div >
 
           <div class="hide" id="url-block">
             <h5>
-              <% I18n.t(:request_list_links) %>
+              <%= I18n.t(:request_list_links) %>
             </h5>
             <%= text_field_tag :url, "", class: "span8" %>
           </div>
 
           <div class="hide" id="type-block">
-            <h5><% I18n.t(:component_type_identified_by_AI) %></h5>
+            <h5>
+              <%= I18n.t(:component_type_identified_by_AI) %>
+            </h5>
 
             <div id="excel-type-block">
               <% if @guw_model.allow_ml_excel == false %>
@@ -790,7 +792,7 @@
           </div>
           <div id ="groups-block" class="hide">
             <h5>
-              <% I18n.t(:host_group) %>
+              <%= I18n.t(:host_group) %>
             </h5>
             <%= text_field_tag :group_name, "", class: "span8" %>
           </div>
