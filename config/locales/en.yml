@@ -2174,7 +2174,9 @@ en:
   demands_list : "Demands List"
 
   #paramétrage demande
+  setting_estimations: "Estimations Settings"
   setting_demands: "Demands Settings"
+  extract_raw_data: "Extract Raw Data"
   edit_demand_statuses: "Edit Demand Status"
   new_demand_statuses: "New Demand Status"
   create_demand_statuses: "New Demand Status"

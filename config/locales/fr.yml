@@ -2230,7 +2230,9 @@ fr:
   demands_list : "Liste de demandes"
 
   #paramétrage demandes
+  setting_estimations: "Paramétrage des estimations"
   setting_demands: "Paramétrage des demandes"
+  extract_raw_data: "Extraction des données brutes"
   edit_demand_statuses: "Paramétrage de la demande statut"
   new_demand_statuses: "Création d'une demande statut"
   create_demand_statuses: "Création d'une demande statut"

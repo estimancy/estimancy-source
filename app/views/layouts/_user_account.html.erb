@@ -8,7 +8,7 @@
         <ul class="dropdown-menu">
           <li class="dropdown">
             <a href="<%= main_app.organization_demands_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-              <%= I18n.t(:liste_des_demandes) %>
+              <%= I18n.t(:demands_list) %>
             </a>
           </li>
           <li class="dropdown">
@@ -123,7 +123,7 @@
           <% if @current_organization && can?(:manage_security_audit, @current_organization)%>
               <li class="dropdown">
                 <a href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
-                  <%= I18n.t(:security_audit_utilities)%>
+                  <%= I18n.t(:security_audit_utilities) %>
                 </a>
               </li>
 

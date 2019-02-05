@@ -130,6 +130,41 @@ class DemandsController < ApplicationController
     redirect_to root_url
   end
 
+  def export_billing
+
+    @organization = Organization.find(params[:organization_id])
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, "Nom")
+    worksheet.add_cell(0, 1, "Date")
+
+    worksheet.add_cell(0, 2, "Montant Total (€)")
+
+    worksheet.add_cell(0, 3, "Statut")
+    worksheet.add_cell(0, 4, "Date")
+    worksheet.add_cell(0, 5, "Montant")
+
+    worksheet.add_cell(0, 6, "Statut")
+    worksheet.add_cell(0, 7, "Date")
+    worksheet.add_cell(0, 8, "Montant")
+
+    # nom demande | date | montant total | date passage statut1 | montant 1 (pourcentage précédent) | date passage statut2 | montant 2 (pourcentage precednt) | etc...
+
+    @organization.demands.each_with_index do |demand, index|
+      worksheet.add_cell(index + 1, 0, demand.name)
+      worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+      worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
+
+      worksheet.add_cell(index + 1, 4, demand.demand_status.to_s)
+      worksheet.add_cell(index + 1, 3, "DATE")
+      worksheet.add_cell(index + 1, 5, (demand.cost.to_f * 1000) * 20 / 100)
+    end
+
+    send_data(workbook.stream.string, filename: "#{@organization.name}-FACTURATION.xlsx", type: "application/vnd.ms-excel")
+  end
+
   def estimations
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])

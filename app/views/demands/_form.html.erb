@@ -132,10 +132,9 @@
               %>
               <br>
               <span class="pull-left" style="font-weight: bold;">
-                <span class="pull-right">
-                  &nbsp;k€
-                </span>
-                <%= value %>
+                <% @demand.cost = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+                <% @demand.save %>
+                <%= @demand.cost %> k€
               </span>
             <% else %>
             <br>
