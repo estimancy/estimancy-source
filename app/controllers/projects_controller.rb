@@ -1640,6 +1640,7 @@ class ProjectsController < ApplicationController
     @estimation_statuses
   end
 
+
   def confirm_deletion
     set_page_title I18n.t(:confirm_deletion)
 

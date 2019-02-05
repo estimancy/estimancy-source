@@ -2073,7 +2073,10 @@ class OrganizationsController < ApplicationController
     final_results = []
 
     # Pour garder le tri même lors du raffraichissement de la page
-    projects = @organization.projects.where(:is_model => [nil, false])
+
+    statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
+    projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
+
     organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
 
     res = []
@@ -3265,7 +3268,6 @@ class OrganizationsController < ApplicationController
       estimation_statuses.each do |i|
         status = EstimationStatus.create(organization_id: @organization.id, status_number: i[0], status_alias: i[1], name: i[2], status_color: i[3], description: i[4])
       end
-
       redirect_to redirect_apply(edit_organization_path(@organization)), notice: "#{I18n.t(:notice_organization_successful_created)}"
     else
       render action: 'new'
