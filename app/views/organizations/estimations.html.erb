@@ -26,7 +26,7 @@
                 <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
               <% end %>
 
-              <% unless ["demo", "saas"].in?(request.original_url) %>
+              <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
                 <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
               <% end %>
 
