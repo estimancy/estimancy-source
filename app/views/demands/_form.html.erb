@@ -5,7 +5,7 @@
         Demandes
       </a>
     </li>
-    <li><a href="#services">Services / Livrables</a></li>
+    <li><a href="#services">Services</a></li>
     <li><a href="#devis">Devis de la demande <%= @demand %></a></li>
   </ul>
 
@@ -54,6 +54,15 @@
                             input_html: { class: 'input-xxlarge' } %>
               <% end %>
             <% end %>
+          <% end %>
+
+          <% sh = StatusHistory.where(demand: "TOTO").all %>
+          <% sh.each_with_index do |s, index| %>
+            <% begin %>
+              Gap : <%= sh[index + 1].change_date - sh[index].change_date %>
+            <% rescue %>
+            <% end %>
+            <br>
           <% end %>
 
         <div class="actions-tabs">

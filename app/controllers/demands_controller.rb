@@ -42,6 +42,14 @@ class DemandsController < ApplicationController
 
     if @demand.save
 
+      StatusHistory.create(organization: @organization.name,
+                           demand: @demand.name,
+                           change_date: Time.now,
+                           action: "Création de la demande",
+                           origin: nil,
+                           target: nil,
+                           user: current_user.name)
+
       @organization.services.each do |s|
         unless s.livrable.nil?
           ServiceDemandLivrable.create(organization_id: @organization.id,
@@ -64,6 +72,18 @@ class DemandsController < ApplicationController
   def update
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
+
+    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
+    if @demand.demand_status_id != params[:demand][:demand_status_id]
+      StatusHistory.create(organization: @organization.name,
+                           demand: @demand.name,
+                           change_date: Time.now,
+                           action: "Changement de statut",
+                           origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
+                           target: new_demand_statut.name,
+                           user: current_user.name)
+    end
+
     @demand.update(params[:demand])
 
     @uploader = AttachmentUploader.new
@@ -76,7 +96,7 @@ class DemandsController < ApplicationController
         sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                           service_id: params["service_#{s.id}"].to_i,
                                           demand_id: @demand.id,
-                                          livrable_id: s.livrable.id).first
+                                          livrable_id: nil).first
 
         unless sdl.nil?
 
