@@ -172,14 +172,30 @@ class DemandsController < ApplicationController
 
     # nom demande | date | montant total | date passage statut1 | montant 1 (pourcentage précédent) | date passage statut2 | montant 2 (pourcentage precednt) | etc...
 
+    dsdts = []
     @organization.demands.each_with_index do |demand, index|
       worksheet.add_cell(index + 1, 0, demand.name)
       worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
       worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
 
-      worksheet.add_cell(index + 1, 4, demand.demand_status.to_s)
-      worksheet.add_cell(index + 1, 3, "DATE")
-      worksheet.add_cell(index + 1, 5, (demand.cost.to_f * 1000) * 20 / 100)
+      shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+      shs.each do |sh|
+        ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
+
+        unless ds.nil?
+          dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                  demand_type_id: demand.demand_type_id,
+                                                  demand_status_id: ds.id).first
+        end
+
+        j = 0
+        dsdts.compact.each do |dsdt|
+          worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
+          worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
+          worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
+          j = j + 3
+        end
+      end
     end
 
     send_data(workbook.stream.string, filename: "#{@organization.name}-FACTURATION.xlsx", type: "application/vnd.ms-excel")

@@ -49,7 +49,12 @@
                   <%= ds.name %>
                 </td>
                 <td>
-                  <%= text_field_tag ds.name, "" %>
+                  <%
+                    dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                          demand_type_id: @demand_type.id,
+                                                          demand_status_id: ds.id).first
+                  %>
+                  <%= text_field_tag "percent_#{ds.id}", dsdt.nil? ? nil : dsdt.percent %>
                 </td>
               </tr>
             <% end %>

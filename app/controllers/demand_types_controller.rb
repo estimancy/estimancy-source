@@ -29,6 +29,26 @@ class DemandTypesController < ApplicationController
     @demand_type = DemandType.find(params[:id])
     @demand_type.update(params[:demand_type])
 
+    @organization = @demand_type.organization
+    @organization.demand_statuses.each do |ds|
+
+      unless params["percent_#{ds.id}"].blank?
+        pc = params["percent_#{ds.id}"].to_f
+        dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                             demand_type_id: @demand_type.id,
+                                             demand_status_id: ds.id).first
+        if dsdt.nil?
+          DemandStatusesDemandType.create(organization_id: @organization.id,
+                                        demand_type_id: @demand_type.id,
+                                        demand_status_id: ds.id,
+                                        percent: pc)
+        else
+          dsdt.percent = pc
+          dsdt.save
+        end
+      end
+    end
+
     if @demand_type.save
       flash[:notice] = "Demande mise à jour avec succès"
     end

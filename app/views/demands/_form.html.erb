@@ -59,7 +59,10 @@
           <% sh = StatusHistory.where(demand: "TOTO").all %>
           <% sh.each_with_index do |s, index| %>
             <% unless sh[index + 1].nil? %>
-              <%= Biz.within(sh[index + 1].change_date.utc, sh[index].change_date.utc).in_seconds %>
+              <%= Biz.within(
+                      Time.utc(sh[index].change_date.year, sh[index].change_date.month, sh[index].change_date.day),
+                      Time.utc(sh[index + 1].change_date.year, sh[index + 1].change_date.month, sh[index + 1].change_date.day)
+                  ).in_seconds %>
             <% end %>
             <br>
           <% end %>
