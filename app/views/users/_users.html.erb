@@ -34,9 +34,9 @@
           <td style="min-width: 105px;" class="align-center">
             <% if current_user.super_admin == true %>
               <% if user.locked_at.nil? %>
-                <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('edit')) %>
+                <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => "Bloquer/Débloquer", method: "POST") %>
               <% else %>
-                <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('edit')) %>
+                <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => "Bloquer/Débloquer", method: "POST") %>
               <% end %>
               <%= link_to('', edit_user_path(user, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit')) %>
               <%= link_to(' ', user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete')) %>
