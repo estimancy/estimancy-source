@@ -58,9 +58,8 @@
 
           <% sh = StatusHistory.where(demand: "TOTO").all %>
           <% sh.each_with_index do |s, index| %>
-            <% begin %>
-              Gap : <%= sh[index + 1].change_date - sh[index].change_date %>
-            <% rescue %>
+            <% unless sh[index + 1].nil? %>
+              <%= Biz.within(sh[index + 1].change_date.utc, sh[index].change_date.utc).in_seconds %>
             <% end %>
             <br>
           <% end %>
