@@ -82,9 +82,9 @@
             <td class="align-center">
               <% if can? :manage, User, :organization_id => @organization.id %>
                 <% if user.locked_at.nil? %>
-                  <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('edit')) %>
+                  <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => "Bloquer/Débloquer", method: "POST") %>
                 <% else %>
-                  <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('edit')) %>
+                  <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => "Bloquer/Débloquer", method: "POST") %>
                 <% end %>
               <% end %>
               <%= link_to "", edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
