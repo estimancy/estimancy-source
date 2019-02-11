@@ -2202,12 +2202,11 @@ en:
 
   text_explain_demand_status_workflow: "Text explanation demand statuses workflow"
 
+
   component: "Component"
   cplx_coeff: "Coeff. complexity"
-  complexity : "Complexity"
   data_model: "Data model"
   data_model_display_error: "An error occurred while displaying the data model"
-  close: "Close"
   treatments_import: "Import the treatments"
   excel_file_import: "Import Excel file (xlsx only)"
   component_serv_creation: "Creating a component or service"
@@ -2218,3 +2217,6 @@ en:
   request_list_links: "Links from the list of requests"
   component_type_identified_by_AI: "Types of component to be identified by the AI"
   host_group: "Host group"
+
+  extract_raw_data: "Extract raw data"
+  setting_estimations: "Estimation settings"
