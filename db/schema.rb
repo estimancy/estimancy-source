@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190207110729) do
+ActiveRecord::Schema.define(version: 20190208161724) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -280,6 +280,25 @@ ActiveRecord::Schema.define(version: 20190207110729) do
     t.datetime "updated_at",                        null: false
   end
 
+  create_table "criticalities", force: :cascade do |t|
+    t.string   "name",            limit: 255
+    t.integer  "organization_id", limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "criticality_severities", force: :cascade do |t|
+    t.integer  "criticality_id",   limit: 4
+    t.integer  "severity_id",      limit: 4
+    t.integer  "organization_id",  limit: 4
+    t.float    "duration",         limit: 24
+    t.integer  "origin_status_id", limit: 4
+    t.integer  "target_status_id", limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "demand_type_id",   limit: 4
+  end
+
   create_table "currencies", force: :cascade do |t|
     t.string   "name",            limit: 255
     t.string   "alias",           limit: 255
@@ -343,6 +362,8 @@ ActiveRecord::Schema.define(version: 20190207110729) do
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
     t.string   "attachment",       limit: 255
+    t.integer  "criticality_id",   limit: 4
+    t.integer  "severity_id",      limit: 4
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|
@@ -1986,6 +2007,13 @@ ActiveRecord::Schema.define(version: 20190207110729) do
     t.text     "description",     limit: 65535
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+  end
+
+  create_table "severities", force: :cascade do |t|
+    t.string   "name",            limit: 255
+    t.integer  "organization_id", limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "size_unit_type_complexities", force: :cascade do |t|

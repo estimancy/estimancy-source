@@ -49,6 +49,35 @@ class DemandTypesController < ApplicationController
       end
     end
 
+
+    @organization.criticalities.each do |criticality|
+      @organization.severities.each do |severity|
+
+        unless params["duration_#{criticality.id}_#{severity.id}"].blank?
+
+          duration = params["duration_#{criticality.id}_#{severity.id}"].to_f
+
+          origin = DemandStatus.where(name: params["origin_status_#{criticality.id}_#{severity.id}"].to_i).first
+          target = DemandStatus.where(name: params["target_status_#{criticality.id}_#{severity.id}"].to_i).first
+
+          cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                         criticality_id: criticality.id,
+                                         severity_id: severity.id).first
+
+          if cs.nil?
+            CriticalitySeverity.create(organization_id: @organization.id,
+                                       criticality_id: criticality.id,
+                                       severity_id: severity.id,
+                                       duration: duration)
+          else
+            cs.duration = duration
+            cs.save
+          end
+
+        end
+      end
+    end
+
     if @demand_type.save
       flash[:notice] = "Demande mise à jour avec succès"
     end

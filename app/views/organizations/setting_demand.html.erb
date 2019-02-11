@@ -3,167 +3,204 @@
     <li><a href="#demands_statuses"><%= I18n.t(:demands_statuses) %></a></li>
     <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
     <li><a href="#services"><%= I18n.t(:services) %></a></li>
+    <li><a href="#criticality">Criticité</a></li>
+    <li><a href="#severity">Sévérité</a></li>
     <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
   </ul>
 
+  <div id="criticality">
+
+    <%= link_to "Sévérité", new_organization_severity_path(@organization), class: "btn" %>
+    <hr>
+
+    <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th>
+          Nom
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @organization.criticalities.each do |criticality| %>
+        <tr>
+          <td><%= link_to criticality.name, "#" %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="severity">
+    <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th>
+          Nom
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @organization.severities.each do |severity| %>
+        <tr>
+          <td><%= link_to severity.name, "#" %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+
   <div id="demands_statuses">
-    <div id="tabs-1">
 
-      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
-      <hr>
+    <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
+    <hr>
 
-      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
-        <thead>
+    <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Status Number
+          </th>
+          <th>
+            Status Alias
+          </th>
+          <th>
+            Status Color
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @demand_statuses.each do |demand_status| %>
           <tr>
-            <th>
-              Name
-            </th>
-            <th>
-              Status Number
-            </th>
-            <th>
-              Status Alias
-            </th>
-            <th>
-              Status Color
-            </th>
+            <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
+            <td><%= demand_status.status_number %></td>
+            <td><%= demand_status.status_alias %></td>
+            <td><%= demand_status.status_color %></td>
           </tr>
-        </thead>
-        <tbody>
-          <% @demand_statuses.each do |demand_status| %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <% if @organization.demand_statuses.length > 0 %>
+      <div class="well well-rounded">
+        <h5 class="blue"><%= I18n.t(:manage_demands_statuses_workflow) %></h5>
+        <h5><%= I18n.t(:text_explain_demand_status_workflow) %></h5>
+
+        <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
+
+          <%= hidden_field_tag "organization_id", @organization.id %>
+          <table class="table table-striped table-bordered table-condensed permissions">
             <tr>
-              <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
-              <td><%= demand_status.status_number %></td>
-              <td><%= demand_status.status_alias %></td>
-              <td><%= demand_status.status_color %></td>
+              <th><%= I18n.t(:demands_statuses) %></th>
+              <% @organization.demand_statuses.each do |status| %>
+                <th><%= status.name %></th>
+              <% end %>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
 
-      <hr>
-
-      <% if @organization.demand_statuses.length > 0 %>
-        <div class="well well-rounded">
-          <h5 class="blue"><%= I18n.t(:manage_demands_statuses_workflow) %></h5>
-          <h5><%= I18n.t(:text_explain_demand_status_workflow) %></h5>
-
-          <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
-
-            <%= hidden_field_tag "organization_id", @organization.id %>
-            <table class="table table-striped table-bordered table-condensed permissions">
+            <% @organization.demand_statuses.each do |demand_status| %>
               <tr>
-                <th><%= I18n.t(:demands_statuses) %></th>
-                <% @organization.demand_statuses.each do |status| %>
-                  <th><%= status.name %></th>
+                <td><%= demand_status.name %></td>
+                <% @organization.demand_statuses.includes(:demand_to_transition_statuses).each do |status| %>
+                  <% if demand_status == status %>
+                    <td class="center">
+                      <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
+                    </td>
+                  <% else %>
+                    <td class="center">
+                      <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
+                    </td>
+                  <% end %>
                 <% end %>
               </tr>
+            <% end %>
+          </table>
 
-              <% @organization.demand_statuses.each do |demand_status| %>
-                <tr>
-                  <td><%= demand_status.name %></td>
-                  <% @organization.demand_statuses.includes(:demand_to_transition_statuses).each do |status| %>
-                    <% if demand_status == status %>
-                      <td class="center">
-                        <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
-                      </td>
-                    <% else %>
-                      <td class="center">
-                        <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
-                      </td>
-                    <% end %>
-                  <% end %>
-                </tr>
-              <% end %>
-            </table>
-
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <div id="demandes_types">
-    <div id="tabs-1">
 
-      <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
-      <hr>
-      <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-        <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Description</th>
-          <th>Provenance des coûts</th>
-          <th>Statut de départ</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
+    <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
+    <hr>
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Provenance des coûts</th>
+        <th>Statut de départ</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
 
-        <tbody>
-          <% @demand_types.each do |dt| %>
-            <tr>
-              <td><%= dt.name %></td>
-              <td><%= dt.description %></td>
-              <td><%= dt.cost_from %></td>
-              <td><%= dt.demand_status %></td>
-              <td>
-                <%= link_to '', edit_organization_demand_type_path(@organization, dt), class: 'fa fa-pencil' %>
-                <%= link_to '', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
+      <tbody>
+        <% @demand_types.each do |dt| %>
+          <tr>
+            <td><%= dt.name %></td>
+            <td><%= dt.description %></td>
+            <td><%= dt.cost_from %></td>
+            <td><%= dt.demand_status %></td>
+            <td>
+              <%= link_to '', edit_organization_demand_type_path(@organization, dt), class: 'fa fa-pencil' %>
+              <%= link_to '', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
 
-        <%= render :partial => 'layouts/footer_table' %>
-      </table>
-    </div>
+      <%= render :partial => 'layouts/footer_table' %>
+    </table>
   </div>
 
   <div id="livrables">
-    <div id="tabs-1">
-      <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn" %>
-      <hr>
-      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
-        <thead>
-          <tr>
-            <th>
-              Name
-            </th>
-            <th>
-              Description
-            </th>
-            <th>
-              Etats
-            </th>
-            <th>
-              Service associé
-            </th>
-          </tr>
-        </thead>
+    <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn" %>
+    <hr>
+    <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            Etats
+          </th>
+          <th>
+            Service associé
+          </th>
+        </tr>
+      </thead>
 
-        <tbody>
-          <% @livrables.each do |livrable| %>
-            <tr>
-              <td><%= livrable.name %></td>
-              <td><%= livrable.description %></td>
-              <td><%= livrable.state %></td>
-              <td><%= livrable.service %></td>
-              <td>
-                <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
-                <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-        <%= render :partial => 'layouts/footer_table' %>
-      </table>
-    </div>
+      <tbody>
+        <% @livrables.each do |livrable| %>
+          <tr>
+            <td><%= livrable.name %></td>
+            <td><%= livrable.description %></td>
+            <td><%= livrable.state %></td>
+            <td><%= livrable.service %></td>
+            <td>
+              <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
+              <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+      <%= render :partial => 'layouts/footer_table' %>
+    </table>
   </div>
 
   <div id="services">
-    <div id="tabs-1">
 
       <%= link_to "Créer un service", new_organization_service_path(@organization), class: "btn" %>
       <hr>
@@ -201,6 +238,5 @@
       </table>
 
     </div>
-  </div>
 
 </div>

@@ -19,7 +19,8 @@
       <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xxlarge'} %>
       <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" , :input_html => {:class => 'input-xlarge'} %>
+      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
+                  :input_html => {:class => 'input-xlarge'} %>
 
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
@@ -60,38 +61,53 @@
             <% end %>
           </table>
         </div>
+      </div>
 
+      <div class="row-fluid">
         <div class="span4">
           <table class="table">
             <tr>
               <th></th>
-              <th>Sévérité S1</th>
-              <th>Sévérité S2</th>
-              <th>Sévérité S3</th>
+              <% @organization.severities.each do |severity| %>
+                <th class="center">
+                  <%= severity.name %>
+                </th>
+              <% end %>
+              <th>Départ</th>
+              <th>Fin</th>
             </tr>
-            <tr>
-              <td>Criticité C1</td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-            </tr>
-            <tr>
-              <td>Criticité C2</td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-            </tr>
-            <tr>
-              <td>Criticité C3</td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-              <td><%= check_box_tag "" %></td>
-            </tr>
+            <% @organization.criticalities.each do |criticality| %>
+              <tr>
+                <th>
+                  <%= criticality.name %>
+                </th>
+                <% @organization.severities.each do |severity| %>
+                  <td>
+                    <%
+                      cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                     demand_type_id: @demand_type.id,
+                                                     criticality_id: criticality.id,
+                                                     severity_id: severity.id).first
+                    %>
+                    <%= text_field_tag "duration_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.duration, class: "" %>
+                  </td>
+                <% end %>
+                <td>
+                  <%
+                    cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                   demand_type_id: @demand_type.id,
+                                                   criticality_id: criticality.id).first
+                  %>
+                  <%= select_tag "origin_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.origin_status_id), class: "" %>
+                </td>
+                <td>
+                  <%= select_tag "target_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.target_status_id), class: "" %>
+                </td>
+              </tr>
+            <% end %>
           </table>
         </div>
       </div>
-
-
 
       <div class="actions-tabs">
         <% if action_name == 'new' || action_name=="create" %>

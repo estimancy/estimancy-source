@@ -20,6 +20,9 @@
           <%= f.input :business_need, :label => I18n.t('business_need'), :input_html => {:class => 'input-xxlarge' } %>
           <%= f.input :demand_type_id, as: :select, label: "Type de demande", collection: @organization.demand_types, input_html: { class: 'input-xxlarge', disabled: (controller.action_name == "edit") } %>
 
+          <%= f.input :severity_id, as: :select, label: "Severité", collection: @organization.severities, input_html: { class: 'input-xxlarge' } %>
+          <%= f.input :criticality_id, as: :select, label: "Criticité", collection: @organization.criticalities, input_html: { class: 'input-xxlarge' } %>
+
           <% unless @demand.demand_status.nil? %>
             <% if @demand.demand_status.name == "En instruction" || @demand.demand_status.name == "En qualification" %>
               <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
@@ -36,35 +39,24 @@
                           as: :select,
                           label: "Statut de la demande",
                           collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
-                          selected: @demand.demand_type.demand_status,
+                          selected: @demand.demand_type.demand_status_id,
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
-              <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
-                <%= f.input :demand_status_id,
+              <%# if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
+                <%# f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
                             collection: @demand.get_demand_statuses(@organization),
                             disabled: true,
                             input_html: { class: 'input-xxlarge' } %>
-              <% else %>
+              <%# else %>
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
                             collection: @demand.get_demand_statuses(@organization),
                             input_html: { class: 'input-xxlarge' } %>
-              <% end %>
+              <%# end %>
             <% end %>
-          <% end %>
-
-          <% sh = StatusHistory.where(demand: "TOTO").all %>
-          <% sh.each_with_index do |s, index| %>
-            <% unless sh[index + 1].nil? %>
-              <%= Biz.within(
-                      Time.utc(sh[index].change_date.year, sh[index].change_date.month, sh[index].change_date.day),
-                      Time.utc(sh[index + 1].change_date.year, sh[index + 1].change_date.month, sh[index + 1].change_date.day)
-                  ).in_seconds %>
-            <% end %>
-            <br>
           <% end %>
 
         <div class="actions-tabs">
@@ -153,6 +145,42 @@
             <% end %>
           <% end %>
         <% end %>
+
+        <hr>
+
+
+        <% StatusHistory.where(demand: @demand.name).each do |sh| %>
+          <% if sh.action == "Création de la demande" %>
+            <%= sh.change_date %> : <%= sh.action %> au statut <b><%= sh.target %></b>
+          <% else %>
+            <%= sh.change_date %> : <%= sh.action %> : <b><%= sh.origin %></b> à <b><%= sh.target %></b>
+          <% end %>
+          <br>
+        <% end %>
+
+        <br>
+        <% sh = StatusHistory.where(demand: @demand.name).all %>
+        <% sh.each_with_index do |s, index| %>
+          <% unless sh[index + 1].nil? %>
+            <%= Biz.within(
+                    Time.utc(sh[index].change_date.year, sh[index].change_date.month, sh[index].change_date.day, sh[index].change_date.hour, sh[index].change_date.min),
+                    Time.utc(sh[index + 1].change_date.year, sh[index + 1].change_date.month, sh[index + 1].change_date.day, sh[index + 1].change_date.hour, sh[index + 1].change_date.min)
+                ).in_seconds / 3600 %> h écoulés entre <%= sh[index].change_date %> et <%= sh[index + 1].change_date %>
+          <% end %>
+          <br>
+        <% end %>
+
+        <br>
+
+        <% cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                          demand_type_id: @demand.demand_type.id,
+                                          criticality_id: @demand.criticality_id,
+                                          severity_id: @demand.severity_id).first %>
+        Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
+
+
+
+
       </div>
     </div>
 

@@ -25,7 +25,7 @@ class DemandsController < ApplicationController
       end
     end
 
-    get_estimations
+    # get_estimations
   end
 
   def new
@@ -47,7 +47,7 @@ class DemandsController < ApplicationController
                            change_date: Time.now,
                            action: "Création de la demande",
                            origin: nil,
-                           target: nil,
+                           target: @demand.demand_status.name,
                            user: current_user.name)
 
       @organization.services.each do |s|
@@ -74,13 +74,14 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:id])
 
     new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
+
     if @demand.demand_status_id != params[:demand][:demand_status_id]
       StatusHistory.create(organization: @organization.name,
                            demand: @demand.name,
                            change_date: Time.now,
                            action: "Changement de statut",
                            origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
-                           target: new_demand_statut.name,
+                           target: new_demand_statut.nil? ? nil : new_demand_statut.name,
                            user: current_user.name)
     end
 
@@ -174,27 +175,32 @@ class DemandsController < ApplicationController
 
     dsdts = []
     @organization.demands.each_with_index do |demand, index|
-      worksheet.add_cell(index + 1, 0, demand.name)
-      worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
-      worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
+      if demand.billing == "Echeance"
+        worksheet.add_cell(index + 1, 0, demand.name)
+        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+        worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
 
-      shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
-      shs.each do |sh|
-        ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
+        shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+        shs.each do |sh|
+          ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
-        unless ds.nil?
-          dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
-                                                  demand_type_id: demand.demand_type_id,
-                                                  demand_status_id: ds.id).first
+          unless ds.nil?
+            dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                    demand_type_id: demand.demand_type_id,
+                                                    demand_status_id: ds.id).first
+          end
+
+          j = 0
+          dsdts.compact.each do |dsdt|
+            worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
+            worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
+            worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
+            j = j + 3
+          end
         end
-
-        j = 0
-        dsdts.compact.each do |dsdt|
-          worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
-          worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
-          worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
-          j = j + 3
-        end
+      elsif demand.billing == "Abonnement"
+        worksheet.add_cell(index + 1, 0, demand.name)
+        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
       end
     end
 
@@ -205,7 +211,7 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])
 
-    get_estimations
+    # get_estimations
   end
 
   private def get_estimations
