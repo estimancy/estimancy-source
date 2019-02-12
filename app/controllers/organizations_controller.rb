@@ -2074,8 +2074,10 @@ class OrganizationsController < ApplicationController
 
     # Pour garder le tri même lors du raffraichissement de la page
 
-    statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
-    projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
+    # statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
+    # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
+
+    projects = @organization.projects.where(:is_model => [nil, false])
 
     organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
 

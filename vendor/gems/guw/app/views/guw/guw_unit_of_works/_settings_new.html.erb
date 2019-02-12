@@ -107,7 +107,8 @@
       <% if can? :execute_estimation_plan, @project %>
         <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
         <% unless @unit_of_work_groups.empty? %>
-          <%= link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+          <%# link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+          <%= link_to "Saisir une exigence", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
         <% end %>
       <% end %>
     <% end %>
@@ -220,7 +221,7 @@
               <th></th>
               <th>#</th>
               <th><%= I18n.t :name %></th>
-              <th><% I18n.t(:component) %></th>
+              <th><%= I18n.t(:component) %></th>
 
               <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                 <% unless i[1].blank? %>
@@ -248,9 +249,9 @@
                     <% else %>
                       <th>
                         <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          <% I18n.t(:cplx_coeff) %>
+                          <%= I18n.t(:cplx_coeff) %>
                         <% else %>
-                          <% I18n.t(:complexity) %>
+                          <%= I18n.t(:complexity) %>
                         <% end %>
                       </th>
                     <% end %>
@@ -296,7 +297,8 @@
             <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
             <% unless @unit_of_work_groups.empty? %>
               <button type="button" class="btn pull-left button_margin_right new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
-                <%= I18n.t('new_unit_of_work') %>
+                <%# I18n.t('new_unit_of_work') %>
+                Saisir une exigence
               </button>
             <% end %>
             <button type="submit" class="btn btn-primary pull-right guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
@@ -506,17 +508,17 @@
     <div class="modal-content">
       <div class="modal-header modal-drag">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><% I18n.t(:data_model) %></h4>
+        <h4 class="modal-title"><%= I18n.t(:data_model) %></h4>
       </div>
       <div class="modal-body">
         <% begin %>
           <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
         <% rescue %>
-          <% I18n.t(:data_model_display_error) %>
+          <%= I18n.t(:data_model_display_error) %>
         <% end %>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
       </div>
     </div>
   </div>
@@ -531,7 +533,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            <% I18n.t(:treatments_import) %>
+            <%= I18n.t(:treatments_import) %>
           </h4>
         </div>
 
@@ -540,13 +542,13 @@
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
           <h5>
-            <% I18n.t(:excel_file_import) %>
+            <%= I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %>
           </button>
           <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
         </div>
@@ -564,7 +566,7 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-            <% I18n.t(:component_serv_creation) %>
+            <%= I18n.t(:component_serv_creation) %>
           </h4>
         </div>
 
@@ -581,38 +583,38 @@
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
                 <p>
-                <h5>
-                  <%= I18n.t(:uw_name) %>
-                </h5>
-                <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
+                  <h5>
+                    <%= I18n.t(:uw_name) %>
+                  </h5>
+                  <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
                 </p>
 
                 <p>
-                <h5>
-                  <%= I18n.t(:comments) %>
-                </h5>
-                <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
+                  <h5>
+                    <%= I18n.t(:comments) %>
+                  </h5>
+                  <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
                 </p>
 
                 <p>
-                <h5>
-                  <%= I18n.t(:type) %>
-                </h5>
-                <% unless @guw_types.nil? %>
-                  <%= select_tag :guw_type_id,
-                                 options_for_select(@guw_types.map{|i| [i.name, i.id]}),
-                                 include_blank: false,
-                                 class: "input-xlarge uo_type" %>
-                <% end %>
+                  <h5>
+                    <%= I18n.t(:type) %>
+                  </h5>
+                  <% unless @guw_types.nil? %>
+                    <%= select_tag :guw_type_id,
+                                   options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+                                   include_blank: false,
+                                   class: "input-xlarge uo_type" %>
+                  <% end %>
                 </p>
 
                 <p>
-                <h5>
-                  <%= I18n.t(:group) %>
-                </h5>
-                <%= select_tag :guw_unit_of_work_group_id,
-                               options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
-                               class: "input-xlarge" %>
+                  <h5>
+                    <%= I18n.t(:group) %>
+                  </h5>
+                  <%= select_tag :guw_unit_of_work_group_id,
+                                 options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
+                                 class: "input-xlarge" %>
                 </p>
               </div>
             </div>
@@ -682,16 +684,16 @@
         <div class="modal-header modal-drag">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
-
+            Importer les données
           </h4>
         </div>
 
         <div class="modal-body" style="height: inherit;">
 
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
-          <% I18n.t(:data_import) %>
+          <%= I18n.t(:data_import) %>
           <h5>
-            <% I18n.t(:excel_file_import) %>
+            <%= I18n.t(:excel_file_import) %>
           </h5>
           <%= file_field_tag :file %>
         </div>
@@ -712,94 +714,96 @@
     <div class="modal-content">
       <%= form_tag guw.extract_from_url_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
-        <div class="modal-header modal-drag">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">
-            <% I18n.t(:requirements_import) %>
-          </h4>
-        </div>
-
-        <div class="modal-body" style="height: inherit;">
-
-          <%= hidden_field_tag "guw_model_id", @guw_model.id %>
-
-          <h5><% I18n.t(:import_type) %></h5>
-          <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
-
-          <h5><% I18n.t(:source_type) %></h5>
-
-          <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-            <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-            <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-            <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-            <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-            <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-            <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-            <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% else %>
-            <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
-          <% end %>
-
-          <div class ="hide" id="file-block" >
-            <h5>
-              <% I18n.t(:excel_file_import) %>
-            </h5>
-            <%= file_field_tag :file %>
-          </div >
-
-          <div class="hide" id="url-block">
-            <h5>
-              <% I18n.t(:request_list_links) %>
-            </h5>
-            <%= text_field_tag :url, "", class: "span8" %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">
+              <%= I18n.t(:requirements_import) %>
+            </h4>
           </div>
 
-          <div class="hide" id="type-block">
-            <h5><% I18n.t(:component_type_identified_by_AI) %></h5>
+          <div class="modal-body" style="height: inherit;">
 
-            <div id="excel-type-block">
-              <% if @guw_model.allow_ml_excel == false %>
-                <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-              <% else %>
-                <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-              <% end %>
+            <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+
+            <h5><%= I18n.t(:import_type) %></h5>
+            <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
+
+            <h5><%= I18n.t(:source_type) %></h5>
+
+            <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% else %>
+              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
+            <% end %>
+
+            <div class ="hide" id="file-block" >
+              <h5>
+                <%= I18n.t(:excel_file_import) %>
+              </h5>
+              <%= file_field_tag :file %>
+            </div >
+
+            <div class="hide" id="url-block">
+              <h5>
+                <%= I18n.t(:request_list_links) %>
+              </h5>
+              <%= text_field_tag :url, "", class: "span8" %>
             </div>
 
-            <div id="jira-type-block">
-              <% if @guw_model.allow_ml_jira == false %>
-                <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-              <% else %>
-                <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-              <% end %>
-            </div>
+            <div class="hide" id="type-block">
+              <h5>
+                <%= I18n.t(:component_type_identified_by_AI) %>
+              </h5>
 
-            <div id="redmine-type-block">
-              <% if @guw_model.allow_ml_redmine == false %>
-                <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-              <% else %>
-                <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-              <% end %>
-            </div>
+              <div id="excel-type-block">
+                <% if @guw_model.allow_ml_excel == false %>
+                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                <% else %>
+                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+                <% end %>
+              </div>
 
+              <div id="jira-type-block">
+                <% if @guw_model.allow_ml_jira == false %>
+                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                <% else %>
+                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+                <% end %>
+              </div>
+
+              <div id="redmine-type-block">
+                <% if @guw_model.allow_ml_redmine == false %>
+                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
+                <% else %>
+                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
+                <% end %>
+              </div>
+
+            </div>
+            <div id ="groups-block" class="hide">
+              <h5>
+                <%= I18n.t(:host_group) %>
+              </h5>
+              <%= text_field_tag :group_name, "", class: "span8" %>
+            </div>
           </div>
-          <div id ="groups-block" class="hide">
-            <h5>
-              <% I18n.t(:host_group) %>
-            </h5>
-            <%= text_field_tag :group_name, "", class: "span8" %>
-          </div>
-        </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
-          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
-        </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => I18n.t(:please_wait) } %>
+          </div>
 
       <% end %>
 

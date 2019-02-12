@@ -88,6 +88,8 @@ class Organization < ActiveRecord::Base
   has_many :demand_statuses
   has_many :livrables
   has_many :services
+  has_many :criticalities
+  has_many :severities
 
   belongs_to :currency
 

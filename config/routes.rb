@@ -243,8 +243,12 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
+    resources :severities
+    resources :criticabilities
+
     resources :livrables
     resources :demand_statuses
+    get 'export_billing' => 'demands#export_billing', :as => 'export_billing'
 
     resources :demands do
       get 'estimations' => 'demands#estimations'

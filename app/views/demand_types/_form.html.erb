@@ -19,9 +19,95 @@
       <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xxlarge'} %>
       <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xxlarge'} %>
 
-      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" , :input_html => {:class => 'input-xlarge'} %>
+      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
+                  :input_html => {:class => 'input-xlarge'} %>
 
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+
+      <br>
+
+      <div class="row-fluid">
+        <div class="span4">
+          <%= f.collection_check_boxes(:service_ids, Service.where(organization_id: @organization.id).all, :id, :to_s) do |b| %>
+            <div class="row-fluid">
+              <%= b.label(class: "check_box") do %>
+                <div class="span1">
+                  <%= b.check_box(class: "check_box") %>
+                </div>
+                <div class="span11">
+                  <%= b.object.name %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+        </div>
+        <div class="span4">
+          <table class="table">
+            <% @organization.demand_statuses.each do |ds| %>
+              <tr>
+                <td>
+                  <%= ds.name %>
+                </td>
+                <td>
+                  <%
+                    dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                          demand_type_id: @demand_type.id,
+                                                          demand_status_id: ds.id).first
+                  %>
+                  <%= text_field_tag "percent_#{ds.id}", dsdt.nil? ? nil : dsdt.percent %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
+
+      <div class="row-fluid">
+        <div class="span4">
+          <table class="table">
+            <tr>
+              <th></th>
+              <% @organization.severities.each do |severity| %>
+                <th class="center">
+                  <%= severity.name %>
+                </th>
+              <% end %>
+              <th>Départ</th>
+              <th>Fin</th>
+            </tr>
+            <% @organization.criticalities.each do |criticality| %>
+              <tr>
+                <th>
+                  <%= criticality.name %>
+                </th>
+                <% @organization.severities.each do |severity| %>
+                  <td>
+                    <%
+                      cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                     demand_type_id: @demand_type.id,
+                                                     criticality_id: criticality.id,
+                                                     severity_id: severity.id).first
+                    %>
+                    <%= text_field_tag "duration_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.duration, class: "" %>
+                  </td>
+                <% end %>
+                <td>
+                  <%
+                    cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                   demand_type_id: @demand_type.id,
+                                                   criticality_id: criticality.id).first
+                  %>
+                  <%= select_tag "origin_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.origin_status_id), class: "" %>
+                </td>
+                <td>
+                  <%= select_tag "target_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.target_status_id), class: "" %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
 
       <div class="actions-tabs">
         <% if action_name == 'new' || action_name=="create" %>

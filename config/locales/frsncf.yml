@@ -2183,6 +2183,64 @@ frsncf:
 
   manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
 
-  text_explain_demand_status_workflow:
+  urgent_project: "Devis urgent"
+
+  #demands
+  description: "Description"
+  attachment: "Fichier joint"
+  edit_demand: "Modification d'une demande"
+  create_demand: "Création d'une demande"
+  new_demand: "Création d'une demande"
+  demands_list: "Liste de demandes"
+
+  #paramétrage demandes
+  setting_estimations: "Paramétrage des estimations"
+  setting_demands: "Paramétrage des demandes"
+  extract_raw_data: "Extraction des données brutes"
+  edit_demand_statuses: "Paramétrage de la demande statut"
+  new_demand_statuses: "Création d'une demande statut"
+  create_demand_statuses: "Création d'une demande statut"
+  edit_demand_types: "Paramétrage de la demande type"
+  new_demand_types: "Création d'une demande type"
+  create_demand_types: "Création d'une demande type"
+  edit_livrable: "Paramétrage du livrable"
+  new_livrable: "Création d'un livrable"
+  create_livrable: "Création d'un livrable"
+  edit_service: "Paramétrage du service"
+  new_service: "Création d'un service"
+  create_service: "Création d'un service"
+
+
+  #_user_account.html.erb
+  setting_demands: "Paramétrage demandes"
+
+  # setting_demand
+  demands: "Demandes"
+  demands_types: "Demandes Types"
+  livrable: "Livrables"
+  demands_statuses: "Demandes Statuts"
+
+  service_id: "Services"
+
+  manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
+
+  text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
 
   urgent_project: "Devis urgent"
+
+  component: "Composant"
+  cplx_coeff: "Coeff. de complexité"
+  complexity: "Complexité"
+  data_model: "Modèle de données"
+  data_model_display_error: "Une erreur est survenue lors de l'affichage du modèle de données"
+  close: "Fermer"
+  treatments_import: "Importer des traitements"
+  excel_file_import: "Importer un fichier Excel (xlsx uniquement)"
+  component_serv_creation: "Création d'un composant ou service"
+  data_import: "Importer les données"
+  requirements_import: "Importer les exigences"
+  import_type: "Type d'import"
+  source_type: "Type de de source"
+  request_list_links: "Liens de la liste des demandes"
+  component_type_identified_by_AI: "Types de composant à identifier par l'IA"
+  host_group: "Groupe d'accueil"

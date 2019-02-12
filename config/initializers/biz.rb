@@ -6,4 +6,7 @@ Biz.configure do |config|
       thu: {'09:00' => '12:00', '13:00' => '17:00'},
       fri: {'09:00' => '12:00', '13:00' => '17:00'}
   }
+
+  config.time_zone = 'Europe/Paris'
+
 end

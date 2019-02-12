@@ -42,6 +42,14 @@ class DemandsController < ApplicationController
 
     if @demand.save
 
+      StatusHistory.create(organization: @organization.name,
+                           demand: @demand.name,
+                           change_date: Time.now,
+                           action: "Création de la demande",
+                           origin: nil,
+                           target: @demand.demand_status.name,
+                           user: current_user.name)
+
       @organization.services.each do |s|
         unless s.livrable.nil?
           ServiceDemandLivrable.create(organization_id: @organization.id,
@@ -64,6 +72,19 @@ class DemandsController < ApplicationController
   def update
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
+
+    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
+
+    if @demand.demand_status_id != params[:demand][:demand_status_id]
+      StatusHistory.create(organization: @organization.name,
+                           demand: @demand.name,
+                           change_date: Time.now,
+                           action: "Changement de statut",
+                           origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
+                           target: new_demand_statut.nil? ? nil : new_demand_statut.name,
+                           user: current_user.name)
+    end
+
     @demand.update(params[:demand])
 
     @uploader = AttachmentUploader.new
@@ -76,7 +97,7 @@ class DemandsController < ApplicationController
         sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                           service_id: params["service_#{s.id}"].to_i,
                                           demand_id: @demand.id,
-                                          livrable_id: s.livrable.id).first
+                                          livrable_id: nil).first
 
         unless sdl.nil?
 
@@ -128,6 +149,62 @@ class DemandsController < ApplicationController
     @demand.delete
 
     redirect_to root_url
+  end
+
+  def export_billing
+
+    @organization = Organization.find(params[:organization_id])
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    worksheet.add_cell(0, 0, "Nom")
+    worksheet.add_cell(0, 1, "Date")
+
+    worksheet.add_cell(0, 2, "Montant Total (€)")
+
+    worksheet.add_cell(0, 3, "Statut")
+    worksheet.add_cell(0, 4, "Date")
+    worksheet.add_cell(0, 5, "Montant")
+
+    worksheet.add_cell(0, 6, "Statut")
+    worksheet.add_cell(0, 7, "Date")
+    worksheet.add_cell(0, 8, "Montant")
+
+    # nom demande | date | montant total | date passage statut1 | montant 1 (pourcentage précédent) | date passage statut2 | montant 2 (pourcentage precednt) | etc...
+
+    dsdts = []
+    @organization.demands.each_with_index do |demand, index|
+      if demand.demand_type.billing == "Echéance"
+        worksheet.add_cell(index + 1, 0, demand.name)
+        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+        worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
+
+        shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+        shs.each do |sh|
+          ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
+
+          unless ds.nil?
+            dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                    demand_type_id: demand.demand_type_id,
+                                                    demand_status_id: ds.id).first
+          end
+
+          j = 0
+          dsdts.compact.each do |dsdt|
+            worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
+            worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
+            worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
+            j = j + 3
+          end
+        end
+      elsif demand.demand_type.billing == "Abonnement"
+        worksheet.add_cell(index + 1, 0, demand.name)
+        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+      end
+    end
+
+    send_data(workbook.stream.string, filename: "#{@organization.name}-FACTURATION.xlsx", type: "application/vnd.ms-excel")
   end
 
   def estimations

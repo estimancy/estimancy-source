@@ -2230,7 +2230,9 @@ fr:
   demands_list : "Liste de demandes"
 
   #paramétrage demandes
+  setting_estimations: "Paramétrage des estimations"
   setting_demands: "Paramétrage des demandes"
+  extract_raw_data: "Extraction des données brutes"
   edit_demand_statuses: "Paramétrage de la demande statut"
   new_demand_statuses: "Création d'une demande statut"
   create_demand_statuses: "Création d'une demande statut"
@@ -2264,18 +2266,17 @@ fr:
 
   component: "Composant"
   cplx_coeff: "Coeff. de complexité"
+  complexity : "Complexité"
   data_model: "Modèle de données"
   data_model_display_error: "Une erreur est survenue lors de l'affichage du modèle de données"
+  close: "Fermer"
   treatments_import: "Importer des traitements"
   excel_file_import: "Importer un fichier Excel (xlsx uniquement)"
   component_serv_creation : "Création d'un composant ou service"
   data_import: "Importer les données"
   requirements_import: "Importer les exigences"
   import_type: "Type d'import"
-  source_type: "Type de source"
+  source_type: "Type de de source"
   request_list_links: "Liens de la liste des demandes"
   component_type_identified_by_AI: "Types de composant à identifier par l'IA"
   host_group: "Groupe d'accueil"
-
-  extract_raw_data : "Extraire les données brutes"
-  setting_estimations: "Paramètres d'estimation"

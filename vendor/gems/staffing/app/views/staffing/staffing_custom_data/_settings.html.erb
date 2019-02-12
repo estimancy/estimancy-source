@@ -75,12 +75,12 @@
           <th></th>
           <th>
               <span class="pull-right">
-                Standard
+                Optimal
               </span>
           </th>
           <th>
               <span class="pull-right">
-                Adapté
+                Révisé
               </span>
           </th>
           <th>
@@ -449,18 +449,18 @@
         }
       },
       series: [{
-        name: "Répartition en Trapèze Optimal",
+        name: "Trapèze Optimal",
         type: 'column',
         color: '#AC6A35',
         data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
-        name: "Répartition en Trapèze Ajusté",
+        name: "Trapèze Révisé",
         type: 'column',
         color: '#AA3538',
         data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
         type: 'spline',
-        name: "Répartition Rayleigh Ajusté",
+        name: "Rayleigh Révisé",
         data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
         color: '#2F3EAF',
         marker: {
@@ -468,7 +468,7 @@
         }
       },{
         type: 'spline',
-        name: "Répartition Rayleigh Optimal",
+        name: "Rayleigh Optimal",
         data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
         color: '#2077A1',
         marker: {

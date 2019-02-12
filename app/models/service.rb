@@ -3,8 +3,11 @@ class Service < ActiveRecord::Base
 
   has_one :livrable
 
+  has_and_belongs_to_many :demand_types
+
+
   def to_s
-    name
+    name.nil? ? '' : name
   end
 
 end

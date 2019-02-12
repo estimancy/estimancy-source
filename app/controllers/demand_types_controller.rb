@@ -29,6 +29,55 @@ class DemandTypesController < ApplicationController
     @demand_type = DemandType.find(params[:id])
     @demand_type.update(params[:demand_type])
 
+    @organization = @demand_type.organization
+    @organization.demand_statuses.each do |ds|
+
+      unless params["percent_#{ds.id}"].blank?
+        pc = params["percent_#{ds.id}"].to_f
+        dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                             demand_type_id: @demand_type.id,
+                                             demand_status_id: ds.id).first
+        if dsdt.nil?
+          DemandStatusesDemandType.create(organization_id: @organization.id,
+                                        demand_type_id: @demand_type.id,
+                                        demand_status_id: ds.id,
+                                        percent: pc)
+        else
+          dsdt.percent = pc
+          dsdt.save
+        end
+      end
+    end
+
+
+    @organization.criticalities.each do |criticality|
+      @organization.severities.each do |severity|
+
+        unless params["duration_#{criticality.id}_#{severity.id}"].blank?
+
+          duration = params["duration_#{criticality.id}_#{severity.id}"].to_f
+
+          origin = DemandStatus.where(name: params["origin_status_#{criticality.id}_#{severity.id}"].to_i).first
+          target = DemandStatus.where(name: params["target_status_#{criticality.id}_#{severity.id}"].to_i).first
+
+          cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                         criticality_id: criticality.id,
+                                         severity_id: severity.id).first
+
+          if cs.nil?
+            CriticalitySeverity.create(organization_id: @organization.id,
+                                       criticality_id: criticality.id,
+                                       severity_id: severity.id,
+                                       duration: duration)
+          else
+            cs.duration = duration
+            cs.save
+          end
+
+        end
+      end
+    end
+
     if @demand_type.save
       flash[:notice] = "Demande mise à jour avec succès"
     end
