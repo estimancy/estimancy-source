@@ -345,7 +345,9 @@ $(document).ready(function() {
             <% unless @guw_outputs.empty? %>
               <% @guw_outputs.each do |guw_output| %>
                 <tr>
-                  <td class="align-center"><%= guw_output.name %></td>
+                  <td class="align-center">
+                    <%= link_to guw_output.name, guw.edit_guw_model_guw_output_path(@guw_model, guw_output) %>
+                  </td>
                   <td class="align-center"><%= guw_output.output_type %></td>
                   <td class="align-center"><%= guw_output.unit %></td>
                   <td class="align-center"><%= guw_output.allow_subtotal %></td>
