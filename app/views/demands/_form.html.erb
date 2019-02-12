@@ -173,12 +173,12 @@
         <br>
 
         <% cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                          demand_type_id: @demand.demand_type.id,
+                                          demand_type_id: @demand.demand_type.nil? ? nil : @demand.demand_type_id,
                                           criticality_id: @demand.criticality_id,
                                           severity_id: @demand.severity_id).first %>
-        Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
-
-
+        <% unless cs.nil? %>
+          Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
+        <% end %>
 
 
       </div>
@@ -231,7 +231,11 @@
           <% if @demand.demand_type == "ANO" %>
             <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
           <% else %>
-            <% @organization_services = @organization.services %>
+            <% unless @demand.demand_type.nil? %>
+              <% @organization_services = @demand.demand_type.services %>
+            <% else %>
+              <% @organization_services = [] %>
+            <% end %>
           <% end %>
           <% @organization_services.each do |service| %>
             <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,

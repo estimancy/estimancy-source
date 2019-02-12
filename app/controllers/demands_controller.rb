@@ -25,7 +25,7 @@ class DemandsController < ApplicationController
       end
     end
 
-    # get_estimations
+    get_estimations
   end
 
   def new
@@ -175,7 +175,7 @@ class DemandsController < ApplicationController
 
     dsdts = []
     @organization.demands.each_with_index do |demand, index|
-      if demand.billing == "Echeance"
+      if demand.demand_type.billing == "Echéance"
         worksheet.add_cell(index + 1, 0, demand.name)
         worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
         worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
@@ -198,7 +198,7 @@ class DemandsController < ApplicationController
             j = j + 3
           end
         end
-      elsif demand.billing == "Abonnement"
+      elsif demand.demand_type.billing == "Abonnement"
         worksheet.add_cell(index + 1, 0, demand.name)
         worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
       end
@@ -211,7 +211,7 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:demand_id])
 
-    # get_estimations
+    get_estimations
   end
 
   private def get_estimations
