@@ -1062,7 +1062,7 @@ en:
   notice_unit_of_work_successful_updated: "Unit of Work was successfully updated"
   notice_unit_of_work_successful_created: "Unit of Work was successfully created"
   notice_unit_of_work_successful_deleted: "Unit of Work was successfully deleted"
-  new_unit_of_work: "New Unit Of Work (UOW)"
+  new_unit_of_work: "New Requirement"
   organization_abacus: "Abacus"
   text_organization_abacus: "Abacus of the organization per technology"
   notice_subcontractor_successfully_created: "Subcontractor was successfully created"
