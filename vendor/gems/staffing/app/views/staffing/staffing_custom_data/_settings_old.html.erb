@@ -71,13 +71,15 @@
    # end
 %>
 
-<%= simple_form_for @staffing_custom_data, url: staffing.staffing_custom_datum_old_save_staffing_custom_data_path(@staffing_custom_data), method: :post do |f| %>
+<%# simple_form_for @staffing_custom_data, url: staffing.staffing_custom_datum_old_save_staffing_custom_data_path(@staffing_custom_data), method: :post do |f| %>
+<%= simple_form_for @staffing_custom_data, url: "#", method: :post do |f| %>
   <div class="row-fluid">
 
 
     <div class="span2">
       <% unless @staffing_model.enabled_input %>
-        <%= hidden_field_tag "staffing_custom_datum[global_effort_value]", effort %>
+        <%= hidden_field_tag "staffing_custom_datum[global_effort_Adaptation de la valeur d'entrée
+value]", effort %>
         <label>Effort (<%= @staffing_model.effort_unit %>)</label>
         <%= text_field_tag "",
                            convert_with_precision(effort, user_number_precision),

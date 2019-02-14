@@ -20,7 +20,10 @@
             <div class="pull-right" style="margin-top: 100px;">
               <%= form_tag import_ge_model_instance_path, :multipart => true, method: "post", :class => 'simple_form' do %>
                   <div>
-                    <label style="color: #808080"><%= I18n.t(:import_generic_effort_model) %> </label> <br>
+                    <label style="color: #808080">
+                      <%= I18n.t(:import_generic_effort_model) %>
+                    </label>
+                    <br>
                     <%= hidden_field_tag :organization_id, @organization.id %>
                     <%= file_field_tag :file %>
                     <%= hidden_field_tag :ge_model_id, nil %>
