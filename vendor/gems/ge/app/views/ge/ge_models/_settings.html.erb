@@ -1,7 +1,11 @@
 <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
 
   <% if @ge_model.ge_factors.size > 0 %>
-      <h4><b> <%= I18n.t(:select_factor_value) %> </b></h4>
+      <h4>
+        <b>
+          <%= I18n.t(:select_factor_value) %>
+        </b>
+      </h4>
 
       <div class="row-fluid col-wrap">
         <div class="accordion" id="accordion_factor">
@@ -48,7 +52,7 @@
                               <div class="span12">
 
                                 <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
-                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank" %>
+                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
                                 <% else %>
                                   <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
                                     <%= key.humanize.upcase %>
