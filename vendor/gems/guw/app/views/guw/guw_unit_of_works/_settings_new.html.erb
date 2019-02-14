@@ -108,7 +108,7 @@
         <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
         <% unless @unit_of_work_groups.empty? %>
           <%# link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
-          <%= link_to "Saisir une exigence", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+          <%= link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
         <% end %>
       <% end %>
     <% end %>

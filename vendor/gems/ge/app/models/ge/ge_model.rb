@@ -22,7 +22,19 @@
 module Ge
   class GeModel < ActiveRecord::Base
 
-    INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]
+    attr_accessible :name, :description, :ge_model_instance_mode, :coeff_a, :coeff_b, :copy_number, :copy_id, :modify_theorical_effort,
+                    :ent1_unit, :ent2_unit, :ent3_unit, :ent4_unit, :sort1_unit, :sort2_unit, :sort3_unit, :sort4_unit,
+                    :ent1_unit_coefficient, :ent2_unit_coefficient, :ent3_unit_coefficient, :ent4_unit_coefficient,
+                    :sort1_unit_coefficient, :sort2_unit_coefficient, :sort3_unit_coefficient, :sort4_unit_coefficient,
+                    :ent1_is_modifiable, :ent2_is_modifiable, :ent3_is_modifiable, :ent4_is_modifiable,
+                    :sort1_is_modifiable, :sort2_is_modifiable, :sort3_is_modifiable, :sort4_is_modifiable,
+                    :ge_model_instance_mode, :input_pe_attribute_id, :output_pe_attribute_id,
+                    :c_calculation_method, :s_calculation_method, :p_calculation_method,
+                    :enabled_input, :input_effort_standard_unit_coefficient, :output_effort_standard_unit_coefficient, :three_points_estimation,
+                    :output_effort_unit, :input_effort_unit, :output_size_unit, :input_size_unit, :organization_id
+
+
+                    INPUT_EFFORTS_ALIAS = ["ent1", "ent2", "ent3", "ent4"]
     OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
     TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS = ["sort1", "sort2", "sort3", "sort4"]
 
@@ -48,7 +60,6 @@ module Ge
     # coeff de conversion de l'effort (standard)
     validates :ent1_unit_coefficient, :ent2_unit_coefficient, :ent3_unit_coefficient, :ent4_unit_coefficient, :presence => true
     validates :sort1_unit_coefficient, :sort2_unit_coefficient, :sort3_unit_coefficient, :sort4_unit_coefficient, :presence => true
-
 
     belongs_to :organization
     belongs_to :input_pe_attribute, class_name: PeAttribute, foreign_key: :input_pe_attribute_id
