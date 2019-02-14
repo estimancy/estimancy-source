@@ -5,7 +5,7 @@
         <%= I18n.t(:knowledge_base) %>
       </a>
     </li>
-    <% if action_name.in?(%w(edit update)) %>
+    <% if action_name.in?("edit", "update") %>
       <li>
         <a href="#tabs-2">
           <%= I18n.t(:data) %>
@@ -105,7 +105,7 @@
     <% end %>
   </div>
 
-  <% if action_name.in?(%w(edit update)) %>
+  <% if action_name.in?("edit", "update") %>
     <div id="tabs-2">
       <div class="row-fluid">
         <div class="span3">
