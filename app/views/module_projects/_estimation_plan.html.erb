@@ -48,7 +48,6 @@
                   <%= link_to '', '#', :title => "#{@project}: \n #{@initialization_module.description}", :class => "icon-info attribute_tooltip a_white" %>
                 <% else %>
                   <%= link_to '', '#', :title => "#{pmod.pemodule.title}: \n #{pmod.pemodule.description}", :class => "icon-info attribute_tooltip a_white" %>
-                  <%#= link_to '', edit_module_project_path(pmod.id), :class => "icon-pencil a_white" %>
                   <%= link_to('', pmod, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash a_white') %>
                 <% end %>
 
