@@ -39,9 +39,9 @@ class DemandTypesController < ApplicationController
                                              demand_status_id: ds.id).first
         if dsdt.nil?
           DemandStatusesDemandType.create(organization_id: @organization.id,
-                                        demand_type_id: @demand_type.id,
-                                        demand_status_id: ds.id,
-                                        percent: pc)
+                                          demand_type_id: @demand_type.id,
+                                          demand_status_id: ds.id,
+                                          percent: pc)
         else
           dsdt.percent = pc
           dsdt.save
@@ -56,6 +56,7 @@ class DemandTypesController < ApplicationController
         unless params["duration_#{criticality.id}_#{severity.id}"].blank?
 
           duration = params["duration_#{criticality.id}_#{severity.id}"].to_f
+          priority = params["priority_#{criticality.id}_#{severity.id}"].to_f
 
           origin = DemandStatus.where(name: params["origin_status_#{criticality.id}_#{severity.id}"].to_i).first
           target = DemandStatus.where(name: params["target_status_#{criticality.id}_#{severity.id}"].to_i).first
@@ -68,9 +69,12 @@ class DemandTypesController < ApplicationController
             CriticalitySeverity.create(organization_id: @organization.id,
                                        criticality_id: criticality.id,
                                        severity_id: severity.id,
-                                       duration: duration)
+                                       duration: duration,
+                                       priority: priority)
           else
             cs.duration = duration
+            cs.priority = priority
+
             cs.save
           end
 

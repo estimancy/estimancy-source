@@ -47,7 +47,7 @@ class DemandsController < ApplicationController
                            change_date: Time.now,
                            action: "Création de la demande",
                            origin: nil,
-                           target: @demand.demand_status.name,
+                           target: @organization.demand_statuses.first.nil? ? nil : @organization.demand_statuses.first.name,
                            user: current_user.name)
 
       @organization.services.each do |s|
