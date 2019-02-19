@@ -22,8 +22,11 @@
 module Skb
   class SkbModel < ActiveRecord::Base
 
-    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
+    attr_accessible :name, :size_unit, :three_points_estimation, :enabled_input, :organization_id, :copy_number, :copy_id,
+                    :description, :label_x, :label_y, :filter_a, :filter_b, :filter_c, :filter_d, :selected_attributes,
+                    :date_min, :date_max, :n_max
 
+    validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
     belongs_to :organization
 

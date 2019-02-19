@@ -89,7 +89,8 @@
                                                      criticality_id: criticality.id,
                                                      severity_id: severity.id).first
                     %>
-                    <%= text_field_tag "duration_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.duration, class: "" %>
+                    <%= text_field_tag "duration_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
+                    <%= text_field_tag "priority_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
                   </td>
                 <% end %>
                 <td>

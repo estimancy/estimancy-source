@@ -1,7 +1,11 @@
 <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
 
   <% if @ge_model.ge_factors.size > 0 %>
-      <h4><b> <%= I18n.t(:select_factor_value) %> </b></h4>
+      <h4>
+        <b>
+          <%= I18n.t(:select_factor_value) %>
+        </b>
+      </h4>
 
       <div class="row-fluid col-wrap">
         <div class="accordion" id="accordion_factor">
@@ -48,9 +52,9 @@
                               <div class="span12">
 
                                 <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
-                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank" %>
+                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
                                 <% else %>
-                                  <span class="attribute_tooltip" title="<b><%= ge_factor.long_name %> : </b><br/> <%= ge_factor.description %>">
+                                  <span title="<%= ge_factor.long_name %> :  <%= ge_factor.description %>">
                                     <%= key.humanize.upcase %>
                                   </span>
                                 <% end %>
@@ -413,7 +417,9 @@
           <% if @ge_model.three_points_estimation == true %>
             <th><%= I18n.t(:top)%></th>
           <% end %>
-          <th>Ratio de Transformation</th>
+          <th>
+            <%= I18n.t(:ratio) %>
+          </th>
         </tr>
 
         <!--  NOUVEAU PARAMS SORTIE  -->
@@ -443,6 +449,7 @@
 
           <td>
             <% current_outputs_evs.each do |ev| %>
+              <% unless ev.nil? %>
                 <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
 
                 <div class="row-fluid">
@@ -459,27 +466,28 @@
                     <%= get_ge_model_value_unit(@ge_model, ev) %>
                   </div>
                 </div>
+              <% end %>
             <% end %>
           </td>
 
           <% if @ge_model.three_points_estimation == true %>
               <td>
                 <% current_outputs_evs.each do |ev| %>
-                    <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                  <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
 
-                    <div class="row-fluid">
-                      <div class="span9">
-                        <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                            <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
-                        <% else %>
-                            <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
-                            <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>
-                      <% end %>
+                  <div class="row-fluid">
+                    <div class="span9">
+                      <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                      <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                          <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
+                      <% else %>
+                          <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
+                          <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>
+                    <% end %>
 
-                        <%= get_ge_model_value_unit(@ge_model, ev) %>
-                      </div>
+                      <%= get_ge_model_value_unit(@ge_model, ev) %>
                     </div>
+                  </div>
                 <% end %>
               </td>
           <% end %>

@@ -21,6 +21,11 @@
 
 module Kb
   class KbModel < ActiveRecord::Base
+
+    attr_accessible :name, :standard_unit_coefficient, :effort_unit, :three_points_estimation, :enabled_input,
+                    :organization_id, :standard_unit_coefficient, :effort_unit, :selected_attributes,
+                    :copy_number, :copy_id, :n_max, :date_max, :date_min, :filter_a, :filter_b, :filter_c, :filter_d
+
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
     validates :standard_unit_coefficient, :presence => true

@@ -1048,6 +1048,7 @@ fr:
   notice_unit_of_work_successful_created: "l'unités d'œuvres à été créée avec succès"
   notice_unit_of_work_successful_deleted: "l'unités d'œuvres à été supprimée avec succès"
   new_unit_of_work: "Saisir une exigence"
+  adaptation_input_value: "Adaptation de la valeur d'entrée"
   organization_abacus: "Abaque"
   text_organization_abacus: "Abaque de l'organisation par technologie"
   notice_subcontractor_successfully_created: "Le sous-traitant a été créé avec succès"

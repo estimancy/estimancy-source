@@ -42,20 +42,20 @@
                           selected: @demand.demand_type.demand_status_id,
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
-              <%# if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
-                <%# f.input :demand_status_id,
+              <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
+                <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
                             collection: @demand.get_demand_statuses(@organization),
                             disabled: true,
                             input_html: { class: 'input-xxlarge' } %>
-              <%# else %>
+              <% else %>
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
                             collection: @demand.get_demand_statuses(@organization),
                             input_html: { class: 'input-xxlarge' } %>
-              <%# end %>
+              <% end %>
             <% end %>
           <% end %>
 
@@ -148,38 +148,60 @@
 
         <hr>
 
-
-        <% StatusHistory.where(demand: @demand.name).each do |sh| %>
-          <% if sh.action == "Création de la demande" %>
-            <%= sh.change_date %> : <%= sh.action %> au statut <b><%= sh.target %></b>
-          <% else %>
-            <%= sh.change_date %> : <%= sh.action %> : <b><%= sh.origin %></b> à <b><%= sh.target %></b>
-          <% end %>
-          <br>
-        <% end %>
-
-        <br>
-        <% sh = StatusHistory.where(demand: @demand.name).all %>
-        <% sh.each_with_index do |s, index| %>
-          <% unless sh[index + 1].nil? %>
-            <%= Biz.within(
-                    Time.utc(sh[index].change_date.year, sh[index].change_date.month, sh[index].change_date.day, sh[index].change_date.hour, sh[index].change_date.min),
-                    Time.utc(sh[index + 1].change_date.year, sh[index + 1].change_date.month, sh[index + 1].change_date.day, sh[index + 1].change_date.hour, sh[index + 1].change_date.min)
-                ).in_seconds / 3600 %> h écoulés entre <%= sh[index].change_date %> et <%= sh[index + 1].change_date %>
-          <% end %>
-          <br>
-        <% end %>
-
-        <br>
-
         <% cs = CriticalitySeverity.where(organization_id: @organization.id,
                                           demand_type_id: @demand.demand_type.nil? ? nil : @demand.demand_type_id,
                                           criticality_id: @demand.criticality_id,
                                           severity_id: @demand.severity_id).first %>
+        <% @demand.priority = cs.priority %>
+        <% @demand.save %>
+
         <% unless cs.nil? %>
           Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
+          <br>
         <% end %>
 
+        <% unless cs.nil? %>
+
+          <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+          <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+
+          <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
+          <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
+
+          <% unless origin_sh.nil? || target_sh.nil? %>
+            <% elapsed_time = Biz.within(
+
+                Time.utc(origin_sh.change_date.year,
+                         origin_sh.change_date.month,
+                         origin_sh.change_date.day,
+                         origin_sh.change_date.hour,
+                         origin_sh.change_date.min),
+
+                Time.utc(target_sh.change_date.year,
+                         target_sh.change_date.month,
+                         target_sh.change_date.day,
+                         target_sh.change_date.hour,
+                         target_sh.change_date.min)
+
+            ).in_seconds / 3600 %>
+
+            Calcul de l'écart entre <%= origin_ds.name %> et <%= target_ds.name %> : <%= elapsed_time.to_f %> heures
+
+            <br>
+
+            <% if cs.duration.to_f >= elapsed_time.to_f %>
+              <% @demand.delayed = false %>
+            <% else %>
+              <% @demand.delayed = true %>
+            <% end %>
+            <% @demand.save %>
+
+            <br>
+
+            Demande <%= (@demand.delayed == true) ? 'en retard' : 'OK' %>
+
+          <% end %>
+        <% end %>
 
       </div>
     </div>
