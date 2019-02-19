@@ -20,6 +20,12 @@
         <div class="widget-content resizableProduct">
           <p>
             <%= raw(@project.description.to_s.truncate(440)) %>
+            <% unless current_module_project.nil? %>
+              <% wbs_activity = current_module_project.wbs_activity %>
+              <% unless wbs_activity.nil? %>
+                <%= wbs_activity.description %>
+              <% end %>
+            <% end %>
           </p>
         </div>
       </div>

@@ -14,3 +14,5 @@
 //= require_self
 //= require_tree .
 //= require cookies_eu
+//= require Chart.bundle
+//= require chartkick

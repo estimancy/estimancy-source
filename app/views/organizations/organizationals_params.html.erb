@@ -26,9 +26,6 @@
       <thead>
         <tr>
           <th><%= I18n.t (:name) %></th>
-          <% if current_user.super_admin? %>
-            <th><%= I18n.t(:is_image_organization) %></th>
-          <% end %>
           <th><%= I18n.t (:description) %></th>
           <th class="action"><%= I18n.t (:actions) %></th>
         </tr>
@@ -43,11 +40,7 @@
                 <%= link_to i.name, organization_estimations_path(i) %>
               <% end %>
             </td>
-            <% if current_user.super_admin? %>
-              <td class="span1 center">
-                <%= i.is_image_organization ? I18n.t("simple_form.yes") : I18n.t("simple_form.no") %>
-              </td>
-            <% end %>
+
 
             <td class="span6"><%= i.description %></td>
             <td class="center">
