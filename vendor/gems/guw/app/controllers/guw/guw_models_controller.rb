@@ -747,7 +747,7 @@ class Guw::GuwModelsController < ApplicationController
     counter_line = 1
     worksheet.add_cell(0, 0, I18n.t(:pe_attribute_name))
     worksheet.add_cell(0, 1, I18n.t(:description))
-    worksheet.change_row_bold(0,true)
+    # worksheet.change_row_bold(0,true)
 
     worksheet.change_row_horizontal_alignment(0, 'center')
     @guw_model.guw_attributes.order("name ASC").each_with_index do |attribute, indx|
@@ -777,7 +777,6 @@ class Guw::GuwModelsController < ApplicationController
     worksheet = workbook[2]
     counter_line = 1
     page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-    worksheet.change_row_bold(0,true)
     page.each_with_index do |cell_name, index|
       worksheet.add_cell(0, index, cell_name)
       worksheet.change_column_horizontal_alignment(index, 'center')
@@ -805,7 +804,6 @@ class Guw::GuwModelsController < ApplicationController
     worksheet = workbook[3]
     counter_line = 1
     page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-    worksheet.change_row_bold(0,true)
     page.each_with_index do |cell_name, index|
       worksheet.add_cell(0, index, cell_name)
       worksheet.change_column_horizontal_alignment(index, 'center')
@@ -833,7 +831,6 @@ class Guw::GuwModelsController < ApplicationController
     worksheet = workbook[4]
     counter_line = 1
     page = [I18n.t(:name), I18n.t(:value), I18n.t(:display_order)]
-    worksheet.change_row_bold(0,true)
     page.each_with_index do |cell_name, index|
       worksheet.add_cell(0, index, cell_name)
       worksheet.change_column_horizontal_alignment(index, 'center')
@@ -889,7 +886,6 @@ class Guw::GuwModelsController < ApplicationController
       worksheet[ind2 + 2][0].change_border(:bottom, 'thin')
 
       worksheet.sheet_data[ind2 + 2][0].change_font_bold(true)
-      worksheet.change_row_bold(ind2 + 3,true)
       worksheet.add_cell(ind2 + 3, 0,  I18n.t(:Coefficient_of_acquisiton))
       worksheet[ind2 + 3][0].change_border(:bottom, 'thin')
 
@@ -934,7 +930,6 @@ class Guw::GuwModelsController < ApplicationController
           # worksheet[ind2 + 3][ind + index].change_border(:bottom, 'thin')
         end
 
-        worksheet.change_row_bold(ind2 + 4,true)
         worksheet.add_cell(ind2 + 4, 0, I18n.t(:organization_technology))
         worksheet[ind2 + 4][0].change_border(:bottom, 'thin')
 
@@ -1098,7 +1093,7 @@ class Guw::GuwModelsController < ApplicationController
     counter_line = 1
     worksheet.add_cell(0, 0, I18n.t(:pe_attribute_name))
     worksheet.add_cell(0, 1, I18n.t(:description))
-    worksheet.change_row_bold(0,true)
+    # worksheet.change_row_bold(0,true)
 
     worksheet.change_row_horizontal_alignment(0, 'center')
     @guw_model.guw_attributes.order("name ASC").each_with_index do |attribute, indx|
@@ -1218,7 +1213,7 @@ class Guw::GuwModelsController < ApplicationController
       line_number += 1
     end
 
-    outputs_worksheet.change_row_bold(0,true)
+    # outputs_worksheet.change_row_bold(0,true)
     counter_line += @guw_outputs.size
 
     counter_line.times do |indx|
@@ -1289,7 +1284,7 @@ class Guw::GuwModelsController < ApplicationController
 
       #======   Colonne 0 =============
       # Valeur initiale (Σ)
-      worksheet.change_row_bold(ind2 + 3,true)
+      # worksheet.change_row_bold(ind2 + 3,true)
       worksheet.add_cell(ind2 + 3, 0, "Valeur initiale").change_font_bold(true)
 
       # Un (1)
@@ -1386,7 +1381,7 @@ class Guw::GuwModelsController < ApplicationController
         @guw_model.guw_coefficients.each do |guw_coefficient|
 
           worksheet.add_cell(output_line, 0, guw_coefficient.name)
-          worksheet.change_row_bold(output_line, true)
+          # worksheet.change_row_bold(output_line, true)
 
           @guw_outputs.each_with_index do |guw_output, index|
             worksheet.add_cell(output_line, column_number + index, guw_output.name)
@@ -1704,7 +1699,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, index, val)
     end
 
-    worksheet.change_row_bold(0,true)
+    # worksheet.change_row_bold(0,true)
 
     jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
@@ -1917,7 +1912,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, index, val)
     end
 
-    worksheet.change_row_bold(0,true)
+    # worksheet.change_row_bold(0,true)
 
     jj = 21 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
