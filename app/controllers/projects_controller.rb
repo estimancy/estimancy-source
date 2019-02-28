@@ -262,7 +262,7 @@ class ProjectsController < ApplicationController
 
               unless fe.nil?
                 vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
-                  @total_effort[project.id] << pf.value.to_f * 1000
+                  @total_effort[project.id] << pf.value.to_f
                 end
               end
 
@@ -291,7 +291,7 @@ class ProjectsController < ApplicationController
     worksheet_synt.add_cell(0, 9, "Date")
     worksheet_synt.add_cell(0, 10, "Statut")
     worksheet_synt.add_cell(0, 11, "Charge totale")
-    worksheet_synt.add_cell(0, 12, "Coût total")
+    worksheet_synt.add_cell(0, 12, "Coût total (€)")
     worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
 
     pi = 1
