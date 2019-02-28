@@ -367,18 +367,18 @@ class ApplicationController < ActionController::Base
   # Get the current activated module project
   def current_module_project
     if @project.nil?
-      nil
+      return nil
     else
       pemodule = Pemodule.find_by_alias('initialization')
       default_current_module_project = ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
-        session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
+        return session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
       else
         begin
           pemodule = Pemodule.find_by_alias('initialization')
-          ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+           return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
         rescue
-          @project.module_projects.first
+          return @project.module_projects.first
         end
       end
     end

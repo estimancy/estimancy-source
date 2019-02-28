@@ -81,6 +81,7 @@ public
     @user = User.new
     @user.auth_type = AuthMethod.where(name: "Application").first.id
     @user.subscription_end_date = Time.now + 1.year
+
     @generated_password = SecureRandom.hex(4)
     @organizations = current_user.organizations
   end
@@ -283,7 +284,7 @@ public
 
 
   #Update user
-  def update
+  def    update
     specific_message = ""
     @user = User.find(params[:id])
     if current_user != @user
@@ -423,6 +424,11 @@ public
       @user_current_password = params[:user][:current_password];  @user_password = params[:user][:password]; @user_password_confirmation = params[:user][:password_confirmation]
       render(:edit, organization_id: @organization_id)
     end
+
+    if params[:user][:last_login].blank?
+      @user.last_login = Time.now
+    end
+
   end
 
   def unlock_user

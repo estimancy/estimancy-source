@@ -180,4 +180,6 @@ class EstimationStatusesController < ApplicationController
       format.html { redirect_to organization_setting_path(organization_id, :anchor => 'tabs-estimations-statuses') }
     end
   end
+
+
 end

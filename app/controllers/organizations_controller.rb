@@ -2010,7 +2010,6 @@ class OrganizationsController < ApplicationController
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
     set_page_title I18n.t(:module ,parameter: @organization)
-
     @guw_models = @organization.guw_models.order("name asc")
     @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
@@ -3782,7 +3781,6 @@ class OrganizationsController < ApplicationController
       end
     end
   end
-
 
   private
   def check_if_organization_is_image(organization)
