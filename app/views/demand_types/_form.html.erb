@@ -16,8 +16,10 @@
       <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => "Provenance coût à facturer", :input_html => {:class => 'input-xlarge'} %>
       <%= f.input :demand_status_id, as: :select, collection: @organization.demand_statuses.map{|i| [i.name, i.id]} , :label => "Statut de départ", :input_html => {:class => 'input-xlarge'} %>
 
-      <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xxlarge'} %>
-      <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xxlarge'} %>
+      <%= f.input :origin_target_mode, as: :select, collection: ["Demande / Demande", "Demande / Devis", "Devis / Demande", "Devis / Devis"] , :label => "Origine / Cible", :input_html => {:class => 'input-xlarge'} %>
+
+      <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xlarge'} %>
+      <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xlarge'} %>
 
       <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
                   :input_html => {:class => 'input-xlarge'} %>
@@ -99,10 +101,15 @@
                                                    demand_type_id: @demand_type.id,
                                                    criticality_id: criticality.id).first
                   %>
-                  <%= select_tag "origin_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.origin_status_id), class: "" %>
+                  <%
+                    grouped_options = {
+                        'Demandes' => @organization.demand_statuses.map{ |i| [i.name, i.id] },
+                        'Devis' => @organization.estimation_statuses.map{ |i| [i.name, i.id] } }
+                  %>
+                  <%= select_tag "origin_status_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.origin_status_id) %>
                 </td>
                 <td>
-                  <%= select_tag "target_status_#{criticality.id}", options_for_select(@organization.demand_statuses.map{|i| [i.name, i.id]}, selected: cs.nil? ? nil : cs.target_status_id), class: "" %>
+                  <%= select_tag "target_status_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.target_status_id) %>
                 </td>
               </tr>
             <% end %>

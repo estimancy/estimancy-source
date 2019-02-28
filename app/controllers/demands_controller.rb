@@ -96,8 +96,7 @@ class DemandsController < ApplicationController
 
         sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                           service_id: params["service_#{s.id}"].to_i,
-                                          demand_id: @demand.id,
-                                          livrable_id: nil).first
+                                          demand_id: @demand.id).first
 
         unless sdl.nil?
 

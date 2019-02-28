@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190214150630) do
+ActiveRecord::Schema.define(version: 20190227094942) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -297,7 +297,7 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.integer  "demand_type_id",   limit: 4
-    t.integer  "priority",         limit: 4
+    t.string   "priority",         limit: 11
   end
 
   create_table "currencies", force: :cascade do |t|
@@ -334,16 +334,17 @@ ActiveRecord::Schema.define(version: 20190214150630) do
   end
 
   create_table "demand_types", force: :cascade do |t|
-    t.string   "name",              limit: 255
-    t.text     "description",       limit: 65535
+    t.string   "name",               limit: 255
+    t.text     "description",        limit: 65535
     t.boolean  "fixed_billing"
     t.boolean  "deadlined_billing"
-    t.integer  "organization_id",   limit: 4
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "cost_from",         limit: 255
-    t.integer  "demand_status_id",  limit: 4
-    t.string   "billing",           limit: 11
+    t.integer  "organization_id",    limit: 4
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "cost_from",          limit: 255
+    t.integer  "demand_status_id",   limit: 4
+    t.string   "billing",            limit: 11
+    t.string   "origin_target_mode", limit: 255
   end
 
   create_table "demand_types_services", force: :cascade do |t|
@@ -366,7 +367,7 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.integer  "criticality_id",   limit: 4
     t.integer  "severity_id",      limit: 4
     t.boolean  "delayed",                        default: false
-    t.integer  "priority",         limit: 4
+    t.string   "priority",         limit: 11
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|

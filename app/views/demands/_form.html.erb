@@ -148,22 +148,39 @@
 
         <hr>
 
+        <% @demand_demand_type = @demand.demand_type %>
         <% cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                          demand_type_id: @demand.demand_type.nil? ? nil : @demand.demand_type_id,
+                                          demand_type_id: @demand_demand_type.nil? ? nil : @demand.demand_type_id,
                                           criticality_id: @demand.criticality_id,
                                           severity_id: @demand.severity_id).first %>
-        <% @demand.priority = cs.priority %>
-        <% @demand.save %>
+        <% unless cs.nil? %>
+          <% @demand.priority = cs.priority %>
+          <% @demand.save %>
+        <% end %>
 
         <% unless cs.nil? %>
-          Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
+          Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
           <br>
         <% end %>
 
         <% unless cs.nil? %>
 
-          <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
-          <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+          <% origin_ds = nil %>
+          <% target_ds = nil %>
+
+          <% if @demand_demand_type.origin_target_mode == "Demande / Demande" %>
+            <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+            <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+          <% elsif @demand_demand_type.origin_target_mode == "Demande / Devis" %>
+            <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+            <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+          <% elsif @demand_demand_type.origin_target_mode == "Devis / Demande" %>
+            <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+            <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+          <% elsif @demand_demand_type.origin_target_mode == "Devis / Devis" %>
+            <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+            <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+          <% end %>
 
           <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
           <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
@@ -185,7 +202,7 @@
 
             ).in_seconds / 3600 %>
 
-            Calcul de l'écart entre <%= origin_ds.name %> et <%= target_ds.name %> : <%= elapsed_time.to_f %> heures
+            Ecart entre <b><%= origin_ds.name %></b> et <b><%= target_ds.name %></b> : <%= elapsed_time.to_i %> heures
 
             <br>
 
@@ -198,7 +215,15 @@
 
             <br>
 
-            Demande <%= (@demand.delayed == true) ? 'en retard' : 'OK' %>
+            <% if @demand.delayed == true %>
+              <span class="badge badge-important">
+                Demande en retard
+              </span>
+            <% else %>
+              <span class="badge badge-success">
+                Demande OK
+              </span>
+            <% end %>
 
           <% end %>
         <% end %>
@@ -318,7 +343,7 @@
                     <% end %>
                   </td>
                   <td class="center">
-                    <% unless sdl.actual_date.nil? %>
+                    <% unless sdl.expected_date.nil? %>
                       <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
                     <% else %>
                       <%= text_field_tag "expected_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>

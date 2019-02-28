@@ -1,6 +1,6 @@
 class DemandType < ActiveRecord::Base
   attr_accessible :name, :description, :fixed_billing, :deadlined_billing, :cost_from,
-                  :organization_id, :demand_status_id, :billing, :service_ids
+                  :organization_id, :demand_status_id, :billing, :service_ids, :origin_target_mode
 
   has_many :demands
 

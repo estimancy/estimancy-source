@@ -18,7 +18,7 @@
       total = Demand.where(organization_id: @organization.id).all.size
     %>
 
-    <%= (dd.to_f / total.to_f) * 100 %> % de demande en retard
+    <%= ((dd.to_f / total.to_f) * 100).round(2) %> % de demande en retard
 
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
       <thead>
@@ -61,8 +61,8 @@
             <td><%= demand.description.to_s.truncate(50) %></td>
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
-            <td><%= demand.demand_status %></td>
-            <td><%= demand.priority %></td>
+            <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
+            <td><%= demand.priority.nil? ? '-' : demand.priority %></td>
             <td><%= (demand.delayed == true) ? "En retard" : "OK  " %></td>
             <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
           </tr>
