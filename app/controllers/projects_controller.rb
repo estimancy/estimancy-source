@@ -210,8 +210,8 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 13, "TJM")
     worksheet_wbs.add_cell(0, 14, "Charge calculée")
     worksheet_wbs.add_cell(0, 15, "Charge retenue")
-    worksheet_wbs.add_cell(0, 16, "Coût calculé")
-    worksheet_wbs.add_cell(0, 17, "Coût retenu")
+    worksheet_wbs.add_cell(0, 16, "Coût calculé (€)")
+    worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
       mpre_project = mpre.module_project.project
@@ -262,14 +262,14 @@ class ProjectsController < ApplicationController
 
               unless fe.nil?
                 vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
-                  @total_effort[project.id] << pf.value.to_f
+                  @total_effort[project.id] << pf.value.to_f * 1000
                 end
               end
 
               unless fc.nil?
                 vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
                   unless pf.field.coefficient.nil?
-                    @total_cost[project.id] << (pf.value.to_f / pf.field.coefficient.to_f)
+                    @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
                   end
                 end
               end
