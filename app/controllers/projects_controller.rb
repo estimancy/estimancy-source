@@ -389,7 +389,7 @@ class ProjectsController < ApplicationController
   # Function to activate the current/selected module_project
   def activate_module_project
     session[:module_project_id] = params[:module_project_id]
-    @module_project = ModuleProject.find(params[:module_project_id])
+    @module_project = ModuleProject.find(session[:module_project_id])
     @project = @module_project.project
     @project_organization = @project.organization
 
