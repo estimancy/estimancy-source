@@ -376,7 +376,7 @@ class ApplicationController < ActionController::Base
       else
         begin
           pemodule = Pemodule.find_by_alias('initialization')
-           return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+          return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
         rescue
           return @project.module_projects.first
         end

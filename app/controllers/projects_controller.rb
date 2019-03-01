@@ -366,7 +366,13 @@ class ProjectsController < ApplicationController
 
     @user = current_user
     @pemodules ||= Pemodule.all
-    @module_project = current_module_project
+
+    if current_module_project.nil?
+      @module_project = @project.module_projects.first
+    else
+      @module_project = current_module_project
+    end
+
     @show_hidden = 'true'
 
     status_comment_link = ""
