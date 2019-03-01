@@ -395,7 +395,7 @@ class ProjectsController < ApplicationController
 
     authorize! :show_project, @project
 
-    @module_projects ||= @project.module_projects
+    @module_projects = @project.module_projects
     @pbs_project_element = current_component
 
     #Get the initialization module_project
