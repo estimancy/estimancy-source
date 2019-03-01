@@ -2,7 +2,7 @@
 <% for j in 0..@module_positions do %>    <!-- @module_positions is the Max Y position of last module -->
     <% position_y = j #j+1 %>
     <!--Get the number of views to show -->
-    <% module_projects_to_show = @project.module_projects.where('position_y = ? AND show_results_view = ?', position_y, true).order(:position_x) %>
+    <% module_projects_to_show = @project.module_projects.where(position_y: position_y, show_results_view: true).order(:position_x).all %>
     <% nb_module_projects_to_show = module_projects_to_show.length %>
 
     <div class="row-fluid">
