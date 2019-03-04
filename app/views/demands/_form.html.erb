@@ -5,8 +5,16 @@
         Demandes
       </a>
     </li>
-    <li><a href="#services">Services</a></li>
-    <li><a href="#devis">Devis de la demande <%= @demand %></a></li>
+    <li>
+      <a href="#services">
+        Services
+      </a>
+    </li>
+    <li>
+      <a href="#devis">
+        Devis de la demande <%= @demand %>
+      </a>
+    </li>
   </ul>
 
   <%= simple_form_for([@organization, @demand]) do |f| %>
@@ -38,7 +46,7 @@
               <%= f.input :demand_status_id,
                           as: :select,
                           label: "Statut de la demande",
-                          collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
+                          collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
                           selected: @demand.demand_type.demand_status_id,
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
@@ -46,14 +54,14 @@
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
-                            collection: @demand.get_demand_statuses(@organization),
+                            collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
                             disabled: true,
                             input_html: { class: 'input-xxlarge' } %>
               <% else %>
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
-                            collection: @demand.get_demand_statuses(@organization),
+                            collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
                             input_html: { class: 'input-xxlarge' } %>
               <% end %>
             <% end %>
@@ -255,30 +263,32 @@
 
         <table class="table tablesorter table-striped table-bordered table-condensed">
           <thead>
-          <tr>
-            <th class="center">Sélect.</th>
-            <th class="center">
-              Services
-            </th>
-            <th class="center">
-              Réalisé
-            </th>
-            <th class="center">
-              Date attendue
-            </th>
-            <th class="center">
-              Date de livraison
-            </th>
-            <th class="center">
-              Etat
-            </th>
-            <th class="center">
-              Délivré
-            </th>
-            <th class="center">
-              Retard
-            </th>
-          </tr>
+            <tr>
+              <th class="center">
+                Sélect.
+              </th>
+              <th class="center">
+                Services
+              </th>
+              <th class="center">
+                Réalisé
+              </th>
+              <th class="center">
+                Date attendue
+              </th>
+              <th class="center">
+                Date de livraison
+              </th>
+              <th class="center">
+                Etat
+              </th>
+              <th class="center">
+                Délivré
+              </th>
+              <th class="center">
+                Retard
+              </th>
+            </tr>
           </thead>
           <% if @demand.demand_type == "ANO" %>
             <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>

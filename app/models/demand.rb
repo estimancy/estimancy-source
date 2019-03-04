@@ -17,13 +17,14 @@ class Demand < ActiveRecord::Base
     name
   end
 
-  def get_demand_statuses(organization=nil)
+  def get_demand_statuses(organization=nil, dt)
     if new_record? || self.demand_status.nil?
       if organization.nil?
         nil
       else
-        initial_status = organization.demand_statuses.first_or_create(organization_id: organization.id,
-                                                                      name: 'Préliminaire')
+        initial_status = dt.demand_statuses.first_or_create(organization_id: organization.id,
+                                                            demand_type_id: dt.id,
+                                                            name: 'Préliminaire')
         [[initial_status.name, initial_status.id]]
       end
       #nil

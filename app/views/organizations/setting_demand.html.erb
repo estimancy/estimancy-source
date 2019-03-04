@@ -52,8 +52,6 @@
 
   <div id="demands_statuses">
     <% if @organization.demand_statuses.length > 0 %>
-      <h5 class="blue"><%= I18n.t(:manage_demands_statuses_workflow) %></h5>
-
       <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
       <hr>
 

@@ -1,25 +1,36 @@
 <div class="tabs">
   <ul>
+
     <li>
       <a href="#tabs-1">
         Type de demande
       </a>
     </li>
+
     <li>
       <a href="#tabs-2">
         Services
       </a>
     </li>
+
     <li>
       <a href="#tabs-3">
         Facturation
       </a>
     </li>
+
     <li>
       <a href="#tabs-4">
         Configuration des SLA
       </a>
     </li>
+
+    <li>
+      <a href="#tabs-5">
+        Workflow des statuts
+      </a>
+    </li>
+
   </ul>
 
   <%= simple_form_for([@organization, @demand_type]) do |f| %>
@@ -39,41 +50,7 @@
 
       <hr>
 
-      <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
-
-        <%= hidden_field_tag "organization_id", @organization.id %>
-        <table class="table table-striped table-bordered table-condensed permissions">
-          <tr>
-            <th><%= I18n.t(:demands_statuses) %></th>
-            <% @demand_statuses.each do |status| %>
-              <th><%= status.name %></th>
-            <% end %>
-          </tr>
-
-          <% @demand_statuses.order("status_number ASC").each do |demand_status| %>
-            <tr>
-              <td><%= demand_status.name %></td>
-              <% @demand_statuses.order("status_number ASC").each do |status| %>
-                <% if demand_status == status %>
-                  <td class="center">
-                    <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
-                  </td>
-                <% else %>
-                  <td class="center">
-                    <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
-                  </td>
-                <% end %>
-              <% end %>
-            </tr>
-          <% end %>
-        </table>
-
-        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
-      <% end %>
-
       <div class="actions-tabs">
-        <hr>
         <% if action_name == 'new' || action_name=="create" %>
           <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
@@ -252,5 +229,41 @@
     </div>
 
   <% end %>
+
+  <div id="tabs-5">
+    <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
+
+      <%= hidden_field_tag "organization_id", @organization.id %>
+      <%= hidden_field_tag "demand_type_id", @demand_type.id %>
+      <table class="table table-striped table-bordered table-condensed permissions">
+        <tr>
+          <th><%= I18n.t(:demands_statuses) %></th>
+          <% @demand_statuses.each do |status| %>
+            <th><%= status.name %></th>
+          <% end %>
+        </tr>
+
+        <% @demand_statuses.order("status_number ASC").each do |demand_status| %>
+          <tr>
+            <td><%= demand_status.name %></td>
+            <% @demand_statuses.order("status_number ASC").each do |status| %>
+              <% if demand_status == status %>
+                <td class="center">
+                  <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
+                </td>
+              <% else %>
+                <td class="center">
+                  <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
+                </td>
+              <% end %>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+
+      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+      <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+    <% end %>
+  </div>
 
 </div>
