@@ -126,12 +126,12 @@
             <% @demand_statuses.each do |ds| %>
               <tr>
                 <td>
-                  <%= ds.name %>
+                  <%= ds.status_number %> - <%= ds.name %>
                 </td>
                 <td class="span3">
                   <%
                     dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
-                                                            demand_type_id: @demand_type.id,
+                                                          demand_type_id: @demand_type.id,
                                                           demand_status_id: ds.id).first
                   %>
                   <%= text_field_tag "percent_#{ds.id}", dsdt.nil? ? nil : dsdt.percent %>

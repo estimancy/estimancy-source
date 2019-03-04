@@ -88,7 +88,7 @@ class DemandsController < ApplicationController
 
     new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
 
-    if @demand.demand_status_id != params[:demand][:demand_status_id]
+    if @demand.demand_status_id != params[:demand][:demand_status_id].to_i
       StatusHistory.create(organization: @organization.name,
                            demand: @demand.name,
                            change_date: Time.now,
@@ -193,6 +193,7 @@ class DemandsController < ApplicationController
         worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
 
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+
         shs.each do |sh|
           ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
@@ -206,7 +207,7 @@ class DemandsController < ApplicationController
           dsdts.compact.each do |dsdt|
             worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
             worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
-            worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
+            worksheet.add_cell(index + 1, 5+j, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
             j = j + 3
           end
         end

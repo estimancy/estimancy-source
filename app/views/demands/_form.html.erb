@@ -210,7 +210,7 @@
 
             ).in_seconds / 3600 %>
 
-            La demande est passé au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+            La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
             <br>
             <% project = @demand.projects.first %>
             Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
@@ -233,11 +233,11 @@
 
             <% if @demand.delayed == true %>
               <span class="badge badge-important">
-                Demande en retard
+                SLA en retard
               </span>
             <% else %>
               <span class="badge badge-success">
-                Demande OK
+                SLA OK
               </span>
             <% end %>
 
@@ -314,10 +314,10 @@
                 <tbody>
                 <tr>
                   <td class="center">
-                    <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
+                    <%= check_box_tag "selected[#{service.id}]", true, sdl.selected, disabled: ("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) %>
                   </td>
-                  <td class="center">
-                    <%= link_to service.name, "#", title: service.description %>
+                  <td>
+                    <%= link_to service.name, "#", title: service.description %> (<%= service.wbs_activity_elements.count != 0 ? 'WBS' : 'CF' %>)
                     <%= hidden_field_tag "service_#{service.id}", service.id %>
                   </td>
                   <td class="center">

@@ -1996,7 +1996,7 @@ class OrganizationsController < ApplicationController
 
     @organization = Organization.find(params[:organization_id])
     @demands = Demand.where(organization_id: @organization.id).all
-    @demand_statuses = @organization.demand_statuses
+    @demand_statuses = @organization.demand_statuses.order("status_number ASC")
     @demand_types = DemandType.where(organization_id: @organization.id).all
     @livrables = Livrable.where(organization_id: @organization.id).all
     @services = Service.where(organization_id: @organization.id).all
