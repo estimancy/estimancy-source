@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190227094942) do
+ActiveRecord::Schema.define(version: 20190304140205) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -324,6 +324,7 @@ ActiveRecord::Schema.define(version: 20190227094942) do
     t.string   "status_color",    limit: 255
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.integer  "demand_type_id",  limit: 4
   end
 
   create_table "demand_statuses_demand_types", force: :cascade do |t|

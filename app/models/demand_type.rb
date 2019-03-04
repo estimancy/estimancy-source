@@ -5,8 +5,13 @@ class DemandType < ActiveRecord::Base
   has_many :demands
 
   belongs_to :organization
-  belongs_to :demand_status #statut de départ
+  belongs_to :demand_status #statut de départ # obsolète
+
+  has_many :demand_statuses
 
   has_and_belongs_to_many :services
 
+  def to_s
+    self.nil? ? nil : self.name
+  end
 end

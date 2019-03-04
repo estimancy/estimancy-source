@@ -8,6 +8,7 @@ class DemandTypesController < ApplicationController
   def new
     set_page_title (I18n.t('new_demand_statuses'))
     @demand_type = DemandType.new
+    @demand_statuses = @demand_type.demand_statuses
     @organization = Organization.find(params[:organization_id])
   end
 
@@ -110,6 +111,7 @@ class DemandTypesController < ApplicationController
   def edit
     set_page_title (I18n.t('edit_demand_types'))
     @demand_type = DemandType.find(params[:id])
+    @demand_statuses = @demand_type.demand_statuses
     @organization = Organization.find(params[:organization_id])
   end
 

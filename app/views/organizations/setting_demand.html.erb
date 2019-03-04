@@ -51,79 +51,44 @@
   </div>
 
   <div id="demands_statuses">
+    <% if @organization.demand_statuses.length > 0 %>
+      <h5 class="blue"><%= I18n.t(:manage_demands_statuses_workflow) %></h5>
 
-    <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
-    <hr>
+      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
+      <hr>
 
-    <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
-      <thead>
+      <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
+        <thead>
         <tr>
           <th>
-            Name
+            Nom
           </th>
           <th>
-            Status Number
+            Type de demande
           </th>
           <th>
-            Status Alias
+            Numéro
           </th>
           <th>
-            Status Color
+            Alias
+          </th>
+          <th>
+            Couleur
           </th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <% @demand_statuses.each do |demand_status| %>
           <tr>
             <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
+            <td><%= demand_status.demand_type %></td>
             <td><%= demand_status.status_number %></td>
             <td><%= demand_status.status_alias %></td>
             <td><%= demand_status.status_color %></td>
           </tr>
         <% end %>
-      </tbody>
-    </table>
-
-    <hr>
-
-    <% if @organization.demand_statuses.length > 0 %>
-      <div class="well well-rounded">
-        <h5 class="blue"><%= I18n.t(:manage_demands_statuses_workflow) %></h5>
-        <h5><%= I18n.t(:text_explain_demand_status_workflow) %></h5>
-
-        <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
-
-          <%= hidden_field_tag "organization_id", @organization.id %>
-          <table class="table table-striped table-bordered table-condensed permissions">
-            <tr>
-              <th><%= I18n.t(:demands_statuses) %></th>
-              <% @organization.demand_statuses.each do |status| %>
-                <th><%= status.name %></th>
-              <% end %>
-            </tr>
-
-            <% @organization.demand_statuses.each do |demand_status| %>
-              <tr>
-                <td><%= demand_status.name %></td>
-                <% @organization.demand_statuses.includes(:demand_to_transition_statuses).each do |status| %>
-                  <% if demand_status == status %>
-                    <td class="center">
-                      <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
-                    </td>
-                  <% else %>
-                    <td class="center">
-                      <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
-                    </td>
-                  <% end %>
-                <% end %>
-              </tr>
-            <% end %>
-          </table>
-
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
-        <% end %>
-      </div>
+        </tbody>
+      </table>
     <% end %>
   </div>
 
