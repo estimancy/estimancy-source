@@ -12,6 +12,7 @@ class Demand < ActiveRecord::Base
   belongs_to :severity
 
   has_many :projects
+  has_many :service_demand_livrables
 
   def to_s
     name

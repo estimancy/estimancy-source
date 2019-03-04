@@ -283,13 +283,10 @@
                 Date de livraison
               </th>
               <th class="center">
-                Etat
+                A l'heure
               </th>
               <th class="center">
-                Délivré
-              </th>
-              <th class="center">
-                Retard
+                Statut
               </th>
             </tr>
           </thead>
@@ -378,22 +375,6 @@
                     <% end %>
                   </td>
                   <td class="center">
-                    <% unless sdl_service_livrable.nil? || sdl.nil? %>
-                      <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
-                      <span class="fa fa-circle red"></span>
-                    <% else %>
-                      <% if sdl.state == sdl_service_livrable.state.split(',').first && sdl.actual_date <= sdl.expected_date %>
-                        <span class="fa fa-circle green"></span>
-                      <% else %>
-                        <span class="fa fa-circle red"></span>
-                      <% end %>
-                    <% end %>
-                  </td>
-                  <td class="center">
                     <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
                       <% if sdl.actual_date > sdl.expected_date %>
                         <span class="fa fa-circle red"></span>
@@ -401,7 +382,12 @@
                         <span class="fa fa-circle green"></span>
                       <% end %>
                     <% else %>
-                      <span class="fa fa-circle"></span>
+                      -
+                    <% end %>
+                  </td>
+                  <td class="center">
+                    <% unless sdl_service_livrable.nil? || sdl.nil? %>
+                      <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
                     <% end %>
                   </td>
                 </tr>

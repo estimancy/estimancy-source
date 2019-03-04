@@ -4075,6 +4075,13 @@ public
                          user: current_user.name,
                          gap: nil)
 
+    unless @project.demand.nil?
+      @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
+        sdl.actual_date = Time.now
+        sdl.save
+      end
+    end
+
     new_comments = ""
     auto_updated_comments = ""
     # Add and update comments on estimation status change
