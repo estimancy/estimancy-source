@@ -8,6 +8,19 @@ class DemandsController < ApplicationController
   end
 
   def edit
+
+    Biz.configure do |config|
+      config.hours = {
+          mon: {'09:00' => '12:00', '13:00' => '17:00'},
+          tue: {'09:00' => '12:00', '13:00' => '17:00'},
+          wed: {'09:00' => '12:00', '13:00' => '17:00'},
+          thu: {'09:00' => '12:00', '13:00' => '17:00'},
+          fri: {'09:00' => '12:00', '13:00' => '17:00'}
+      }
+
+      config.time_zone = 'Europe/Paris'
+    end
+
     set_page_title (I18n.t('edit_demand'))
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
