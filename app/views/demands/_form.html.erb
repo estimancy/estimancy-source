@@ -216,7 +216,7 @@
             Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
             <br>
             <% delay = elapsed_time - cs.duration.to_i %>
-            <% if delay <= 0 %>
+            <% unless delay <= 0 %>
               L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
             <% end %>
 

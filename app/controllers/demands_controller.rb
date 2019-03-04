@@ -177,24 +177,17 @@ class DemandsController < ApplicationController
 
     worksheet.add_cell(0, 3, "Statut")
     worksheet.add_cell(0, 4, "Date")
-    worksheet.add_cell(0, 5, "Montant")
+    worksheet.add_cell(0, 5, "Montant %")
 
-    worksheet.add_cell(0, 6, "Statut")
-    worksheet.add_cell(0, 7, "Date")
-    worksheet.add_cell(0, 8, "Montant")
-
-    # nom demande | date | montant total | date passage statut1 | montant 1 (pourcentage précédent) | date passage statut2 | montant 2 (pourcentage precednt) | etc...
 
     dsdts = []
-    @organization.demands.each_with_index do |demand, index|
+    @organization.demands.each do |demand|
       if demand.demand_type.billing == "Echéance"
-        worksheet.add_cell(index + 1, 0, demand.name)
-        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
-        worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
 
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
 
         shs.each do |sh|
+
           ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
           unless ds.nil?
@@ -203,12 +196,17 @@ class DemandsController < ApplicationController
                                                     demand_status_id: ds.id).first
           end
 
-          j = 0
-          dsdts.compact.each do |dsdt|
-            worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
-            worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
-            worksheet.add_cell(index + 1, 5+j, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
-            j = j + 3
+          j = 1
+          dsdts.compact.each_with_index do |dsdt, index|
+            worksheet.add_cell(j, 0, demand.name)
+            worksheet.add_cell(j, 1, demand.created_at.to_s)
+            worksheet.add_cell(j, 2, demand.cost.to_f * 1000)
+
+            worksheet.add_cell(j, 3, dsdt.demand_status.name)
+            worksheet.add_cell(j, 4, sh.change_date.to_s)
+            worksheet.add_cell(j, 5, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+
+            j = j + 1
           end
         end
       elsif demand.demand_type.billing == "Abonnement"
