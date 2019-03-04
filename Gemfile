@@ -259,6 +259,7 @@ gem 'bootstrap-sass', '~> 3.3.7'
 
 gem 'rack-cors', require: 'rack/cors'
 
+gem 'chartkick'
 
 #AppSignal
 # gem 'appsignal'

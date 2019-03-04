@@ -6,49 +6,94 @@
     </ul>
 
     <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-        <table>
-          <tr>
-            <td colspan=2 style="text-align:right;">
-              <% projects = @organization.projects %>
+
+          <div style="text-align:right;">
+            <% projects = @organization.projects %>
               <div class="pull-left">
-                Nombre de devis:
+                Nombre total de devis:
                 <%= projects.count %>
               </div>
-              <% prjs_per_estimation_status = projects.group(:estimation_status_id).count %>
-              <%= pie_chart prjs_per_estimation_status.transform_keys {|key| EstimationStatus.find(key).name} %>
-              <br/>
-              <br/>
-              <%= I18n.t(:label_filter_on_projects_version) %>
-              <%= select_tag 'filter_organization_projects_version',
-                              options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
-                                                 [I18n.t(:label_filter_on_project_version_1),1],
-                                                 [I18n.t(:label_filter_on_project_version_3),3],
-                                                 [I18n.t(:label_filter_on_project_version_4),4]],
-                                                :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
-                             'data-organization_id' => @organization.id, include_blank: false %>
-                              <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
+          </div>
 
-              <% if can? :create_project_from_template, Project %>
-                <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-              <% end %>
+          <br/>
 
-              <% if can? :create_project_from_scratch, Project %>
-                <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-              <% end %>
+          <div class="row" >
+              <div class="span3 offset1">
+                <% prjs_estimation_status = projects.group(:estimation_status_id).count %>
+                <%= pie_chart prjs_estimation_status.transform_keys {|estt_id| EstimationStatus.find(estt_id).name} %>
+                  <div style = "text-align: center" />
+                    <strong>Nombre de Devis par Estimation Status</strong>
+                  </div>
+              </div>
 
-              <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-                <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-              <% end %>
+              <div class="span3">
+                <% prjs_prj_area = projects.group(:project_area_id).count %>
+                <% if prjs_prj_area.has_key?(nil) %>
+                  <% val_nil = prjs_prj_area.fetch(nil) %>
+                  <% prjs_prj_area.delete(nil) %>
+                  <% prjs_prj_area.store("Null", val_nil) %>
+                  <%= pie_chart prjs_prj_area.transform_keys {|prj_area_id| %>
+                    <% if prj_area_id != "Null" %>
+                      <% ProjectArea.find(prj_area_id).name %>
+                    <% else prj_area_id = "Null" end } %>
+                <% else %>
+                    <%= pie_chart prjs_prj_area.transform_keys {|prj_area_id| ProjectArea.find(prj_area_id).name} %>
+                <% end %>
+                  <div style = "text-align: center" />
+                    <strong>Nombre de Devis par Project Area</strong>
+                  </div>
+              </div>
 
-            </td>
+              <div class="span3">
+                <% prjs_acquisition = projects.group(:acquisition_category_id).count %>
+                <% if prjs_acquisition.has_key?(nil) %>
+                  <% val_nil = prjs_acquisition.fetch(nil) %>
+                  <% prjs_acquisition.delete(nil) %>
+                  <% prjs_acquisition.store("Null", val_nil) %>
+                  <%= bar_chart prjs_acquisition.transform_keys {|acq_id| %>
+                    <% if acq_id != "Null" %>
+                      <% AcquisitionCategory.find(acq_id).name %>
+                    <% else acq_id = "Null" end } %>
+                <% else %>
+                  <%= bar_chart prjs_acquisition.transform_keys {|acq_id| AcquisitionCategory.find(acq_id).name} , height: "50%"  %>
+                <% end %>
+                  <div style = "text-align: center" />
+                    <strong>Nombre de Devis par Acquisition </strong>
+                  </div>
+              </div>
+          </div>
 
-          </tr>
-        </table>
+          <br/>
 
-        <div id="organization_projects">
-          <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-        </div>
-    </div>
+          <div>
+            <%= I18n.t(:label_filter_on_projects_version) %>
+            <%= select_tag 'filter_organization_projects_version',
+                           options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
+                                               [I18n.t(:label_filter_on_project_version_1),1],
+                                               [I18n.t(:label_filter_on_project_version_3),3],
+                                               [I18n.t(:label_filter_on_project_version_4),4]],
+                                              :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
+                           'data-organization_id' => @organization.id, include_blank: false %>
+            <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
+
+            <% if can? :create_project_from_template, Project %>
+              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+            <% end %>
+
+            <% if can? :create_project_from_scratch, Project %>
+              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
+            <% end %>
+
+            <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+              <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+            <% end %>
+
+          </div>
+                <div id="organization_projects">
+                  <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+                </div>
+          </div>
+
   </div>
 
   <%#= submit_tag "recherchez", class: "hide" %>
