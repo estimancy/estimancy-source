@@ -5,9 +5,25 @@
         Type de demande
       </a>
     </li>
+    <li>
+      <a href="#tabs-2">
+        Services
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-3">
+        Facturation
+      </a>
+    </li>
+    <li>
+      <a href="#tabs-4">
+        Configuration des SLA
+      </a>
+    </li>
   </ul>
-  <div id="tabs-1">
-    <%= simple_form_for([@organization, @demand_type]) do |f| %>
+  <%= simple_form_for([@organization, @demand_type]) do |f| %>
+
+    <div id="tabs-1">
       <%= f.error_notification %>
 
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
@@ -18,16 +34,27 @@
 
       <%= f.input :origin_target_mode, as: :select, collection: ["Demande / Demande", "Demande / Devis", "Devis / Demande", "Devis / Devis"] , :label => "Origine / Cible", :input_html => {:class => 'input-xlarge'} %>
 
-      <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xlarge'} %>
-      <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xlarge'} %>
-
-      <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
-                  :input_html => {:class => 'input-xlarge'} %>
-
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
-      <br>
+      <div class="actions-tabs">
+        <hr>
+        <% if action_name == 'new' || action_name=="create" %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% elsif action_name == 'edit' || action_name=="update" %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
+      </div>
 
+    </div>
+
+    <div id="tabs-2">
+      <h4>
+        Cochez les services associés à ce type de demande
+      </h4>
+      <br>
       <div class="row-fluid">
         <div class="span4">
           <%= f.collection_check_boxes(:service_ids, Service.where(organization_id: @organization.id).all, :id, :to_s) do |b| %>
@@ -42,16 +69,53 @@
               <% end %>
             </div>
           <% end %>
+        </div>
+      </div>
+
+      <div class="actions-tabs">
+        <hr>
+        <% if action_name == 'new' || action_name=="create" %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% elsif action_name == 'edit' || action_name=="update" %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
+      </div>
+
+    </div>
+
+    <div id="tabs-3">
+
+      <h4>
+        Configuration des élements de facturation
+      </h4>
+      <br>
+
+      <div class="row-fluid">
+
+        <div class="span3">
+          <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xlarge'} %>
+          <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xlarge'} %>
+
+          <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
+                      :input_html => {:class => 'input-xlarge'} %>
 
         </div>
+
         <div class="span4">
           <table class="table">
+            <tr>
+              <th>Statut</th>
+              <th>Pourcentage</th>
+            </tr>
             <% @organization.demand_statuses.each do |ds| %>
               <tr>
                 <td>
                   <%= ds.name %>
                 </td>
-                <td>
+                <td class="span3">
                   <%
                     dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
                                                           demand_type_id: @demand_type.id,
@@ -65,6 +129,26 @@
         </div>
       </div>
 
+      <div class="actions-tabs">
+        <hr>
+        <% if action_name == 'new' || action_name=="create" %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% elsif action_name == 'edit' || action_name=="update" %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
+      </div>
+
+
+    </div>
+
+    <div id="tabs-4">
+      <h4>
+        Configuration des élements de calcul des SLA
+      </h4>
+      <br>
       <div class="row-fluid">
         <div class="span4">
           <table class="table">
@@ -91,8 +175,8 @@
                                                      criticality_id: criticality.id,
                                                      severity_id: severity.id).first
                     %>
-                    <%= text_field_tag "duration_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
-                    <%= text_field_tag "priority_#{severity.id}_#{criticality.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
+                    <%= text_field_tag "duration_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
+                    <%= text_field_tag "priority_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
                   </td>
                 <% end %>
                 <td>
@@ -118,15 +202,19 @@
       </div>
 
       <div class="actions-tabs">
+        <hr>
         <% if action_name == 'new' || action_name=="create" %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% elsif action_name == 'edit' || action_name=="update" %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
         <% end %>
         <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
       </div>
-    <% end %>
-  </div>
+
+    </div>
+
+  <% end %>
+
 </div>

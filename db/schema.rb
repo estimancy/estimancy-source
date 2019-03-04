@@ -297,7 +297,7 @@ ActiveRecord::Schema.define(version: 20190227094942) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.integer  "demand_type_id",   limit: 4
-    t.string   "priority",         limit: 11
+    t.integer  "priority",         limit: 4
   end
 
   create_table "currencies", force: :cascade do |t|
@@ -367,7 +367,7 @@ ActiveRecord::Schema.define(version: 20190227094942) do
     t.integer  "criticality_id",   limit: 4
     t.integer  "severity_id",      limit: 4
     t.boolean  "delayed",                        default: false
-    t.string   "priority",         limit: 11
+    t.integer  "priority",         limit: 4
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|

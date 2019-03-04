@@ -4063,6 +4063,7 @@ public
     new_status_name = EstimationStatus.find(new_status_id).name rescue nil
 
     StatusHistory.create(organization: @project.organization.name,
+                         demand: @project.demand.nil? ? nil : @project.demand,
                          project_id: @project.id,
                          project: @project.title,
                          version_number: nil,

@@ -58,22 +58,39 @@ class DemandTypesController < ApplicationController
           duration = params["duration_#{criticality.id}_#{severity.id}"].to_f
           priority = params["priority_#{criticality.id}_#{severity.id}"].to_f
 
-          origin = DemandStatus.where(name: params["origin_status_#{criticality.id}_#{severity.id}"].to_i).first
-          target = DemandStatus.where(name: params["target_status_#{criticality.id}_#{severity.id}"].to_i).first
+          if @demand_type.origin_target_mode == "Demande / Demande"
+            origin = DemandStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
+            target = DemandStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
+          elsif @demand_type.origin_target_mode == "Demande / Devis"
+            origin = DemandStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
+            target = EstimationStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
+          elsif @demand_type.origin_target_mode == "Devis / Demande"
+            origin = EstimationStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
+            target = DemandStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
+          elsif  @demand_type.origin_target_mode == "Devis / Devis"
+            origin = EstimationStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
+            target = EstimationStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
+          end
 
           cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                         demand_type_id: @demand_type.id,
                                          criticality_id: criticality.id,
                                          severity_id: severity.id).first
 
           if cs.nil?
             CriticalitySeverity.create(organization_id: @organization.id,
+                                       demand_type_id: @demand_type.id,
                                        criticality_id: criticality.id,
                                        severity_id: severity.id,
                                        duration: duration,
-                                       priority: priority)
+                                       priority: priority,
+                                       origin_status_id: origin,
+                                       target_status_id: target)
           else
             cs.duration = duration
             cs.priority = priority
+            cs.origin_status_id = origin.nil? ? nil : origin.id
+            cs.target_status_id = target.nil? ? nil : target.id
 
             cs.save
           end

@@ -202,7 +202,12 @@
 
             ).in_seconds / 3600 %>
 
-            Ecart entre <b><%= origin_ds.name %></b> et <b><%= target_ds.name %></b> : <%= elapsed_time.to_i %> heures
+            La demande est passé au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+            <br>
+            <% project = @demand.projects.first %>
+            Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+            <br>
+            L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= elapsed_time - cs.duration.to_i %> heures</b>
 
             <br>
 
@@ -256,7 +261,7 @@
               Services
             </th>
             <th class="center">
-              Demandes
+              Réalisé
             </th>
             <th class="center">
               Date attendue
@@ -288,6 +293,7 @@
             <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                                  service_id: service.id,
                                                  demand: @demand.id).first %>
+
             <% unless sdl.nil? %>
               <% unless sdl.service.nil? %>
                 <% sdl_service = sdl.service %>
@@ -339,7 +345,9 @@
                           <% end %>
                         <% end %>
                       <% end %>
-                      <span class="fa fa-circle <%= color %>"></span>
+                      <% unless color.blank? %>
+                        <span class="fa fa-circle <%= color %>"></span>
+                      <% end %>
                     <% end %>
                   </td>
                   <td class="center">
