@@ -239,19 +239,12 @@
                   <% end %>
 
                   <% if cs.duration.to_f >= elapsed_time.to_f %>
-                    <% @demand.delayed = false %>
-                  <% else %>
-                    <% @demand.delayed = true %>
-                  <% end %>
-                  <% @demand.save %>
-
-                  <% if @demand.delayed == true %>
-                    <span class="badge badge-important">
-                      En retard
-                    </span>
-                  <% else %>
                     <span class="badge badge-success">
                       OK
+                    </span>
+                  <% else %>
+                    <span class="badge badge-important">
+                      En retard
                     </span>
                   <% end %>
 
