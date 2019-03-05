@@ -20,7 +20,7 @@ class AgreementsController < ApplicationController
 
     if @agreement.save
       flash[:notice] = "Demande créee avec succès"
-      redirect_to :back
+      redirect_to edit_organization_demand_type_path(@organization, @demand_type, anchor: "tabs-4")
     else
       render action: 'new'
     end
