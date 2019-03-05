@@ -293,6 +293,8 @@ module OrganizationsHelper
           organization = project.organization
           unless demand.nil?
             content_tag("td", link_to(demand, edit_organization_demand_path(organization, demand)))
+          else
+            content_tag("td", "-")
           end
         end
       when :business_need
