@@ -13,14 +13,45 @@
       <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn" %>
     </div>
 
-    <%
-      dd = Demand.where(organization_id: @organization.id, delayed: true).all.size
-      total = Demand.where(organization_id: @organization.id).all.size
-    %>
+    <br>
+    <div class="row-fluid">
+      <div class="span6">
+        <table class="table">
+          <tr class="center">
+            <th>Nom</th>
+            <th>Temps moyen</th>
+            <th>Pourcentage OK</th>
+          </tr>
+          <% @organization.agreements.each do |a| %>
+            <tr>
+              <td class="center">
+                <%= a.name %>
+              </td>
+              <td class="center">
+                <% ad = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).map(&:elapsed_time) %>
+                <% unless ad.count == 0 %>
+                  <%= (ad.sum / ad.count).to_i.round(2).to_i %> heures
+                <% end %>
+              </td>
+              <td class="center">
+                <% ad = AgreementDemand.where(organization_id: @organization.id, delayed: true, agreement_id: a.id).all.count %>
+                <% total_d = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).all.count %>
+                <% unless total_d == 0 %>
+                  <%= (ad / total_d) * 100 %> %
+                <% else %>
+                  -
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
 
-    <%= ((dd.to_f / total.to_f) * 100).round(2) %> % de demande en retard
+      </div>
+    </div>
+    <br>
 
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+
       <thead>
         <tr>
           <th>
@@ -42,12 +73,6 @@
             Statut
           </th>
           <th>
-            Priorité
-          </th>
-          <th>
-            SLA
-          </th>
-          <th>
             Date
           </th>
         </tr>
@@ -62,8 +87,6 @@
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
             <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
-            <td><%= demand.priority.nil? ? '-' : demand.priority %></td>
-            <td><%= (demand.delayed == true) ? "En retard" : "OK  " %></td>
             <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
           </tr>
         <% end %>

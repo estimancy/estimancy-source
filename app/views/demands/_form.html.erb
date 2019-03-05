@@ -238,15 +238,40 @@
                     L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
                   <% end %>
 
+                  <%
+
+                    ad = AgreementDemand.where(organization_id: @organization.id,
+                                               agreement_id: agreement.id,
+                                               demand_id: @demand.id ,
+                                               demand_type_id: @demand.demand_type_id).first
+
+                    if ad.nil?
+                      AgreementDemand.create(organization_id: @organization.id,
+                                            agreement_id: agreement.id,
+                                            demand_id: @demand.id ,
+                                            demand_type_id: @demand.demand_type_id)
+                    end
+                  %>
+                  <br>
+
                   <% if cs.duration.to_f >= elapsed_time.to_f %>
+                    <%
+                      ad.delayed = false
+                    %>
                     <span class="badge badge-success">
                       OK
                     </span>
                   <% else %>
+                    <%
+                      ad.delayed = true
+                    %>
                     <span class="badge badge-important">
                       En retard
                     </span>
                   <% end %>
+
+                  <% ad.elapsed_time = elapsed_time %>
+                  <% ad.save %>
 
                 <% end %>
               <% end %>
@@ -286,7 +311,7 @@
                     Services
                   </th>
                   <th class="center">
-                    Réalisé
+                    Demandé / Chiffré
                   </th>
                   <th class="center">
                     Date attendue
@@ -298,7 +323,7 @@
                     A l'heure
                   </th>
                   <th class="center">
-                    Statut
+                    Etat
                   </th>
                 </tr>
               </thead>
