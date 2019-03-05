@@ -225,8 +225,10 @@
                   La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
                   <br>
                   <% project = @demand.projects.first %>
-                  Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
-                  <br>
+                  <% unless project.nil? %>
+                    Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                    <br>
+                  <% end %>
                   <% delay = elapsed_time - cs.duration.to_i %>
                   <% unless delay <= 0 %>
                     L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
