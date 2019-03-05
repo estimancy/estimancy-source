@@ -248,10 +248,10 @@
                                                demand_type_id: @demand.demand_type_id).first
 
                     if ad.nil?
-                      AgreementDemand.create(organization_id: @organization.id,
-                                            agreement_id: agreement.id,
-                                            demand_id: @demand.id ,
-                                            demand_type_id: @demand.demand_type_id)
+                      ad = AgreementDemand.create(organization_id: @organization.id,
+                                                  agreement_id: agreement.id,
+                                                  demand_id: @demand.id ,
+                                                  demand_type_id: @demand.demand_type_id)
                     end
                   %>
                   <br>
