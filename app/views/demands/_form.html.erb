@@ -188,16 +188,16 @@
                 <% origin_ds = nil %>
                 <% target_ds = nil %>
 
-                <% if @demand_demand_type.origin_target_mode == "Demande / Demande" %>
+                <% if agreement.origin_target_mode == "Demande / Demande" %>
                   <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
                   <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
-                <% elsif @demand_demand_type.origin_target_mode == "Demande / Devis" %>
+                <% elsif agreement.origin_target_mode == "Demande / Devis" %>
                   <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
                   <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
-                <% elsif @demand_demand_type.origin_target_mode == "Devis / Demande" %>
+                <% elsif agreement.origin_target_mode == "Devis / Demande" %>
                   <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
                   <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
-                <% elsif @demand_demand_type.origin_target_mode == "Devis / Devis" %>
+                <% elsif agreement.origin_target_mode == "Devis / Devis" %>
                   <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
                   <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
                 <% end %>

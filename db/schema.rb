@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190305084138) do
+ActiveRecord::Schema.define(version: 20190305103932) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -67,11 +67,12 @@ ActiveRecord::Schema.define(version: 20190305084138) do
   end
 
   create_table "agreements", force: :cascade do |t|
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.integer  "demand_type_id",  limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.string   "name",               limit: 255
+    t.integer  "organization_id",    limit: 4
+    t.integer  "demand_type_id",     limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.string   "origin_target_mode", limit: 255
   end
 
   create_table "amoa_amoa_applications", force: :cascade do |t|

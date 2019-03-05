@@ -1,5 +1,5 @@
 class Agreement < ActiveRecord::Base
-  attr_accessible :name, :demand_type_id, :organization_id
+  attr_accessible :name, :demand_type_id, :organization_id, :origin_target_mode
 
   has_many :criticality_severities
 

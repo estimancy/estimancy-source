@@ -60,16 +60,16 @@ class DemandTypesController < ApplicationController
             duration = params["duration_#{agreement.id}_#{criticality.id}_#{severity.id}"].to_f
             priority = params["priority_#{agreement.id}_#{criticality.id}_#{severity.id}"].to_f
 
-            if @demand_type.origin_target_mode == "Demande / Demande"
+            if agreement.origin_target_mode == "Demande / Demande"
               origin = DemandStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
               target = DemandStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
-            elsif @demand_type.origin_target_mode == "Demande / Devis"
+            elsif agreement.origin_target_mode == "Demande / Devis"
               origin = DemandStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
               target = EstimationStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
-            elsif @demand_type.origin_target_mode == "Devis / Demande"
+            elsif agreement.origin_target_mode == "Devis / Demande"
               origin = EstimationStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
               target = DemandStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
-            elsif  @demand_type.origin_target_mode == "Devis / Devis"
+            elsif  agreement.origin_target_mode == "Devis / Devis"
               origin = EstimationStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
               target = EstimationStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
             end

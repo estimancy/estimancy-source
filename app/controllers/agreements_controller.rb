@@ -30,6 +30,7 @@ class AgreementsController < ApplicationController
   def edit
     set_page_title (I18n.t('edit_agreeements'))
     @agreement = Agreement.find(params[:id])
+    @demand_type = DemandType.find(params[:demand_type_id].to_i)
     @organization = Organization.find(params[:organization_id])
   end
 

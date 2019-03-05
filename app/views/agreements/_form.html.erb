@@ -12,7 +12,9 @@
     <%= simple_form_for([@organization, @demand_type, @agreement]) do |f| %>
       <%= f.error_notification %>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+
+      <%= f.input :origin_target_mode, as: :select, collection: ["Demande / Demande", "Demande / Devis", "Devis / Demande", "Devis / Devis"] , :label => "Origine / Cible", :input_html => {:class => 'input-xlarge'} %>
 
       <%= hidden_field_tag "organization_id", @organization.id %>
       <%= hidden_field_tag "demand_type_id", @demand_type.id %>

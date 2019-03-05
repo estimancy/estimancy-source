@@ -44,8 +44,6 @@
       <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => "Provenance coût à facturer", :input_html => {:class => 'input-xlarge'} %>
       <%= f.input :demand_status_id, as: :select, collection: @demand_statuses.map{|i| [i.name, i.id]} , :label => "Statut de départ", :input_html => {:class => 'input-xlarge'} %>
 
-      <%= f.input :origin_target_mode, as: :select, collection: ["Demande / Demande", "Demande / Devis", "Devis / Demande", "Devis / Devis"] , :label => "Origine / Cible", :input_html => {:class => 'input-xlarge'} %>
-
       <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
 
       <hr>
