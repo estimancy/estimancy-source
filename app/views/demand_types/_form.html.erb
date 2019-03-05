@@ -107,12 +107,8 @@
       <div class="row-fluid">
 
         <div class="span3">
-          <%= f.input :fixed_billing, :label => "Facturation fixe", :input_html => {:class => 'input-xlarge'} %>
-          <%= f.input :deadlined_billing, :label => "Facturation sur échéance", :input_html => {:class => 'input-xlarge'} %>
-
           <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
                       :input_html => {:class => 'input-xlarge'} %>
-
         </div>
 
         <div class="span4">

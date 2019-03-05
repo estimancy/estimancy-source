@@ -8,16 +8,18 @@
     </li>
 
     <% unless controller.action_name == "new" %>
-      <li>
-        <a href="#services">
-          Services
-        </a>
-      </li>
-      <li>
-        <a href="#devis">
-          Devis de la demande <%= @demand %>
-        </a>
-      </li>
+      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+        <li>
+          <a href="#services">
+            Services
+          </a>
+        </li>
+        <li>
+          <a href="#devis">
+            Devis
+          </a>
+        </li>
+      <% end %>
     <% end %>
 
   </ul>
