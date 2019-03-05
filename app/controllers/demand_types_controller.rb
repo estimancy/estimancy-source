@@ -51,51 +51,55 @@ class DemandTypesController < ApplicationController
     end
 
 
-    @organization.criticalities.each do |criticality|
-      @organization.severities.each do |severity|
+    @demand_type.agreements.each do |agreement|
+      @organization.criticalities.each do |criticality|
+        @organization.severities.each do |severity|
 
-        unless params["duration_#{criticality.id}_#{severity.id}"].blank?
+          unless params["duration_#{agreement.id}_#{criticality.id}_#{severity.id}"].blank?
 
-          duration = params["duration_#{criticality.id}_#{severity.id}"].to_f
-          priority = params["priority_#{criticality.id}_#{severity.id}"].to_f
+            duration = params["duration_#{agreement.id}_#{criticality.id}_#{severity.id}"].to_f
+            priority = params["priority_#{agreement.id}_#{criticality.id}_#{severity.id}"].to_f
 
-          if @demand_type.origin_target_mode == "Demande / Demande"
-            origin = DemandStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
-            target = DemandStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
-          elsif @demand_type.origin_target_mode == "Demande / Devis"
-            origin = DemandStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
-            target = EstimationStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
-          elsif @demand_type.origin_target_mode == "Devis / Demande"
-            origin = EstimationStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
-            target = DemandStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
-          elsif  @demand_type.origin_target_mode == "Devis / Devis"
-            origin = EstimationStatus.where(id: params["origin_status_#{criticality.id}"].to_i).first
-            target = EstimationStatus.where(id: params["target_status_#{criticality.id}"].to_i).first
-          end
+            if @demand_type.origin_target_mode == "Demande / Demande"
+              origin = DemandStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
+              target = DemandStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
+            elsif @demand_type.origin_target_mode == "Demande / Devis"
+              origin = DemandStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
+              target = EstimationStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
+            elsif @demand_type.origin_target_mode == "Devis / Demande"
+              origin = EstimationStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
+              target = DemandStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
+            elsif  @demand_type.origin_target_mode == "Devis / Devis"
+              origin = EstimationStatus.where(id: params["origin_status_#{agreement.id}_#{criticality.id}"].to_i).first
+              target = EstimationStatus.where(id: params["target_status_#{agreement.id}_#{criticality.id}"].to_i).first
+            end
 
-          cs = CriticalitySeverity.where(organization_id: @organization.id,
+            cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                           demand_type_id: @demand_type.id,
+                                           agreement_id: agreement.id,
+                                           criticality_id: criticality.id,
+                                           severity_id: severity.id).first
+
+            if cs.nil?
+              CriticalitySeverity.create(organization_id: @organization.id,
                                          demand_type_id: @demand_type.id,
                                          criticality_id: criticality.id,
-                                         severity_id: severity.id).first
+                                         severity_id: severity.id,
+                                         agreement_id: agreement.id,
+                                         duration: duration,
+                                         priority: priority,
+                                         origin_status_id: origin.nil? ? nil : origin.id,
+                                         target_status_id: target.nil? ? nil : target.id)
+            else
+              cs.duration = duration
+              cs.priority = priority
+              cs.origin_status_id = origin.nil? ? nil : origin.id
+              cs.target_status_id = target.nil? ? nil : target.id
 
-          if cs.nil?
-            CriticalitySeverity.create(organization_id: @organization.id,
-                                       demand_type_id: @demand_type.id,
-                                       criticality_id: criticality.id,
-                                       severity_id: severity.id,
-                                       duration: duration,
-                                       priority: priority,
-                                       origin_status_id: origin,
-                                       target_status_id: target)
-          else
-            cs.duration = duration
-            cs.priority = priority
-            cs.origin_status_id = origin.nil? ? nil : origin.id
-            cs.target_status_id = target.nil? ? nil : target.id
+              cs.save
+            end
 
-            cs.save
           end
-
         end
       end
     end

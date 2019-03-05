@@ -158,61 +158,82 @@
     </div>
 
     <div id="tabs-4">
-      <h4>
-        Configuration des élements de calcul des SLA
-      </h4>
-      <br>
+
       <div class="row-fluid">
-        <div class="span4">
-          <table class="table">
-            <tr>
-              <th></th>
-              <% @organization.severities.each do |severity| %>
-                <th class="center">
-                  <%= severity.name %>
-                </th>
-              <% end %>
-              <th>Départ</th>
-              <th>Fin</th>
-            </tr>
-            <% @organization.criticalities.each do |criticality| %>
+        <div class="span6">
+          <h4>
+            Configuration des élements de calcul des SLA
+          </h4>
+        </div>
+        <div class="span6">
+          <%= link_to "Créer un nouveau SLA", new_organization_demand_type_agreement_path(@organization, @demand_type), class: "btn btn-default pull-right" %>
+        </div>
+      </div>
+
+      <hr>
+
+      <% @demand_type.agreements.each do |agreement| %>
+        <div class="row-fluid">
+          <div class="span6">
+
+            <p>
+              <b>
+                <%= link_to agreement.name, edit_organization_demand_type_agreement_path(@organization, @demand_type, agreement) %>
+              </b>
+            </p>
+
+            <table class="table">
               <tr>
-                <th>
-                  <%= criticality.name %>
-                </th>
+                <th></th>
                 <% @organization.severities.each do |severity| %>
+                  <th class="center">
+                    <%= severity.name %>
+                  </th>
+                <% end %>
+                <th>Départ</th>
+                <th>Fin</th>
+              </tr>
+              <% @organization.criticalities.each do |criticality| %>
+                <tr>
+                  <th>
+                    <%= criticality.name %>
+                  </th>
+                  <% @organization.severities.each do |severity| %>
+                    <td>
+                      <%
+                        cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                       demand_type_id: @demand_type.id,
+                                                       criticality_id: criticality.id,
+                                                       severity_id: severity.id,
+                                                       agreement_id: agreement.id).first
+                      %>
+                      <%= text_field_tag "duration_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
+                      <%= text_field_tag "priority_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
+                    </td>
+                  <% end %>
                   <td>
                     <%
                       cs = CriticalitySeverity.where(organization_id: @organization.id,
                                                      demand_type_id: @demand_type.id,
                                                      criticality_id: criticality.id,
-                                                     severity_id: severity.id).first
+                                                     agreement_id: agreement.id).first
                     %>
-                    <%= text_field_tag "duration_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
-                    <%= text_field_tag "priority_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
+                    <%
+                      grouped_options = {
+                          'Demandes' => @organization.demand_statuses.where(demand_type_id: @demand_type.id).map{ |i| [i.name, i.id] },
+                          'Devis' => @organization.estimation_statuses.map{ |i| [i.name, i.id] } }
+                    %>
+                    <%= select_tag "origin_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.origin_status_id) %>
                   </td>
-                <% end %>
-                <td>
-                  <%
-                    cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                                   demand_type_id: @demand_type.id,
-                                                   criticality_id: criticality.id).first
-                  %>
-                  <%
-                    grouped_options = {
-                        'Demandes' => @organization.demand_statuses.map{ |i| [i.name, i.id] },
-                        'Devis' => @organization.estimation_statuses.map{ |i| [i.name, i.id] } }
-                  %>
-                  <%= select_tag "origin_status_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.origin_status_id) %>
-                </td>
-                <td>
-                  <%= select_tag "target_status_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.target_status_id) %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
+                  <td>
+                    <%= select_tag "target_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.target_status_id) %>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
         </div>
-      </div>
+      <% end %>
 
       <div class="actions-tabs">
         <hr>

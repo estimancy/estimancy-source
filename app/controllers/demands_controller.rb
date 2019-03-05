@@ -76,7 +76,7 @@ class DemandsController < ApplicationController
       end
 
       flash[:notice] = "Demande créee avec succès"
-      redirect_to organization_demands_path(@organization)
+      redirect_to :back
     else
       render action: 'new'
     end

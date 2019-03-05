@@ -1,6 +1,6 @@
 class DemandType < ActiveRecord::Base
   attr_accessible :name, :description, :fixed_billing, :deadlined_billing, :cost_from,
-                  :organization_id, :demand_status_id, :billing, :service_ids, :origin_target_mode
+                  :organization_id, :demand_status_id, :billing, :service_ids, :origin_target_mode, :agreement_id
 
   has_many :demands
 
@@ -8,6 +8,7 @@ class DemandType < ActiveRecord::Base
   belongs_to :demand_status #statut de départ # obsolète
 
   has_many :demand_statuses
+  has_many :agreements
 
   has_and_belongs_to_many :services
 
