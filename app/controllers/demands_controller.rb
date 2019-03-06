@@ -55,6 +55,10 @@ class DemandsController < ApplicationController
   def create
     set_page_title (I18n.t('create_demand'))
     @demand = Demand.new(params[:demand])
+
+    ds = DemandType.find(params[:demand][:demand_type_id].to_i).demand_status
+    @demand.demand_status_id = ds.nil? ? nil : ds.id
+
     @organization = Organization.find(params[:organization_id])
 
     if @demand.save
@@ -64,7 +68,7 @@ class DemandsController < ApplicationController
                            change_date: Time.now,
                            action: "Création de la demande",
                            origin: nil,
-                           target: @organization.demand_statuses.first.nil? ? nil : @organization.demand_statuses.first.name,
+                           target: ds.nil? ? nil : ds.name,
                            user: current_user.name)
 
       @organization.services.each do |s|
@@ -80,7 +84,7 @@ class DemandsController < ApplicationController
       end
 
       flash[:notice] = "Demande créee avec succès"
-      redirect_to :back
+      redirect_to organization_demands_path(@organization)
     else
       render action: 'new'
     end
