@@ -289,7 +289,7 @@
               <% if sh.origin.nil? %>
                 <b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
               <% else %>
-                <b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <%= sh.target %> le <b><%= sh.change_date %></b>
+                <b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
               <% end %>
             <% else %>
               <b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
