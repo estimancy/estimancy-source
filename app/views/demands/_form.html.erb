@@ -315,7 +315,8 @@
     </div>
 
     <% unless controller.action_name == "new" %>
-      <div id="services">
+      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+        <div id="services">
         <div class="row-fluid">
           <div class="span12" style="overflow: visible;">
 
@@ -475,25 +476,26 @@
         </div>
       </div>
 
-      <div id="devis">
-        <% unless @projects.nil? %>
-          <div class="row-fluid">
-            <div class="span12">
-              <% if @demand.demand_status.to_s == "En chiffrage" %>
-                <% if can? :create_project_from_template, Project %>
-                  <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
-                <% end %>
+        <div id="devis">
+          <% unless @projects.nil? %>
+            <div class="row-fluid">
+              <div class="span12">
+                <% if @demand.demand_status.to_s == "En chiffrage" %>
+                  <% if can? :create_project_from_template, Project %>
+                    <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                  <% end %>
 
-                <% if can? :create_project_from_scratch, Project %>
-                  <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                  <% if can? :create_project_from_scratch, Project %>
+                    <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                  <% end %>
+                  <hr>
                 <% end %>
-                <hr>
-              <% end %>
-              <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+                <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+              </div>
             </div>
-          </div>
-        <% end %>
-      </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 
