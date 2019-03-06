@@ -282,6 +282,8 @@
             <% end %>
           <% end %>
 
+          <hr>
+          <p> Historique des changements </p>
           <% StatusHistory.where(demand: @demand.name).all.each do |sh| %>
             <% if sh.project.blank? %>
               <% if sh.origin.nil? %>
@@ -296,6 +298,8 @@
           <% end %>
         </div>
       </div>
+
+      <hr>
 
       <div class="row-fluid">
         <div class="span12">
