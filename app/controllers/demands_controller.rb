@@ -96,14 +96,16 @@ class DemandsController < ApplicationController
 
     new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
 
-    if @demand.demand_status_id != params[:demand][:demand_status_id].to_i
-      StatusHistory.create(organization: @organization.name,
-                           demand: @demand.name,
-                           change_date: Time.now,
-                           action: "Changement de statut",
-                           origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
-                           target: new_demand_statut.nil? ? nil : new_demand_statut.name,
-                           user: current_user.name)
+    unless new_demand_statut.nil?
+      if @demand.demand_status_id != new_demand_statut.id
+        StatusHistory.create(organization: @organization.name,
+                             demand: @demand.name,
+                             change_date: Time.now,
+                             action: "Changement de statut",
+                             origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
+                             target: new_demand_statut.nil? ? nil : new_demand_statut.name,
+                             user: current_user.name)
+      end
     end
 
     @demand.update(params[:demand])

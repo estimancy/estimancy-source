@@ -62,7 +62,7 @@
                             as: :select,
                             label: "Statut de la demande",
                             collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
-                            disabled: true,
+                            readonly: true,
                             input_html: { class: 'input-xxlarge' } %>
               <% else %>
                 <%= f.input :demand_status_id,
@@ -263,7 +263,7 @@
                     <span class="badge badge-success">
                       OK
                     </span>
-                  <% else %>
+                  <% elsif cs.duration.to_f < elapsed_time.to_f %>
                     <%
                       ad.delayed = true
                     %>
