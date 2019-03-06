@@ -1,0 +1,51 @@
+<div class="tabs">
+  <ul>
+    <% @organization.agreements.each do |a| %>
+      <li>
+        <a href="#<%= a.id %>">
+          <%= a.name %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+
+  <% @organization.agreements.each do |a| %>
+    <div id="<%= a.id %>">
+      <div class="row-fluid">
+        <div class="span12">
+          <%= link_to "Liste des demandes", organization_demands_path(@organization), class: "btn btn-default pull-right" %>
+
+          <% ad = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).map(&:elapsed_time) %>
+
+          <b>
+            <%= a.name %>
+          </b>
+
+          <br>
+          <% unless ad.count == 0 %>
+            Délai moyen : <%= (ad.sum / ad.count).to_i.round(2).to_i %> heures
+          <% end %>
+
+          <br>
+
+          <% @ad = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
+          <% @total_d = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).all.count %>
+
+          <% unless @total_d == 0 %>
+            <%= (@ad / @total_d) * 100 %> % en retard
+          <% else %>
+            -
+          <% end %>
+
+          <br>
+
+          <% delayed = AgreementDemand.where(organization_id: @organization.id, delayed: true, agreement_id: a.id).all.count %>
+          <% ontime = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
+          <%= pie_chart({"SLA OK" => ontime, "SLA KO" => delayed}) %>
+
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>

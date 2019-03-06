@@ -1,5 +1,9 @@
 class DemandsController < ApplicationController
 
+  def demand_dashboard
+    @organization = Organization.find(params[:organization_id])
+  end
+
   def index
     set_page_title "Liste des demandes"
 

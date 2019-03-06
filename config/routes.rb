@@ -243,6 +243,8 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
+    get 'demand_dashboard' => 'demands#demand_dashboard'
+
     resources :severities
     resources :criticabilities
 
