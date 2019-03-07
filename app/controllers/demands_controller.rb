@@ -1,5 +1,9 @@
 class DemandsController < ApplicationController
 
+  def demand_dashboard
+    @organization = Organization.find(params[:organization_id])
+  end
+
   def index
     set_page_title "Liste des demandes"
 
@@ -8,6 +12,19 @@ class DemandsController < ApplicationController
   end
 
   def edit
+
+    Biz.configure do |config|
+      config.hours = {
+          mon: {'09:00' => '12:00', '13:00' => '17:00'},
+          tue: {'09:00' => '12:00', '13:00' => '17:00'},
+          wed: {'09:00' => '12:00', '13:00' => '17:00'},
+          thu: {'09:00' => '12:00', '13:00' => '17:00'},
+          fri: {'09:00' => '12:00', '13:00' => '17:00'}
+      }
+
+      config.time_zone = 'Europe/Paris'
+    end
+
     set_page_title (I18n.t('edit_demand'))
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
@@ -38,6 +55,10 @@ class DemandsController < ApplicationController
   def create
     set_page_title (I18n.t('create_demand'))
     @demand = Demand.new(params[:demand])
+
+    ds = DemandType.find(params[:demand][:demand_type_id].to_i).demand_status
+    @demand.demand_status_id = ds.nil? ? nil : ds.id
+
     @organization = Organization.find(params[:organization_id])
 
     if @demand.save
@@ -47,7 +68,7 @@ class DemandsController < ApplicationController
                            change_date: Time.now,
                            action: "Création de la demande",
                            origin: nil,
-                           target: @organization.demand_statuses.first.nil? ? nil : @organization.demand_statuses.first.name,
+                           target: ds.nil? ? nil : ds.name,
                            user: current_user.name)
 
       @organization.services.each do |s|
@@ -75,14 +96,16 @@ class DemandsController < ApplicationController
 
     new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
 
-    if @demand.demand_status_id != params[:demand][:demand_status_id]
-      StatusHistory.create(organization: @organization.name,
-                           demand: @demand.name,
-                           change_date: Time.now,
-                           action: "Changement de statut",
-                           origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
-                           target: new_demand_statut.nil? ? nil : new_demand_statut.name,
-                           user: current_user.name)
+    unless new_demand_statut.nil?
+      if @demand.demand_status_id != new_demand_statut.id
+        StatusHistory.create(organization: @organization.name,
+                             demand: @demand.name,
+                             change_date: Time.now,
+                             action: "Changement de statut",
+                             origin: @demand.demand_status.nil? ? nil : @demand.demand_status.name,
+                             target: new_demand_statut.nil? ? nil : new_demand_statut.name,
+                             user: current_user.name)
+      end
     end
 
     @demand.update(params[:demand])
@@ -96,8 +119,7 @@ class DemandsController < ApplicationController
 
         sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
                                           service_id: params["service_#{s.id}"].to_i,
-                                          demand_id: @demand.id,
-                                          livrable_id: nil).first
+                                          demand_id: @demand.id).first
 
         unless sdl.nil?
 
@@ -165,23 +187,17 @@ class DemandsController < ApplicationController
 
     worksheet.add_cell(0, 3, "Statut")
     worksheet.add_cell(0, 4, "Date")
-    worksheet.add_cell(0, 5, "Montant")
+    worksheet.add_cell(0, 5, "Montant %")
 
-    worksheet.add_cell(0, 6, "Statut")
-    worksheet.add_cell(0, 7, "Date")
-    worksheet.add_cell(0, 8, "Montant")
-
-    # nom demande | date | montant total | date passage statut1 | montant 1 (pourcentage précédent) | date passage statut2 | montant 2 (pourcentage precednt) | etc...
 
     dsdts = []
-    @organization.demands.each_with_index do |demand, index|
+    @organization.demands.each do |demand|
       if demand.demand_type.billing == "Echéance"
-        worksheet.add_cell(index + 1, 0, demand.name)
-        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
-        worksheet.add_cell(index + 1, 2, demand.cost.to_f * 1000)
 
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+
         shs.each do |sh|
+
           ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
           unless ds.nil?
@@ -190,12 +206,17 @@ class DemandsController < ApplicationController
                                                     demand_status_id: ds.id).first
           end
 
-          j = 0
-          dsdts.compact.each do |dsdt|
-            worksheet.add_cell(index + 1, 3+j, dsdt.demand_status.name)
-            worksheet.add_cell(index + 1, 4+j, sh.change_date.to_s)
-            worksheet.add_cell(index + 1, 5+j, ((demand.cost * 1000) * (dsdt.percent.to_f / 100)))
-            j = j + 3
+          j = 1
+          dsdts.compact.each_with_index do |dsdt, index|
+            worksheet.add_cell(j, 0, demand.name)
+            worksheet.add_cell(j, 1, demand.created_at.to_s)
+            worksheet.add_cell(j, 2, demand.cost.to_f * 1000)
+
+            worksheet.add_cell(j, 3, dsdt.demand_status.name)
+            worksheet.add_cell(j, 4, sh.change_date.to_s)
+            worksheet.add_cell(j, 5, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+
+            j = j + 1
           end
         end
       elsif demand.demand_type.billing == "Abonnement"

@@ -90,6 +90,7 @@ class Organization < ActiveRecord::Base
   has_many :services
   has_many :criticalities
   has_many :severities
+  has_many :agreements
 
   belongs_to :currency
 

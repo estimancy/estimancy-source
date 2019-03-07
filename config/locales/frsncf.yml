@@ -2244,3 +2244,5 @@ frsncf:
   request_list_links: "Liens de la liste des demandes"
   component_type_identified_by_AI: "Types de composant à identifier par l'IA"
   host_group: "Groupe d'accueil"
+
+  "Autoriser l'export PDF": "Autoriser l'export PDF"

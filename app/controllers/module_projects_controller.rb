@@ -114,11 +114,13 @@ class ModuleProjectsController < ApplicationController
     authorize! :alter_estimation_plan, @project
 
     @module_projects = @project.module_projects
-    @initialization_module_project = @initialization_module.nil? ? nil : @module_projects.find_by_pemodule_id(@initialization_module.id)
+
+    #Get the initialization module_project
+    @initialization_module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
 
     # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     set_page_title I18n.t(:editing, parameter: @module_project.pemodule.title)
   end
@@ -297,8 +299,8 @@ class ModuleProjectsController < ApplicationController
       @project = @module_project.project
       @project_organization = @project.organization
       @module_projects = @project.module_projects
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
       # when get click on the show_module_project_results_view button
       # if show_module_project_results_view is true, value will be changed to false and vice-versa

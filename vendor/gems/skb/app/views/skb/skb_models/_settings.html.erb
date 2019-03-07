@@ -63,6 +63,7 @@
     <div class="span4">
       <h5>
         <strong>
+          <%= I18n.t :"Nombre de projets sélectionnée" %> :
           Nombre de projets sélectionnée :
           <span class="project_numbers">
             <%= @project_list.size %>
@@ -86,7 +87,7 @@
       <div class="span4">
         <h5>
           <strong>
-            Date Min :
+            <%= I18n.t :from %>
             <span class="project_numbers">
               <%= @skb_model.date_min.strftime("%d %b %Y") %>
             </span>
@@ -99,7 +100,7 @@
       <div class="span4">
         <h5>
           <strong>
-            Date Max :
+            <%= I18n.t :to %>
             <span class="project_numbers">
               <%= @skb_model.date_max.strftime("%d %b %Y") %>
             </span>
@@ -184,7 +185,7 @@
           <%= I18n.t(:calculate_button) %>
         </button>
       <% end %>
-      <%= link_to "RAZ", skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
+      <%= link_to I18n.t(:reset), skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
 
       <script>
 
@@ -231,7 +232,7 @@
           xAxis: {
             gridLineWidth: 1,
             title: {
-              text: '<%= @skb_model.label_x || 'Données' %>'
+              text: '<%= @skb_model.label_x || 'Data' %>'
             },
             labels: {
               format: '{value}'
@@ -241,7 +242,7 @@
             startOnTick: false,
             endOnTick: false,
             title: {
-              text: '<%= @skb_model.label_y || 'Traitements' %>'
+              text: '<%= @skb_model.label_y || 'Transaction' %>'
             },
             labels: {
               format: '{value}'
@@ -254,8 +255,8 @@
             pointFormat:
             '<h5><b>{point.name}</b></h5>' +
             '<p>{point.description}<br>' +
-            '<%= @skb_model.label_x || 'Données' %>: {point.x}<br>' +
-            '<%= @skb_model.label_y || 'Traitements' %>: {point.y}</p>' +
+            '<%= @skb_model.label_x || 'Data' %>: {point.x}<br>' +
+            '<%= @skb_model.label_y || 'Transaction' %>: {point.y}</p>' +
             '<p><%= I18n.t :total_size %>: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
             footerFormat: '</table>',
             followPointer: false
@@ -269,7 +270,7 @@
             }
           },
           series: [{
-            name: 'Taille de <%= @project.to_s %>',
+            name: 'Size : <%= @project.to_s %>',
             color: 'rgba(255, 50, 50, 0.8)',
             data: <%= raw(@my_skb_input.to_json) %>,
             events: {
@@ -291,7 +292,7 @@
               }
             }
           },{
-            name: "Base de connaissance '<%= @skb_model.name %>'",
+            name: "Historical database : '<%= @skb_model.name %>'",
             color: 'rgba(50, 50, 255, 0.8)',
             data: <%= raw(@my_skb_datas.to_json) %>,
             events: {

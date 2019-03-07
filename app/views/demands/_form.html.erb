@@ -1,12 +1,27 @@
 <div class="tabs">
   <ul>
+
     <li>
       <a href="#demand">
         Demandes
       </a>
     </li>
-    <li><a href="#services">Services</a></li>
-    <li><a href="#devis">Devis de la demande <%= @demand %></a></li>
+
+    <% unless controller.action_name == "new" %>
+      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+        <li>
+          <a href="#services">
+            Services
+          </a>
+        </li>
+        <li>
+          <a href="#devis">
+            Devis
+          </a>
+        </li>
+      <% end %>
+    <% end %>
+
   </ul>
 
   <%= simple_form_for([@organization, @demand]) do |f| %>
@@ -38,7 +53,7 @@
               <%= f.input :demand_status_id,
                           as: :select,
                           label: "Statut de la demande",
-                          collection: [[@demand.demand_type.demand_status, @demand.demand_type.demand_status_id]],
+                          collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
                           selected: @demand.demand_type.demand_status_id,
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
@@ -46,360 +61,443 @@
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
-                            collection: @demand.get_demand_statuses(@organization),
-                            disabled: true,
+                            collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
+                            readonly: true,
                             input_html: { class: 'input-xxlarge' } %>
               <% else %>
                 <%= f.input :demand_status_id,
                             as: :select,
                             label: "Statut de la demande",
-                            collection: @demand.get_demand_statuses(@organization),
+                            collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
                             input_html: { class: 'input-xxlarge' } %>
               <% end %>
             <% end %>
           <% end %>
 
-        <div class="actions-tabs">
-          <% if action_name == 'new' || action_name=="create" %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% elsif action_name == 'edit' || action_name=="update" %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <% end %>
-          <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
-        </div>
+          <div class="actions-tabs">
+            <% if action_name == 'new' || action_name=="create" %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=="update" %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+          </div>
       </div>
 
-      <div class="span6">
-        <%= f.input :attachment, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
-        <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
-          <p>Il n'y a aucun document attaché à cette demande.</p>
-        <% else %>
-          Pièces jointes à la demande <br>
-          <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
-          <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-        <% end %>
-
-        <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
-        <% unless @demand.new_record? %>
-          <% if @demand.demand_type.cost_from == "Projet" %>
-            <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+        <div class="span6">
+          <%= f.input :attachment, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
+          <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
+            <p>Il n'y a aucun document attaché à cette demande.</p>
           <% else %>
-            <span>
-              Coût (€) :
-            </span>
-            <% if "Accepté".in?@demand.projects.map(&:estimation_status).map(&:name) %>
-              <%
-                 es = EstimationStatus.where(name: "Accepté",organization_id: @demand.organization_id).first
-                 project = @demand.projects.where(estimation_status: es.id).first
+            Pièces jointes à la demande <br>
+            <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
+            <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+          <% end %>
 
-                 unless project.nil?
-                   @fields_coefficients = {}
-                   @pfs = {}
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
+          <% unless @demand.new_record? %>
+            <% if @demand.demand_type.cost_from == "Projet" %>
+              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+            <% else %>
+              <span>
+                Coût (€) :
+              </span>
+              <% if "Accepté".in?@demand.projects.map(&:estimation_status).map(&:name) %>
+                <%
+                   es = EstimationStatus.where(name: "Accepté",organization_id: @demand.organization_id).first
+                   project = @demand.projects.where(estimation_status: es.id).first
 
-                   fields = @organization.fields
-                   ProjectField.where(project_id: [project.id]).each do |pf|
-                     begin
-                       if pf.field_id.in?(fields.map(&:id))
-                         if pf.project && pf.views_widget
-                           if pf.project_id == pf.views_widget.module_project.project_id
-                             @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+                   unless project.nil?
+                     @fields_coefficients = {}
+                     @pfs = {}
+
+                     fields = @organization.fields
+                     ProjectField.where(project_id: [project.id]).each do |pf|
+                       begin
+                         if pf.field_id.in?(fields.map(&:id))
+                           if pf.project && pf.views_widget
+                             if pf.project_id == pf.views_widget.module_project.project_id
+                               @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+                             else
+                               # pf.delete
+                             end
                            else
                              # pf.delete
                            end
                          else
                            # pf.delete
                          end
-                       else
-                         # pf.delete
+                       rescue
+                         #puts "erreur"
                        end
-                     rescue
-                       #puts "erreur"
                      end
+
+                     fields.each do |f|
+                       @fields_coefficients[f.id] = f.coefficient
+                     end
+
+                     field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
+                     column = QueryColumn.new(field.name.to_sym,
+                                              sortable: "",
+                                              caption: "efefef",
+                                              field_id: field.id,
+                                              organization_id: @current_organization.id)
+
+                     value = column_content(@pfs, column, project, @fields_coefficients)
                    end
-
-                   fields.each do |f|
-                     @fields_coefficients[f.id] = f.coefficient
-                   end
-
-                   field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
-                   column = QueryColumn.new(field.name.to_sym,
-                                            sortable: "",
-                                            caption: "efefef",
-                                            field_id: field.id,
-                                            organization_id: @current_organization.id)
-
-                   value = column_content(@pfs, column, project, @fields_coefficients)
-                 end
-              %>
+                %>
+                <br>
+                <span class="pull-left" style="font-weight: bold;">
+                  <% @demand.cost = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+                  <% @demand.save %>
+                  <%= @demand.cost %> k€
+                </span>
+              <% else %>
               <br>
-              <span class="pull-left" style="font-weight: bold;">
-                <% @demand.cost = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-                <% @demand.save %>
-                <%= @demand.cost %> k€
-              </span>
-            <% else %>
-            <br>
-              -
-            <% end %>
-          <% end %>
-        <% end %>
-
-        <hr>
-
-        <% cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                          demand_type_id: @demand.demand_type.nil? ? nil : @demand.demand_type_id,
-                                          criticality_id: @demand.criticality_id,
-                                          severity_id: @demand.severity_id).first %>
-        <% @demand.priority = cs.priority %>
-        <% @demand.save %>
-
-        <% unless cs.nil? %>
-          Temps imparti (priorité) : <%= cs.nil? ? '-' : cs.duration %> heures
-          <br>
-        <% end %>
-
-        <% unless cs.nil? %>
-
-          <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
-          <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
-
-          <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
-          <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
-
-          <% unless origin_sh.nil? || target_sh.nil? %>
-            <% elapsed_time = Biz.within(
-
-                Time.utc(origin_sh.change_date.year,
-                         origin_sh.change_date.month,
-                         origin_sh.change_date.day,
-                         origin_sh.change_date.hour,
-                         origin_sh.change_date.min),
-
-                Time.utc(target_sh.change_date.year,
-                         target_sh.change_date.month,
-                         target_sh.change_date.day,
-                         target_sh.change_date.hour,
-                         target_sh.change_date.min)
-
-            ).in_seconds / 3600 %>
-
-            Calcul de l'écart entre <%= origin_ds.name %> et <%= target_ds.name %> : <%= elapsed_time.to_f %> heures
-
-            <br>
-
-            <% if cs.duration.to_f >= elapsed_time.to_f %>
-              <% @demand.delayed = false %>
-            <% else %>
-              <% @demand.delayed = true %>
-            <% end %>
-            <% @demand.save %>
-
-            <br>
-
-            Demande <%= (@demand.delayed == true) ? 'en retard' : 'OK' %>
-
-          <% end %>
-        <% end %>
-
-      </div>
-    </div>
-
-    <div class="row-fluid">
-      <div class="span12">
-        <% begin %>
-          <%= link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
-                      method: :delete,
-                      :class => 'btn btn-danger pull-right',
-                      :title => I18n.t('delete') %>
-        <% rescue %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
-  <div id="services">
-    <div class="row-fluid">
-      <div class="span12" style="overflow: visible;">
-
-        <table class="table tablesorter table-striped table-bordered table-condensed">
-          <thead>
-          <tr>
-            <th class="center">Sélect.</th>
-            <th class="center">
-              Services
-            </th>
-            <th class="center">
-              Demandes
-            </th>
-            <th class="center">
-              Date attendue
-            </th>
-            <th class="center">
-              Date de livraison
-            </th>
-            <th class="center">
-              Etat
-            </th>
-            <th class="center">
-              Délivré
-            </th>
-            <th class="center">
-              Retard
-            </th>
-          </tr>
-          </thead>
-          <% if @demand.demand_type == "ANO" %>
-            <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
-          <% else %>
-            <% unless @demand.demand_type.nil? %>
-              <% @organization_services = @demand.demand_type.services %>
-            <% else %>
-              <% @organization_services = [] %>
-            <% end %>
-          <% end %>
-          <% @organization_services.each do |service| %>
-            <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id,
-                                                 service_id: service.id,
-                                                 demand: @demand.id).first %>
-            <% unless sdl.nil? %>
-              <% unless sdl.service.nil? %>
-                <% sdl_service = sdl.service %>
-                <% sdl_service_livrable = sdl.service.livrable %>
-                <tbody>
-                <tr>
-                  <td class="center">
-                    <%= check_box_tag "selected[#{service.id}]", true, sdl.selected %>
-                  </td>
-                  <td class="center">
-                    <%= link_to service.name, "#", title: service.description %>
-                    <%= hidden_field_tag "service_#{service.id}", service.id %>
-                  </td>
-                  <td class="center">
-                    <% if "Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name)) %>
-                      <% color = "" %>
-                      <% project = @demand.projects.first %>
-                      <% project.module_projects.each do |mp| %>
-                        <% if mp.pemodule.alias == "guw" %>
-                          <% @guw_types = mp.guw_unit_of_works.map(&:guw_type).select{|i| i.service_id == sdl_service.id } %>
-                          <% if sdl.selected == true %>
-                            <% if @guw_types.size >= 1 %>
-                              <% color = "green" %>
-                            <% else %>
-                              <% unless color == "green" %>
-                                <% color = "red" %>
-                              <% end %>
-                            <% end %>
-                          <% else %>
-                            <% if @guw_types.size >= 1 %>
-                              <% color = "orange" %>
-                            <% end %>
-                          <% end %>
-                        <% elsif mp.pemodule.alias == "effort_breakdown" %>
-
-                          <% @mp_wbs_activity_wbs_activity_elements = mp.wbs_activity.wbs_activity_elements.select{|i| i.service_id == sdl_service.id } %>
-                          <% if sdl.selected == true %>
-                            <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
-                              <% color = "green" %>
-                            <% else %>
-                              <% unless color == "green" %>
-                                <% color = "red" %>
-                              <% end %>
-                            <% end %>
-                          <% else %>
-                            <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
-                              <% color = "orange" %>
-                            <% end %>
-                          <% end %>
-                        <% end %>
-                      <% end %>
-                      <span class="fa fa-circle <%= color %>"></span>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% unless sdl.actual_date.nil? %>
-                      <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
-                    <% else %>
-                      <%= text_field_tag "expected_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% unless sdl.actual_date.nil? %>
-                      <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
-                    <% else %>
-                      <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% unless sdl_service_livrable.nil? || sdl.nil? %>
-                      <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% if sdl.actual_date.nil? || sdl.expected_date.nil? %>
-                      <span class="fa fa-circle red"></span>
-                    <% else %>
-                      <% if sdl.state == sdl_service_livrable.state.split(',').first && sdl.actual_date <= sdl.expected_date %>
-                        <span class="fa fa-circle green"></span>
-                      <% else %>
-                        <span class="fa fa-circle red"></span>
-                      <% end %>
-                    <% end %>
-                  </td>
-                  <td class="center">
-                    <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
-                      <% if sdl.actual_date > sdl.expected_date %>
-                        <span class="fa fa-circle red"></span>
-                      <% else %>
-                        <span class="fa fa-circle green"></span>
-                      <% end %>
-                    <% else %>
-                      <span class="fa fa-circle"></span>
-                    <% end %>
-                  </td>
-                </tr>
-                </tbody>
+                -
               <% end %>
             <% end %>
           <% end %>
-        </table>
 
-        <div class="actions-tabs">
-          <% if action_name == 'new' || action_name=="create" %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% elsif action_name == 'edit' || action_name=="update" %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <hr>
+
+          <% @demand_demand_type = @demand.demand_type %>
+
+          <% unless @demand_demand_type.nil? %>
+            <% @demand_demand_type.agreements.each do |agreement| %>
+
+              <% cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                demand_type_id: @demand_demand_type.nil? ? nil : @demand.demand_type_id,
+                                                criticality_id: @demand.criticality_id,
+                                                agreement_id: agreement.id,
+                                                severity_id: @demand.severity_id).first %>
+              <% unless cs.nil? %>
+                <% @demand.priority = cs.priority %>
+                <% @demand.save %>
+              <% end %>
+
+              <% unless cs.nil? %>
+                <b>
+                  <%= agreement.name %>
+                </b> : Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
+                <br>
+              <% end %>
+
+              <% unless cs.nil? %>
+
+                <% origin_ds = nil %>
+                <% target_ds = nil %>
+
+                <% if agreement.origin_target_mode == "Demande / Demande" %>
+                  <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+                  <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+                <% elsif agreement.origin_target_mode == "Demande / Devis" %>
+                  <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+                  <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+                <% elsif agreement.origin_target_mode == "Devis / Demande" %>
+                  <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+                  <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+                <% elsif agreement.origin_target_mode == "Devis / Devis" %>
+                  <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+                  <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+                <% end %>
+
+                <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
+                <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
+
+                <% unless origin_sh.nil? || target_sh.nil? %>
+                  <% elapsed_time = Biz.within(
+
+                      Time.utc(origin_sh.change_date.year,
+                               origin_sh.change_date.month,
+                               origin_sh.change_date.day,
+                               origin_sh.change_date.hour,
+                               origin_sh.change_date.min),
+
+                      Time.utc(target_sh.change_date.year,
+                               target_sh.change_date.month,
+                               target_sh.change_date.day,
+                               target_sh.change_date.hour,
+                               target_sh.change_date.min)
+
+                  ).in_seconds / 3600 %>
+
+                  La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+                  <br>
+
+                  <% if agreement.origin_target_mode == "Demande / Devis" || agreement.origin_target_mode == "Devis / Demande" || agreement.origin_target_mode == "Devis / Devis" %>
+                    <% project = @demand.projects.first %>
+                    <% unless project.nil? %>
+                      Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                      <br>
+                    <% end %>
+                  <% end %>
+
+                  <% delay = elapsed_time - cs.duration.to_i %>
+                  <% unless delay <= 0 %>
+                    L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
+                  <% end %>
+
+                  <%
+
+                    ad = AgreementDemand.where(organization_id: @organization.id,
+                                               agreement_id: agreement.id,
+                                               demand_id: @demand.id ,
+                                               demand_type_id: @demand.demand_type_id).first
+
+                    if ad.nil?
+                      ad = AgreementDemand.create(organization_id: @organization.id,
+                                                  agreement_id: agreement.id,
+                                                  demand_id: @demand.id ,
+                                                  demand_type_id: @demand.demand_type_id)
+                    end
+                  %>
+                  <br>
+
+                  <% if cs.duration.to_f >= elapsed_time.to_f %>
+                    <%
+                      ad.delayed = false
+                    %>
+                    <span class="badge badge-success">
+                      OK
+                    </span>
+                  <% elsif cs.duration.to_f < elapsed_time.to_f %>
+                    <%
+                      ad.delayed = true
+                    %>
+                    <span class="badge badge-important">
+                      En retard
+                    </span>
+                  <% end %>
+
+                  <% ad.elapsed_time = elapsed_time %>
+                  <% ad.save %>
+
+                <% end %>
+              <% end %>
+              <br>
+              <br>
+            <% end %>
           <% end %>
-          <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+
+          <hr>
+          <p> Historique des changements </p>
+          <% StatusHistory.where(demand: @demand.name).all.each do |sh| %>
+            <% if sh.project.blank? %>
+              <% if sh.origin.nil? %>
+                <b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+              <% else %>
+                <b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+              <% end %>
+            <% else %>
+              <b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+            <% end %>
+            <br>
+          <% end %>
         </div>
-
       </div>
-    </div>
-    </div>
-  <% end %>
 
-  <div id="devis">
-    <% unless @projects.nil? %>
+      <hr>
+
       <div class="row-fluid">
         <div class="span12">
-          <% if @demand.demand_status.to_s == "En chiffrage" %>
-            <% if can? :create_project_from_template, Project %>
-              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
-            <% end %>
-
-            <% if can? :create_project_from_scratch, Project %>
-              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
-            <% end %>
-            <hr>
+          <% begin %>
+            <%= link_to 'Supprimer la demande', organization_demand_path(@organization, @demand), confirm: I18n.t('are_you_sure'),
+                        method: :delete,
+                        :class => 'btn btn-danger pull-right',
+                        :title => I18n.t('delete') %>
+          <% rescue %>
           <% end %>
-          <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
         </div>
       </div>
+    </div>
+
+    <% unless controller.action_name == "new" %>
+      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+        <div id="services">
+        <div class="row-fluid">
+          <div class="span12" style="overflow: visible;">
+
+            <table class="table tablesorter table-striped table-bordered table-condensed">
+
+              <thead>
+                <tr>
+                  <th class="center">
+                    Sélect.
+                  </th>
+                  <th class="center">
+                    Services
+                  </th>
+                  <th class="center">
+                    Demandé / Chiffré
+                  </th>
+                  <th class="center">
+                    Date attendue
+                  </th>
+                  <th class="center">
+                    Date de livraison
+                  </th>
+                  <th class="center">
+                    A l'heure
+                  </th>
+                  <th class="center">
+                    Etat
+                  </th>
+                </tr>
+              </thead>
+
+              <% if @demand.demand_type == "ANO" %>
+                <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
+              <% else %>
+                <% unless @demand.demand_type.nil? %>
+                  <% @organization_services = @demand.demand_type.services %>
+                <% else %>
+                  <% @organization_services = [] %>
+                <% end %>
+              <% end %>
+              <% @organization_services.each do |service| %>
+                <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
+                <% unless sdl.nil? %>
+                  <% unless sdl.service.nil? %>
+                    <% sdl_service = sdl.service %>
+                    <% sdl_service_livrable = sdl.service.livrable %>
+                      <tr>
+
+                        <td class="center">
+                          <%= check_box_tag "selected[#{service.id}]", true, sdl.selected, disabled: ("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) %>
+                        </td>
+
+                        <td>
+                          <%= link_to service.name, "#", title: service.description %> (<%= service.wbs_activity_elements.count != 0 ? 'WBS' : 'CF' %>)
+                          <%= hidden_field_tag "service_#{service.id}", service.id %>
+                        </td>
+
+                        <td class="center">
+                          <% if ("Accepté".in?(@demand.projects.map(&:estimation_status).map(&:name))) %>
+
+                            <% color = "" %>
+                            <% project = @demand.projects.first %>
+                            <% project.module_projects.each do |mp| %>
+                              <% if mp.pemodule.alias == "guw" %>
+                                <% @guw_types = mp.guw_unit_of_works.map(&:guw_type).select{|i| i.service_id == sdl_service.id } %>
+                                <% if sdl.selected == true %>
+                                  <% if @guw_types.size >= 1 %>
+                                    <% color = "green" %>
+                                  <% else %>
+                                    <% unless color == "green" %>
+                                      <% color = "red" %>
+                                    <% end %>
+                                  <% end %>
+                                <% else %>
+                                  <% if @guw_types.size >= 1 %>
+                                    <% color = "orange" %>
+                                  <% end %>
+                                <% end %>
+                              <% elsif mp.pemodule.alias == "effort_breakdown" %>
+
+                                <% @mp_wbs_activity_wbs_activity_elements = mp.wbs_activity.wbs_activity_elements.select{|i| i.service_id == sdl_service.id } %>
+                                <% if sdl.selected == true %>
+                                  <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
+                                    <% color = "green" %>
+                                  <% else %>
+                                    <% unless color == "green" %>
+                                      <% color = "red" %>
+                                    <% end %>
+                                  <% end %>
+                                <% else %>
+                                  <% if @mp_wbs_activity_wbs_activity_elements.size >= 1 %>
+                                    <% color = "orange" %>
+                                  <% end %>
+                                <% end %>
+                              <% end %>
+                            <% end %>
+
+                            <% unless color.blank? %>
+                              <span class="fa fa-circle <%= color %>"></span>
+                            <% end %>
+
+                          <% end %>
+                        </td>
+
+                        <td class="center">
+                          <% unless sdl.expected_date.nil? %>
+                            <%= text_field_tag "expected_date[#{service.id}]", sdl.expected_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                          <% else %>
+                            <%= text_field_tag "expected_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
+                          <% end %>
+                        </td>
+
+                        <td class="center">
+                          <% unless sdl.actual_date.nil? %>
+                            <%= text_field_tag "actual_date[#{service.id}]", sdl.actual_date.strftime("%d/%m/%Y"), class: "date-picker", style: "width: 80px" %>
+                          <% else %>
+                            <%= text_field_tag "actual_date[#{service.id}]", "", class: "date-picker", style: "width: 80px" %>
+                          <% end %>
+                        </td>
+
+                        <td class="center">
+                          <% unless sdl.actual_date.nil? || sdl.expected_date.nil? %>
+                            <% if sdl.actual_date > sdl.expected_date %>
+                              <span class="fa fa-circle red"></span>
+                            <% else %>
+                              <span class="fa fa-circle green"></span>
+                            <% end %>
+                          <% else %>
+                            -
+                          <% end %>
+                        </td>
+
+                        <td class="center">
+                          <% unless sdl_service_livrable.nil? || sdl.nil? %>
+                            <%= select_tag "state[#{service.id}]", options_for_select(sdl_service_livrable.state.split(','), selected: sdl.state), prompt: "Aucun", style: "width: 80px" %>
+                          <% end %>
+                        </td>
+
+                      </tr>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </table>
+
+            <div class="actions-tabs">
+              <% if action_name == 'new' || action_name=="create" %>
+                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name=="update" %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+              <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+        <div id="devis">
+          <% unless @projects.nil? %>
+            <div class="row-fluid">
+              <div class="span12">
+                <% if @demand.demand_status.to_s == "En chiffrage" %>
+                  <% if can? :create_project_from_template, Project %>
+                    <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                  <% end %>
+
+                  <% if can? :create_project_from_scratch, Project %>
+                    <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, demand_id: @demand.id), :class => 'btn' %>
+                  <% end %>
+                  <hr>
+                <% end %>
+                <%= render :partial => 'organizations/organization_demand_projects', object: [@organization, @projects] %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
-  </div>
+  <% end %>
 
 
 </div>

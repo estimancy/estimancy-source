@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190214150630) do
+ActiveRecord::Schema.define(version: 20190306095359) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -64,6 +64,28 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.datetime "updated_at"
     t.text     "description",    limit: 65535
     t.string   "category",       limit: 255
+  end
+
+  create_table "agreement_demands", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "agreement_id",    limit: 4
+    t.integer  "demand_id",       limit: 4
+    t.integer  "demand_type_id",  limit: 4
+    t.boolean  "delayed"
+    t.integer  "elapsed_time",    limit: 4
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  add_index "agreement_demands", ["organization_id", "agreement_id", "demand_id", "demand_type_id"], name: "agreement_demands_index", using: :btree
+
+  create_table "agreements", force: :cascade do |t|
+    t.string   "name",               limit: 255
+    t.integer  "organization_id",    limit: 4
+    t.integer  "demand_type_id",     limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.string   "origin_target_mode", limit: 255
   end
 
   create_table "amoa_amoa_applications", force: :cascade do |t|
@@ -298,7 +320,10 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.datetime "updated_at",                  null: false
     t.integer  "demand_type_id",   limit: 4
     t.integer  "priority",         limit: 4
+    t.integer  "agreement_id",     limit: 4
   end
+
+  add_index "criticality_severities", ["organization_id", "demand_type_id", "criticality_id", "agreement_id", "severity_id"], name: "criticality_severities_index", using: :btree
 
   create_table "currencies", force: :cascade do |t|
     t.string   "name",            limit: 255
@@ -324,6 +349,7 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.string   "status_color",    limit: 255
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.integer  "demand_type_id",  limit: 4
   end
 
   create_table "demand_statuses_demand_types", force: :cascade do |t|
@@ -334,17 +360,20 @@ ActiveRecord::Schema.define(version: 20190214150630) do
   end
 
   create_table "demand_types", force: :cascade do |t|
-    t.string   "name",              limit: 255
-    t.text     "description",       limit: 65535
+    t.string   "name",               limit: 255
+    t.text     "description",        limit: 65535
     t.boolean  "fixed_billing"
     t.boolean  "deadlined_billing"
-    t.integer  "organization_id",   limit: 4
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "cost_from",         limit: 255
-    t.integer  "demand_status_id",  limit: 4
-    t.string   "billing",           limit: 11
+    t.integer  "organization_id",    limit: 4
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "cost_from",          limit: 255
+    t.integer  "demand_status_id",   limit: 4
+    t.string   "billing",            limit: 11
+    t.string   "origin_target_mode", limit: 255
   end
+
+  add_index "demand_types", ["organization_id"], name: "index_demand_types_on_organization_id", using: :btree
 
   create_table "demand_types_services", force: :cascade do |t|
     t.integer "demand_type_id", limit: 4
@@ -368,6 +397,8 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.boolean  "delayed",                        default: false
     t.integer  "priority",         limit: 4
   end
+
+  add_index "demands", ["organization_id"], name: "index_demands_on_organization_id", using: :btree
 
   create_table "estimation_status_group_roles", force: :cascade do |t|
     t.integer  "estimation_status_id",      limit: 4
@@ -1255,6 +1286,8 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.integer  "service_id",      limit: 4
   end
 
+  add_index "livrables", ["organization_id"], name: "index_livrables_on_organization_id", using: :btree
+
   create_table "module_project_guw_unit_of_work_groups", id: false, force: :cascade do |t|
     t.integer  "uow_organization_id",              limit: 4,     default: 0, null: false
     t.string   "organization_name",                limit: 255
@@ -1937,6 +1970,7 @@ ActiveRecord::Schema.define(version: 20190214150630) do
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
+  add_index "projects", ["demand_id"], name: "index_projects_on_demand_id", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "index_projects_on_organization_id_and_is_model", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "organization_estimation_models", using: :btree
 
@@ -2003,6 +2037,8 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.boolean  "selected"
   end
 
+  add_index "service_demand_livrables", ["organization_id", "service_id", "demand_id"], name: "service_demand_livrables_index", using: :btree
+
   create_table "services", force: :cascade do |t|
     t.integer  "organization_id", limit: 4
     t.integer  "livrable_id",     limit: 4
@@ -2011,6 +2047,8 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
   end
+
+  add_index "services", ["organization_id"], name: "index_services_on_organization_id", using: :btree
 
   create_table "severities", force: :cascade do |t|
     t.string   "name",            limit: 255
@@ -2184,6 +2222,8 @@ ActiveRecord::Schema.define(version: 20190214150630) do
     t.datetime "updated_at"
     t.integer  "gap",                limit: 4
   end
+
+  add_index "status_histories", ["demand"], name: "index_status_histories_on_demand", using: :btree
 
   create_table "status_transitions", force: :cascade do |t|
     t.integer  "from_transition_status_id",        limit: 4

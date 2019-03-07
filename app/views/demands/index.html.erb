@@ -11,16 +11,11 @@
     <div class="group_button">
       <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn" %>
       <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn" %>
+      <%= link_to "Afficher le tableau de bord", organization_demand_dashboard_path(@organization), class: "btn" %>
     </div>
 
-    <%
-      dd = Demand.where(organization_id: @organization.id, delayed: true).all.size
-      total = Demand.where(organization_id: @organization.id).all.size
-    %>
-
-    <%= (dd.to_f / total.to_f) * 100 %> % de demande en retard
-
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+
       <thead>
         <tr>
           <th>
@@ -42,12 +37,6 @@
             Statut
           </th>
           <th>
-            Priorité
-          </th>
-          <th>
-            SLA
-          </th>
-          <th>
             Date
           </th>
         </tr>
@@ -61,9 +50,7 @@
             <td><%= demand.description.to_s.truncate(50) %></td>
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
-            <td><%= demand.demand_status %></td>
-            <td><%= demand.priority %></td>
-            <td><%= (demand.delayed == true) ? "En retard" : "OK  " %></td>
+            <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
             <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
           </tr>
         <% end %>

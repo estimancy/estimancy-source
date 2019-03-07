@@ -70,8 +70,9 @@ class ProjectsController < ApplicationController
 
     @pemodules ||= Pemodule.all
     @project_modules = @project.pemodules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     if current_user.super_admin == true
       @organizations = Organization.all
@@ -366,7 +367,13 @@ class ProjectsController < ApplicationController
 
     @user = current_user
     @pemodules ||= Pemodule.all
-    @module_project = current_module_project
+
+    if current_module_project.nil?
+      @module_project = @project.module_projects.first
+    else
+      @module_project = current_module_project
+    end
+
     @show_hidden = 'true'
 
     status_comment_link = ""
@@ -378,10 +385,10 @@ class ProjectsController < ApplicationController
     @project_organization = @project.organization
     @module_projects = @project.module_projects
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     check_module_project
   end
@@ -389,21 +396,21 @@ class ProjectsController < ApplicationController
   # Function to activate the current/selected module_project
   def activate_module_project
     session[:module_project_id] = params[:module_project_id]
-    @module_project = ModuleProject.find(params[:module_project_id])
+    @module_project = ModuleProject.find(session[:module_project_id])
     @project = @module_project.project
     @project_organization = @project.organization
 
     authorize! :show_project, @project
 
-    @module_projects ||= @project.module_projects
+    @module_projects = @project.module_projects
     @pbs_project_element = current_component
 
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
     # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     @results = nil
 
@@ -603,10 +610,10 @@ class ProjectsController < ApplicationController
 
     @module_projects = @project.module_projects
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     if @module_project.pemodule.alias == "expert_judgement"
       if none_displayed_module_project.expert_judgement_instance.nil?
@@ -1048,14 +1055,13 @@ class ProjectsController < ApplicationController
       end
     end
 
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
     #@pe_wbs_project_activity = @project.pe_wbs_projects.activities_wbs.first
-
-    # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 
     @guw_module = Pemodule.where(alias: "guw").first
     @kb_module = Pemodule.where(alias: "kb").first
@@ -1169,7 +1175,10 @@ class ProjectsController < ApplicationController
 
       @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
       @wbs_activity_elements = []
-      @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+      @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
+
+      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
       # Before modifications for trigger
       # we can update group securities levels on edit or on show with some restrictions
@@ -1333,8 +1342,8 @@ class ProjectsController < ApplicationController
       end
 
       # Get the max X and Y positions of modules
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
       #Get the project Organization before update
       project_organization = @project.organization
@@ -1519,12 +1528,11 @@ class ProjectsController < ApplicationController
     end
 
     @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
-    #@pe_wbs_project_activity = @project.pe_wbs_projects.activities_wbs.first
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
 
-    # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
 
     @guw_module = Pemodule.where(alias: "guw").first
@@ -1762,7 +1770,10 @@ class ProjectsController < ApplicationController
       authorize! :alter_estimation_plan, @project
     end
 
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     if params[:pbs_project_element_id] && params[:pbs_project_element_id] != ''
       @pbs_project_element = PbsProjectElement.find(params[:pbs_project_element_id])
@@ -1773,10 +1784,6 @@ class ProjectsController < ApplicationController
     unless @pemodule.nil? || @project.nil?
       @array_modules = Pemodule.all
       @pemodules ||= Pemodule.all
-
-      #Max pos or 1
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
 
       # Get the module_project creation order : for this, we have to count the number of MP with same pemodule in this project
       mp_creation_order = @project.module_projects.where(pemodule_id: @pemodule.id).all.map(&:creation_order).max
@@ -1896,8 +1903,8 @@ class ProjectsController < ApplicationController
       my_module_project.save
 
 
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
+      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+      @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).compact.uniq.max
 
       if @pemodule.alias.in?(["guw", "operation"])
         #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
@@ -2061,15 +2068,18 @@ class ProjectsController < ApplicationController
     #No authorize required
     @project = Project.find(params[:project_id])
     @module_projects = @project.module_projects
-    @initialization_module_project = @initialization_module.nil? ? nil : @module_projects.find_by_pemodule_id(@initialization_module.id)
+
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     if params[:pbs_project_element_id] && params[:pbs_project_element_id] != ''
       @pbs_project_element = PbsProjectElement.find(params[:pbs_project_element_id])
     else
       @pbs_project_element = @project.root_component
     end
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
+
   end
 
 
@@ -4053,6 +4063,7 @@ public
     new_status_name = EstimationStatus.find(new_status_id).name rescue nil
 
     StatusHistory.create(organization: @project.organization.name,
+                         demand: @project.demand.nil? ? nil : @project.demand,
                          project_id: @project.id,
                          project: @project.title,
                          version_number: nil,
@@ -4063,6 +4074,13 @@ public
                          target: new_status_name,
                          user: current_user.name,
                          gap: nil)
+
+    unless @project.demand.nil?
+      @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
+        sdl.actual_date = Time.now
+        sdl.save
+      end
+    end
 
     new_comments = ""
     auto_updated_comments = ""
@@ -4254,10 +4272,10 @@ public
     @project_organization = @project.organization
     @module_projects = @project.module_projects
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     if @module_project.pemodule.alias == "expert_judgement"
       if current_module_project.expert_judgement_instance.nil?

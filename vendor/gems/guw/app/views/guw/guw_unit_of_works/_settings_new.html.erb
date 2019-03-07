@@ -92,8 +92,8 @@
             @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups
           %>
           <%=
-            "#{@current_module_project_guw_unit_of_works.where(selected: true).size} /
-              #{@current_module_project_guw_unit_of_works.size}"
+            "#{ @current_module_project_guw_unit_of_works.where(selected: true).size } /
+             #{ @current_module_project_guw_unit_of_works.size }"
           %>
         </span>
       </span>
@@ -297,8 +297,7 @@
             <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
             <% unless @unit_of_work_groups.empty? %>
               <button type="button" class="btn pull-left button_margin_right new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
-                <%# I18n.t('new_unit_of_work') %>
-                Saisir une exigence
+                <%= I18n.t('new_unit_of_work') %>
               </button>
             <% end %>
             <button type="submit" class="btn btn-primary pull-right guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>

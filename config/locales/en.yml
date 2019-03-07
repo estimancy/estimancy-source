@@ -2016,10 +2016,10 @@ en:
   subscription_end_date: "Subscription end date"
   formula: "Formula"
   wbs_phase_formula: "Calculation formula"
-  label_add_new_kpi_widget: "Add new KPI widget"
+  label_add_new_kpi_widget: "Add new computed widget"
   label_parameters: "Settings"
 
-  new_widget_kpi: "New KPI widget"
+  new_widget_kpi: "New computed widget"
   estimations_counter: "Estimations counter"
 
   entree1: "Input 1"
@@ -2083,7 +2083,7 @@ en:
   automatic_quotation_number: "Automatic and incremental quotation number"
   label_automatic_quotation_number: "Automatic and incremental number"
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
-  show_tjm: "Show TJM"
+  show_tjm: "Show ADR"
   only_numeric: "Only numeric values ​​are allowed"
   current_estimation_does_not_exists: "There is no current estimation"
   security_audit_management: "Security audit management"
@@ -2204,6 +2204,8 @@ en:
 
   text_explain_demand_status_workflow: "Text explanation demand statuses workflow"
 
+  new_unit_of_work: "New component"
+  "Copier les sécurités": "Copy security"
 
   component: "Component"
   cplx_coeff: "Coeff. complexity"
@@ -2222,3 +2224,7 @@ en:
 
   extract_raw_data: "Extract raw data"
   setting_estimations: "Estimation settings"
+
+  urgent_project: "Devis urgent"
+
+  "Autoriser l'export PDF": "Autoriser l'export PDF"
