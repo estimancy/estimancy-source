@@ -96,8 +96,8 @@
         <% @organization.applications.each do |app| %>
           <tr>
             <td><%= app.name %></td>
-            <td></td>
-            <td></td>
+            <td><%= app.forfait_mco %></td>
+            <td><%= app.month_number %></td>
             <td class="center"><%= app.is_ignored == true ? I18n.t(:yes) : I18n.t(:no) %></td>
             <td class="center">
               <% if can? :manage, Application %>
