@@ -2227,4 +2227,7 @@ en:
 
   urgent_project: "Devis urgent"
 
-  "Autoriser l'export PDF": "Autoriser l'export PDF"
+  Autoriser l'export PDF: "Autoriser l'export PDF"
+
+  forfait_mco : "Forfait MCO"
+  month_number : "Nombre de mois "

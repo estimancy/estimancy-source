@@ -11,7 +11,10 @@
 
     <div class="row-fluid input-xxlarge">
       <div class="span7">
-        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %></div>
+        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+        <%= f.input :forfait_mco, :label => I18n.t('forfait_mco'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+        <%= f.input :month_number, :label => I18n.t('month_number'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+      </div>
       <div class="span5">
         <label class="checkbox"></label>
         <%= f.input :is_ignored, as: :boolean, :label => I18n.t('is_ignored') %>
