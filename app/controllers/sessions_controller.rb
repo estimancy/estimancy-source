@@ -90,7 +90,7 @@ class SessionsController < Devise::SessionsController
     session[:user_return_to] = nil
     session[:module_project_id] = nil
     Monitoring.create(user: User.current, action: "Se Déconnecter", action_at: Time.now+3600)
-    #current_user.previous_login = current_user.last_login
+    current_user.last_login = Time.now
     super
   end
 
