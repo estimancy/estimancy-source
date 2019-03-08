@@ -1,5 +1,5 @@
 class Application < ActiveRecord::Base
-  attr_accessible :name, :organization_id, :is_ignored, :forfait_mco, :month_number
+  attr_accessible :name, :organization_id, :is_ignored, :forfait_mco, :month_number, :start_date, :end_date
   belongs_to :organization
 
   has_and_belongs_to_many :projects
