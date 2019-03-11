@@ -151,6 +151,7 @@ class DemandsController < ApplicationController
 
       flash[:notice] = "Demande mise à jour avec succès"
       redirect_to :back
+
     end
 
   end
@@ -180,14 +181,16 @@ class DemandsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    worksheet.add_cell(0, 0, "Nom")
-    worksheet.add_cell(0, 1, "Date")
+    worksheet.add_cell(0, 0, "Application")
+    worksheet.add_cell(0, 1, "Nom")
+    worksheet.add_cell(0, 2, "Date")
 
-    worksheet.add_cell(0, 2, "Montant Total (€)")
+    worksheet.add_cell(0, 3, "Montant Total (€)")
 
-    worksheet.add_cell(0, 3, "Statut")
-    worksheet.add_cell(0, 4, "Date")
-    worksheet.add_cell(0, 5, "Montant %")
+    worksheet.add_cell(0, 4, "Statut")
+    worksheet.add_cell(0, 5, "Date")
+    worksheet.add_cell(0, 6, "Montant %")
+
 
 
     dsdts = []
@@ -208,13 +211,14 @@ class DemandsController < ApplicationController
 
           j = 1
           dsdts.compact.each_with_index do |dsdt, index|
-            worksheet.add_cell(j, 0, demand.name)
-            worksheet.add_cell(j, 1, demand.created_at.to_s)
-            worksheet.add_cell(j, 2, demand.cost.to_f * 1000)
+            worksheet.add_cell(j, 0, demand.application_name)
+            worksheet.add_cell(j, 1, demand.name)
+            worksheet.add_cell(j, 2, demand.created_at.to_s)
+            worksheet.add_cell(j, 3, demand.cost.to_f * 1000)
 
-            worksheet.add_cell(j, 3, dsdt.demand_status.name)
-            worksheet.add_cell(j, 4, sh.change_date.to_s)
-            worksheet.add_cell(j, 5, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+            worksheet.add_cell(j, 4, dsdt.demand_status.name)
+            worksheet.add_cell(j, 5, sh.change_date.to_s)
+            worksheet.add_cell(j, 6, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
 
             j = j + 1
           end
