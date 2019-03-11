@@ -32,7 +32,7 @@
           <% @total_d = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).all.count %>
 
           <% unless @total_d == 0 %>
-            <%= (@ad / @total_d) * 100 %> % SLA OK
+            <%= (@ad.to_f / @total_d.to_f).to_f * 100 %> % SLA OK
           <% else %>
             -
           <% end %>

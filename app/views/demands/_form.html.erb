@@ -99,7 +99,7 @@
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
           <% unless @demand.new_record? %>
             <% if @demand.demand_type.name == "FRAIS" %>
-              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
+              <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xlarge' } %>
             <% elsif @demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" %>
               <span>
                 Coût (€) :
