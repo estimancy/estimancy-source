@@ -164,123 +164,120 @@
                 Coût (€) :
                 </span>
               <% unless demand_application.end_date.nil? %>
-                <%= @demand.cost = ((demand_application.forfait_mco.to_f) / (demand_application.end_date - demand_application.start_date)).round(4) %>
-            <% end %>
-          <% end %>
-
-          <hr>
-
-          <% @demand_demand_type = @demand.demand_type %>
-
-          <% unless @demand_demand_type.nil? %>
-            <% @demand_demand_type.agreements.each do |agreement| %>
-
-              <% cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                                demand_type_id: @demand_demand_type.nil? ? nil : @demand.demand_type_id,
-                                                criticality_id: @demand.criticality_id,
-                                                agreement_id: agreement.id,
-                                                severity_id: @demand.severity_id).first %>
-              <% unless cs.nil? %>
-                <% @demand.priority = cs.priority %>
+                <% @demand.cost = demand_application.forfait_mco.to_f / ((demand_application.end_date - demand_application.start_date).to_f / (30 * 24 * 3600)).round  %>
                 <% @demand.save %>
+                <%= @demand.cost %>
+
               <% end %>
+            <% end %>
 
-              <% unless cs.nil? %>
-                <b>
-                  <%= agreement.name %>
-                </b> : Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
-                <br>
-              <% end %>
+            <hr>
+            <h4>Gestion des SLA</h4>
+           <% @demand_demand_type = @demand.demand_type %>
 
-              <% unless cs.nil? %>
+            <% unless @demand_demand_type.nil? %>
+              <% @demand_demand_type.agreements.each do |agreement| %>
 
-                <% origin_ds = nil %>
-                <% target_ds = nil %>
-
-                <% if agreement.origin_target_mode == "Demande / Demande" %>
-                  <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
-                  <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
-                <% elsif agreement.origin_target_mode == "Demande / Devis" %>
-                  <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
-                  <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
-                <% elsif agreement.origin_target_mode == "Devis / Demande" %>
-                  <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
-                  <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
-                <% elsif agreement.origin_target_mode == "Devis / Devis" %>
-                  <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
-                  <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+                <% cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                  demand_type_id: @demand_demand_type.nil? ? nil : @demand.demand_type_id,
+                                                  criticality_id: @demand.criticality_id,
+                                                  agreement_id: agreement.id,
+                                                  severity_id: @demand.severity_id).first %>
+                <% unless cs.nil? %>
+                  <% @demand.priority = cs.priority %>
+                  <% @demand.save %>
                 <% end %>
 
-                <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
-                <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
+                <% unless cs.nil? %>
 
-                <% unless origin_sh.nil? || target_sh.nil? %>
-                  <% elapsed_time = Biz.within(
+                  <% origin_ds = nil %>
+                  <% target_ds = nil %>
 
-                      Time.utc(origin_sh.change_date.year,
-                               origin_sh.change_date.month,
-                               origin_sh.change_date.day,
-                               origin_sh.change_date.hour,
-                               origin_sh.change_date.min),
+                  <% if agreement.origin_target_mode == "Demande / Demande" %>
+                    <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+                    <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+                  <% elsif agreement.origin_target_mode == "Demande / Devis" %>
+                    <% origin_ds = DemandStatus.where(id: cs.origin_status_id).first %>
+                    <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+                  <% elsif agreement.origin_target_mode == "Devis / Demande" %>
+                    <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+                    <% target_ds = DemandStatus.where(id: cs.target_status_id).first %>
+                  <% elsif agreement.origin_target_mode == "Devis / Devis" %>
+                    <% origin_ds = EstimationStatus.where(id: cs.origin_status_id).first %>
+                    <% target_ds = EstimationStatus.where(id: cs.target_status_id).first %>
+                  <% end %>
 
-                      Time.utc(target_sh.change_date.year,
-                               target_sh.change_date.month,
-                               target_sh.change_date.day,
-                               target_sh.change_date.hour,
-                               target_sh.change_date.min)
+                  <% origin_sh = StatusHistory.where(demand: @demand.name, target: origin_ds.name).first %>
+                  <% target_sh = StatusHistory.where(demand: @demand.name, target: target_ds.name).first %>
 
-                  ).in_seconds / 3600 %>
+                  <% unless origin_sh.nil? || target_sh.nil? %>
+                    <% elapsed_time = Biz.within(
 
-                  La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
-                  <br>
+                        Time.utc(origin_sh.change_date.year,
+                                 origin_sh.change_date.month,
+                                 origin_sh.change_date.day,
+                                 origin_sh.change_date.hour,
+                                 origin_sh.change_date.min),
 
-                  <% if agreement.origin_target_mode == "Demande / Devis" || agreement.origin_target_mode == "Devis / Demande" || agreement.origin_target_mode == "Devis / Devis" %>
-                    <% project = @demand.projects.first %>
-                    <% unless project.nil? %>
-                      Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                        Time.utc(target_sh.change_date.year,
+                                 target_sh.change_date.month,
+                                 target_sh.change_date.day,
+                                 target_sh.change_date.hour,
+                                 target_sh.change_date.min)
+
+                    ).in_seconds / 3600 %>
+
+                    La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+                    <br>
+
+                    <% if agreement.origin_target_mode == "Demande / Devis" || agreement.origin_target_mode == "Devis / Demande" || agreement.origin_target_mode == "Devis / Devis" %>
+                      <% project = @demand.projects.first %>
+                      <% unless project.nil? %>
+                        Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                        <br>
+                      <% end %>
+                    <% end %>
+
+                    <% delay = elapsed_time - cs.duration.to_i %>
+                    <% unless delay <= 0 %>
+                      L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
+                    <% end %>
+
+                    <%
+
+                      ad = AgreementDemand.where(organization_id: @organization.id,
+                                                 agreement_id: agreement.id,
+                                                 demand_id: @demand.id ,
+                                                 demand_type_id: @demand.demand_type_id).first
+
+                      if ad.nil?
+                        ad = AgreementDemand.create(organization_id: @organization.id,
+                                                    agreement_id: agreement.id,
+                                                    demand_id: @demand.id ,
+                                                    demand_type_id: @demand.demand_type_id)
+                      end
+                    %>
+
+                    <% unless cs.nil? %>
+                      <br>
+                      <b>
+                        <%= agreement.name %>
+                      </b> : Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
+                        <% if cs.duration.to_f >= elapsed_time.to_f %>
+                          <%
+                            ad.delayed = false
+                          %>
+                          <span class="badge badge-success">OK</span>
+                        <% elsif cs.duration.to_f < elapsed_time.to_f %>
+                          <%
+                            ad.delayed = true
+                          %> <span class="badge badge-important">En retard</span>
+                        <% end %>
+
+                        <% ad.elapsed_time = elapsed_time %>
+                        <% ad.save %>
                       <br>
                     <% end %>
-                  <% end %>
-
-                  <% delay = elapsed_time - cs.duration.to_i %>
-                  <% unless delay <= 0 %>
-                    L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
-                  <% end %>
-
-                  <%
-
-                    ad = AgreementDemand.where(organization_id: @organization.id,
-                                               agreement_id: agreement.id,
-                                               demand_id: @demand.id ,
-                                               demand_type_id: @demand.demand_type_id).first
-
-                    if ad.nil?
-                      ad = AgreementDemand.create(organization_id: @organization.id,
-                                                  agreement_id: agreement.id,
-                                                  demand_id: @demand.id ,
-                                                  demand_type_id: @demand.demand_type_id)
-                    end
-                  %>
-                  <br>
-
-                  <% if cs.duration.to_f >= elapsed_time.to_f %>
-                    <%
-                      ad.delayed = false
-                    %>
-                    <span class="badge badge-success">
-                      OK
-                    </span>
-                  <% elsif cs.duration.to_f < elapsed_time.to_f %>
-                    <%
-                      ad.delayed = true
-                    %>
-                    <span class="badge badge-important">
-                      En retard
-                    </span>
-                  <% end %>
-
-                  <% ad.elapsed_time = elapsed_time %>
-                  <% ad.save %>
 
                 <% end %>
               <% end %>
@@ -290,7 +287,7 @@
           <% end %>
 
           <hr>
-          <p> Historique des changements </p>
+          <h4> Historique des changements </h4>
           <% StatusHistory.where(demand: @demand.name).all.each do |sh| %>
             <% if sh.project.blank? %>
               <% if sh.origin.nil? %>
