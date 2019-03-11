@@ -84,7 +84,7 @@
             <% end %>
             <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
           </div>
-      </div>
+        </div>
 
         <div class="span6">
           <%= f.input :attachment, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
@@ -98,55 +98,55 @@
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
           <% unless @demand.new_record? %>
-            <% if @demand.demand_type.cost_from == "Projet" %>
+            <% if @demand.demand_type.name == "FRAIS" %>
               <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xxlarge' } %>
-            <% else %>
+            <% elsif @demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" %>
               <span>
                 Coût (€) :
               </span>
               <% if "Accepté".in?@demand.projects.map(&:estimation_status).map(&:name) %>
                 <%
-                   es = EstimationStatus.where(name: "Accepté",organization_id: @demand.organization_id).first
-                   project = @demand.projects.where(estimation_status: es.id).first
+                  es = EstimationStatus.where(name: "Accepté",organization_id: @demand.organization_id).first
+                  project = @demand.projects.where(estimation_status: es.id).first
 
-                   unless project.nil?
-                     @fields_coefficients = {}
-                     @pfs = {}
+                  unless project.nil?
+                    @fields_coefficients = {}
+                    @pfs = {}
 
-                     fields = @organization.fields
-                     ProjectField.where(project_id: [project.id]).each do |pf|
-                       begin
-                         if pf.field_id.in?(fields.map(&:id))
-                           if pf.project && pf.views_widget
-                             if pf.project_id == pf.views_widget.module_project.project_id
-                               @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
-                             else
-                               # pf.delete
-                             end
-                           else
-                             # pf.delete
-                           end
-                         else
-                           # pf.delete
-                         end
-                       rescue
-                         #puts "erreur"
-                       end
-                     end
+                    fields = @organization.fields
+                    ProjectField.where(project_id: [project.id]).each do |pf|
+                      begin
+                        if pf.field_id.in?(fields.map(&:id))
+                          if pf.project && pf.views_widget
+                            if pf.project_id == pf.views_widget.module_project.project_id
+                              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+                            else
+                              # pf.delete
+                            end
+                          else
+                            # pf.delete
+                          end
+                        else
+                          # pf.delete
+                        end
+                      rescue
+                        #puts "erreur"
+                      end
+                    end
 
-                     fields.each do |f|
-                       @fields_coefficients[f.id] = f.coefficient
-                     end
+                    fields.each do |f|
+                      @fields_coefficients[f.id] = f.coefficient
+                    end
 
-                     field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
-                     column = QueryColumn.new(field.name.to_sym,
-                                              sortable: "",
-                                              caption: "efefef",
-                                              field_id: field.id,
-                                              organization_id: @current_organization.id)
+                    field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
+                    column = QueryColumn.new(field.name.to_sym,
+                                             sortable: "",
+                                             caption: "efefef",
+                                             field_id: field.id,
+                                             organization_id: @current_organization.id)
 
-                     value = column_content(@pfs, column, project, @fields_coefficients)
-                   end
+                    value = column_content(@pfs, column, project, @fields_coefficients)
+                  end
                 %>
                 <br>
                 <span class="pull-left" style="font-weight: bold;">
@@ -155,9 +155,16 @@
                   <%= @demand.cost %> k€
                 </span>
               <% else %>
-              <br>
+                <br>
                 -
               <% end %>
+            <% elsif @demand.demand_type.name == "ANO" || @demand.demand_type.name == "MCO" %>
+              <% demand_application = Application.find(@demand.application_id) %>
+                <span>
+                Coût (€) :
+                </span>
+              <% unless demand_application.end_date.nil? %>
+                <%= @demand.cost = ((demand_application.forfait_mco.to_f) / (demand_application.end_date - demand_application.start_date)).round(4) %>
             <% end %>
           <% end %>
 
@@ -317,12 +324,12 @@
     <% unless controller.action_name == "new" %>
       <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
         <div id="services">
-        <div class="row-fluid">
-          <div class="span12" style="overflow: visible;">
+          <div class="row-fluid">
+            <div class="span12" style="overflow: visible;">
 
-            <table class="table tablesorter table-striped table-bordered table-condensed">
+              <table class="table tablesorter table-striped table-bordered table-condensed">
 
-              <thead>
+                <thead>
                 <tr>
                   <th class="center">
                     Sélect.
@@ -346,23 +353,23 @@
                     Etat
                   </th>
                 </tr>
-              </thead>
+                </thead>
 
-              <% if @demand.demand_type == "ANO" %>
-                <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
-              <% else %>
-                <% unless @demand.demand_type.nil? %>
-                  <% @organization_services = @demand.demand_type.services %>
+                <% if @demand.demand_type == "ANO" %>
+                  <% @organization_services = @organization.services.where(name: "Maintenance Corrective").all %>
                 <% else %>
-                  <% @organization_services = [] %>
+                  <% unless @demand.demand_type.nil? %>
+                    <% @organization_services = @demand.demand_type.services %>
+                  <% else %>
+                    <% @organization_services = [] %>
+                  <% end %>
                 <% end %>
-              <% end %>
-              <% @organization_services.each do |service| %>
-                <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
-                <% unless sdl.nil? %>
-                  <% unless sdl.service.nil? %>
-                    <% sdl_service = sdl.service %>
-                    <% sdl_service_livrable = sdl.service.livrable %>
+                <% @organization_services.each do |service| %>
+                  <% sdl = ServiceDemandLivrable.where(organization_id: @organization.id, service_id: service.id, demand: @demand.id).first %>
+                  <% unless sdl.nil? %>
+                    <% unless sdl.service.nil? %>
+                      <% sdl_service = sdl.service %>
+                      <% sdl_service_livrable = sdl.service.livrable %>
                       <tr>
 
                         <td class="center">
@@ -456,25 +463,25 @@
                         </td>
 
                       </tr>
+                    <% end %>
                   <% end %>
                 <% end %>
-              <% end %>
-            </table>
+              </table>
 
-            <div class="actions-tabs">
-              <% if action_name == 'new' || action_name=="create" %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <% elsif action_name == 'edit' || action_name=="update" %>
-                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <% end %>
-              <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+              <div class="actions-tabs">
+                <% if action_name == 'new' || action_name=="create" %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <% elsif action_name == 'edit' || action_name=="update" %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% end %>
+                <%= link_to I18n.t('back'), :back, :class => 'btn btn-primary' %>
+              </div>
+
             </div>
-
           </div>
         </div>
-      </div>
 
         <div id="devis">
           <% unless @projects.nil? %>
@@ -498,18 +505,19 @@
       <% end %>
     <% end %>
   <% end %>
+<% end %>
 
 
 </div>
 
 <script>
-  $(document).ready(function () {
-    $(".date-picker").datepicker({
-      language: '<%= set_user_language %>',
-      autoclose: true,
-      todayHighlight: true,
-      todayBtn: true
+    $(document).ready(function () {
+        $(".date-picker").datepicker({
+            language: '<%= set_user_language %>',
+            autoclose: true,
+            todayHighlight: true,
+            todayBtn: true
+        });
     });
-  });
 </script>
 

@@ -1195,7 +1195,7 @@ en:
   weeks: "weeks"
   hours: "hours"
   months: "months"
-  end_date: "End Date"
+  #end_date: "End Date"
   staffing: "Staffing"
   duration: "Duration"
   complexity: "Complexity"
@@ -2231,3 +2231,5 @@ en:
 
   forfait_mco : "Forfait MCO"
   month_number : "Nombre de mois "
+
+
