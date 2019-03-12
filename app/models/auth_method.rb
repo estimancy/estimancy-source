@@ -35,3 +35,11 @@ class AuthMethod < ActiveRecord::Base
     self.nil? ? '' : self.name
   end
 end
+
+# o = Organization.first
+# o.applications.each do |application|
+#   application.forfait_mco = rand(2000..300000)
+#   application.start_date = Time.now
+#   application.end_date = Time.now + 1.year
+#   application.save
+# end

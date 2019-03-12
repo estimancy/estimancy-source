@@ -164,10 +164,10 @@
                 Coût (€) :
                 </span>
               <% unless demand_application.end_date.nil? %>
-                <% @demand.cost = demand_application.forfait_mco.to_f / ((demand_application.end_date - demand_application.start_date).to_f / (30 * 24 * 3600)).round  %>
+                <%# @demand.cost = demand_application.forfait_mco.to_f / ((demand_application.end_date - demand_application.start_date).to_f / (30 * 24 * 3600)).round  %>
+                <% @demand.cost = (demand_application.forfait_mco.to_f / 12).round(2)  %>
                 <% @demand.save %>
-                <%= @demand.cost %>
-
+                <%= @demand.cost %> / mois
               <% end %>
             <% end %>
 
