@@ -1243,7 +1243,7 @@ class WbsActivitiesController < ApplicationController
             model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
           end
         end
-        model_worksheet.change_column_bold(0,true)
+        # model_worksheet.change_column_bold(0,true)
         model_worksheet.change_column_width(0, 60)
         model_worksheet.change_column_width(1, 100)
         model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
@@ -1357,7 +1357,7 @@ class WbsActivitiesController < ApplicationController
           ratio_elements_worksheet.add_cell(0, 0, I18n.t(:name))
           ratio_elements_worksheet.add_cell(0, 1, ratio.name)
 
-          ratio_elements_worksheet.change_column_bold(0,true)
+          # ratio_elements_worksheet.change_column_bold(0,true)
           ratio_elements_worksheet.change_column_width(0, I18n.t(:do_not_show_phases_with_zero_value).size)
           counter_line = 2 #4
 

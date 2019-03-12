@@ -735,7 +735,7 @@ class Guw::GuwModelsController < ApplicationController
         worksheet[index][1].change_border(symbole.to_sym, 'thin')
       end
     end
-    worksheet.change_column_bold(0,true)
+    # worksheet.change_column_bold(0,true)
     worksheet.change_row_height(1, @guw_model.description.count("\n") * 13 + 1)
     worksheet.change_column_width(0, 38)
     worksheet.change_column_width(1, 30)
@@ -1089,7 +1089,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(index, 1, row[1].nil? ? '' : row[1])
     end
 
-    worksheet.change_column_bold(0,true)
+    # worksheet.change_column_bold(0,true)
     worksheet.change_column_width(0, 45)
     worksheet.change_column_width(1, 45)
 
@@ -1173,7 +1173,7 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
 
-      coeff_elements_worksheet.change_column_bold(0,true)
+      # coeff_elements_worksheet.change_column_bold(0,true)
       counter_line += coefficient.guw_coefficient_elements.all.size
 
       counter_line.times do |indx|
@@ -1977,7 +1977,7 @@ class Guw::GuwModelsController < ApplicationController
                 end
 
                 worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
-                worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
+                # worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
                 worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end

@@ -174,7 +174,7 @@ class Ge::GeModelsController < ApplicationController
         model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
       end
     end
-    model_worksheet.change_column_bold(0,true)
+    # model_worksheet.change_column_bold(0,true)
     model_worksheet.change_column_width(0, 45)
     model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
 
