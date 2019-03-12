@@ -2171,7 +2171,7 @@ frsncf:
 
 
   #_user_account.html.erb
-  setting_demands: "Paramétrage demandes"
+  setting_demands: "Paramétrage des demandes"
 
   # setting_demand
   demands: "Demandes"

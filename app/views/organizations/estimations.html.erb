@@ -7,63 +7,62 @@
 
     <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
-          <div style="text-align:right;">
-            <% projects = @organization.projects %>
-              <div class="pull-left">
-                Nombre total de devis:
-                <%= projects.count %>
-              </div>
-          </div>
+<!--          <div style="text-align:right;">-->
+                <%# projects = @organization.projects %>
+<!--            <div class="pull-left">-->
+<!--              Nombre total de devis:-->
+                    <%#= projects.count %>
+<!--            </div>-->
+<!--          </div>-->
+<!--          <br/>-->
 
-          <br/>
+<!--          <div class="row" >-->
+<!--              <div class="span3 offset1">-->
+                <%# prjs_estimation_status = projects.group(:estimation_status_id).count %>
+                <%#= pie_chart prjs_estimation_status.transform_keys {|estt_id| EstimationStatus.find(estt_id).name} %>
+<!--                  <div style = "text-align: center" />-->
+<!--                    <strong>Nombre de Devis par Estimation Status</strong>-->
+<!--                  </div>-->
+<!--              </div>-->
 
-          <div class="row" >
-              <div class="span3 offset1">
-                <% prjs_estimation_status = projects.group(:estimation_status_id).count %>
-                <%= pie_chart prjs_estimation_status.transform_keys {|estt_id| EstimationStatus.find(estt_id).name} %>
-                  <div style = "text-align: center" />
-                    <strong>Nombre de Devis par Estimation Status</strong>
-                  </div>
-              </div>
+<!--              <div class="span3">-->
+                <%# prjs_prj_area = projects.group(:project_area_id).count %>
+                <%# if prjs_prj_area.has_key?(nil) %>
+                  <%# val_nil = prjs_prj_area.fetch(nil) %>
+                  <%# prjs_prj_area.delete(nil) %>
+                  <%# prjs_prj_area.store("Null", val_nil) %>
+                  <%#= pie_chart prjs_prj_area.transform_keys {|prj_area_id| %>
+                    <%# if prj_area_id != "Null" %>
+                      <%# ProjectArea.find(prj_area_id).name %>
+                    <%# else prj_area_id = "Null" end } %>
+                <%# else %>
+                    <%#= pie_chart prjs_prj_area.transform_keys {|prj_area_id| ProjectArea.find(prj_area_id).name} %>
+                <%# end %>
+<!--                  <div style = "text-align: center" />-->
+<!--                    <strong>Nombre de Devis par Project Area</strong>-->
+<!--                  </div>-->
+<!--              </div>-->
 
-              <div class="span3">
-                <% prjs_prj_area = projects.group(:project_area_id).count %>
-                <% if prjs_prj_area.has_key?(nil) %>
-                  <% val_nil = prjs_prj_area.fetch(nil) %>
-                  <% prjs_prj_area.delete(nil) %>
-                  <% prjs_prj_area.store("Null", val_nil) %>
-                  <%= pie_chart prjs_prj_area.transform_keys {|prj_area_id| %>
-                    <% if prj_area_id != "Null" %>
-                      <% ProjectArea.find(prj_area_id).name %>
-                    <% else prj_area_id = "Null" end } %>
-                <% else %>
-                    <%= pie_chart prjs_prj_area.transform_keys {|prj_area_id| ProjectArea.find(prj_area_id).name} %>
-                <% end %>
-                  <div style = "text-align: center" />
-                    <strong>Nombre de Devis par Project Area</strong>
-                  </div>
-              </div>
+<!--              <div class="span3">-->
+                <%# prjs_acquisition = projects.group(:acquisition_category_id).count %>
+                <%# if prjs_acquisition.has_key?(nil) %>
+                  <%# val_nil = prjs_acquisition.fetch(nil) %>
+                  <%# prjs_acquisition.delete(nil) %>
+                  <%# prjs_acquisition.store("Null", val_nil) %>
+                  <%#= bar_chart prjs_acquisition.transform_keys {|acq_id| %>
+                    <%# if acq_id != "Null" %>
+                      <%# AcquisitionCategory.find(acq_id).name %>
+                    <%# else acq_id = "Null" end } %>
+                <%# else %>
+                  <%#= bar_chart prjs_acquisition.transform_keys {|acq_id| AcquisitionCategory.find(acq_id).name} , height: "50%"  %>
+                <%# end %>
+<!--                  <div style = "text-align: center" />-->
+<!--                    <strong>Nombre de Devis par Acquisition </strong>-->
+<!--                  </div>-->
+<!--              </div>-->
+<!--          </div>-->
 
-              <div class="span3">
-                <% prjs_acquisition = projects.group(:acquisition_category_id).count %>
-                <% if prjs_acquisition.has_key?(nil) %>
-                  <% val_nil = prjs_acquisition.fetch(nil) %>
-                  <% prjs_acquisition.delete(nil) %>
-                  <% prjs_acquisition.store("Null", val_nil) %>
-                  <%= bar_chart prjs_acquisition.transform_keys {|acq_id| %>
-                    <% if acq_id != "Null" %>
-                      <% AcquisitionCategory.find(acq_id).name %>
-                    <% else acq_id = "Null" end } %>
-                <% else %>
-                  <%= bar_chart prjs_acquisition.transform_keys {|acq_id| AcquisitionCategory.find(acq_id).name} , height: "50%"  %>
-                <% end %>
-                  <div style = "text-align: center" />
-                    <strong>Nombre de Devis par Acquisition </strong>
-                  </div>
-              </div>
-          </div>
-
-          <br/>
+<!--          <br/>-->
 
           <div>
             <%= I18n.t(:label_filter_on_projects_version) %>
