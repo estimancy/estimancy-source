@@ -29,6 +29,7 @@ class DemandsController < ApplicationController
     @demand = Demand.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @uploader = AttachmentUploader.new
+    @uploaders = DemandAttachmentsUploader.new
 
 
     @organization.services.each do |s|
@@ -50,6 +51,7 @@ class DemandsController < ApplicationController
     @demand = Demand.new
     @organization = Organization.find(params[:organization_id])
     @demand.attachment = params[:attachment]
+    @demand.attachments = params[:attachments]
   end
 
   def create
@@ -108,10 +110,13 @@ class DemandsController < ApplicationController
       end
     end
 
-    @demand.update(params[:demand])
+    @demand.update(params[:attachment])
+    @demand.update(params[:attachments])
 
     @uploader = AttachmentUploader.new
     @uploader.store!(params[:attachment])
+
+    @uploader.store!(params[:attachments])
 
     if @demand.save
 
