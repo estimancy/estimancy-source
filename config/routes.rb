@@ -23,13 +23,13 @@
 
 Projestimate::Application.routes.draw do
 
- # get 'file_uploaders/index'
+  #get 'file_uploader/index'
 
-  #get 'file_uploaders/new'
+  #get 'file_uploader/new'
 
-  #get 'file_uploaders/create'
+  #get 'file_uploader/create'
 
-  #get 'file_uploaders/destroy'
+  #get 'file_uploader/destroy'
 
   resources :autorization_log_events
 
