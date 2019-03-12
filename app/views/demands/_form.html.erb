@@ -100,7 +100,7 @@
           <% unless @demand.new_record? %>
             <% if @demand.demand_type.name == "FRAIS" %>
               <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xlarge' } %>
-            <% elsif @demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" %>
+            <% elsif @demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "MCO" %>
               <span>
                 Coût (€) :
               </span>
@@ -158,7 +158,7 @@
                 <br>
                 -
               <% end %>
-            <% elsif @demand.demand_type.name == "ANO" || @demand.demand_type.name == "MCO" %>
+            <% elsif @demand.demand_type.name == "ANO" %>
               <% demand_application = Application.find(@demand.application_id) %>
                 <span>
                 Coût (€) :
