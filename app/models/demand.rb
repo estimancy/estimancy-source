@@ -3,7 +3,7 @@ class Demand < ActiveRecord::Base
                   :demand_status_id, :organization_id, :cost, :attachment, :selected, :criticality_id, :severity_id
 
   mount_uploader :attachment, AttachmentUploader
-  mount_uploaders :attachment, DemandAttachmentsUploader
+  mount_uploader :attachment, DemandAttachmentsUploader
 
   belongs_to :demand_type
   belongs_to :organization
