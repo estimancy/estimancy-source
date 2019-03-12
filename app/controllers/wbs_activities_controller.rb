@@ -1385,7 +1385,7 @@ class WbsActivitiesController < ApplicationController
             ratio.wbs_activity_ratio_variables.each do |ratio_variable|
               value = ratio_variable.send(variable_attr)
 
-              if variable_attr.in?("is_modifiable", "is_used_in_ratio_calculation")
+              if variable_attr.in?(["is_modifiable", "is_used_in_ratio_calculation"])
                 val = ratio_variable.send(variable_attr)
                 if val == true
                   value = 1
@@ -1418,7 +1418,7 @@ class WbsActivitiesController < ApplicationController
             line_number = counter_line + 1
 
             wbs_activity_ratio_elements.each do |ratio_element|
-              if attr.in?("position", "phase_short_name", "name", "description")
+              if attr.in?(["position", "phase_short_name", "name", "description"])
                 activity_element = ratio_element.wbs_activity_element
                 if activity_element
                   value = activity_element.send(attr)
@@ -1426,7 +1426,7 @@ class WbsActivitiesController < ApplicationController
                   value = nil
                 end
 
-              elsif attr.in?("is_optional", "effort_is_modifiable", "cost_is_modifiable")
+              elsif attr.in?(["is_optional", "effort_is_modifiable", "cost_is_modifiable"])
                 val = ratio_element.send(attr)
                 if val == true
                   value = 1
