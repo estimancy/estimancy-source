@@ -105,7 +105,7 @@ gem 'zip-zip'
 gem 'axlsx'
 gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
-gem 'rubyXL'
+gem 'rubyXL', "3.3.33"
 gem 'nokogiri'
 gem 'mechanize'
 
