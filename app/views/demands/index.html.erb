@@ -46,7 +46,7 @@
         <% @demands.each do |demand| %>
           <tr>
             <td><%= link_to demand.name, edit_organization_demand_path(@organization, demand) %></td>
-            <td><%= demand.demand_type.name %></td>
+            <td><%= demand.demand_type.nil? ? nil : demand.demand_type.name %></td>
             <td><%= demand.description.to_s.truncate(50) %></td>
             <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>

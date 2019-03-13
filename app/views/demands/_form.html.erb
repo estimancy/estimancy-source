@@ -96,23 +96,24 @@
             <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
           <% end %>
 
-          <br/>
+<!--          <br/>-->
 
           <%#= f.input :attachments, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
-          <%= f.file_field :attachments, multiple: true %>
-            <% if @demand.attachments.to_s.blank? || controller.action_name == "new"%>
-              <p> Il n'y a aucun document attaché à cette demande.</p>
-            <% else %>
-              Pièces jointes à la demande <br>
-              <ul>
-                <% @demand.attachments.each do |attachment| %>
-                  <%= link_to File.basename(attachment.to_s), attachment.to_s, target: "_blank" %>
-                  <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                <% end %>
-              </ul>
-            <% end %>
+          <%#= f.input :attachments, as: :file, multiple: true %>
+            <%# if @demand.attachments.to_s.blank? || controller.action_name == "new"%>
+<!--              <p> Il n'y a aucun document attaché à cette demande.</p>-->
+            <%# else %>
+<!--              Pièces jointes à la demande <br>-->
+<!--              <ul>-->
+                <%# @demand.attachments.each do |attachment| %>
+                  <%#= link_to File.basename(attachment.to_s), attachment.to_s, target: "_blank" %>
+                  <%#= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                <%# end %>
+<!--              </ul>-->
+            <%# end %>
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
+
           <% unless @demand.new_record? %>
             <% if @demand.demand_type.name == "FRAIS" %>
               <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xlarge' } %>

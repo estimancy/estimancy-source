@@ -110,11 +110,13 @@ class DemandsController < ApplicationController
       end
     end
 
-    @demand.update(params[:attachment])
-    @demand.update(params[:attachments])
-
     @uploader = AttachmentUploader.new
-    @uploader.store!(params[:attachment])
+
+    @demand.update(params[:attachment])
+    # @demand.update(params[:attachments])
+
+    # @uploader = AttachmentUploader.new
+    # @uploader.store!(params[:attachment])
 
     @uploader.store!(params[:attachments])
 
