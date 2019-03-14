@@ -2227,11 +2227,15 @@ en:
 
   urgent_project: "Devis urgent"
 
-  Autoriser l'export PDF: "Autoriser l'export PDF"
+  Autoriser l'export PDF: "Allow export pdf"
 
   forfait_mco : "Forfait MCO"
-  month_number : "Nombre de mois "
+  month_number : "Month number"
 
-  "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
-
+  "Nombre de projets sélectionnée": "Number of selected projects"
+  adaptation_input_value: "Input value adaptation"
+  average_rates: "Average rates"
+  revised: "révised"
+  begin: "Start"
+  gap: "gap"
 
