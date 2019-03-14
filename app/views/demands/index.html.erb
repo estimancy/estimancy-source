@@ -25,16 +25,13 @@
             Type de demande
           </th>
           <th>
-            Description
-          </th>
-          <th>
-            Besoin Métier
-          </th>
-          <th>
             Application
           </th>
           <th>
             Statut
+          </th>
+          <th>
+            Besoin Métier
           </th>
           <th>
             Date
@@ -47,10 +44,9 @@
           <tr>
             <td><%= link_to demand.name, edit_organization_demand_path(@organization, demand) %></td>
             <td><%= demand.demand_type.nil? ? nil : demand.demand_type.name %></td>
-            <td><%= demand.description.to_s.truncate(50) %></td>
-            <td><%= demand.business_need %></td>
             <td><%= demand.application %></td>
             <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
+            <td><%= demand.business_need %></td>
             <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
           </tr>
         <% end %>

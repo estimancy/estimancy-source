@@ -202,6 +202,7 @@ class DemandsController < ApplicationController
 
     dsdts = []
     @organization.demands.each do |demand|
+      j = 1
       if demand.demand_type.billing == "Echéance"
 
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
@@ -216,7 +217,7 @@ class DemandsController < ApplicationController
                                                     demand_status_id: ds.id).first
           end
 
-          j = 1
+          # pourcentage
           dsdts.compact.each_with_index do |dsdt, index|
             worksheet.add_cell(j, 0, demand.application.nil? ? nil : demand.application.name)
             worksheet.add_cell(j, 1, demand.name)
@@ -230,9 +231,16 @@ class DemandsController < ApplicationController
             j = j + 1
           end
         end
-      elsif demand.demand_type.billing == "Abonnement"
-        worksheet.add_cell(0, 0, demand.name)
-        worksheet.add_cell(1, 1, demand.created_at.to_s)
+      else
+        shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+        shs.each do |sh|
+          worksheet.add_cell(j, 0, demand.name)
+          worksheet.add_cell(j, 1, demand.created_at.to_s)
+          worksheet.add_cell(j, 2, demand.cost.to_f * 1000)
+          worksheet.add_cell(j, 3, demand.demand_status.name)
+          worksheet.add_cell(j, 4, sh.change_date.to_s)
+          j = j + 1
+        end
       end
     end
 
