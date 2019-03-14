@@ -344,7 +344,6 @@ class DemandsController < ApplicationController
         else
           pf.delete
         end
-
       rescue
         #puts "erreur"
       end
