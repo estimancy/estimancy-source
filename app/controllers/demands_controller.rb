@@ -218,7 +218,7 @@ class DemandsController < ApplicationController
 
           j = 1
           dsdts.compact.each_with_index do |dsdt, index|
-            worksheet.add_cell(j, 0, demand.application_name)
+            worksheet.add_cell(j, 0, demand.application.nil? ? nil : demand.application.name)
             worksheet.add_cell(j, 1, demand.name)
             worksheet.add_cell(j, 2, demand.created_at.to_s)
             worksheet.add_cell(j, 3, demand.cost.to_f * 1000)

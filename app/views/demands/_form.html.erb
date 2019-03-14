@@ -276,8 +276,8 @@
                     %>
 
                     <% unless cs.nil? %>
-                      <br>
                       <b>
+                        <br>
                         <%= agreement.name %>
                       </b> : Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
                         <% if cs.duration.to_f >= elapsed_time.to_f %>
@@ -298,7 +298,6 @@
 
                 <% end %>
               <% end %>
-              <br>
               <br>
             <% end %>
           <% end %>
