@@ -213,13 +213,13 @@ class DemandsController < ApplicationController
           ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
           unless ds.nil?
-            dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
-                                                    demand_type_id: demand.demand_type_id,
-                                                    demand_status_id: ds.id).first
+            dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                   demand_type_id: demand.demand_type_id,
+                                                   demand_status_id: ds.id).first
           end
 
           # pourcentage
-          dsdts.compact.each_with_index do |dsdt, index|
+          # dsdts.compact.each_with_index do |dsdt, index|
             worksheet.add_cell(j, 0, demand.organization)
             worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
             worksheet.add_cell(j, 2, demand.name)
@@ -230,7 +230,7 @@ class DemandsController < ApplicationController
             worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
 
             j = j + 1
-          end
+          # end
         end
       else
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
