@@ -229,7 +229,6 @@ class Guw::GuwModelsController < ApplicationController
                                                      output_type: row[1].nil? ? nil : row[1].value,
                                                      guw_model_id: @guw_model.id,
                                                      allow_intermediate_value: (row[2].value == 0) ? false : true,
-                                                     allow_subtotal: (row[3].value == 0) ? false : true,
                                                      standard_coefficient: row[4].nil? ? nil : row[4].value,
                                                      display_order: row[5].nil? ? nil : row[5].value,
                                                      unit: row[6].nil? ? nil : row[6].value,
