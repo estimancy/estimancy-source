@@ -231,8 +231,8 @@ class DemandsController < ApplicationController
           end
         end
       elsif demand.demand_type.billing == "Abonnement"
-        worksheet.add_cell(index + 1, 0, demand.name)
-        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+        worksheet.add_cell(0, 0, demand.name)
+        worksheet.add_cell(1, 1, demand.created_at.to_s)
       end
     end
 
