@@ -178,7 +178,7 @@ class DemandsController < ApplicationController
 
     @demand.delete
 
-    redirect_to organization_demands_path(@organization)
+    redirect_to organization_demands_path(@demand.organization)
   end
 
   def export_billing
