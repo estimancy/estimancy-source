@@ -224,9 +224,10 @@ class DemandsController < ApplicationController
             worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
             worksheet.add_cell(j, 2, demand.name)
             worksheet.add_cell(j, 3, demand.created_at.to_s)
-            worksheet.add_cell(j, 4, dsdt.demand_status.name)
-            worksheet.add_cell(j, 5, sh.change_date.to_s)
-            worksheet.add_cell(j, 6, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+            worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
+            worksheet.add_cell(j, 5, dsdt.demand_status.name)
+            worksheet.add_cell(j, 6, sh.change_date.to_s)
+            worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
 
             j = j + 1
           end
@@ -238,10 +239,10 @@ class DemandsController < ApplicationController
           worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
           worksheet.add_cell(j, 2, demand.name)
           worksheet.add_cell(j, 3, demand.created_at.to_s)
-          worksheet.add_cell(j, 4, demand.demand_status.name)
-          worksheet.add_cell(j, 5, sh.change_date.to_s)
-          worksheet.add_cell(j, 6, demand.cost.to_f * 1000)
-
+          worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
+          worksheet.add_cell(j, 5, demand.demand_status.name)
+          worksheet.add_cell(j, 6, sh.change_date.to_s)
+          worksheet.add_cell(j, 7, nil)
           j = j + 1
         end
       end
