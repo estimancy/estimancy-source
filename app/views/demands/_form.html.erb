@@ -244,20 +244,20 @@
 
                     ).in_seconds / 3600 %>
 
-                    La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+                    &nbsp;&nbsp;&nbsp;La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
                     <br>
 
                     <% if agreement.origin_target_mode == "Demande / Devis" || agreement.origin_target_mode == "Devis / Demande" || agreement.origin_target_mode == "Devis / Devis" %>
                       <% project = @demand.projects.first %>
                       <% unless project.nil? %>
-                        Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                        &nbsp;&nbsp;&nbsp;Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
                         <br>
                       <% end %>
                     <% end %>
 
                     <% delay = elapsed_time - cs.duration.to_i %>
                     <% unless delay <= 0 %>
-                      L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
+                      &nbsp;&nbsp;&nbsp;L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
                     <% end %>
 
                     <%
@@ -298,7 +298,6 @@
 
                 <% end %>
               <% end %>
-              <br>
             <% end %>
           <% end %>
 
@@ -307,12 +306,12 @@
           <% StatusHistory.where(demand: @demand.name).all.each do |sh| %>
             <% if sh.project.blank? %>
               <% if sh.origin.nil? %>
-                <b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                  &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
               <% else %>
-                <b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                  &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
               <% end %>
             <% else %>
-              <b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
             <% end %>
             <br>
           <% end %>
@@ -340,6 +339,11 @@
           <div class="row-fluid">
             <div class="span12" style="overflow: visible;">
 
+              <p class="pull-right">
+                <span class="fa fa-circle green"></span> Demandé et chiffré &nbsp;
+                <span class="fa fa-circle orange"></span> Non demandé &nbsp;
+                <span class="fa fa-circle red"></span> Pas chiffré
+              </p>
               <table class="table tablesorter table-striped table-bordered table-condensed">
 
                 <thead>

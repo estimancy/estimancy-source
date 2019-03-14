@@ -178,7 +178,7 @@ class DemandsController < ApplicationController
 
     @demand.delete
 
-    redirect_to root_url
+    redirect_to organization_demands_path(@organization)
   end
 
   def export_billing
@@ -188,15 +188,16 @@ class DemandsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    worksheet.add_cell(0, 0, "Application")
-    worksheet.add_cell(0, 1, "Nom")
-    worksheet.add_cell(0, 2, "Date")
+    worksheet.add_cell(0, 0, "CDS")
+    worksheet.add_cell(0, 1, "Application")
+    worksheet.add_cell(0, 2, "Nom")
+    worksheet.add_cell(0, 3, "Date")
 
-    worksheet.add_cell(0, 3, "Montant Total (€)")
+    worksheet.add_cell(0, 4, "Montant Total (€)")
 
-    worksheet.add_cell(0, 4, "Statut")
-    worksheet.add_cell(0, 5, "Date")
-    worksheet.add_cell(0, 6, "Montant %")
+    worksheet.add_cell(0, 5, "Statut")
+    worksheet.add_cell(0, 6, "Date")
+    worksheet.add_cell(0, 7, "Montant %")
 
 
 
@@ -219,6 +220,7 @@ class DemandsController < ApplicationController
 
           # pourcentage
           dsdts.compact.each_with_index do |dsdt, index|
+            worksheet.add_cell(j, 0, demand.organization)
             worksheet.add_cell(j, 0, demand.application.nil? ? nil : demand.application.name)
             worksheet.add_cell(j, 1, demand.name)
             worksheet.add_cell(j, 2, demand.created_at.to_s)
