@@ -221,11 +221,9 @@ class DemandsController < ApplicationController
           # pourcentage
           dsdts.compact.each_with_index do |dsdt, index|
             worksheet.add_cell(j, 0, demand.organization)
-            worksheet.add_cell(j, 0, demand.application.nil? ? nil : demand.application.name)
-            worksheet.add_cell(j, 1, demand.name)
-            worksheet.add_cell(j, 2, demand.created_at.to_s)
-            worksheet.add_cell(j, 3, demand.cost.to_f * 1000)
-
+            worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
+            worksheet.add_cell(j, 2, demand.name)
+            worksheet.add_cell(j, 3, demand.created_at.to_s)
             worksheet.add_cell(j, 4, dsdt.demand_status.name)
             worksheet.add_cell(j, 5, sh.change_date.to_s)
             worksheet.add_cell(j, 6, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
@@ -236,11 +234,14 @@ class DemandsController < ApplicationController
       else
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
         shs.each do |sh|
-          worksheet.add_cell(j, 0, demand.name)
-          worksheet.add_cell(j, 1, demand.created_at.to_s)
-          worksheet.add_cell(j, 2, demand.cost.to_f * 1000)
-          worksheet.add_cell(j, 3, demand.demand_status.name)
-          worksheet.add_cell(j, 4, sh.change_date.to_s)
+          worksheet.add_cell(j, 0, demand.organization)
+          worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
+          worksheet.add_cell(j, 2, demand.name)
+          worksheet.add_cell(j, 3, demand.created_at.to_s)
+          worksheet.add_cell(j, 4, demand.demand_status.name)
+          worksheet.add_cell(j, 5, sh.change_date.to_s)
+          worksheet.add_cell(j, 6, demand.cost.to_f * 1000)
+
           j = j + 1
         end
       end
