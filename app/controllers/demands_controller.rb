@@ -96,10 +96,10 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
 
-    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
+    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id].to_i)
 
     unless new_demand_statut.nil?
-      if @demand.demand_status_id != new_demand_statut.id
+      if @demand.demand_status_id.to_i != new_demand_statut.id.to_i
         StatusHistory.create(organization: @organization.name,
                              demand: @demand.name,
                              change_date: Time.now,
