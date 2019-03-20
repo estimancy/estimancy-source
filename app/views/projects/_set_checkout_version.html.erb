@@ -1,4 +1,4 @@
-<%= simple_form_for @project, :url => checkout_path(params[:project_id]) do |f| %>
+<%= simple_form_for @project, :url => checkout_path(params[:project_id]), method: "POST" do |f| %>
     <%= f.error_notification %>
 
     <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
