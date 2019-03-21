@@ -64,7 +64,7 @@
         <% end %>
 
         <% user_local =  set_user_language
-           if !user_local.in?("en", "en-gb")
+           if !user_local.in?(["en", "en-gb"])
              user_local = "fr"
            end
 
