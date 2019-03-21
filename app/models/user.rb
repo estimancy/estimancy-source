@@ -41,10 +41,12 @@ class User < ActiveRecord::Base
                   :password, :password_confirmation, :remember_me, :provider, :uid, :description,
                   :avatar, :language_id, :first_name, :last_name, :initials, :time_zone, :locked_at,
                   :object_per_page, :password_salt, :password_hash, :password_reset_token, :auth_token, :created_at,
-                  :updated_at, :auth_type, :number_precision, :subscription_end_date, :transaction_id
+                  :updated_at, :auth_type, :number_precision, :subscription_end_date, :transaction_id, :ability
 
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
   attr_accessor :id_connexion, :updating_password, :current_password
+
+  serialize :ability
 
   # Hair-Triggers
 
@@ -52,6 +54,7 @@ class User < ActiveRecord::Base
   def self.current
     Thread.current[:user]
   end
+
   def self.current=(user)
     Thread.current[:user] = user
   end

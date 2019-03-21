@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190319102554) do
+ActiveRecord::Schema.define(version: 20190321093930) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -2364,6 +2364,7 @@ ActiveRecord::Schema.define(version: 20190319102554) do
     t.integer  "event_organization_id",  limit: 4
     t.text     "transaction_id",         limit: 65535
     t.string   "unconfirmed_email",      limit: 255
+    t.text     "ability",                limit: 65535
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

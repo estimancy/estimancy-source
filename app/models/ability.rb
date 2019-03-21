@@ -263,9 +263,9 @@ class Ability
 
         status_global = [status, global].inject(:&)
 
-        pe = Permission.where(id: status_global.map{|i| i[0]}).all
-        pp = Project.where(id: status_global.map{|i| i[1]}).all
-        ss = EstimationStatus.where(id: status_global.map{|i| i[2]}).all
+        pe = Permission.where(id: status_global.map{|i| i[0]}.uniq).all
+        pp = Project.where(id: status_global.map{|i| i[1]}.uniq).all
+        ss = EstimationStatus.where(id: status_global.map{|i| i[2]}.uniq).all
 
         hash_permission = Hash.new
         hash_project = Hash.new
