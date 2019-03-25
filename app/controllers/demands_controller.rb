@@ -199,8 +199,6 @@ class DemandsController < ApplicationController
     worksheet.add_cell(0, 6, "Date")
     worksheet.add_cell(0, 7, "Montant %")
 
-
-
     dsdts = []
     @organization.demands.each do |demand|
       j = 1
@@ -225,7 +223,7 @@ class DemandsController < ApplicationController
             worksheet.add_cell(j, 2, demand.name)
             worksheet.add_cell(j, 3, demand.created_at.to_s)
             worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
-            worksheet.add_cell(j, 5, dsdt.demand_status.name)
+            worksheet.add_cell(j, 5, dsdt.demand_status.nil? ? nil : dsdt.demand_status.name)
             worksheet.add_cell(j, 6, sh.change_date.to_s)
             worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
 
@@ -240,7 +238,7 @@ class DemandsController < ApplicationController
           worksheet.add_cell(j, 2, demand.name)
           worksheet.add_cell(j, 3, demand.created_at.to_s)
           worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
-          worksheet.add_cell(j, 5, demand.demand_status.name)
+          worksheet.add_cell(j, 5, demand.demand_status.nil? ? nil : demand.demand_status.name)
           worksheet.add_cell(j, 6, sh.change_date.to_s)
           worksheet.add_cell(j, 7, nil)
           j = j + 1
