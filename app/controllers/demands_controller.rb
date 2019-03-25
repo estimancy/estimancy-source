@@ -225,7 +225,11 @@ class DemandsController < ApplicationController
             worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
             worksheet.add_cell(j, 5, dsdt.nil? ? nil : (dsdt.demand_status.nil? ? nil : dsdt.demand_status.name))
             worksheet.add_cell(j, 6, sh.change_date.to_s)
-            worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+            unless dsdt.nil?
+              worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+            else
+              worksheet.add_cell(j, 7, nil)
+            end
 
             j = j + 1
           # end
