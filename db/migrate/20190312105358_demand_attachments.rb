@@ -8,3 +8,4 @@ class DemandAttachments < ActiveRecord::Migration
     end
   end
 end
+

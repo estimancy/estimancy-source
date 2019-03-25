@@ -199,13 +199,8 @@
                         <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
                       <% end %>
                     </td>
-
-                    <td>
-                      <%= f.input :previous_login, :label => I18n.t('previous_login') do %>
-                        <%= f.text_field :previous_login, :value => (I18n.l(@user.previous_login) unless @user.previous_login.nil?), :disabled => true %>
-                      <% end %>
-                    </td>
                   </tr>
+
                 </table>
               </div>
             </div>

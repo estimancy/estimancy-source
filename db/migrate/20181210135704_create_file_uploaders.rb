@@ -3,7 +3,7 @@ class CreateFileUploaders < ActiveRecord::Migration
     begin
       create_table :file_uploaders do |t|
         t.string :name
-        t.string :attachment
+        t.text :attachment
 
         t.timestamps null: false
       end

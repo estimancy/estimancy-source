@@ -3327,8 +3327,35 @@ public
     build_footer
   end
 
-  private def check_for_projects(start_number, desired_size, organization_estimations)
+  def advanced_search
+    @adv_search_hash = {}
+    @projects = @current_organization.projects
 
+    @prj_users = []
+    @users = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").all
+    @users.each do |user|
+    end
+    @prj_users << @users.map(&:projects)
+
+    @adv_search_hash['author'] = @prj_users
+
+
+    @apps = Application.where("name LIKE '%#{params[:advanced_search]}%'").all
+    @apps.each do |app|
+      @prj_apps = @projects.where(is_model: false).where("application_id LIKE '%#{app.id}%'")
+    end
+    @adv_search_hash['application'] = @prj_apps
+
+
+    @acqs = AcquisitionCategory.where("organization_id LIKE '%#{@current_organization.id}'").where("name LIKE '%#{params[:advanced_search]}%'")
+    @acqs.each do |acq|
+      @prj_acqs = @projects.where(is_model: false).where("acquisition_category_id LIKE '%#{acq.id}%'")
+    end
+    @adv_search_hash['acquisition'] = @prj_acqs
+
+  end
+
+  private def check_for_projects(start_number, desired_size, organization_estimations)
      if start_number == 0
        projects = organization_estimations.take(desired_size)
      else

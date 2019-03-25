@@ -2,8 +2,8 @@ class Demand < ActiveRecord::Base
   attr_accessible :name, :description, :business_need, :demand_type_id, :application_id,
                   :demand_status_id, :organization_id, :cost, :attachment, :selected, :criticality_id, :severity_id
 
-  mount_uploader :attachment, AttachmentUploader
-  mount_uploader :attachment, DemandAttachmentsUploader
+  #mount_uploader :attachment, AttachmentUploader
+  #mount_uploaders :attachment, DemandAttachmentsUploader
 
   belongs_to :demand_type
   belongs_to :organization
@@ -15,6 +15,8 @@ class Demand < ActiveRecord::Base
 
   has_many :projects
   has_many :service_demand_livrables
+  has_many :demand_attachments
+  accepts_nested_attributes_for :demand_attachments
 
   def to_s
     name

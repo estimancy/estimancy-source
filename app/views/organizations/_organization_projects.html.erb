@@ -18,6 +18,7 @@
   <tr style="background-color: #eeeeee;">
     <% selected_inline_columns.each do |column| %>
       <td>
+        <%= params[column.name] %>
         <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) || (session['search_hash'].keys.include?(column.name.to_s)) %>
             <% search_value = (params[column.name] || params['search'][column.name.to_s]) rescue "" %>
             <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
@@ -117,111 +118,4 @@
 
 </table>
 
-<script>
 
-    $(".table th").css("font-weight", "300");
-    $(".table th").css("font-size", "14px");
-
-    function toggle_group(){
-        var number_of_checked = 0;
-        var number_of_line = 0;
-
-        $(".myCHECK").each(function() {
-            if (this.checked)
-                number_of_checked = number_of_checked + 1;
-            number_of_line = number_of_line + 1
-        });
-        if (number_of_checked < number_of_line){
-            $(".myCHECK").attr("checked", true);
-        }
-        else if (number_of_checked == number_of_line){
-            $(".myCHECK").attr("checked", false);
-        }
-    }
-
-    function verif_checkbox() {
-        var myConfirm = confirm("<%= I18n.t(:are_you_sure)%>");
-        if (myConfirm == true) {
-            $(".myCHECK").each(function () {
-
-                if (this.checked) {
-                    $.ajax({
-                        url: "/projects/" + this.id,
-                        type: "delete",
-                        datatype: "json",
-                        data: {
-                            "_method": "delete",
-                            "commit": "<%= I18n.t(:delete)%>",
-                            "yes_confirmation": "selected"
-                        },
-                        complete: function() {
-                            $(this).prop('checked', false);
-                            window.location.reload(true);
-                        }
-                    });
-
-                }
-            });
-        }
-    }
-
-
-    function delete_all_selected_checkbox_projects() {
-
-        var project_ids_to_delete = [];
-        $(".myCHECK").each(function () {
-            if ($(this).is(':checked') ) {
-                project_ids_to_delete.push($(this).attr('value'));
-            }
-        });
-
-
-        $.ajax({
-            url: "/destroy_multiple_project",
-            type: "GET",
-            data: {
-                commit: "<%= I18n.t(:delete)%>",
-                yes_confirmation: "selected",
-                project_ids_to_delete: project_ids_to_delete
-            },
-            complete: function() {
-                $(this).prop('checked', false);
-                window.location.reload(true);
-            }
-        });
-    }
-
-   // Allow to destro multiple selected projects
-    function delete_all_selected_checkbox_projects1() {
-
-        //$("#destroy_multiple_checked_projects").click(function(){
-
-            alert("test");
-            var myConfirm = confirm("<%= I18n.t(:are_you_sure)%>");
-            //if (myConfirm == true) {
-                var project_ids_to_delete = [];
-                $(".myCHECK").each(function () {
-                    if ($(this).is(':checked') ) {
-                        project_ids_to_delete.push($(this).attr('value'));
-                    }
-                });
-
-                $.ajax({
-                    url: "/destroy_multiple_project",
-                    type: "GET",
-                    data: {
-                        commit: "<%= I18n.t(:delete)%>",
-                        yes_confirmation: "selected",
-                        project_ids_to_delete: project_ids_to_delete
-                    },
-                    complete: function() {
-                        $(this).prop('checked', false);
-                        window.location.reload(true);
-                    }
-                });
-            //}
-        //});
-
-    }
-
-</script>

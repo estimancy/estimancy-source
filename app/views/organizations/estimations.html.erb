@@ -1,3 +1,9 @@
+<%= form_tag advanced_search_path, method: "GET" do %>
+  <%= search_field_tag :advanced_search, '', :placeholder => "Recherche avancée", :class => 'search-input span5' %>
+  <%= submit_tag 'Submit', class: "btn-primary" %>
+<% end %>
+
+<br/>
 
 <%= form_tag search_path, method: "GET", remote: true do %>
   <div class="tabs">
@@ -63,6 +69,8 @@
 <!--          </div>-->
 
 <!--          <br/>-->
+
+
 
           <div>
             <%= I18n.t(:label_filter_on_projects_version) %>

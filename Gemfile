@@ -254,7 +254,7 @@ gem "rails-observers", "0.1.5"
 
 gem 'biz'
 
-gem 'carrierwave', '~> 1.2.3'
+gem 'carrierwave', '~> 0.11.2'
 gem 'bootstrap-sass', '~> 3.3.7'
 
 gem 'rack-cors', require: 'rack/cors'
@@ -263,3 +263,4 @@ gem 'chartkick'
 
 #AppSignal
 # gem 'appsignal'
+gem 'carrierwave', '~> 0.11.2'
