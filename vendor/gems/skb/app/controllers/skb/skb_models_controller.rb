@@ -123,7 +123,7 @@ class Skb::SkbModelsController < ApplicationController
     end
 
     worksheet.change_column_width(0, I18n.t(:modification_of_the_input_value_allow).size)
-    worksheet.change_column_bold(0,true)
+    # worksheet.change_column_bold(0,true)
 
     worksheet = workbook.add_worksheet("Données")
     skb_model_datas = @skb_model.skb_datas

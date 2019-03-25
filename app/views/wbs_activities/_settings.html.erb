@@ -221,21 +221,21 @@
           <th><%= I18n.t(:change_ratio) %></th>
 
           <% if wbs_activity.three_points_estimation? %>
-            <th>Effort total calculé (L)</th>
-            <th>Effort total retenu (L)</th>
+            <th><%= I18n.t(:total_effort) %></th>
+            <th><%= I18n.t(:retained_effort) %></th>
 
-            <th>Effort total calculé (M)</th>
-            <th>Effort total retenu (M)</th>
+            <th><%= I18n.t(:total_effort) %></th>
+            <th><%= I18n.t(:retained_effort) %></th>
 
-            <th>Effort total calculé (H)</th>
-            <th>Effort total retenu (H)</th>
+            <th><%= I18n.t(:total_effort) %></th>
+            <th><%= I18n.t(:retained_effort) %></th>
 
           <% else %>
-            <th>Effort total Calculé</th>
-            <th>Effort total Retenu</th>
+            <th><%= I18n.t(:total_effort) %></th>
+            <th><%= I18n.t(:retained_effort) %></th>
           <% end %>
 
-          <th>Ratio global</th>
+          <th><%= I18n.t(:ratio) %></th>
           <th><%= I18n.t(:comment) %></th>
         </tr>
     <!--</thead>-->
@@ -246,11 +246,12 @@
        <% levels.each do |level| %>
            <td class="hide_wbs_header">
              <% current_inputs_evs.each do |ev| %>
-                 <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
-                <span>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                </span><br>
+               <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
+               <% unless entry_level_value.nil? %>
+                 <%= ev.pe_attribute.alias %> :
+                 <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+               <% end %>
+               <br>
              <% end %>
            </td>
        <% end %>

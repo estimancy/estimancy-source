@@ -96,10 +96,10 @@ class DemandsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @demand = Demand.find(params[:id])
 
-    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id])
+    new_demand_statut = DemandStatus.find_by_id(params[:demand][:demand_status_id].to_i)
 
     unless new_demand_statut.nil?
-      if @demand.demand_status_id != new_demand_statut.id
+      if @demand.demand_status_id.to_i != new_demand_statut.id.to_i
         StatusHistory.create(organization: @organization.name,
                              demand: @demand.name,
                              change_date: Time.now,
@@ -110,11 +110,13 @@ class DemandsController < ApplicationController
       end
     end
 
-    @demand.update(params[:attachment])
-    @demand.update(params[:attachments])
-
     @uploader = AttachmentUploader.new
-    @uploader.store!(params[:attachment])
+
+    @demand.update(params[:attachment])
+    # @demand.update(params[:attachments])
+
+    # @uploader = AttachmentUploader.new
+    # @uploader.store!(params[:attachment])
 
     @uploader.store!(params[:attachments])
 
@@ -176,7 +178,7 @@ class DemandsController < ApplicationController
 
     @demand.delete
 
-    redirect_to root_url
+    redirect_to organization_demands_path(@demand.organization)
   end
 
   def export_billing
@@ -186,20 +188,22 @@ class DemandsController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    worksheet.add_cell(0, 0, "Application")
-    worksheet.add_cell(0, 1, "Nom")
-    worksheet.add_cell(0, 2, "Date")
+    worksheet.add_cell(0, 0, "CDS")
+    worksheet.add_cell(0, 1, "Application")
+    worksheet.add_cell(0, 2, "Nom")
+    worksheet.add_cell(0, 3, "Date")
 
-    worksheet.add_cell(0, 3, "Montant Total (€)")
+    worksheet.add_cell(0, 4, "Montant Total (€)")
 
-    worksheet.add_cell(0, 4, "Statut")
-    worksheet.add_cell(0, 5, "Date")
-    worksheet.add_cell(0, 6, "Montant %")
+    worksheet.add_cell(0, 5, "Statut")
+    worksheet.add_cell(0, 6, "Date")
+    worksheet.add_cell(0, 7, "Montant %")
 
 
 
     dsdts = []
     @organization.demands.each do |demand|
+      j = 1
       if demand.demand_type.billing == "Echéance"
 
         shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
@@ -209,28 +213,38 @@ class DemandsController < ApplicationController
           ds = DemandStatus.where(organization_id: @organization.id, name: sh.target).first
 
           unless ds.nil?
-            dsdts << DemandStatusesDemandType.where(organization_id: @organization.id,
-                                                    demand_type_id: demand.demand_type_id,
-                                                    demand_status_id: ds.id).first
+            dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                   demand_type_id: demand.demand_type_id,
+                                                   demand_status_id: ds.id).first
           end
 
-          j = 1
-          dsdts.compact.each_with_index do |dsdt, index|
-            worksheet.add_cell(j, 0, demand.application_name)
-            worksheet.add_cell(j, 1, demand.name)
-            worksheet.add_cell(j, 2, demand.created_at.to_s)
-            worksheet.add_cell(j, 3, demand.cost.to_f * 1000)
-
-            worksheet.add_cell(j, 4, dsdt.demand_status.name)
-            worksheet.add_cell(j, 5, sh.change_date.to_s)
-            worksheet.add_cell(j, 6, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
+          # pourcentage
+          # dsdts.compact.each_with_index do |dsdt, index|
+            worksheet.add_cell(j, 0, demand.organization)
+            worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
+            worksheet.add_cell(j, 2, demand.name)
+            worksheet.add_cell(j, 3, demand.created_at.to_s)
+            worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
+            worksheet.add_cell(j, 5, dsdt.demand_status.name)
+            worksheet.add_cell(j, 6, sh.change_date.to_s)
+            worksheet.add_cell(j, 7, ((demand.cost.to_f * 1000) * (dsdt.percent.to_f / 100)))
 
             j = j + 1
-          end
+          # end
         end
-      elsif demand.demand_type.billing == "Abonnement"
-        worksheet.add_cell(index + 1, 0, demand.name)
-        worksheet.add_cell(index + 1, 1, demand.created_at.to_s)
+      else
+        shs = StatusHistory.where(organization: @organization.name, demand: demand.name).all
+        shs.each do |sh|
+          worksheet.add_cell(j, 0, demand.organization)
+          worksheet.add_cell(j, 1, demand.application.nil? ? nil : demand.application.name)
+          worksheet.add_cell(j, 2, demand.name)
+          worksheet.add_cell(j, 3, demand.created_at.to_s)
+          worksheet.add_cell(j, 4, demand.cost.to_f * 1000)
+          worksheet.add_cell(j, 5, demand.demand_status.name)
+          worksheet.add_cell(j, 6, sh.change_date.to_s)
+          worksheet.add_cell(j, 7, nil)
+          j = j + 1
+        end
       end
     end
 
@@ -342,7 +356,6 @@ class DemandsController < ApplicationController
         else
           pf.delete
         end
-
       rescue
         #puts "erreur"
       end

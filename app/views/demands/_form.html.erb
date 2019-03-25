@@ -104,21 +104,31 @@
           </div>
         </div>
 
+        <div class="span6">
+          <%= f.input :attachment, as: :file %>
+          <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
+            <p>Il n'y a aucun document attaché à cette demande.</p>
+          <% else %>
+            Pièces jointes à la demande <br>
+            <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
+            <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+          <% end %>
 
+          <br/>
 
           <%#= f.input :attachments, :label => false, as: :file, input_html: { class: 'input-xxlarge' }  %>
-          <%#= f.file_field :attachment, multiple: true, name: "demand_attachments[attachment][]" %>
-            <%# if @demand.attachments.to_s.blank? || controller.action_name == "new"%>
-              <!-- <p> Il n'y a aucun document attaché à cette demande.</p>
-            <%# else %>
+          <%= f.file_field :attachments, multiple: true %>
+            <% if @demand.attachments.to_s.blank? || controller.action_name == "new"%>
+              <p> Il n'y a aucun document attaché à cette demande.</p>
+            <% else %>
               Pièces jointes à la demande <br>
               <ul>
-                <%# @demand.attachments.each do |attachment| %>
-                  <%#= link_to File.basename(attachment.to_s), attachment.to_s, target: "_blank" %>
-                  <%#= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                <%# end %>
-              </ul> -->
-            <%# end %>
+                <% @demand.attachments.each do |attachment| %>
+                  <%= link_to File.basename(attachment.to_s), attachment.to_s, target: "_blank" %>
+                  <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                <% end %>
+              </ul>
+            <% end %>
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
           <% unless @demand.new_record? %>
@@ -251,20 +261,20 @@
 
                     ).in_seconds / 3600 %>
 
-                    La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
+                    &nbsp;&nbsp;&nbsp;La demande est passée au statut <b><%= origin_ds.name %></b> le <b><%= origin_sh.change_date.strftime("%d/%m/%Y à %H:%M")%></b>
                     <br>
 
                     <% if agreement.origin_target_mode == "Demande / Devis" || agreement.origin_target_mode == "Devis / Demande" || agreement.origin_target_mode == "Devis / Devis" %>
                       <% project = @demand.projects.first %>
                       <% unless project.nil? %>
-                        Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
+                        &nbsp;&nbsp;&nbsp;Le devis <%= link_to project, dashboard_path(project) %> associé est passé au statut <b><%= target_ds.name %></b> le <b><%= target_sh.change_date.strftime("%d/%m/%Y à %H:%M") %></b>
                         <br>
                       <% end %>
                     <% end %>
 
                     <% delay = elapsed_time - cs.duration.to_i %>
                     <% unless delay <= 0 %>
-                      L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
+                      &nbsp;&nbsp;&nbsp;L'écart entre les deux changements est de <b><%= elapsed_time.to_i %> heures</b> soit un retard de <b><%= delay %> heures</b>
                     <% end %>
 
                     <%
@@ -283,8 +293,8 @@
                     %>
 
                     <% unless cs.nil? %>
-                      <br>
                       <b>
+                        <br>
                         <%= agreement.name %>
                       </b> : Priorité <%= @demand.priority %> (<%= cs.nil? ? '-' : cs.duration.to_i %> h.)
                         <% if cs.duration.to_f >= elapsed_time.to_f %>
@@ -305,8 +315,6 @@
 
                 <% end %>
               <% end %>
-              <br>
-              <br>
             <% end %>
           <% end %>
 
@@ -315,12 +323,12 @@
           <% StatusHistory.where(demand: @demand.name).all.each do |sh| %>
             <% if sh.project.blank? %>
               <% if sh.origin.nil? %>
-                <b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                  &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> de la demande. Passage au statut <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
               <% else %>
-                <b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                  &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> de la demande. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
               <% end %>
             <% else %>
-              <b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date %></b>
+                &nbsp;&nbsp;&nbsp;<b><%= sh.action %></b> du devis <b><%= sh.project %></b>. Passage de <b><%= sh.origin %></b> à <b><%= sh.target %></b> le <b><%= sh.change_date.strftime("%d-%m-%Y %H:%M:%S") %></b>
             <% end %>
             <br>
           <% end %>
@@ -348,6 +356,11 @@
           <div class="row-fluid">
             <div class="span12" style="overflow: visible;">
 
+              <p class="pull-right">
+                <span class="fa fa-circle green"></span> Demandé et chiffré &nbsp;
+                <span class="fa fa-circle orange"></span> Non demandé &nbsp;
+                <span class="fa fa-circle red"></span> Pas chiffré
+              </p>
               <table class="table tablesorter table-striped table-bordered table-condensed">
 
                 <thead>

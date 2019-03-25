@@ -47,6 +47,9 @@ class Ability
       #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
       organization_projects = projects.compact
 
+      #remettre getsorted pour la liste complete des devis
+      # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
+
       organization_estimation_statuses = organization.estimation_statuses
       user_groups = user.groups.where(organization_id: organization.id)
 
@@ -258,9 +261,11 @@ class Ability
         global = @array_users + @array_groups + @array_owners
         status = @array_status_groups
 
-        pe = Permission.where(id: [status, global].inject(:&).map{|i| i[0]}).all
-        pp = Project.where(id: [status, global].inject(:&).map{|i| i[1]}).all
-        ss = EstimationStatus.where(id: [status, global].inject(:&).map{|i| i[2]}).all
+        status_global = [status, global].inject(:&)
+
+        pe = Permission.where(id: status_global.map{|i| i[0]}.uniq).all
+        pp = Project.where(id: status_global.map{|i| i[1]}.uniq).all
+        ss = EstimationStatus.where(id: status_global.map{|i| i[2]}.uniq).all
 
         hash_permission = Hash.new
         hash_project = Hash.new
@@ -280,12 +285,11 @@ class Ability
           hash_status[e.id] = e.id
         end
 
-        [status, global].inject(:&).each_with_index do |a, i|
+        status_global.each_with_index do |a, i|
           unless hash_project[a[1]].nil?
             can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
           end
         end
-
       end
     end
   end

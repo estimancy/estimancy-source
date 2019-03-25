@@ -75,17 +75,17 @@
           <th></th>
           <th>
               <span class="pull-right">
-                Optimal
+                <%= I18n.t :optimal %>
               </span>
           </th>
           <th>
               <span class="pull-right">
-                Révisé
+                <%= I18n.t :revised %>
               </span>
           </th>
           <th>
               <span class="pull-right">
-                Ecart
+                <%= I18n.t :gap %>
               </span>
           </th>
           <th>
@@ -136,7 +136,7 @@
         <tr>
           <td>
               <span class="pull-left">
-                Début : <%= I18n.l(@project.start_date, format: "%d/%m/%Y") %>
+                 <%= I18n.t(:begin) %> : <%= I18n.l(@project.start_date, format: "%d/%m/%Y") %>
               </span>
           </td>
           <td>
@@ -168,12 +168,12 @@
         <tr>
           <td>
               <span class="pull-left">
-                Durée (sem.)
+                <%= I18n.t(:duration) %> (week.)
               </span>
           </td>
           <td>
               <span class="pull-right">
-                &nbsp; sem.
+                &nbsp; week.
               </span>
               <span class="reference_duration pull-right">
                 <% unless @md_duration.nil? %>
@@ -454,13 +454,13 @@
         color: '#AC6A35',
         data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
-        name: "Trapèze Révisé",
+        name: "Trapèze <%= I18n.t(:revised) %>",
         type: 'column',
         color: '#AA3538',
         data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
       },{
         type: 'spline',
-        name: "Rayleigh Révisé",
+        name: "Rayleigh <%= I18n.t(:revised) %>",
         data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
         color: '#2F3EAF',
         marker: {

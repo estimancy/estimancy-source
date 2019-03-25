@@ -86,10 +86,9 @@
         <tr>
           <th><%= I18n.t('name') %></th>
           <th><%= "Forfait MCO" %></th>
-          <th><%= "Month Number" %></th>
-          <th><%= "Start Date" %></th>
-          <th><%= "End Date" %></th>
-          <th><%= I18n.t('ignored_application') %></th>
+          <th><%= "Budget Projet/Evo" %></th>
+          <th><%= "Date d'entrée" %></th>
+          <th><%= "Date de sortie" %></th>
           <th class="action"><%= I18n.t(:actions) %></th>
         </tr>
         </thead>
@@ -98,11 +97,24 @@
         <% @organization.applications.each do |app| %>
           <tr>
             <td><%= app.name %></td>
-            <td><%= app.forfait_mco %></td>
-            <td><%= app.month_number %></td>
-            <td><%= app.start_date %></td>
-            <td><%= app.end_date %></td>
-            <td class="center"><%= app.is_ignored == true ? I18n.t(:yes) : I18n.t(:no) %></td>
+            <td>
+              <span class="pull-right">
+                <% unless app.forfait_mco.blank? %>
+                  <%= number_with_delimiter(app.forfait_mco.to_i, delimiter: ",") %> €
+                <% end %>
+              </span>
+            </td>
+            <td></td>
+            <td>
+              <% unless app.start_date.nil? %>
+                <%= app.start_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
+            <td>
+              <% unless app.end_date.nil? %>
+                <%= app.end_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
             <td class="center">
               <% if can? :manage, Application %>
                 <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>

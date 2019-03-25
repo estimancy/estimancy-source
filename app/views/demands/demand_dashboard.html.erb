@@ -12,38 +12,37 @@
   <% @organization.agreements.each do |a| %>
     <div id="<%= a.id %>">
       <div class="row-fluid">
-        <div class="span12">
-          <%= link_to "Liste des demandes", organization_demands_path(@organization), class: "btn btn-default pull-right" %>
+        <%= link_to "Liste des demandes", organization_demands_path(@organization), class: "btn btn-default pull-right" %>
+        <% ["Janvier 2019", "Février 2019", "Mars 2019"].each do |mois| %>
+          <div class="span3">
+            <h4>
+              <%= mois %>
+            </h4>
 
-          <% ad = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).map(&:elapsed_time) %>
+            <% ad = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).map(&:elapsed_time) %>
 
-          <b>
-            <%= a.name %>
-          </b>
+            <% unless ad.count == 0 %>
+              Délai moyen : <%= (ad.sum / ad.count).to_i.round(2).to_i %> heures
+            <% end %>
 
-          <br>
-          <% unless ad.count == 0 %>
-            Délai moyen : <%= (ad.sum / ad.count).to_i.round(2).to_i %> heures
-          <% end %>
+            <br>
 
-          <br>
+            <% @ad = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
+            <% @total_d = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).all.count %>
 
-          <% @ad = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
-          <% @total_d = AgreementDemand.where(organization_id: @organization.id, agreement_id: a.id).all.count %>
+            <% unless @total_d == 0 %>
+              <%= (@ad.to_f / @total_d.to_f).to_f * 100 %> % SLA OK
+            <% else %>
+              -
+            <% end %>
 
-          <% unless @total_d == 0 %>
-            <%= (@ad.to_f / @total_d.to_f).to_f * 100 %> % SLA OK
-          <% else %>
-            -
-          <% end %>
+            <br>
 
-          <br>
-
-          <% delayed = AgreementDemand.where(organization_id: @organization.id, delayed: true, agreement_id: a.id).all.count %>
-          <% ontime = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
-          <%= pie_chart({"SLA OK" => ontime, "SLA KO" => delayed}) %>
-
-        </div>
+            <% delayed = AgreementDemand.where(organization_id: @organization.id, delayed: true, agreement_id: a.id).all.count %>
+            <% ontime = AgreementDemand.where(organization_id: @organization.id, delayed: false, agreement_id: a.id).all.count %>
+            <%= pie_chart({"SLA OK" => ontime, "SLA KO" => delayed}) %>
+          </div>
+        <% end %>
       </div>
     </div>
   <% end %>

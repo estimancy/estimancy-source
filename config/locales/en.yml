@@ -1776,7 +1776,7 @@ en:
   data: "Datas"
   last_update: "Last update"
   project_number: "Numbers of project: "
-  Indifferent: "Indifferent"
+  Indifferent: "Any"
   standard_coef_conv: "Standard unit coefficient"
   Generic_Model_Effort: "Generic Model Effort"
   changing_enter_value: "Changing inputs values"
@@ -2227,11 +2227,21 @@ en:
 
   urgent_project: "Devis urgent"
 
-  Autoriser l'export PDF: "Autoriser l'export PDF"
+  Autoriser l'export PDF: "Allow export pdf"
 
   forfait_mco : "Forfait MCO"
-  month_number : "Nombre de mois "
+  month_number : "Month number"
 
-  "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
+  "Nombre de projets sélectionnée": "Number of selected projects"
+  adaptation_input_value: "Input value adaptation"
+  average_rates: "Average rates"
+  revised: "révised"
+  begin: "Start"
+  gap: "gap"
 
 
+  min_value_message: "La valeur minmale doit être inférieure à la valeur maximale."
+  val_min: "Minimal value"
+  val_max: "Maximal value"
+  min_value_message_placeholder: ""
+  max_value_message_placeholder: ""
