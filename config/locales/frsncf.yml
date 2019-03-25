@@ -2247,3 +2247,5 @@ frsncf:
 
   "Autoriser l'export PDF": "Autoriser l'export PDF"
   "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
+
+  min_value_message: La valeur minmale doit être inférieure à la valeur maximale.

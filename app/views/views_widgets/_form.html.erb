@@ -58,21 +58,21 @@
         <tr>
           <td colspan="2">
             <b>
-              La valeur minmale doit être inférieure à la valeur maximale.
+              <%= I18n.t(:min_value_message) %>
             </b>
           </td>
         </tr>
         <tr>
           <td>
-            <%= f.input :min_value, as: :integer, label: I18n.t(:val_min), :input_html => { value: @min_value, placeholder: "Valeur min. autorisée" } %>
+            <%= f.input :min_value, as: :integer, label: I18n.t(:val_min), :input_html => { value: @min_value, placeholder: I18n.t(:min_value_message_placeholder) } %>
           </td>
           <td>
-            <%= f.input :max_value, as: :integer, label: I18n.t(:val_max), :input_html => { value: @max_value, placeholder: "Valeur max. autorisée" } %>
+            <%= f.input :max_value, as: :integer, label: I18n.t(:val_max), :input_html => { value: @max_value, placeholder: I18n.t(:max_value_message_placeholder) } %>
           </td>
         </tr>
         <tr>
           <td colspan="2">
-            <%= f.input :validation_text, as: :string, label: "Texte de validation", :input_html => { value: @views_widget.validation_text } %>
+            <%= f.input :validation_text, as: :string, label: I18n.t(:validation_text), :input_html => { value: @views_widget.validation_text } %>
           </td>
         </tr>
         <tr>
