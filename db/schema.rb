@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190312112935) do
+ActiveRecord::Schema.define(version: 20190321093930) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -156,10 +156,6 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.datetime "updated_at",                  null: false
     t.boolean  "is_ignored"
     t.integer  "criticality",     limit: 4
-    t.float    "forfait_mco",     limit: 24
-    t.integer  "month_number",    limit: 4
-    t.datetime "start_date"
-    t.datetime "end_date"
   end
 
   create_table "applications_projects", id: false, force: :cascade do |t|
@@ -824,6 +820,7 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.integer  "display_order", limit: 4,                            default: 0
     t.boolean  "default_value"
     t.float    "weight_b",      limit: 24
+    t.integer  "guw_model_id",  limit: 4
   end
 
   add_index "guw_guw_complexities", ["guw_type_id", "name"], name: "guw_type_complexities", using: :btree
@@ -1032,7 +1029,6 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.integer  "color_priority",             limit: 4
     t.boolean  "allow_line_color"
     t.boolean  "mandatory_comments",                       default: true
-    t.integer  "service_id",                 limit: 4
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], name: "guw_model_default_guw_types", using: :btree
@@ -1520,42 +1516,50 @@ ActiveRecord::Schema.define(version: 20190312112935) do
   add_index "operation_operation_models", ["organization_id", "name"], name: "index_operation_operation_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "organization_estimations", id: false, force: :cascade do |t|
-    t.integer  "current_organization_id", limit: 4,     default: 0,     null: false
-    t.string   "organization_name",       limit: 255
+    t.integer  "current_organization_id",        limit: 4,     default: 0,     null: false
+    t.string   "organization_name",              limit: 255
     t.datetime "project_created_date"
-    t.integer  "project_id",              limit: 4,     default: 0,     null: false
-    t.integer  "id",                      limit: 4,     default: 0,     null: false
-    t.string   "title",                   limit: 255
-    t.string   "version_number",          limit: 64,    default: "1.0"
-    t.string   "alias",                   limit: 255
-    t.string   "ancestry",                limit: 255
-    t.text     "description",             limit: 65535
-    t.integer  "estimation_status_id",    limit: 4
-    t.string   "state",                   limit: 255
+    t.integer  "project_id",                     limit: 4,     default: 0,     null: false
+    t.integer  "id",                             limit: 4,     default: 0,     null: false
+    t.string   "title",                          limit: 255
+    t.string   "version_number",                 limit: 64,    default: "1.0"
+    t.string   "alias",                          limit: 255
+    t.string   "ancestry",                       limit: 255
+    t.text     "description",                    limit: 65535
+    t.integer  "estimation_status_id",           limit: 4
+    t.string   "state",                          limit: 255
     t.date     "start_date"
-    t.integer  "organization_id",         limit: 4
-    t.integer  "original_model_id",       limit: 4
-    t.integer  "project_area_id",         limit: 4
-    t.integer  "project_category_id",     limit: 4
-    t.integer  "platform_category_id",    limit: 4
-    t.integer  "acquisition_category_id", limit: 4
+    t.integer  "organization_id",                limit: 4
+    t.integer  "original_model_id",              limit: 4
+    t.integer  "project_area_id",                limit: 4
+    t.integer  "project_category_id",            limit: 4
+    t.integer  "platform_category_id",           limit: 4
+    t.integer  "acquisition_category_id",        limit: 4
     t.boolean  "is_model"
-    t.integer  "master_anscestry",        limit: 4
-    t.integer  "creator_id",              limit: 4
-    t.text     "purpose",                 limit: 65535
-    t.text     "level_of_detail",         limit: 65535
-    t.text     "scope",                   limit: 65535
-    t.integer  "copy_number",             limit: 4
-    t.integer  "copy_id",                 limit: 4
-    t.text     "included_wbs_activities", limit: 65535
+    t.integer  "master_anscestry",               limit: 4
+    t.integer  "creator_id",                     limit: 4
+    t.text     "purpose",                        limit: 65535
+    t.text     "level_of_detail",                limit: 65535
+    t.text     "scope",                          limit: 65535
+    t.integer  "copy_number",                    limit: 4
+    t.integer  "copy_id",                        limit: 4
+    t.text     "included_wbs_activities",        limit: 65535
     t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "status_comment",          limit: 65535
-    t.integer  "application_id",          limit: 4
-    t.string   "application_name",        limit: 255
-    t.boolean  "private",                               default: false
+    t.text     "status_comment",                 limit: 65535
+    t.integer  "application_id",                 limit: 4
+    t.string   "application_name",               limit: 255
+    t.boolean  "private",                                      default: false
     t.boolean  "is_historicized"
+    t.integer  "provider_id",                    limit: 4
+    t.string   "request_number",                 limit: 255
+    t.boolean  "use_automatic_quotation_number"
+    t.string   "business_need",                  limit: 255
+    t.integer  "originator_id",                  limit: 4
+    t.integer  "event_organization_id",          limit: 4
+    t.text     "transaction_id",                 limit: 65535
+    t.boolean  "is_new_created_record"
   end
 
   create_table "organization_labor_categories", force: :cascade do |t|
@@ -1919,6 +1923,8 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.text     "transaction_id",            limit: 65535
   end
 
+  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "project_securities_index", using: :btree
+
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
     t.string   "custom_value",          limit: 255
@@ -1974,15 +1980,13 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.integer  "event_organization_id",          limit: 4
     t.text     "transaction_id",                 limit: 65535
     t.boolean  "is_new_created_record"
-    t.boolean  "allow_export_pdf"
-    t.datetime "change_date"
+    t.date     "change_date"
     t.integer  "time_count",                     limit: 4
+    t.boolean  "allow_export_pdf"
     t.integer  "demand_id",                      limit: 4
-    t.boolean  "urgent_project"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
-  add_index "projects", ["demand_id"], name: "index_projects_on_demand_id", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "index_projects_on_organization_id_and_is_model", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "organization_estimation_models", using: :btree
 
@@ -2204,46 +2208,41 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.boolean  "enabled_input"
     t.integer  "copy_id",                   limit: 4
     t.integer  "copy_number",               limit: 4
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.float    "standard_unit_coefficient", limit: 24
     t.string   "effort_unit",               limit: 255
     t.string   "staffing_method",           limit: 255
     t.integer  "effort_week_unit",          limit: 4
     t.string   "config_type",               limit: 255
-    t.integer  "min_range",                 limit: 4,     default: 70
-    t.integer  "max_range",                 limit: 4,     default: 150
+    t.integer  "min_range",                 limit: 4
+    t.integer  "max_range",                 limit: 4
   end
 
   add_index "staffing_staffing_models", ["organization_id", "name"], name: "index_staffing_staffing_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "status_histories", force: :cascade do |t|
     t.string   "organization",       limit: 255
-    t.string   "demand",             limit: 255
     t.integer  "project_id",         limit: 4
     t.string   "project",            limit: 255
     t.string   "old_version_number", limit: 255
     t.string   "new_version_number", limit: 255
-    t.datetime "change_date"
+    t.date     "change_date"
     t.string   "action",             limit: 255
     t.text     "comments",           limit: 65535
     t.string   "origin",             limit: 255
     t.string   "target",             limit: 255
     t.string   "user",               limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.integer  "gap",                limit: 4
   end
 
-  add_index "status_histories", ["demand"], name: "index_status_histories_on_demand", using: :btree
-
   create_table "status_transitions", force: :cascade do |t|
-    t.integer  "from_transition_status_id",        limit: 4
-    t.integer  "to_transition_status_id",          limit: 4
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
-    t.integer  "demand_from_transition_status_id", limit: 4
-    t.integer  "demand_to_transition_status_id",   limit: 4
+    t.integer  "from_transition_status_id", limit: 4
+    t.integer  "to_transition_status_id",   limit: 4
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "subcontractors", force: :cascade do |t|
@@ -2369,6 +2368,7 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.integer  "event_organization_id",  limit: 4
     t.text     "transaction_id",         limit: 65535
     t.string   "unconfirmed_email",      limit: 255
+    t.text     "ability",                limit: 65535
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -2508,7 +2508,6 @@ ActiveRecord::Schema.define(version: 20190312112935) do
     t.string   "phase_short_name",   limit: 255
     t.boolean  "allow_modif_effort"
     t.boolean  "allow_modif_cost"
-    t.integer  "service_id",         limit: 4
   end
 
   add_index "wbs_activity_elements", ["ancestry"], name: "index_wbs_activity_elements_on_ancestry", using: :btree

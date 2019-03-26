@@ -1,13 +1,5 @@
 <div class="text-center">
 
-  <% @users.each do |user| %>
-    <% @prj_users = @projects.where("creator_id LIKE '%#{user.id}%'") %>
-    <% @prj_users.each do |p| %>
-      <%= p %>
-      <br/>
-    <% end %>
-  <% end %>
-
   <% unless @adv_search_hash.length == 0 %>
     <h1> Projets </h1>
       <table class="table table-bordered table-condensed">
@@ -18,11 +10,11 @@
               <% unless valeur.blank? %>
                   <% valeur.each do |val|  %>
                     <tr>
-                      <td class="center"><%= val %></td>
+                      <td><%= val %></td>
                     </tr>
                   <% end %>
               <% else %>
-                  <tr><td class="center"> --- </td></tr>
+                  <tr><td> --- </td></tr>
               <% end %>
             <% end %>
       </table>

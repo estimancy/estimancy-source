@@ -3331,27 +3331,23 @@ public
     @adv_search_hash = {}
     @projects = @current_organization.projects
 
-    @prj_users = []
-    @users = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").all
-    @users.each do |user|
-    end
-    @prj_users << @users.map(&:projects)
+    user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
+    projects = Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false)
 
-    @adv_search_hash['author'] = @prj_users
+    @adv_search_hash['user'] = projects
 
-
-    @apps = Application.where("name LIKE '%#{params[:advanced_search]}%'").all
-    @apps.each do |app|
-      @prj_apps = @projects.where(is_model: false).where("application_id LIKE '%#{app.id}%'")
-    end
-    @adv_search_hash['application'] = @prj_apps
-
-
-    @acqs = AcquisitionCategory.where("organization_id LIKE '%#{@current_organization.id}'").where("name LIKE '%#{params[:advanced_search]}%'")
-    @acqs.each do |acq|
-      @prj_acqs = @projects.where(is_model: false).where("acquisition_category_id LIKE '%#{acq.id}%'")
-    end
-    @adv_search_hash['acquisition'] = @prj_acqs
+    # @apps = Application.where("name LIKE '%#{params[:advanced_search]}%'").all
+    # @apps.each do |app|
+    #   @prj_apps = @projects.where(is_model: false).where("application_id LIKE '%#{app.id}%'")
+    # end
+    # @adv_search_hash['application'] = @prj_apps
+    #
+    #
+    # @acqs = AcquisitionCategory.where("organization_id LIKE '%#{@current_organization.id}'").where("name LIKE '%#{params[:advanced_search]}%'")
+    # @acqs.each do |acq|
+    #   @prj_acqs = @projects.where(is_model: false).where("acquisition_category_id LIKE '%#{acq.id}%'")
+    # end
+    # @adv_search_hash['acquisition'] = @prj_acqs
 
   end
 
