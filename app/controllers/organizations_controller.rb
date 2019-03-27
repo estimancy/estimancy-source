@@ -1962,7 +1962,7 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:Parameter, parameter: @organization)
 
-    @technologies = @organization.organization_technologies
+    #@technologies = @organization.organization_technologies
     @fields = @organization.fields
     @work_element_types = @organization.work_element_types
 

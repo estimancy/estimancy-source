@@ -277,6 +277,8 @@ Projestimate::Application.routes.draw do
     resources :organization_profiles
     resources :views
     resources :providers
+    resources :budget_types
+
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
