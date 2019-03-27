@@ -156,6 +156,10 @@ ActiveRecord::Schema.define(version: 20190321093930) do
     t.datetime "updated_at",                  null: false
     t.boolean  "is_ignored"
     t.integer  "criticality",     limit: 4
+    t.float    "forfait_mco",     limit: 24
+    t.integer  "month_number",    limit: 4
+    t.datetime "start_date"
+    t.datetime "end_date"
   end
 
   create_table "applications_projects", id: false, force: :cascade do |t|
