@@ -1984,6 +1984,7 @@ ActiveRecord::Schema.define(version: 20190321093930) do
     t.integer  "time_count",                     limit: 4
     t.boolean  "allow_export_pdf"
     t.integer  "demand_id",                      limit: 4
+    t.boolean  "urgent_project"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree

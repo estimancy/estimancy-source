@@ -10,7 +10,13 @@
 
     <!-- Others modules -->
     <% module_projects.each do |pmod| %>
-
+      <ul class="table-columns">
+        <% pmod.estimation_values.where.not(estimation_value_id: nil).each do |ev| %>
+          <li class="table-column table-column-type-integer jtk-droppable jtk-managed jtk-connected span2" primary-key="true" data-port-id="id" id="jsPlumb_2_3">
+            <%= ev %>
+          </li>
+        <% end %>
+      </ul>
         <% if @pbs_project_element %>
           <% if pmod.pbs_project_elements.map(&:id).include?(@pbs_project_element.id) %>
             <% pbs_class = 'highlight' %>
@@ -28,16 +34,6 @@
         <% end %>
 
         <div class="<%= pbs_class %> module_project <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>" style="top: <%= top_position %>; left: <%= left_position %>">
-
-          <div class="row">
-            <% pmod.estimation_values.where.not(estimation_value_id: nil).each do |ev| %>
-              <div class="span6" id="<%= ev.id %>">
-                <%= ev %>
-              </div>
-            <% end %>
-          </div>
-
-
 
             <% if pmod.id != @initialization_module_project.id %>
               <%= link_to pmod, edit_module_project_path(pmod, organization_id: @organization.id), class: "a_white" %>
