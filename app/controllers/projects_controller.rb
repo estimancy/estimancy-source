@@ -3320,6 +3320,7 @@ public
     session[:sort_order] = @sort_order
     session[:sort_action] = @sort_action
     session[:is_last_page] = @is_last_page
+
     session[:search_column] = @search_column
     session[:search_value] = @search_value
 
@@ -3332,22 +3333,16 @@ public
     @projects = @current_organization.projects
 
     user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
-    projects = Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false)
+    user_prjs = Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false)
+    @adv_search_hash['user'] = user_prjs
 
-    @adv_search_hash['user'] = projects
+    app_ids = Application.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
+    app_prjs = Project.where(organization_id: @current_organization.id, application_id: app_ids, is_model: false)
+    @adv_search_hash['application'] = app_prjs
 
-    # @apps = Application.where("name LIKE '%#{params[:advanced_search]}%'").all
-    # @apps.each do |app|
-    #   @prj_apps = @projects.where(is_model: false).where("application_id LIKE '%#{app.id}%'")
-    # end
-    # @adv_search_hash['application'] = @prj_apps
-    #
-    #
-    # @acqs = AcquisitionCategory.where("organization_id LIKE '%#{@current_organization.id}'").where("name LIKE '%#{params[:advanced_search]}%'")
-    # @acqs.each do |acq|
-    #   @prj_acqs = @projects.where(is_model: false).where("acquisition_category_id LIKE '%#{acq.id}%'")
-    # end
-    # @adv_search_hash['acquisition'] = @prj_acqs
+    acq_ids = AcquisitionCategory.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
+    acq_prjs = Project.where(organization_id: @current_organization.id, acquisition_category_id: acq_ids, is_model: false)
+    @adv_search_hash['acquisition'] = acq_prjs
 
   end
 
