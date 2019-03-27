@@ -866,6 +866,9 @@ en:
   notice_project_area_successful_created: "Project area was successfully created."
   notice_project_area_successful_updated: "Project area was successfully updated."
   notice_project_area_successful_deleted: "Project area was successfully deleted."
+  notice_budget_type_successful_created: "Budget type was successfully created."
+  notice_budget_type_successful_updated: "Budget type was successfully updated."
+  notice_budget_type_successful_deleted: "Budget type was successfully deleted."
   warning_project_categories_cant_be_edit: "This project category can not be edited, previous changes have not yet been validated."
   notice_project_categories_successful_created: "Project category was successfully created."
   notice_project_categories_successful_updated: "Project category was successfully updated."
@@ -2245,3 +2248,5 @@ en:
   val_max: "Maximal value"
   min_value_message_placeholder: ""
   max_value_message_placeholder: ""
+
+  budget_type: "Budget Type"
