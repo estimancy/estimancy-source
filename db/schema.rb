@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190327140416) do
+ActiveRecord::Schema.define(version: 20190327130308) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -309,7 +309,6 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "application_id",  limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
-    t.string   "description",     limit: 255
   end
 
   create_table "budgets", force: :cascade do |t|
@@ -842,6 +841,7 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "display_order", limit: 4,                            default: 0
     t.boolean  "default_value"
     t.float    "weight_b",      limit: 24
+    t.integer  "guw_model_id",  limit: 4
   end
 
   add_index "guw_guw_complexities", ["guw_type_id", "name"], name: "guw_type_complexities", using: :btree
@@ -1050,7 +1050,6 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "color_priority",             limit: 4
     t.boolean  "allow_line_color"
     t.boolean  "mandatory_comments",                       default: true
-    t.integer  "service_id",                 limit: 4
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], name: "guw_model_default_guw_types", using: :btree
@@ -1538,42 +1537,50 @@ ActiveRecord::Schema.define(version: 20190327140416) do
   add_index "operation_operation_models", ["organization_id", "name"], name: "index_operation_operation_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "organization_estimations", id: false, force: :cascade do |t|
-    t.integer  "current_organization_id", limit: 4,     default: 0,     null: false
-    t.string   "organization_name",       limit: 255
+    t.integer  "current_organization_id",        limit: 4,     default: 0,     null: false
+    t.string   "organization_name",              limit: 255
     t.datetime "project_created_date"
-    t.integer  "project_id",              limit: 4,     default: 0,     null: false
-    t.integer  "id",                      limit: 4,     default: 0,     null: false
-    t.string   "title",                   limit: 255
-    t.string   "version_number",          limit: 64,    default: "1.0"
-    t.string   "alias",                   limit: 255
-    t.string   "ancestry",                limit: 255
-    t.text     "description",             limit: 65535
-    t.integer  "estimation_status_id",    limit: 4
-    t.string   "state",                   limit: 255
+    t.integer  "project_id",                     limit: 4,     default: 0,     null: false
+    t.integer  "id",                             limit: 4,     default: 0,     null: false
+    t.string   "title",                          limit: 255
+    t.string   "version_number",                 limit: 64,    default: "1.0"
+    t.string   "alias",                          limit: 255
+    t.string   "ancestry",                       limit: 255
+    t.text     "description",                    limit: 65535
+    t.integer  "estimation_status_id",           limit: 4
+    t.string   "state",                          limit: 255
     t.date     "start_date"
-    t.integer  "organization_id",         limit: 4
-    t.integer  "original_model_id",       limit: 4
-    t.integer  "project_area_id",         limit: 4
-    t.integer  "project_category_id",     limit: 4
-    t.integer  "platform_category_id",    limit: 4
-    t.integer  "acquisition_category_id", limit: 4
+    t.integer  "organization_id",                limit: 4
+    t.integer  "original_model_id",              limit: 4
+    t.integer  "project_area_id",                limit: 4
+    t.integer  "project_category_id",            limit: 4
+    t.integer  "platform_category_id",           limit: 4
+    t.integer  "acquisition_category_id",        limit: 4
     t.boolean  "is_model"
-    t.integer  "master_anscestry",        limit: 4
-    t.integer  "creator_id",              limit: 4
-    t.text     "purpose",                 limit: 65535
-    t.text     "level_of_detail",         limit: 65535
-    t.text     "scope",                   limit: 65535
-    t.integer  "copy_number",             limit: 4
-    t.integer  "copy_id",                 limit: 4
-    t.text     "included_wbs_activities", limit: 65535
+    t.integer  "master_anscestry",               limit: 4
+    t.integer  "creator_id",                     limit: 4
+    t.text     "purpose",                        limit: 65535
+    t.text     "level_of_detail",                limit: 65535
+    t.text     "scope",                          limit: 65535
+    t.integer  "copy_number",                    limit: 4
+    t.integer  "copy_id",                        limit: 4
+    t.text     "included_wbs_activities",        limit: 65535
     t.boolean  "is_locked"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "status_comment",          limit: 65535
-    t.integer  "application_id",          limit: 4
-    t.string   "application_name",        limit: 255
-    t.boolean  "private",                               default: false
+    t.text     "status_comment",                 limit: 65535
+    t.integer  "application_id",                 limit: 4
+    t.string   "application_name",               limit: 255
+    t.boolean  "private",                                      default: false
     t.boolean  "is_historicized"
+    t.integer  "provider_id",                    limit: 4
+    t.string   "request_number",                 limit: 255
+    t.boolean  "use_automatic_quotation_number"
+    t.string   "business_need",                  limit: 255
+    t.integer  "originator_id",                  limit: 4
+    t.integer  "event_organization_id",          limit: 4
+    t.text     "transaction_id",                 limit: 65535
+    t.boolean  "is_new_created_record"
   end
 
   create_table "organization_labor_categories", force: :cascade do |t|
@@ -1612,6 +1619,18 @@ ActiveRecord::Schema.define(version: 20190327140416) do
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], name: "wbs_activity_profiles_index", unique: true, using: :btree
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
+
+  create_table "organization_technologies", force: :cascade do |t|
+    t.integer  "organization_id",    limit: 4
+    t.string   "name",               limit: 255
+    t.string   "alias",              limit: 255
+    t.text     "description",        limit: 65535
+    t.float    "productivity_ratio", limit: 24
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "state",              limit: 20
+    t.integer  "copy_id",            limit: 4
+  end
 
   create_table "organization_technologies_unit_of_works", id: false, force: :cascade do |t|
     t.integer  "organization_technology_id", limit: 4
@@ -1925,6 +1944,8 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.text     "transaction_id",            limit: 65535
   end
 
+  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "project_securities_index", using: :btree
+
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
     t.string   "custom_value",          limit: 255
@@ -1980,15 +2001,14 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "event_organization_id",          limit: 4
     t.text     "transaction_id",                 limit: 65535
     t.boolean  "is_new_created_record"
-    t.boolean  "allow_export_pdf"
-    t.datetime "change_date"
+    t.date     "change_date"
     t.integer  "time_count",                     limit: 4
+    t.boolean  "allow_export_pdf"
     t.integer  "demand_id",                      limit: 4
     t.boolean  "urgent_project"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
-  add_index "projects", ["demand_id"], name: "index_projects_on_demand_id", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "index_projects_on_organization_id_and_is_model", using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "organization_estimation_models", using: :btree
 
@@ -2210,46 +2230,41 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.boolean  "enabled_input"
     t.integer  "copy_id",                   limit: 4
     t.integer  "copy_number",               limit: 4
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.float    "standard_unit_coefficient", limit: 24
     t.string   "effort_unit",               limit: 255
     t.string   "staffing_method",           limit: 255
     t.integer  "effort_week_unit",          limit: 4
     t.string   "config_type",               limit: 255
-    t.integer  "min_range",                 limit: 4,     default: 70
-    t.integer  "max_range",                 limit: 4,     default: 150
+    t.integer  "min_range",                 limit: 4
+    t.integer  "max_range",                 limit: 4
   end
 
   add_index "staffing_staffing_models", ["organization_id", "name"], name: "index_staffing_staffing_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "status_histories", force: :cascade do |t|
     t.string   "organization",       limit: 255
-    t.string   "demand",             limit: 255
     t.integer  "project_id",         limit: 4
     t.string   "project",            limit: 255
     t.string   "old_version_number", limit: 255
     t.string   "new_version_number", limit: 255
-    t.datetime "change_date"
+    t.date     "change_date"
     t.string   "action",             limit: 255
     t.text     "comments",           limit: 65535
     t.string   "origin",             limit: 255
     t.string   "target",             limit: 255
     t.string   "user",               limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.integer  "gap",                limit: 4
   end
 
-  add_index "status_histories", ["demand"], name: "index_status_histories_on_demand", using: :btree
-
   create_table "status_transitions", force: :cascade do |t|
-    t.integer  "from_transition_status_id",        limit: 4
-    t.integer  "to_transition_status_id",          limit: 4
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
-    t.integer  "demand_from_transition_status_id", limit: 4
-    t.integer  "demand_to_transition_status_id",   limit: 4
+    t.integer  "from_transition_status_id", limit: 4
+    t.integer  "to_transition_status_id",   limit: 4
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "subcontractors", force: :cascade do |t|
@@ -2375,6 +2390,7 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "event_organization_id",  limit: 4
     t.text     "transaction_id",         limit: 65535
     t.string   "unconfirmed_email",      limit: 255
+    t.text     "ability",                limit: 65535
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -2514,7 +2530,6 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.string   "phase_short_name",   limit: 255
     t.boolean  "allow_modif_effort"
     t.boolean  "allow_modif_cost"
-    t.integer  "service_id",         limit: 4
   end
 
   add_index "wbs_activity_elements", ["ancestry"], name: "index_wbs_activity_elements_on_ancestry", using: :btree
@@ -2656,428 +2671,9 @@ ActiveRecord::Schema.define(version: 20190327140416) do
     t.integer  "organization_id", limit: 4
   end
 
-  # WARNING: generating adapter-specific definition for estimation_status_group_roles_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER estimation_status_group_roles_after_delete_row_tr AFTER DELETE ON `estimation_status_group_roles`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
-      transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
-      author_id = OLD.originator_id,
-      item_type = 'EstimationStatusGroupRole',
-      item_id = OLD.estimation_status_id,
-      group_id = OLD.group_id,
-      project_security_level_id = OLD.project_security_level_id,
-      object_class_name = 'EstimationStatus',
-      association_class_name = 'EstimationStatusGroupRole',
-      event = 'delete',
-        object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
-                                    ' "project_security_level_id": ', OLD.project_security_level_id,
-                                    ' "group_id": ', OLD.group_id,
-                             '}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for estimation_status_group_roles_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER estimation_status_group_roles_after_insert_row_tr AFTER INSERT ON `estimation_status_group_roles`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
-              author_id = NEW.originator_id,
-              item_type = 'EstimationStatusGroupRole',
-              item_id = NEW.estimation_status_id,
-              estimation_status_id = NEW.estimation_status_id,
-              group_id = NEW.group_id,
-              project_security_level_id = NEW.project_security_level_id,
-              object_class_name = 'EstimationStatus',
-              association_class_name = 'EstimationStatusGroupRole',
-              event = 'create',
-              object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
-                                          ' "project_security_level_id": ', NEW.project_security_level_id,
-                                          ' "group_id": ', NEW.group_id,
-                                   '}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_after_delete_row_tr AFTER DELETE ON `groups`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = OLD.event_organization_id,
-      author_id = OLD.originator_id,
-      item_type = 'Group',
-      item_id = OLD.id,
-      object_class_name = 'Group',
-      event = 'delete',
-      object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_after_insert_row_tr AFTER INSERT ON `groups`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              author_id = NEW.originator_id,
-              item_type = 'Group',
-              item_id = NEW.id,
-              object_class_name = 'Group',
-              event = 'create',
-              object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_after_update_of_name_description_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_after_update_of_name_description_row_tr AFTER UPDATE ON `groups`
-FOR EACH ROW
-BEGIN
-    IF NEW.name <> OLD.name OR (NEW.name IS NULL) <> (OLD.name IS NULL) OR NEW.description <> OLD.description OR (NEW.description IS NULL) <> (OLD.description IS NULL) THEN
-        
-              INSERT INTO autorization_log_events SET
-                event_organization_id = NEW.event_organization_id,
-                author_id = NEW.originator_id,
-                item_type = 'Group',
-                item_id = OLD.id,
-                object_class_name = 'Group',
-                event = 'update',
-                object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-                created_at = UTC_TIMESTAMP();
-    END IF;
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_permissions_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_permissions_after_delete_row_tr AFTER DELETE ON `groups_permissions`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
-      transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
-      author_id = OLD.originator_id,
-      item_type = 'GroupPermission',
-      item_id = OLD.group_id,
-      group_id = OLD.group_id,
-      permission_id = OLD.permission_id,
-      object_class_name = 'Group',
-      association_class_name = 'Permission',
-      event = 'delete',
-      object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_permissions_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_permissions_after_insert_row_tr AFTER INSERT ON `groups_permissions`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
-              author_id = NEW.originator_id,
-              item_type = 'GroupPermission',
-              item_id = NEW.group_id,
-              group_id = NEW.group_id,
-              permission_id = NEW.permission_id,
-              object_class_name = 'Group',
-              association_class_name = 'Permission',
-              event = 'create',
-              object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_users_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_users_after_delete_row_tr AFTER DELETE ON `groups_users`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
-      transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
-      author_id = OLD.originator_id,
-      item_type = 'GroupUser',
-      item_id = OLD.user_id,
-      user_id = OLD.user_id,
-      group_id = OLD.group_id,
-      object_class_name = 'User',
-      association_class_name = 'Group',
-      event = 'delete',
-      object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for groups_users_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER groups_users_after_insert_row_tr AFTER INSERT ON `groups_users`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
-              author_id = NEW.originator_id,
-              item_type = 'GroupUser',
-              item_id = NEW.user_id,
-              user_id = NEW.user_id,
-              group_id = NEW.group_id,
-              object_class_name = 'User',
-              association_class_name = 'Group',
-              event = 'create',
-              object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for organizations_users_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER organizations_users_after_delete_row_tr AFTER DELETE ON `organizations_users`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = OLD.organization_id,
-        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
-        author_id = OLD.originator_id,
-        item_type = 'OrganizationUser',
-        item_id = OLD.user_id,
-        user_id = OLD.user_id,
-        organization_id = OLD.organization_id,
-        object_class_name = 'User',
-        association_class_name = 'Organization',
-        event = 'delete',
-        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "organization_id": ', OLD.organization_id, '}'),
-        created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for organizations_users_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER organizations_users_after_insert_row_tr AFTER INSERT ON `organizations_users`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
-              author_id = NEW.originator_id,
-              item_type = 'OrganizationUser',
-              item_id = NEW.user_id,
-              user_id = NEW.user_id,
-              organization_id = NEW.organization_id,
-              object_class_name = 'User',
-              association_class_name = 'Organization',
-              event = 'create',
-              object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "organization_id": ', NEW.organization_id, '}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for permissions_project_security_levels_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER permissions_project_security_levels_after_delete_row_tr AFTER DELETE ON `permissions_project_security_levels`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
-      transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
-      author_id = OLD.originator_id,
-      item_type = 'PermissionProjectSecurityLevel',
-      item_id = OLD.project_security_level_id,
-      project_security_level_id = OLD.project_security_level_id,
-      permission_id = OLD.permission_id,
-      object_class_name = 'ProjectSecurityLevel',
-      association_class_name = 'Permission',
-      event = 'delete',
-      object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for permissions_project_security_levels_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER permissions_project_security_levels_after_insert_row_tr AFTER INSERT ON `permissions_project_security_levels`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-              event_organization_id = NEW.event_organization_id,
-              transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
-              author_id = NEW.originator_id,
-              item_type = 'PermissionProjectSecurityLevel',
-              item_id = NEW.project_security_level_id,
-              project_security_level_id = NEW.project_security_level_id,
-              permission_id = NEW.permission_id,
-              object_class_name = 'ProjectSecurityLevel',
-              association_class_name = 'Permission',
-              event = 'create',
-              object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
-              created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for project_securities_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER project_securities_after_delete_row_tr AFTER DELETE ON `project_securities`
-FOR EACH ROW
-BEGIN
-    
-          IF ((SELECT is_new_created_record FROM projects WHERE id = OLD.project_id) != true) THEN
-    
-            INSERT INTO autorization_log_events SET
-              event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
-              transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
-              author_id = OLD.originator_id,
-              item_type = 'ProjectSecurity',
-              item_id = OLD.project_id,
-              project_id = OLD.project_id,
-              group_id = OLD.group_id,
-              user_id = OLD.user_id,
-              project_security_level_id = OLD.project_security_level_id,
-              is_model_permission = OLD.is_model_permission,
-              is_estimation_permission = OLD.is_estimation_permission,
-              is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
-              object_class_name = 'Project',
-              association_class_name = 'EstimationStatusGroupRole',
-              event = 'delete',
-              object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
-                                          ' "group_id": ', OLD.group_id,
-                                          ' "user_id": ', OLD.user_id,
-                                          ' "is_model_permission": ', OLD.is_model_permission,
-                                          ' "is_estimation_permission": ', OLD.is_estimation_permission,
-                                '}'),
-              created_at = UTC_TIMESTAMP();
-          END IF;
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for project_securities_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER project_securities_after_insert_row_tr AFTER INSERT ON `project_securities`
-FOR EACH ROW
-BEGIN
-    
-          IF ((SELECT is_new_created_record FROM projects WHERE id = NEW.project_id) != true) THEN
-    
-            INSERT INTO autorization_log_events SET
-                event_organization_id = NEW.event_organization_id,
-                transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
-                author_id = NEW.originator_id,
-                item_type = 'ProjectSecurity',
-                item_id = NEW.project_id,
-                project_id = NEW.project_id,
-                group_id = NEW.group_id,
-                user_id = NEW.user_id,
-                project_security_level_id = NEW.project_security_level_id,
-                is_model_permission = NEW.is_model_permission,
-                is_estimation_permission = NEW.is_estimation_permission,
-                is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
-                object_class_name = 'Project',
-                association_class_name = 'EstimationStatusGroupRole',
-                event = 'create',
-                object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
-                                            ' "group_id": ', NEW.group_id,
-                                            ' "user_id": ', NEW.user_id,
-                                            ' "is_model_permission": ', NEW.is_model_permission,
-                                            ' "is_estimation_permission": ', NEW.is_estimation_permission,
-                                       '}'),
-                created_at = UTC_TIMESTAMP();
-          END IF;
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for project_security_levels_after_delete_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER project_security_levels_after_delete_row_tr AFTER DELETE ON `project_security_levels`
-FOR EACH ROW
-BEGIN
-    INSERT INTO autorization_log_events SET
-      event_organization_id = OLD.event_organization_id,
-      author_id = OLD.originator_id,
-      item_type = 'ProjectSecurityLevel',
-      item_id = OLD.id,
-      object_class_name = 'ProjectSecurityLevel',
-      event = 'delete',
-      object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
-      created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for project_security_levels_after_insert_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER project_security_levels_after_insert_row_tr AFTER INSERT ON `project_security_levels`
-FOR EACH ROW
-BEGIN
-    
-          INSERT INTO autorization_log_events SET
-            event_organization_id = NEW.event_organization_id,
-            author_id = NEW.originator_id,
-            item_type = 'ProjectSecurityLevel',
-            item_id = NEW.id,
-            object_class_name = 'ProjectSecurityLevel',
-            event = 'create',
-            object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
-            created_at = UTC_TIMESTAMP();
-END
-  TRIGGERSQL
-
-  # WARNING: generating adapter-specific definition for project_security_levels_after_update_of_name_description_row_tr due to a mismatch.
-  # either there's a bug in hairtrigger or you've messed up your migrations and/or db :-/
-  execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER project_security_levels_after_update_of_name_description_row_tr AFTER UPDATE ON `project_security_levels`
-FOR EACH ROW
-BEGIN
-    IF NEW.name <> OLD.name OR (NEW.name IS NULL) <> (OLD.name IS NULL) OR NEW.description <> OLD.description OR (NEW.description IS NULL) <> (OLD.description IS NULL) THEN
-        INSERT INTO autorization_log_events SET
-          event_organization_id = NEW.event_organization_id,
-          author_id = NEW.originator_id,
-          item_type = 'ProjectSecurityLevel',
-          item_id = OLD.id,
-          object_class_name = 'ProjectSecurityLevel',
-          event = 'update',
-          object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
-          created_at = UTC_TIMESTAMP();
-    END IF;
-END
-  TRIGGERSQL
-
   # no candidate create_trigger statement could be found, creating an adapter-specific one
   execute(<<-TRIGGERSQL)
-CREATE DEFINER = 'root'@'localhost' TRIGGER user_events AFTER UPDATE ON `users`
+CREATE TRIGGER user_events AFTER UPDATE ON `users`
 FOR EACH ROW
 BEGIN
           DECLARE old_value varchar(255);
@@ -3126,5 +2722,386 @@ BEGIN
           END IF;
         END
   TRIGGERSQL
+
+  create_trigger("groups_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          author_id = NEW.originator_id,
+          item_type = 'Group',
+          item_id = NEW.id,
+          object_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', ' "description": ', '["', '', '", "', NEW.description, '"]}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'Group',
+        item_id = OLD.id,
+        object_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      IF ((SELECT is_new_created_record FROM projects WHERE id = NEW.project_id) != true) THEN
+
+        INSERT INTO autorization_log_events SET
+            event_organization_id = NEW.event_organization_id,
+            transaction_id = (SELECT transaction_id FROM projects WHERE id = NEW.project_id),
+            author_id = NEW.originator_id,
+            item_type = 'ProjectSecurity',
+            item_id = NEW.project_id,
+            project_id = NEW.project_id,
+            group_id = NEW.group_id,
+            user_id = NEW.user_id,
+            project_security_level_id = NEW.project_security_level_id,
+            is_model_permission = NEW.is_model_permission,
+            is_estimation_permission = NEW.is_estimation_permission,
+            is_model = (SELECT is_model FROM projects WHERE id = NEW.project_id),
+            object_class_name = 'Project',
+            association_class_name = 'EstimationStatusGroupRole',
+            event = 'create',
+            object_changes = CONCAT('{ "project_id": ', NEW.project_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id,
+                                        ' "group_id": ', NEW.group_id,
+                                        ' "user_id": ', NEW.user_id,
+                                        ' "is_model_permission": ', NEW.is_model_permission,
+                                        ' "is_estimation_permission": ', NEW.is_estimation_permission,
+                                   '}'),
+            created_at = UTC_TIMESTAMP();
+      END IF;
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_securities_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_securities").
+      after(:delete) do
+    <<-SQL_ACTIONS
+
+      IF ((SELECT is_new_created_record FROM projects WHERE id = OLD.project_id) != true) THEN
+
+        INSERT INTO autorization_log_events SET
+          event_organization_id = (SELECT organization_id FROM projects WHERE id = OLD.project_id),
+          transaction_id = (SELECT transaction_id FROM projects WHERE id = OLD.project_id),
+          author_id = OLD.originator_id,
+          item_type = 'ProjectSecurity',
+          item_id = OLD.project_id,
+          project_id = OLD.project_id,
+          group_id = OLD.group_id,
+          user_id = OLD.user_id,
+          project_security_level_id = OLD.project_security_level_id,
+          is_model_permission = OLD.is_model_permission,
+          is_estimation_permission = OLD.is_estimation_permission,
+          is_model = (SELECT is_model FROM projects WHERE id = OLD.project_id),
+          object_class_name = 'Project',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'delete',
+          object_changes = CONCAT('{ "project_id": ', OLD.project_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                                      ' "user_id": ', OLD.user_id,
+                                      ' "is_model_permission": ', OLD.is_model_permission,
+                                      ' "is_estimation_permission": ', OLD.is_estimation_permission,
+                            '}'),
+          created_at = UTC_TIMESTAMP();
+      END IF;
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = NEW.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'create',
+        object_changes = CONCAT('{ "name": ', '["', '', '", "', NEW.name, '"],', '"description": ', '["', '', '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_update_of_name_description_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:update).
+      of(:name, :description) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = NEW.event_organization_id,
+        author_id = NEW.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'update',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', NEW.name, '"],', ' "description": ', '["', OLD.description, '", "', NEW.description, '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.event_organization_id,
+        author_id = OLD.originator_id,
+        item_type = 'ProjectSecurityLevel',
+        item_id = OLD.id,
+        object_class_name = 'ProjectSecurityLevel',
+        event = 'delete',
+        object_changes = CONCAT('{ "name": ', '["', OLD.name, '", "', '', '"],', ' "description": ', '["', OLD.description, '", "', '', '"]}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = NEW.estimation_status_id),
+          author_id = NEW.originator_id,
+          item_type = 'EstimationStatusGroupRole',
+          item_id = NEW.estimation_status_id,
+          estimation_status_id = NEW.estimation_status_id,
+          group_id = NEW.group_id,
+          project_security_level_id = NEW.project_security_level_id,
+          object_class_name = 'EstimationStatus',
+          association_class_name = 'EstimationStatusGroupRole',
+          event = 'create',
+          object_changes = CONCAT('{ "estimation_status_id": ', NEW.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', NEW.project_security_level_id,
+                                      ' "group_id": ', NEW.group_id,
+                               '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("estimation_status_group_roles_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("estimation_status_group_roles").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        transaction_id = (SELECT transaction_id FROM estimation_statuses WHERE id = OLD.estimation_status_id),
+        author_id = OLD.originator_id,
+        item_type = 'EstimationStatusGroupRole',
+        item_id = OLD.estimation_status_id,
+        group_id = OLD.group_id,
+        project_security_level_id = OLD.project_security_level_id,
+        object_class_name = 'EstimationStatus',
+        association_class_name = 'EstimationStatusGroupRole',
+        event = 'delete',
+          object_changes = CONCAT('{ "estimation_status_id": ', OLD.estimation_status_id, ',',
+                                      ' "project_security_level_id": ', OLD.project_security_level_id,
+                                      ' "group_id": ', OLD.group_id,
+                               '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM groups WHERE id = NEW.group_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupPermission',
+          item_id = NEW.group_id,
+          group_id = NEW.group_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'Group',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "group_id": ', NEW.group_id, ',', ' "permission_id": ', NEW.permission_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_permissions_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_permissions").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM groups WHERE id = OLD.group_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupPermission',
+        item_id = OLD.group_id,
+        group_id = OLD.group_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'Group',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "group_id": ', OLD.group_id, ',', ' "permission_id": ', OLD.permission_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'GroupUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          group_id = NEW.group_id,
+          object_class_name = 'User',
+          association_class_name = 'Group',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "group_id": ', NEW.group_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("groups_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("groups_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM groups WHERE id = OLD.group_id),
+        transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+        author_id = OLD.originator_id,
+        item_type = 'GroupUser',
+        item_id = OLD.user_id,
+        user_id = OLD.user_id,
+        group_id = OLD.group_id,
+        object_class_name = 'User',
+        association_class_name = 'Group',
+        event = 'delete',
+        object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "group_id": ', OLD.group_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = NEW.user_id),
+          author_id = NEW.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = NEW.user_id,
+          user_id = NEW.user_id,
+          organization_id = NEW.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'create',
+          object_changes = CONCAT('{ "user_id": ', NEW.user_id, ',', ' "organization_id": ', NEW.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("organizations_users_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("organizations_users").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = OLD.organization_id,
+          transaction_id = (SELECT transaction_id FROM users WHERE id = OLD.user_id),
+          author_id = OLD.originator_id,
+          item_type = 'OrganizationUser',
+          item_id = OLD.user_id,
+          user_id = OLD.user_id,
+          organization_id = OLD.organization_id,
+          object_class_name = 'User',
+          association_class_name = 'Organization',
+          event = 'delete',
+          object_changes = CONCAT('{ "user_id": ', OLD.user_id, ',', ' "organization_id": ', OLD.organization_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_insert_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:insert) do
+    <<-SQL_ACTIONS
+
+      INSERT INTO autorization_log_events SET
+          event_organization_id = NEW.event_organization_id,
+          transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = NEW.project_security_level_id),
+          author_id = NEW.originator_id,
+          item_type = 'PermissionProjectSecurityLevel',
+          item_id = NEW.project_security_level_id,
+          project_security_level_id = NEW.project_security_level_id,
+          permission_id = NEW.permission_id,
+          object_class_name = 'ProjectSecurityLevel',
+          association_class_name = 'Permission',
+          event = 'create',
+          object_changes = CONCAT('{ "permission_id": ', NEW.permission_id, ',', ' "project_security_level_id": ', NEW.project_security_level_id, '}'),
+          created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
+
+  create_trigger("permissions_project_security_levels_after_delete_row_tr", :generated => true, :compatibility => 1).
+      on("permissions_project_security_levels").
+      after(:delete) do
+    <<-SQL_ACTIONS
+      INSERT INTO autorization_log_events SET
+        event_organization_id = (SELECT organization_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        transaction_id = (SELECT transaction_id FROM project_security_levels WHERE id = OLD.project_security_level_id),
+        author_id = OLD.originator_id,
+        item_type = 'PermissionProjectSecurityLevel',
+        item_id = OLD.project_security_level_id,
+        project_security_level_id = OLD.project_security_level_id,
+        permission_id = OLD.permission_id,
+        object_class_name = 'ProjectSecurityLevel',
+        association_class_name = 'Permission',
+        event = 'delete',
+        object_changes = CONCAT('{ "permission_id": ', OLD.permission_id, ',', ' "project_security_level_id": ', OLD.project_security_level_id, '}'),
+        created_at = UTC_TIMESTAMP();
+    SQL_ACTIONS
+  end
 
 end

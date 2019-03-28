@@ -1,6 +1,65 @@
 <script id="code">
     $(document).ready(function(){
 
+
+        //On surcharge Link avec GradientLink
+        function GradientLink() {
+            go.Link.call(this);
+            this.startColor = "orange";
+            this.endColor = "green";
+        }
+        go.Diagram.inherit(GradientLink, go.Link);
+
+        Object.defineProperty(GradientLink.prototype, "startColor", {
+            get: function() { return this._startColor; },
+            set: function(value) {
+                if (this._startColor !== value) {
+                    this._startColor = value;
+                    this.updateBrush();
+                }
+            }
+        });
+
+        Object.defineProperty(GradientLink.prototype, "endColor", {
+            get: function() { return this._endColor; },
+            set: function(value) {
+                if (this._endColor !== value) {
+                    this._endColor = value;
+                    this.updateBrush();
+                }
+            }
+        });
+
+        GradientLink.prototype.updateBrush = function() {
+            var path = this.path;
+            if (path !== null) {
+                if (this.startColor === this.endColor) {
+                    path.stroke = this.startColor;
+                } else if (this.pointsCount >= 2) {
+                    var br = new go.Brush(go.Brush.Linear);
+                    var p0 = this.getPoint(0);
+                    var pn = this.getPoint(this.pointsCount - 1);
+                    var dx = pn.x - p0.x;
+                    var dy = pn.y - p0.y;
+                    var ex = (dx > 0) ? 1.0 : 0.0;
+                    var ey = (dy > 0) ? 1.0 : 0.0;
+                    br.end = new go.Spot(ex, ey);
+                    br.start = br.end.opposite();
+                    br.addColorStop(0.0, this.startColor);
+                    br.addColorStop(1.0, this.endColor);
+                    path.stroke = br;
+                }
+            }
+        };
+
+        GradientLink.prototype.computePoints = function() {
+            var result = go.Link.prototype.computePoints.call(this);
+            if (result) this.updateBrush();
+            return result;
+        };
+
+        // end GradientLink
+
         var $ = go.GraphObject.make;  // for conciseness in defining templates
         myDiagram =
             $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
@@ -72,11 +131,10 @@
                   $(go.Shape,
                     {
                         geometryString:
-                            "F M0 0 L80 0 B-90 90 80 20 20 20 L100 100 20 100 B90 90 20 80 20 20z",
+                            "F M0 0 100 0 100 100 10 100 0 80z",
                         fill: "#ffffff",
                         strokeWidth: 1,
-                        stroke: "#5472D3"
-                    }, new go.Binding("figure", "figure")),
+                    }, new go.Binding("stroke", "color", brushConverterNode), new go.Binding("figure", "figure")),
                 $(go.TextBlock,
                     {
                         font: "bold 10pt Helvetica, Arial, sans-serif",
@@ -97,35 +155,46 @@
                 makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false));
 
         myDiagram.contextMenu = myContextMenu;
-        myDiagram.allowMove = false;
+        // myDiagram.allowMove = false;
 
         cxElement.addEventListener("contextmenu", function(e) {
             e.preventDefault();
             return false;
         }, false);
 
+        function brushConverterNode(e) {
+            return e;
+        }
+
         // replace the default Link template in the linkTemplateMap
         myDiagram.linkTemplate =
-            $(go.Link,  // the whole link panel
+            $(GradientLink,
+                new go.Binding("startColor"),
+                new go.Binding("endColor"),
                 {
                     routing: go.Link.AvoidsNodes,
                     curve: go.Link.JumpOver,
-                    corner: 0, toShortLength: 4,
+                    corner: 0,
+                    toShortLength: 4,
+                    fromEndSegmentLength: 20,
+                    toEndSegmentLength: 20,
                     relinkableFrom: false,
                     relinkableTo: false,
                     reshapable: false,
                     resegmentable: false,
                     // mouse-overs subtly highlight links:
-                    mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-                    mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+                    // mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+                    // mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
                     selectionAdorned: false
                 },
                 new go.Binding("points").makeTwoWay(),
-                $(go.Shape,  // the highlight shape, normally transparent
-                    { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
+                $(go.Shape,
+                    { isPanelMain: true, strokeWidth: 1, name: "HIGHLIGHT" }),
                 $(go.Shape,  // the link path shape
-                    { isPanelMain: true, stroke: "gray", strokeWidth: 1 },
-                    new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+                    { isPanelMain: true, strokeWidth: 1 }),
+                    // new go.Binding("stroke", "isSelected", function(sel) {
+                    //     return sel ? "dodgerblue" : $(go.Brush, "Linear", { 0.0: brushConverterLink, 1: brushConverterLink })
+                    // }).ofObject()),
                 $(go.Shape,  // the arrowhead
                     { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
                 $(go.Panel, "Auto", { visible: true, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
@@ -143,24 +212,24 @@
 
         data =
             {
-                "class": "go.GraphLinksModel",
-                "linkFromPortIdProperty": "fromPort",
-                "linkToPortIdProperty": "toPort",
-                "nodeDataArray": [
-                    { key: "pf", "loc":"100 0", "text": "Point de Fonction" },
-                    { key: "cocomo", "loc":"100 170", "text": "Cocomo"},
-                    { key: "staffing", "loc":"100 340", "text":"Staffing"},
-                    { key: "wbs", "loc":"100 510", "text":"WBS"},
-                    { key: "isbsg", "loc":"100 680", "text":"ISBSG"}
+                class: "go.GraphLinksModel",
+                linkFromPortIdProperty: "fromPort",
+                linkToPortIdProperty: "toPort",
+                nodeDataArray: [
+                    { key: "pf", loc: "100 0", text: "Point de Fonction", color: "#5472D3" },
+                    { key: "cocomo", loc: "100 170", text: "Cocomo", color: "#7C43BD" },
+                    { key: "staffing", "loc":"100 340", text:"Staffing", color: "#439889" },
+                    { key: "wbs", "loc":"100 510", text:"WBS", color: "#F9683A" },
+                    { key: "isbsg", "loc":"100 680", text:"ISBSG", color: "#4FB3BF" }
         ],
             "linkDataArray": [
-            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TB" },
-            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TN" },
-            {"from": "cocomo", "to": "staffing", "fromPort": "B", "toPort": "T", text: "EB" },
-            {"from": "staffing", "to": "wbs", "fromPort": "B", "toPort": "T", text: "EN" },
-            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "EN" },
-            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "C" },
-            {"from": "cocomo", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "E" },
+            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TB", startColor: "#5472D3", endColor: "#5472D3" },
+            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TN", startColor: "#5472D3", endColor: "#7C43BD" },
+            {"from": "cocomo", "to": "staffing", "fromPort": "B", "toPort": "T", text: "EB", startColor: "#7C43BD", endColor: "#439889" },
+            {"from": "staffing", "to": "wbs", "fromPort": "B", "toPort": "T", text: "EN", startColor: "#439889", endColor: "#F9683A" },
+            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "EN", startColor: "#F9683A", endColor: "#4FB3BF" },
+            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "C", startColor: "#F9683A", endColor: "#4FB3BF" },
+            {"from": "cocomo", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "E", startColor: "#7C43BD", endColor: "#4FB3BF" },
         ]};
 
         // Load !
