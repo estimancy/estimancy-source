@@ -13,6 +13,7 @@
 
     <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
+
 <!--          <div style="text-align:right;">-->
                 <%# projects = @organization.projects %>
 <!--            <div class="pull-left">-->
@@ -70,7 +71,21 @@
 
 <!--          <br/>-->
 
+      <% costs = {} %>
+      <% @organization.applications.each do |application| %>
+        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts| %>
+          <% projects = Project.where(application_id: application.id ,
+                                      organization_id: @organization.id,
+                                      estimation_status_id: bts.estimation_status_id) %>
+          <% projects.each do |project| %>
+            <% costs[application.id] = get_value(project) %>
+            <% costs.sum %>
+          <% end %>
+        <% end %>
+      <% end %>
 
+      <%= "costs:" %>
+      <%= costs %>
 
           <div>
             <%= I18n.t(:label_filter_on_projects_version) %>

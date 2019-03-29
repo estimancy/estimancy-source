@@ -1471,4 +1471,47 @@ module ProjectsHelper
     can?(:delete_project, estimation)
   end
 
+
+  def get_value(project)
+    unless project.nil?
+      @fields_coefficients = {}
+      @pfs = {}
+
+      fields = @organization.fields
+      ProjectField.where(project_id: [project.id]).each do |pf|
+        begin
+          if pf.field_id.in?(fields.map(&:id))
+            if pf.project && pf.views_widget
+              if pf.project_id == pf.views_widget.module_project.project_id
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+              else
+                # pf.delete
+              end
+            else
+              # pf.delete
+            end
+          else
+            # pf.delete
+          end
+        rescue
+          #puts "erreur"
+        end
+      end
+
+      fields.each do |f|
+        @fields_coefficients[f.id] = f.coefficient
+      end
+
+      field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
+      column = QueryColumn.new(field.name.to_sym,
+                               sortable: "",
+                               caption: "efefef",
+                               field_id: field.id,
+                               organization_id: @current_organization.id)
+
+      value = column_content(@pfs, column, project, @fields_coefficients)
+      value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f
+    end
+  end
+
 end

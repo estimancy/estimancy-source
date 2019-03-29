@@ -14,6 +14,7 @@ class BudgetTypesController < ApplicationController
 
     @budget_type = BudgetType.find(params[:id])
     @organization = Organization.find(params[:organization_id])
+    @application = @budget_type.application
 
     set_page_title I18n.t(:budget_type)
     set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
@@ -37,12 +38,20 @@ class BudgetTypesController < ApplicationController
   end
 
   def update
-    authorize! :manage, BudgetType
+    #authorize! :manage, BudgetType
     @organization = Organization.find(params[:organization_id])
     @budget_type = BudgetType.find(params[:id])
 
-    set_page_title I18n.t(:budget_type)
-    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@organization, anchor: "tabs-budget-type"), I18n.t(:edit_project_area) => ""
+    BudgetTypeStatus.where(organization_id: @organization.id,
+                           budget_type_id: @budget_type.id).delete_all
+
+    params[:estimation_statuses].each do |k, v|
+      BudgetTypeStatus.where(organization_id: @organization.id,
+                             budget_type_id: @budget_type.id,
+                             estimation_status_id: k,
+                             application_id: params[:budget_type][:application_id]).first_or_create
+    end
+
 
     if @budget_type.update_attributes(params[:budget_type])
       flash[:notice] = I18n.t (:notice_budget_type_successful_updated)
