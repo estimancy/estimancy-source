@@ -175,7 +175,7 @@
                     field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
                     column = QueryColumn.new(field.name.to_sym,
                                              sortable: "",
-                                             caption: "efefef",
+                                             caption: "",
                                              field_id: field.id,
                                              organization_id: @current_organization.id)
 
