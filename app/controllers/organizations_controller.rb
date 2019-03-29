@@ -2026,6 +2026,7 @@ class OrganizationsController < ApplicationController
 
   def estimations
     @organization = Organization.find(params[:organization_id])
+
     check_if_organization_is_image(@organization)
 
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
