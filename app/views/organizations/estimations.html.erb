@@ -71,50 +71,61 @@
 
 <!--          <br/>-->
 
-      <% costs = {} %>
+      <% total_costs = Hash.new {|h,k| h[k] = [] } %>
       <% @organization.applications.each do |application| %>
-        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts| %>
+        <% BudgetTypeStatus.where(application_id: application.id,
+                                  organization_id: @organization.id).all.each do |bts| %>
           <% projects = Project.where(application_id: application.id ,
                                       organization_id: @organization.id,
-                                      estimation_status_id: bts.estimation_status_id) %>
+                                      estimation_status_id: bts.estimation_status_id,
+                                      is_model: false) %>
           <% projects.each do |project| %>
-            <% costs[application.id] = get_value(project) %>
-            <% costs.sum %>
+
+            <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
+              column = QueryColumn.new(field.name.to_sym,
+                                       sortable: "",
+                                       caption: "",
+                                       field_id: field.id,
+                                       organization_id: @current_organization.id) %>
+
+              <% value = column_content(@pfs, column, project, @fields_coefficients) %>
+              <% value = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+              <% total_costs[application.id] << value %>
           <% end %>
         <% end %>
       <% end %>
 
-      <%= "costs:" %>
-      <%= costs %>
+      <% total_costs.each do |k,v| %>
+        <%= Application.find(k) %> : <%= v.sum %>
+      <% end %>
 
-          <div>
-            <%= I18n.t(:label_filter_on_projects_version) %>
-            <%= select_tag 'filter_organization_projects_version',
-                           options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
-                                               [I18n.t(:label_filter_on_project_version_1),1],
-                                               [I18n.t(:label_filter_on_project_version_3),3],
-                                               [I18n.t(:label_filter_on_project_version_4),4]],
-                                              :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
-                           'data-organization_id' => @organization.id, include_blank: false %>
-            <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
+      <div>
+        <%= I18n.t(:label_filter_on_projects_version) %>
+        <%= select_tag 'filter_organization_projects_version',
+                       options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
+                                           [I18n.t(:label_filter_on_project_version_1),1],
+                                           [I18n.t(:label_filter_on_project_version_3),3],
+                                           [I18n.t(:label_filter_on_project_version_4),4]],
+                                          :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
+                       'data-organization_id' => @organization.id, include_blank: false %>
 
-            <% if can? :create_project_from_template, Project %>
-              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-            <% end %>
+        <% if can? :create_project_from_template, Project %>
+          <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+        <% end %>
 
-            <% if can? :create_project_from_scratch, Project %>
-              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-            <% end %>
+        <% if can? :create_project_from_scratch, Project %>
+          <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
+        <% end %>
 
-            <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-              <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-            <% end %>
+        <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+          <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+        <% end %>
 
-          </div>
-                <div id="organization_projects">
-                  <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-                </div>
-          </div>
+      </div>
+        <div id="organization_projects">
+          <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+        </div>
+      </div>
 
   </div>
 

@@ -1478,7 +1478,7 @@ module ProjectsHelper
       @pfs = {}
 
       fields = @organization.fields
-      ProjectField.where(project_id: [project.id]).each do |pf|
+      ProjectField.where(project_id: project.id).each do |pf|
         begin
           if pf.field_id.in?(fields.map(&:id))
             if pf.project && pf.views_widget
@@ -1502,10 +1502,10 @@ module ProjectsHelper
         @fields_coefficients[f.id] = f.coefficient
       end
 
-      field = Field.where(organization_id: @demand.organization_id, name: "Coût (k€)").first
+      field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
       column = QueryColumn.new(field.name.to_sym,
                                sortable: "",
-                               caption: "efefef",
+                               caption: "",
                                field_id: field.id,
                                organization_id: @current_organization.id)
 
