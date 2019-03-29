@@ -72,6 +72,8 @@
 <!--          <br/>-->
 
       <% total_costs = Hash.new {|h,k| h[k] = [] } %>
+      <% budgets = Hash.new {|h,k| h[k] = [] } %>
+
       <% @organization.applications.each do |application| %>
         <% BudgetTypeStatus.where(application_id: application.id,
                                   organization_id: @organization.id).all.each do |bts| %>
@@ -90,13 +92,18 @@
 
               <% value = column_content(@pfs, column, project, @fields_coefficients) %>
               <% value = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-              <% total_costs[application.id] << value %>
+              <% budgets[bts.id] << value %>
+              <% total_costs[application.id] << budgets %>
           <% end %>
         <% end %>
       <% end %>
 
-      <% total_costs.each do |k,v| %>
-        <%= Application.find(k) %> : <%= v.sum %>
+      <% total_costs.each do |key,values| %>
+        <%= Application.find(key) %> :
+        <% values.each do |v| %>
+          <%= v %>
+        <% end %>
+        <br>
       <% end %>
 
       <div>

@@ -264,6 +264,11 @@ Projestimate::Application.routes.draw do
     resources :services
 
     resources :applications
+
+    resources :applications do
+      resources :budget_types
+    end
+
     resources :fields
     resources :wbs_activities
     resources :groups
@@ -277,8 +282,6 @@ Projestimate::Application.routes.draw do
     resources :organization_profiles
     resources :views
     resources :providers
-    resources :budget_types
-
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'

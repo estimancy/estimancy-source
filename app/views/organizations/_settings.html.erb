@@ -14,7 +14,6 @@
         <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
     <% end %>
     <li><a href="#tabs-select-columns-list"><%= I18n.t(:select_columns_list) %></a></li>
-    <li><a href="#tabs-budget-type"><%= I18n.t(:budget_type) %></a></li>
   </ul>
 
   <div id="tabs-applications">
@@ -416,40 +415,6 @@
       <%= render partial: "organizations/select_project_columns_to_display" %>
     <% else %>
       <div class="red_color"><%= I18n.t(:notice_cannot_view_selected_columns_list) %></div>
-    <% end %>
-  </div>
-
-  <div id="tabs-budget-type">
-    <% if can? :show_budget_type, BudgetType %>
-
-      <% if can? :manage, BudgetType %>
-        <div class="buttons">
-          <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn' %>
-        </div>
-      <% end %>
-
-      <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-        <thead>
-        <tr>
-          <th><%= I18n.t('name') %></th>
-          <th class="action"><%= I18n.t(:actions) %></th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <% @organization.budget_types.each do |bt| %>
-          <tr>
-            <td><%= bt.name %></td>
-            <td class="center">
-              <%= link_to '', edit_organization_budget_type_path(@organization, bt), :class => 'icon-pencil' %>
-              <% if can? :manage, BudgetType %>
-                <%= link_to '', organization_budget_type_path(@organization, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
     <% end %>
   </div>
 
