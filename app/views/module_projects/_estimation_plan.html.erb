@@ -118,6 +118,7 @@
             cxElement.style.top = mousePt.y + "px";
         }
 
+        //utiliser HTMLInfo pour afficher des élement en HTML
         var myContextMenu = $(go.HTMLInfo, {
             show: showContextMenu,
             mainElement: cxElement
@@ -216,7 +217,7 @@
                 linkFromPortIdProperty: "fromPort",
                 linkToPortIdProperty: "toPort",
                 nodeDataArray: [
-                    { key: "pf", loc: "100 0", text: "Point de Fonction", color: "#5472D3" },
+                    { key: "pf", loc: "100 0", text: "Point de Fonction <br>", color: "#5472D3" },
                     { key: "cocomo", loc: "100 170", text: "Cocomo", color: "#7C43BD" },
                     { key: "staffing", "loc":"100 340", text:"Staffing", color: "#439889" },
                     { key: "wbs", "loc":"100 510", text:"WBS", color: "#F9683A" },
