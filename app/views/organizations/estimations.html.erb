@@ -12,188 +12,34 @@
     </ul>
 
     <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+      <%= I18n.t(:label_filter_on_projects_version) %>
+      <%= select_tag 'filter_organization_projects_version',
+                     options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
+                                         [I18n.t(:label_filter_on_project_version_1),1],
+                                         [I18n.t(:label_filter_on_project_version_3),3],
+                                         [I18n.t(:label_filter_on_project_version_4),4]],
+                                        :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
+                     'data-organization_id' => @organization.id, include_blank: false %>
 
-<!--          <div style="text-align:right;">-->
-                <%# projects = @organization.projects %>
-<!--            <div class="pull-left">-->
-<!--              Nombre total de devis:-->
-                    <%#= projects.count %>
-<!--            </div>-->
-<!--          </div>-->
-<!--          <br/>-->
-
-<!--          <div class="row" >-->
-<!--              <div class="span3 offset1">-->
-                <%# prjs_estimation_status = projects.group(:estimation_status_id).count %>
-                <%#= pie_chart prjs_estimation_status.transform_keys {|estt_id| EstimationStatus.find(estt_id).name} %>
-<!--                  <div style = "text-align: center" />-->
-<!--                    <strong>Nombre de Devis par Estimation Status</strong>-->
-<!--                  </div>-->
-<!--              </div>-->
-
-<!--              <div class="span3">-->
-                <%# prjs_prj_area = projects.group(:project_area_id).count %>
-                <%# if prjs_prj_area.has_key?(nil) %>
-                  <%# val_nil = prjs_prj_area.fetch(nil) %>
-                  <%# prjs_prj_area.delete(nil) %>
-                  <%# prjs_prj_area.store("Null", val_nil) %>
-                  <%#= pie_chart prjs_prj_area.transform_keys {|prj_area_id| %>
-                    <%# if prj_area_id != "Null" %>
-                      <%# ProjectArea.find(prj_area_id).name %>
-                    <%# else prj_area_id = "Null" end } %>
-                <%# else %>
-                    <%#= pie_chart prjs_prj_area.transform_keys {|prj_area_id| ProjectArea.find(prj_area_id).name} %>
-                <%# end %>
-<!--                  <div style = "text-align: center" />-->
-<!--                    <strong>Nombre de Devis par Project Area</strong>-->
-<!--                  </div>-->
-<!--              </div>-->
-
-<!--              <div class="span3">-->
-                <%# prjs_acquisition = projects.group(:acquisition_category_id).count %>
-                <%# if prjs_acquisition.has_key?(nil) %>
-                  <%# val_nil = prjs_acquisition.fetch(nil) %>
-                  <%# prjs_acquisition.delete(nil) %>
-                  <%# prjs_acquisition.store("Null", val_nil) %>
-                  <%#= bar_chart prjs_acquisition.transform_keys {|acq_id| %>
-                    <%# if acq_id != "Null" %>
-                      <%# AcquisitionCategory.find(acq_id).name %>
-                    <%# else acq_id = "Null" end } %>
-                <%# else %>
-                  <%#= bar_chart prjs_acquisition.transform_keys {|acq_id| AcquisitionCategory.find(acq_id).name} , height: "50%"  %>
-                <%# end %>
-<!--                  <div style = "text-align: center" />-->
-<!--                    <strong>Nombre de Devis par Acquisition </strong>-->
-<!--                  </div>-->
-<!--              </div>-->
-<!--          </div>-->
-
-<!--          <br/>-->
-
-      <% total_costs = Hash.new {|h,k| h[k] = [] } %>
-
-      <% @organization.applications.each do |application| %>
-        <% app_cost = 0 %>
-        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts| %>
-          <% budgets = Hash.new {|h,k| h[k] = [] } %>
-
-          <% projects = Project.where(application_id: application.id ,
-                                      organization_id: @organization.id,
-                                      estimation_status_id: bts.estimation_status_id,
-                                      is_model: false) %>
-
-          <% app_projects = Project.where(application_id: application.id ,
-                                          organization_id: @organization.id,
-                                          is_model: false) %>
-
-
-          <% projects.each do |project| %>
-            <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
-              column = QueryColumn.new(field.name.to_sym,
-                                       sortable: "",
-                                       caption: "",
-                                       field_id: field.id,
-                                       organization_id: @current_organization.id) %>
-
-              <% value = column_content(@pfs, column, project, @fields_coefficients) %>
-              <% value = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-              <% budgets[bts.id] << value %>
-            <% end %>
-              <% total_costs[application.id] << budgets %>
-
-
-          <% app_projects.each do |app_project| %>
-
-            <% app_field = Field.where(organization_id: app_project.organization_id, name: "Coût (k€)").first
-               app_column = QueryColumn.new(app_field.name.to_sym,
-                                        sortable: "",
-                                        caption: "",
-                                        field_id: app_field.id,
-                                        organization_id: @current_organization.id) %>
-            <% app_cost += column_content(@pfs, app_column, app_project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-            <% app_cost.round(2) %>
-            <% @application_cost = app_cost %>
-          <% end %>
-        <% end %>
+      <% if can? :create_project_from_template, Project %>
+        <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
       <% end %>
 
-      <br>
-
-      <%#= "Cout total de l'application: " %>
-      <%#= @application_cost.round(2) %>
-
-      <% total_costs.each do |key,values| %>
-        <% cost_pie = Hash.new {|h,k| h[k] = []}  %>
-          <%= Application.find(key) %> :
-            <% values.each do |i| %>
-              <% unless i.empty? %>
-                <% budget_type = BudgetTypeStatus.find(i.keys[0]).budget_type.name %>
-                  <%#= "Cout des projets avec estimation status: " %>
-                  <% @sum = i[i.keys[0]].sum.round(2) %>
-                  <% cost_pie[budget_type] = @sum %>
-              <% end %>
-            <% end %>
-
-        <% @rest = (@application_cost - @sum).round(2) %>
-        <% cost_pie['Reste'] = @rest %>
-
-        <%= pie_chart cost_pie %>
-
+      <% if can? :create_project_from_scratch, Project %>
+        <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
       <% end %>
 
-      <%# total_costs.each do |key,values| %>
-        <%# cost_pie = Hash.new {|h,k| h[k] = []}  %>
-        <%#= Application.find(key) %> :
-          <%# values.each do |i| %>
-            <%# unless i.empty? %>
-              <%# budget_type = BudgetTypeStatus.find(i.keys[0]).budget_type.name %>
-                <%# i[i.keys[0]].each do |cost| %>
-                  <%#= cost %>
-                <%# end %>
-                <%# sum = i[i.keys[0]].sum.round(2) %>
-                <%#= rest = app_cost - sum %>
-                <%#= sum %>
-                <%# cost_pie[budget_type] = sum %>
+      <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+        <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+      <% end %>
 
-            <%# end %>
-          <%# end %>
-
-        <%# cost_pie['Reste'] = rest %>
-        <%#= pie_chart cost_pie %>
-
-      <%# end %>
-
-      <div>
-        <%= I18n.t(:label_filter_on_projects_version) %>
-        <%= select_tag 'filter_organization_projects_version',
-                       options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
-                                           [I18n.t(:label_filter_on_project_version_1),1],
-                                           [I18n.t(:label_filter_on_project_version_3),3],
-                                           [I18n.t(:label_filter_on_project_version_4),4]],
-                                          :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
-                       'data-organization_id' => @organization.id, include_blank: false %>
-
-        <% if can? :create_project_from_template, Project %>
-          <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-        <% end %>
-
-        <% if can? :create_project_from_scratch, Project %>
-          <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-        <% end %>
-
-        <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-          <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-        <% end %>
-
+      <div id="organization_projects">
+        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
       </div>
-        <div id="organization_projects">
-          <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-        </div>
-      </div>
+    </div>
 
   </div>
 
-  <%#= submit_tag "recherchez", class: "hide" %>
   <%= submit_tag "", class: "invisible_button" %>
 
 <% end %>
