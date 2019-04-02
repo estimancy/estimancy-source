@@ -1,0 +1,59 @@
+ <% @current_organization.applications.each do |application| %>
+
+      <%= Application.find(application.id).name %>
+      <% application_all_projects = Project.where(organization_id: @current_organization.id, application_id: application.id) %>
+      <% application_sum = 0 %>
+        <% application_all_projects.each do |p| %>
+          <% application_field = Field.where(organization_id: p.organization_id, name: "Coût (k€)").first
+             application_column = QueryColumn.new(application_field.name.to_sym,
+                                      sortable: "",
+                                      caption: "",
+                                      field_id: application_field.id,
+                                      organization_id: @current_organization.id) %>
+          <% cost = column_content(@pfs, application_column, p, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+          <% application_sum += cost %>
+        <% end %>
+
+
+        <% budget_types_pie = Hash.new {|h,k| h[k] = [] } %>
+        <% budget_types_calculated = 0 %>
+        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @current_organization.id).all.each do |bts| %>
+          <% projects = Project.where(application_id: application.id ,
+                                    organization_id: @current_organization.id,
+                                    estimation_status_id: bts.estimation_status_id,
+                                    is_model: false) %>
+          <% projects_sum = 0  %>
+          <% projects.each do |project| %>
+            <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
+               column = QueryColumn.new(field.name.to_sym,
+                                        sortable: "",
+                                        caption: "",
+                                        field_id: field.id,
+                                        organization_id: @current_organization.id) %>
+            <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+            <% projects_sum += value.round(2) %>
+            <% budget_types_pie[bts.budget_type.name] = projects_sum.round(2) %>
+          <% end %>
+      <% end %>
+
+      <% budget_types_pie.each_value do |btpval| %>
+        <% budget_types_calculated = budget_types_calculated + btpval %>
+      <% end %>
+
+      <strong><%= "Cout total des projets de l'application: " %></strong>
+      <%= application_sum %>
+
+      <br>
+
+      <strong><%= "Cout total des projets avec estimations: " %></strong>
+      <%= budget_types_calculated  %>
+
+      <br>
+
+      <strong><%= "Rest: " %></strong>
+      <%= reste = (application_sum - budget_types_calculated).round(2) %>
+      <% budget_types_pie['Reste'] = reste %>
+
+      <%= pie_chart budget_types_pie %>
+
+<% end %>

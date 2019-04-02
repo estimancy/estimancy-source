@@ -70,6 +70,9 @@
 
 <!--          <br/>-->
 
+
+
+
       <% total_costs = Hash.new {|h,k| h[k] = [] } %>
 
       <% @organization.applications.each do |application| %>
@@ -119,23 +122,25 @@
 
       <br>
 
-      <%#= "Cout total de l'application: " %>
-      <%#= @application_cost.round(2) %>
-
-      <% total_costs.each do |key,values| %>
+      <% total_costs.each do |key,values| %> <%# pour chaque application  %>
         <% cost_pie = Hash.new {|h,k| h[k] = []}  %>
-          <%= Application.find(key) %> :
-            <% values.each do |i| %>
+        <% @sum = 0 %>
+        <%= Application.find(key) %> :
+            <% values.each do |i| %> <%# i est un tableau %>
               <% unless i.empty? %>
                 <% budget_type = BudgetTypeStatus.find(i.keys[0]).budget_type.name %>
-                  <%#= "Cout des projets avec estimation status: " %>
-                  <% @sum = i[i.keys[0]].sum.round(2) %>
-                  <% cost_pie[budget_type] = @sum %>
+                <%# i[i.keys[0]] %>
+                <%# "Sum: " %>
+                <%# @sum += i[i.keys[0]].sum.round(2) %>
+                <% cost_pie[budget_type] = i[i.keys[0]].sum.round(2) %>
               <% end %>
             <% end %>
+        <%# "Application cost: " %>
+        <%# @application_cost %>
+        <%# "Rest: " %>
+        <%# @rest = (@application_cost - @sum).round(2) %>
 
-        <% @rest = (@application_cost - @sum).round(2) %>
-        <% cost_pie['Reste'] = @rest %>
+        <%= cost_pie['Reste'] = @rest %>
 
         <%= pie_chart cost_pie %>
 
