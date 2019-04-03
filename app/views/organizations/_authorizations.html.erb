@@ -1,3 +1,10 @@
+<div class="d-flex align-items-center mt-4">
+  <div style="flex: 1">
+    <h1>Authorization</h1>
+  </div>
+</div>
+
+
 <div class="tabs">
   <ul>
     <li><a href="#tabs-group"><%= I18n.t(:groups) %></a></li>
@@ -12,12 +19,12 @@
     <% if can? :show_groups, Group %>
         <div class="group_button">
           <% if can? :manage, Group  %>
-              <%= link_to I18n.t('create_button'), new_organization_group_path(@organization), :class => 'btn' %>
-              <a href="#myWBSModal" role="button" class="btn" title="Import groups from excel" data-toggle="modal">
+              <%= link_to I18n.t('create_button'), new_organization_group_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+              <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import groups from excel" data-toggle="modal">
                 <%= I18n.t(:import) %>
               </a>
           <% end %>
-          <%= link_to I18n.t('export'), organization_export_groups_path(@organization), :class => 'btn' %>
+          <%= link_to I18n.t('export'), organization_export_groups_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
         </div>
 
       <% if can? :manage, Group  %>
@@ -31,8 +38,8 @@
                 <%= file_field_tag :file %>
               </div>
               <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
               </div>
               <div class="loading span11 hide">
                 <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
@@ -53,7 +60,7 @@
 
       <% if can? :manage, ProjectSecurityLevel %>
         <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_organization_project_security_level_path(@organization), :class => 'btn' %>
+          <%= link_to I18n.t('create_button'), new_organization_project_security_level_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
         </div>
       <% end %>
 
@@ -156,8 +163,8 @@
         </table>
 
         <% if can? :manage_organization_permissions, Permission %>
-            <%= submit_tag I18n.t('apply'), name: "organization_permissions", :class => 'btn btn-primary' %>
-            <%= link_to I18n.t('back'), :back, :class => 'btn'%>
+            <%= submit_tag I18n.t('apply'), name: "organization_permissions", :class => 'btn btn-primary btn-estimancy' %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn btn-default btn-estimancy'%>
         <% end %>
 
       <% else %>
@@ -235,7 +242,7 @@
           </table>
 
           <% if can? :manage_global_permissions, Permission %>
-            <%= submit_tag I18n.t('apply'), name: "global_permissions", :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: "global_permissions", :class => 'btn btn-primary btn-estimancy' %>
             <%= link_to I18n.t('back'), :back, :class => 'btn'%>
           <% end %>
 
@@ -290,9 +297,9 @@
             <% end %>
           </table>
           <% if can? :manage_modules_permissions, Permission %>
-            <%= submit_tag I18n.t('apply'), name: "modules_permissions", :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: "modules_permissions", :class => 'btn btn-primary btn-estimancy' %>
           <% end %>
-          <%= submit_tag I18n.t('cancel'), name: "modules_permissions",  :class => 'btn' %>
+          <%= submit_tag I18n.t('cancel'), name: "modules_permissions",  :class => 'btn btn-primary btn-estimancy' %>
         <% else %>
           <div class="red_color">
             <%= I18n.t(:notice_cannot_view_modules_permissions) %>
@@ -353,8 +360,8 @@
         </table>
 
         <% if can? :manage_estimations_permissions, Permission %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary', :tab_name => 'tabs-estimation-permissions' %>
-          <%= link_to I18n.t('back'), :back, :class => 'btn'%>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy', :tab_name => 'tabs-estimation-permissions' %>
+          <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary btn-estimancy'%>
         <% end %>
       <% end %>
     <% else %>
