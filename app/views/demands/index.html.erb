@@ -1,59 +1,56 @@
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        Listes des demandes
-      </a>
-    </li>
-  </ul>
-
-  <div id="tabs-1">
-    <div class="group_button">
-      <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn" %>
-      <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn" %>
-      <%= link_to "Synthèse SLA", organization_demand_dashboard_path(@organization), class: "btn" %>
-    </div>
-
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-
-      <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Type de demande
-          </th>
-          <th>
-            Application
-          </th>
-          <th>
-            Statut
-          </th>
-          <th>
-            Besoin Métier
-          </th>
-          <th>
-            Date
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @demands.each do |demand| %>
-          <tr>
-            <td><%= link_to demand.name, edit_organization_demand_path(@organization, demand) %></td>
-            <td><%= demand.demand_type.nil? ? nil : demand.demand_type.name %></td>
-            <td><%= demand.application %></td>
-            <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
-            <td><%= demand.business_need %></td>
-            <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
-          </tr>
-        <% end %>
-      </tbody>
-
-      <%= render :partial => 'layouts/footer_table' %>
-    </table>
-
+<div class="d-flex align-items-center mt-4">
+  <div style="flex: 1">
+    <h1>
+      Liste des demandes
+    </h1>
   </div>
+  <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to "Synthèse SLA", organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
+</div>
+
+
+
+<table class="table table-list">
+
+  <thead>
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Type de demande
+      </th>
+      <th>
+        Application
+      </th>
+      <th>
+        Statut
+      </th>
+      <th>
+        Besoin Métier
+      </th>
+      <th>
+        Date
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @demands.each do |demand| %>
+      <tr>
+        <td><%= link_to demand.name, edit_organization_demand_path(@organization, demand) %></td>
+        <td><%= demand.demand_type.nil? ? nil : demand.demand_type.name %></td>
+        <td><%= demand.application %></td>
+        <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
+        <td><%= demand.business_need %></td>
+        <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+
+  <%= render :partial => 'layouts/footer_table' %>
+</table>
+
+</div>
 </div>

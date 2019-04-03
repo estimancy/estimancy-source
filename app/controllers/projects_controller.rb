@@ -3331,6 +3331,7 @@ public
   def advanced_search
     @adv_search_hash = {}
     @projects = @current_organization.projects
+    @organizations = Organization.all
 
     user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
     user_prjs = Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false)

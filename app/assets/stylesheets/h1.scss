@@ -1,0 +1,18 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+h1 {
+  font-family: "Roboto";
+  font-weight: bold;
+  font-size: 36px;
+  line-height: 45px;
+  color: $brand-first-color;
+}

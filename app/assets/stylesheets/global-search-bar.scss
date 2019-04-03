@@ -1,0 +1,78 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+
+.global-search-bar-prepend {
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+
+  span {
+    background-color: white;
+    border: 0;
+    i {
+      color: $brand-first-color;
+      font-size: 18px;
+    }
+  }
+}
+
+.global-search-bar-input {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 24px;
+  color: $grey-70;
+  padding-left: 0;
+  border-color: white;
+  padding-left: 50px;
+  border-radius: 3px !important;
+
+  &:hover {
+    border-color: $brand-second-color;
+  }
+
+  &:focus {
+    border-color: $brand-fifth-color;
+  }
+}
+
+.global-search-bar-append {
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+
+  a {
+    background-color: white;
+    color: $brand-first-color;
+    font-family: "Roboto";
+    font-size: 12px;
+    line-height: 15px;
+    border-left: 0;
+    border-color: white;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 50%;
+      background-color: $brand-second-color;
+    }
+  }
+}

@@ -34,12 +34,14 @@
    end
 
    #Libelle du TJM / taux moyen
-   tjm_taux_moyen = wbs_activity.average_rate_wording.blank? ? "Taux moyen" : wbs_activity.average_rate_wording
+   unless wbs_activity.nil?
+     tjm_taux_moyen = wbs_activity.average_rate_wording.blank? ? "Taux moyen" : wbs_activity.average_rate_wording
+   end
    tjm_global = nil
 
 %>
 
-<table class='table table-condensed table-bordered  table_effort_per_phase' style="margin-left:20px;">
+<table class='card-overview-phase-table w-100 mb-4'>
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
 
@@ -55,72 +57,74 @@
   </tr>
 
   <% number_precision = user_number_precision %>
-  <% project_wbs_activity_elements.each_with_index do |wbs_activity_elt, i| %>
-    <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
-    <% if mp_ratio_element %>
-      <%# module_project_ratio_elements.each do |mp_ratio_element| %>
-      <% completion_consistency = "" %>
-      <% title = "" %>
-      <tr>
-        <td>
-        <span class='tree_element_in_out' title='<%= title %>' style='margin-left:<%= mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>em;'>
-          <% if i == 0 %>
-            <b><%= mp_ratio_element.name_to_show %></b>
-          <% else %>
-            <%= mp_ratio_element.name_to_show %>
-          <% end %>
-        </span>
-        </td>
-
-        <!--  AFFICHAGE DU TJM -->
-        <% if view_widget.show_tjm %>
-            <% element_tjm = mp_ratio_element.tjm %>
-            <% if mp_ratio_element.is_root? %>
-                <% root_effort = mp_ratio_element.send("#{effort_attribute_alias}_most_likely") %>
-                <% root_cost = mp_ratio_element.send("#{cost_attribute_alias}_most_likely") %>
-                <% tjm_global = root_cost/root_effort %>
-                <td>
-                  <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} global : " %>
-                    <p id='<%= "tjm_global_#{view_widget.id}" %>'>
-                      <%= tjm_global.blank? ? "-" : convert_with_precision(tjm_global, 3, true) %>
-                    </p>
-                  </strong>
-                </td>
-            <% else %>
-                <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
-            <% end %>
-        <% end %>
-
-
-        <% levels.each do |level| %>
-            <td class=''>
-          <span class='pull-right'>
-
-            <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
-            <%=
-                if mp_ratio_element.selected
-                    if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])  # if estimation_value.pe_attribute.alias == "cost"
-                        level_value.nil? ? "-" : "#{convert_with_precision(level_value, number_precision, true)} #{wbs_unit}"
-                    else
-                      # for Effort attribute
-                      if view_widget.use_organization_effort_unit == true
-                        # use organization effort unit
-                        # "#{convert_with_precision(convert(level_value, project.organization), number_precision, true)} #{@wbs_unit}"
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
-                      else
-                        # use module instance effort unit
-                        level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), number_precision, true)} #{wbs_unit}"
-                      end
-                    end
-                else
-                    "-"
-                end
-            %>
-
-          </span>
-            </td>
-        <% end %>
+  <% unless project_wbs_activity_elements.nil? %>
+    <% project_wbs_activity_elements.each_with_index do |wbs_activity_elt, i| %>
+      <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
+      <% if mp_ratio_element %>
+        <%# module_project_ratio_elements.each do |mp_ratio_element| %>
+        <% completion_consistency = "" %>
+        <% title = "" %>
         <tr>
+          <td>
+          <span class='tree_element_in_out' title='<%= title %>' style='margin-left:<%= mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>em;'>
+            <% if i == 0 %>
+              <b><%= mp_ratio_element.name_to_show %></b>
+            <% else %>
+              <%= mp_ratio_element.name_to_show %>
+            <% end %>
+          </span>
+          </td>
+
+          <!--  AFFICHAGE DU TJM -->
+          <% if view_widget.show_tjm %>
+              <% element_tjm = mp_ratio_element.tjm %>
+              <% if mp_ratio_element.is_root? %>
+                  <% root_effort = mp_ratio_element.send("#{effort_attribute_alias}_most_likely") %>
+                  <% root_cost = mp_ratio_element.send("#{cost_attribute_alias}_most_likely") %>
+                  <% tjm_global = root_cost/root_effort %>
+                  <td>
+                    <strong style="vertical-align: middle"><%= "#{tjm_taux_moyen} global : " %>
+                      <p id='<%= "tjm_global_#{view_widget.id}" %>'>
+                        <%= tjm_global.blank? ? "-" : convert_with_precision(tjm_global, 3, true) %>
+                      </p>
+                    </strong>
+                  </td>
+              <% else %>
+                  <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
+              <% end %>
+          <% end %>
+
+
+          <% levels.each do |level| %>
+              <td class=''>
+            <span class='pull-right'>
+
+              <% level_value = mp_ratio_element.send("#{pe_attribute_alias}_#{level}") %>
+              <%=
+                  if mp_ratio_element.selected
+                      if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])  # if estimation_value.pe_attribute.alias == "cost"
+                          level_value.nil? ? "-" : "#{convert_with_precision(level_value, number_precision, true)} #{wbs_unit}"
+                      else
+                        # for Effort attribute
+                        if view_widget.use_organization_effort_unit == true
+                          # use organization effort unit
+                          # "#{convert_with_precision(convert(level_value, project.organization), number_precision, true)} #{@wbs_unit}"
+                          level_value.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(level_value, organization_effort_limit_coeff, organization_effort_unit), number_precision, true)} #{organization_effort_unit}"
+                        else
+                          # use module instance effort unit
+                          level_value.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(level_value, effort_unit_coefficient), number_precision, true)} #{wbs_unit}"
+                        end
+                      end
+                  else
+                      "-"
+                  end
+              %>
+
+            </span>
+              </td>
+          <% end %>
+          <tr>
+      <% end %>
     <% end %>
   <% end %>
 </table>

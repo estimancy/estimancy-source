@@ -99,6 +99,7 @@ module Projestimate
     config.assets.enabled = true
 
     config.assets.paths << Rails.root.join("app", "assets", "font")
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

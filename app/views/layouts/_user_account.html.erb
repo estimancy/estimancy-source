@@ -1,82 +1,10 @@
 <ul class="nav">
 
-    <% if @current_organization.allow_demand == true %>
-    <li class="dropdown">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t(:config_and_setting)%>">
-        <i class="fa fa-list-ul fa-lg pull-left"></i></b>
-      </a>
-        <ul class="dropdown-menu">
-          <li class="dropdown">
-            <a href="<%= main_app.organization_demands_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-              <%= I18n.t(:demands_list) %>
-            </a>
-          </li>
-          <li class="dropdown">
-            <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %>">
-              <%= I18n.t(:liste_des_estimations) %>
-            </a>
-          </li>
-        </ul>
-    </li>
-    <% else %>
-    <li class="navbar-item ">
-      <a href="<%= main_app.organization_estimations_path(@current_organization) %>" title="<%= I18n.t(:liste_des_estimations) %> ">
-        <i class="fa fa-list-ul fa-lg pull-left" ></i>
-      </a>
-    </li>
-    <% end %>
-
-
-  <li class="divider-vertical"></li>
-
-  <li class="dropdown">
-    <% begin %>
-      <% if @project %>
-        <a href="<%= main_app.dashboard_path(@project, organization_id: @current_organization.id, from_current_dashboard: true) %>" title="<%= I18n.t(:Current_estimate) %>">
-          <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
-        </a>
-      <% else %>
-        <a href="<%= main_app.organization_estimations_path(@current_organization) %>">
-          <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
-        </a>
-      <% end %>
-    <% rescue %>
-      <a href="<%= main_app.organization_estimations_path(@current_organization) %>">
-        <i class="fa fa-calculator fa-lg pull-left"></i>&nbsp;</b>
-      </a>
-    <% end %>
-  </li>
-
-  <li class="dropdown">
-    <a href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>">
-      <i class="fa fa-print fa-lg pull-left"></i>&nbsp;
-    </a>
-  </li>
-
-  <li class="divider-vertical"></li>
-
   <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%=I18n.t(:users_env)%>">
       <i class="fa fa-user fa-lg pull-left" style="margin-top: 4px; color: black;"></i>&nbsp;</b>
     </a>
     <ul class="dropdown-menu">
-      <li>
-        <a href="<%= main_app.edit_organization_user_path(@current_organization, current_user) %>" title="<%= I18n.t 'edit' %>">
-          <%= current_user %>
-        </a>
-      </li>
-
-      <li class="dropdown">
-        <a href="<%= main_app.organization_authorization_path(@current_organization) %>"> <%= I18n.t(:permission) %> </a>
-      </li>
-
-      <li class="dropdown">
-        <a href="<%= main_app.organization_users_path(@current_organization) %>"> <%= I18n.t(:users) %> </a>
-      </li>
-
-      <li class="dropdown">
-        <a href="/organizationals_params"><%= I18n.t(:Organisation_change) %> </a>
-      </li>
     </ul>
   </li>
 
@@ -152,7 +80,7 @@
           <i class="fa fa-user-plus fa-lg pull-left"></i>
         </a>
         <ul class="dropdown-menu">
-          <li class="dropdown"><a href="<%= main_app.organizationals_params_path %> ">
+          <li class="dropdown"><a href=" ">
             <%= I18n.t(:organizations) %></a>
           </li>
 
@@ -285,37 +213,3 @@
 </ul>
 
 
-<div id="FeedbackModal" style="width: 600px;" class="modal hide fade" tabindex="-1" role="dialog" >
-
-  <div class="modal-header modal-drag">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-    <h3 id="myModalLabel"><%= I18n.t(:send_feedback) %> &nbsp; - &nbsp;<%= I18n.t(:notice_send_feedback) %></h3>
-  </div>
-
-  <div class="modal-body" >
-    <div id="error_send_feedback" class="alert alert-error hide" style="margin-bottom: 15px; ">
-      <%= I18n.t('error_send_feedback_empty') %>
-    </div>
-
-    <%= simple_form_for(:send_feedback, {:url => main_app.send_feedback_path, :method => 'post'}) do |f| %>
-        <div>
-          <%= f.input :user_name, :label => I18n.t('user'), :input_html => {:class => 'input-xxlarge', :value => current_user.nil? ? '' : (current_user.first_name + ' ' + current_user.last_name + ' (' + current_user.email+ ' )') } %>
-          <%= f.input :type, :label => I18n.t('label_feedback_type'), :input_html => {:class => 'input-large'}, :collection => (['Problem', 'Suggestion', 'Other']) %>
-          <%= f.input :description, :label => I18n.t('description'), :as => :text, :input_html => {:class => 'input-xxlarge', :rows => 8} %>
-        </div>
-        <div class="modal-footer-left">
-          <%= f.submit I18n.t('send_request'), :class => 'btn' %>
-          <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancel"><%= I18n.t(:cancel) %></button>
-        </div>
-    <% end %>
-  </div>
-
-</div>
-
-<script>
-    <% if allow_feedback? %>
-    $(".btn-primary").show();
-    <% else %>
-    $(".btn-primary").hide();
-    <% end %>
-</script>

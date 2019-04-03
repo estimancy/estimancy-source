@@ -1,0 +1,43 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.global-nav {
+  background: #FFFFFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  justify-content: center;
+  align-items: flex-end;
+  height: 50px;
+
+  .nav-item {
+    width: 180px;
+    margin: 0 1rem;
+    flex: none;
+  }
+
+  .nav-link {
+    font-family: "Roboto";
+    font-weight: bold;
+    font-size: 14px;
+    line-height: normal;
+    text-align: center;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $grey-light;
+    background-color: transparent;
+    border-radius: 0;
+
+    &.active {
+      color: $brand-fourth-color;
+      background-color: transparent;
+      border-bottom: 4px solid $brand-third-color;
+    }
+  }
+}

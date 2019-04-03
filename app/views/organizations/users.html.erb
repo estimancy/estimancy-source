@@ -1,3 +1,14 @@
+<div class="d-flex align-items-center mt-4">
+  <div style="flex: 1">
+    <h1>
+      Liste des demandes
+    </h1>
+  </div>
+  <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to "Synthèse SLA", organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
+</div>
+
 <div class="tabs">
   <ul>
     <li><a href="#tabs-1"><%= I18n.t(:users) %> </a></li>

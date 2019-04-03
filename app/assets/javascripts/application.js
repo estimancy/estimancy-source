@@ -4,15 +4,7 @@
 // It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
 // the compiled file.
 //
-//= require jquery
-//= require jquery.remotipart
-//= require jquery_ujs
-//= require jquery-ui
-//= require jit
-//= require highcharts
-//= require highcharts/highcharts-more
 //= require_self
 //= require_tree .
-//= require cookies_eu
-//= require Chart.bundle
-//= require chartkick
+//= require projestimate_script
+//= require projects

@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # gem 'rails', '3.2.22'
 gem 'rails', '~> 4.2.11'
 
-gem 'jquery-rails', '~> 2.0.2'
+# gem 'jquery-rails'
 gem 'i18n'
 gem 'builder'
 gem 'cookies_eu'
@@ -171,10 +171,12 @@ gem 'delocalize'
 group :assets do
   gem 'coffee-rails'
   gem 'uglifier', '>= 1.0.3'
-  gem 'jquery-datatables-rails'
-  gem 'jquery-ui-rails', '5.0.5'
+  # gem 'jquery-datatables-rails'
+  # gem 'jquery-ui-rails', '5.0.5'
   gem 'sass'
 end
+
+gem 'sass-rails'
 
 group :development do
   #For UML classes diagram generator (!looks not easy to turn it in order on windows)

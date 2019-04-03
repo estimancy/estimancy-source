@@ -117,7 +117,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)} &and;"), sort_path(f: column.name, s: "asc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "asc", filter_version: filter_version), remote: true)
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -125,7 +125,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)} &or;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version), remote: true)
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -133,31 +133,31 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)} &or;"), sort_path(f: column.name, s: "desc", filter_version: filter_version), style: "font-weight: bold;", remote: true)
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version), remote: true)
 
       end
 
     else
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
-      lk = link_to(raw("#{I18n.t(column.caption)} &and;&or;"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), style: "font-weight: normal;", remote: true)
+      lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version), remote: true)
     end
 
 
     case column.name
       when :title
-        content_tag('th class="center"', lk)
+        content_tag("th class='text-left'", lk)
       when :description
-        content_tag('th class="center"', I18n.t(column.caption))
+        content_tag("th class='text-left'", I18n.t(column.caption))
       when :version_number
-        content_tag('th class="center"', lk)
+        content_tag("th class='text-left'", lk)
       when :status_name
-        content_tag('th id="toto" style="width: 50px"', lk)
+        content_tag("th class='text-center'", lk)
       else
         if column.field_id
-          content_tag('th class="project_field_text_overflow"', column.caption)
+          content_tag("th class='text-left'", column.caption)
         else
-          content_tag('th', lk)
+          content_tag("th class='text-left'", lk)
         end
     end
   end
@@ -260,28 +260,28 @@ module OrganizationsHelper
   def column_value(column, project, value)
     case column.name
       when :urgent_project
-        content_tag('td', project.urgent_project)
+        content_tag("td class='text-left'", project.urgent_project)
       when :application
         if value.blank?
-          content_tag('td', project.application_name)
+          content_tag("td class='text-left'", project.application_name)
         else
           if project.application.nil?
-            content_tag('td', '')
+            content_tag("td class='text-left'", '')
           else
-            content_tag('td', project.application.name)
+            content_tag("td class='text-left'", project.application.name)
           end
         end
       when :title
-        content_tag('td', can_show_estimation?(project) ? link_to(value, dashboard_path(project), :class => 'button_attribute_tooltip pull-left') : value)
+        content_tag('td', can_show_estimation?(project) ? link_to(value, dashboard_path(project), :class => 'estimation-table-name-cell text-left') : value)
       when :original_model
         begin
           if project.original_model
             content_tag('td', can_show_estimation?(project.original_model) ? link_to(value, dashboard_path(project.original_model), :class => 'button_attribute_tooltip pull-left') : value)
           else
-            content_tag('td', value)
+            content_tag("td class='text-left'", value)
           end
         rescue
-          content_tag('td', '-')
+          content_tag("td class='text-left'", '-')
         end
       when :version_number
         content_tag("td class='center'", value)
@@ -301,7 +301,7 @@ module OrganizationsHelper
         content_tag("td", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
-            content_tag("td class='center'") do
+            content_tag("td class='text-left'") do
             content_tag(:span, link_to(project.status_name, main_app.add_comment_on_status_change_path(:project_id => project.id), style: "color: #FFFFFF;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true),
                         class: "badge", style: "background-color: #{project.status_background_color}").to_s.html_safe
           end

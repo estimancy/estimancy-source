@@ -2064,12 +2064,13 @@ class OrganizationsController < ApplicationController
     @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
     @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
 
-    @search_column = session[:search_column]
-    @search_value = session[:search_value]
+    # @search_column = session[:search_column]
+    # @search_value = session[:search_value]
     #@search_hash =  {} #session[:search_hash] || {}
-    @search_hash = (params['search'].blank? ? session[:search_hash] : params['search'])
-    @search_hash ||=  {}
-    @search_string = ""
+    # @search_hash = (params['search'].blank? ? session[:search_hash] : params['search'])
+    # @search_hash ||=  {}
+    @search_hash = nil
+    # @search_string = ""
     final_results = []
 
     # Pour garder le tri même lors du raffraichissement de la page
@@ -2077,9 +2078,8 @@ class OrganizationsController < ApplicationController
     # statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
     # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
 
-    projects = @organization.projects.where(:is_model => [nil, false])
-
-    organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
+    @all_projects = @organization.projects.where(:is_model => [nil, false])
+    organization_projects = get_sorted_estimations(@organization.id, @all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
     organization_projects.each do |p|

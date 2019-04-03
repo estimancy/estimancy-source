@@ -256,10 +256,12 @@ class ModuleProject < ActiveRecord::Base
     end
 
     if selected_ratio.nil?
-      selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
-      unless selected_ratio.nil?
-        module_project.wbs_activity_ratio_id = selected_ratio.id
-        module_project.save
+      unless module_project.wbs_activity.nil?
+        selected_ratio = module_project.wbs_activity.wbs_activity_ratios.first
+        unless selected_ratio.nil?
+          module_project.wbs_activity_ratio_id = selected_ratio.id
+          module_project.save
+        end
       end
     end
 

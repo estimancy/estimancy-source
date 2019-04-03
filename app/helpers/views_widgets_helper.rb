@@ -484,6 +484,22 @@ module ViewsWidgetsHelper
     widget_data
   end
 
+  def new_get_view_widget_data(module_project_id, view_widget_id)
+    view_widget = ViewsWidget.find(view_widget_id)
+    component = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
+
+    ev = view_widget.estimation_value
+    unless ev.nil?
+      data = ev[:string_data_probabale]
+    end
+
+    unless data.nil?
+      result = data[component.id]
+    end
+
+    return result
+  end
+
 
   # Get the view_widget data for each view/widget/module_project
   def get_view_widget_data(module_project_id, view_widget_id)

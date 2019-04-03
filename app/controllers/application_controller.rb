@@ -90,6 +90,17 @@ class ApplicationController < ActionController::Base
   before_filter :set_current_organization
   before_filter :update_activity_time
   before_filter :initialization_module
+  before_filter :get_organizations
+
+  def get_organizations
+    if current_user.super_admin?
+      @organizations = Organization.all
+    elsif can?(:manage, :all)
+      @organizations = Organization.all.reject{|org| org.is_image_organization}
+    else
+      @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
+    end
+  end
 
   # skip_before_filter :set_paper_trail_whodunnit
   # before_filter :set_paper_trail_whodunnit

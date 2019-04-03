@@ -1,0 +1,105 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.btn-estimancy {
+  margin-left: 5px;
+}
+
+.btn {
+  font-family: "Roboto";
+  font-size: 14px;
+  line-height: normal;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: white;
+  padding: 0.65rem 1.2rem;
+  border: 0;
+
+  &:focus, &:not(:disabled):not(.disabled):active {
+    border: 0;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.btn-primary {
+  background-color: $brand-third-color;
+
+  &:hover {
+    background-color: #006B98;
+    border: 0;
+  }
+
+  &:focus, &:not(:disabled):not(.disabled):active {
+    background-color: #00406A;
+  }
+
+  &:disabled, &.disabled {
+    background-color: #00B6ED;
+    opacity: 0.35;
+  }
+}
+
+.btn-secondary {
+  background-color: white;
+  color: $brand-third-color;
+  border: 1px solid $brand-third-color;
+
+  &:hover {
+    background-color: white;
+    color: $brand-third-color;
+    border-color: $brand-third-color;
+  }
+
+  &:focus, &:not(:disabled):not(.disabled):active {
+    background-color: $brand-third-color;
+    color: white;
+    border: 1px solid white;
+  }
+
+  &:disabled, &.disabled {
+    background-color: white;
+    color: #00B6ED;
+    opacity: 0.35;
+  }
+}
+
+// Boutons statut
+.btn-status {
+  width: 90px;
+  height: 30px;
+  font-size: 13px;
+  padding: 0;
+  text-align: center;
+}
+
+//.btn-encours {
+//  background-color: $status-encours-color;
+//}
+//.btn-relecture {
+//  background-color: $status-relecture-color;
+//}
+//.btn-controle {
+//  background-color: $status-controle-color;
+//}
+//.btn-arevoir {
+//  background-color: $status-arevoir-color;
+//}
+//.btn-accepte {
+//  background-color: $status-accepte-color;
+//}
+//.btn-rejet {
+//  background-color: $status-rejet-color;
+//}
+//.btn-brouillon {
+//  background-color: $status-brouillon-color;
+//}

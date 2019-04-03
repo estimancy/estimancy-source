@@ -1,45 +1,264 @@
-<%= form_tag advanced_search_path, method: "GET" do %>
-  <%= search_field_tag :advanced_search, '', :placeholder => "Recherche avancée", :class => 'search-input span5' %>
-  <%= submit_tag 'Submit', class: "btn-primary" %>
-<% end %>
+<% selected_inline_columns = update_selected_inline_columns(Project) %>
 
-<br/>
+<div class="d-flex align-items-center mt-4">
+  <div style="flex: 1">
+    <h1>Liste des estimations</h1>    </div>
+  <button type="button" class="btn btn-primary">Créer une estimation</button>
+  <div style="flex: 1"></div>
+  <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+    <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+  <% end %>
+</div>
 
-<%= form_tag search_path, method: "GET", remote: true do %>
-  <div class="tabs">
-    <ul>
-      <li><a href="#tabs-group"><%= I18n.t(:estimation_setting) %></a></li>
-    </ul>
+<p><span class="font-weight-bold">Accès rapide</span> aux dernières estimations consultées</p>
 
-    <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-      <%= I18n.t(:label_filter_on_projects_version) %>
-      <%= select_tag 'filter_organization_projects_version',
+<div class="mb-5">
+  <div class="card-list">
+    <div class="card w-25">
+      <a href="#">
+        <div class="card-body">
+          <h5 class="card-title">EST. 00551</h5>
+          <h6 class="card-status card-status--encours mb-2 ">En cours</h6>
+          <div class="d-flex"><span class="card-date mb-2 ">21/03/2019</span><span class="card-version mb-2 ">v.3.0</span></div>
+          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
+          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="card w-25">
+      <a href="#">
+        <div class="card-body">
+          <h5 class="card-title">EST. 00551</h5>
+          <h6 class="card-status card-status--relecture mb-2 ">Relecture</h6>
+          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
+          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
+          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="card w-25">
+      <a href="#">
+        <div class="card-body">
+          <h5 class="card-title">EST. 00551</h5>
+          <h6 class="card-status card-status--controle mb-2 ">Contrôle</h6>
+          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
+          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
+          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="card w-25">
+      <a href="#">
+        <div class="card-body">
+          <h5 class="card-title">EST. 00551</h5>
+          <h6 class="card-status card-status--arevoir mb-2 ">A revoir</h6>
+          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
+          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
+          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="mb-5">
+  <div class="estimation-list">
+    <div class="estimation-list-filter">
+      <span><%= @all_projects.count %> Eléments</span>
+      <span>
+        <div class="dropdown">
+          <a class="dropdown-toggle estimation-list-sort" href="#" id="sortDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Du plus récent au moins récent
+          </a>
+          <div class="dropdown-menu sort-list" aria-labelledby="sortDropdown">
+            <a class="dropdown-item sort-item" href="#">Du plus récent au moins récent</a>
+            <a class="dropdown-item sort-item" href="#">Du moins récent au plus récent</a>
+          </div>
+        </div>
+        <%# select_tag 'filter_organization_projects_version',
                      options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
                                          [I18n.t(:label_filter_on_project_version_1),1],
                                          [I18n.t(:label_filter_on_project_version_3),3],
                                          [I18n.t(:label_filter_on_project_version_4),4]],
                                         :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
                      'data-organization_id' => @organization.id, include_blank: false %>
-
-      <% if can? :create_project_from_template, Project %>
-        <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-      <% end %>
-
-      <% if can? :create_project_from_scratch, Project %>
-        <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-      <% end %>
-
-      <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-        <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-      <% end %>
-
-      <div id="organization_projects">
-        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
-      </div>
+      </span>
+      <span>
+        <a href="#">Afficher les archives</a>
+      </span>
     </div>
+    <table class="estimation-table" style="width:100%">
+      <thead>
+        <tr>
+          <th>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="selectAll">
+              <label class="custom-control-label" for="selectAll"></label>
+            </div>
+          </th>
 
+          <% selected_inline_columns = update_selected_inline_columns(Project) %>
+          <% selected_inline_columns.each do |column| %>
+            <%= column_header(column) %>
+          <% end %>
+
+        </tr>
+      </thead>
+      <tbody>
+        <% @projects.each_with_index do |project, index| %>
+          <tr>
+
+            <td>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="estimationCheck<%= index %>">
+                <label class="custom-control-label" for="estimationCheck1"></label>
+              </div>
+            </td>
+
+            <% selected_inline_columns.each do |column| %>
+              <%= column_content(@pfs, column, project, @fields_coefficients) %>
+            <% end %>
+
+            <% @project_module_projects = project.module_projects %>
+
+            <td class="estimation-table-overview-cell">
+              <div class="card card-overview">
+                <div class="card-body">
+                  <a href="#" class="close-button"><i class="material-icons">close</i></a>
+                  <div class="d-flex justify-content-between">
+                    <h5 class="card-overview-title">
+                      <%= project.title %>
+                    </h5>
+                    <button onclick="window.location.href='<%= dashboard_path(project) %>'" type="button" class="btn btn-secondary">Voir le détail</button></div>
+                  <h6 class="card-overview-author"><%= project.creator %></h6>
+                  <p class="card-overview-text mb-3"><%= project.description %></p>
+
+                  <div class="row card-overview-infos mb-3">
+
+                    <% @project_module_projects.each do |module_project| %>
+                      <%= module_project_view = module_project.view %>
+                      <% unless module_project_view.nil? %>
+                        <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+                        <% module_project_view_widgets.each do |view_widget| %>
+                          <% if view_widget.is_label_widget? %>
+                            <%# view_widget_data = get_label_widget_data(view_widget.id) %>
+                          <% elsif view_widget.is_kpi_widget? %>
+                            <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
+                            <div class="col">
+                              <%= view_widget %>
+                              <div class="card-overview-info-number">
+                                <span>
+                                  <%= view_widget_data %>
+                                </span>
+                              </div>
+                            </div>
+                          <% else %>
+                            <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                              <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                              <% if view_widget.widget_type == "text" %>
+                                <div class="col">
+                                  <div class="card card-man-day">
+                                    <div class="card-body">
+                                      <span><%= view_widget %></span>
+                                      <div class="quantity"><img src=""><span><%= view_widget_data %></span> unit</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              <% end %>
+                            <% else %>
+                              <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </div>
+
+
+                  <% @project_module_projects.each do |module_project| %>
+                    <% unless module_project.view.nil? %>
+                      <% module_project_view_widgets = module_project.view.views_widgets.order('position').all %>
+                      <% module_project_view_widgets.each do |view_widget| %>
+                        <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                          <% case view_widget.widget_type %>
+                            <% when "table_effort_and_cost_per_phase", "table_effort_and_cost_per_phase_without_zero" %>
+                            <%
+                              project_organization_profiles = []
+                              estimation_value = view_widget.estimation_value
+                              if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
+                                wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
+                              else
+                                wbs_activity = module_project.wbs_activity
+                                unless wbs_activity.nil?
+                                  wbs_unit = wbs_activity.effort_unit
+                                end
+                              end
+                              wbs_activity_ratio_profiles = []
+                              ratio_reference = module_project.get_wbs_activity_ratio(current_component.id)
+
+                              unless ratio_reference.nil?
+                                ratio_reference.wbs_activity_ratio_elements.each do |ratio_elt|
+                                  ratio_profiles_with_nil_ratio << ratio_elt.wbs_activity_ratio_profiles
+                                end
+                                # Reject all RatioProfile with nil ratio_value
+                                wbs_activity_ratio_profiles = ratio_profiles_with_nil_ratio.flatten.reject{|i| i.ratio_value.nil? }
+                              end
+
+                              wbs_activity_ratio_profiles.each do |ratio_profile|
+                                project_organization_profiles << ratio_profile.organization_profile
+                              end
+
+                              unless project_organization_profiles.nil?
+                                project_organization_profiles = project_organization_profiles.uniq
+                              end
+
+                              unless wbs_activity.nil?
+                                wbs_activity_elements = WbsActivityElement.sort_by_ancestry(wbs_activity.wbs_activity_elements.arrange(:order => :position))
+                                wbs_activity_element_root = wbs_activity_elements.first.root
+                              end
+                              probable_est_value = estimation_value.send("string_data_probable")
+                              pbs_probable_est_value = probable_est_value[current_component.id]
+                              pe_attribute_alias = estimation_value.pe_attribute.alias
+                              if pe_attribute_alias.in?(["cost", "effort"])
+                                pe_attribute_alias = "retained_#{pe_attribute_alias}"
+                              end
+                              unless ratio_reference.nil?
+                                module_project_ratio_elements = module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id,
+                                                                                                                   pbs_project_element_id: current_component.id,
+                                                                                                                   selected: true)
+                              end
+
+                            %>
+                            <%= raw(render :partial => 'views_widgets/effort_by_phases_with_mp_ratio_elements',
+                                           :locals => { project_wbs_activity_elements: wbs_activity_elements,
+                                                        estimation_value: estimation_value,
+                                                        pe_attribute: estimation_value.pe_attribute,
+                                                        module_project: module_project,
+                                                        project_organization_profiles: project_organization_profiles,
+                                                        estimation_pbs_probable_results: pbs_probable_est_value,
+                                                        ratio_reference: ratio_reference,
+                                                        pe_attribute_alias: pe_attribute_alias,
+                                                        wbs_unit: wbs_unit,
+                                                        module_project_ratio_elements: module_project_ratio_elements,
+                                                        wbs_activity_element_root: wbs_activity_element_root,
+                                                        view_widget_type: view_widget.widget_type,
+                                                        view_widget_id: view_widget.id
+                                           } ) %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <%= submit_tag "", class: "invisible_button" %>
 
-<% end %>
+
+

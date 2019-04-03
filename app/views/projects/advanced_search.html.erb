@@ -1,23 +1,21 @@
-<div class="text-center">
-  <% unless @adv_search_hash.length == 0 %>
-    <h1> Projets </h1>
-      <table class="table table-bordered table-condensed">
-        <% @adv_search_hash.each do |key, valeur| %>
-            <tr>
-              <th scope="row"><strong><%= key %></strong></th>
-            </tr>
-              <% unless valeur.blank? %>
-                  <% valeur.each do |val|  %>
-                    <tr>
-                      <td><%= val %></td>
-                    </tr>
-                  <% end %>
-              <% else %>
-                  <tr><td> --- </td></tr>
+<% unless @adv_search_hash.length == 0 %>
+  <h1> Projets </h1>
+  <table class="table table-list">
+    <% @adv_search_hash.each do |key, valeur| %>
+        <tr class="">
+          <th><strong><%= key %></strong></th>
+        </tr>
+          <% unless valeur.blank? %>
+              <% valeur.each do |val|  %>
+                <tr>
+                  <td><%= val %></td>
+                </tr>
               <% end %>
-            <% end %>
-      </table>
-  <% else %>
-    <%= "Aucun résultat correspond à la recherche" %>
-  <% end %>
-</div>
+          <% else %>
+              <tr><td> --- </td></tr>
+          <% end %>
+        <% end %>
+  </table>
+<% else %>
+  <%= "Aucun résultat correspond à la recherche" %>
+<% end %>
