@@ -1140,6 +1140,7 @@ module ProjectsHelper
 
   def display_value(value, est_val, mp_id, use_organization_effort_unit=false)
     module_project = ModuleProject.find(mp_id)
+    project = module_project.project
     est_val_pe_attribute = est_val.pe_attribute
     precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
 
@@ -1184,14 +1185,14 @@ module ProjectsHelper
           # By default use module instance effort unit
           if use_organization_effort_unit == true
             # Use orgnization effort unit
-            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, project.organization)
             "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
           else
             # Use orgnization effort unit
             "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
           end
         else
-          "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
+          "#{convert_with_precision(convert(value, project.organization), precision, true)} #{convert_label(value, project.organization)}"
         end
 
       elsif module_project.pemodule.alias == "staffing"
@@ -1199,14 +1200,14 @@ module ProjectsHelper
         effort_standard_unit_coefficient = staffing_model.standard_unit_coefficient.nil? ? 1 : staffing_model.standard_unit_coefficient.to_f
         effort_unit = staffing_model.effort_unit
         if use_organization_effort_unit == true
-          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, project.organization)
           "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
         else
           "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
         end
 
       else
-        "#{convert_with_precision(convert(value, @project.organization), precision, true)} #{convert_label(value, @project.organization)}"
+        "#{convert_with_precision(convert(value, project.organization), precision, true)} #{convert_label(value, project.organization)}"
       end
 
     elsif est_val_pe_attribute.alias == "ratio"
@@ -1230,23 +1231,10 @@ module ProjectsHelper
         when 'date'
           display_date(value)
         when 'float'
-          "#{ convert_with_precision(convert(value, @project.organization), precision, true) } #{convert_label(value, @project.organization)}"
+          "#{ convert_with_precision(convert(value, project.organization), precision, true) } #{convert_label(value, project.organization)}"
         when 'integer'
-          "#{convert(value, @project.organization).round(precision)} #{convert_label(value, @project.organization)}"
+          "#{convert(value, project.organization).round(precision)} #{convert_label(value, project.organization)}"
         else
-
-          # guw_model = module_project.guw_model
-          # conv = guw_model.hour_coefficient_conversion
-          #
-          # begin
-          #   "#{value.to_f.round(user_number_precision) / (conv.nil? ? 1 : conv.to_f)} #{guw_model.effort_unit}"
-          # rescue
-          #   if module_project.pemodule.alias == "guw"
-          #     "#{value.to_f / conv} #{guw_model.effort_unit}"
-          #   else
-          #     value.to_f
-          #   end
-          # end
       end
     end
   end

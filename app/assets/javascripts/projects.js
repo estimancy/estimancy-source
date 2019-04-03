@@ -1,4 +1,26 @@
 jQuery(function() {
+
+    $('#query-columns').closest('form').submit(function(){
+        $('#selected_columns option').prop('selected', true);
+
+        //get the selected value in Array
+        var selected_columns = new Array();
+
+        $('#selected_columns option').each(function(){
+            selected_columns.push(this.value);
+        });
+
+        //update the data in database
+        $.ajax({
+            url:"/update_available_inline_columns",
+            method: 'GET',
+            data: {
+                query_classname: "Project",
+                selected_inline_columns: selected_columns
+            }
+        })
+    });
+
     $("#select_pbs_project_elements").on('change', function() {
         return $.ajax({
             url: "/select_pbs_project_elements",

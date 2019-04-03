@@ -87,7 +87,7 @@
         <a href="#">Afficher les archives</a>
       </span>
     </div>
-    <table class="estimation-table" style="width:100%">
+    <table class="estimation-table">
       <thead>
         <tr>
           <th>
@@ -96,18 +96,16 @@
               <label class="custom-control-label" for="selectAll"></label>
             </div>
           </th>
-
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
           <% selected_inline_columns.each do |column| %>
             <%= column_header(column) %>
           <% end %>
-
         </tr>
       </thead>
+
       <tbody>
         <% @projects.each_with_index do |project, index| %>
           <tr>
-
             <td>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="estimationCheck<%= index %>">
@@ -130,49 +128,70 @@
                       <%= project.title %>
                     </h5>
                     <button onclick="window.location.href='<%= dashboard_path(project) %>'" type="button" class="btn btn-secondary">Voir le détail</button></div>
-                  <h6 class="card-overview-author"><%= project.creator %></h6>
-                  <p class="card-overview-text mb-3"><%= project.description %></p>
+                  <h6 class="card-overview-author">
+                    <%= project.creator %>
+                  </h6>
+                  <p class="card-overview-text mb-3">
+                    <%= project.description %>
+                  </p>
 
-                  <div class="row card-overview-infos mb-3">
-
-                    <% @project_module_projects.each do |module_project| %>
-                      <%= module_project_view = module_project.view %>
-                      <% unless module_project_view.nil? %>
-                        <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
-                        <% module_project_view_widgets.each do |view_widget| %>
-                          <% if view_widget.is_label_widget? %>
-                            <%# view_widget_data = get_label_widget_data(view_widget.id) %>
-                          <% elsif view_widget.is_kpi_widget? %>
-                            <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
-                            <div class="col">
-                              <%= view_widget %>
-                              <div class="card-overview-info-number">
-                                <span>
-                                  <%= view_widget_data %>
-                                </span>
-                              </div>
-                            </div>
-                          <% else %>
-                            <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                              <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
-                              <% if view_widget.widget_type == "text" %>
-                                <div class="col">
-                                  <div class="card card-man-day">
-                                    <div class="card-body">
-                                      <span><%= view_widget %></span>
-                                      <div class="quantity"><img src=""><span><%= view_widget_data %></span> unit</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              <% end %>
-                            <% else %>
-                              <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                  <% @widget_hash = {} %>
+                  <% @project_module_projects.each do |module_project| %>
+                    <% module_project_view = module_project.view %>
+                    <% unless module_project_view.nil? %>
+                      <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+                      <% module_project_view_widgets.each do |view_widget| %>
+                        <% if view_widget.is_label_widget? %>
+                          <% view_widget_data = get_label_widget_data(view_widget.id) %>
+                          <% @widget_hash[view_widget.name] = view_widget_data[:string_data_probable] %>
+                        <% elsif view_widget.is_kpi_widget? %>
+                          <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
+                          <% @widget_hash[view_widget.name] = view_widget_data %>
+                        <% else %>
+                          <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                            <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                            <% if view_widget.widget_type == "text" %>
+                              <% @widget_hash[view_widget.name] = view_widget_data %>
                             <% end %>
+                          <% else %>
+                            <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                            <% @widget_hash[view_widget.name] = view_widget_data %>
                           <% end %>
                         <% end %>
                       <% end %>
                     <% end %>
+                  <% end %>
+
+                  <div class="d-flex card-overview-quantity mb-5 row">
+                    <% @widget_hash.keys[0..1].each do |k| %>
+                      <div class="col">
+                        <div class="card card-man-day">
+                          <div class="card-body">
+                            <span><%= k %></span>
+                            <div class="quantity"><img src="">
+                              <span>
+                                <%= @widget_hash[k] %>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
                   </div>
+
+                  <div class="row card-overview-infos mb-3">
+                    <% @widget_hash.keys[0..1].each do |k| %>
+                      <div class="col">
+                        <%= k %>
+                        <div class="card-overview-info-number">
+                          <span>
+                            <%= @widget_hash[k] %>
+                          </span>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+
 
 
                   <% @project_module_projects.each do |module_project| %>

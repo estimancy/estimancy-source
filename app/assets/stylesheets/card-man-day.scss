@@ -1,0 +1,63 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.card.card-man-day {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+  margin-left: 15px;
+
+  &:before {
+    width: 15px;
+    height: calc(100% - 15px);
+    left: -15px;
+    border-left: 2px solid $brand-third-color;
+  }
+
+  &:after {
+    left: -10px;
+    bottom: 3px;
+    height: 21px;
+    width: 21px;
+  }
+
+  .card-body {
+    padding: 0.7rem 1.3rem 0.5rem 0.2rem;
+  }
+
+  .quantity {
+    font-family: "Roboto";
+    font-size: 22px;
+    line-height: 30px;
+    display: flex;
+    align-items: baseline;
+
+    span {
+      font-family: "Roboto";
+      font-weight: bold;
+      font-size: 36px;
+      line-height: normal;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: $brand-first-color;
+      margin-right: 10px;
+    }
+
+    img {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+
+}

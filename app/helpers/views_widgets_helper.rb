@@ -486,18 +486,23 @@ module ViewsWidgetsHelper
 
   def new_get_view_widget_data(module_project_id, view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)
-    component = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
 
     ev = view_widget.estimation_value
     unless ev.nil?
-      data = ev[:string_data_probabale]
+      data = ev['string_data_probable']
     end
 
     unless data.nil?
-      result = data[component.id]
+      result = data.values.first
     end
 
-    return result
+    if is_number?(result)
+      probable_value_text = display_value(result.to_f, ev, module_project_id, view_widget.use_organization_effort_unit)
+    else
+      probable_value_text = result
+    end
+
+    return probable_value_text
   end
 
 
