@@ -70,103 +70,62 @@
 
 <!--          <br/>-->
 
+    <div class="row">
+      <% @current_organization.applications.each do |application| %>
+
+        <% application_all_projects = Project.where(organization_id: @current_organization.id, application_id: application.id) %>
+        <% application_sum = 0 %>
+        <% application_all_projects.each do |p| %>
+          <% application_field = Field.where(organization_id: p.organization_id, name: "Coût (k€)").first
+             application_column = QueryColumn.new(application_field.name.to_sym,
+                                                  sortable: "",
+                                                  caption: "",
+                                                  field_id: application_field.id,
+                                                  organization_id: @current_organization.id) %>
+          <% cost = column_content(@pfs, application_column, p, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+          <% application_sum += cost %>
+        <% end %>
 
 
-
-      <% total_costs = Hash.new {|h,k| h[k] = [] } %>
-
-      <% @organization.applications.each do |application| %>
-        <% app_cost = 0 %>
-        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts| %>
-          <% budgets = Hash.new {|h,k| h[k] = [] } %>
-
+        <% budget_types_pie = Hash.new {|h,k| h[k] = [] } %>
+        <% budget_types_calculated_sum = 0 %>
+        <% BudgetTypeStatus.where(application_id: application.id, organization_id: @current_organization.id).all.each do |bts| %>
           <% projects = Project.where(application_id: application.id ,
-                                      organization_id: @organization.id,
+                                      organization_id: @current_organization.id,
                                       estimation_status_id: bts.estimation_status_id,
                                       is_model: false) %>
-
-          <% app_projects = Project.where(application_id: application.id ,
-                                          organization_id: @organization.id,
-                                          is_model: false) %>
-
-
+          <% projects_sum = 0  %>
           <% projects.each do |project| %>
             <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
-              column = QueryColumn.new(field.name.to_sym,
-                                       sortable: "",
-                                       caption: "",
-                                       field_id: field.id,
-                                       organization_id: @current_organization.id) %>
-
-              <% value = column_content(@pfs, column, project, @fields_coefficients) %>
-              <% value = value.gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-              <% budgets[bts.id] << value %>
-            <% end %>
-              <% total_costs[application.id] << budgets %>
-
-
-          <% app_projects.each do |app_project| %>
-
-            <% app_field = Field.where(organization_id: app_project.organization_id, name: "Coût (k€)").first
-               app_column = QueryColumn.new(app_field.name.to_sym,
+               column = QueryColumn.new(field.name.to_sym,
                                         sortable: "",
                                         caption: "",
-                                        field_id: app_field.id,
+                                        field_id: field.id,
                                         organization_id: @current_organization.id) %>
-            <% app_cost += column_content(@pfs, app_column, app_project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-            <% app_cost.round(2) %>
-            <% @application_cost = app_cost %>
+            <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+            <% projects_sum += value.round(2) %>
+            <% budget_types_pie[bts.budget_type.name] = projects_sum.round(2) %>
           <% end %>
         <% end %>
-      <% end %>
 
-      <br>
+        <% budget_types_pie.each_value do |btpval| %>
+          <% budget_types_calculated_sum = budget_types_calculated_sum + btpval %>
+        <% end %>
 
-      <% total_costs.each do |key,values| %> <%# pour chaque application  %>
-        <% cost_pie = Hash.new {|h,k| h[k] = []}  %>
-        <% @sum = 0 %>
-        <%= Application.find(key) %> :
-            <% values.each do |i| %> <%# i est un tableau %>
-              <% unless i.empty? %>
-                <% budget_type = BudgetTypeStatus.find(i.keys[0]).budget_type.name %>
-                <%# i[i.keys[0]] %>
-                <%# "Sum: " %>
-                <%# @sum += i[i.keys[0]].sum.round(2) %>
-                <% cost_pie[budget_type] = i[i.keys[0]].sum.round(2) %>
-              <% end %>
-            <% end %>
-        <%# "Application cost: " %>
-        <%# @application_cost %>
-        <%# "Rest: " %>
-        <%# @rest = (@application_cost - @sum).round(2) %>
+        <% rest = (application_sum - budget_types_calculated_sum).round(2) %>
+        <% budget_types_pie['Reste'] = rest %>
 
-        <%= cost_pie['Reste'] = @rest %>
+          <% if budget_types_pie.length > 1 %>
+            <div class="span4">
+              <%= Application.find(application.id).name %>
+              <%= pie_chart budget_types_pie %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
 
-        <%= pie_chart cost_pie %>
-
-      <% end %>
-
-      <%# total_costs.each do |key,values| %>
-        <%# cost_pie = Hash.new {|h,k| h[k] = []}  %>
-        <%#= Application.find(key) %> :
-          <%# values.each do |i| %>
-            <%# unless i.empty? %>
-              <%# budget_type = BudgetTypeStatus.find(i.keys[0]).budget_type.name %>
-                <%# i[i.keys[0]].each do |cost| %>
-                  <%#= cost %>
-                <%# end %>
-                <%# sum = i[i.keys[0]].sum.round(2) %>
-                <%#= rest = app_cost - sum %>
-                <%#= sum %>
-                <%# cost_pie[budget_type] = sum %>
-
-            <%# end %>
-          <%# end %>
-
-        <%# cost_pie['Reste'] = rest %>
-        <%#= pie_chart cost_pie %>
-
-      <%# end %>
+    <br>
 
       <div>
         <%= I18n.t(:label_filter_on_projects_version) %>
