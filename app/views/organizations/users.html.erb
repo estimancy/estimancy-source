@@ -1,13 +1,17 @@
 <div class="d-flex align-items-center mt-4">
   <div style="flex: 1">
     <h1>
-      Liste des demandes
+      Liste des utilisateurs
     </h1>
   </div>
-  <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to "Synthèse SLA", organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
-</div>
+    <% if can? :manage, User, :organization_id => @organization.id %>
+      <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+      <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
+        <%= I18n.t(:import) %>
+      </a>
+    <% end %>
+    <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
+  </div>
 
 <div class="tabs">
   <ul>
@@ -20,13 +24,13 @@
       <div class="group_button">
 
         <% if can? :manage, User, :organization_id => @organization.id %>
-            <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn' %>
+            <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
 
-            <a href="#myWBSModal" role="button" class="btn" title="Import users from excel" data-toggle="modal">
+            <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
               <%= I18n.t(:import) %>
             </a>
         <% end %>
-        <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn', method: "post" %>
+        <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
       </div>
 
       <% if can?(:manage, User, :organization_id => @organization.id) %>
@@ -41,7 +45,7 @@
             </div>
             <div class="modal-footer">
               <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
             </div>
             <div class="loading span11 hide">
               <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>

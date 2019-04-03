@@ -1,3 +1,5 @@
+<h1>Reports</h1>
+
 <div class="tabs">
   <ul>
     <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
@@ -32,7 +34,7 @@
 
       <div class="row-fluid">
         <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
         </div>
       </div>
     <% end %>
@@ -48,7 +50,7 @@
       </p>
       <br>
       <%= hidden_field_tag "organization_id", params[:organization_id] %>
-      <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+      <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
     <% end %>
   </div>
 
@@ -154,7 +156,7 @@
       <br>
       <div class="row-fluid">
         <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
         </div>
       </div>
     <% end %>
@@ -214,7 +216,7 @@
 
           </div>
 
-          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
 
         <% end %>
       </div>
