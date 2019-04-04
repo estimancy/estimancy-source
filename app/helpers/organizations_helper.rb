@@ -301,9 +301,8 @@ module OrganizationsHelper
         content_tag("td", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
-            content_tag("td class='text-left'") do
-            content_tag(:span, link_to(project.status_name, main_app.add_comment_on_status_change_path(:project_id => project.id), style: "color: #FFFFFF;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true),
-                        class: "badge", style: "background-color: #{project.status_background_color}").to_s.html_safe
+          content_tag("td class='text-left'") do
+            content_tag('button', project.status_name, onclick: "location.href='#{main_app.add_comment_on_status_change_url(:project_id => project.id)}'", :remote => true, class: "btn btn-status", style: "background-color: #{project.status_background_color}").to_s.html_safe
           end
         else
           content_tag("td class='center'") do

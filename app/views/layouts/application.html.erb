@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
 
-  <body>
+  <body style="background-color: #F8F9FA;">
     <%= render 'layouts/modal' %>
 
     <header class="header">
@@ -79,16 +79,16 @@
                 <a class="dropdown-item account-item" href="<%= main_app.organization_users_path(@current_organization) %>"><%= I18n.t(:users) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>"><%= I18n.t(:report) %></a>
                 <div class="dropdown-divider"></div>
-                <h6 class="dropdown-header">Configuration et paramétrage</h6>
+                <h6 class="dropdown-header">Configuration</h6>
                 <a class="dropdown-item account-item" href="<%= main_app.edit_organization_path(@current_organization)%>" title="<%= I18n.t(:report) %>"><%= @current_organization %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_setting_path(@current_organization)%>"><%= I18n.t(:setting_estimations) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_setting_demand_path(@current_organization)%>"><%= I18n.t(:setting_demands) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_module_estimation_path(@current_organization)%>"><%= I18n.t(:projestimate_module) %></a>
                 <div class="dropdown-divider"></div>
-                <h6 class="dropdown-header">Configuration Expert</h6>
+                <h6 class="dropdown-header">Aide</h6>
                 <a class="dropdown-item account-item" href="<%= load_admin_setting('url_wiki') %>">Wiki</a>
                 <a class="dropdown-item account-item" href="/contactsupport">A propos</a>
-                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Paramétrage</h6>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
                   <%= I18n.t(:security_audit_utilities) %>
                 </a>
