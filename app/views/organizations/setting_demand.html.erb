@@ -10,7 +10,7 @@
 
   <div id="criticality">
 
-    <%= link_to "Sévérité", new_organization_severity_path(@organization), class: "btn" %>
+    <%= link_to "Sévérité", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
 
     <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
@@ -52,7 +52,7 @@
 
   <div id="demands_statuses">
     <% if @organization.demand_statuses.length > 0 %>
-      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn" %>
+      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn btn-primary btn-estimancy" %>
       <hr>
 
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
@@ -92,7 +92,7 @@
 
   <div id="demandes_types">
 
-    <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn" %>
+    <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
       <thead>
@@ -125,7 +125,7 @@
   </div>
 
   <div id="livrables">
-    <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn" %>
+    <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
     <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
       <thead>
@@ -165,7 +165,7 @@
 
   <div id="services">
 
-      <%= link_to "Créer un service", new_organization_service_path(@organization), class: "btn" %>
+      <%= link_to "Créer un service", new_organization_service_path(@organization), class: "btn btn-primary btn-estimancy" %>
       <hr>
 
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
