@@ -4,13 +4,14 @@
   <div style="flex: 1">
     <h1>Liste des estimations</h1>    </div>
   <button type="button" class="btn btn-primary">Créer une estimation</button>
-  <div style="flex: 1"></div>
   <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
     <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
   <% end %>
 </div>
 
-<p><span class="font-weight-bold">Accès rapide</span> aux dernières estimations consultées</p>
+<p>
+  <span class="font-weight-bold">Accès rapide</span> aux dernières estimations consultées
+</p>
 
 <div class="mb-5">
   <div class="card-list">
