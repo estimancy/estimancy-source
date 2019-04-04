@@ -16,6 +16,10 @@
   align-items: center;
   font-family: "Roboto";
 
+  .back-button:hover{
+    text-decoration: none;
+  }
+
   .back-button {
     font-weight: 500;
     font-size: 14px;

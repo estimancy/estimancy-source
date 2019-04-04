@@ -2,7 +2,8 @@
 
 <div class="d-flex align-items-center mt-4">
   <div style="flex: 1">
-    <h1>Liste des estimations</h1>    </div>
+    <h1>Liste des estimations</h1>
+  </div>
   <button type="button" class="btn btn-primary">Créer une estimation</button>
   <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
     <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>

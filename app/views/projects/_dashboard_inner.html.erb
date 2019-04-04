@@ -5,7 +5,7 @@
     <div class="widget-box collapsible" >
      <div class="page-header page-detail-header">
           <a href="#" class="back-button"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
-          <h1><%= @project.title %></h1>
+          <h1><%# @project.title %></h1>
           <span class="page-header-status">En cours</span>
           <div class="page-header-buttons">
         <button type="button" class="btn btn-primary btn-estimancy">éditer</button>
@@ -136,28 +136,28 @@
 <!--<div id="show_estimation_graph">-->
 <!--</div>-->
 
-<script>
-    $(document).ready(function () {
-        $(".date-picker").datepicker({
-            language: '<%= set_user_language %>',
-            autoclose: true,
-            todayHighlight: true,
-            todayBtn: true
-        }).on("hide", function (e) {
-            $.ajax({
-                url: "check_attribute",
-                type: 'POST',
-                data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + this.className.split(/\s/)[2]
-            })
-         });
+<!--<script>-->
+<!--    $(document).ready(function () {-->
+<!--        $(".date-picker").datepicker({-->
+<!--            language: '<%# set_user_language %>',-->
+<!--            autoclose: true,-->
+<!--            todayHighlight: true,-->
+<!--            todayBtn: true-->
+<!--        }).on("hide", function (e) {-->
+<!--            $.ajax({-->
+<!--                url: "check_attribute",-->
+<!--                type: 'POST',-->
+<!--                data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + this.className.split(/\s/)[2]-->
+<!--            })-->
+<!--         });-->
 
-    });
-</script>
+<!--    });-->
+<!--// </script>-->
 
 
 <!--Load the AJAX API-->
-<script type="text/javascript">
-    // Load the Visualization API and the corechart package.
-    google.charts.load('current', {'packages':['corechart']});
-</script>
+<!--<script type="text/javascript">-->
+<!--    // Load the Visualization API and the corechart package.-->
+<!--    // google.charts.load('current', {'packages':['corechart']});-->
+<!--</script>-->
 
