@@ -1,0 +1,67 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.page-header {
+  background: #FFFFFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  font-family: "Roboto";
+
+  .back-button {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 14px;
+    letter-spacing: 0.02em;
+    color: $grey-medium;
+    display: flex;
+
+    i {
+      margin-right: 0.8rem;
+      color: $brand-third-color
+    }
+  }
+
+  h1 {
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: $brand-sixth-color;
+    margin: 0;
+    margin-left: 2.5rem;
+    align-self: baseline;
+  }
+
+  .page-header-status {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0277BD;
+    margin-left: 1rem;
+    align-self: baseline;
+  }
+
+  .page-header-buttons {
+    margin-left: 7rem;
+
+    .btn {
+      width: 120px;
+      margin-right: 1rem;
+    }
+  }
+
+  &.page-detail-header {
+    padding: 1.5rem 5.5rem;
+  }
+}
