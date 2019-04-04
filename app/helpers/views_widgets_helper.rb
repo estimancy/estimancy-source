@@ -71,49 +71,53 @@ module ViewsWidgetsHelper
   end
 
   def get_kpi_value_without_unit(view_widget, component = nil)
-    eq = view_widget.equation
-    ev = view_widget.estimation_value
-    formula = eq["formula"].to_s
-
-    if component.nil?
-      component = current_component
-    end
-
-    unless eq["A"].blank?
-      a_value = get_ev_value(eq["A"].first, component.id, view_widget.id)
-      formula = formula.gsub("A", a_value)
-    end
-
-    unless eq["B"].blank?
-      b_value = get_ev_value(eq["B"].first, component.id, view_widget.id)
-      formula = formula.gsub("B", b_value)
-    end
-
-    unless eq["C"].blank?
-      c_value = get_ev_value(eq["C"].first, component.id, view_widget.id)
-      formula = formula.gsub("C", c_value)
-    end
-
-    unless eq["D"].blank?
-      d_value = get_ev_value(eq["D"].first, component.id, view_widget.id)
-      formula = formula.gsub("D", d_value)
-    end
-
-    unless eq["E"].blank?
-      e_value = get_ev_value(eq["E"].first, component.id, view_widget.id)
-      formula = formula.gsub("E", e_value)
-    end
-
     begin
-      if correct_syntax?(formula)
-        result_value = eval(formula) #.round(current_user.number_precision)
-        if result_value.is_a?(Float) && result_value.nan?
-          '-'
+      eq = view_widget.equation
+      ev = view_widget.estimation_value
+      formula = eq["formula"].to_s
+
+      if component.nil?
+        component = current_component
+      end
+
+      unless eq["A"].blank?
+        a_value = get_ev_value(eq["A"].first, component.id, view_widget.id)
+        formula = formula.gsub("A", a_value)
+      end
+
+      unless eq["B"].blank?
+        b_value = get_ev_value(eq["B"].first, component.id, view_widget.id)
+        formula = formula.gsub("B", b_value)
+      end
+
+      unless eq["C"].blank?
+        c_value = get_ev_value(eq["C"].first, component.id, view_widget.id)
+        formula = formula.gsub("C", c_value)
+      end
+
+      unless eq["D"].blank?
+        d_value = get_ev_value(eq["D"].first, component.id, view_widget.id)
+        formula = formula.gsub("D", d_value)
+      end
+
+      unless eq["E"].blank?
+        e_value = get_ev_value(eq["E"].first, component.id, view_widget.id)
+        formula = formula.gsub("E", e_value)
+      end
+
+      begin
+        if correct_syntax?(formula)
+          result_value = eval(formula) #.round(current_user.number_precision)
+          if result_value.is_a?(Float) && result_value.nan?
+            '-'
+          else
+            #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: current_user.number_precision.nil? ? 2 : current_user.number_precision, locale: (current_user.language.locale rescue "fr"))}"
+            result_value.to_f
+          end
         else
-          #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: current_user.number_precision.nil? ? 2 : current_user.number_precision, locale: (current_user.language.locale rescue "fr"))}"
-          result_value.to_f
+          '-'
         end
-      else
+      rescue
         '-'
       end
     rescue

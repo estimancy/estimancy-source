@@ -167,14 +167,24 @@
       </div>
     </header>
 
-    <ul class="nav nav-pills global-nav">
-      <li class="nav-item">
-        <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>">Demandes</a>
-      </li>
-    </ul>
+    <% if controller.action_name == "dashboard" %>
+      <div class="page-header page-detail-header">
+        <a href="#" class="back-button"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+        <h1><%= @project.title.to_s %></h1>
+        <span class="page-header-status"> <%= @project.estimation_status.to_s %> </span>
+        <div class="page-header-buttons">
+          <button type="button" class="btn btn-secondary">éditer</button> <button type="button" class="btn btn-secondary">Exporter</button> </div>
+      </div>
+    <% else %>
+      <ul class="nav nav-pills global-nav">
+        <li class="nav-item">
+          <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>">Demandes</a>
+        </li>
+      </ul>
+    <% end %>
 
     <div class="container">
       <%= yield %>

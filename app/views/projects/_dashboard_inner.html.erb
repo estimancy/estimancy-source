@@ -1,13 +1,19 @@
-<div class="row-fluid">
-  <div class="span3 pbs">
-
+<!--
+<body style="background-color: #f8f9fa">
+<div class="page-header page-detail-header">
+  <div class="container">
     <div class="widget-box collapsible" >
-      <div class="widget-title" >
-        <h5>
-          <span class="component_name">
-            <%= @project.title %>
-          </span>
-        </h5>
+     <div class="page-header page-detail-header">
+          <a href="#" class="back-button"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+          <h1><%= @project.title %></h1>
+          <span class="page-header-status">En cours</span>
+          <div class="page-header-buttons">
+        <button type="button" class="btn btn-primary btn-estimancy">éditer</button>
+        <button type="button" class="btn btn-primary btn-estimancy">Exporter</button>  </div>
+    </div>
+-->
+
+
         <!--
         <div class="buttons">
              if @project.allow_export_pdf == true %>
@@ -15,7 +21,7 @@
           end %>
         </div>
         -->
-      </div>
+
       <div class="collapse in" id="collapseProduct" style="height: 217px;">
         <div class="widget-content resizableProduct">
           <p>
@@ -123,6 +129,8 @@
 <div id="output_data_view_widgets_results">
   <%= render :partial => 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x, @wbs_activity_ratio] %>
 </div>
+
+</body>
 
 <!-- The Estimation graph -->
 <!--<div id="show_estimation_graph">-->
