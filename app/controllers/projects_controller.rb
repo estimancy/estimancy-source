@@ -3329,22 +3329,45 @@ public
   end
 
   def advanced_search
-    @adv_search_hash = {}
-    @projects = @current_organization.projects
-    @organizations = Organization.all
+    @projects_search_results = []
 
     user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
-    user_prjs = Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false)
-    @adv_search_hash['user'] = user_prjs
+    @projects_search_results << Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false).all
 
     app_ids = Application.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    app_prjs = Project.where(organization_id: @current_organization.id, application_id: app_ids, is_model: false)
-    @adv_search_hash['application'] = app_prjs
+    @projects_search_results << Project.where(organization_id: @current_organization.id, application_id: app_ids, is_model: false).all
 
     acq_ids = AcquisitionCategory.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    acq_prjs = Project.where(organization_id: @current_organization.id, acquisition_category_id: acq_ids, is_model: false)
-    @adv_search_hash['acquisition'] = acq_prjs
+    @projects_search_results << Project.where(organization_id: @current_organization.id, acquisition_category_id: acq_ids, is_model: false).all
 
+    @projects_search_results = @projects_search_results.flatten
+
+    @fields_coefficients = {}
+    @pfs = {}
+    fields = @current_organization.fields
+    ProjectField.where(project_id: @projects_search_results.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)
