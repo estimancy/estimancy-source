@@ -213,7 +213,7 @@
                                 end
                               end
                               wbs_activity_ratio_profiles = []
-                              ratio_reference = module_project.get_wbs_activity_ratio(current_component.id)
+                              ratio_reference = module_project.get_wbs_activity_ratio(project.root_component)
 
                               unless ratio_reference.nil?
                                 ratio_reference.wbs_activity_ratio_elements.each do |ratio_elt|
@@ -236,7 +236,7 @@
                                 wbs_activity_element_root = wbs_activity_elements.first.root
                               end
                               probable_est_value = estimation_value.send("string_data_probable")
-                              pbs_probable_est_value = probable_est_value[current_component.id]
+                              pbs_probable_est_value = probable_est_value[project.root_component.id]
                               pe_attribute_alias = estimation_value.pe_attribute.alias
                               if pe_attribute_alias.in?(["cost", "effort"])
                                 pe_attribute_alias = "retained_#{pe_attribute_alias}"
