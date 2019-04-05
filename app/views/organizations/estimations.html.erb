@@ -23,7 +23,7 @@
       <% project = Project.find(project_id) %>
       <% unless project.nil? %>
         <div class="card w-25">
-          <a href="#">
+          <a href="<%= edit_project_path(project) %>">
             <div class="card-body">
               <h5 class="card-title"><%= project.title %></h5>
               <h6 class="card-status card-status--encours mb-2 "><%= project.estimation_status.name %></h6>
