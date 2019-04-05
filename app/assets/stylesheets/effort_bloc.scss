@@ -1,0 +1,127 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.effort-bloc {
+  font-family: "Roboto";
+
+  .card-body {
+    padding: 1.3rem 1.3rem 1rem 0.3rem;
+  }
+
+  .tabs {
+    margin-bottom: -5px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .effort-bloc-tools {
+    a {
+      color: #BDBDBD;
+      margin-left: 1rem
+    }
+  }
+}
+
+.effort-chart-bloc {
+  font-family: "Roboto";
+
+  .card-body {
+    padding: 1.3rem 1.3rem 1rem 0.3rem;
+  }
+
+  .effort-chart {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-evenly;
+    font-family: Roboto;
+    font-weight: 300;
+    font-size: 14px;
+    color: #555555;
+
+    .effort-chart-canvas {
+      flex: 2;
+      text-align: center
+    }
+
+    .effort-chart-legend {
+      flex: 1
+    }
+
+    .legend-color {
+      display:inline-block;
+      width:20px;
+      height:20px;
+      border: 1px solid #E4E4E4;
+      margin: 0.5rem;
+      vertical-align: sub
+    }
+  }
+}
+
+.effort-table {
+  font-family: "Roboto";
+
+  .table {
+    & > thead > tr > th {
+      font-weight: 500;
+      font-size: 13px;
+      line-height: normal;
+      text-align: center;
+      color: $grey-medium;
+      border-top: 0;
+      border-bottom: 3px solid #E9E9E9;
+      width: 10%;
+
+      &:first-child, &:last-child {
+        font-weight: bold;
+      }
+
+      &:first-child {
+        text-align: left;
+        width: auto;
+      }
+    }
+
+    & > tbody > tr {
+      & > td {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 21px;
+        text-align: center;
+        letter-spacing: 0.02em;
+        color: $brand-sixth-color;
+        border-bottom: 1px solid #E9E9E9;
+
+        &:first-child, &:last-child {
+          font-weight: bold;
+          color: $grey-dark;
+        }
+
+        &:first-child {
+          text-align: left;
+        }
+      }
+
+      &:first-child {
+        background-color: #F8F9FA;
+        & > td {
+          &:first-child {
+            font-weight: 500;
+            text-transform: uppercase;
+            color: $grey-medium
+          }
+        }
+      }
+    }
+  }
+
+}
