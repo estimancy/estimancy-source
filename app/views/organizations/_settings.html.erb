@@ -21,11 +21,11 @@
 
       <% if can? :manage, Application %>
         <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn' %>
-          <a href="#myWBSModal" role="button" class="btn" title="Import applications from excel" data-toggle="modal">
+          <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+          <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import applications from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
-          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn'%>
+          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary btn-estimancy'%>
         </div>
 
           <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -38,8 +38,8 @@
                 <%= file_field_tag :file %>
               </div>
               <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
               </div>
               <div class="loading span11 hide">
                 <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
@@ -103,11 +103,11 @@
 
       <% if can? :manage, ProjectArea %>
         <div class="group_button">
-         <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn' %>
-          <a href="#ImportProjectAreas" role="button" class="btn" title="Import project areas from excel" data-toggle="modal">
+         <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+          <a href="#ImportProjectAreas" role="button" class="btn btn-primary btn-estimancy" title="Import project areas from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
-          <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn'%>
+          <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn btn-primary btn-estimancy'%>
         </div>
 
           <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -120,7 +120,7 @@
                   <%= file_field_tag :file %>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                  <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
                   <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
                 </div>
                 <div class="loading span11 hide">
@@ -165,11 +165,11 @@
 
       <% if can? :manage, ProjectCategory %>
         <div class="group_button">
-            <%= link_to I18n.t('create_button'), new_organization_project_category_path(@organization), :class => 'btn' %>
-            <a href="#import_project_category" role="button" class="btn" title="Import project category from Excel" data-toggle="modal">
+            <%= link_to I18n.t('create_button'), new_organization_project_category_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+            <a href="#import_project_category" role="button" class="btn btn-primary btn-estimancy" title="Import project category from Excel" data-toggle="modal">
               <%= I18n.t(:import) %>
             </a>
-          <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn'%>
+          <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn btn-primary btn-estimancy'%>
         </div>
         <div id="import_project_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_project_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -181,8 +181,8 @@
               <%= file_field_tag :file %>
             </div>
             <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
             </div>
             <div class="loading span11 hide">
               <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
@@ -226,11 +226,11 @@
 
       <% if can? :manage, PlatformCategory %>
         <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_organization_platform_category_path(@organization), :class => 'btn' %>
-          <a href="#import_platform_category" role="button" class="btn" title="Import platform category from Excel" data-toggle="modal">
+          <%= link_to I18n.t('create_button'), new_organization_platform_category_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+          <a href="#import_platform_category" role="button" class="btn btn-primary btn-estimancy" title="Import platform category from Excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
-          <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn'%>
+          <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn btn-primary btn-estimancy'%>
         </div>
       <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -242,8 +242,8 @@
             <%= file_field_tag :file %>
           </div>
           <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+            <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
           </div>
           <div class="loading span11 hide">
             <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
@@ -285,11 +285,11 @@
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
         <div class="group_button">
-            <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn' %>
-            <a href="#import_acquisition_category" role="button" class="btn" title="Import acquisition category from Excel" data-toggle="modal">
+            <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+            <a href="#import_acquisition_category" role="button" class="btn btn-primary btn-estimancy" title="Import acquisition category from Excel" data-toggle="modal">
               <%= I18n.t(:import) %>
             </a>
-          <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn' %>
+          <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn btn-primary btn-estimancy' %>
         </div>
         <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -301,8 +301,8 @@
               <%= file_field_tag :file %>
             </div>
             <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
             </div>
             <div class="loading span11 hide">
               <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
@@ -344,7 +344,7 @@
     <% if can? :show_custom_fields, Field %>
         <% if can? :manage, Field %>
             <div class="group_button">
-                <%= link_to I18n.t(:create_button), new_organization_field_path(@organization), class: "btn" %>
+                <%= link_to I18n.t(:create_button), new_organization_field_path(@organization), class: "btn btn-primary btn-estimancy" %>
             </div>
         <% end %>
 
@@ -386,7 +386,7 @@
     <% if can? :show_estimation_statuses, EstimationStatus %>
         <% if can? :manage, EstimationStatus %>
             <div class="group_button">
-                <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn' %>
+                <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn btn-primary btn-estimancy' %>
             </div>
         <% end %>
         <%= render "estimation_statuses/statuses_management", object: [@organization, @organization_group] %>
@@ -424,11 +424,11 @@
 
         <% if can? :manage, Provider %>
             <div class="group_button">
-              <%= link_to I18n.t('create_button'), new_organization_provider_path(@organization), :class => 'btn' %>
-              <a href="#ImportProviders" role="button" class="btn" title="Import providers from excel" data-toggle="modal">
+              <%= link_to I18n.t('create_button'), new_organization_provider_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+              <a href="#ImportProviders" role="button" class="btn btn-primary btn-estimancy" title="Import providers from excel" data-toggle="modal">
                 <%= I18n.t(:import) %>
               </a>
-              <%= link_to I18n.t('export'), organization_export_providers_path(@organization), :class => 'btn'%>
+              <%= link_to I18n.t('export'), organization_export_providers_path(@organization), :class => 'btn btn-primary btn-estimancy'%>
             </div>
 
             <div id="ImportProviders" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -441,8 +441,8 @@
                     <%= file_field_tag :file %>
                   </div>
                   <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                    <button class="btn btn-primary btn-estimancy" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-estimancy', :onclick => "$('.loading').show();" %>
                   </div>
                   <div class="loading span11 hide">
                     <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
