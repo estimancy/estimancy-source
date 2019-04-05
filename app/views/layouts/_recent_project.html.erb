@@ -1,9 +1,0 @@
-<div class="dropdown">
-  <a class="dropdown-toggle" data-toggle="dropdown" href="#"> <%=  I18n.t('recent_project') %> &nbsp;<i class="icon-chevron-down" style = "color:gray"></i></a>
-  <ul class="dropdown-menu">
-    <% current_user.ten_latest_projects.each do |i| %>
-      <% p = Project.find(i.to_i) %>
-      <li><%= link_to p.title, main_app.choose_project_path(:project_id => p.id), :title => 'Activate' %></li>
-    <% end %>
-  </ul>
-</div>

@@ -19,50 +19,23 @@
 
 <div class="mb-5">
   <div class="card-list">
-    <div class="card w-25">
-      <a href="#">
-        <div class="card-body">
-          <h5 class="card-title">EST. 00551</h5>
-          <h6 class="card-status card-status--encours mb-2 ">En cours</h6>
-          <div class="d-flex"><span class="card-date mb-2 ">21/03/2019</span><span class="card-version mb-2 ">v.3.0</span></div>
-          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
-          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+    <%= current_user.recent_projects %>
+    <% current_user.recent_projects.each do |project_id| %>
+      <% project = Project.find(project_id) %>
+      <% unless project.nil? %>
+        <div class="card w-25">
+          <a href="#">
+            <div class="card-body">
+              <h5 class="card-title"><%= project.title %></h5>
+              <h6 class="card-status card-status--encours mb-2 "><%= project.estimation_status.name %></h6>
+              <div class="d-flex"><span class="card-date mb-2 ">21/03/2019</span><span class="card-version mb-2 "><%= project.version %></span></div>
+              <p class="card-text"><%= project.description %></p>
+              <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+            </div>
+          </a>
         </div>
-      </a>
-    </div>
-    <div class="card w-25">
-      <a href="#">
-        <div class="card-body">
-          <h5 class="card-title">EST. 00551</h5>
-          <h6 class="card-status card-status--relecture mb-2 ">Relecture</h6>
-          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
-          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
-          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
-        </div>
-      </a>
-    </div>
-    <div class="card w-25">
-      <a href="#">
-        <div class="card-body">
-          <h5 class="card-title">EST. 00551</h5>
-          <h6 class="card-status card-status--controle mb-2 ">Contrôle</h6>
-          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
-          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
-          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
-        </div>
-      </a>
-    </div>
-    <div class="card w-25">
-      <a href="#">
-        <div class="card-body">
-          <h5 class="card-title">EST. 00551</h5>
-          <h6 class="card-status card-status--arevoir mb-2 ">A revoir</h6>
-          <div class="d-flex"><span class="card-date mb-2 ">17/03/2019</span><span class="card-version mb-2 ">v.2.5</span></div>
-          <p class="card-text">Refonte des applicatifs STP - STD root et legacy</p>
-          <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
-        </div>
-      </a>
-    </div>
+      <% end %>
+    <% end %>
   </div>
 </div>
 
