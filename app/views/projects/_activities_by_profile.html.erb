@@ -3,7 +3,7 @@
     <h4 style="color: #0073ea;"><%= I18n.t(:label_output_data_with_activities_profiles) %></h4>
   </div><br>
 
-    <table id="profiles_per_activity" class="table table-striped table-bordered table-condensed">
+    <table id="profiles_per_activity"  class="table table-list">
       <tr>
         <% module_project.estimation_values.order('display_order ASC').each do |est_val| %>
             <% if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project.id == module_project.id %>

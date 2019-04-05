@@ -1,9 +1,10 @@
-<div class="d-flex align-items-center mt-4">
-  <div style="flex: 1">
-    <h1>
-      Liste des utilisateurs
-    </h1>
-  </div>
+<% if can? :show_organization_users, User %>
+  <div class="d-flex align-items-center mt-4">
+    <div style="flex: 1">
+      <h1>
+        Liste des utilisateurs
+      </h1>
+    </div>
     <% if can? :manage, User, :organization_id => @organization.id %>
       <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
       <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
@@ -13,127 +14,98 @@
     <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
   </div>
 
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:users) %> </a></li>
-  </ul>
-
-  <div id="tabs-1">
-    <% if can? :show_organization_users, User %>
-
-      <div class="group_button">
-
-        <% if can? :manage, User, :organization_id => @organization.id %>
-            <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
-
-            <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
-              <%= I18n.t(:import) %>
-            </a>
-        <% end %>
-        <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
-      </div>
-
-      <% if can?(:manage, User, :organization_id => @organization.id) %>
-        <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
-            <div class="modal-header modal-drag">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
-            </div>
-            <div class="modal-body">
-              <%= file_field_tag :file %>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
-            </div>
-            <div class="loading span11 hide">
-              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-            </div>
-          <% end %>
+  <% if can?(:manage, User, :organization_id => @organization.id) %>
+    <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
+        </div>
+        <div class="modal-body">
+          <%= file_field_tag :file %>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
+        </div>
+        <div class="loading span11 hide">
+          <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
         </div>
       <% end %>
+    </div>
+  <% end %>
 
-      <table id="table_list_2" class="table tablesorterPager table-striped table-bordered table-condensed">
-        <thead>
-          <tr>
-            <th><%= I18n.t(:first_name) %></th>
-            <th><%= I18n.t(:last_name) %></th>
-            <th><%= I18n.t(:login_name) %></th>
-            <th><%= I18n.t(:email) %></th>
-            <th><%= I18n.t(:groups) %></th>
+  <table class="table table-list">
+    <thead>
+      <tr>
+        <th><%= I18n.t(:first_name) %></th>
+        <th><%= I18n.t(:last_name) %></th>
+        <th><%= I18n.t(:login_name) %></th>
+        <th><%= I18n.t(:email) %></th>
+        <th><%= I18n.t(:groups) %></th>
 
-            <% if current_user.super_admin? %>
-              <th><%= I18n.t(:Confirmed_at) %></th>
-              <th><%= I18n.t(:locked_at)%></th>
-            <% end %>
-
-            <th><%= I18n.t(:subscription_end_date)%></th>
-            <th><%= I18n.t(:last_login) %></th>
-            <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
-          </tr>
-        </thead>
-        <tbody>
-
-        <% if current_user.super_admin == true %>
-            <% @organization_users = @organization.users %>
-        <% else %>
-            <% @organization_users = @organization.users.where('login_name <> ?', 'owner') %>
+        <% if current_user.super_admin? %>
+          <th><%= I18n.t(:Confirmed_at) %></th>
         <% end %>
 
-        <% @organization_users.each do |user| %>
-          <tr>
-            <% if user.super_admin? %>
-              <td><strong><%= user.first_name %></strong></td>
-              <td><strong><%= user.last_name %></strong></td>
-            <% else %>
-              <td><%= user.first_name %></td>
-              <td><%= user.last_name %></td>
-            <% end %>
 
-            <td><%= user.login_name %>
-            <td><%= user.email %></td>
-            <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
+        <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+      </tr>
+    </thead>
 
-            <% if current_user.super_admin? %>
-              <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
-              <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
-            <% end %>
-
-            <td class="center"><%= user.subscription_end_date.nil? ? "-" : I18n.l(user.subscription_end_date.to_date) %></td>
-            <td><%= user.last_login %></td>
-
-            <td class="align-center">
-              <% if can? :manage, User, :organization_id => @organization.id %>
-                <% if user.locked_at.nil? %>
-                  <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('lock')) %>
-                <% else %>
-                  <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
-                <% end %>
-
-                <% if user.confirmed_at.nil? %>
-                  <%= link_to('', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
-                <% else %>
-                  <%= link_to('', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
-                <% end %>
-              <% end %>
-              <%= link_to "", edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
-              <% if can? :manage, User, :organization_id => @organization.id %>
-                <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-                <%= link_to '', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-
-        <%= render :partial => 'layouts/footer_table' %>
-
-        </tbody>
-      </table>
+    <% if current_user.super_admin == true %>
+        <% @organization_users = @organization.users %>
     <% else %>
-      <div class="red_color">
-        <%= I18n.t(:notice_cannot_view_organization_users) %>
-      </div>
+        <% @organization_users = @organization.users.where('login_name <> ?', 'owner') %>
     <% end %>
+    <tbody>
+    <% @organization_users.each do |user| %>
+      <tr>
+        <% if user.super_admin? %>
+          <td><strong><%= user.first_name %></strong></td>
+          <td><strong><%= user.last_name %></strong></td>
+        <% else %>
+          <td><%= user.first_name %></td>
+          <td><%= user.last_name %></td>
+        <% end %>
+
+        <td><%= user.login_name %>
+        <td><%= user.email %></td>
+        <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
+
+        <% if current_user.super_admin? %>
+          <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
+        <% end %>
+
+        <td class="align-center">
+          <% if can? :manage, User, :organization_id => @organization.id %>
+            <% if user.locked_at.nil? %>
+              <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('lock')) %>
+            <% else %>
+              <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+            <% end %>
+
+            <% if user.confirmed_at.nil? %>
+              <%= link_to('', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+            <% else %>
+              <%= link_to('', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+            <% end %>
+          <% end %>
+          <%= link_to "", edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
+          <% if can? :manage, User, :organization_id => @organization.id %>
+            <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            <%= link_to '', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+
+    <%= render :partial => 'layouts/footer_table' %>
+
+    </tbody>
+  </table>
+<% else %>
+  <div class="red_color">
+    <%= I18n.t(:notice_cannot_view_organization_users) %>
   </div>
-</div>
+<% end %>

@@ -245,17 +245,17 @@ $(document).ready(function() {
         $(e.target).parent().find(".icon-caret-down").removeClass("icon-caret-down").addClass("icon-caret-right");
     });
 
-    $(window).resize(function() {
-        jsPlumb.repaintEverything();
-    });
-
-    $('.module_box').add('.estimation_plan_min').scroll(
-        function(){
-            jsPlumb.repaintEverything();
-        }
-    );
-
-
+    // $(window).resize(function() {
+    //     jsPlumb.repaintEverything();
+    // });
+    //
+    // $('.module_box').add('.estimation_plan_min').scroll(
+    //     function(){
+    //         jsPlumb.repaintEverything();
+    //     }
+    // );
+    //
+    //
     //$('.tabs').tabs();
     //$('.tabs-project').tabs();
     // $('.tabs').tabs({
@@ -266,7 +266,7 @@ $(document).ready(function() {
     //         $(window).scrollTop(scrollTop);
     //     }
     // });
-
+    //
     // $('.tabs-project').tabs({
     //     activate: function (event, ui) {
     //         var scrollTop = $(window).scrollTop();

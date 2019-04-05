@@ -1,6 +1,6 @@
 <%= hidden_field_tag "wbs_activity_id", params[:id] %>
 
-<table id="profiles_per_activity" class="table table-striped table-bordered table-condensed">
+<table id="profiles_per_activity"  class="table table-list">
   <tr>
     <th colspan="2"><%= I18n.t(:wbs_activity) %></th>
     <th colspan="<%= @wbs_organization_profiles.length %>"><%= I18n.t(:profiles) %></th>

@@ -177,7 +177,7 @@ value]", effort %>
           <% staffing_actuel = 0 %>
 
           <% unless @staffing_custom_data.duration.nil? and @staffing_custom_data.rayleigh_duration.nil? %>
-            <table class="table table-striped table-bordered table-condensed">
+            <table  class="table table-list">
               <tr>
                 <th><%= I18n.t(:periode) %></th>
                 <% for t in 0..[@staffing_custom_data.duration.to_f, @staffing_custom_data.rayleigh_duration.to_f].max %>
