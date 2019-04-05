@@ -169,11 +169,18 @@
 
     <% if controller.action_name == "dashboard" %>
       <div class="page-header page-detail-header">
-        <a href="#" class="back-button"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+        <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button">
+          <i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
         <h1><%= @project.title.to_s %></h1>
         <span class="page-header-status"> <%= @project.estimation_status.to_s %> </span>
         <div class="page-header-buttons">
-          <button type="button" class="btn btn-secondary">éditer</button> <button type="button" class="btn btn-secondary">Exporter</button> </div>
+          <a href="<%= edit_project_path(@project) %>" class="no-underline">
+            <button type="button" class="btn btn-secondary">
+              éditer
+            </button>
+          </a>
+          <button type="button" class="btn btn-secondary no-underline">Exporter</button>
+        </div>
       </div>
     <% else %>
       <ul class="nav nav-pills global-nav">

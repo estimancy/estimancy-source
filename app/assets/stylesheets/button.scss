@@ -9,6 +9,10 @@
 @import "fonts";
 @import "normalize";
 
+a:hover.no-underline {
+  text-decoration: none;
+}
+
 .btn-estimancy {
   margin-left: 5px;
 }
