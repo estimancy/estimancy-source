@@ -21,22 +21,23 @@
                                         :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
                      'data-organization_id' => @organization.id, include_blank: false %>
 
-      <% if can? :create_project_from_template, Project %>
-        <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-      <% end %>
+        <% if can? :create_project_from_template, Project %>
+          <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+        <% end %>
 
-      <% if can? :create_project_from_scratch, Project %>
-        <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
-      <% end %>
+        <% if can? :create_project_from_scratch, Project %>
+          <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn' %>
+        <% end %>
 
-      <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-        <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-      <% end %>
+        <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+          <%= link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+        <% end %>
 
-      <div id="organization_projects">
-        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
       </div>
-    </div>
+        <div id="organization_projects">
+          <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+        </div>
+      </div>
 
   </div>
 

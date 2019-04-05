@@ -1710,6 +1710,41 @@ class OrganizationsController < ApplicationController
 
   end
 
+  def budget_dashboard
+    @projects = @current_organization.projects.where(is_model: false)
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @current_organization.fields
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
+
+
+  end
+
   def generate_report_excel_detail
 
     workbook = RubyXL::Workbook.new
@@ -2112,6 +2147,9 @@ class OrganizationsController < ApplicationController
     # @projects = check_for_projects(@min, @max)
     # @projects = check_for_projects(@min, @object_per_page)
 
+    # ceci est mis en commentaire afin que les variables "@pfs" et "@fields_coefficients"
+    # soient appropriées avec la variable "@projects" qui sont les projets de l'organisation courante
+=begin
     @fields_coefficients = {}
     @pfs = {}
 
@@ -2140,6 +2178,39 @@ class OrganizationsController < ApplicationController
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+
+=end
+
+      @projects = @current_organization.projects.where(is_model: false)
+
+      @fields_coefficients = {}
+      @pfs = {}
+
+      fields = @current_organization.fields
+      ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+        begin
+          if pf.field_id.in?(fields.map(&:id))
+            if pf.project && pf.views_widget
+              if pf.project_id == pf.views_widget.module_project.project_id
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+              else
+                pf.delete
+              end
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+
+        rescue
+          #puts "erreur"
+        end
+      end
+
+      fields.each do |f|
+        @fields_coefficients[f.id] = f.coefficient
+      end
 
     if user_signed_in?
       Monitoring.create(user: User.current, action: "Accéder à la liste des devis de l'organisation #{@organization.name}", action_at: Time.now+3600)
