@@ -16051,7 +16051,7 @@ var _this = void 0;
                 } else {
                     input.fireEvent("onchange");
                 }
-            }
+            };
 
             var hideAllMenus = function () {
                 opened = false;
@@ -16231,4 +16231,3 @@ $( document ).ready(function() {
 });
 
 //# sourceMappingURL=main.js.map
-    

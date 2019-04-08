@@ -21,6 +21,29 @@ jQuery(function() {
         })
     });
 
+    $("#select_module").on('change', function() {
+        if ($("#select_module").val() !== "") {
+            return $.ajax({
+                url: "/append_pemodule",
+                method: "get",
+                data: {
+                    module_selected: $(this).val(),
+                    project_id: $("#project_id").val(),
+                    pbs_project_element_id: $("#select_pbs_project_elements").val()
+                }
+                ,
+                success: function(data) {
+                    //return alert("success");
+                    //jsPlumb.repaintEverything();
+                    //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    return alert("Error! :" + textStatus + ";" + errorThrown );
+                }
+            });
+        }
+    });
+
     $("#select_pbs_project_elements").on('change', function() {
         return $.ajax({
             url: "/select_pbs_project_elements",

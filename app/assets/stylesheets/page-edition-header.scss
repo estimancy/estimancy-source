@@ -1,0 +1,133 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.page-edition-header {
+  padding: 1.5rem 0;
+  font-family: "Roboto";
+
+  .container {
+    justify-content: flex-end;
+  }
+
+  .back-button {
+    left: -3rem;
+  }
+
+  .progressbar {
+    counter-reset: step;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0.02em;
+    color: $grey-dark;
+    display: flex;
+    margin-bottom: -52px;
+    width: 50%;
+
+    &:before {
+      width: 100%;
+      height: 3px;
+      content: '';
+      position: absolute;
+      background-color: $brand-third-color;
+      bottom: -25px;
+      left: -50%;
+      z-index: -1;
+    }
+
+    &:after {
+      width: 100%;
+      height: 3px;
+      content: '';
+      position: absolute;
+      background-color: $grey-light;
+      bottom: -25px;
+      left: 50%;
+      z-index: -1;
+    }
+
+    li {
+      list-style-type: none;
+      width: 33%;
+      position: relative;
+      text-align: center;
+      color: $grey-dark;
+
+      &:before {
+        width: 100%;
+        height: 3px;
+        content: '';
+        position: absolute;
+        background-color: $grey-light;
+        bottom: 16px;
+        left: -50%;
+        z-index: -1;
+      }
+      &:after {
+        width: 30px;
+        height: 30px;
+        content: counter(step);
+        counter-increment: step;
+        line-height: 30px;
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%);
+        font-weight: bold;
+        font-size: 17px;
+        line-height: 24px;
+        text-align: center;
+        color: white
+      }
+
+      .losange {
+        width: 30px;
+        height: 30px;
+        transform: rotate(45deg);
+        box-sizing: content-box;
+        background-color: $grey-light;
+        border: 3px solid white;
+        margin: 1.3rem auto 0 auto;
+      }
+      &:first-child:not(.active):before {
+        content: none;
+      }
+
+      &.active {
+        color: $grey-extradark;
+        font-weight: bold;
+
+        .losange {
+          background-color: $brand-fifth-color;
+        }
+
+        &:before {
+          background: linear-gradient(to right, #0099C9 0%, #E26524 100%);
+        }
+      }
+
+      &.complete .losange {
+        background-color: $brand-third-color;
+      }
+    }
+  }
+
+  .page-header-buttons {
+    margin-left: 4rem;
+
+    .btn {
+      width: 120px;
+      margin-right: 1rem;
+    }
+  }
+}

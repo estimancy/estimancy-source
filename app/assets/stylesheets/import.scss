@@ -3,10 +3,16 @@
 @import "fonts";
 @import "normalize";
 
+// import bootstrap
+//@import 'bootstrap-user-variables';
+//@import 'bootstrap-reboot';
+//@import 'bootstrap';
+//@import 'bootstrap-grid';
+
 // import mdb
 //@import "mdb/mdb.lite.scss";
 // import material design select
-@import "getmdl-select";
+@import "mdl/getmdl-select";
 
 // import customize styles
 @import "forms";
