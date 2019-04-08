@@ -1,0 +1,109 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+.card {
+  background: #FFFFFF;
+  /* Dark - 12 */
+  border: 1px 1px 0 0 solid rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;/* Z-Index - Strong - Active */
+  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  margin-left: 30px;
+
+  &:before{
+    content: "";
+    position: absolute;
+    left: -30px;
+    top: -1px;
+    height: calc(100% - 28px);
+    width: 30px;
+    background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    border-top-left-radius: 3px;
+    box-sizing: border-box;
+    box-shadow: -6px -6px 24px -4px rgba(0, 0, 0, 0.06);
+    display: block;
+  }
+
+  &:after{
+    content: "";
+    position: absolute;
+    left: -21px;
+    bottom: 8px;
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    height: 43px;
+    width: 43px;
+    transform: rotate(-45deg);
+    display: block;
+    background-color: white;
+    box-shadow: -6px 0px 24px -4px rgba(0, 0, 0, 0.06);
+  }
+
+  &.card-widget {
+    &:before {
+      width: 15px;
+      height: calc(100% - 12px);
+      left: -15px;
+      border-left: 2px solid $brand-third-color;
+    }
+
+    &:after {
+      left: -10px;
+      bottom: 3px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  &.card-cliquable {
+    &:hover {
+      box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.12);
+      &:before {
+        box-shadow: -6px -6px 24px -4px rgba(0, 0, 0, 0.12);
+      }
+      &:after {
+        box-shadow: -6px 0px 14px -6px rgba(0, 0, 0, 0.12);
+      }
+    }
+
+    &:focus, &:active {
+      border: 1px solid $brand-second-color;
+      &:before {
+        border-top: 1px solid $brand-second-color;
+        border-left: 1px solid $brand-second-color;
+      }
+      &:after {
+        border-left: 1px solid $brand-second-color;
+      }
+    }
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  & > * {
+    z-index: 1;
+  }
+}
+
+.card-body {
+  padding: 1.5rem 1.3rem 1.5rem 0;
+  z-index: 1;
+  background-color: white;
+  border-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  position: relative;
+}

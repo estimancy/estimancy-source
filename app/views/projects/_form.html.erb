@@ -1,4 +1,111 @@
 <%= simple_form_for(@project) do |f| %>
+
+  <%= hidden_field_tag :project_id, @project.id %>
+
+  <div class="card estimation-edition-estimation">
+    <div class="card-body">
+      <div class="edition-bloc-title">
+        Estimation
+      </div>
+      <div class="edition-bloc-form">
+        <div class="form-row">
+          <div class="col-6">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="name">
+              <label class="mdl-textfield__label" for="name">Nom</label>
+              <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="version">
+              <label class="mdl-textfield__label" for="version">Version</label>
+              <span class="mdl-textfield__error">Input is not a number!</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select">
+              <input type="text" value="" class="mdl-textfield__input" id="status" readonly>
+              <input type="hidden" value="" name="status">
+              <i class="mdl-icon-toggle__label material-icons">arrow_drop_down</i>
+              <label for="status" class="mdl-textfield__label">Statut</label>
+              <ul for="status" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
+                <li class="mdl-menu__item" data-val="encours">En cours</li>
+                <li class="mdl-menu__item" data-val="relecture">En relecture</li>
+                <li class="mdl-menu__item" data-val="controle">Contrôle</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-12">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="need">
+              <label class="mdl-textfield__label" for="need">Besoin métier</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-6">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="number">
+              <label class="mdl-textfield__label" for="number">N° de la demande</label>
+              <span class="mdl-textfield__error">Merci de saisir un nombre</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-9">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select">
+              <input type="text" value="" class="mdl-textfield__input" id="application" readonly>
+              <input type="hidden" value="" name="application">
+              <i class="mdl-icon-toggle__label material-icons">arrow_drop_down</i>
+              <label for="application" class="mdl-textfield__label">Application</label>
+              <ul for="application" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
+                <li class="mdl-menu__item" data-val="encours">En cours</li>
+                <li class="mdl-menu__item" data-val="relecture">En relecture</li>
+                <li class="mdl-menu__item" data-val="controle">Contrôle</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-8">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty">
+              <a href="#" class="" id="template">00 - Estimation en UO "Maison" - 1.0 </a>
+              <label for="template" class="mdl-textfield__label active">Modèle d’origine</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-8">
+            <div class="form-group btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-secondary active">
+                <input type="radio" name="privacy" id="option1" autocomplete="off" checked> Publique
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="privacy" id="option2" autocomplete="off"> Privée
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-12">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <textarea class="mdl-textfield__input" type="text" rows= "3" id="description" ></textarea>
+              <label class="mdl-textfield__label" for="description">Description</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+
+
+
+<%= simple_form_for(@project) do |f| %>
   <div class="tabs-project">
     <ul>
       <li><a href="#tabs-1"><%= I18n.t(:global_properties) %></a></li>
@@ -12,26 +119,7 @@
 
     <div id="tabs-1">
 
-      <%= hidden_field_tag :project_id, @project.id %>
 
-      <% can_alter_model = can?(:manage_estimation_models, Project) %>
-
-      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :business_need, :label => "#{I18n.t 'business_need'}", :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :request_number, :label => "#{I18n.t 'request_number'}", :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-
-      <% if @project.new_record? %>
-        <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
-      <% end %>
-
-      <% if @project.is_model || @is_model %>
-        <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
-        <%= f.input :allow_export_pdf, :label => I18n.t("Autoriser l'export PDF"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
-      <% end %>
-      <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
-      <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !(can?(:alter_private_estimation_setup, @project) || can_alter_model) %>
-
-      <%= f.input :demand_id, as: :hidden, :input_html => { :value => params[:demand_id] } %>
 
       <br/>
 
@@ -156,16 +244,16 @@
                           :input_html => { :class => 'date-picker',
                                            :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) } %></td>
 
-          <script>
-              $(document).ready(function () {
-                  $(".date-picker").datepicker({
-                      language: '<%= set_user_language %>',
-                      autoclose: true,
-                      todayHighlight: true,
-                      todayBtn: true
-                  });
-              });
-          </script>
+<!--          <script>-->
+<!--              $(document).ready(function () {-->
+<!--                  $(".date-picker").datepicker({-->
+<!--                      language: '<%# set_user_language %>',-->
+<!--                      autoclose: true,-->
+<!--                      todayHighlight: true,-->
+<!--                      todayBtn: true-->
+<!--                  });-->
+<!--              });-->
+<!--          </script>-->
         </tr>
 
         <tr>

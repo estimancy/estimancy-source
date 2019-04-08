@@ -1,0 +1,88 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+
+label {
+  //margin-bottom: 0;
+}
+
+.form-row {
+  margin-right: -30px;
+  margin-left: -30px;
+
+  & > .col, & > [class*="col-"] {
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+}
+
+.mdl-textfield {
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.mdl-textfield--floating-label.is-focused .mdl-textfield__label,
+.mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
+.mdl-textfield--floating-label.has-placeholder .mdl-textfield__label {
+  color: $brand-sixth-color;
+  font-size: 16px;
+  top: 10px;
+}
+
+.mdl-textfield__input {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid $grey-light;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.04em;
+  color: $grey-extradark
+}
+
+.mdl-textfield__label {
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.04em;
+  color: $grey-medium;
+  top: 30px;
+
+  &:after {
+    background-color: $brand-third-color;
+    bottom: 22px;
+  }
+}
+
+// Error
+.mdl-textfield.is-invalid .mdl-textfield__input {
+  border-color: #D84315;
+}
+.mdl-textfield__error {
+  color: #D84315;
+}
+.mdl-textfield--floating-label.is-invalid .mdl-textfield__label {
+  color: #D84315;
+}
+
+// Dropdown icon
+.getmdl-select .mdl-icon-toggle__label {
+  color: $grey-medium;
+  margin-top: -38px;
+}
+.getmdl-select.is-focused .mdl-icon-toggle__label {
+  color: $grey-medium;
+}
+
+.mdl-textfield > a {
+  padding: 0.5rem 0;
+  display: block;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.04em;
+  color: $brand-third-color;
+}

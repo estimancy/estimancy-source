@@ -1,0 +1,42 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+@import "colors";
+@import "fonts";
+@import "normalize";
+@import "forms";
+@import "getmdl-select";
+
+.estimation-edition-estimation {
+  border-top: 3px solid $brand-third-color;
+
+  &:before {
+    border-top: 3px solid $brand-third-color;
+    top: -3px
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: row;
+    padding-right: 3.8rem;
+  }
+
+  .edition-bloc-title {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 23px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $brand-first-color;
+    padding: 0.3rem 3.3em 0 1.7em;
+  }
+
+  .edition-bloc-form {
+    flex: 1;
+    padding-right: 3.7rem;
+  }
+}

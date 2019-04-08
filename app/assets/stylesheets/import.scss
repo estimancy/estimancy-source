@@ -1,10 +1,41 @@
-// import bootstrap
-//@import 'bootstrap/bootstrap-user-variables';
-//@import 'bootstrap/bootstrap-reboot';
-//@import 'bootstrap/bootstrap';
-//@import 'bootstrap/bootstrap-grid';
-
 // import the basics
 @import "colors";
 @import "fonts";
 @import "normalize";
+
+// import mdb
+//@import "mdb/mdb.lite.scss";
+// import material design select
+@import "getmdl-select";
+
+// import customize styles
+@import "forms";
+@import "card";
+
+// import components
+@import "button.scss";
+//@import "card-indicator.scss";
+@import "effort-bloc.scss";
+//@import "effort-chart-bloc.scss";
+//@import "effort-table.scss";
+//@import "estimation-detail-sidebar.scss";
+@import "estimation-edition-estimation.scss";
+@import "estimation-list.scss";
+//@import "estimation-overview.scss";
+//@import "estimation-quickview.scss";
+//@import "estimation-widgets.scss";
+@import "global-search-bar.scss";
+@import "header.scss";
+@import "h1.scss";
+//@import "h2.scss";
+//@import "h3.scss";
+@import "home-button.scss";
+@import "logo.scss";
+@import "page-detail-header.scss";
+//@import "page-edition-header.scss";
+//@import "page-list-header.scss";
+//@import "estimation-detail-page.scss";
+//@import "estimation-list-page.scss";
+@import "project_dropdown.scss";
+@import "quickview-list.scss";
+@import "tabs.scss";
