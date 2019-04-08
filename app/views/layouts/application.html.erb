@@ -209,7 +209,10 @@
             </ul>
             <div class="page-header-buttons">
               <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">Suivant</button>
-              <button type="button" href="<%= dashboard_path(@project) %>" class="btn btn-secondary waves-effect waves-light">Précedent</button>    </div>
+              <% unless @project.nil? %>
+                <button type="button" href="<%= dashboard_path(@project) %>" class="btn btn-secondary waves-effect waves-light">Précedent</button>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
