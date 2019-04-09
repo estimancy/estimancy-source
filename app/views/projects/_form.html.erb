@@ -1,3 +1,5 @@
+<br>
+<br>
 <%= simple_form_for(@project) do |f| %>
 
   <%= hidden_field_tag :project_id, @project.id %>
@@ -129,4 +131,65 @@
       </div>
     </div>
   </div>
+
+  <br>
+  <br>
+
+  <div class="card card-content-bloc estimation-edition">
+    <div class="card-body">
+      <div class="edition-bloc-title">
+        <%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
+      </div>
+
+      <div class="edition-bloc-content">
+        <table class="table access-table">
+          <thead>
+            <tr>
+              <th><%= I18n.t(:group_name)%></th>
+              <% @organization.project_security_levels.each do |prj_level| %>
+                <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
+              <% end %>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @organization.groups.each do |group| %>
+              <tr>
+                <td>
+                  <%= group.name %>
+                  <% @organization.project_security_levels.each do |prj_level| %>
+                    <%
+                      ps = ProjectSecurity.where(group_id: group.id,
+                                                 project_id: @project.id,
+                                                 project_security_level_id: prj_level.id,
+                                                 is_model_permission: false,
+                                                 is_estimation_permission: true).first
+                    %>
+                  <td>
+                    <div class="custom-control custom-checkbox">
+                      <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, class: "custom-control-input") %>
+                    </div>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+          <%= render :partial => 'layouts/footer_table' %>
+        </table>
+
+          <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+            <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+          <% end %>
+
+          <% if @project.is_model %>
+            <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+          <% else %>
+            <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
+          <% end %>
+
+      </div>
+    </div>
+  </div>
+
 <% end %>

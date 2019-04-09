@@ -187,7 +187,23 @@
                   </div>
 
                   <div class="row estimation-overview-infos mb-3">
-                    <% @data_widget_hash.keys.reverse[3..10].each do |k| %>
+                    <% @data_widget_hash.keys.reverse[3..5].each do |k| %>
+                      <% value = @data_widget_hash[k] %>
+                      <% unless value.is_a?(Hash) %>
+                        <div class="col">
+                          <%= k %>
+                          <div class="estimation-overview-info-number">
+                            <strong>
+                              <%= value %>
+                            </strong>
+                          </div>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+
+                  <div class="row estimation-overview-infos mb-3">
+                    <% @data_widget_hash.keys.reverse[5..7].each do |k| %>
                       <% value = @data_widget_hash[k] %>
                       <% unless value.is_a?(Hash) %>
                         <div class="col">

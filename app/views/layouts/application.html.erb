@@ -198,7 +198,7 @@
         </li>
       </ul>
     <% else %>
-      <div>
+
         <div class="page-header page-edition-header">
           <div class="container text-center">
             <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
@@ -208,18 +208,21 @@
               <li class="<%= controller.action_name == "dashboard" ? "active" : "" %>">Valeurs<div class="losange"></div></li>
             </ul>
             <div class="page-header-buttons">
-              <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">Suivant</button>
               <% unless @project.nil? %>
-                <button type="button" href="<%= dashboard_path(@project) %>" class="btn btn-secondary waves-effect waves-light">Précedent</button>
+                <button type="button" class="btn btn-secondary waves-effect waves-light">
+                  <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">Précédent</a>
+                </button>
               <% end %>
+              <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">
+                <a class="estimancy" href="<%= dashboard_path(@project) %>">Suivant</a>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+
     <% end %>
 
     <% if controller.action_name == "dashboard" %>
-
       <div id="sidebar">
         <button type="button" id="sidebarCollapse" class="btn btn-info waves-effect waves-light">
           <img src="/assets/map_icon.svg">
@@ -236,7 +239,8 @@
       </div>
     <% end %>
 
-    <hr>
+    <br>
+    <br>
     <div class="text-center mb-3">
       <img src="/assets/Estimancy_Logo_150px_RVB.png" id="exifviewer-img-1" exifid="1776978814" oldsrc="https://arnaud-devui.bitbucket.io/images/Estimancy_Logo_150px_RVB.png">
     </div>
