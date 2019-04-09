@@ -219,6 +219,7 @@
     <% end %>
 
     <% if controller.action_name == "dashboard" %>
+
       <div id="sidebar">
         <button type="button" id="sidebarCollapse" class="btn btn-info waves-effect waves-light">
           <img src="/assets/map_icon.svg">
@@ -226,13 +227,9 @@
         </button>
         <div class="sidebar-content">blabla</div>
       </div>
-      <div class="position-relative">
-        <div class="" style="background: #ECEFF2;">
-          <div class="container">
-            <%= yield %>
-          </div>
-        </div>
-      </div>
+
+      <%= yield %>
+
     <% else %>
       <div class="container">
         <%= yield %>

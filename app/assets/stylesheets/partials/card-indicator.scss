@@ -33,7 +33,7 @@
 
   .card-indicator-quantity {
     font-family: "Roboto";
-    font-size: 22px;
+    font-size: 20px;
     line-height: 30px;
     display: flex;
     align-items: baseline;
@@ -41,10 +41,35 @@
     span {
       font-family: "Roboto";
       font-weight: 500;
-      font-size: 36px;
+      font-size: 30px;
       line-height: normal;
       letter-spacing: -0.02em;
       text-transform: uppercase;
+      color: $brand-first-color;
+      margin-right: 10px;
+    }
+
+    img {
+      display: inline-block;
+      margin-right: 10px;
+      align-self: center;
+    }
+  }
+
+  .card-indicator-label {
+    font-family: "Roboto";
+    font-size: 20px;
+    line-height: 30px;
+    display: flex;
+    align-items: baseline;
+
+    span {
+      font-family: "Roboto";
+      font-weight: 500;
+      font-size: 20px;
+      line-height: normal;
+      letter-spacing: -0.02em;
+      //text-transform: uppercase;
       color: $brand-first-color;
       margin-right: 10px;
     }
