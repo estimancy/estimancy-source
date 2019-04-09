@@ -218,11 +218,30 @@
       </div>
     <% end %>
 
-    <div class="container">
-      <%= yield %>
-    </div>
+    <% if controller.action_name == "dashboard" %>
+      <div id="sidebar">
+        <button type="button" id="sidebarCollapse" class="btn btn-info waves-effect waves-light">
+          <img src="/assets/map_icon.svg">
+          <div>Plan</div>
+        </button>
+        <div class="sidebar-content">blabla</div>
+      </div>
+      <div class="position-relative">
+        <div class="" style="background: #ECEFF2;">
+          <div class="container">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="container">
+        <%= yield %>
+      </div>
+    <% end %>
 
-    <div class="text-center mb-3"><img src="/assets/Estimancy_Logo_150px_RVB.png" id="exifviewer-img-1" exifid="1776978814" oldsrc="https://arnaud-devui.bitbucket.io/images/Estimancy_Logo_150px_RVB.png"></div>
+    <div class="text-center mb-3">
+      <img src="/assets/Estimancy_Logo_150px_RVB.png" id="exifviewer-img-1" exifid="1776978814" oldsrc="https://arnaud-devui.bitbucket.io/images/Estimancy_Logo_150px_RVB.png">
+    </div>
 
     <%= render 'cookies_eu/consent_banner' %>
     <%= render 'layouts/notifications' %>

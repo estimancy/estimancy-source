@@ -103,6 +103,10 @@ pre {
 a {
     background-color: transparent; /* 1 */
     -webkit-text-decoration-skip: objects; /* 2 */
+
+&:hover {
+     text-decoration: none
+ }
 }
 
 /**
@@ -444,4 +448,12 @@ template {
 
 [hidden] {
     display: none;
+}
+
+li {
+    list-style: none
+}
+
+ul {
+    padding-left: 0
 }

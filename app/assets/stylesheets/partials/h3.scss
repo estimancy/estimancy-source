@@ -5,14 +5,14 @@
 //@import 'bootstrap/bootstrap-grid';
 
 // import the basics
-@import "colors";
-@import "fonts";
-@import "normalize";
+//@import "default/colors";
+//@import "default/fonts";
+//@import "default/normalize";
 
-h1 {
+h3 {
   font-family: "Roboto";
   font-weight: bold;
-  font-size: 36px;
-  line-height: 45px;
+  font-size: 28px;
+  line-height: 36px;
   color: $brand-first-color;
 }

@@ -1,7 +1,7 @@
 // import the basics
-@import "colors";
-@import "fonts";
-@import "normalize";
+//@import "default/colors";
+//@import "default/fonts";
+//@import "default/normalize";
 
 // import bootstrap
 //@import 'bootstrap-user-variables';
@@ -16,7 +16,7 @@
 
 // import customize styles
 @import "forms";
-@import "card";
+@import "default/card";
 
 // import components
 @import "button.scss";
@@ -31,17 +31,17 @@
 //@import "estimation-quickview.scss";
 //@import "estimation-widgets.scss";
 @import "global-search-bar.scss";
-@import "header.scss";
+@import "header";
 @import "h1.scss";
 //@import "h2.scss";
 //@import "h3.scss";
-@import "home-button.scss";
-@import "logo.scss";
-@import "page-detail-header.scss";
+@import "home-button";
+@import "logo";
+@import "page-detail-header";
 //@import "page-edition-header.scss";
 //@import "page-list-header.scss";
 //@import "estimation-detail-page.scss";
 //@import "estimation-list-page.scss";
-@import "project_dropdown.scss";
-@import "quickview-list.scss";
-@import "tabs.scss";
+@import "project_dropdown";
+@import "quickview-list";
+@import "tabs";

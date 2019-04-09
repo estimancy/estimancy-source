@@ -1,0 +1,97 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+//@import "default/colors";
+//@import "default/fonts";
+//@import "default/normalize";
+
+.card.card-indicator {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+  margin-left: 15px;
+
+  .card-body {
+    padding: 0.7rem 1.3rem 0.5rem 0.2rem;
+  }
+
+  .card-indicator-type {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $brand-third-color;
+  }
+
+  .card-indicator-quantity {
+    font-family: "Roboto";
+    font-size: 22px;
+    line-height: 30px;
+    display: flex;
+    align-items: baseline;
+
+    span {
+      font-family: "Roboto";
+      font-weight: 500;
+      font-size: 36px;
+      line-height: normal;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: $brand-first-color;
+      margin-right: 10px;
+    }
+
+    img {
+      display: inline-block;
+      margin-right: 10px;
+      align-self: center;
+    }
+  }
+
+  &.card-indicator-with-module, &.card-indicator-with-module-dark {
+    .card-indicator-quantity {
+      margin-top: 0.5rem;
+    }
+  }
+
+  &.card-indicator-with-module-dark {
+    background-color: $brand-first-color;
+    color: white;
+    border: 1px solid $brand-first-color;
+
+    &:before {
+      background-color: $brand-first-color;
+      border-left: 0;
+    }
+
+    &:after {
+      left: -10px;
+      bottom: 3px;
+      height: 21px;
+      width: 21px;
+      background-color: $brand-first-color;
+      border: 1px solid $brand-first-color;
+    }
+
+    .card-body {
+      background-color: $brand-first-color;
+    }
+
+    .card-indicator-type {
+      color: white;
+    }
+
+    .card-indicator-quantity span {
+      color: white
+    }
+  }
+
+}

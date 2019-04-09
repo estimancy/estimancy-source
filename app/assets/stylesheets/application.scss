@@ -1,8 +1,13 @@
-/*
-    *= require_tree .
-    *= require_self
-    //*= require font-awesome
-    //*= require font-awesome/font-awesome
-    //*= require cookies_eu
-    //*= require import
-*/
+@import "bootstrap/bootstrap.css";
+@import "bootstrap/bootstrap-grid.css";
+@import "bootstrap/bootstrap-reboot.css";
+@import "bootstrap/bootstrap-responsive.css";
+@import "bootstrap/material.indigo-pink.min.css";
+@import "bootstrap/datatables.min.css";
+
+@import "default/*";
+
+@import "mdl/*";
+@import "partials/*";
+
+@import "bootstrap/normalize";

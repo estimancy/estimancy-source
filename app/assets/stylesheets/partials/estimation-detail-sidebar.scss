@@ -1,0 +1,74 @@
+// import bootstrap
+//@import 'bootstrap/bootstrap-user-variables';
+//@import 'bootstrap/bootstrap-reboot';
+//@import 'bootstrap/bootstrap';
+//@import 'bootstrap/bootstrap-grid';
+
+// import the basics
+//@import "default/colors";
+//@import "default/fonts";
+//@import "default/normalize";
+
+
+#sidebar {
+  position: absolute;
+  background: white;
+  height: 100%;
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+  z-index: 1;
+  border-right: 1px solid #F0F0F0;
+
+  &:after{
+    content: "";
+    position: absolute;
+    right: -21px;
+    top: -20px;
+    border-bottom: 1px solid #F0F0F0;
+    height: 43px;
+    width: 43px;
+    transform: rotate(-45deg);
+    display: block;
+    background-color: white;
+  }
+
+  & + div {
+    transition: all 0.3s;
+  }
+
+  .sidebar-content {
+    display: none;
+    text-align: center;
+  }
+
+  &.active {
+    width: 270px;
+
+    .sidebar-content {
+      display: block
+    }
+
+    & + div {
+      margin-left: 180px;
+    }
+  }
+}
+
+#sidebarCollapse {
+  background: white;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: center;
+  letter-spacing: 0.04em;
+  color: $grey-dark;
+  margin: 2.5rem 0;
+  padding: 0;
+
+  img {
+    margin-bottom: 0.5rem;
+  }
+
+}
