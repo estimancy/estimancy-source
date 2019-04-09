@@ -208,14 +208,14 @@
               <li class="<%= controller.action_name == "dashboard" ? "active" : "" %>">Valeurs<div class="losange"></div></li>
             </ul>
             <div class="page-header-buttons">
+              <button type="button" class="btn btn-secondary waves-effect waves-light">
+                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">Précédent</a>
+              </button>
               <% unless @project.nil? %>
-                <button type="button" class="btn btn-secondary waves-effect waves-light">
-                  <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">Précédent</a>
+                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">
+                  <a class="estimancy" href="<%= dashboard_path(@project) %>">Suivant</a>
                 </button>
               <% end %>
-              <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">
-                <a class="estimancy" href="<%= dashboard_path(@project) %>">Suivant</a>
-              </button>
             </div>
           </div>
         </div>
