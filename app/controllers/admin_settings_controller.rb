@@ -36,7 +36,7 @@ class AdminSettingsController < ApplicationController
     @message = params[:message]
     @objet = params[:objet]
     UserMailer.maintenance(@users, @message, @objet).deliver
-    redirect_to "/organizationals_params"
+    redirect_to "/all_organizations"
   end
 
   def index

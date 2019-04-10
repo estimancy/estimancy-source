@@ -19,7 +19,7 @@
 
     <header class="header">
       <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="<%= organizationals_params_path %>">
+        <a class="navbar-brand" href="<%= all_organizations_path %>">
           <div class="home-button">
             <img class="logo" src=/assets/logo_arrows_white_small.png>
             <div class="home-button-text">Accueil Estimancy</div>
@@ -92,7 +92,7 @@
                 <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
                   <%= I18n.t(:security_audit_utilities) %>
                 </a>
-                <a class="dropdown-item account-item" href="<%= main_app.organizationals_params_path %>">
+                <a class="dropdown-item account-item" href="<%= main_app.all_organizations_path %>">
                   <%= I18n.t(:organizations) %>
                 </a>
                 <a class="dropdown-item account-item" href="<%= main_app.users_path %>">
@@ -167,7 +167,8 @@
       </div>
     </header>
 
-    <% if controller.action_name == "dashboard" %>
+    <% if controller.action_name == "all_organizations" %>
+    <% elsif controller.action_name == "dashboard" %>
       <div class="page-header page-detail-header">
         <div class="container">
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>

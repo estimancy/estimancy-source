@@ -32,7 +32,7 @@ class Guw::GuwCoefficientElementsController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     set_page_title "Nouveau coefficient"
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}",
                     I18n.t(:uo_model) => guw.edit_guw_model_path(@guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients"),
                     @guw_model.organization => ""
   end
@@ -42,7 +42,7 @@ class Guw::GuwCoefficientElementsController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.find(params[:guw_coefficient_id])
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     set_page_title "Editer le coefficient"
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}",
                     I18n.t(:uo_model) => guw.edit_guw_model_path(@guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients"),
                     @guw_model.organization => ""
 

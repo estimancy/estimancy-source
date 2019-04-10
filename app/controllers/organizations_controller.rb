@@ -40,7 +40,7 @@ class OrganizationsController < ApplicationController
     @start_date = params[:start_date]
     @end_date = params[:end_date] || DateTime.now
 
-    redirect_to organizationals_params_path if @organization.nil? and return
+    redirect_to all_organizations_path if @organization.nil? and return
 
     @versions = AutorizationLogEvent.where(organization_id: @organization.id).order(:created_at)
     unless @start_date.blank?
@@ -1927,7 +1927,7 @@ class OrganizationsController < ApplicationController
   def report
     @organization = Organization.find(params[:organization_id])
     set_page_title I18n.t(:report, parameter: @organization)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
   end
 
@@ -1935,7 +1935,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:authorisation, parameter: @organization)
 
     @groups = @organization.groups
@@ -1959,7 +1959,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:Parameter, parameter: @organization)
 
     #@technologies = @organization.organization_technologies
@@ -2008,7 +2008,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
     set_page_title I18n.t(:module ,parameter: @organization)
     @guw_models = @organization.guw_models.order("name asc")
     @skb_models = @organization.skb_models.order("name asc")
@@ -2020,7 +2020,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_users, parameter: @organization)
   end
 
@@ -2029,7 +2029,7 @@ class OrganizationsController < ApplicationController
 
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
     if params[:filter_version].present?
@@ -3170,10 +3170,10 @@ class OrganizationsController < ApplicationController
 
       respond_to do |format|
         flash[:notice] = "Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation."
-        format.html { redirect_to organizationals_params_path and return }
-        #format.js { render :js => "window.location.replace('/organizationals_params');"}
-        ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/organizationals_params');"}
-        #format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.'); window.location.replace('/organizationals_params');"}
+        format.html { redirect_to all_organizations_path and return }
+        #format.js { render :js => "window.location.replace('/all_organizations');"}
+        ##format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès'); window.location.replace('/all_organizations');"}
+        #format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.'); window.location.replace('/all_organizations');"}
 
         format.js { render :js => "alert('Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation.');" and return }
 
@@ -3185,8 +3185,8 @@ class OrganizationsController < ApplicationController
 
       flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
       respond_to do |format|
-        format.html { redirect_to organizationals_params_path and return }
-        format.js { render :js => "window.location.replace('/organizationals_params');"}
+        format.html { redirect_to all_organizations_path and return }
+        format.js { render :js => "window.location.replace('/all_organizations');"}
       end
     end
 
@@ -3196,7 +3196,7 @@ class OrganizationsController < ApplicationController
     authorize! :create_organizations, Organization
     @organization = Organization.new
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @groups = @organization.groups
   end
 
@@ -3209,7 +3209,7 @@ class OrganizationsController < ApplicationController
     @current_organization = @organization
     check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
 
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
@@ -3234,7 +3234,7 @@ class OrganizationsController < ApplicationController
     @organization = Organization.new(params[:organization])
 
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
 
     check_if_organization_is_image(@organization)
 
@@ -3284,11 +3284,11 @@ class OrganizationsController < ApplicationController
     @current_organization = @organization
 
     set_page_title I18n.t(:organizations)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
 
     if @organization.update_attributes(params[:organization])
       flash[:notice] = I18n.t (:notice_organization_successful_updated)
-      redirect_to redirect_apply(edit_organization_path(@organization), nil, '/organizationals_params')
+      redirect_to redirect_apply(edit_organization_path(@organization), nil, '/all_organizations')
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
@@ -3337,7 +3337,7 @@ class OrganizationsController < ApplicationController
             session[:organization_id] = current_user.organizations.first  #session[:organization_id] = nil
           end
           flash[:notice] = I18n.t(:notice_organization_successful_deleted)
-          redirect_to '/organizationals_params' and return
+          redirect_to '/all_organizations' and return
 
         else
           flash[:warning] = I18n.t('warning_need_organization_check_box_confirmation')
@@ -3345,18 +3345,18 @@ class OrganizationsController < ApplicationController
         end
 
       when I18n.t('cancel')
-        redirect_to '/organizationals_params' and return
+        redirect_to '/all_organizations' and return
       else
         render :template => 'projects/confirm_organization_deletion', :locals => {:organization_id => @organization_id}
     end
   end
 
-  def organizationals_params
+  def all_organizations
     set_page_title I18n.t(:Organizational_Parameters)
     if @current_organization
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", "#{I18n.t(:organizations)}" => ""
     else
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params", "#{I18n.t(:organizations)}" => ""
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations", "#{I18n.t(:organizations)}" => ""
     end
 
     if current_user.super_admin?
@@ -3729,7 +3729,7 @@ class OrganizationsController < ApplicationController
     else
       flash[:error] = "#{ I18n.t(:errors_when_copying_organization)} : #{new_organization.errors.full_messages.join(', ')}"
     end
-    redirect_to organizationals_params_path
+    redirect_to all_organizations_path
   end
 
   def show
@@ -3786,7 +3786,7 @@ class OrganizationsController < ApplicationController
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
-      redirect_to("/organizationals_params",
+      redirect_to("/all_organizations",
                   flash: {
                       error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
                   }) and return

@@ -31,7 +31,7 @@ class Ge::GeModelsController < ApplicationController
     @organization = @ge_model.organization
 
     set_page_title @ge_model.name
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.name => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.name => ""
   end
 
   def new
@@ -40,7 +40,7 @@ class Ge::GeModelsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @ge_model = Ge::GeModel.new
     set_page_title I18n.t(:new_instance_of_effort)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "effort"), I18n.t(:new) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "effort"), I18n.t(:new) => ""
   end
 
   def edit
@@ -50,8 +50,8 @@ class Ge::GeModelsController < ApplicationController
     @organization = @ge_model.organization
 
     set_page_title I18n.t(:Edit_instance_of_effort)
-    #set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.organization => ""
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.name => ""
+    #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:effort_modules) => main_app.organization_module_estimation_path(@organization, anchor: "effort"), @ge_model.name => ""
 
   end
 

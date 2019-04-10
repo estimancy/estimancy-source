@@ -27,7 +27,7 @@ class Kb::KbInputsController < ApplicationController
 
     @kb_model = Kb::KbModel.find(params[:id])
     @organization = @kb_model.organization
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def new
@@ -43,7 +43,7 @@ class Kb::KbInputsController < ApplicationController
     @kb_model = Kb::KbModel.find(params[:id])
     @organization = @kb_model.organization
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
   end
 
   def import

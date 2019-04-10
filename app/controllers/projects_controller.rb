@@ -380,7 +380,7 @@ class ProjectsController < ApplicationController
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
     @module_projects = @project.module_projects
@@ -615,7 +615,7 @@ class ProjectsController < ApplicationController
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@project_organization.id}", @project_organization.to_s => organization_estimations_path(@project_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@project_organization.id}", @project_organization.to_s => organization_estimations_path(@project_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @module_projects = @project.module_projects
     #Get the initialization module_project
@@ -1050,7 +1050,7 @@ class ProjectsController < ApplicationController
 
     else
 
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       # if cannot?(:edit_project, @project)    # No write access to project
       #   redirect_to(:action => 'show') and return
@@ -1522,7 +1522,7 @@ class ProjectsController < ApplicationController
     if @project.is_model
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     else
-      set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     end
 
     @project_areas = @organization.project_areas
@@ -3142,7 +3142,7 @@ public
   def projects_from
     @organization = Organization.find(params[:organization_id])
     set_page_title I18n.t(:text_create_from_model_2)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization), I18n.t('new_project_from') => ""
 
     #authorize! :create_project_from_template, Project
     if cannot?(:create_project_from_template, Project)
@@ -4318,7 +4318,7 @@ public
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
     end
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
     @module_projects = @project.module_projects

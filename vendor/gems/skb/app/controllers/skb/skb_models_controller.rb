@@ -27,7 +27,7 @@ class Skb::SkbModelsController < ApplicationController
 
     @skb_model = Skb::SkbModel.find(params[:id])
     @organization = @skb_model.organization
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:skb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @organization => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:skb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @organization => ""
   end
 
   def duplicate
@@ -64,7 +64,7 @@ class Skb::SkbModelsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @skb_model = Skb::SkbModel.new
     set_page_title I18n.t(:New_knowledge_base)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:skb_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "taille"), I18n.t(:new) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:skb_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "taille"), I18n.t(:new) => ""
   end
 
   def edit
@@ -75,7 +75,7 @@ class Skb::SkbModelsController < ApplicationController
 
     @current_organization
     set_page_title I18n.t(:Edit_knowledge_base)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:skb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @skb_model.name => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:skb_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @skb_model.name => ""
   end
 
   def data_export

@@ -29,7 +29,7 @@ class GroupsController < ApplicationController
     @group = Group.new
     @organization = Organization.find_by_id(params[:organization_id])
 
-    #set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization)
+    #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization)
     set_breadcrumbs I18n.t(:groups) => organization_setting_path(@organization, anchor: "tabs-group"), I18n.t('new_group') => ""
 
     @users = User.all
@@ -43,8 +43,8 @@ class GroupsController < ApplicationController
     @group = Group.find(params[:id])
     @organization = @group.organization
     set_page_title I18n.t(:edit_group, value: @group.name)
-    #set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:groups)} / #{@group.to_s}" => edit_organization_path(@organization)
+    #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization)
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:groups)} / #{@group.to_s}" => edit_organization_path(@organization)
     @users = User.all
     @projects = Project.all.reject { |i| !i.is_childless? }
   end
@@ -144,7 +144,7 @@ class GroupsController < ApplicationController
     @organization = @group.organization
 
     set_page_title I18n.t(:edit_group, value: @group.name)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:groups)} / #{@group.to_s}" => edit_organization_path(@organization)
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:groups)} / #{@group.to_s}" => edit_organization_path(@organization)
 
     if @group.update_attributes(params[:group].merge(originator_id: @current_user.id, event_organization_id: @organization.id))
       #redirect_to redirect(groups_path), :notice => "#{I18n.t (:notice_group_successful_updated)}"

@@ -60,13 +60,13 @@
   }
 
   &:focus, &:active {
-    border: 1px solid $brand-second-color;
+    //border: 1px solid $brand-second-color;
     &:before {
-      border-top: 1px solid $brand-second-color;
-      border-left: 1px solid $brand-second-color;
+      //border-top: 1px solid $brand-second-color;
+      //border-left: 1px solid $brand-second-color;
     }
     &:after {
-      border-left: 1px solid $brand-second-color;
+      //border-left: 1px solid $brand-second-color;
     }
   }
 

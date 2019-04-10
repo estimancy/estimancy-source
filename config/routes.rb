@@ -322,7 +322,7 @@ Projestimate::Application.routes.draw do
   get "export_permissions" => 'permissions#export_permissions'
   post "import_permissions" => 'permissions#import_permissions'
 
-  get 'organizationals_params' => 'organizations#organizationals_params', :as => 'organizationals_params'
+  get 'all_organizations' => 'organizations#all_organizations', :as => 'all_organizations'
   post '/organizations/:organization_id/export' => 'organizations#export', :as => 'export_organization'
   post 'organizations/:organization_id/duplicate_organization' => 'organizations#duplicate_organization', :as => :duplicate_organization
   get 'new_organization_from_image' => 'organizations#new_organization_from_image', as: 'new_organization_from_image'
@@ -458,7 +458,7 @@ Projestimate::Application.routes.draw do
   get "/404" => "errors#not_found"
   get "/500" => "errors#internal_server_error"
 
-  root :to => 'organizations#organizationals_params'
+  root :to => 'organizations#all_organizations'
 
   get 'projects_quantity' => 'organizations#projects_quantity'
 

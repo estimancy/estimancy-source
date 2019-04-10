@@ -70,7 +70,7 @@ public
     authorize! :manage, User
 
     set_page_title I18n.t(:new_user)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
 
     @organization_id = params[:organization_id]
     unless @organization_id.nil? || @organization_id.empty?
@@ -91,7 +91,7 @@ public
     authorize! :manage, User
 
     set_page_title I18n.t(:new_user)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
 
     auth_type = AuthMethod.find(params[:user][:auth_type])
 
@@ -188,7 +188,7 @@ public
   #   authorize! :manage, User
   #
   #   set_page_title I18n.t(:new_user)
-  #   set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
+  #   set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:new_user) => ""
   #
   #   auth_type = AuthMethod.find(params[:user][:auth_type])
   #
@@ -268,7 +268,7 @@ public
 
     @user = User.find(params[:id])
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
@@ -292,7 +292,7 @@ public
     end
 
     set_page_title I18n.t(:edit_user, value: @user.name)
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization => "#!", I18n.t(:edit_user, value: @user) => ""
 
     # # Trigger : Gestion historique des evenements
     @user.transaction_id = @user.transaction_id.nil? ? "#{@user.id}_1" : @user.transaction_id.next rescue "#{@user.id}_1"

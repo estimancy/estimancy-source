@@ -81,7 +81,7 @@ class AttributeOrganizationsController < ApplicationController
     end
 
     @attribute_settings = AttributeOrganization.where(:organization_id => params[:organization_id]).all
-    redirect_to redirect_apply(edit_organization_path(@organization, :anchor => 'tabs-2'), nil, '/organizationals_params')
+    redirect_to redirect_apply(edit_organization_path(@organization, :anchor => 'tabs-2'), nil, '/all_organizations')
   end
 
 end

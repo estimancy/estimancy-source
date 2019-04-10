@@ -32,7 +32,7 @@ class Guw::GuwWeightingsController < ApplicationController
     @guw_weighting = Guw::GuwWeighting.new
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization)
 
     set_page_title I18n.t(:Create_a_new_Work_Unit)
@@ -42,7 +42,7 @@ class Guw::GuwWeightingsController < ApplicationController
     @guw_weighting = Guw::GuwWeighting.find(params[:id])
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}",
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}",
                     @current_organization.to_s => main_app.organization_estimations_path(@current_organization),
                     @guw_model => guw.edit_guw_model_path(@guw_weighting.guw_model.id, organization_id: @current_organization.id)
 

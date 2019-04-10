@@ -261,7 +261,7 @@ class DemandsController < ApplicationController
   end
 
   private def get_estimations
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
     if params[:filter_version].present?
