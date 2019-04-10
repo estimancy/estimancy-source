@@ -1,0 +1,56 @@
+p {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+}
+
+.edition-page-template {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color
+}
+
+.edition-scrollable {
+  position: relative;
+  height: calc(100vh - 288px);
+  overflow: auto;
+}
+
+.edition-page-group {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 21px;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $grey-extradark;
+  overflow: hidden;
+
+  &:before {
+    float: left;
+    width: 0;
+    white-space: nowrap;
+    font-weight: 100;
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    color: #E0E0E0;
+    content:
+            "••••••••••••••••••••••••••••••••••••••••"
+            "••••••••••••••••••••••••••••••••••••••••"
+            "••••••••••••••••••••••••••••••••••••••••"
+            "••••••••••••••••••••••••••••••••••••••••"
+            "••••••••••••••••••••••••••••••••••••••••"
+            "••••••••••••••••••••••••••••••••••••••••"
+  }
+
+  span {
+    background-color: #F8F9FA;
+    padding: 0 1rem;
+  }
+}

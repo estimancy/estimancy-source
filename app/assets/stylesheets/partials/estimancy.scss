@@ -10,7 +10,6 @@
   top: 30px;
 }
 
-////////////  AJOUTS NRE ////////////
 a:hover.no-underline {
   text-decoration: none;
 }
@@ -21,6 +20,12 @@ th a.estimancy, a.estimancy {
 
 .btn-estimancy {
   margin-left: 5px;
+}
+
+#edition-sidebar {
+  position: static;
+  //height : 50px;
+  //width: 100%;
 }
 
 //////////// FIN AJOUTS NRE ////////////

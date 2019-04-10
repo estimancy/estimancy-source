@@ -1,0 +1,83 @@
+.card-module {
+  font-family: "Roboto";
+
+  .card-module-text {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 18px;
+    padding-right: 1rem
+  }
+
+  .card-module-precision {
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 18px;
+    color: $grey-medium;
+    margin-top: 5px
+  }
+
+  .card-module-buttons {
+    position: absolute;
+    bottom: 12px;
+    right: 10px;
+
+    a, button {
+      -webkit-appearance: none;
+      background-color: transparent;
+      border: 0;
+      color: $grey-light;
+      outline: 0;
+      cursor: pointer;
+    }
+  }
+
+  &--function-point {
+    &, &:before, &:after {
+      border-color: $module-function-border-color;
+    }
+
+    .card-module-text {
+      color: $module-function-color;
+    }
+  }
+
+  &--trans {
+    &, &:before, &:after {
+      border-color: $module-trans-border-color;
+    }
+
+    .card-module-text {
+      color: $module-trans-color;
+    }
+  }
+
+  &--timecost {
+    &, &:before, &:after {
+      border-color: $module-timecost-border-color;
+    }
+
+    .card-module-text {
+      color: $module-timecost-color;
+    }
+  }
+
+  &--isbg {
+    &, &:before, &:after {
+      border-color: $module-isbg-border-color;
+    }
+
+    .card-module-text {
+      color: $module-isbg-color;
+    }
+  }
+
+  &--cycle {
+    &, &:before, &:after {
+      border-color: $module-cycle-border-color;
+    }
+
+    .card-module-text {
+      color: $module-cycle-color;
+    }
+  }
+}

@@ -16228,6 +16228,15 @@ $( document ).ready(function() {
     $('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
+
+    $(document).on('scroll', function(){
+        if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+            $("#edition-sidebar").css({position: "fixed", top: -5});
+        }
+        if ($(document).scrollTop() < 200){
+            $("#edition-sidebar").css({position: "static", top: 0});
+        }
+    });
 });
 
 //# sourceMappingURL=main.js.map

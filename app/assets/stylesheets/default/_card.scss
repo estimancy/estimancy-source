@@ -11,8 +11,6 @@
 
 .card {
   background: #FFFFFF;
-  /* Dark - 12 */
-  border: 1px 1px 0 0 solid rgba(0, 0, 0, 0.12);
   box-sizing: border-box;/* Z-Index - Strong - Active */
   box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.06);
   border-radius: 0;
@@ -66,6 +64,28 @@
     }
   }
 
+  &.card-module {
+    width: 165px;
+    height: 120px;
+
+    &:before {
+      width: 15px;
+      height: calc(100% - 12px);
+      left: -15px;
+    }
+
+    &:after {
+      left: -10px;
+      bottom: 3px;
+      height: 20px;
+      width: 20px;
+    }
+
+    .card-body {
+      padding: 1.5rem 0.6rem 0.7rem 0.9rem
+    }
+  }
+
   &.card-cliquable {
     &:hover {
       box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.12);
@@ -86,6 +106,16 @@
       &:after {
         border-left: 1px solid $brand-second-color;
       }
+    }
+  }
+
+  &.card-content-bloc {
+    border-top: 3px solid $brand-third-color;
+    padding-bottom: 1.3rem;
+
+    &:before {
+      border-top: 3px solid $brand-third-color;
+      top: -3px
     }
   }
 
