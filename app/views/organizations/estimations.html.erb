@@ -18,18 +18,20 @@
 </p>
 
 <div class="mb-5">
-  <div class="card-list">
-    <% current_user.recent_projects.take(4).each do |project_id| %>
+  <div class="quickview-list">
+    <% current_user.recent_projects.take(4).reverse.each do |project_id| %>
       <% project = Project.find(project_id) %>
       <% unless project.nil? %>
-        <div class="card w-25">
+        <div class="card card-cliquable estimation-quickview w-25">
           <a href="<%= edit_project_path(project) %>">
             <div class="card-body">
-              <h5 class="card-title"><%= project.title %></h5>
-              <h6 class="card-status card-status--encours mb-2 "><%= project.estimation_status.name %></h6>
-              <div class="d-flex"><span class="card-date mb-2 ">21/03/2019</span><span class="card-version mb-2 "><%= project.version_number %></span></div>
-              <p class="card-text"><%= project.description %></p>
-              <div class="d-flex justify-content-between"><span class="card-quantity">121 j.h</span><span class="card-price">650,45 K€</span></div>
+              <h5 class="estimation-quickview-title"><%= project.title %></h5>
+              <h6 class="estimation-quickview-status mb-2" style="color: <%= project.status_background_color %>;">
+                <%= project.estimation_status.name %>
+              </h6>
+              <div class="d-flex"><span class="estimation-quickview-date mb-2 "><%= project.start_date %></span><span class="estimation-quickview-version mb-2 "><%= project.version_number %></span></div>
+              <p class="estimation-quickview-text"><%= project.description %></p>
+              <div class="d-flex justify-content-between"><span class="estimation-quickview-quantity">121 j.h</span><span class="estimation-quickview-price">650,45 K€</span></div>
             </div>
           </a>
         </div>
@@ -98,12 +100,12 @@
             <% @project_module_projects = project.module_projects %>
 
             <td class="estimation-table-overview-cell">
-              <div class="card card-overview">
-                <div class="card-body">
+              <div class="card estimation-overview">
+                <div class="card-body" style="width: 568.5px;">
                   <a href="#" class="close-button"><i class="material-icons">close</i></a>
                   <div class="d-flex justify-content-between">
-                    <div class="card-overview-title" style="flex: 1">
-                      <h5>
+                    <div class="estimation-overview-title" style="flex: 1">
+                      <h5 class="estimation-overview-title">
                         <%= project.title %>
                       </h5>
                     </div>
@@ -113,10 +115,10 @@
                       </button>
                     </a>
                   </div>
-                  <h6 class="card-overview-author">
+                  <h6 class="estimation-overview-author">
                     <%= project.creator %>
                   </h6>
-                  <p class="card-overview-text mb-3">
+                  <p class="estimation-overview-text mb-3">
                     <%= raw(project.description) %>
                   </p>
 
@@ -151,7 +153,7 @@
                     <% end %>
                   <% end %>
 
-                  <div class="d-flex card-overview-quantity mb-5 row">
+                  <div class="d-flex estimation-overview-quantity mb-5 row">
                     <% unless @data_widget_hash.keys.reverse[0..1].nil? %>
                       <% @data_widget_hash.keys.reverse[0..1].each do |k| %>
                         <% value = @data_widget_hash[k] %>
@@ -181,9 +183,9 @@
                           <div class="col">
                             <%= k %>
                             <div class="estimation-overview-info-number">
-                              <strong>
+                              <span>
                                 <%= value %>
-                              </strong>
+                              </span>
                             </div>
                           </div>
                         <% end %>
@@ -199,9 +201,9 @@
                           <div class="col">
                             <%= k %>
                             <div class="estimation-overview-info-number">
-                              <strong>
+                              <span>
                                 <%= value %>
-                              </strong>
+                              </span>
                             </div>
                           </div>
                         <% end %>
@@ -217,9 +219,9 @@
                           <div class="col">
                             <%= k %>
                             <div class="estimation-overview-info-number">
-                              <strong>
+                              <span>
                                 <%= value %>
-                              </strong>
+                              </span>
                             </div>
                           </div>
                         <% end %>

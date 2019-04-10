@@ -16191,6 +16191,8 @@ var _this = void 0;
     };
 }
 
+
+
 $( document ).ready(function() {
 
     // Champ de recherche du header
@@ -16202,18 +16204,6 @@ $( document ).ready(function() {
     });
 
     // Table des estimations
-    // $('.estimation-table').DataTable( {
-    //   columnDefs: [ {
-    //     orderable: false,
-    //     className: 'select-checkbox',
-    //     targets:   0
-    //   } ],
-    //   select: {
-    //     style:    'os',
-    //     selector: 'td:first-child'
-    //   },
-    //   order: [[ 1, 'asc' ]]
-    // } );
     $('.estimation-table tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
@@ -16221,12 +16211,45 @@ $( document ).ready(function() {
         else {
             $('.estimation-table tr.selected').removeClass('selected');
             $(this).addClass('selected');
+            setOverviewSticky($(this).find('.estimation-overview'));
         }
     } );
 
-    // Sidebar
+    // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
+    window.onscroll = function() {setOverviewSticky()};
+
+    function setOverviewSticky(pOverview) {
+        var overview;
+        if (pOverview) {
+            overview = pOverview;
+        } else {
+            overview = $(".estimation-overview:visible");
+        }
+        var table = $(".estimation-table");
+        var tableTop = table[0].offsetTop + 58;
+        var tableBottom = table[0].offsetTop + table[0].offsetHeight;
+
+        if(overview.length) {
+            if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
+                overview.removeClass('sticky-bottom').addClass("sticky");
+                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+            } else if(window.pageYOffset > tableTop) {
+                if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
+                    overview.addClass("sticky").addClass("sticky-bottom");
+                } else {
+                    overview.removeClass('sticky-bottom').addClass("sticky")
+                }
+                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+            } else {
+                overview.removeClass("sticky").removeClass("sticky-bottom");
+                overview.children('.card-body').removeAttr("style");
+            }
+        }
+    }
+
+    // Sidebar page détail
     $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
+        $('#estimation-detail-sidebar').toggleClass('active');
     });
 
     $(document).on('scroll', function(){
@@ -16235,6 +16258,18 @@ $( document ).ready(function() {
         }
         if ($(document).scrollTop() < 200){
             $("#edition-sidebar").css({position: "static", top: 0});
+        }
+    });
+
+    // Date pickers
+    $('#projectStartDate').datepicker({
+        locale: 'fr-fr',
+        format: 'dd.mm.yyyy',
+        weekStartDay: 1,
+        close: function (e) {
+            if($(this).val()) {
+                $(this).parents('.mdl-textfield').addClass('is-dirty');
+            }
         }
     });
 });

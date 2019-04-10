@@ -1,14 +1,3 @@
-// import bootstrap
-//@import 'bootstrap/bootstrap-user-variables';
-//@import 'bootstrap/bootstrap-reboot';
-//@import 'bootstrap/bootstrap';
-//@import 'bootstrap/bootstrap-grid';
-
-// import the basics
-//@import "default/colors";
-//@import "default/fonts";
-//@import "default/normalize";
-
 .header {
   height: 80px;
   background-color: $brand-first-color;
@@ -74,7 +63,7 @@
       font-size: 16px;
       line-height: 20px;
       letter-spacing: 0.02em;
-      color: $grey-dark;
+      color: $grey-extradark;
       padding: 0.5rem 1.5rem;
       position: relative;
 

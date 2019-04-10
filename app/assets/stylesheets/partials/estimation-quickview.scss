@@ -1,0 +1,79 @@
+.estimation-quickview {
+
+  .estimation-quickview-title {
+    font-family: "Roboto";
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 27px;
+    letter-spacing: 0.02em;
+    color: #333333;
+    margin-bottom: 0;
+  }
+
+  .estimation-quickview-status {
+    font-family: "Roboto";
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: 0.02em;
+    -webkit-font-smoothing: antialiased;
+
+    &--encours {
+      color: $status-encours-color;
+    }
+
+    &--relecture {
+      color: $status-relecture-color;
+    }
+
+    &--controle {
+      color: $status-controle-color;
+    }
+
+    &--arevoir {
+      color: $status-arevoir-color;
+    }
+
+    &--accepte {
+      color: $status-accepte-color;
+    }
+
+    &--rejet {
+      color: $status-rejet-color;
+    }
+
+    &--brouillon {
+      color: $status-brouillon-color;
+    }
+  }
+
+  .estimation-quickview-date, .estimation-quickview-version {
+    font-family: "Roboto";
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 21px;
+    letter-spacing: 0.02em;
+    color: #58585A;
+  }
+
+  .estimation-quickview-version {
+    margin-left: 1rem
+  }
+
+  .estimation-quickview-text {
+    font-family: "Roboto";
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    color: #58585A;
+  }
+
+  .estimation-quickview-quantity, .estimation-quickview-price {
+    font-family: "Roboto";
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: 0.02em;
+    color: #333333;
+  }
+}
