@@ -4,7 +4,11 @@
 // It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
 // the compiled file.
 //
-//= require_self
-//= require_tree .
+// require_self
+//= require jquery
+//= require jquery_ujs
 //= require projestimate_script
 //= require projects
+//= require jscolor
+// require main
+//= require_tree .

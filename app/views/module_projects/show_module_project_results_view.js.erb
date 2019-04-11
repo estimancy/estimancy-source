@@ -1,7 +1,7 @@
 //Get the current_component first
 <% @current_component = current_component %>
 $(".estimation_plan_min").html("<%=raw j render 'module_projects/estimation_plan_min', :locals => {:module_projects => @project.module_projects} %>");
-$(".module_box").html("<%=raw j render 'module_projects/estimation_plan', :locals => {:module_projects => @project.module_projects} %>");
+$(".module_box").html("<%=raw j render 'module_projects/estimation_plan_with_go', :locals => {:module_projects => @project.module_projects} %>");
 $("#output_data_view_widgets_results").html("<%=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
 
 //$(".output_data").html("<%#=raw j(sanitize(display_results, :tags => %w(table tr th td span title h4 strong), :attributes => %w(id class style title colspan rowspan))) %>");

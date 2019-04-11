@@ -134,7 +134,7 @@
             <div class="form-row">
               <div class="col-12">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <textarea class="mdl-textfield__input" type="text" rows="3" id="description"></textarea>
+                  <textarea class="mdl-textfield__input" type="text" rows="3" id="description"><%= @project.description %></textarea>
                   <label class="mdl-textfield__label" for="description">Description</label>
                 </div>
               </div>
@@ -234,67 +234,9 @@
             </div>
 
             <div class="p-3" style="background-color: #F8F9FA">
-              <!-- Start: @module--function-point -->
-              <div class="card card-module card-module--function-point">
-                <div class="card-body">
-                  <div class="card-module-text">Points de fonction</div>
-                  <div class="card-module-precision"></div>
-                  <div class="card-module-buttons">
-                    <button><i class="material-icons">delete</i></button>
-                  </div>
-                </div>
-              </div>
-              <!-- End: @module--function-point -->
-
-              <!-- Start: @module--trans -->
-              <div class="card card-module card-module--trans">
-                <div class="card-body">
-                  <div class="card-module-text">Trans PF j.h</div>
-                  <div class="card-module-precision">(COCOMO)</div>
-                  <div class="card-module-buttons">
-                    <button><i class="material-icons">delete</i></button>
-                  </div>
-                </div>
-              </div>
-              <!-- End: @module--trans -->
-
-              <!-- Start: @module--timecost -->
-              <div class="card card-module card-module--timecost">
-                <div class="card-body">
-                  <div class="card-module-text">TimeCost Trade OFF</div>
-                  <div class="card-module-precision">(FR)</div>
-                  <div class="card-module-buttons">
-                    <button><i class="material-icons">delete</i></button>
-                  </div>
-                </div>
-              </div>
-              <!-- End: @module--timecost -->
-
-              <!-- Start: @module--isbg -->
-              <div class="card card-module card-module--isbg">
-                <div class="card-body">
-                  <div class="card-module-text">ISBSG</div>
-                  <div class="card-module-precision">(COCOMO)</div>
-                  <div class="card-module-buttons">
-                    <button><i class="material-icons">delete</i></button>
-                  </div>
-                </div>
-              </div>
-              <!-- End: @module--isbg -->
-
-              <!-- Start: @module--cycle -->
-              <div class="card card-module card-module--cycle">
-                <div class="card-body">
-                  <div class="card-module-text">Cycle du projet</div>
-                  <div class="card-module-precision">(Ing+Mngmt) (1)</div>
-                  <div class="card-module-buttons">
-                    <button><i class="material-icons">delete</i></button>
-                  </div>
-                </div>
-              </div>
-              <!-- End: @module--cycle -->
-
+              <%= render 'module_projects/new_estimation_plan' %>
             </div>
+
           </div>
         </div>
       </div>
@@ -313,36 +255,36 @@
 
             <table class="table access-table">
               <thead>
-                <tr>
-                  <th><%= I18n.t(:group_name)%></th>
-                  <% @organization.project_security_levels.each do |prj_level| %>
-                    <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
-                  <% end %>
-                </tr>
+              <tr>
+                <th><%= I18n.t(:group_name)%></th>
+                <% @organization.project_security_levels.each do |prj_level| %>
+                  <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
+                <% end %>
+              </tr>
               </thead>
 
               <tbody>
-                <% @organization.groups.each do |group| %>
-                  <tr>
+              <% @organization.groups.each do |group| %>
+                <tr>
+                  <td>
+                    <%= group.name %>
+                    <% @organization.project_security_levels.each do |prj_level| %>
+                      <%
+                        ps = ProjectSecurity.where(group_id: group.id,
+                                                   project_id: @project.id,
+                                                   project_security_level_id: prj_level.id,
+                                                   is_model_permission: false,
+                                                   is_estimation_permission: true).first
+                      %>
                     <td>
-                      <%= group.name %>
-                      <% @organization.project_security_levels.each do |prj_level| %>
-                        <%
-                          ps = ProjectSecurity.where(group_id: group.id,
-                                                     project_id: @project.id,
-                                                     project_security_level_id: prj_level.id,
-                                                     is_model_permission: false,
-                                                     is_estimation_permission: true).first
-                        %>
-                      <td>
-                        <div class="custom-control custom-checkbox">
-                          <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false, class: "custom-control-input") %>
-                          <label class="custom-control-label" for="group_securities_<%= prj_level.id %>_<%= group.id %>"></label>
-                        </div>
-                      </td>
-                    <% end %>
-                  </tr>
-                <% end %>
+                      <div class="custom-control custom-checkbox">
+                        <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false, class: "custom-control-input") %>
+                        <label class="custom-control-label" for="group_securities_<%= prj_level.id %>_<%= group.id %>"></label>
+                      </div>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
               </tbody>
             </table>
 
@@ -365,14 +307,14 @@
 
             <table class="table access-table">
               <thead>
-                <tr>
-                  <th><%= I18n.t(:name)%></th>
-                  <% @organization.project_security_levels.each do |prj_level| %>
-                    <th class="filter-select">
-                      <span title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
-                    </th>
-                  <% end %>
-                </tr>
+              <tr>
+                <th><%= I18n.t(:name)%></th>
+                <% @organization.project_security_levels.each do |prj_level| %>
+                  <th class="filter-select">
+                    <span title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
+                  </th>
+                <% end %>
+              </tr>
               </thead>
 
               <tbody>
@@ -448,12 +390,12 @@
 
               <table class="table table-list">
                 <thead>
-                  <tr>
-                    <th><%= I18n.t(:group_name)%></th>
-                    <% @organization.project_security_levels.each do |prj_level| %>
-                      <th><span title="<%= display_security_level_description(prj_level) %>"><%= prj_level.name %></span></th>
-                    <% end %>
-                  </tr>
+                <tr>
+                  <th><%= I18n.t(:group_name)%></th>
+                  <% @organization.project_security_levels.each do |prj_level| %>
+                    <th><span title="<%= display_security_level_description(prj_level) %>"><%= prj_level.name %></span></th>
+                  <% end %>
+                </tr>
                 </thead>
                 <% @organization.groups.each do |group| %>
                   <tr>
@@ -561,3 +503,17 @@
   <br>
 
 <% end %>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on('scroll', function(){
+            if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                $("#edition-sidebar").css({position: "fixed", top: -5});
+            }
+            if ($(document).scrollTop() < 200){
+                $("#edition-sidebar").css({position: "static", top: 0});
+            }
+        });
+    });
+</script>

@@ -45,10 +45,6 @@
 
             <%# unless @project.locked? %>
               <% if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
-                <%#= link_to '', pemodules_left_path(pmod.id), :class => 'icon-arrow-left a_white' %>
-                <%#= link_to '', pemodules_up_path(pmod.id), :class => 'icon-arrow-up a_white' %>
-                <%#= link_to '', pemodules_down_path(pmod.id), :class => 'icon-arrow-down a_white' %>
-                <%#= link_to '', pemodules_right_path(pmod.id), :class => 'icon-arrow-right a_white' %>
 
                 <% if pmod.id == @initialization_module_project.id %>
                   <%= link_to '', '#', :title => "#{@project}: \n #{@initialization_module.description}", :class => "icon-info attribute_tooltip a_white" %>
@@ -69,7 +65,7 @@
     <% end %>
 
     <%# if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
-    <%= render :partial => 'module_projects/dynamic_estimation_paths', :locals => { :module_projects => module_projects, estimation_view: "estimation_plan" } %>
+    <%= render :partial => 'module_projects/old_dynamic_estimation_paths', :locals => {:module_projects => module_projects, estimation_view: "estimation_plan" } %>
     <%# end %>
 <% else %>
   <%= content_tag(:div, I18n.t(:notice_no_estimation_plan_defined), :class => 'alert alert-info') %>

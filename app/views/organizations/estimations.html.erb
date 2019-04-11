@@ -23,7 +23,7 @@
       <% project = Project.find(project_id) %>
       <% unless project.nil? %>
         <div class="card card-cliquable estimation-quickview w-25">
-          <a href="<%= edit_project_path(project) %>">
+          <a href="<%= dashboard_path(project) %>">
             <div class="card-body">
               <h5 class="estimation-quickview-title"><%= project.title %></h5>
               <h6 class="estimation-quickview-status mb-2" style="color: <%= project.status_background_color %>;">
@@ -238,6 +238,42 @@
     </table>
   </div>
 </div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
+    window.onscroll = function() {setOverviewSticky()};
+
+    function setOverviewSticky(pOverview) {
+        var overview;
+        if (pOverview) {
+            overview = pOverview;
+        } else {
+            overview = $(".estimation-overview:visible");
+        }
+        var table = $(".estimation-table");
+        var tableTop = table[0].offsetTop + 58;
+        var tableBottom = table[0].offsetTop + table[0].offsetHeight;
+
+        if(overview.length) {
+            if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
+                overview.removeClass('sticky-bottom').addClass("sticky");
+                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+            } else if(window.pageYOffset > tableTop) {
+                if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
+                    overview.addClass("sticky").addClass("sticky-bottom");
+                } else {
+                    overview.removeClass('sticky-bottom').addClass("sticky")
+                }
+                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+            } else {
+                overview.removeClass("sticky").removeClass("sticky-bottom");
+                overview.children('.card-body').removeAttr("style");
+            }
+        }
+    }
+
+</script>
 
 
 

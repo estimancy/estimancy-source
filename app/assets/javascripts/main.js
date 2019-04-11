@@ -16191,8 +16191,6 @@ var _this = void 0;
     };
 }
 
-
-
 $( document ).ready(function() {
 
     // Champ de recherche du header
@@ -16215,63 +16213,54 @@ $( document ).ready(function() {
         }
     } );
 
-    // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
-    window.onscroll = function() {setOverviewSticky()};
-
-    function setOverviewSticky(pOverview) {
-        var overview;
-        if (pOverview) {
-            overview = pOverview;
-        } else {
-            overview = $(".estimation-overview:visible");
-        }
-        var table = $(".estimation-table");
-        var tableTop = table[0].offsetTop + 58;
-        var tableBottom = table[0].offsetTop + table[0].offsetHeight;
-
-        if(overview.length) {
-            if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
-                overview.removeClass('sticky-bottom').addClass("sticky");
-                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-            } else if(window.pageYOffset > tableTop) {
-                if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
-                    overview.addClass("sticky").addClass("sticky-bottom");
-                } else {
-                    overview.removeClass('sticky-bottom').addClass("sticky")
-                }
-                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-            } else {
-                overview.removeClass("sticky").removeClass("sticky-bottom");
-                overview.children('.card-body').removeAttr("style");
-            }
-        }
-    }
+    // // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
+    // window.onscroll = function() {setOverviewSticky()};
+    //
+    // function setOverviewSticky(pOverview) {
+    //     var overview;
+    //     if (pOverview) {
+    //         overview = pOverview;
+    //     } else {
+    //         overview = $(".estimation-overview:visible");
+    //     }
+    //     var table = $(".estimation-table");
+    //     var tableTop = table[0].offsetTop + 58;
+    //     var tableBottom = table[0].offsetTop + table[0].offsetHeight;
+    //
+    //     if(overview.length) {
+    //         if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
+    //             overview.removeClass('sticky-bottom').addClass("sticky");
+    //             overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+    //         } else if(window.pageYOffset > tableTop) {
+    //             if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
+    //                 overview.addClass("sticky").addClass("sticky-bottom");
+    //             } else {
+    //                 overview.removeClass('sticky-bottom').addClass("sticky")
+    //             }
+    //             overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+    //         } else {
+    //             overview.removeClass("sticky").removeClass("sticky-bottom");
+    //             overview.children('.card-body').removeAttr("style");
+    //         }
+    //     }
+    // }
 
     // Sidebar page détail
     $('#sidebarCollapse').on('click', function () {
         $('#estimation-detail-sidebar').toggleClass('active');
     });
 
-    $(document).on('scroll', function(){
-        if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
-            $("#edition-sidebar").css({position: "fixed", top: -5});
-        }
-        if ($(document).scrollTop() < 200){
-            $("#edition-sidebar").css({position: "static", top: 0});
-        }
-    });
-
     // Date pickers
-    $('#projectStartDate').datepicker({
-        locale: 'fr-fr',
-        format: 'dd.mm.yyyy',
-        weekStartDay: 1,
-        close: function (e) {
-            if($(this).val()) {
-                $(this).parents('.mdl-textfield').addClass('is-dirty');
-            }
-        }
-    });
+    // $('#projectStartDate').datepicker({
+    //     locale: 'fr-fr',
+    //     format: 'dd.mm.yyyy',
+    //     weekStartDay: 1,
+    //     close: function (e) {
+    //         if($(this).val()) {
+    //             $(this).parents('.mdl-textfield').addClass('is-dirty');
+    //         }
+    //     }
+    // });
 });
 
-//# sourceMappingURL=main.js.map
+// # sourceMappingURL=main.js.map

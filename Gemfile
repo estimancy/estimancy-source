@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # gem 'rails', '3.2.22'
 gem 'rails', '~> 4.2.11'
 
-# gem 'jquery-rails'
+gem 'jquery-rails'
 gem 'i18n'
 gem 'builder'
 gem 'cookies_eu'
