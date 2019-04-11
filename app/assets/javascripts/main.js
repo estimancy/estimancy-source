@@ -16201,49 +16201,18 @@ $( document ).ready(function() {
         $('.global-search-bar-prepend i').css('color', '#007DAB');
     });
 
-    // Table des estimations
-    $('.estimation-table tbody').on( 'click', 'tr', function () {
-        if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            $('.estimation-table tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            setOverviewSticky($(this).find('.estimation-overview'));
+    $('.estimation-table tbody').on( 'click', 'tr', function (e) {
+        if(!$(e.target).parents('.tools').length) {
+            if ( $(this).hasClass('selected') ) {
+                $(this).removeClass('selected');
+            }
+            else {
+                $('.estimation-table tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                setOverviewSticky($(this).find('.estimation-overview'));
+            }
         }
     } );
-
-    // // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
-    // window.onscroll = function() {setOverviewSticky()};
-    //
-    // function setOverviewSticky(pOverview) {
-    //     var overview;
-    //     if (pOverview) {
-    //         overview = pOverview;
-    //     } else {
-    //         overview = $(".estimation-overview:visible");
-    //     }
-    //     var table = $(".estimation-table");
-    //     var tableTop = table[0].offsetTop + 58;
-    //     var tableBottom = table[0].offsetTop + table[0].offsetHeight;
-    //
-    //     if(overview.length) {
-    //         if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
-    //             overview.removeClass('sticky-bottom').addClass("sticky");
-    //             overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-    //         } else if(window.pageYOffset > tableTop) {
-    //             if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
-    //                 overview.addClass("sticky").addClass("sticky-bottom");
-    //             } else {
-    //                 overview.removeClass('sticky-bottom').addClass("sticky")
-    //             }
-    //             overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-    //         } else {
-    //             overview.removeClass("sticky").removeClass("sticky-bottom");
-    //             overview.children('.card-body').removeAttr("style");
-    //         }
-    //     }
-    // }
 
     // Sidebar page détail
     $('#sidebarCollapse').on('click', function () {

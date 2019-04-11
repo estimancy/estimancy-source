@@ -69,12 +69,6 @@
     <table class="estimation-table">
       <thead>
         <tr>
-          <th>
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="selectAll">
-              <label class="custom-control-label" for="selectAll"></label>
-            </div>
-          </th>
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
           <% selected_inline_columns.each do |column| %>
             <%= column_header(column) %>
@@ -86,22 +80,35 @@
       <tbody>
         <% @projects.each_with_index do |project, index| %>
           <tr>
-            <td>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="estimationCheck<%= index %>">
-                <label class="custom-control-label" for="estimationCheck<%= index %>"></label>
-              </div>
-            </td>
 
             <% selected_inline_columns.each do |column| %>
               <%= column_content(@pfs, column, project, @fields_coefficients) %>
             <% end %>
 
             <% @project_module_projects = project.module_projects %>
-
             <td class="estimation-table-overview-cell">
+              <div class="tools">
+                <a href="<%= edit_project_path(project) %>" style="z-index: 100"><i class="material-icons">edit</i></a>
+                <div class="dropdown">
+                  <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons">more_vert</i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
+                    <a class="dropdown-item" href="#"><i class="material-icons">filter_none</i>Éditer</a>
+                    <a class="dropdown-item" href="#"><i class="material-icons">picture_as_pdf</i>Exporter en PDF</a>
+                    <a class="dropdown-item" href="#"><i class="material-icons">flag</i>Modifier le statut</a>
+                    <a class="dropdown-item" href="#"><i class="material-icons">record_voice_over</i>Promouvoir le projet</a>
+                    <a class="dropdown-item" href="#"><i class="material-icons">call_split</i>Créer une nouvelle version du projet</a>
+                    <a class="dropdown-item" href="#"><i class="material-icons">history</i>Consulter l’historique</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#"><i class="material-icons">delete</i>Supprimer</a>
+                  </div>
+                </div>
+              </div>
+
+
               <div class="card estimation-overview">
-                <div class="card-body" style="width: 568.5px;">
+                <div class="card-body" style="width: 568.5px; height: 800px;">
                   <a href="#" class="close-button"><i class="material-icons">close</i></a>
                   <div class="d-flex justify-content-between">
                     <div class="estimation-overview-title" style="flex: 1">
