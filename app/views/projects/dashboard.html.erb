@@ -4,7 +4,16 @@
       <div class="widgets-list">
         <div class="d-flex align-items-center mt-4">
           <div style="flex: 1">
-            <h2>Résultats après calculs</h2>
+            <h2>
+              <%= @project.to_s %>
+
+              <small style="color: <%= @project.status_background_color %>">
+                <b>
+                  <%= @project.estimation_status.to_s %>
+                </b>
+              </small>
+            </h2>
+
           </div>
           <a href="/projects_from?organization_id=56">
             <button type="button" class="btn btn-primary dropdown-toggle pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

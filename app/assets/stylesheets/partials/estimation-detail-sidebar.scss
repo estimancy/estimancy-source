@@ -1,16 +1,5 @@
-// import bootstrap
-//@import 'bootstrap/bootstrap-user-variables';
-//@import 'bootstrap/bootstrap-reboot';
-//@import 'bootstrap/bootstrap';
-//@import 'bootstrap/bootstrap-grid';
 
-// import the basics
-//@import "default/colors";
-//@import "default/fonts";
-//@import "default/normalize";
-
-
-#sidebar {
+#estimation-detail-sidebar {
   position: absolute;
   background: white;
   height: 100%;
@@ -18,10 +7,10 @@
   display: flex;
   flex-direction: column;
   transition: all 0.3s;
-  z-index: 1;
+  z-index: 2;
   border-right: 1px solid #F0F0F0;
 
-  &:after{
+  &:after {
     content: "";
     position: absolute;
     right: -21px;

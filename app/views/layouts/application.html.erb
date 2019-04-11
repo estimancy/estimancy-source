@@ -168,29 +168,55 @@
       </div>
     </header>
 
-    <% if controller.action_name == "all_organizations" %>
-    <% elsif controller.action_name == "dashboard" %>
-      <div class="page-header page-detail-header">
-        <div class="container">
+    <% if (controller_name == "projects" && controller.action_name.in?(["dashboard", "edit", "new", "update", "create"])) %>
+
+      <div class="page-header page-edition-header">
+        <div class="container text-center">
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
-          <h1>
-            <%= @project.title.to_s %>
-          </h1>
-          <span class="page-header-status">
-            <%= @project.estimation_status.to_s %>
-          </span>
+          <ul class="progressbar">
+            <li class="complete">Modèle<div class="losange"></div></li>
+            <li class="complete">Propriétés<div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Valeurs<div class="losange"></div></li>
+          </ul>
           <div class="page-header-buttons">
-            <a href="<%= edit_project_path(@project) %>" class="offset-9 no-underline">
+            <% if controller.action_name == "dashboard" %>
               <button type="button" class="btn btn-secondary">
-                éditer
+                <a class="estimancy" href="<%= edit_project_path(@project) %>">éditer</a>
               </button>
-            </a>
-            <button type="button" class="btn btn-secondary">Exporter</button>
+              <% unless @project.nil? %>
+                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary exporter-secondary">
+                  <a class="estimancy" href="#">exporter</a>
+                </button>
+              <% end %>
+            <% else %>
+              <button type="button" class="btn btn-secondary">
+                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">précedent</a>
+              </button>
+              <% unless @project.nil? %>
+                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
+                  <a class="estimancy" href="<%= dashboard_path(@project) %>">suivant</a>
+                </button>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </div>
 
-    <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"])  %>
+    <% elsif controller.action_name == "projects_from" %>
+
+      <div class="page-header page-edition-header">
+        <div class="container text-center">
+          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+          <ul class="progressbar">
+            <li class="complete">Modèle<div class="losange"></div></li>
+            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>">Propriétés<div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Valeurs<div class="losange"></div></li>
+          </ul>
+          <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
+        </div>
+      </div>
+
+    <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"]) %>
       <ul class="nav nav-pills global-nav">
         <li class="nav-item">
           <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
@@ -199,33 +225,13 @@
           <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>">Demandes</a>
         </li>
       </ul>
-    <% else %>
 
-        <div class="page-header page-edition-header">
-          <div class="container text-center">
-            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
-            <ul class="progressbar">
-              <li class="<%= controller.action_name == "project_from" ? "active" : "complete" %>">Modèle<div class="losange"></div></li>
-              <li class="<%= controller.action_name == "edit" ? "active" : "" %>">Propriétés<div class="losange"></div></li>
-              <li class="<%= controller.action_name == "dashboard" ? "active" : "" %>">Valeurs<div class="losange"></div></li>
-            </ul>
-            <div class="page-header-buttons">
-              <button type="button" class="btn btn-secondary waves-effect waves-light">
-                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">Précédent</a>
-              </button>
-              <% unless @project.nil? %>
-                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary waves-effect waves-light">
-                  <a class="estimancy" href="<%= dashboard_path(@project) %>">Suivant</a>
-                </button>
-              <% end %>
-            </div>
-          </div>
-        </div>
+    <% else %>
 
     <% end %>
 
     <% if controller.action_name == "dashboard" %>
-      <div id="sidebar">
+      <div id="estimation-detail-sidebar">
         <button type="button" id="sidebarCollapse" class="btn btn-info waves-effect waves-light">
           <img src="/assets/map_icon.svg">
           <div>Plan</div>
