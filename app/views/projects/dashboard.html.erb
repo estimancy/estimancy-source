@@ -16,10 +16,10 @@
 
           </div>
           <div class="tools">
-            <a href="#"><i class="material-icons" >add_box</i></a>
-            <a href="#"><i class="material-icons" >text_fields</i></a>
-            <a href="#"><i class="material-icons" >dashboard</i></a>
-            <a href="#"><i class="material-icons" >build</i></a>
+            <% mp = @project.module_projects.where(pemodule_id: initialization_module.id).first %>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>"><i class="material-icons" >add_box</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>"><i class="material-icons" >text_fields</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>"><i class="material-icons" >dashboard</i></a>
           </div>
         </div>
 

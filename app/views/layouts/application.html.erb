@@ -179,22 +179,30 @@
           </ul>
           <div class="page-header-buttons">
             <% if controller.action_name == "dashboard" %>
-              <button type="button" class="btn btn-secondary">
-                <a class="estimancy" href="<%= edit_project_path(@project) %>">éditer</a>
-              </button>
+                <a class="estimancy" href="<%= edit_project_path(@project) %>">
+                  <button type="button" class="btn btn-secondary">
+                    Editer
+                  </button>
+                </a>
               <% unless @project.nil? %>
-                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary exporter-secondary">
-                  <a class="estimancy" href="#">exporter</a>
-                </button>
+                <a class="estimancy" href="#">
+                  <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
+                    Exporter
+                  </button>
+                </a>
               <% end %>
             <% else %>
-              <button type="button" class="btn btn-secondary">
-                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">précedent</a>
-              </button>
+                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
+                  <button type="button" class="btn btn-secondary">
+                    précedent
+                  </button>
+                </a>
               <% unless @project.nil? %>
-                <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
-                  <a class="estimancy" href="<%= dashboard_path(@project) %>">suivant</a>
-                </button>
+                  <a class="estimancy" href="<%= dashboard_path(@project) %>">
+                    <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
+                      Suivant
+                    </button>
+                  </a>
               <% end %>
             <% end %>
           </div>

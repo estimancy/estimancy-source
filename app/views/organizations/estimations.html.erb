@@ -6,7 +6,8 @@
   </div>
   <a href="<%= projects_from_path(organization_id: @organization.id) %>">
     <button type="button" class="btn btn-primary">
-    Créer une estimation</button>
+      Créer une estimation
+    </button>
   </a>
   <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
     <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
