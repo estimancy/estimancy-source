@@ -2715,6 +2715,8 @@ public
           ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
+        old_prj_pbs_project_elements = old_prj.pbs_project_elements
+
         # For ModuleProject associations
         old_prj.module_projects.group(:id).each do |old_mp|
 
@@ -2816,7 +2818,6 @@ public
           end
 
           new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
-          old_prj_pbs_project_elements = old_prj.pbs_project_elements
           new_mp_estimation_values = new_mp.estimation_values
           hash_nmpevs = {}
 
