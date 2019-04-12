@@ -1,0 +1,32 @@
+.portal-page-bienvenu {
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 26px;
+  color: $brand-sixth-color;
+
+  span {
+    font-weight: 500;
+  }
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 36px;
+  color: $brand-sixth-color;
+  //margin-top: 0.1rem;
+  margin-bottom: 0;
+}
+
+.portal-page-widget-list {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: -0.5rem -1rem;
+
+  li {
+    flex: 0 1 calc(33% - 2rem);
+    margin: 0.5rem 1rem;
+  }
+}

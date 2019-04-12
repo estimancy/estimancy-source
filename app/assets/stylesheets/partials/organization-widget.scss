@@ -1,0 +1,67 @@
+.organisation-widget {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+  margin-left: 30px;
+  min-height: 211px;
+
+  &:before {
+    border-left: 2px solid #0099C9;
+  }
+
+  .card-body {
+    padding: 1.5rem 1.5rem 1.8rem 0;
+  }
+
+  .organisation-widget-img {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.8rem;
+  }
+
+  .organisation-widget-title {
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 23px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $grey-extradark;
+    width: 85%;
+  }
+
+  .organisation-widget-subtitle {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $grey-dark;
+  }
+
+  .organisation-widget-text {
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    color: $grey-extradark
+  }
+
+  .organisation-widget-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    a, button {
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 21px;
+      text-align: right;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: $grey-dark;
+      //margin-top: 20px;
+    }
+  }
+}

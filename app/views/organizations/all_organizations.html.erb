@@ -1,106 +1,53 @@
-<div class="d-flex align-items-center mt-4">
-  <div style="flex: 1">
-    <h1>
-      <%= I18n.t (:organizations) %>
-    </h1>
-  </div>
-  <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn btn-primary btn-estimancy' %>
-  <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn btn-primary btn-estimancy' %>
-</div>
 
-
-<% if can? :create_organizations, Organization %>
-  <div class="group_button">
-    <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
-
-  </div>
-
-  <div id="display_copy_message" style="display: none; text-align: center">
-    <p id="syncStarted" style="display:none">
-      <strong>
-        <h4 style="color: green">
-          La copie de l'organisation a démaré, merci de patienter...
-        </h4>
-      </strong>
-    </p>
-  </div>
-<% end %>
-
-<table class="table table-list">
-  <thead>
-    <tr>
-      <th><%= I18n.t (:name) %></th>
-      <th><%= I18n.t (:description) %></th>
-      <th class="action"><%= I18n.t (:actions) %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @organizations.each do |i| %>
-      <tr>
-        <td>
-          <% if i.is_image_organization || i.copy_in_progress==true %>
-            <%= i.name %>
-          <% else %>
-            <%= link_to i.name, organization_estimations_path(i) %>
-          <% end %>
-        </td>
-
-
-        <td><%= i.description %></td>
-        <td>
-          <% if can? :show_organizations, Organization %>
-            <% if i.copy_in_progress != true %>
-                <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
-
-                <% if can? :manage, Organization %>
-                  <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST") %>
-                <% end %>
-            <% else %>
-                <%= I18n.t(:copy_in_progress) %>
-            <% end %>
-          <% end %>
-        </td>
-      </tr>
+  <div class="d-flex align-items-center mt-4">
+    <div style="flex: 1">
+      <h1>Sélectionnez une organisation</h1>
+    </div>
+    <% if can? :manage, Organization %>
+      <a href="<%= new_organization_path %>">
+        <button type="button" class="btn btn-primary">
+          Créer une nouvelle organisation
+        </button>
+      </a>
     <% end %>
-    <%= render :partial => 'layouts/footer_table' %>
-  </tbody>
-</table>
+  </div>
 
-<div id="modal-window_copy_organization" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-<%= render partial: "display_animation_ajax_loader" %>
-</div>
+  <p>
+    Bienvenue <span class="font-weight-bold"><%= current_user %></span>
+  </p>
 
-<!--<div id="display_animation_ajax_loader" style="display: none">-->
-<!--<p> <%#= I18n.t(:wait_for_new_organization_creation) %></p>-->
-<!--</div>-->
+  <ul class="portal-page-widget-list mt-5 mb-6">
+    <% @organizations.each do |organization| %>
 
-<script>
-
-  $('#close_copy_modal').click(function() {
-      $('#modal-window_copy_organization').modal('hide');
-      window.location.replace('/all_organizations');
-  });
-
-
-  $('#modal-window_copy_organization').on('shown', function(){
-
-      setTimeout(function () {
-          $("#modal-window_copy_organization").modal("hide");
-      }, 5000);
-
-      window.location.replace('/all_organizations');
-  });
-
-
-  //      $('.copy_an_organization').bind('ajax:beforeSend', function() {
-//          //$('#display_copy_message').show();
-//      });
-//
-//
-//      $('.copy_an_organization').bind('ajax:complete', function() {
-//          //$('#display_copy_message').hide();
-//      });
-
-</script>
+      <li>
+        <div class="card card-cliquable organisation-widget">
+          <div class="card-body">
+            <a href="<%= organization_estimations_path(organization) %>">
+              <div class="organisation-widget-title"><%= organization.name %></div>
+              <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
+              <p class="organisation-widget-text mt-3 mb-4">
+                <%= organization.description.truncate(110) %>
+              </p>
+            </a>
+            <div class="organisation-widget-buttons">
+              <a href="#"></a>
+              <% if can? :manage, Organization %>
+                <a href="<%= edit_organization_path(organization) %>">
+                  <i class="material-icons">
+                    edit
+                  </i>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </li>
+    <% end %>
+  </ul>
 
 
+<%# link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
+
+<%# if can? :manage, Organization %>
+  <%# link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST") %>
+<%# end %>
