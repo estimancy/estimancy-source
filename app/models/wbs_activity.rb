@@ -83,7 +83,8 @@ class WbsActivity < ActiveRecord::Base
       self.name
     else
       ###"#{self.name} (#{Projestimate::Application::ALPHABETICAL[mp.position_x.to_i-1]};#{mp.position_y.to_i})"
-      "#{self.name} (#{mp.creation_order})"
+      # "#{self.name} (#{mp.creation_order})"
+      self.name
     end
   end
 
