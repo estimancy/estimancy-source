@@ -12,6 +12,16 @@
 
 .widgets-list {
 
+  .tools i{
+    -webkit-appearance: none;
+    background-color: transparent;
+    border: 0;
+    color: $grey-light;
+    outline: 0;
+    cursor: pointer;
+    padding: 0 0.2rem;
+  }
+
   .widget-list-content {
     display: flex;
     margin-left: -1rem;

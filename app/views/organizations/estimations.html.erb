@@ -88,7 +88,7 @@
             <% @project_module_projects = project.module_projects %>
             <td class="estimation-table-overview-cell">
               <div class="tools">
-                <a href="<%= edit_project_path(project) %>" style="z-index: 100"><i class="material-icons">edit</i></a>
+                <a href="<%= edit_project_path(project) %>"><i class="material-icons">edit</i></a>
                 <div class="dropdown">
                   <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="material-icons">more_vert</i>
@@ -114,7 +114,7 @@
 
 
               <div class="card estimation-overview">
-                <div class="card-body" style="width: 568.5px; height: 800px;">
+                <div class="card-body" style="width: 568.5px; min-height: 900px;">
                   <a href="#" class="close-button"><i class="material-icons">close</i></a>
                   <div class="d-flex justify-content-between">
                     <div class="estimation-overview-title" style="flex: 1">
@@ -272,6 +272,7 @@
             if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
                 overview.removeClass('sticky-bottom').addClass("sticky");
                 overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+                overview.children('.card-body').css("min-height", "900px");
             } else if(window.pageYOffset > tableTop) {
                 if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
                     overview.addClass("sticky").addClass("sticky-bottom");
@@ -279,9 +280,10 @@
                     overview.removeClass('sticky-bottom').addClass("sticky")
                 }
                 overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
+                overview.children('.card-body').css("min-height", "900px");
             } else {
                 overview.removeClass("sticky").removeClass("sticky-bottom");
-                overview.children('.card-body').removeAttr("style");
+                // overview.children('.card-body').removeAttr("style");
             }
         }
     }
