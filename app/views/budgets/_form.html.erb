@@ -4,42 +4,25 @@
   </ul>
 
   <div id="tabs-1">
-    <%= simple_form_for([@organization, @application, @budget_type]) do |f| %>
+    <%= simple_form_for([@organization, @budget]) do |f| %>
       <%= f.error_notification %>
 
       <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%# apps = @organization.applications %>
+      <%#= f.input :application_id,
+                  as: :select,
+                  collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
+                  label: I18n.t(:label_product_name),
+                  input_html: {:class => 'input-large'},
+                  selected: @project.application_id %>
+      <%= f.input :start_date, :label => I18n.t('start_date_budget'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :end_date, :label => I18n.t('end_date_budget'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :sum, :label => I18n.t('sum_budget'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 
       <%= hidden_field_tag :application_id, params[:application_id] %>
-
-      <% @organization.estimation_statuses.each do |es| %>
-        <div class="row-fluid">
-          <div class="pull-left">
-            <% bts = BudgetTypeStatus.where(organization_id: @organization.id,
-                                            budget_type_id: @budget_type.id,
-                                            application_id: @application.id ,
-                                            estimation_status_id: es.id).first %>
-
-            <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>
-          </div>
-          <div class="pull-left">
-            <%= es.name %>
-          </div>
-        </div>
-      <% end %>
-
       <br/>
-
-      <%= "Budget Colors" %>
-          <% colors = ["#7B9F35", "#BBCC44", "#AA7939"] %>
-          <% colors.each do |color| %>
-          <div class="row-fluid">
-            <div class="pull-left">
-              <%= check_box_tag "budget_colors[#{color}]", nil, (color.nil? ? true : false)  %>
-              <%= color %>
-            </div>
-          </div>
-        <% end %>
 
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>

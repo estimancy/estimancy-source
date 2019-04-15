@@ -2299,3 +2299,8 @@ fr:
   gap: "Ecart"
   Secteur de projets: "Secteur de projets"
   budget_type: "Type du budget"
+  budget: "Budgets"
+
+  start_date_budget: "Date de début"
+  end_date_budget: "Date de fin"
+  sum_budget: "Montant"

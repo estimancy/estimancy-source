@@ -118,7 +118,7 @@
           <% if budget_types_pie.length > 1 %>
             <div class="span4">
               <%= Application.find(application.id).name %>
-              <%= pie_chart budget_types_pie %>
+              <%= pie_chart budget_types_pie, colors: color_bt(budget_types_pie.keys)  %>
             </div>
           <% end %>
         <% end %>

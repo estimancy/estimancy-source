@@ -2250,3 +2250,7 @@ en:
   max_value_message_placeholder: ""
 
   budget_type: "Budget Type"
+  budget: "Budgets"
+  start_date_budget: "Start date"
+  end_date_budget: "End date"
+  sum_budget: "Sum"

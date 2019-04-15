@@ -2249,3 +2249,9 @@ frsncf:
   "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
 
   min_value_message: La valeur minmale doit être inférieure à la valeur maximale.
+
+  budget: "Budgets"
+
+  start_date_budget: "Date de début"
+  end_date_budget: "Date de fin"
+  sum_budget: "Montant"
