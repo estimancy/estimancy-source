@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190321093930) do
+ActiveRecord::Schema.define(version: 20190415153041) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -289,6 +289,23 @@ ActiveRecord::Schema.define(version: 20190321093930) do
     t.boolean  "from_direct_trigger"
   end
 
+  create_table "budget_type_statuses", force: :cascade do |t|
+    t.integer  "organization_id",      limit: 4
+    t.integer  "budget_type_id",       limit: 4
+    t.integer  "estimation_status_id", limit: 4
+    t.integer  "application_id",       limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  create_table "budget_types", force: :cascade do |t|
+    t.string   "name",            limit: 255
+    t.integer  "organization_id", limit: 4
+    t.integer  "application_id",  limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
   create_table "budgets", force: :cascade do |t|
     t.integer  "organization_id",         limit: 4
     t.integer  "application_id",          limit: 4
@@ -375,7 +392,7 @@ ActiveRecord::Schema.define(version: 20190321093930) do
     t.datetime "updated_at",                       null: false
     t.string   "cost_from",          limit: 255
     t.integer  "demand_status_id",   limit: 4
-    t.string   "billing",            limit: 11
+    t.integer  "billing",            limit: 4
     t.string   "origin_target_mode", limit: 255
   end
 
@@ -467,6 +484,7 @@ ActiveRecord::Schema.define(version: 20190321093930) do
   end
 
   add_index "estimation_values", ["links"], name: "index_attribute_projects_on_links", using: :btree
+  add_index "estimation_values", ["module_project_id"], name: "ev_mp_id", using: :btree
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], name: "organization_estimation_values", using: :btree
 
   create_table "events", force: :cascade do |t|
@@ -1470,6 +1488,7 @@ ActiveRecord::Schema.define(version: 20190321093930) do
   end
 
   add_index "module_projects", ["organization_id", "pemodule_id", "project_id"], name: "organization_module_projects", using: :btree
+  add_index "module_projects", ["project_id"], name: "mp_p_id", using: :btree
 
   create_table "module_projects_pbs_project_elements", id: false, force: :cascade do |t|
     t.integer "module_project_id",      limit: 4
@@ -1921,7 +1940,7 @@ ActiveRecord::Schema.define(version: 20190321093930) do
     t.text     "transaction_id",            limit: 65535
   end
 
-  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "project_securities_index", using: :btree
+  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "ability_project_securities", using: :btree
 
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
