@@ -62,6 +62,22 @@
       height: 20px;
       width: 20px;
     }
+
+    &.card-reversed {
+      margin-top: -1px;
+
+      &:before {
+        top: auto;
+        bottom: -1px;
+        border-top: 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom-left-radius: 3px;
+      }
+      &:after {
+        top: 3px;
+        transform: rotate(45deg);
+      }
+    }
   }
 
   &.card-module {
