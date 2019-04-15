@@ -238,20 +238,12 @@
     <% end %>
 
     <% if controller.action_name == "dashboard" %>
-      <div id="estimation-detail-sidebar">
-        <button type="button" id="sidebarCollapse" class="btn btn-info">
-          <img src="/assets/map_icon.svg">
-          <div>Plan</div>
-        </button>
-        <div class="sidebar-content">
-          <%# render 'module_projects/new_estimation_plan' %>
-          <%= render 'module_projects/new_estimation_plan_min' %>
-        </div>
+      <div class="page-edition-content row">
+        <%= render 'module_projects/new_estimation_plan_min' %>
+        <%= yield %>
+        <%= render 'module_projects/dashboard_right_panel' %>
       </div>
-
-      <%= yield %>
-
-    <% else %>
+  <% else %>
       <div class="container">
         <%= yield %>
       </div>

@@ -1,5 +1,5 @@
-<% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
-<% unless module_projects.empty? %>
+<div class="col-2 pr-0">
+  <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
   <div id="modules-sidebar" class="py-6">
     <ul class="nav flex-column">
       <% module_projects.each_with_index do |pmod, index| %>
@@ -9,4 +9,4 @@
       <% end %>
     </ul>
   </div>
-<% end %>
+</div>

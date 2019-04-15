@@ -1,0 +1,132 @@
+.estimation-modules-edition {
+  font-family: "Roboto";
+  margin-bottom: 3rem;
+
+  .card-body {
+    display: flex;
+    flex-wrap: wrap;
+    //flex-direction: row;
+    padding-right: 3.8rem;
+    padding-left: 30px;
+  }
+
+  .edition-bloc-left {
+    width: 22%;
+  }
+
+  .edition-bloc-title {
+    padding: 0.5rem 0 2rem;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 23px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $brand-first-color;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+  }
+
+  .edition-bloc-content {
+    flex: 1;
+  }
+
+  .edition-bloc-slider {
+    text-align: center;
+
+    .edition-bloc-slider-value {
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 30px;
+      text-align: center;
+      letter-spacing: 0.02em;
+      color: #FFFFFF;
+      background: #0099C9;
+      border-radius: 3px;
+      margin-bottom: 1rem;
+    }
+
+    &:after {
+      content: '';
+      margin-top: 0.5rem;
+      display: block;
+      height: 6px;
+      width: 100%;
+      background: repeating-linear-gradient(to right,
+              transparent 0em,
+              transparent 1.85em,
+              #E0E0E0 1.85em,
+              #E0E0E0 2em);
+    }
+  }
+
+  .timecost-indicator {
+    padding: 1rem 0 2rem;
+
+    .indicator-title {
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0.02em;
+      color: $brand-sixth-color;
+      margin-bottom: 0.3rem
+    }
+
+    .indicator-value {
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0.02em;
+      color: $brand-sixth-color;
+      position: relative;
+
+      span {
+        font-weight: 500;
+        font-size: 36px;
+        line-height: 36px;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        color: $brand-first-color;
+        margin-right: 0.3rem
+      }
+
+      .indicator-value-gain {
+        font-weight: bold;
+        font-size: 18px;
+        line-height: 18px;
+        letter-spacing: 0.02em;
+        color: $grey-extradark;
+        position: absolute;
+        top: 0;
+        left: 5.3rem
+      }
+    }
+
+    .indicator-optimal {
+      margin-top: 1rem;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 16px;
+      letter-spacing: 0.02em;
+      color: $brand-sixth-color;
+    }
+
+    .indicator-optimal-value {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 16px;
+      letter-spacing: 0.02em;
+      color: $brand-sixth-color;
+
+      span {
+        font-weight: bold;
+        font-size: 18px;
+        line-height: 24px;
+      }
+    }
+  }
+}
