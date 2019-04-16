@@ -194,13 +194,13 @@
             <% else %>
                 <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
                   <button type="button" class="btn btn-secondary">
-                    précedent
+                    Précedent
                   </button>
                 </a>
               <% unless @project.nil? %>
                   <a class="estimancy" href="<%= dashboard_path(@project) %>">
                     <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
-                      Suivant
+                      Résultats
                     </button>
                   </a>
               <% end %>

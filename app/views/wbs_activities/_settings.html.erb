@@ -1,3 +1,14 @@
+<div style="flex: 1">
+  <h2>
+    <%= @project.to_s %>
+    <small style="color: <%= @project.status_background_color %>">
+      <b>
+        <%= @project.estimation_status.to_s %>
+      </b>
+    </small>
+  </h2>
+</div>
+
 <h4 class="<%= (@wbs_activity.hide_wbs_header != 'show_all' ? 'hide' : 'show') %>">
   <strong>
     <%= I18n.t(:wbs_activities) %>

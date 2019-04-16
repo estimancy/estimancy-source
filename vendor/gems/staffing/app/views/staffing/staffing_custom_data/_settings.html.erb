@@ -61,9 +61,18 @@
 
 %>
 
+  <div style="flex: 1">
+    <h2>
+      <%= @project.to_s %>
+      <small style="color: <%= @project.status_background_color %>">
+        <b>
+          <%= @project.estimation_status.to_s %>
+        </b>
+      </small>
+    </h2>
+  </div>
+
   <div class="edition-page-title pt-5 pl-3">
-    <div class="edition-page-template"><%= @project.title %></div>
-    <h2>3. Saisissez les valeurs de l’estimation</h2>
     <div class="edition-page-module pt-3">Timecost Trade Off</div>
   </div>
   <section class="estimation-modules-edition">
@@ -511,7 +520,6 @@
 
 
         </script>
-
 
       <% rescue Exception => e %>
         <%= e %>
