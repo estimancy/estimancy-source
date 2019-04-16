@@ -2,11 +2,13 @@
   <div id="results-sidebar" class="py-6">
     <div class="results-sidebar-title">Résultats entrant dans le module</div>
     <p>
-      Depuis <a href="#"><%= current_module_project.preceding.name %></a>
-      <% current_module_project.estimation_values.where(in_out: "input").all.each do |ev| %>
-        <% value = ev.string_data_probable[current_component.id] %>
-        <% unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
-          <span class="results-sidebar-value"><%= ev %><span><%= value.to_f %></span></span>
+      <% unless current_module_project.preceding.nil? %>
+        Depuis <a href="#"><%= current_module_project.preceding.name %></a>
+        <% current_module_project.estimation_values.where(in_out: "input").all.each do |ev| %>
+          <% value = ev.string_data_probable[current_component.id] %>
+          <% unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
+            <span class="results-sidebar-value"><%= ev %><span><%= value.to_f %></span></span>
+          <% end %>
         <% end %>
       <% end %>
     </p>
