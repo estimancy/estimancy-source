@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # gem 'rails', '3.2.22'
-gem 'rails', '~> 4.2.11'
+gem 'rails', '4.2.11.1'
 
 gem 'jquery-rails', '~> 2.0.2'
 gem 'i18n'
@@ -105,8 +105,8 @@ gem 'zip-zip'
 gem 'axlsx'
 gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
-gem 'rubyXL', '~> 3.3.33'
-gem 'nokogiri' , '~>1.9.1'
+gem 'rubyXL'
+gem 'nokogiri'
 gem 'mechanize'
 
 # Including

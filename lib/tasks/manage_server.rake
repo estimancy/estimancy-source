@@ -47,3 +47,19 @@
 #     end
 #   end
 # end
+#
+# #
+#
+#
+
+# CLEAN DATABASE
+# ProjectField.where(value: nil).delete_all
+# Guw::GuwAttributeComplexity.where(value: nil, value_b: nil).delete_all
+# Guw::GuwOutputComplexity.where(value: nil).delete_all
+# Guw::GuwUnitOfWorkAttribute.where(low: nil, most_likely: nil, high: nil).delete_all
+# Guw::GuwComplexity.all.each do |cplx|
+#   unless cplx.guw_type.nil?
+#     cplx.guw_model_id = cplx.guw_type.guw_model_id
+#     cplx.save
+#   end
+# end

@@ -263,7 +263,7 @@ module OrganizationsHelper
         content_tag('td', project.urgent_project)
       when :application
         if value.blank?
-          content_tag('td', project.application_name)
+            content_tag('td', project.application_name)
         else
           if project.application.nil?
             content_tag('td', '')

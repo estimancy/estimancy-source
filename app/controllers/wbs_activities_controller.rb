@@ -1259,7 +1259,7 @@ class WbsActivitiesController < ApplicationController
         elements_worksheet.add_cell(0, 4, "Root")
         elements_worksheet.add_cell(0, 5, I18n.t('parent'))
 
-        elements_worksheet.change_row_bold(0,true)
+        # elements_worksheet.change_row_bold(0,true)
 
         elements_worksheet.change_row_horizontal_alignment(0, 'center')
         @wbs_activity_elements.each_with_index do |activity_element, index|
@@ -1309,7 +1309,7 @@ class WbsActivitiesController < ApplicationController
         ratios_worksheet.add_cell(0, 2, I18n.t(:do_not_show_cost))
         ratios_worksheet.add_cell(0, 3, I18n.t(:do_not_show_phases_with_zero_value))
         ratios_worksheet.add_cell(0, 4, I18n.t(:comment_required_if_modifiable))
-        ratios_worksheet.change_row_bold(0,true)
+        # ratios_worksheet.change_row_bold(0,true)
 
         ratios_worksheet.change_row_horizontal_alignment(0, 'center')
         @wbs_activity_ratios.each_with_index do |ratio, index|
