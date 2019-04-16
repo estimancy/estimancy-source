@@ -10,5 +10,6 @@
 //= require projestimate_script
 //= require projects
 //= require jscolor
-// require main
+//= require highcharts
+//= require highcharts/highcharts-more
 //= require_tree .

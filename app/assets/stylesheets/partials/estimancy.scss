@@ -1,4 +1,4 @@
-h5, h6{
+h2, h5, h6{
   margin: 0;
 }
 
@@ -81,4 +81,14 @@ th a.estimancy, a.estimancy {
 
   /*margin-left:auto;*/
   /*margin-right:auto;*/
+}
+
+.tools a {
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: 0;
+  color: $grey-light;
+  outline: 0;
+  cursor: pointer;
+  padding: 0 0.2rem;
 }

@@ -45,7 +45,7 @@ label {
 .mdl-textfield--floating-label.has-placeholder .mdl-textfield__label {
   color: $brand-sixth-color;
   font-size: 16px;
-  top: 10px;
+  top: 5px;
 }
 
 .mdl-textfield__input {
@@ -76,6 +76,7 @@ label {
 }
 .mdl-textfield__error {
   color: #D84315;
+  margin-top: 0;
 }
 .mdl-textfield--floating-label.is-invalid .mdl-textfield__label {
   color: #D84315;
@@ -114,7 +115,6 @@ label {
 }
 .gj-picker {
   padding: 1rem 1.5rem 1rem;
-  //font-size: 13px
 }
 .gj-picker-md table tr th div, .gj-picker-md table tr td div {
   width: 35px;
@@ -148,4 +148,22 @@ label {
   height: 24px;
   line-height: 24px;
   margin: 4px;
+}
+
+// Slider
+.gj-slider-md [role="track"] {
+  height: 3px;
+  background-color: #84CEE5;
+}
+.gj-slider-md [role="handle"] {
+  width: 21px;
+  height: 21px;
+  background: #0099C9;
+  border: 3px solid #FFFFFF;
+  transform: rotate(-45deg);
+  border-radius: 1px;
+  top: -1px;
+}
+.gj-slider-md [role="progress"] {
+  background-color: $brand-first-color;
 }

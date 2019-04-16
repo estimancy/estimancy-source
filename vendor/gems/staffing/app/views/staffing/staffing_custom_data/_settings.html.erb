@@ -83,8 +83,23 @@
             </div>
             <div class="col-9 pl-6">
               <div class="edition-bloc-slider">
-                <span class="edition-bloc-slider-value">0</span>
-                <div role="wrapper" class="gj-slider gj-slider-md"><input class="edition-bloc-slider-slider" data-type="slider" data-guid="a65c3e2f-00de-3a29-ba59-a570d64022c7" data-slider="true" value="0" style="display: none;"><div role="track"></div><div role="handle" style="left: 0px;"></div><div role="progress" style="width: 0px;"></div></div>
+                <span class="edition-bloc-slider-value">50</span>
+                <div role="wrapper" class="gj-slider gj-slider-md">
+                  <input class="edition-bloc-slider-slider" data-type="slider" data-slider="true" value="0" style="display: none;">
+                  <div role="track"></div>
+                  <div role="handle" style="left: 0px;"></div>
+                  <div role="progress" style="width: 0px;"></div>
+                </div>
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+                <script>
+                    $(document).ready(function(){
+                        $('.edition-bloc-slider-slider').slider({
+                            slide: function (e, value) {
+                                $('.edition-bloc-slider-value').text(value);
+                            }
+                        });
+                    });
+                </script>
               </div>
             </div>
           </div>
@@ -155,10 +170,10 @@
         </div>
       </div>
     </div>
+
+    <hr>
     <%= simple_form_for @staffing_custom_data, url: staffing.save_data_path(custom_data: @staffing_custom_data.id), method: :post do |f| %>
-
       <div class="row-fluid">
-
         <div class="span6">
           <table class="table table-list">
             <tr>
@@ -369,15 +384,15 @@
 
             </tr>
           </table>
-          <input type="text" name='percents' id='percent' class="factor-slider" value="<%= @staffing_custom_data.percent %>" />
 
+          <input type="text" name='percents' id='percent' class="factor-slider form-control" value="<%= @staffing_custom_data.percent %>" />
           <% if can? :execute_estimation_plan, @project %>
             <button id="submit_staffing" name="actuals_based_on[custom]" type="submit" class="btn btn-primary pull-right button_margin_right">
               <%= I18n.t(:calculate_button) %>
             </button>
           <% end %>
 
-          <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn pull-right button_margin_right"%>
+          <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-estimancy btn-secondary pull-right"%>
         </div>
 
         <div class="span6">
@@ -413,18 +428,18 @@
                 set_staffing_values({from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>})
             });
 
-            $('#percent').ionRangeSlider({
-                min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
-                max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>,
-                from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,
-                grid: true,
-                postfix: "%",
+<!--            $('#percent').ionRangeSlider({-->
+<!--                min: <%#= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,-->
+<!--                max: <%#= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>,-->
+<!--                from: <%#= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>,-->
+<!--                grid: true,-->
+<!--                postfix: "%",-->
 
-                onChange: function (data) {
-                    set_staffing_values(data);
-                    $("#submit_staffing").off("click");
-                }
-            });
+<!--                onChange: function (data) {-->
+<!--                    set_staffing_values(data);-->
+<!--                    $("#submit_staffing").off("click");-->
+<!--                }-->
+<!--            });-->
 
             function sign(value){
                 if (value > 0) {
@@ -506,82 +521,3 @@
 
   </section>
 </div>
-
-<script>
-
-  refresh_chart();
-
-  function refresh_chart() {
-    $('#staffing_trapeze_chart').highcharts({
-      title: {
-        text: '<%= I18n.t("Répartition des ressources en fonction du temps") %>'
-      },
-      xAxis: {
-        min: 0,
-        title: {
-          text: '<%= I18n.t("Evolution du temps") %>'
-        }
-      },
-      yAxis: {
-        min: 0,
-        title: {
-          text: '<%= I18n.t(:staffing) %>'
-        }
-      },
-      plotOptions: {
-        column: {
-          pointPadding: 0,
-          borderWidth: 0
-        },
-        line: {
-          marker: {
-            enabled: false
-          }
-        }
-      },
-      series: [{
-        name: "Trapèze Optimal",
-        type: 'column',
-        color: '#AC6A35',
-        data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
-      },{
-        name: "Trapèze <%= I18n.t(:revised) %>",
-        type: 'column',
-        color: '#AA3538',
-        data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
-      },{
-        type: 'spline',
-        name: "Rayleigh <%= I18n.t(:revised) %>",
-        data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
-        color: '#2F3EAF',
-        marker: {
-          enabled: false
-        }
-      },{
-        type: 'spline',
-        name: "Rayleigh Optimal",
-        data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
-        color: '#2077A1',
-        marker: {
-          enabled: false
-        }
-      }]
-//        {
-//        name: '<%#= I18n.t("Répartition en trapèze personnalisé") %>',
-//        type: 'column',
-//        data: <%# @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.round(1)} %>,
-//        color: '#7CB9E8'
-//      },
-//      },{
-//        type: 'spline',
-//        name: '<%#= I18n.t("Répartition optimal") %>',
-//        data: <%#= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.round(1)} %>,
-//        color: '#000000',
-//        marker: {
-//          enabled: false
-//        }
-//      }]
-    });
-  }
-
-</script>

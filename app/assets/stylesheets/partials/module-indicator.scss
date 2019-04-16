@@ -1,0 +1,86 @@
+.card.module-indicator {
+  font-family: "Roboto";
+  font-weight: 300;
+  font-size: 18px;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+  margin-left: 15px;
+
+  .card-body {
+    padding: 0.7rem 1.3rem 0.5rem 0.2rem;
+  }
+
+  .module-indicator-type {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: $brand-third-color;
+  }
+
+  .module-indicator-quantity {
+    font-family: "Roboto";
+    font-size: 22px;
+    line-height: 30px;
+    display: flex;
+    align-items: baseline;
+
+    span {
+      font-family: "Roboto";
+      font-weight: 500;
+      font-size: 36px;
+      line-height: normal;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: $brand-first-color;
+      margin-right: 10px;
+    }
+
+    img {
+      display: inline-block;
+      margin-right: 10px;
+      align-self: center;
+    }
+  }
+
+  &.module-indicator-with-module, &.module-indicator-with-module-dark {
+    .module-indicator-quantity {
+      margin-top: 0.5rem;
+    }
+  }
+
+  &.module-indicator-with-module-dark {
+    background-color: $brand-first-color;
+    color: white;
+    border: 1px solid $brand-first-color;
+
+    &:before {
+      background-color: $brand-first-color;
+      border-left: 0;
+    }
+
+    &:after {
+      left: -10px;
+      bottom: 3px;
+      height: 21px;
+      width: 21px;
+      background-color: $brand-first-color;
+      border: 1px solid $brand-first-color;
+    }
+
+    .card-body {
+      background-color: $brand-first-color;
+    }
+
+    .module-indicator-type {
+      color: white;
+    }
+
+    .module-indicator-quantity span {
+      color: white
+    }
+  }
+
+}

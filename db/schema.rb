@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190405081511) do
+ActiveRecord::Schema.define(version: 20190415153041) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -309,18 +309,7 @@ ActiveRecord::Schema.define(version: 20190405081511) do
     t.integer  "application_id",  limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
-  end
-
-  create_table "budgets", force: :cascade do |t|
-    t.integer  "organization_id",         limit: 4
-    t.integer  "application_id",          limit: 4
-    t.integer  "project_area_id",         limit: 4
-    t.integer  "acquisition_category_id", limit: 4
-    t.integer  "platform_category_id",    limit: 4
-    t.integer  "project_category_id",     limit: 4
-    t.integer  "provider_id",             limit: 4
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.string   "description",     limit: 255
   end
 
   create_table "criticalities", force: :cascade do |t|
@@ -489,6 +478,7 @@ ActiveRecord::Schema.define(version: 20190405081511) do
   end
 
   add_index "estimation_values", ["links"], name: "index_attribute_projects_on_links", using: :btree
+  add_index "estimation_values", ["module_project_id"], name: "ev_mp_id", using: :btree
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], name: "organization_estimation_values", using: :btree
 
   create_table "events", force: :cascade do |t|
@@ -1492,6 +1482,7 @@ ActiveRecord::Schema.define(version: 20190405081511) do
   end
 
   add_index "module_projects", ["organization_id", "pemodule_id", "project_id"], name: "organization_module_projects", using: :btree
+  add_index "module_projects", ["project_id"], name: "mp_p_id", using: :btree
 
   create_table "module_projects_pbs_project_elements", id: false, force: :cascade do |t|
     t.integer "module_project_id",      limit: 4
@@ -1619,18 +1610,6 @@ ActiveRecord::Schema.define(version: 20190405081511) do
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], name: "wbs_activity_profiles_index", unique: true, using: :btree
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
-
-  create_table "organization_technologies", force: :cascade do |t|
-    t.integer  "organization_id",    limit: 4
-    t.string   "name",               limit: 255
-    t.string   "alias",              limit: 255
-    t.text     "description",        limit: 65535
-    t.float    "productivity_ratio", limit: 24
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "state",              limit: 20
-    t.integer  "copy_id",            limit: 4
-  end
 
   create_table "organization_technologies_unit_of_works", id: false, force: :cascade do |t|
     t.integer  "organization_technology_id", limit: 4

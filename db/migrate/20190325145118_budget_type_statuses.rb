@@ -1,6 +1,6 @@
 class BudgetTypeStatuses < ActiveRecord::Migration
   def change
-    create_table :budget_type_statuses do |t|
+    create_table :budget_type_statuses, force: true do |t|
       t.integer :organization_id
       t.integer :budget_type_id
       t.integer :estimation_status_id

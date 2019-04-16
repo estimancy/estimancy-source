@@ -1,3 +1,5 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form", remote: true do %>
 
   <%= hidden_field_tag 'module_project_id', current_module_project.id %>
@@ -14,299 +16,209 @@
                                                           project_id: @project.id,
                                                           pbs_project_element_id: current_component.id,
                                                           module_project_id: current_module_project.id) %>
-  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
-                                                                  project_id: @project.id,
-                                                                  module_project_id: current_module_project.id,
-                                                                  pbs_project_element_id: current_component.id) %>
+
   <% @guw_coefficients = @guw_model.guw_coefficients %>
 
-  <div class="row-fluid">
-    <div class="span12">
+  <div class="d-flex align-items-center mt-4">
+    <div style="flex: 1">
+      <h2>
+        <%= @project.to_s %>
+        <small style="color: <%= @project.status_background_color %>">
+          <b>
+            <%= @project.estimation_status.to_s %>
+          </b>
+        </small>
+      </h2>
+    </div>
+
+    <div class="tools">
       <% if can? :execute_estimation_plan, @project %>
-        <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn" %>
+        <%= link_to raw("<i class='material-icons'>group</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model) %>
       <% end %>
 
       <% if can? :execute_estimation_plan, @project %>
         <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
-          <button type="button" class="btn" data-toggle="modal" data-target="#extract">
-            <%= I18n.t(:import) %>
-          </button>
+          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!" %>
         <% end %>
       <% end %>
 
-      <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
+      <%= link_to raw("<i class='material-icons'>import_export</i>"), guw.guw_model_export_path(@guw_model), method: "post" %>
 
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
-        <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
+        <%= link_to raw("<i class='material-icons'>import_export</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post" %>
       <% end %>
 
       <% if @guw_model.view_data == true %>
-        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+        <%= link_to raw("<i class='material-icons'>screen_share</i>"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank %>
       <% end %>
 
       <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" name="commit[all]" class="btn btn-primary pull-right guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:recalculate_all) %></button>
-        <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained pull-right button_margin_right", onclick: "multiraz()" %>
+<!--        <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
+
+        <%= link_to raw("<i class='material-icons'>flash_on</i>"), "#!" %>
+        <%= link_to raw("<i class='material-icons'>clear</i>"), "#!", onclick: "multiraz()" %>
       <% end %>
     </div>
   </div>
 
-  <div class="row-fluid">
-    <hr>
-    <div class="pull-right">
-      <% @guw_outputs = @guw_model.guw_outputs %>
-      <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
-        <span class="label label-success">
-          Total <%= guw_output.name %> retenu :
-          <span class="ajusted_size">
-            <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%= @unit_of_work_groups.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
-                i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
-              end
-            end.flatten.compact.sum.to_f.round(3) %>
-          </span>
-        </span>
-      <% end %>
 
-      <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
-        <span class="label label-success">
-          Total <%= guw_output.name %> théorique :
-          <span class="ajusted_size">
-            <!-- Vue  ModuleProjectGuwUnitOfWork -->
-            <%= @unit_of_work_groups.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
-                i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
-              end
-            end.flatten.compact.sum.to_f.round(3) %>
-          </span>
-        </span>
-      <% end %>
 
-      <!-- Vue  ModuleProjectGuwUnitOfWork et ModuleProjectGuwUnitOfWorkGoup -->
-      <span class="label label-info">
-        <%= I18n.t(:number_of_uw_selected_lines) %> :
-        <span class="selected_of_unit_of_work">
-          <%
-            @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
-            @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups
-          %>
-          <%=
-            "#{ @current_module_project_guw_unit_of_works.where(selected: true).size } /
-             #{ @current_module_project_guw_unit_of_works.size }"
-          %>
-        </span>
-      </span>
+  <div class="row">
+      <div class="col-12">
+
     </div>
   </div>
 
   <hr>
 
-  <div class="accordion" id="accordion">
-    <% if @unit_of_work_groups.empty? %>
-      <% if can? :execute_estimation_plan, @project %>
-        <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
-        <% unless @unit_of_work_groups.empty? %>
-          <%# link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
-          <%= link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
-        <% end %>
+  <% if @unit_of_work_groups.empty? %>
+    <% if can? :execute_estimation_plan, @project %>
+      <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
+      <% unless @unit_of_work_groups.empty? %>
+        <%# link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+        <%= link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
       <% end %>
     <% end %>
+  <% end %>
 
-    <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
-    <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
-    <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
+  <% @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works %>
+  <% @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups %>
+  <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
+  <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
+  <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
+  <% @guw_outputs = @guw_model.guw_outputs %>
 
-    <% @hash_guw_coefficients = {} %>
-    <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                 name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
-      <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
-    <% end %>
+  <% @hash_guw_coefficients = {} %>
+  <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                               name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
+    <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
+  <% end %>
 
-    <% @hash_guw_outputs = {} %>
-    <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
-                            name: @guw_model.orders.map(&:first)).each do |guw_output| %>
-      <% @hash_guw_outputs[guw_output.name] = guw_output %>
-    <% end %>
+  <% @hash_guw_outputs = {} %>
+  <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+                          name: @guw_model.orders.map(&:first)).each do |guw_output| %>
+    <% @hash_guw_outputs[guw_output.name] = guw_output %>
+  <% end %>
 
-    <% @hash_guw_output_types = {} %>
-    <%Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
-      <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
-    <% end %>
+  <% @hash_guw_output_types = {} %>
+  <% Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
+    <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
+  <% end %>
 
-    <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-    <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
-      <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
-    <% end %>
+  <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
+  <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
+    <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
+  <% end %>
 
-    <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-    <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).order("updated_at ASC").each do |gceuw| %>
-      <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
-    <% end %>
+  <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
+  <% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).order("updated_at ASC").each do |gceuw| %>
+    <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
+  <% end %>
 
-    <% @hash_guw_coefficients = {} %>
-    <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                                 name: @guw_model.orders.map(&:first),
-                                 deported: false).each do |guw_coef| %>
-      <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
-    <% end %>
+  <% @hash_guw_coefficients = {} %>
+  <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                               name: @guw_model.orders.map(&:first),
+                               deported: false).each do |guw_coef| %>
+    <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
+  <% end %>
 
-    <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
-      <%# @uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
-      <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
+  <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <div class="accordion-heading" style="padding:5px;">
-        <div class="row-fluid">
-          <div class="span3">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
-            <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
-              <%= uowg.name %>
-            </span>
-            </a>
-          </div>
+    <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
 
-          <div class="span9">
-            <% if can?(:execute_estimation_plan, @project) %>
-              <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
-            <% end %>
+    <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
-            <div class="pull-right">
+    <table class="table table-list group_<%= uowg.id %>" id="guw">
+        <tr>
+          <th></th>
+          <th>#</th>
+          <th><%= I18n.t :name %></th>
+          <th><%= I18n.t(:component) %></th>
 
-              <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
-                <span class="label label-success">
-                  Total <%= guw_output.name %> R. :
-                  <span>
-                    <%= [
-                            @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
-                              i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
-                            end
-                        ].flatten.compact.sum.to_f.round(3) %>
-                  </span>
-                </span>
-              <% end %>
-
-              <% @guw_outputs.where(allow_subtotal: true).each do |guw_output| %>
-                <span class="label label-success">
-                  Total <%= guw_output.name %> T. :
-                  <span>
-                    <%= [
-                            @uowg_guw_unit_of_works.where(selected: true).flatten.map do |i|
-                              i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
-                            end
-                        ].flatten.compact.sum.to_f.round(3) %>
-                  </span>
-                </span>
-              <% end %>
-
-              <span class="label label-info">
-                <%= I18n.t(:number_of_uw_selected) %> :
-                <span class="<%= uowg.id %>_selected">
-                  <%# @uowg_guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
-                  <%= "#{@uowg_guw_unit_of_works.where(selected: true).size} / #{@uowg_guw_unit_of_works.size}" %>
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll; padding-bottom: 10px;">
-        <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
-
-        <div class="accordion-inner">
-          <table class="table table-bordered table-condensed group_<%= uowg.id %>" id="guw">
-            <tr>
-              <th></th>
-              <th>#</th>
-              <th><%= I18n.t :name %></th>
-              <th><%= I18n.t(:component) %></th>
-
-              <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
-                <% unless i[1].blank? %>
-                  <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
-                    <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
-                    <% unless guw_coefficient.nil? %>
-                      <th>
-                        <%= i[0] %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Coefficient" %>
-                    <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
-                      <th>
-                        <%= i[0] %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Critères" %>
-                    <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
-                      <th>
-                        <%= I18n.t :criteria %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Coeff. de Complexité" %>
-                    <% if i[1].blank? %>
-                    <% else %>
-                      <th>
-                        <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          <%= I18n.t(:cplx_coeff) %>
-                        <% else %>
-                          <%= I18n.t(:complexity) %>
-                        <% end %>
-                      </th>
-                    <% end %>
-                  <% else %>
-                    <th>
-                      <%= i[0] %>
-                    </th>
-                  <% end %>
+          <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+            <% unless i[1].blank? %>
+              <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
+                <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
+                <% unless guw_coefficient.nil? %>
+                  <th>
+                    <%= i[0] %>
+                  </th>
                 <% end %>
+              <% elsif i[0] == "Coefficient" %>
+                <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
+                  <th>
+                    <%= i[0] %>
+                  </th>
+                <% end %>
+              <% elsif i[0] == "Critères" %>
+                <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
+                  <th>
+                    <%= I18n.t :criteria %>
+                  </th>
+                <% end %>
+              <% elsif i[0] == "Coeff. de Complexité" %>
+                <% if i[1].blank? %>
+                <% else %>
+                  <th>
+                    <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                      <%= I18n.t(:cplx_coeff) %>
+                    <% else %>
+                      <%= I18n.t(:complexity) %>
+                    <% end %>
+                  </th>
+                <% end %>
+              <% else %>
+                <th>
+                  <%= i[0] %>
+                </th>
               <% end %>
-
-              <% if can? :execute_estimation_plan, @project %>
-                <th class=""><%= I18n.t :actions %></th>
-              <% end %>
-            </tr>
-
-            <% @hash_guw_complexities = {} %>
-            <% Guw::GuwComplexity.all.each do |guw_complexity| %>
-              <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
             <% end %>
-
-            <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
-            <% @guw_model.guw_types.each do |guw_type| %>
-              <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
-              <% unless guw_complexity.nil? %>
-                <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
-              <% end %>
-            <% end %>
-
-            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
-              <% @guw_type = guow.guw_type %>
-              <% unless @guw_type.nil? %>
-                <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
-              <% end %>
-
-              <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
-                <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
-              </tr>
-
-            <% end %>
-          </table>
-          <% if can? :execute_estimation_plan, @project %>
-            <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
-            <% unless @unit_of_work_groups.empty? %>
-              <button type="button" class="btn pull-left button_margin_right new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
-                <%= I18n.t('new_unit_of_work') %>
-              </button>
-            <% end %>
-            <button type="submit" class="btn btn-primary pull-right guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
-            <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained button_margin_right pull-right", onclick: "raz(#{uowg.id})" %>
           <% end %>
-        </div>
-      </div>
+
+          <% if can? :execute_estimation_plan, @project %>
+            <th class=""><%= I18n.t :actions %></th>
+          <% end %>
+        </tr>
+
+        <% @hash_guw_complexities = {} %>
+        <% Guw::GuwComplexity.all.each do |guw_complexity| %>
+          <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
+        <% end %>
+
+        <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
+        <% @guw_model.guw_types.each do |guw_type| %>
+          <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
+          <% unless guw_complexity.nil? %>
+            <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
+          <% end %>
+        <% end %>
+
+        <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
+          <% @guw_type = guow.guw_type %>
+          <% unless @guw_type.nil? %>
+            <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
+          <% end %>
+
+          <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
+            <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
+          </tr>
+
+        <% end %>
+      </table>
+
+    <% if can? :execute_estimation_plan, @project %>
+      <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn btn-primary button_margin_right" %>
+      <% unless @unit_of_work_groups.empty? %>
+        <button type="button" class="btn btn-primary new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
+          <%= I18n.t('new_unit_of_work') %>
+        </button>
+      <% end %>
+      <button type="submit" class="btn btn-primary guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
+      <%= link_to "RAZ", "#!", class: "btn btn-secondary reset_retained", onclick: "raz(#{uowg.id})" %>
     <% end %>
-  </div>
+
+  <% end %>
 
   <% if params[:recalculate] == "true" %>
     <%= hidden_field_tag "modified_guw_line_ids", @current_module_project_guw_unit_of_works.map(&:id).flatten.join(",") %>
@@ -315,25 +227,25 @@
   <% end %>
 
   <script>
-      var my_array = [];
-      $(document).ready(function(){
-          $(".new_guw_button").on('click', function(e){
-              $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
-              $("#hidden_position").val($(this).data("display-order"));
-          });
+    var my_array = [];
+    $(document).ready(function(){
+        $(".new_guw_button").on('click', function(e){
+            $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
+            $("#hidden_position").val($(this).data("display-order"));
+        });
 
-          $("table#guw input").keyup(function(e) {
-              var new_line = $(this).closest("tr").data("guw-id");
-              my_array.push(new_line);
-              $("#modified_guw_line_ids").val(my_array);
-          });
+        $("table#guw input").keyup(function(e) {
+            var new_line = $(this).closest("tr").data("guw-id");
+            my_array.push(new_line);
+            $("#modified_guw_line_ids").val(my_array);
+        });
 
-          $("table#guw select").on("change", function(e) {
-              var new_line = $(this).closest("tr").data("guw-id");
-              my_array.push(new_line);
-              $("#modified_guw_line_ids").val(my_array);
-          });
-      });
+        $("table#guw select").on("change", function(e) {
+            var new_line = $(this).closest("tr").data("guw-id");
+            my_array.push(new_line);
+            $("#modified_guw_line_ids").val(my_array);
+        });
+    });
   </script>
 
 <% end %>
