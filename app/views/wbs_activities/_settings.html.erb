@@ -185,7 +185,7 @@
     </div> <br>
   <% end %>
 
-  <table id="table_hide_wbs_header" class="table table-bordered">
+  <table id="table_hide_wbs_header" class="table table-list">
     <!--<thead class="<%#= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">-->
         <% if wbs_activity.enabled_input %>
           <tr class="hide_wbs_header">
@@ -446,10 +446,12 @@
 
       <td class="hide_wbs_header">
         <% if wai.nil? %>
-            <%= '----' %>
+          <span class="estimancy">
+            ----
+          </span>
         <% else %>
-            <span class="pull-left" >
-                <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
+            <span class="pull-left estimancy" >
+              <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
             </span>
             <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
               <div class="modal-dialog">
@@ -493,7 +495,6 @@
        <% end %>
     </div>
   </div>
-  <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
     <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
