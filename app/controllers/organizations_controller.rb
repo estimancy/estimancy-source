@@ -1483,7 +1483,7 @@ class OrganizationsController < ApplicationController
           # [@wbs_activity_wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten + ["TJM Moyen"]].each_with_index do |val, i|
           #   worksheet.add_cell(0, (20 + hash.size + @guw_model_guw_attributes.size + i), val)
           # end
-          worksheet.change_row_bold(0,true)
+          # worksheet.change_row_bold(0,true)
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
@@ -1806,7 +1806,7 @@ class OrganizationsController < ApplicationController
             worksheet.add_cell(0, index, val)
           end
 
-          worksheet.change_row_bold(0,true)
+          # worksheet.change_row_bold(0,true)
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
@@ -2112,6 +2112,7 @@ class OrganizationsController < ApplicationController
     # statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
     # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
 
+    # Pour garder le tri même lors du rafraichissement de la page
     projects = @organization.projects.where(:is_model => [nil, false])
 
     organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)

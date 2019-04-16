@@ -186,19 +186,19 @@ class Ge::GeModelsController < ApplicationController
     factors_default_attributs.flatten.each_with_index do |w_header, index|
       factors_worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
     end
-    factors_worksheet.change_row_bold(0,true)
+    # factors_worksheet.change_row_bold(0,true)
     factors_worksheet.change_column_width(0, 10)
 
     values_counter_line = 1
     values_default_attributs.flatten.each_with_index do |w_header, index|
       values_worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
     end
-    values_worksheet.change_row_bold(0,true)
+    # values_worksheet.change_row_bold(0,true)
     values_worksheet.change_column_width(0, 20)
 
     # For help worksheet
     help_worksheet.add_cell(0, 0, "Quelques remarques concernant la construction de ce fichier : ")
-    help_worksheet.change_row_bold(0,true)
+    # help_worksheet.change_row_bold(0,true)
     help_worksheet.add_cell(1, 0, "Un attribut ayant une seule valeur n'est pas affiché")
     help_worksheet.add_cell(2, 0, I18n.t(:scale_prod_help))
     help_worksheet.change_row_height(0, 30)
@@ -223,14 +223,14 @@ class Ge::GeModelsController < ApplicationController
       factors_default_attributs.flatten.each_with_index do |w_header, index|
         factors_exple_worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
       end
-      factors_exple_worksheet.change_row_bold(0,true)
+      # factors_exple_worksheet.change_row_bold(0,true)
       factors_exple_worksheet.change_column_width(0, 10)
 
       values_exple_counter_line = 1
       values_default_attributs.flatten.each_with_index do |w_header, index|
         values_exple_worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
       end
-      values_exple_worksheet.change_row_bold(0,true)
+      # values_exple_worksheet.change_row_bold(0,true)
       values_exple_worksheet.change_column_width(0, 20)
 
       factors_exple = [
