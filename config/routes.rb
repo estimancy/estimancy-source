@@ -266,11 +266,14 @@ Projestimate::Application.routes.draw do
 
     resources :applications
 
-    resources :applications do
-      resources :budget_types
+    resources :budgets
+
+    resources :budgets do
+      resources :applications do
+        resources :budget_types
+      end
     end
 
-    resources :budgets
     resources :fields
     resources :wbs_activities
     resources :groups

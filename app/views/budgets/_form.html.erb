@@ -57,7 +57,7 @@
 
         <% @organization.applications.each do |app| %>
           <tr>
-            <td><%= link_to app, edit_organization_application_path(@organization, app), :class => 'link' %></td>
+            <td><%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %></td>
             <td>
               <%= app.forfait_mco.to_f %>
               <%= "€ " %>

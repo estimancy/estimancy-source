@@ -39,14 +39,6 @@
 
   <div id="tabs-2">
 
-    <% if can? :manage, BudgetType %>
-      <div class="buttons">
-        <%= link_to I18n.t('create_button'), new_organization_application_budget_type_path(@organization, @application), :class => 'btn' %>
-      </div>
-    <% end %>
-
-    <hr>
-
     <table class="table">
       <tr>
         <th>Libelle du budget</th>
