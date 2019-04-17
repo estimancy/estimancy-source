@@ -53,7 +53,6 @@ class BudgetsController < ApplicationController
     #@budget.application_id = @application.id
 
     if @budget.save
-
       flash[:notice] = I18n.t (:notice_budget_successful_created)
       redirect_to :back
     else
@@ -62,15 +61,13 @@ class BudgetsController < ApplicationController
   end
 
   def update
-
     @organization = Organization.find(params[:organization_id])
     @budget = Budget.find(params[:id])
-    @application = Application.find(params[:application_id])
-
+    #@application = Application.find(params[:application_id])
 
     if @budget.update_attributes(params[:budget])
       flash[:notice] = I18n.t (:notice_budget_successful_updated)
-      redirect_to :back
+      redirect_to organization_setting_path(@organization)
     else
       render action: 'edit'
     end
@@ -92,5 +89,7 @@ class BudgetsController < ApplicationController
       Budget.where(application_id: params[:value])
     end
   end
+
+
 
 end

@@ -103,43 +103,38 @@
     <% if can? :manage, Application %>
       <%= link_to I18n.t('create_button'), new_organization_budget_path(@organization), :class => 'btn' %>
     <% end %>
+
+    <br>
+
     <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
       <thead>
       <tr>
         <th><%= I18n.t('name') %></th>
-        <th>Applications</th>
-        <th>Montant</th>
-        <th>Date début</th>
-        <th>Date fin</th>
-
+        <th><%= "Montant" %></th>
+        <th><%= "Date début" %></th>
+        <th><%= "Date fin" %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
 
       <tbody>
-      <% @organization.budgets.each do |b| %>
-        <% sum = 0.0 %>
-        <tr>
-          <td><%= b.name %></td>
-
-          <td><% @organization.applications.each do |app| %>
-              <li><%= app.name %></li>
+        <% @organization.budgets.each do |b| %>
+          <% sum = 0.0 %>
+          <tr>
+            <td class="center"><%= b.name %></td>
+              <% unless b.sum.nil? %>
+                <td class="center"><%= b.sum %><%= " €" %></td>
+              <% else %>
+                <td> </td>
               <% end %>
-          </td>
-          <% @organization.applications.each do |app| %>
-              <% sum += app.forfait_mco.to_f %>
-            <% end %>
-          <td><%= sum %></td>
-          <td><%= b.start_date %></td>
-          <td><%= b.end_date %></td>
-          <td class="center">
-          <% if can? :manage, Application %>
-            <%= link_to '', edit_organization_path(@organization), :class => 'icon-pencil' %>
-            <%= link_to '', organization_path(@organization), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-          <% end %>
-          </td>
-        </tr>
-      <% end %>
+            <td class="center"><%= b.start_date %></td>
+            <td class="center"><%= b.end_date %></td>
+              <td class="center">
+              <%= link_to '', edit_organization_budget_path(@organization, b), :class => 'icon-pencil' %>
+              <%= link_to '', organization_budget_path(@organization, b), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>

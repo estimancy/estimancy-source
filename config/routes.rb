@@ -268,11 +268,9 @@ Projestimate::Application.routes.draw do
 
     resources :applications do
       resources :budget_types
-
     end
 
     resources :budgets
-
     resources :fields
     resources :wbs_activities
     resources :groups
@@ -471,6 +469,7 @@ Projestimate::Application.routes.draw do
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
+
 
 end
 

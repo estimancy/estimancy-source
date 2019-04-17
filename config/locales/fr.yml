@@ -938,6 +938,9 @@ fr:
   notice_module_project_successful_updated: "Module Project a été mis à jour avec succès"
   notice_module_project_successful_created: "Module Project a été créé avec succès"
   notice_attribute_module_successful_created: "L'attribut du module a été créé avec succès"
+  notice_budget_successful_updated: "Budget a été mis à jour avec succès"
+  notice_budget_successful_created: "Budget a été créé avec succès"
+
 
   #mail
   mail_salutation: "Bonjour %{value},"

@@ -1,26 +1,70 @@
 <div class="tabs">
   <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:budget_type) %> </a></li>
+    <li><a href="#tabs-1"><%= I18n.t(:budget) %> </a></li>
   </ul>
 
   <div id="tabs-1">
     <%= simple_form_for([@organization, @budget]) do |f| %>
-      <%= f.error_notification %>
 
+      <%= f.error_notification %>
       <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%# apps = @organization.applications %>
-      <%#= f.input :application_id,
-                  as: :select,
-                  collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
-                  label: I18n.t(:label_product_name),
-                  input_html: {:class => 'input-large'},
-                  selected: @project.application_id %>
-      <%= f.input :start_date, :label => I18n.t('start_date_budget'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :end_date, :label => I18n.t('end_date_budget'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :sum, :label => I18n.t('sum_budget'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <div class="container-fluid">
+        <div class="span4"><%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %></div>
+        <div class="span2"><%= f.input :sum, :label => I18n.t('sum_budget'), :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %></div>
+        <div class="span2">
+          <%= f.input :start_date,
+                      :as => :string,
+                      :label => I18n.t(:start_date_budget),
+                      :input_html => { :class => 'date-picker',
+                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+        </div>
+        <div class="span2">
+          <%= f.input :end_date,
+                      :as => :string,
+                      :label => I18n.t(:end_date_budget),
+                      :input_html => { :class => 'date-picker',
+                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+        </div>
+      </div>
 
+      <script>
+          $(document).ready(function () {
+              $(".date-picker").datepicker({
+                  language: '<%= set_user_language %>',
+                  autoclose: true,
+                  todayHighlight: true,
+                  todayBtn: true
+              });
+          });
+      </script>
+
+      <% sum = 0.0 %>
+      <% @organization.applications.each do |app| %>
+        <% sum += app.forfait_mco.to_f %>
+      <% end %>
+
+      <div class="pull-right"><%= "Montant total des applications: " %>
+        <%= sum.to_s + " €" %>
+      </div>
+
+      <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+        <tr>
+          <th>Applications</th>
+
+          <th>Montants</th>
+        </tr>
+
+        <% @organization.applications.each do |app| %>
+          <tr>
+            <td><%= link_to app, edit_organization_application_path(@organization, app), :class => 'link' %></td>
+            <td>
+              <%= app.forfait_mco.to_f %>
+              <%= "€ " %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
       <%= hidden_field_tag :application_id, params[:application_id] %>
       <br/>
 
@@ -39,3 +83,4 @@
     <% end %>
   </div>
 </div>
+
