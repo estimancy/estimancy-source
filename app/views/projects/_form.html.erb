@@ -1,10 +1,7 @@
-<br>
-<br>
 <%= simple_form_for(@project) do |f| %>
 
   <%= hidden_field_tag :project_id, @project.id %>
   <% can_alter_model = can?(:manage_estimation_models, Project) %>
-
 
   <div class="row pb-5">
     <div class="col-10">
@@ -451,48 +448,19 @@
 
     <div class="col-2">
       <div id="edition-sidebar">
-        <h4 class="mb-0">Propriétés</h4>
+        <h4 class="mb-0">Navigation</h4>
         <ul class="nav flex-column">
           <li class="nav-item">
             <a class="nav-link group" href="#global1"><span>Propriétés globales</span></a>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link section"><span>Estimation</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link section"><span>Utilisateurs</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link section"><span>Historique</span></a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link group" href="#plan"><span>Plan d'estimation</span></a>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link section"><span>Modules</span></a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link group" href="#security"><span>Sécurité</span></a>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link section"><span>Droits des groupes</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link section"><span>Droits des personnes</span></a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link group" href="#history"><span>Historique</span></a>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link section"><span>Evénements</span></a>
-              </li>
-            </ul>
           </li>
         </ul>
       </div>

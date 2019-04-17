@@ -61,14 +61,6 @@
     </div>
   </div>
 
-
-
-  <div class="row">
-      <div class="col-12">
-
-    </div>
-  </div>
-
   <hr>
 
   <% if @unit_of_work_groups.empty? %>
@@ -129,7 +121,19 @@
 
     <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
-    <table class="table table-list group_<%= uowg.id %>" id="guw">
+    <div class="d-flex align-items-center mt-4">
+      <div style="flex: 1">
+        <h2>
+          <small style="color: #3A87AD">
+            <b>
+              <%= uowg %>
+            </b>
+          </small>
+        </h2>
+      </div>
+    </div>
+
+    <table class="table table-list estimation-list estimation-table group_<%= uowg.id %>" id="guw">
         <tr>
           <th></th>
           <th>#</th>
@@ -141,7 +145,7 @@
               <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
                 <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
                 <% unless guw_coefficient.nil? %>
-                  <th>
+                  <th style="width: 11%;">
                     <%= i[0] %>
                   </th>
                 <% end %>
@@ -169,14 +173,15 @@
                   </th>
                 <% end %>
               <% else %>
-                <th>
+                <th style="width: 12%;">
                   <%= i[0] %>
                 </th>
               <% end %>
             <% end %>
           <% end %>
 
-          <% if can? :execute_estimation_plan, @project %>
+          <%# if can? :execute_estimation_plan, @project %>
+          <% if false %>
             <th class=""><%= I18n.t :actions %></th>
           <% end %>
         </tr>

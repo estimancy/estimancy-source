@@ -2,12 +2,12 @@
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
   <div id="modules-sidebar" class="py-6">
     <div class="title">
-      <a class="estimancy" href="<%= activate_module_project_path(@project.module_projects.first) %>">Désélectionner <br> tous les modules</a>
+      <a class="estimancy" href="<%= activate_module_project_path(@project.module_projects.first) %>">Afficher <br> le tableau de bord</a>
     </div>
     <ul class="nav flex-column">
       <% module_projects.each_with_index do |pmod, index| %>
         <li class="nav-item">
-          <a class="nav-link" href="<%= activate_module_project_path(pmod) %>"><span>
+          <a class="nav-link <%= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>"><span>
             <%= pmod.to_s.truncate(22) %>
           </span>
             <i class="material-icons">arrow_left</i></a>

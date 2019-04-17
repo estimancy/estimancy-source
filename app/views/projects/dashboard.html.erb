@@ -1,4 +1,4 @@
-<div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-9' : 'col-7' %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
+<div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-9' : 'col-8' %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
 
   <% if current_module_project.pemodule.alias != "initialization" %>
     <%= render(:partial => 'projects/setting_module') %>
@@ -98,18 +98,18 @@
               <% module_project.views_widgets.each_with_index do |vw, index| %>
                 <% unless vw.widget_type == "text" %>
                   <li class="nav-item">
-                    <a class="nav-link <%= (index == 0) ? 'active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
+                    <a class="nav-link <%= (index == 0) ? 'active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
                   </li>
                 <% end %>
               <% end %>
             <% end %>
           </ul>
 
-          <% @project.module_projects.each do |module_project| %>
-            <% module_project.views_widgets.each_with_index do |vw, index| %>
-              <% unless vw.widget_type == "text" %>
-                <div class="tab-content" id="pills-tabContent">
-                  <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
+          <div class="tab-content" id="pills-tabContent">
+            <% @project.module_projects.each do |module_project| %>
+              <% module_project.views_widgets.each_with_index do |vw, index| %>
+                <% unless vw.widget_type == "text" %>
+                  <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-bloc-tools d-flex justify-content-end mb-2">
@@ -123,10 +123,10 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                <% end %>
               <% end %>
             <% end %>
-          <% end %>
+          </div>
         </div>
       </div>
     </div>

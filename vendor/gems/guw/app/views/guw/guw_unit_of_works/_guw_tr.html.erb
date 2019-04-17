@@ -53,25 +53,25 @@
    end
 %>
 
-<td style="border-left: <%= border_color %>">
+<td style="border-left: <%= border_color %>" class="guw-cell-ajustment">
   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}_group" %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="span1">
+<td class="guw-cell-ajustment">
   <span class="badge badge-default">
     #<%= guow.id %>
   </span>
 </td>
 
-<td class="text_field_text_overflow span3">
+<td class="text_field_text_overflow span3 guw-cell-ajustment">
   <span class="pull-left">
     <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
   </span>
 </td>
 
-<td class="span3">
+<td class="guw-cell-ajustment">
   <% unless @guw_type.nil? %>
 
     <%
@@ -82,8 +82,7 @@
     %>
 
     <%= select_tag "guw_type[#{guow.id}]", raw(str),
-                   class: "guw_type",
-                   style: "width: 90%",
+                   class: "guw_type form-control",
                    prompt: "",
                    guw: guow.id,
                    title: (@guw_type.description.blank? ? @guw_type.name : @guw_type.description) %>
@@ -97,8 +96,7 @@
     %>
 
     <%= select_tag "guw_type[#{guow.id}]", raw(str),
-                   class: "guw_type",
-                   style: "width: 90%;",
+                   class: "guw_type form-control",
                    prompt: "",
                    guw: guow.id,
                    title: '' %>
@@ -119,7 +117,7 @@
             <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|j| [j.name, j.id] },
                                                                            selected: @guw_complexities.first.nil? ? nil : @guw_complexities.first.id),
                            guw: guow.id,
-                           class: "guw_complexity" %>
+                           class: "guw_complexity form-control" %>
           </td>
         <% end %>
       <% end %>
@@ -149,7 +147,7 @@
              end
           %>
 
-          <td class="span2">
+          <td class="">
             <%# if has_element == true %>
             <% v = elmnts.flatten.compact.inject(&:*) %>
             <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
@@ -161,15 +159,15 @@
       <% end %>
     <% elsif i[0] == "Critères" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-        <td class="span1">
+        <td class="guw-cell-ajustment">
           <% unless @guw_type.nil? %>
             <% if @guw_type.allow_criteria == true %>
               <span class="text-center criteria_label_<%= guow.id %>">
                 <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
                 <% if counting.empty? %>
-                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                 <% else %>
-                  <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
                 <% end %>
               </span>
             <% else %>
@@ -184,7 +182,7 @@
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
       <% end %>
-      <td class="span2">
+      <td>
         <span class="cotation_label_<%= guow.id %>">
           <% unless @guw_type.nil? %>
             <% if @guw_type.display_threshold == true %>
@@ -192,30 +190,26 @@
               <% if guow.off_line == true %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
-                               class: "guw_complexity",
+                               class: "guw_complexity form-control",
                                prompt: "HSAT",
-                               disabled: !@guw_type.allow_complexity,
-                               style: "width: 80%;" %>
+                               disabled: !@guw_type.allow_complexity %>
               <% elsif guow.off_line_uo == true %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
-                               class: "guw_complexity",
+                               class: "guw_complexity form-control",
                                prompt: "HSUO",
-                               disabled: !@guw_type.allow_complexity,
-                               style: "width: 80%;" %>
+                               disabled: !@guw_type.allow_complexity %>
               <% elsif guow.guw_complexity.nil? %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
                                guw: guow.id,
-                               class: "guw_complexity",
+                               class: "guw_complexity form-control",
                                include_blank: false,
-                               disabled: !@guw_type.allow_complexity,
-                               style: "width: 80%;" %>
+                               disabled: !@guw_type.allow_complexity %>
               <% else %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                               class: "guw_complexity",
+                               class: "guw_complexity form-control",
                                include_blank: false,
-                               disabled: !@guw_type.allow_complexity,
-                               style: "width: 80%;" %>
+                               disabled: !@guw_type.allow_complexity %>
               <% end %>
             <% else %>
               <% if guow.off_line == true %>
@@ -233,15 +227,15 @@
                       <% color = @guw_type.color_code %>
                     <% end %>
                     <%= number_field_tag "complexity_coeff[#{guow.id}]", guow.intermediate_percent.to_f.round(3),
-                                         style: "width: 80%; text-align: right;",
-                                         class: "complexity_weight-#{uowg.id} guw-#{guow.id}",
+                                         style: "text-align: right; width: 90%;",
+                                         class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control",
                                          guw: guow.id,
                                          title: guow.cplx_comments,
                                          readonly: true %>
                     <% if @guw_type.allow_complexity %>
                       <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight.to_f.round(3),
-                                           style: "width: 80%; background-color: ##{color}; text-align: right;",
-                                           class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained",
+                                           style: "background-color: ##{color}; text-align: right; width: 90%;",
+                                           class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained form-control",
                                            guw: guow.id,
                                            title: guow.cplx_comments,
                                            step: 0.001 %>
@@ -306,7 +300,7 @@
                                                                      module_project_id: current_module_project.id).order("updated_at ASC").last %>
               <% end %>
 
-              <td class="span2 <%= @guw_coefficient.id %>_<%= guow.id %>">
+              <td  class="guw-cell-ajustment <%= @guw_coefficient.id %>_<%= guow.id %>">
                 <%
                    if ceuw.nil?
                      color = ""
@@ -321,8 +315,8 @@
                 <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                      ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
-                                     style: "width: 60%; #{color}; text-align: right;",
-                                     class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
+                                     style: "#{color}; text-align: right; width: 90%;",
+                                     class: "complexity_weight-#{uowg.id} form-control guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
                                      step: 0.001,
                                      guw: guow.id,
@@ -333,8 +327,8 @@
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                        ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
-                                       style: "width: 60%; text-align: right;",
-                                       class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
+                                       style: "text-align: right; width: 90%;",
+                                       class: "complexity_weight-#{uowg.id} form-control retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
                                        step: 0.001,
                                        title: ceuw.nil? ? "" : ceuw.comments %>
                 <% end %>
@@ -401,10 +395,9 @@
                   <% unless results.empty? %>
                     <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                              selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
-                                   class: "guw_coefficient guw-#{guow.id}",
+                                   class: "guw_coefficient guw-#{guow.id} form-control",
                                    guw: guow.id,
-                                   readonly: !can?(:execute_estimation_plan, @project),
-                                   style: "width: 80%;" %>
+                                   readonly: !can?(:execute_estimation_plan, @project) %>
                   <% end %>
                 <% end %>
               </td>
@@ -431,14 +424,14 @@
         <% end %>
 
         <% unless got.nil? %>
-          <td class="span2">
+          <td class="guw-cell-ajustment">
             <% if got.display_type == "display" %>
                               <span class="ajusted_size_<%= guow.id %>">
                                 <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
                                                      readonly: true,
-                                                     class: "guw-#{guow.id} guw_number_field_tag retained",
-                                                     style: "width: 80%; text-align: right;" %>
+                                                     class: "guw-#{guow.id} guw_number_field_tag retained form-control",
+                                                     style: "text-align: right; width: 90%;" %>
                               </span>
             <% elsif got.display_type == "modif" %>
 
@@ -453,8 +446,8 @@
               <span class="ajusted_size_<%= guow.id %>">
                                 <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                                      step: 0.001,
-                                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                                     style: "width: 80%; #{color} text-align: right;" %>
+                                                     class: "retained-guw-#{guow.id} form-control guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
+                                                     style: "#{color} text-align: right; width: 60%;" %>
                               </span>
             <% elsif got.display_type == nil %>
               <span class="ajusted_size_<%= guow.id %>">
@@ -474,27 +467,27 @@
 
               <span class=" size_label_<%= guow.id %>">
                 <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
-                                     class: "size-#{uowg.id} guw-#{guow.id} guw_number_field_tag",
+                                     class: "size-#{uowg.id} guw-#{guow.id} form-control guw_number_field_tag",
                                      readonly: true,
-                                     style: "width: 80%; text-align: right;",
+                                     style: " text-align: right; width: 60%;",
                                      step: 0.001 %>
               </span>
               <span class="ajusted_size_<%= guow.id %>">
                 <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                      step: 0.001,
-                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained",
-                                     style: "width: 80%; #{color} text-align: right;"
+                                     class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained form-control",
+                                     style: "#{color} text-align: right; width: 60%;"
                 %>
               </span>
             <% end %>
           </td>
         <% else %>
-          <td>
+          <td class="guw-cell-ajustment">
             <span class="ajusted_size_<%= guow.id %>">
               <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
                                    step: 0.001,
-                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
-                                   style: "width: 80%; background-color: ##{@guw_output.color_code}; text-align: right;" %>
+                                   class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained form-control",
+                                   style: "background-color: ##{@guw_output.color_code}; text-align: right; width: 60%;" %>
             </span>
           </td>
         <% end %>
@@ -523,21 +516,29 @@
       <% unless default.nil? %>
         <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([[default.name, default.id]],
                                                                                                        selected: default.value),
-                       class: "guw_coefficient guw-#{guow.id}",
+                       class: "guw_coefficient guw-#{guow.id} form-control",
                        guw: guow.id,
-                       readonly: !can?(:execute_estimation_plan, @project),
-                       style: "width: 80%;" %>
+                       readonly: !can?(:execute_estimation_plan, @project) %>
       <% end %>
     <% end %>
   <% end %>
 </td>
 
-<% if can? :execute_estimation_plan, @project %>
-  <td>
+<%# if can? :execute_estimation_plan, @project %>
+<% if false %>
+  <td class="estimation-table-overview-cell">
     <div class="tools">
-      <%= link_to raw("<i class='material-icons'>clear_all</i"), "#!", onclick: "raz_line(#{guow.id})", title: "RAZ" %>
-      <%= link_to raw("<i class='material-icons'>file_copy</i"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", title: I18n.t(:duplicate), remote: true %>
-      <%= link_to raw("<i class='material-icons'>delete</i"), guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), title: I18n.t(:delete), remote: true %>
+      <div class="dropdown">
+        <a href="#!" class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="material-icons">more_vert</i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
+          <div class="dropdown-divider"></div>
+          <%= link_to raw("<i class='material-icons'>clear_all</i"), "#!", onclick: "raz_line(#{guow.id})", title: "RAZ", class: "dropdown-item" %>
+          <%= link_to raw("<i class='material-icons'>file_copy</i"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", title: I18n.t(:duplicate), remote: true, class: "dropdown-item" %>
+          <%= link_to raw("<i class='material-icons'>delete</i"), guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), title: I18n.t(:delete), remote: true, class: "dropdown-item" %>
+        </div>
+      </div>
     </div>
   </td>
 <% end %>
