@@ -241,7 +241,9 @@
       <div class="page-edition-content row justify-content-start">
         <%= render 'module_projects/new_estimation_plan_min' %>
         <%= yield %>
-        <%= render 'module_projects/dashboard_right_panel' %>
+        <% unless current_module_project.pemodule.alias == "initialization" %>
+          <%= render 'module_projects/dashboard_right_panel' %>
+        <% end %>
       </div>
     <% else %>
       <div class="container">
