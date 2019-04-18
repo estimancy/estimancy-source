@@ -13,21 +13,21 @@
         <%= I18n.t(:name) %>
       </b>
     </label>
-    <%= text_area_tag "name[#{guow.id}]", guow.name, class: "attribute_note_area", readonly: !can?(:execute_estimation_plan, @project) %>
+    <%= text_area_tag "name[#{guow.id}]", guow.name, class: "attribute_note_area form-control", readonly: !can?(:execute_estimation_plan, @project) %>
 
     <label>
       <b>
         <%= I18n.t(:description) %>
       </b>
     </label>
-    <%= text_area_tag "comments[#{guow.id}]", guow.comments, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+    <%= text_area_tag "comments[#{guow.id}]", guow.comments, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
     <label>
       <b>
         Traçabilité
       </b>
     </label>
-    <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+    <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
     <label>
       <b>
@@ -37,7 +37,7 @@
     <%= select_tag :guw_unit_of_work_group_id,
                    options_for_select(current_module_project.guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort,
                                       selected: guow.guw_unit_of_work_group_id),
-                   class: "input-xlarge" %>
+                   class: "form-control" %>
 
     <br>
 
@@ -55,7 +55,7 @@
     <% end %>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
     <% if can? :execute_estimation_plan, @project %>
       <button type="submit" class="btn btn-primary" data-disable-with="<%= I18n.t :please_wait %>">
         <%= I18n.t(:save) %>

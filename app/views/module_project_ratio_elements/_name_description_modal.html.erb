@@ -13,14 +13,14 @@
         <%= I18n.t(:name) %>
       </b>
     </label>
-    <%= text_area_tag "name[#{mp_ratio_element.id}]", name_to_show, class: "attribute_note_area", readonly: !can?(:execute_estimation_plan, @project) %>
+    <%= text_area_tag "name[#{mp_ratio_element.id}]", name_to_show, class: "attribute_note_area form-control", readonly: !can?(:execute_estimation_plan, @project) %>
 
     <label>
       <b>
         <%= I18n.t(:description) %>
       </b>
     </label>
-    <%= text_area_tag "description[#{mp_ratio_element.id}]", mp_ratio_element.description, class: "attribute_note_area", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+    <%= text_area_tag "description[#{mp_ratio_element.id}]", mp_ratio_element.description, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
   </div>
   <div class="modal-footer">

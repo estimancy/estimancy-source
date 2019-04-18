@@ -1,8 +1,5 @@
 $("#modal_cotation_content").html("<%= j(render 'guw/guw_unit_of_works/cotations_modal', { :guow => @guw_unit_of_work })%>")
-$("#modal_cotation").modal({
-  keyboard: false,
-  backdrop: "static"
-});
+$("#modal_cotation").modal();
 
 //        .css({
 //  width: "80%",

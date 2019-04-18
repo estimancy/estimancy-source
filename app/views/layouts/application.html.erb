@@ -20,7 +20,7 @@
 
     <header class="header">
       <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="<%= all_organizations_path %>">
+        <a class="navbar-brand" href="<%= main_app.all_organizations_path %>">
           <div class="home-button">
             <img class="logo" src=/assets/logo_arrows_white_small.png>
             <div class="home-button-text">Accueil Estimancy</div>
@@ -34,7 +34,7 @@
               </a>
               <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
                 <% @organizations.each do |organization| %>
-                  <a class="dropdown-item project-item <%= (@current_organization.id == organization.id) ? 'active' : '' %>" href="<%= organization_estimations_path(organization) %>">
+                  <a class="dropdown-item project-item <%= (@current_organization.id == organization.id) ? 'active' : '' %>" href="<%= main_app.organization_estimations_path(organization) %>">
                     <div class="project-title"><%= organization.name %></div>
                     <div class="project-subtitle"><%= organization.headband_title %></div>
                   </a>
@@ -46,7 +46,7 @@
             </div>
           </div>
 
-          <%= form_tag advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" do %>
+          <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" do %>
             <div class="input-group global-search-bar">
               <div class="input-group-prepend global-search-bar-prepend">
                 <span class="input-group-text" id="search-icon">

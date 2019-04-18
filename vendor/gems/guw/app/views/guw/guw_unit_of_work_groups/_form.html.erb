@@ -1,41 +1,25 @@
-<b>
-  <%= @guw_model %>
-</b>
+<%= @guw_model %> / <%= I18n.t :add_new_unit_of_work_group %>
 
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t :add_new_unit_of_work_group %>
-      </a>
-    </li>
-  </ul>
+  <%= simple_form_for(@guw_unit_of_work_group) do |f| %>
+    <%= f.error_notification %>
 
-  <div id="tabs-1">
-    <%= simple_form_for(@guw_unit_of_work_group) do |f| %>
-      <%= f.error_notification %>
-      <div class="form-inputs">
+      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id]} %>
+      <%= f.input :project_id, :as => :hidden, :input_html => { :value => @project.id || params[:project_id]} %>
 
-        <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id]} %>
-        <%= f.input :project_id, :as => :hidden, :input_html => { :value => @project.id || params[:project_id]} %>
-
-        <%= f.input :name, label: I18n.t(:name), :input_html => { :class => 'input-xxlarge' } %>
-        <%= f.input :comments, label: I18n.t(:comments), :input_html => { :class => 'input-xxlarge' } %>
-        <% if @guw_model.allow_technology == true %>
-          <%= f.input :organization_technology_id, as: :select, collection: @project.organization.organization_technologies, label: I18n.t(:organization_technology) %>
-        <% end %>
-      </div>
-
-      <% if can? :execute_estimation_plan, @project %>
-        <div class="actions-tabs">
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-          <%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
-          <% unless controller.action_name == "new" %>
-            <%= link_to I18n.t(:delete), guw.guw_unit_of_work_group_path(@guw_unit_of_work_group), method: "delete", confirm: I18n.t('are_you_sure'), :class => 'btn btn-error pull-right' %>
-          <% end %>
-        </div>
+      <%= f.input :name, label: I18n.t(:name), :input_html => { :class => 'form-control' } %>
+      <%= f.input :comments, label: I18n.t(:comments), :input_html => { :class => 'form-control' } %>
+      <% if @guw_model.allow_technology == true %>
+        <%= f.input :organization_technology_id, as: :select, collection: @project.organization.organization_technologies, label: I18n.t(:organization_technology) %>
       <% end %>
 
-  <% end %>
-  </div>
-</div>
+    <% if can? :execute_estimation_plan, @project %>
+      <div class="actions-tabs">
+        <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
+        <% unless controller.action_name == "new" %>
+          <%= link_to I18n.t(:delete), guw.guw_unit_of_work_group_path(@guw_unit_of_work_group), method: "delete", confirm: I18n.t('are_you_sure'), :class => 'btn btn-error pull-right' %>
+        <% end %>
+      </div>
+    <% end %>
+
+<% end %>

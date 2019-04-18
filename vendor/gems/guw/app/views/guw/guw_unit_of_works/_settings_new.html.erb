@@ -353,21 +353,21 @@
 </script>
 
 <div class="modal hide fade" id="modal_cotation" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-cotation" id="modal_cotation_content">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-cotation modal-content" id="modal_cotation_content">
     </div>
   </div>
 </div>
 
 <div class="modal hide fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="modal_comments_content">
     </div>
   </div>
 </div>
 
 <div class="modal hide fade" id="coefficient_comments" tabindex="-1" role="dialog" aria-labelledby="modal_coefficient_comments_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="modal_coefficient_comments_content">
 
     </div>
@@ -375,21 +375,21 @@
 </div>
 
 <div class="modal hide fade" id="cplx_comments" tabindex="-1" role="dialog" aria-labelledby="modal_cplx_comments_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="modal_cplx_comments_content">
     </div>
   </div>
 </div>
 
 <div class="modal hide fade" id="modal_trackings" tabindex="-1" role="dialog" aria-labelledby="modal_trackings_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="modal_trackings_content">
     </div>
   </div>
 </div>
 
 <div class="modal hide fade" id="modal_name" tabindex="-1" role="dialog" aria-labelledby="modal_name_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="modal_name_content">
     </div>
   </div>
@@ -420,7 +420,7 @@
 
 <!-- Word Trees modal : Modèle de données -->
 <div class="modal hide fade" tabindex="-1" role="dialog" id="word_trees_modal" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document" style="width:100%">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header modal-drag">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -442,7 +442,7 @@
 
 
 <div class="modal hide fade" tabindex="-1" role="dialog" id="ml_trt" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <%= form_tag guw.ml_trt_path, :method => 'POST', :multipart => true, :class => 'simple_form', remote: true do %>
 
@@ -475,12 +475,11 @@
 </div>
 
 <div class="modal hide fade" tabindex="-1" role="dialog" id="new_guw" aria-labelledby="new_guw_label">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <% @guw_unit_of_work = Guw::GuwUnitOfWork.new %>
       <%= form_tag guw.guw_model_guw_unit_of_works_path(@guw_model, @guw_unit_of_work), remote: true do |f| %>
         <div class="modal-header modal-drag">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
             <%= I18n.t(:component_serv_creation) %>
           </h4>
@@ -502,14 +501,14 @@
                   <h5>
                     <%= I18n.t(:uw_name) %>
                   </h5>
-                  <%= text_field_tag :name, "", class: "input-xlarge uo_name" %>
+                  <%= text_field_tag :name, "", class: "form-control uo_name" %>
                 </p>
 
                 <p>
                   <h5>
                     <%= I18n.t(:comments) %>
                   </h5>
-                  <%= text_area_tag :comments, "", rows: "5", class: "input-xlarge uo_comment" %>
+                  <%= text_area_tag :comments, "", rows: "5", class: "form-control uo_comment" %>
                 </p>
 
                 <p>
@@ -520,7 +519,7 @@
                     <%= select_tag :guw_type_id,
                                    options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                                    include_blank: false,
-                                   class: "input-xlarge uo_type" %>
+                                   class: "form-control uo_type" %>
                   <% end %>
                 </p>
 
@@ -530,7 +529,7 @@
                   </h5>
                   <%= select_tag :guw_unit_of_work_group_id,
                                  options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
-                                 class: "input-xlarge" %>
+                                 class: "form-control input-xlarge" %>
                 </p>
               </div>
             </div>
