@@ -1964,6 +1964,36 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:report, parameter: @organization)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
+    @projects = @current_organization.projects.where(is_model: false)
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @current_organization.fields
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
   end
 
   def authorization

@@ -34,16 +34,7 @@
 
       <br/>
 
-      <%= "Budget Colors" %>
-          <% colors = ["#7B9F35", "#BBCC44", "#AA7939"] %>
-          <% colors.each do |color| %>
-          <div class="row-fluid">
-            <div class="pull-left">
-              <%= check_box_tag "budget_colors[#{color}]", nil, (color.nil? ? true : false)  %>
-              <%= color %>
-            </div>
-          </div>
-        <% end %>
+      <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
 
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>

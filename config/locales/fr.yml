@@ -2307,3 +2307,6 @@ fr:
   start_date_budget: "Date de début"
   end_date_budget: "Date de fin"
   sum_budget: "Montant"
+
+  budget_type: "Type du budget"
+  color: "Couleur"

@@ -241,7 +241,11 @@ Projestimate::Application.routes.draw do
 
   resources :currencies
 
+
+
   resources :organizations do
+
+    post 'generate_budget_report' => 'budgets#budget_report', :as => 'generate_budget_report'
 
     get 'demand_dashboard' => 'demands#demand_dashboard'
     get 'budget_dashboard' => "organizations#budget_dashboard"
@@ -472,6 +476,7 @@ Projestimate::Application.routes.draw do
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
+
 
 
 end

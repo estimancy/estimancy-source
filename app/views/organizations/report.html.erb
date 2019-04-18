@@ -4,7 +4,9 @@
     <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
     <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
     <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
+    <li><a href="#tabs-budget-report"><%= "Budget Report" %></a></li>
   </ul>
+
 
   <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
     <p>
@@ -36,6 +38,83 @@
         </div>
       </div>
     <% end %>
+
+  </div>
+
+  <div id="tabs-budget-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <%= form_tag "generate_budget_report", method: "post" do %>
+
+      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+      <div class="span4">
+        <%= label_tag "Budgets" %>
+        <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent) %>
+      </div>
+
+      <div class="span4">
+        <%= label_tag "Applications" %>
+        <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent) %>
+      </div>
+
+      <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+
+    <% end %>
+
+    <br/>
+
+    <div class="container-fluid">
+
+      <% unless params[:budget_id].nil? %>
+        <% @budget = Budget.find(params[:budget_id]) %>
+      <% end %>
+
+      <br/>
+
+      <div class="center">
+        <%= "Montant du budget " + @budget.name.to_s + ": " + @budget.sum.to_s + " €" %>
+      </div>
+
+      <% unless params[:application_id].nil? %>
+        <% @app = Application.find(params[:application_id]) %>
+      <% end %>
+
+      <% bt_pie = Hash.new {|h,k| h[k] = [] } %>
+      <% bt_sum = 0 %>
+      <% BudgetTypeStatus.where(application_id: @app.id, organization_id: @current_organization.id).all.each do |bts| %>
+        <% projects = Project.where(application_id: @app.id ,
+                                    organization_id: @current_organization.id,
+                                    estimation_status_id: bts.estimation_status_id,
+                                    is_model: false) %>
+        <% projects_sum = 0  %>
+        <% projects.each do |project| %>
+          <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
+             column = QueryColumn.new(field.name.to_sym,
+                                      sortable: "",
+                                      caption: "",
+                                      field_id: field.id,
+                                      organization_id: @current_organization.id) %>
+          <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+          <% projects_sum += value.round(2) %>
+          <% bt_pie[bts.budget_type.name] = projects_sum.round(2) %>
+        <% end %>
+      <% end %>
+
+      <% bt_pie.each_value do |btpval| %>
+        <% bt_sum = bt_sum + btpval %>
+      <% end %>
+
+      <% rest = (@budget.sum.to_f - bt_sum).round(2) %>
+      <% bt_pie['Reste'] = rest %>
+
+      <br/>
+
+      <% if bt_pie.length > 1 %>
+        <div class="span4">
+          <%= @app.name %>
+          <%= pie_chart bt_pie, colors: color_bt(bt_pie.keys)  %>
+        </div>
+      <% end %>
+    </div>
 
   </div>
 
