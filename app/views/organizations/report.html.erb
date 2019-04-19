@@ -70,49 +70,57 @@
 
       <br/>
 
-      <div class="center">
-        <%= "Montant du budget " + @budget.name.to_s + ": " + @budget.sum.to_s + " €" %>
-      </div>
+      <% unless @budget.nil? %>
+        <div class="center">
+          <%= "Montant du budget " + @budget.name.to_s + ": " + @budget.sum.to_s + " €" %>
+        </div>
+      <% end %>
 
       <% unless params[:application_id].nil? %>
         <% @app = Application.find(params[:application_id]) %>
-      <% end %>
 
-      <% bt_pie = Hash.new {|h,k| h[k] = [] } %>
-      <% bt_sum = 0 %>
-      <% BudgetTypeStatus.where(application_id: @app.id, organization_id: @current_organization.id).all.each do |bts| %>
-        <% projects = Project.where(application_id: @app.id ,
-                                    organization_id: @current_organization.id,
-                                    estimation_status_id: bts.estimation_status_id,
-                                    is_model: false) %>
-        <% projects_sum = 0  %>
-        <% projects.each do |project| %>
-          <% field = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
-             column = QueryColumn.new(field.name.to_sym,
-                                      sortable: "",
-                                      caption: "",
-                                      field_id: field.id,
-                                      organization_id: @current_organization.id) %>
-          <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-          <% projects_sum += value.round(2) %>
-          <% bt_pie[bts.budget_type.name] = projects_sum.round(2) %>
+        <% bt_hash = Hash.new {|h,k| h[k] = [] } %>
+        <% bt_colors = Hash.new %>
+
+        <% BudgetTypeStatus.where(application_id: @app.id,
+                                  organization_id: @current_organization.id).all.each do |bts| %>
+
+          <% projects = Project.where(application_id: @app.id ,
+                                      organization_id: @current_organization.id,
+                                      estimation_status_id: bts.estimation_status_id,
+                                      is_model: false).all %>
+          <% projects_sum = 0 %>
+          <% projects.each do |project| %>
+
+            <% field = Field.where(organization_id: project.organization_id, name: "Effort (j.h)").first
+               column = QueryColumn.new(field.name.to_sym,
+                                        sortable: "",
+                                        caption: "",
+                                        field_id: field.id,
+                                        organization_id: @current_organization.id) %>
+            <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+            <% projects_sum += value.round(2) %>
+            <% unless bts.budget_type.nil? %>
+              <% bt_hash[bts.budget_type.name] << projects_sum.round(2) %>
+              <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+            <% end %>
+          <% end %>
         <% end %>
-      <% end %>
 
-      <% bt_pie.each_value do |btpval| %>
-        <% bt_sum = bt_sum + btpval %>
-      <% end %>
+        <% bt_hash.each do |k, v| %>
+          <% bt_hash[k] = v.sum %>
+        <% end %>
 
-      <% rest = (@budget.sum.to_f - bt_sum).round(2) %>
-      <% bt_pie['Reste'] = rest %>
+        <% rest = (@budget.sum.to_f - bt_hash.values.sum).round(2) %>
+        <% bt_hash['Solde'] = rest %>
 
-      <br/>
+        <br/>
 
-      <% if bt_pie.length > 1 %>
-        <div class="span4">
-          <%= @app.name %>
-          <%= pie_chart bt_pie, colors: color_bt(bt_pie.keys)  %>
-        </div>
+        <% if bt_hash.length > 1 %>
+          <div class="span4">
+            <%= pie_chart bt_hash, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
+          </div>
+        <% end %>
       <% end %>
     </div>
 
