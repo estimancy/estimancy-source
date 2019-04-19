@@ -7,8 +7,7 @@ $("#myModalLabel").html('<%= I18n.t(:label_edit_attribute_notes, :attribute_name
 
 $("#edit_component").modal({
     keyboard: false,
-    backdrop: "static",
-    backdrop: false
+    backdrop: "static"
 });
 
 $("#notifications").html("<%= j(render "layouts/notifications") %>");

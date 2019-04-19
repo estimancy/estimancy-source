@@ -303,7 +303,10 @@ module OrganizationsHelper
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
           content_tag("td class='text-left'") do
-            link_to project.status_name, main_app.add_comment_on_status_change_url(:project_id => project.id), remote: true, class: "btn btn-status", style: "padding: 8px; background-color: #{project.status_background_color}".to_s.html_safe
+            link_to project.status_name, main_app.add_comment_on_status_change_path(project_id: project.id),
+                    remote: true,
+                    class: "btn btn-status",
+                    style: "padding: 8px; background-color: #{project.status_background_color}".to_s.html_safe
           end
         else
           content_tag("td class='center'") do

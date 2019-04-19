@@ -5,5 +5,8 @@ $('#'+comment_id).html("<%= j (@module_project_ratio_element.comments.blank? ? "
 var mp_id = '<%= @module_project_ratio_element.id %>';
 $('#module_project_ratio_element_hidden_comments_'+mp_id).val("<%= j (@module_project_ratio_element.comments) %>");
 
-$('#modal_comments').modal('toggle');
+$('#modal_comments').modal({
+    keyboard: false,
+    backdrop: "static"
+});
 

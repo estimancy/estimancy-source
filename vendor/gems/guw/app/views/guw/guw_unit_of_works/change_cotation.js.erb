@@ -14,7 +14,7 @@ $("#guw_type_<%= @guw_unit_of_work.id %>").prop('title', '<%= @new_popup_title %
 <% else %>
     $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
                class: "guw_type",
-               style: "width: 90%;",
+               style: "",
                prompt: "",
                guw: @guw_unit_of_work.id,
                title: '' ) %>");

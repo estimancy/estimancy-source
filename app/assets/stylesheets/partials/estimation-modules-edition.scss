@@ -5,9 +5,8 @@
   .card-body {
     display: flex;
     flex-wrap: wrap;
-    //flex-direction: row;
-    padding-right: 3.8rem;
-    padding-left: 30px;
+    padding-right: 2rem;
+    padding-left: 1rem;
   }
 
   .edition-bloc-left {
@@ -24,8 +23,17 @@
     color: $brand-first-color;
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center
+    align-items: center;
+
+    .edition-bloc-title-link {
+      font-weight: normal;
+      font-size: 17px;
+      line-height: 24px;
+      text-decoration-line: underline;
+      text-transform: capitalize;
+      color: $grey-medium;
+      margin-left: 2rem
+    }
   }
 
   .edition-bloc-content {
@@ -126,6 +134,72 @@
         font-weight: bold;
         font-size: 18px;
         line-height: 24px;
+      }
+    }
+  }
+
+  .requirements-table {
+    border-bottom: 1px solid #dee2e6;
+
+    thead th {
+      border-bottom: 3px solid #dee2e6;
+      color: $grey-dark;
+    }
+
+    tr {
+      height: 60px;
+
+      th {
+        color: $grey-dark;
+      }
+
+      td {
+        color: $brand-sixth-color;
+      }
+    }
+
+    th, td {
+      vertical-align: middle;
+      font-size: 15px;
+
+      &:last-child {
+        padding-right: 0
+      }
+    }
+
+    .btn-delete {
+      color: #BDBDBD;
+      padding: 0
+    }
+  }
+
+  .new-requirement-form {
+    margin-top: -42px;
+    position: relative;
+    margin-left: -2.5rem;
+    margin-right: -2.5rem;
+    border: 1px solid #84CEE5;
+    box-sizing: border-box;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .edition-bloc-tools {
+    a {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 16px;
+      text-align: right;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: $brand-third-color;
+      display: inline-block;
+      margin-right: 2.5rem;
+
+      i {
+        font-size: 18px;
+        vertical-align: bottom;
+        line-height: 16px;
+        margin-right: 0.3rem
       }
     }
   }
