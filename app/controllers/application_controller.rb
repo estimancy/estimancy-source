@@ -383,14 +383,15 @@ class ApplicationController < ActionController::Base
     if @project.nil?
       nil
     else
+      organization = @project.organization
       pemodule = Pemodule.find_by_alias('initialization')
-      default_current_module_project = ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+      default_current_module_project = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id , project_id: @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
         session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
       else
         begin
           pemodule = Pemodule.find_by_alias('initialization')
-          ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+          ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id, project_id: @project.id).first
         rescue
           @project.module_projects.first
         end

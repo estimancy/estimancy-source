@@ -444,23 +444,23 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "kb"
       @kb_model = @module_project.kb_model
-      @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
-                                    organization_id: @project_organization.id,
-                                    kb_model_id: @kb_model.id).first_or_create
+      @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
+                                    kb_model_id: @kb_model.id,
+                                    module_project_id: @module_project.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
       @skb_model = @module_project.skb_model
-      @skb_input = Skb::SkbInput.where(module_project_id: @module_project.id,
-                                       organization_id: @project_organization.id,
-                                       skb_model_id: @skb_model.id).first_or_create
+      @skb_input = Skb::SkbInput.where(organization_id: @project_organization.id,
+                                       skb_model_id: @skb_model.id,
+                                       module_project_id: @module_project.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
       @ge_model = @module_project.ge_model
-      @ge_input = Ge::GeInput.where(module_project_id: @module_project.id,
-                                    organization_id: @project_organization.id,
-                                    ge_model_id: @ge_model.id).first_or_create
+      @ge_input = Ge::GeInput.where(organization_id: @project_organization.id,
+                                    ge_model_id: @ge_model.id,
+                                    module_project_id: @module_project.id).first_or_create
       @ge_input_values = @ge_input.values
       @ge_factors = @ge_model.ge_factors
       @all_factors_values_hash = Hash.new #hash that contained factor values
@@ -490,7 +490,7 @@ class ProjectsController < ApplicationController
         @ge_type_factors_per_scale_prod.each do |scale_prod, factors_per_type|
           factors_per_type.each do |type, factor_values_array|
             @type_factors_values_hash = Hash.new
-            @ge_model.ge_factors.where(scale_prod: "#{scale_prod}").each do |f|
+            @ge_factors.where(scale_prod: "#{scale_prod}").each do |f|
               if f.factor_type == type
                 factors_array = Array.new
                 factor_values_array.each do |factor_value|
@@ -528,7 +528,7 @@ class ProjectsController < ApplicationController
     elsif @module_project.pemodule.alias == "staffing"
       @staffing_model = @module_project.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
-      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).first
+      @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, pbs_project_element_id: @pbs_project_element.id, module_project_id: @module_project.id).first
       if @staffing_custom_data.nil?
         @staffing_custom_data = Staffing::StaffingCustomDatum.create(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
                                                                      staffing_method: 'trapeze',
@@ -707,7 +707,7 @@ class ProjectsController < ApplicationController
       @operation_model = none_displayed_module_project.operation_model
     elsif @module_project.pemodule.alias == "guw"
       @guw_model = none_displayed_module_project.guw_model
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: none_displayed_module_project.id).all
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(module_project_id: none_displayed_module_project.id, pbs_project_element_id: current_component.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
       @staffing_model = none_displayed_module_project.staffing_model
@@ -848,7 +848,7 @@ class ProjectsController < ApplicationController
 
     #Give full control to project creator
     defaut_psl = AdminSetting.where(key: "Secure Level Creator").first_or_create!(key: "Secure Level Creator", value: "*ALL")
-    full_control_security_level = ProjectSecurityLevel.where(name: defaut_psl.value, organization_id: @organization.id).first_or_create(name: defaut_psl.value,
+    full_control_security_level = ProjectSecurityLevel.where(organization_id: @organization.id, name: defaut_psl.value).first_or_create(name: defaut_psl.value,
                                                                                                                                         organization_id: @organization.id,
                                                                                                                                         description: "Authorization to Read + Comment + Modify + Define + can change users's permissions on the project")
 
@@ -878,8 +878,7 @@ class ProjectsController < ApplicationController
     #For group
     defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
     defaut_group_ps = @project.project_securities.build
-    defaut_group_ps.group_id = Group.where(name: defaut_group.value,
-                                           organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+    defaut_group_ps.group_id = Group.where(organization_id: @organization.id, name: defaut_group.value).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
     defaut_group_ps.project_security_level = full_control_security_level
     defaut_group_ps.is_model_permission = false
     defaut_group_ps.is_estimation_permission = true
@@ -898,7 +897,7 @@ class ProjectsController < ApplicationController
       new_current_user_ps.save
 
       new_defaut_group_ps = @project.project_securities.build
-      new_defaut_group_ps.group_id = Group.where(name: defaut_group.value, organization_id: @organization.id).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
+      new_defaut_group_ps.group_id = Group.where(organization_id: @organization.id, name: defaut_group.value).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
       new_defaut_group_ps.project_security_level = full_control_security_level
       new_defaut_group_ps.is_model_permission = true
       new_defaut_group_ps.is_estimation_permission = false
@@ -941,7 +940,7 @@ class ProjectsController < ApplicationController
           #When creating project, we need to create module_projects for created initialization
           unless @initialization_module.nil?
             # Create the project's Initialization module
-            cap_module_project = ModuleProject.new(:project_id => @project.id, :organization_id => @organization.id, :pemodule_id => @initialization_module.id, :position_x => 0, :position_y => 0, show_results_view: true)
+            cap_module_project = ModuleProject.new(:organization_id => @organization.id, :pemodule_id => @initialization_module.id, :project_id => @project.id, :position_x => 0, :position_y => 0, show_results_view: true)
             # Create the Initialization module view
             ###cap_module_project.build_view(name: "#{cap_module_project.to_s} - Module project View", pemodule_id: cap_module_project.pemodule_id, organization_id: @project.organization_id)
 

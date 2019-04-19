@@ -3630,7 +3630,7 @@ class OrganizationsController < ApplicationController
                 group_index = 9
                 if can?(:manage, Group, :organization_id => @current_organization.id)
                    while row[group_index]
-                      group = Group.where(name: row[group_index].nil? ? '' : row[group_index].value, organization_id: @current_organization.id).first
+                      group = Group.where(organization_id: @current_organization.id, name: row[group_index].nil? ? '' : row[group_index].value).first
                       begin
                         if (group.is_protected_group != true || ( group.is_protected_group == true && ( @current_user.super_admin || @current_user.groups.include?(group)) ))
                           GroupsUsers.create(group_id: group.id, user_id: user.id)

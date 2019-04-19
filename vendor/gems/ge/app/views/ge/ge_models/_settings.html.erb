@@ -50,7 +50,9 @@
                                   <%= key.humanize.upcase %>
                                 </span>
 
-                                <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, module_project_id: @module_project.id , project_id: @project.id, organization_id: @ge_model.organization_id).first_or_create %>
+                                <% model_factor_description = Ge::GeModelFactorDescription.where(organization_id: @ge_model.organization_id, ge_model_id: @ge_model.id,
+                                                                                                 ge_factor_id: ge_factor.id, project_id: @project.id,
+                                                                                                 module_project_id: @module_project.id, factor_alias: ge_factor.alias).first_or_create %>
 
                                 <span class="attribute_tooltip" id='<%= "ge_model_factor_description_#{key}" %>' title="<%= model_factor_description.description %>" style="margin-left: 10px;">
                                   <%= link_to (model_factor_description.description.nil? || model_factor_description.description.blank?) ? '...' :  model_factor_description.description.truncate(50),
@@ -142,13 +144,17 @@
             ge_effort_size_translation["#{output}"] = I18n.t("sortie#{index+1}")
       end %>
 
-      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size") %>
+      <% organization_id = @ge_model.organization_id %>
+      <% current_mp = current_module_project %>
+      <% current_mp_pe_attributes = current_mp.pemodule.pe_attributes %>
+      <% current_mp_estimation_values = EstimationValue.where(organization_id: organization_id, module_project_id: current_mp) #current_mp.estimation_values %>
+      <% attr = current_mp_pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size") %>
       <% unless @ge_model.input_pe_attribute.nil? %>
           <% attr = @ge_model.input_pe_attribute %>
       <% end %>
       <%# input_attribute_ids = [attr.id] %>
 
-      <% out_attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+      <% out_attr = current_mp_pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
       <% unless @ge_model.output_pe_attribute_id.nil? %>
           <% out_attr = @ge_model.output_pe_attribute %>
       <% end %>
@@ -166,13 +172,13 @@
           <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::DEFECTS_TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
       <% end %>
 
-      <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
-      <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
+      <% current_inputs_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
+      <% current_outputs_evs = current_mp_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
 
       <%# if current_inputs_evs.empty? %>
       <% if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length) %>
           <!-- Get estimation_value of the input attribute to use -->
-          <% all_estimation_values = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids) %>
+          <% all_estimation_values = current_mp.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids) %>
           <% current_inputs_evs = all_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
           <% current_outputs_evs = all_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
       <% end %>
@@ -183,13 +189,13 @@
         </b>
       </h4>
 
-      <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(attr) %>
+      <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(attr) %>
       <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
                                              :module_project_id => possible_module_projects.last,
                                              :in_out => "output").first %>
 
       <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
-                                             :module_project_id => current_module_project.id,
+                                             :module_project_id => current_mp.id,
                                              :in_out => "input").first %>
 
       <% component_id = current_component.id %>
@@ -212,8 +218,8 @@
 
               <% current_inputs_evs.each do |ev| %>
 
-                  <% is_modifiable = current_module_project.ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
-                  <%# coeff = ev.pe_attribute.alias=="effort" ? current_module_project.ge_model.input_effort_standard_unit_coefficient : 1 %>
+                  <% is_modifiable = current_mp.ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                  <%# coeff = ev.pe_attribute.alias=="effort" ? current_mp.ge_model.input_effort_standard_unit_coefficient : 1 %>
                   <% coeff = get_ge_model_effort_standard_coefficient(@ge_model, ev) %>
                   <% if coeff.nil? || coeff==0
                        coeff = 1
@@ -226,7 +232,7 @@
                       <% if !ev.estimation_value_id.nil? %>
                         <% previous_mp_ev = EstimationValue.find(ev.estimation_value_id) %>
                       <% else %>
-                        <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(ev.pe_attribute) %>
+                        <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(ev.pe_attribute) %>
                         <% previous_mp_ev = EstimationValue.where(:pe_attribute_id => ev.pe_attribute.id, :in_out => "output",
                                                                   :module_project_id => possible_module_projects.last).first %>
                       <% end %>
@@ -288,7 +294,7 @@
 
         <tr>
           <!--  TEST NOUVEAU PARAMS ENTREES  -->
-          <% if current_module_project.ge_model.three_points_estimation? %>
+          <% if current_mp.ge_model.three_points_estimation? %>
               <td>
                 <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>
@@ -342,7 +348,7 @@
             <% end %>
           </td>
 
-          <% if current_module_project.ge_model.three_points_estimation? %>
+          <% if current_mp.ge_model.three_points_estimation? %>
               <td>
                 <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>
@@ -377,20 +383,20 @@
     </div>
 
     <div class="span6">
-      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+      <% attr = current_mp_pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
       <% unless @ge_model.output_pe_attribute.nil? %>
         <% attr = @ge_model.output_pe_attribute %>
       <% end %>
 
       <%
          begin
-            ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first
+            ev = current_mp_estimation_values.where(:pe_attribute_id => attr.id, in_out: "output").first
          rescue
            ev = nil
          end
       %>
       <% theorical_effort_attr = PeAttribute.find_by_alias("theoretical_effort") %>
-      <% theorical_ev = EstimationValue.where(pe_attribute_id: theorical_effort_attr.id, module_project_id: current_module_project.id, in_out: "output").last %>
+      <% theorical_ev = current_mp_estimation_values.where(pe_attribute_id: theorical_effort_attr.id, in_out: "output").last %>
       <% component_id = current_component.id %>
 
       <h4>
