@@ -26,6 +26,18 @@
                       :input_html => { :class => 'date-picker',
                                        :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
         </div>
+
+        <div class="span2">
+          <%= f.input :field_id,
+                      as: :select,
+                      collection: @organization.fields.map{|i| [i.name, i.id]},
+                      label: 'Champs personnalisé',
+                      selected: @budget.field_id,
+                      input_html: { selected: I18n.t(:Indifferent),:class => 'input-large' } %>
+        </div>
+
+
+
       </div>
 
       <script>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190417083212) do
+ActiveRecord::Schema.define(version: 20190419093952) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -323,6 +323,7 @@ ActiveRecord::Schema.define(version: 20190417083212) do
     t.datetime "end_date"
     t.integer  "sum",             limit: 4
     t.string   "name",            limit: 255
+    t.string   "field_id",        limit: 255
   end
 
   create_table "criticalities", force: :cascade do |t|

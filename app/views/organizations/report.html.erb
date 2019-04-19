@@ -46,17 +46,19 @@
 
       <%= hidden_field_tag "organization_id", params[:organization_id] %>
 
-      <div class="span4">
+      <div class="span3">
         <%= label_tag "Budgets" %>
         <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent) %>
       </div>
 
-      <div class="span4">
+      <div class="span3">
         <%= label_tag "Applications" %>
         <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent) %>
       </div>
 
-      <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+      <div class="container-fluid">
+        <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+      </div>
 
     <% end %>
 
@@ -82,6 +84,8 @@
         <% bt_hash = Hash.new {|h,k| h[k] = [] } %>
         <% bt_colors = Hash.new %>
 
+        <%= "Pie chart par " + Field.find(@budget.field_id).name.to_s + ": " %>
+
         <% BudgetTypeStatus.where(application_id: @app.id,
                                   organization_id: @current_organization.id).all.each do |bts| %>
 
@@ -92,17 +96,20 @@
           <% projects_sum = 0 %>
           <% projects.each do |project| %>
 
-            <% field = Field.where(organization_id: project.organization_id, name: "Effort (j.h)").first
-               column = QueryColumn.new(field.name.to_sym,
-                                        sortable: "",
-                                        caption: "",
-                                        field_id: field.id,
-                                        organization_id: @current_organization.id) %>
-            <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
-            <% projects_sum += value.round(2) %>
-            <% unless bts.budget_type.nil? %>
-              <% bt_hash[bts.budget_type.name] << projects_sum.round(2) %>
-              <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+            <% unless @budget.field_id.nil? %>
+
+              <% field = Field.where(organization_id: project.organization_id, name: Field.find(@budget.field_id).name).first
+                 column = QueryColumn.new(field.name.to_sym,
+                                          sortable: "",
+                                          caption: "",
+                                          field_id: field.id,
+                                          organization_id: @current_organization.id) %>
+              <% value = column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f %>
+              <% projects_sum += value.round(2) %>
+                <% unless bts.budget_type.nil? %>
+                  <% bt_hash[bts.budget_type.name] << projects_sum.round(2) %>
+                  <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+                <% end %>
             <% end %>
           <% end %>
         <% end %>
