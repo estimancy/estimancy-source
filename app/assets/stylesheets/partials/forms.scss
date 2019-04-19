@@ -1,7 +1,3 @@
-label {
-  //margin-bottom: 0;
-}
-
 .form-row {
   margin-right: -30px;
   margin-left: -30px;
@@ -12,7 +8,8 @@ label {
   }
 }
 
-// Checkbox
+/** Checkbox **/
+// Bootstrap
 .custom-checkbox {
   width: 24px;
   height: 24px;
@@ -33,13 +30,99 @@ label {
     transform: translateY(-50%);
   }
 }
+// MDL
+.mdl-checkbox {
+  .mdl-checkbox__label {
+    line-height: 28px;
+    margin-left: 0.3rem;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    color: $grey-extradark;
+  }
 
-// Material Design Lite elements
+  .mdl-checkbox__box-outline {
+    width: 20px;
+    height: 20px;
+  }
+
+  &.is-checked .mdl-checkbox__box-outline {
+    border: 2px solid $brand-third-color;
+  }
+
+  &.is-checked .mdl-checkbox__tick-outline {
+    background-color: $brand-third-color;
+    // background-position: 50% 40%;
+    // background-repeat: no-repeat;
+    // background-size: 70%;
+    // -webkit-mask: none;
+    // mask: none
+  }
+
+  .mdl-checkbox__ripple-container {
+    display: none
+  }
+}
+
+/** Material Design Lite elements **/
+//Prepend on the text mdl fields (mix with bootstrap)
 .mdl-textfield {
   width: 100%;
   padding: 1.7rem 0;
+
+  .input-group-prepend {
+    position: absolute;
+
+    .input-group-text {
+      border: 0;
+      background-color: transparent;
+      padding-left: 0;
+      color: $brand-third-color;
+    }
+
+    & + .mdl-textfield__input {
+      padding-left: 2.8rem;
+      font-size: 16px;
+
+      & + .mdl-textfield__label {
+        padding-left: 2.8rem;
+      }
+    }
+  }
+
+  .input-group-append {
+    position: absolute;
+    top: 1.7rem;
+    right: 0;
+
+    .input-group-text {
+      border: 0;
+      background-color: transparent;
+      padding-right: 0;
+      color: $brand-third-color;
+
+      a {
+        color: $brand-third-color;
+      }
+    }
+  }
+
+  &.mdl-textfield--floating-label.is-focused .input-group-prepend + .mdl-textfield__input + .mdl-textfield__label,
+  &.mdl-textfield--floating-label.is-dirty .input-group-prepend + .mdl-textfield__input + .mdl-textfield__label,
+  &.mdl-textfield--floating-label.has-placeholder .input-group-prepend + .mdl-textfield__input + .mdl-textfield__label {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 36px;
+    letter-spacing: 0.04em;
+    color: $brand-first-color;
+  }
+
+  &.mdl-textfield--floating-label.is-invalid .input-group-prepend .input-group-text {
+    color: #D84315;
+  }
 }
 
+// Text fields
 .mdl-textfield--floating-label.is-focused .mdl-textfield__label,
 .mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
 .mdl-textfield--floating-label.has-placeholder .mdl-textfield__label {
@@ -66,7 +149,8 @@ label {
 
   &:after {
     background-color: $brand-third-color;
-    bottom: 16px;
+    bottom: 17px;
+    height: 1px;
   }
 }
 
@@ -79,9 +163,10 @@ label {
   margin-top: 0;
 }
 .mdl-textfield--floating-label.is-invalid .mdl-textfield__label {
-  color: #D84315;
+  color: #D84315 !important;
 }
 
+/** Gijgo elements **/
 // Dropdown icon
 .getmdl-select .mdl-icon-toggle__label {
   color: $grey-medium;
@@ -166,4 +251,92 @@ label {
 }
 .gj-slider-md [role="progress"] {
   background-color: $brand-first-color;
+}
+
+// Password strength
+#passwordStrength {
+  display: inline-block;
+  height: 10px;
+  border-radius: 5px;
+  transition: all 0.4s ease;
+}
+
+#pwd-length {
+  position: absolute;
+  right: 0;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 15px;
+  text-align: right;
+  letter-spacing: 0.05em;
+  color: $brand-sixth-color;
+  margin-top: 0.2rem;
+}
+
+.pwd-strength-wrap {
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  color: $brand-sixth-color;
+
+  .strength-bg {
+    background: none repeat scroll 0 0 #C4C4C4;
+    width: 180px;
+    display: inline-block;
+    height: 10px;
+    border-radius: 5px;
+    line-height: 10px;
+  }
+  .strength0 {
+    background: none; /* too short */
+    width: 0px;
+  }
+  .strength1 {
+    background: none repeat scroll 0 0 #FF4545;/* weak */
+    width: 45px;
+  }
+  .strength2 {
+    background: none repeat scroll 0 0 $brand-fifth-color;/* good */
+    width: 90px;
+  }
+  .strength3 {
+    background: none repeat scroll 0 0 $brand-first-color;/* strong */
+    width: 135px;
+  }
+
+  .strength4 {
+    background: none repeat scroll 0 0 #62C057;/* best */
+    width: 180px;
+  }
+
+  .pswd-info {
+    ul {
+      margin-bottom: 0;
+
+      li {
+        font-size: 12px;
+        line-height: 18px;
+        letter-spacing: 0.05em;
+        margin-top: 0.6rem;
+
+        i {
+          font-size: 18px;
+          vertical-align: bottom;
+          margin-right: 0.3rem
+        }
+
+        &.invalid {
+          i {
+            color: $brand-fifth-color
+          }
+        }
+        &.valid {
+          i {
+            color: #62C057
+          }
+        }
+      }
+    }
+  }
 }

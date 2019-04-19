@@ -1,23 +1,104 @@
-<div class="span5">
-  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
-    <div class="login_input">
-      <div class="input-prepend">
-        <span class="add-on"><img src="/assets/man.png" /></span>
-        <%= f.text_field :id_connexion, required: false, autofocus: true, :label => I18n.t('login_name'), :class => 'login_username', :placeholder => I18n.t('login_name_or_email') %>
+<div class="login-page vh-100 d-flex flex-column justify-content-between align-items-center">
+  <div class="logo-container">
+    <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
+  </div>
+  <section class="login-form text-left">
+    <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
+      <h1>Connection</h1>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
       </div>
-
-      <div class="input-prepend">
-        <span class="add-on"><img src="/assets/keez.png" /></span>
-        <%= f.password_field :password, required: false, :label => I18n.t('password'), :class => 'login_pw', :placeholder => I18n.t('password')%>
-      </div>
-
-      <label class="checkbox">
-        <%= f.check_box :remember_me, :label => I18n.t(:remember_me), as: :boolean if devise_mapping.rememberable? %>
-        <%= I18n.t(:remember_me ) %>
-      </label>
-
-      <%= f.button :submit, I18n.t('connect'), :class => "btn btn-primary btn-estimancy" %>
+      <input placeholder="Votre identifiant" class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
     </div>
-  <% end %>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="material-icons-outlined">vpn_key</i></div>
+        </div>
+        <input placeholder="Votre mot de passe" class="mdl-textfield__input" type="password" id="password" name="user[password]" style="width: 360px;">
+        <span class="mdl-textfield__error">Mot de passe inconnu. Réessayez ou cliquez sur “Mot de passe oublié”.</span>
+      </div>
+      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3 mdl-js-ripple-effect--ignore-events is-upgraded" for="checkbox-1" data-upgraded=",MaterialCheckbox,MaterialRipple">
+        <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input">
+        <span class="mdl-checkbox__label">Se souvenir de moi</span>
+        <span class="mdl-checkbox__focus-helper"></span><span class="mdl-checkbox__box-outline"><span class="mdl-checkbox__tick-outline"></span></span><span class="mdl-checkbox__ripple-container mdl-js-ripple-effect mdl-ripple--center" data-upgraded=",MaterialRipple"><span class="mdl-ripple"></span></span></label>
+      <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
+        Se connecter</button>
+      <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+        <%= link_to I18n.t('button_forgotten_password'), new_password_path(resource_name), class: "login-form-link" %><br />
+      <% end -%>
+      <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+        <%= link_to I18n.t('devise.confirmations.not_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "login-form-link" %><br />
+      <% end -%>
+    <% end %>
+  </section>
 </div>
-<%= render "devise/shared/links" %>
+
+
+
+
+<script>
+    // Show-Hide password
+    $(".js-show-hide-password a").on('click', function(event) {
+        event.preventDefault();
+        if($('.js-show-hide-password input').attr("type") == "text"){
+            $('.js-show-hide-password input').attr('type', 'password');
+            $('.js-show-hide-password a i').css( "opacity", "0.5" );
+        }else if($('.js-show-hide-password input').attr("type") == "password"){
+            $('.js-show-hide-password input').attr('type', 'text');
+            $('.js-show-hide-password a i').css( "opacity", "1" );
+        }
+    });
+
+    // Password strength
+    $("input#password").on("focus keyup", function () {
+        var score = 0;
+        var a = $(this).val();
+
+        // password length
+        if (a.length >= 8) {
+            $("#length").removeClass("invalid").addClass("valid");
+            $("#length i").text("check_circle_outline");
+            score++;
+        } else {
+            $("#length").removeClass("valid").addClass("invalid");
+            $("#length i").text("error_outline");
+        }
+
+        // at least 1 digit in password
+        if (a.match(/\d/)) {
+            score++;
+        }
+        // at least 1 capital or lower letter in password
+        if (a.match(/[A-Z]/) || a.match(/[a-z]/)) {
+            score++;
+        }
+        // at least 1 special character in password
+        if (a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            score++;
+        }
+
+        // at least 1 digit, 1 letter and 1 special character in password
+        if (a.match(/\d/) && (a.match(/[A-Z]/) || a.match(/[a-z]/)) && a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            $("#pnum").removeClass("invalid").addClass("valid");
+            $("#pnum i").text("check_circle_outline");
+        } else {
+            $("#pnum").removeClass("valid").addClass("invalid");
+            $("#pnum i").text("error_outline");
+        }
+
+        // strength indicator
+        $("#passwordStrength").removeClass().addClass("strength"+score);
+
+        // length indicator
+        $("#pwd-length span").text(a.length);
+
+    });
+
+    // Prevent click inside dropdowns with form
+    $('#advancedSearchDropdown .dropdown-menu, #newRequirementDropdown .dropdown-menu').on({
+        "click":function(e) {
+            e.stopPropagation();
+        }
+    });
+</script>

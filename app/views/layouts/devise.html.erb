@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Estimancy </title>
+  <head>
+    <title>Estimancy </title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <%= stylesheet_link_tag 'application' %>
-  <%= javascript_include_tag :application %>
-  <%= csrf_meta_tag %>
+    <%= stylesheet_link_tag 'application', media: 'screen' %>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <%= csrf_meta_tag %>
 
-</head>
-<body class="login">
-
-<div class="login_background">
-  <div class="login_window">
-    <div class="login_wrapper"></div>
-      <div class="login_information">
-        <div id="notifications">
-          <%= render 'layouts/notifications' %>
-        </div>
-        <%= yield %>
-      </div>
-  </div>
-</div>
-
-<%= render 'cookies_eu/consent_banner' %>
-
-
-</body>
+  </head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <body class="login">
+    <%= yield %>
+    <%= render 'cookies_eu/consent_banner' %>
+    <%= javascript_include_tag :application %>
+    <script defer="" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  </body>
 </html>

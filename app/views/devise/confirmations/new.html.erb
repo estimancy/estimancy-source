@@ -1,18 +1,87 @@
-<h2>Resend confirmation instructions</h2>
-<hr>
-
-<%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-
-  <%= f.error_notification %>
-  <%= f.full_error :confirmation_token %>
-  <%= f.full_error :email %>
-
-  <div class="form-inputs">
-    <%= f.input :id_connexion, label: I18n.t(:login_name_or_email), required: true, autofocus: true %>
+<div class="login-page vh-100 d-flex flex-column justify-content-between align-items-center">
+  <div class="logo-container">
+    <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
   </div>
+  <section class="login-form text-left">
+    <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+      <h1>Renvoyer la demande de confirmation</h1>
+      <p>Saisissez votre login. Vous recevrez les instructions pour confirmer votre compte par email.</p>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
+        </div>
+        <input class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
+      </div>
+      <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
+        Valider
+      </button>
+      <%= link_to "Retour", :back, class: "login-form-link" %><br />
+    <% end %>
+  </section>
+</div>
 
-  <%= f.button :submit, I18n.t(:resend_confirmation_instructions) %>
+<script>
+    // Show-Hide password
+    $(".js-show-hide-password a").on('click', function(event) {
+        event.preventDefault();
+        if($('.js-show-hide-password input').attr("type") == "text"){
+            $('.js-show-hide-password input').attr('type', 'password');
+            $('.js-show-hide-password a i').css( "opacity", "0.5" );
+        }else if($('.js-show-hide-password input').attr("type") == "password"){
+            $('.js-show-hide-password input').attr('type', 'text');
+            $('.js-show-hide-password a i').css( "opacity", "1" );
+        }
+    });
 
-<% end %>
+    // Password strength
+    $("input#password").on("focus keyup", function () {
+        var score = 0;
+        var a = $(this).val();
 
-<%= render "devise/shared/links" %>
+        // password length
+        if (a.length >= 8) {
+            $("#length").removeClass("invalid").addClass("valid");
+            $("#length i").text("check_circle_outline");
+            score++;
+        } else {
+            $("#length").removeClass("valid").addClass("invalid");
+            $("#length i").text("error_outline");
+        }
+
+        // at least 1 digit in password
+        if (a.match(/\d/)) {
+            score++;
+        }
+        // at least 1 capital or lower letter in password
+        if (a.match(/[A-Z]/) || a.match(/[a-z]/)) {
+            score++;
+        }
+        // at least 1 special character in password
+        if (a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            score++;
+        }
+
+        // at least 1 digit, 1 letter and 1 special character in password
+        if (a.match(/\d/) && (a.match(/[A-Z]/) || a.match(/[a-z]/)) && a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            $("#pnum").removeClass("invalid").addClass("valid");
+            $("#pnum i").text("check_circle_outline");
+        } else {
+            $("#pnum").removeClass("valid").addClass("invalid");
+            $("#pnum i").text("error_outline");
+        }
+
+        // strength indicator
+        $("#passwordStrength").removeClass().addClass("strength"+score);
+
+        // length indicator
+        $("#pwd-length span").text(a.length);
+
+    });
+
+    // Prevent click inside dropdowns with form
+    $('#advancedSearchDropdown .dropdown-menu, #newRequirementDropdown .dropdown-menu').on({
+        "click":function(e) {
+            e.stopPropagation();
+        }
+    });
+</script>

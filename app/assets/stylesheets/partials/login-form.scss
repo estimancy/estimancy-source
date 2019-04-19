@@ -1,0 +1,66 @@
+.login-form {
+  width: 360px;
+  margin: 5vh auto 2vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  h1 {
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 41px;
+    color: $brand-first-color;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .login-form-link {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    color: $brand-first-color;
+    padding: 0;
+    display: block;
+    text-align: center;
+
+    &:before {
+      content: '\e5cc';
+      font-family: 'Material Icons';
+      font-size: 20px;
+      color: $brand-first-color;
+      vertical-align: bottom
+    }
+  }
+
+  .btn-login {
+    width: 100%;
+    height: 60px;
+    position: relative;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+
+    .brand-icon {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 20px;
+    }
+
+    &:disabled, &.disabled {
+      background-color: $grey-light;
+      opacity: 1;
+    }
+  }
+
+  .login-form-more {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
