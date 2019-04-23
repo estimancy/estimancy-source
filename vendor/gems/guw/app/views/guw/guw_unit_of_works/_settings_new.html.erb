@@ -38,14 +38,14 @@
 
       <% if can? :execute_estimation_plan, @project %>
         <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
-          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!" %>
+          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!", "data-toggle": "modal", "data-target": "#extract" %>
         <% end %>
       <% end %>
 
-      <%= link_to raw("<i class='material-icons'>import_export</i>"), guw.guw_model_export_path(@guw_model), method: "post" %>
-
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
-        <%= link_to raw("<i class='material-icons'>import_export</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post" %>
+        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post" %>
+      <% else %>
+        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_path(@guw_model), method: "post" %>
       <% end %>
 
       <% if @guw_model.view_data == true %>
@@ -53,9 +53,7 @@
       <% end %>
 
       <% if can? :execute_estimation_plan, @project %>
-<!--        <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
-
-        <%= link_to raw("<i class='material-icons'>flash_on</i>"), "#!" %>
+<!--  <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
         <%= link_to raw("<i class='material-icons'>clear</i>"), "#!", onclick: "multiraz()" %>
       <% end %>
     </div>
@@ -117,11 +115,10 @@
   <section class="estimation-modules-edition">
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-      <%= @project.to_s %>
+      <%= @module_project %>
       <div class="edition-bloc-tools">
         <a href="#"><i class="material-icons">add</i>Ajouter un groupe</a>
-        <button class="btn btn-secondary">Calculer</button>
-        <button class="btn btn-secondary">...</button>
+        <button class="btn btn-secondary"><%= I18n.t :recalculate_all %></button>
       </div>
     </div>
 
@@ -130,7 +127,6 @@
     <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
 
     <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
-
 
     <div class="card card-widget">
       <div class="card-body">
@@ -217,21 +213,22 @@
 
             <% end %>
           </table>
+
+          <div class="float-right">
+            <% if can? :execute_estimation_plan, @project %>
+              <% unless @unit_of_work_groups.empty? %>
+                <button type="button" class="btn btn-primary new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
+                  <%= I18n.t('new_unit_of_work') %>
+                </button>
+              <% end %>
+              <button type="submit" class="btn btn-secondary guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
 
-
-    <% if can? :execute_estimation_plan, @project %>
-      <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn btn-primary button_margin_right" %>
-      <% unless @unit_of_work_groups.empty? %>
-        <button type="button" class="btn btn-primary new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
-          <%= I18n.t('new_unit_of_work') %>
-        </button>
-      <% end %>
-      <button type="submit" class="btn btn-primary guw_submit" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
-      <%= link_to "RAZ", "#!", class: "btn btn-secondary reset_retained", onclick: "raz(#{uowg.id})" %>
-    <% end %>
+      <br>
 
   <% end %>
   </section>

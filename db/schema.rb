@@ -831,6 +831,7 @@ ActiveRecord::Schema.define(version: 20190415153041) do
     t.integer  "display_order", limit: 4,                            default: 0
     t.boolean  "default_value"
     t.float    "weight_b",      limit: 24
+    t.integer  "guw_model_id",  limit: 4
   end
 
   add_index "guw_guw_complexities", ["guw_type_id", "name"], name: "guw_type_complexities", using: :btree
@@ -1923,6 +1924,8 @@ ActiveRecord::Schema.define(version: 20190415153041) do
     t.text     "transaction_id",            limit: 65535
   end
 
+  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "ability_project_securities", using: :btree
+
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
     t.datetime "created_at"
@@ -2372,6 +2375,7 @@ ActiveRecord::Schema.define(version: 20190415153041) do
     t.integer  "event_organization_id",  limit: 4
     t.text     "transaction_id",         limit: 65535
     t.string   "unconfirmed_email",      limit: 255
+    t.text     "ability",                limit: 65535
     t.text     "recent_projects",        limit: 65535
   end
 

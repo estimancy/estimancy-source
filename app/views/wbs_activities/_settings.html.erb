@@ -1,762 +1,771 @@
-<div style="flex: 1">
-  <h2>
-    <%= @project.to_s %>
-    <small style="color: <%= @project.status_background_color %>">
-      <b>
-        <%= @project.estimation_status.to_s %>
-      </b>
-    </small>
-  </h2>
-</div>
+<section class="estimation-modules-edition">
 
-<h4 class="<%= (@wbs_activity.hide_wbs_header != 'show_all' ? 'hide' : 'show') %>">
-  <strong>
-    <%= I18n.t(:wbs_activities) %>
-  </strong>
-</h4>
+  <div style="flex: 1">
+    <h2>
+      <%= @project.to_s %>
+      <small style="color: <%= @project.status_background_color %>">
+        <b>
+          <%= @project.estimation_status.to_s %>
+        </b>
+      </small>
+    </h2>
+  </div>
 
-<!-- Params -->
-<% pbs_project_element = current_component %>
-<% component_id = pbs_project_element.id %>
-<% organization = @project.organization %>
+  <h4 class="<%= (@wbs_activity.hide_wbs_header != 'show_all' ? 'hide' : 'show') %>">
+    <strong>
+      <%= I18n.t(:wbs_activities) %>
+    </strong>
+  </h4>
 
-<% begin
-    module_project = none_displayed_module_project.nil? ? current_module_project : none_displayed_module_project
-   rescue
-    module_project = current_module_project
-   end
-%>
-<% wbs_activity = module_project.wbs_activity %>
+  <!-- Params -->
+  <% pbs_project_element = current_component %>
+  <% component_id = pbs_project_element.id %>
+  <% organization = @project.organization %>
 
-<!--Attributes-->
-<% module_project_pemodule = module_project.pemodule%>
-<% effort = module_project_pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
-<% theoretical_effort = module_project_pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
-<% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
+  <% begin
+      module_project = none_displayed_module_project.nil? ? current_module_project : none_displayed_module_project
+     rescue
+      module_project = current_module_project
+     end
+  %>
+  <% wbs_activity = module_project.wbs_activity %>
 
-<!-- RATIO -->
-<% selected_ratio = module_project.get_wbs_activity_ratio(component_id) ## @wbs_activity_ratio # %>
+  <!--Attributes-->
+  <% module_project_pemodule = module_project.pemodule%>
+  <% effort = module_project_pemodule.pe_attributes.where(alias: "effort").first %>   <!-- Retained effort -->
+  <% theoretical_effort = module_project_pemodule.pe_attributes.where(alias: "theoretical_effort").first %>
+  <% ratio = module_project.pemodule.pe_attributes.where(alias: "ratio").first %>
 
-<% if selected_ratio.nil?
-     selected_ratio_id = nil
-     wai = nil
-     # wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil, pbs_project_element_id: component_id)
-     #         .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
-     #                          wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: nil)
-  else
-    selected_ratio_id = selected_ratio.id
-    wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id, pbs_project_element_id: component_id)
-            .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
-                             wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id)
-  end %>
+  <!-- RATIO -->
+  <% selected_ratio = module_project.get_wbs_activity_ratio(component_id) ## @wbs_activity_ratio # %>
 
-
-<% coeff = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient %>
-
-<% cev = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => module_project.id,
-                               :in_out => "input").first unless effort.nil? %>
-<% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
-                                      :module_project_id => module_project.id,
-                                      :in_out => "output").first unless effort.nil? %>
-
-<% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                               :module_project_id => module_project.id,
-                               :in_out => "input").first unless theoretical_effort.nil? %>
-
-<% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                                      :module_project_id => module_project.id,
-                                      :in_out => "output").first unless theoretical_effort.nil? %>
-
-<% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
-                                      :module_project_id => module_project.id,
-                                      :in_out => "output").first unless ratio.nil? %>
-
-<% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => module_project.previous.first,
-                               :in_out => "output").first unless effort.nil? %>
-
-<% possible_module_projects = module_project.possible_previous_mp_for_attribute(effort) %>
-
-<% begin %>
-    <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => possible_module_projects.last.id,
-                               :in_out => "output").first unless effort.nil? %>
-<% rescue %>
-  <% pev = nil %>
-<% rescue %>
-<% end %>
-
-<% levels = ["most_likely"] %>
-<% if wbs_activity.three_points_estimation? %>
-    <% levels = ["low", "most_likely", "high"] %>
-<% end %>
+  <% if selected_ratio.nil?
+       selected_ratio_id = nil
+       wai = nil
+    else
+      selected_ratio_id = selected_ratio.id
+      wai = WbsActivityInput.where(module_project_id: module_project.id, wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id, pbs_project_element_id: component_id)
+              .first_or_create(module_project_id: module_project.id, pbs_project_element_id: component_id,
+                               wbs_activity_id: module_project.wbs_activity_id, wbs_activity_ratio_id: selected_ratio.id)
+    end %>
 
 
-<% if cev.nil? %>
-    <% v_low = nil %>
-    <% v_most_likely = nil %>
-    <% v_high = nil %>
+  <% coeff = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient %>
 
-<% else %>
+  <% cev = EstimationValue.where(:pe_attribute_id => effort.id,
+                                 :module_project_id => module_project.id,
+                                 :in_out => "input").first unless effort.nil? %>
+  <% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
+                                        :module_project_id => module_project.id,
+                                        :in_out => "output").first unless effort.nil? %>
+
+  <% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
+                                 :module_project_id => module_project.id,
+                                 :in_out => "input").first unless theoretical_effort.nil? %>
+
+  <% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
+                                        :module_project_id => module_project.id,
+                                        :in_out => "output").first unless theoretical_effort.nil? %>
+
+  <% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
+                                        :module_project_id => module_project.id,
+                                        :in_out => "output").first unless ratio.nil? %>
+
+  <% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
+                                 :module_project_id => module_project.previous.first,
+                                 :in_out => "output").first unless effort.nil? %>
+
+  <% possible_module_projects = module_project.possible_previous_mp_for_attribute(effort) %>
+
   <% begin %>
-    <% if cev.string_data_low[component_id].blank? %>
-      <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
-    <% else %>
-      <% v_low = cev.nil? ? nil : (cev.string_data_low[component_id].to_f / coeff) %>
-    <% end %>
-
-    <% if cev.string_data_most_likely[component_id].blank? %>
-      <% v_most_likely = pev.nil? ? nil : (pev.string_data_most_likely[component_id].to_f / coeff) %>
-    <% else %>
-      <% v_most_likely = cev.nil? ? nil : (cev.string_data_most_likely[component_id].to_f / coeff) %>
-    <% end %>
-
-    <% if cev.string_data_low[component_id].blank? %>
-      <% v_high = pev.nil? ? nil : (pev.string_data _high[component_id].to_f / coeff) %>
-    <% else %>
-      <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
-    <% end %>
+      <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
+                                 :module_project_id => possible_module_projects.last.id,
+                                 :in_out => "output").first unless effort.nil? %>
   <% rescue %>
-    <% v_low = nil %>
-    <% v_most_likely = nil %>
-    <% v_high = nil %>
+    <% pev = nil %>
+  <% rescue %>
   <% end %>
-<% end %>
 
-<% effort_ids = PeAttribute.where(alias: WbsActivity::  INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-<% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+  <% levels = ["most_likely"] %>
+  <% if wbs_activity.three_points_estimation? %>
+      <% levels = ["low", "most_likely", "high"] %>
+  <% end %>
 
-<% initial_entry_values = {} %>
-<% entry_values = {} %>
-<% if current_inputs_evs.all.empty? %>
-    <% current_inputs_evs = module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio_id, component_id, v_low.to_f*coeff, v_most_likely.to_f*coeff, v_high.to_f*coeff) %>
-<% end %>
 
-<% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
+  <% if cev.nil? %>
+      <% v_low = nil %>
+      <% v_most_likely = nil %>
+      <% v_high = nil %>
 
-<% ['low', 'most_likely', 'high'].each do |level| %>
-    <% entry_values["#{level}"] = Hash.new %>
-    <% initial_entry_values["#{level}"] = Hash.new %>
+  <% else %>
+    <% begin %>
+      <% if cev.string_data_low[component_id].blank? %>
+        <% v_low = pev.nil? ? nil : (pev.string_data_low[component_id].to_f / coeff) %>
+      <% else %>
+        <% v_low = cev.nil? ? nil : (cev.string_data_low[component_id].to_f / coeff) %>
+      <% end %>
 
-    <% unless current_inputs_evs.empty? %>
-        <% current_inputs_evs.each do |ev| %>
-            <% current_ev = ev.send("string_data_#{level}")[component_id] %>
-            <% begin %>
-                <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
-            <% rescue %>
-                <% previous_mp_ev = nil %>
-            <% end %>
+      <% if cev.string_data_most_likely[component_id].blank? %>
+        <% v_most_likely = pev.nil? ? nil : (pev.string_data_most_likely[component_id].to_f / coeff) %>
+      <% else %>
+        <% v_most_likely = cev.nil? ? nil : (cev.string_data_most_likely[component_id].to_f / coeff) %>
+      <% end %>
 
-            <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[component_id] %>
-
-            <% begin %>
-              <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank? %>
-                <% if previous_ev.is_a?(Hash) %>
-                  <% entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
-                <% else %>
-                  <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-                <% end %>
-              <% else %>
-                <% if previous_ev.is_a?(Hash) %>
-                  <% entry_values["#{level}"][ev.id] = current_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
-                <% else %>
-                  <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
-                <% end %>
-              <% end %>
-            <% rescue %>
-              <% entry_values["#{level}"][ev.id] = nil %>
-            <% end %>
-
-            <!-- Les valeurs d'entree initiales -->
-            <% begin %>
-              <% if previous_ev.is_a?(Hash) %>
-                <% initial_entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
-              <% else %>
-                <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
-              <% end %>
-            <% rescue %>
-              <% initial_entry_values["#{level}"][ev.id] = nil %>
-            <% end %>
-
-        <% end %>
+      <% if cev.string_data_low[component_id].blank? %>
+        <% v_high = pev.nil? ? nil : (pev.string_data _high[component_id].to_f / coeff) %>
+      <% else %>
+        <% v_high = cev.nil? ? nil : (cev.string_data_high[component_id].to_f / coeff) %>
+      <% end %>
+    <% rescue %>
+      <% v_low = nil %>
+      <% v_most_likely = nil %>
+      <% v_high = nil %>
     <% end %>
-<% end %>
-
-<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
-
-  <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
-  <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-    <div class="float_left">
-      <span><strong> <%= I18n.t(:change_ratio) %> : </strong></span>
-
-      <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                              selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                              readonly: cannot?(:execute_estimation_plan, @project) %>
-    </div> <br>
   <% end %>
 
-  <table id="table_hide_wbs_header" class="table table-list">
-    <!--<thead class="<%#= (@wbs_activity.hide_wbs_header == true ? 'hide' : '') %>">-->
-        <% if wbs_activity.enabled_input %>
-          <tr class="hide_wbs_header">
-            <% if wbs_activity.three_points_estimation? %>
-                <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
-                <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
-            <% else %>
-                <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
-                <th><%= I18n.t(:retained_input_value) %></th>
-            <% end %>
+  <% effort_ids = PeAttribute.where(alias: WbsActivity::  INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+  <% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
 
-            <th colspan="9"></th>
-          </tr>
-        <% end %>
+  <% initial_entry_values = {} %>
+  <% entry_values = {} %>
+  <% if current_inputs_evs.all.empty? %>
+      <% current_inputs_evs = module_project.get_wbs_efforts_attributes_estimation_values(selected_ratio_id, component_id, v_low.to_f*coeff, v_most_likely.to_f*coeff, v_high.to_f*coeff) %>
+  <% end %>
 
-        <% current_mp_wbs_activity_root_id = wbs_activity.root_element.id %>
+  <% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
 
-        <tr class="hide_wbs_header">
-          <% if wbs_activity.enabled_input && wbs_activity.three_points_estimation? %>
-            <th>L</th>
-            <th>M</th>
-            <th>H</th>
-          <% end %>
+  <% ['low', 'most_likely', 'high'].each do |level| %>
+      <% entry_values["#{level}"] = Hash.new %>
+      <% initial_entry_values["#{level}"] = Hash.new %>
 
-          <% if wbs_activity.three_points_estimation? %>
-            <th>Effort (L)</th>
-            <th>Effort (M)</th>
-            <th>Effort (H)</th>
-          <% else %>
-            <th>Effort</th>
-          <% end %>
-
-          <th><%= I18n.t(:change_ratio) %></th>
-
-          <% if wbs_activity.three_points_estimation? %>
-            <th><%= I18n.t(:total_effort) %></th>
-            <th><%= I18n.t(:retained_effort) %></th>
-
-            <th><%= I18n.t(:total_effort) %></th>
-            <th><%= I18n.t(:retained_effort) %></th>
-
-            <th><%= I18n.t(:total_effort) %></th>
-            <th><%= I18n.t(:retained_effort) %></th>
-
-          <% else %>
-            <th><%= I18n.t(:total_effort) %></th>
-            <th><%= I18n.t(:retained_effort) %></th>
-          <% end %>
-
-          <th><%= I18n.t(:ratio) %></th>
-          <th><%= I18n.t(:comment) %></th>
-        </tr>
-    <!--</thead>-->
-
-    <tr class="hide_wbs_header">
-      <!-- Les valeurs d'entreé initiales venant du module du dessous -->
-      <% if wbs_activity.enabled_input %>
-       <% levels.each do |level| %>
-           <td class="hide_wbs_header">
-             <% current_inputs_evs.each do |ev| %>
-               <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
-               <% unless entry_level_value.nil? %>
-                 <%= ev.pe_attribute.alias %> :
-                 <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-               <% end %>
-               <br>
-             <% end %>
-           </td>
-       <% end %>
-      <% end %>
-
-      <% if wbs_activity.three_points_estimation? %>
-        <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
-          <td class="hide_wbs_header">
-            <% if current_inputs_evs.empty? %>
-                <!-- Anciennes valeurs -->
-                <%= hidden_field_tag "values[low]", v_low %>
-                <%= text_field_tag "", v_low.nil? ? nil : convert_with_precision(v_low, user_number_precision, true), disabled: true %>
-            <% else %>
-                <!-- nouvelles entrees -->
-                <% current_inputs_evs.each do |ev| %>
-                    <% entry_low_value =  entry_values["low"][ev.id] %>
-                    <span>
-                      <%= ev.pe_attribute.alias %> :
-                      <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
-                      <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                    </span><br>
-                <% end %>
-            <% end %>
-          </td>
-        <% else %>
-          <td class="hide_wbs_header">
-            <% if current_inputs_evs.empty? %>
-                <!-- Anciennes valeurs -->
-                <%= number_field_tag "values[low]", v_low, step: "any", style: "width: 60px;" %>
-            <% else %>
-                <!-- nouvelles entrees -->
-                <% current_inputs_evs.each do |ev| %>
-                    <% entry_low_value =  entry_values["low"][ev.id] %>
-                    <span>
-                      <%= ev.pe_attribute.alias %> :
-                      <%= number_field_tag "values[low][#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
-                    </span> <br>
-                <% end %>
-            <% end %>
-          </td>
-        <% end %>
-      <% end %>
-
-
-      <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
-        <td class="hide_wbs_header">
-          <% if current_inputs_evs.empty? %>
-              <!-- Anciennes valeurs -->
-              <%= hidden_field_tag "values[most_likely]", v_most_likely %>
-              <%= text_field_tag "", convert_with_precision(v_most_likely, user_number_precision, true), disabled: true %>
-          <% else %>
-              <!-- nouvelles entrees -->
-              <% current_inputs_evs.each do |ev| %>
-                <span>
-                  <% entry_ml_value = entry_values["most_likely"][ev.id] %>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
-                  <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                </span><br>
-              <% end %>
-          <% end %>
-        </td>
-      <% else %>
-        <td class="hide_wbs_header">
-          <!-- Nouvelles entrees -->
+      <% unless current_inputs_evs.empty? %>
           <% current_inputs_evs.each do |ev| %>
-            <% entry_ml_value = entry_values["most_likely"][ev.id] %>
-            <span>
-              <%= ev.pe_attribute.alias %> :
-              <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
-            </span> <br>
-          <% end %>
-        </td>
-      <% end %>
-
-      <% if wbs_activity.three_points_estimation? %>
-        <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
-          <td class="hide_wbs_header">
-            <%#= hidden_field_tag "values[high]", v_high %>
-            <%#= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
-
-            <!-- nouvelles entrees -->
-            <% current_inputs_evs.each do |ev| %>
-                <% entry_high_value = entry_values["high"][ev.id] %>
-                <span>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
-                  <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                </span><br>
-            <% end %>
-          </td>
-        <% else %>
-          <td class="hide_wbs_header">
-            <%#= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %>
-            <% current_inputs_evs.each do |ev| %>
-                <% entry_high_value = entry_values["high"][ev.id] %>
-                <span>
-                  <%= ev.pe_attribute.alias %> :
-                  <%= number_field_tag "values[high][#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
-                </span> <br>
-            <% end %>
-          </td>
-        <% end %>
-      <% end %>
-
-      <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-          <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
-            <% if @wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1 %>
-                <span><strong> <%= I18n.t(:change_ratio) %> :  </strong></span>
-            <% end %>
-
-            <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                           selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                           readonly: cannot?(:execute_estimation_plan, @project) %>
-          </td>
-      <% end %>
-
-      <% if wbs_activity.three_points_estimation? %>
-        <!-- Effort Theorique calculé -->
-        <td class="hide_wbs_header">
-            <strong>
+              <% current_ev = ev.send("string_data_#{level}")[component_id] %>
               <% begin %>
-                  <%= convert_with_precision(theorical_cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                  <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
               <% rescue %>
-                  -
+                  <% previous_mp_ev = nil %>
               <% end %>
-            </strong>
-        </td>
 
-        <!-- Effort Retenu -->
-        <td class="hide_wbs_header">
-          <% begin %>
-            <%= convert_with_precision(cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-          <% rescue %>
-            -
-          <% end %>
-        </td>
-      <% end %>
+              <% previous_ev = previous_mp_ev.nil? ? nil : previous_mp_ev.string_data_probable[component_id] %>
 
-      <!-- Effort Theorique calculé -->
-      <td class="hide_wbs_header">
-        <strong>
-          <% begin %>
-              <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-          <% rescue %>
-              -
-          <% end %>
-        </strong>
-      </td>
-
-      <!-- Effort Retenu -->
-      <td class="hide_wbs_header">
-        <strong>
-          <% begin %>
-            <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %></span>
-          <% rescue %>
-            -
-          <% end %>
-        </strong>
-      </td>
-
-      <% if wbs_activity.three_points_estimation? %>
-
-        <!-- Effort Theorique calculé -->
-        <td class="hide_wbs_header">
-            <strong>
               <% begin %>
-                  <%= convert_with_precision(theorical_cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                <% if !wbs_activity.enabled_input ||  current_ev.nil? || current_ev.blank? %>
+                  <% if previous_ev.is_a?(Hash) %>
+                    <% entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+                  <% else %>
+                    <% entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                  <% end %>
+                <% else %>
+                  <% if previous_ev.is_a?(Hash) %>
+                    <% entry_values["#{level}"][ev.id] = current_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+                  <% else %>
+                    <% entry_values["#{level}"][ev.id] = current_ev.nil? ? nil : (current_ev.to_f / coeff ) %>
+                  <% end %>
+                <% end %>
               <% rescue %>
-                  -
+                <% entry_values["#{level}"][ev.id] = nil %>
               <% end %>
-            </strong>
-        </td>
 
-        <!-- Effort Retenu -->
-        <td class="hide_wbs_header">
-          <strong>
-            <% begin %>
-              <%= convert_with_precision(cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-            <% rescue %>
-              -
-            <% end %>
-          </strong>
-        </td>
+              <!-- Les valeurs d'entree initiales -->
+              <% begin %>
+                <% if previous_ev.is_a?(Hash) %>
+                  <% initial_entry_values["#{level}"][ev.id] = previous_ev.values.map{|i|i[:value]}.compact.sum / coeff %>
+                <% else %>
+                  <% initial_entry_values["#{level}"][ev.id] = previous_ev.nil? ? nil : (previous_ev.to_f / coeff ) %>
+                <% end %>
+              <% rescue %>
+                <% initial_entry_values["#{level}"][ev.id] = nil %>
+              <% end %>
+
+          <% end %>
       <% end %>
-
-      <td class="hide_wbs_header">
-        <strong>
-          <span id="modified_global_ratio"><%= convert_with_precision(ratio_output.string_data_probable[component_id].to_f, user_number_precision, true) %></span>
-        </strong>
-      </td>
-
-      <td class="hide_wbs_header">
-        <% if wai.nil? %>
-          <span class="estimancy">
-            ----
-          </span>
-        <% else %>
-            <span class="pull-left estimancy" >
-              <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
-            </span>
-            <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header modal-drag">
-                    <h4 class="modal-title" id="comment_label<%= wai.id %>">
-                      <b>
-                        <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
-                      </b>
-                    </h4>
-                  </div>
-                  <div class="modal-body">
-                    <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area" %>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
-                    <% if can?(:execute_estimation_plan, @project) %>
-                        <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
-        <% end %>
-      </td>
-    </tr>
-  </table>
-
-  <!-- Ajout des valeurs des Ratios -->
-  <div id="module_project_ratio_elements">
-    <div id="module_project_ratio_section">
-
-      <% @wbs_activity_ratio =  selected_ratio %>
-
-      <% if selected_ratio.nil? %>
-         <%= render :text => "Aucun ratio sélectionné" %>
-      <% else %>
-          <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                 :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
-                 locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-       <% end %>
-    </div>
-  </div>
-
-  <% if can?(:execute_estimation_plan, @project) %>
-    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
-    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
   <% end %>
 
-<% end %>
+  <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
-<div class="modal fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content" id="modal_comments_content">
+    <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
+    <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+      <div class="float_left">
+        <span><strong> <%= I18n.t(:change_ratio) %> : </strong></span>
+
+        <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                                selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                                readonly: cannot?(:execute_estimation_plan, @project) %>
+      </div> <br>
+    <% end %>
+
+    <div class="card card-widget">
+      <div class="card-body">
+        <div class="edition-bloc-title">
+          Valeurs d'entrée
+        </div>
+        <div class="edition-bloc-content pb-4">
+          <table id="table" class="phases-table">
+          <% if wbs_activity.enabled_input %>
+            <tr class="hide_wbs_header">
+              <% if wbs_activity.three_points_estimation? %>
+                  <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
+                  <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
+              <% else %>
+                  <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
+                  <th><%= I18n.t(:retained_input_value) %></th>
+              <% end %>
+
+              <th colspan="9"></th>
+            </tr>
+          <% end %>
+
+            <% current_mp_wbs_activity_root_id = wbs_activity.root_element.id %>
+
+            <tr class="hide_wbs_header">
+              <% if wbs_activity.enabled_input && wbs_activity.three_points_estimation? %>
+                <th>L</th>
+                <th>M</th>
+                <th>H</th>
+              <% end %>
+
+              <% if wbs_activity.three_points_estimation? %>
+                <th>Effort (L)</th>
+                <th>Effort (M)</th>
+                <th>Effort (H)</th>
+              <% else %>
+                <th>Effort</th>
+              <% end %>
+
+              <th><%= I18n.t(:change_ratio) %></th>
+
+              <% if wbs_activity.three_points_estimation? %>
+                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:retained_effort) %></th>
+
+                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:retained_effort) %></th>
+
+                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:retained_effort) %></th>
+
+              <% else %>
+                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:retained_effort) %></th>
+              <% end %>
+
+              <th><%= I18n.t(:ratio) %></th>
+              <th><%= I18n.t(:comment) %></th>
+            </tr>
+
+          <tr class="hide_wbs_header">
+            <!-- Les valeurs d'entreé initiales venant du module du dessous -->
+            <% if wbs_activity.enabled_input %>
+             <% levels.each do |level| %>
+                 <td class="hide_wbs_header">
+                   <% current_inputs_evs.each do |ev| %>
+                     <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
+                     <% unless entry_level_value.nil? %>
+                       <%= ev.pe_attribute.alias %> :
+                       <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                     <% end %>
+                     <br>
+                   <% end %>
+                 </td>
+             <% end %>
+            <% end %>
+
+            <% if wbs_activity.three_points_estimation? %>
+              <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+                <td class="hide_wbs_header">
+                  <% if current_inputs_evs.empty? %>
+                      <!-- Anciennes valeurs -->
+                      <%= hidden_field_tag "values[low]", v_low %>
+                      <%= text_field_tag "", v_low.nil? ? nil : convert_with_precision(v_low, user_number_precision, true), disabled: true %>
+                  <% else %>
+                      <!-- nouvelles entrees -->
+                      <% current_inputs_evs.each do |ev| %>
+                          <% entry_low_value =  entry_values["low"][ev.id] %>
+                          <span>
+                            <%= ev.pe_attribute.alias %> :
+                            <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
+                            <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                          </span><br>
+                      <% end %>
+                  <% end %>
+                </td>
+              <% else %>
+                <td class="hide_wbs_header">
+                  <% if current_inputs_evs.empty? %>
+                      <!-- Anciennes valeurs -->
+                      <%= number_field_tag "values[low]", v_low, step: "any", style: "width: 60px;" %>
+                  <% else %>
+                      <!-- nouvelles entrees -->
+                      <% current_inputs_evs.each do |ev| %>
+                          <% entry_low_value =  entry_values["low"][ev.id] %>
+                          <span>
+                            <%= ev.pe_attribute.alias %> :
+                            <%= number_field_tag "values[low][#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                          </span> <br>
+                      <% end %>
+                  <% end %>
+                </td>
+              <% end %>
+            <% end %>
+
+
+            <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+              <td class="hide_wbs_header">
+                <% if current_inputs_evs.empty? %>
+                    <!-- Anciennes valeurs -->
+                    <%= hidden_field_tag "values[most_likely]", v_most_likely %>
+                    <%= text_field_tag "", convert_with_precision(v_most_likely, user_number_precision, true), disabled: true %>
+                <% else %>
+                    <!-- nouvelles entrees -->
+                    <% current_inputs_evs.each do |ev| %>
+                      <span>
+                        <% entry_ml_value = entry_values["most_likely"][ev.id] %>
+                        <%= ev.pe_attribute.alias %> :
+                        <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
+                        <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                      </span><br>
+                    <% end %>
+                <% end %>
+              </td>
+            <% else %>
+              <td class="hide_wbs_header">
+                <!-- Nouvelles entrees -->
+                <% current_inputs_evs.each do |ev| %>
+                  <% entry_ml_value = entry_values["most_likely"][ev.id] %>
+                  <span>
+                    <%= ev.pe_attribute.alias %> :
+                    <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                  </span> <br>
+                <% end %>
+              </td>
+            <% end %>
+
+            <% if wbs_activity.three_points_estimation? %>
+              <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+                <td class="hide_wbs_header">
+                  <%#= hidden_field_tag "values[high]", v_high %>
+                  <%#= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
+
+                  <!-- nouvelles entrees -->
+                  <% current_inputs_evs.each do |ev| %>
+                      <% entry_high_value = entry_values["high"][ev.id] %>
+                      <span>
+                        <%= ev.pe_attribute.alias %> :
+                        <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
+                        <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                      </span><br>
+                  <% end %>
+                </td>
+              <% else %>
+                <td class="hide_wbs_header">
+                  <%#= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %>
+                  <% current_inputs_evs.each do |ev| %>
+                      <% entry_high_value = entry_values["high"][ev.id] %>
+                      <span>
+                        <%= ev.pe_attribute.alias %> :
+                        <%= number_field_tag "values[high][#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                      </span> <br>
+                  <% end %>
+                </td>
+              <% end %>
+            <% end %>
+
+            <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+                <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
+                  <% if @wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1 %>
+                      <span><strong> <%= I18n.t(:change_ratio) %> :  </strong></span>
+                  <% end %>
+
+                  <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                                 selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                                 readonly: cannot?(:execute_estimation_plan, @project) %>
+                </td>
+            <% end %>
+
+            <% if wbs_activity.three_points_estimation? %>
+              <!-- Effort Theorique calculé -->
+              <td class="hide_wbs_header">
+                  <strong>
+                    <% begin %>
+                        <%= convert_with_precision(theorical_cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                    <% rescue %>
+                        -
+                    <% end %>
+                  </strong>
+              </td>
+
+              <!-- Effort Retenu -->
+              <td class="hide_wbs_header">
+                <% begin %>
+                  <%= convert_with_precision(cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                <% rescue %>
+                  -
+                <% end %>
+              </td>
+            <% end %>
+
+            <!-- Effort Theorique calculé -->
+            <td class="hide_wbs_header">
+              <strong>
+                <% begin %>
+                    <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                <% rescue %>
+                    -
+                <% end %>
+              </strong>
+            </td>
+
+            <!-- Effort Retenu -->
+            <td class="hide_wbs_header">
+              <strong>
+                <% begin %>
+                  <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %></span>
+                <% rescue %>
+                  -
+                <% end %>
+              </strong>
+            </td>
+
+            <% if wbs_activity.three_points_estimation? %>
+
+              <!-- Effort Theorique calculé -->
+              <td class="hide_wbs_header">
+                  <strong>
+                    <% begin %>
+                        <%= convert_with_precision(theorical_cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                    <% rescue %>
+                        -
+                    <% end %>
+                  </strong>
+              </td>
+
+              <!-- Effort Retenu -->
+              <td class="hide_wbs_header">
+                <strong>
+                  <% begin %>
+                    <%= convert_with_precision(cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                  <% rescue %>
+                    -
+                  <% end %>
+                </strong>
+              </td>
+            <% end %>
+
+            <td class="hide_wbs_header">
+              <strong>
+                <span id="modified_global_ratio"><%= convert_with_precision(ratio_output.string_data_probable[component_id].to_f, user_number_precision, true) %></span>
+              </strong>
+            </td>
+
+            <td class="hide_wbs_header">
+              <% if wai.nil? %>
+                <span class="estimancy">
+                  ----
+                </span>
+              <% else %>
+                  <span class="pull-left estimancy" >
+                    <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static"  %>
+                  </span>
+                  <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header modal-drag">
+                          <h4 class="modal-title" id="comment_label<%= wai.id %>">
+                            <b>
+                              <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
+                            </b>
+                          </h4>
+                        </div>
+                        <div class="modal-body">
+                          <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area" %>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                          <% if can?(:execute_estimation_plan, @project) %>
+                              <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              <% end %>
+            </td>
+          </tr>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <!-- Ajout des valeurs des Ratios -->
+    <div id="module_project_ratio_elements">
+      <div id="module_project_ratio_section">
+
+        <% @wbs_activity_ratio =  selected_ratio %>
+
+        <% if selected_ratio.nil? %>
+           <%= render :text => "Aucun ratio sélectionné" %>
+        <% else %>
+            <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
+                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+         <% end %>
+      </div>
+    </div>
+
+    <% if can?(:execute_estimation_plan, @project) %>
+      <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
+      <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
+    <% end %>
+
+  <% end %>
+
+  <div class="modal fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content" id="modal_comments_content">
+      </div>
     </div>
   </div>
-</div>
 
-<div class="modal fade" id="form_modal" tabindex="-1" role="dialog" aria-labelledby="form_modal_label" aria-hidden="true" backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content" id="form_modal_content">
+  <div class="modal fade" id="form_modal" tabindex="-1" role="dialog" aria-labelledby="form_modal_label" aria-hidden="true" backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content" id="form_modal_content">
+      </div>
     </div>
   </div>
-</div>
 
 
-<script>
-  $(document).ready(function(){
+  <script>
+    $(document).ready(function(){
 
-    var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
+      var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
 
-    $(".selected_phase").change(function(){
+      $(".selected_phase").change(function(){
 
-      var val = this.value;
+        var val = this.value;
 
-      //alert("value = "+ val);
+        //alert("value = "+ val);
 
-      if ($(this).is(':checked') ) {
-          if ($("#retained_effort_most_likely_" + val).val() == "") {
+        if ($(this).is(':checked') ) {
+            if ($("#retained_effort_most_likely_" + val).val() == "") {
 
-            var theoretical_effort_ml_visible = $("#theoretical_effort_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
-            var theoretical_cost_ml_visible = $("#theoretical_cost_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
+              var theoretical_effort_ml_visible = $("#theoretical_effort_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
+              var theoretical_cost_ml_visible = $("#theoretical_cost_most_likely_visible_" + val).val().replace(/\(|\)/g, "");
 
-            //$("#retained_effort_most_likely_visible_" + val).val($("#theoretical_effort_most_likely_visible_" + val).val());
-            //$("#retained_cost_most_likely_visible_" + val).val($("#theoretical_cost_most_likely_visible_" + val).val());
+              //$("#retained_effort_most_likely_visible_" + val).val($("#theoretical_effort_most_likely_visible_" + val).val());
+              //$("#retained_cost_most_likely_visible_" + val).val($("#theoretical_cost_most_likely_visible_" + val).val());
 
-            $("#retained_effort_most_likely_visible_" + val).val(theoretical_effort_ml_visible);
-            $("#retained_cost_most_likely_visible_" + val).val(theoretical_cost_ml_visible);
+              $("#retained_effort_most_likely_visible_" + val).val(theoretical_effort_ml_visible);
+              $("#retained_cost_most_likely_visible_" + val).val(theoretical_cost_ml_visible);
 
-            $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
-            $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
+              $("#retained_effort_most_likely_" + val).val($("#theoretical_effort_most_likely_" + val).val());
+              $("#retained_cost_most_likely_" + val).val($("#theoretical_cost_most_likely_" + val).val());
+            }
+        }
+        else{
+            $("#retained_effort_most_likely_" + val).val("");
+            $("#retained_cost_most_likely_" + val).val("");
+
+            $("#retained_effort_most_likely_visible_" + val).val("");
+            $("#retained_cost_most_likely_visible_" + val).val("");
+        }
+
+        // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
+        $("#theoretical_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+        $("#theoretical_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+        $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+        $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+      });
+
+
+      //Tester si toutes les phases modifiées ont des commentaires
+      //Hide WBS dashboard header if hide_wbs_header is true
+      var hide_wbs_header = "<%= @wbs_activity.hide_wbs_header %>";
+      var ratio_hide_wbs_header = "<%= @wbs_activity.wbs_activity_ratios.size > 1 %>";
+
+      if (hide_wbs_header != "show_all") {
+          if (ratio_hide_wbs_header == "true") {
+              $(".hide_wbs_header").hide();
+          } else {
+              $("#table_hide_wbs_header").children().hide();
           }
       }
-      else{
-          $("#retained_effort_most_likely_" + val).val("");
-          $("#retained_cost_most_likely_" + val).val("");
 
-          $("#retained_effort_most_likely_visible_" + val).val("");
-          $("#retained_cost_most_likely_visible_" + val).val("");
-      }
-
-      // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
-      $("#theoretical_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
-      $("#theoretical_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
-      $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
-      $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
-    });
-
-
-    //Tester si toutes les phases modifiées ont des commentaires
-    //Hide WBS dashboard header if hide_wbs_header is true
-    var hide_wbs_header = "<%= @wbs_activity.hide_wbs_header %>";
-    var ratio_hide_wbs_header = "<%= @wbs_activity.wbs_activity_ratios.size > 1 %>";
-
-    if (hide_wbs_header != "show_all") {
-        if (ratio_hide_wbs_header == "true") {
-            $(".hide_wbs_header").hide();
-        } else {
-            $("#table_hide_wbs_header").children().hide();
-        }
+    function precisionRound(number, precision) {
+        var factor = Math.pow(10, precision);
+        return Math.round(number * factor) / factor;
     }
 
-  function precisionRound(number, precision) {
-      var factor = Math.pow(10, precision);
-      return Math.round(number * factor) / factor;
-  }
+    $(function() {
 
-  $(function() {
+        $("form").bind("keypress", function (e) {
+            if (e.keyCode == 13) {
+                event.preventDefault();
+                //alert('Un ENTER ne suffit pas.\nCliquez sur le bouton Soumettre.'+ event.keyCode);
+                return false;
+            }
+        });
 
-      $("form").bind("keypress", function (e) {
-          if (e.keyCode == 13) {
-              event.preventDefault();
-              //alert('Un ENTER ne suffit pas.\nCliquez sur le bouton Soumettre.'+ event.keyCode);
-              return false;
-          }
-      });
+        // Ajouter des parenthèses au valeurs théorique calculé dont la phase est décochée
+        $('[id^="theoretical_effort_most_likely_visible_"], [id^="theoretical_cost_most_likely_visible_"]').each(function() {
+            var element_id = $(this).attr('id');
+            var mp_ratio_elt_id = element_id.replace(new RegExp("theoretical_effort_most_likely_visible_"), "").replace(new RegExp("theoretical_cost_most_likely_visible_"), "");
 
-      // Ajouter des parenthèses au valeurs théorique calculé dont la phase est décochée
-      $('[id^="theoretical_effort_most_likely_visible_"], [id^="theoretical_cost_most_likely_visible_"]').each(function() {
-          var element_id = $(this).attr('id');
-          var mp_ratio_elt_id = element_id.replace(new RegExp("theoretical_effort_most_likely_visible_"), "").replace(new RegExp("theoretical_cost_most_likely_visible_"), "");
-
-          var disabled_value = $(this).val();
-          if((disabled_value != "") && ($("#selected_phase_"+mp_ratio_elt_id).is(':checked') == false)){
-              $(this).val("( " + disabled_value + " )");
-              $(this).closest('td').append("<i class='fa fa-info-circle' title='<%= I18n.t(:value_not_taken_in_account) %>' style='margin-right: -1em; color: #bbb;'></i>");
-          }
-      });
+            var disabled_value = $(this).val();
+            if((disabled_value != "") && ($("#selected_phase_"+mp_ratio_elt_id).is(':checked') == false)){
+                $(this).val("( " + disabled_value + " )");
+                $(this).closest('td').append("<i class='fa fa-info-circle' title='<%= I18n.t(:value_not_taken_in_account) %>' style='margin-right: -1em; color: #bbb;'></i>");
+            }
+        });
 
 
-      // Mettre à jour les valeurs des champs contenant les vraies valeurs de la phase modifiée
-      // Puis mettre à blanc la valeur affichee du Root/racine
-      //$('input.retained_effort_visible, input.retained_cost_visible').change(function() {
-      $('input.retained_effort_visible, input.retained_cost_visible').on('focusin', function(){
-          console.log("Saving value " + $(this).val());
-          $(this).data('val', $(this).val());
-      }).on('keyup', function() {
-          var previousValue = $(this).data('val');
-          var currentValue = $(this).val();
+        // Mettre à jour les valeurs des champs contenant les vraies valeurs de la phase modifiée
+        // Puis mettre à blanc la valeur affichee du Root/racine
+        //$('input.retained_effort_visible, input.retained_cost_visible').change(function() {
+        $('input.retained_effort_visible, input.retained_cost_visible').on('focusin', function(){
+            console.log("Saving value " + $(this).val());
+            $(this).data('val', $(this).val());
+        }).on('keyup', function() {
+            var previousValue = $(this).data('val');
+            var currentValue = $(this).val();
 
-          //console.log("Prev value " + previousValue);
-          //console.log("New value " + currentValue);
-          //console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
-          //console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
+            //console.log("Prev value " + previousValue);
+            //console.log("New value " + currentValue);
+            //console.log("different precisionRound " + (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10))));
+            //console.log("different precisionRound avec text " + (parseFloat(precisionRound(currentValue, 10)).text != parseFloat(precisionRound(previousValue, 10)).text));
 
-          if( (parseFloat(currentValue) != parseFloat(previousValue)) ||
-              (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10)))) {
+            if( (parseFloat(currentValue) != parseFloat(previousValue)) ||
+                (parseFloat(precisionRound(currentValue, 10)) != parseFloat(precisionRound(previousValue, 10)))) {
 
-              var element_id = $(this).attr('id');
-              var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
-              var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
-              var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
-              var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
-              var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
+                var element_id = $(this).attr('id');
+                var mp_ratio_element_id = $(this).data('mp_ratio_element_id');
+                var corresponding_element_id = element_id.replace(new RegExp("_visible"), "");
+                var theoretical_value_id = corresponding_element_id.replace(new RegExp("retained"), "theoretical");
+                var theoretical_value = parseFloat($('#' + theoretical_value_id).val());
+                var new_value = parseFloat($(this).val().replace(",", ".").replace(/\s/g, ''));  //$(this).val();  //
 
-              //console.log("valeur différente");
+                //console.log("valeur différente");
 
-              $.ajax({
-                  url: "/update_mp_ratio_element_changed_value",
-                  method: "get",
-                  data: {
-                      corresponding_element_id: corresponding_element_id,
-                      theoretical_value: theoretical_value,
-                      new_value: new_value,
-                      root_mp_ratio_element_id: root_mp_ratio_element_id
-                  }
-              });
+                $.ajax({
+                    url: "/update_mp_ratio_element_changed_value",
+                    method: "get",
+                    data: {
+                        corresponding_element_id: corresponding_element_id,
+                        theoretical_value: theoretical_value,
+                        new_value: new_value,
+                        root_mp_ratio_element_id: root_mp_ratio_element_id
+                    }
+                });
 
-              // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
-              $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
-              $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
-          }
-      });
+                // Apres chaque changement (coche/decoche) il faudra mettre à blanc la valeur affichée du root
+                $("#retained_effort_most_likely_visible_" + root_mp_ratio_element_id).val("");
+                $("#retained_cost_most_likely_visible_" + root_mp_ratio_element_id).val("");
+            }
+        });
 
-      var clkBtn = "";
-      $('input[type="submit"]').click(function(evt) {
-          clkBtn = evt.target.name;
-      });
+        var clkBtn = "";
+        $('input[type="submit"]').click(function(evt) {
+            clkBtn = evt.target.name;
+        });
 
-      $("#save_effort_breakdown_form").on("submit",function(e) {
+        $("#save_effort_breakdown_form").on("submit",function(e) {
 
-          var clicked_button = clkBtn;
-          var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
+            var clicked_button = clkBtn;
+            var comment_required_if_modifiable = $("#comment_required_if_modifiable").val();
 
-          //console.log("debut ");
-          //console.log("comment_required_if_modifiable = "+ comment_required_if_modifiable);
+            //console.log("debut ");
+            //console.log("comment_required_if_modifiable = "+ comment_required_if_modifiable);
 
-          if((comment_required_if_modifiable == "true") || (comment_required_if_modifiable == true)){
-              var disable_calculate_button = false;
-              //console.log("clicked_button = " + clicked_button);
+            if((comment_required_if_modifiable == "true") || (comment_required_if_modifiable == true)){
+                var disable_calculate_button = false;
+                //console.log("clicked_button = " + clicked_button);
 
-              //$("td.flagged").find('span').each(function(i, td_object){
-              if(clicked_button == "update_calculation") {
+                //$("td.flagged").find('span').each(function(i, td_object){
+                if(clicked_button == "update_calculation") {
 
-                  $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
-                      var mp_ratio_element_id = $(td_object).data('mp_ratio_element');
-                      //alert("mp_ratio_element_id = " + mp_ratio_element_id);
-                      var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
-                      var cost_is_modifiable = $(td_object).data('cost_is_modifiable');
-                      //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
-                      //console.log("effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
-                      //console.log("is checked = " + $("selected_phase_"+mp_ratio_element_id).is(':checked'));
+                    $('td.flagged[data-effort_is_modifiable="true"], td.flagged[data-cost_is_modifiable="true"]').each(function (i, td_object) {
+                        var mp_ratio_element_id = $(td_object).data('mp_ratio_element');
+                        //alert("mp_ratio_element_id = " + mp_ratio_element_id);
+                        var effort_is_modifiable = $(td_object).data('effort_is_modifiable');
+                        var cost_is_modifiable = $(td_object).data('cost_is_modifiable');
+                        //alert( "effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+                        //console.log("effort_is_modifiable = " + effort_is_modifiable + " " + "cost_is_modifiable = " + cost_is_modifiable);
+                        //console.log("is checked = " + $("selected_phase_"+mp_ratio_element_id).is(':checked'));
 
-                      if($("#selected_phase_"+mp_ratio_element_id).is(':checked')){
+                        if($("#selected_phase_"+mp_ratio_element_id).is(':checked')){
 
-                        if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
-                          if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
+                          if ((effort_is_modifiable == true) || (cost_is_modifiable == true)) {
+                            if ((mp_ratio_element_id != "") && (mp_ratio_element_id != undefined)) {
 
-                              //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
-                              $('input.retained_effort[data-mp_ratio_element_id="' + mp_ratio_element_id + '"]').each(function (j, retained_elt) {
-                                  //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
+                                //$('input.retained_effort[data-mp_ratio_element_id="'+mp_ratio_element_id+'"], input.retained_cost[data-mp_ratio_element_id="'+mp_ratio_element_id+'"]').each(function(j, retained_elt){
+                                $('input.retained_effort[data-mp_ratio_element_id="' + mp_ratio_element_id + '"]').each(function (j, retained_elt) {
+                                    //$("input.retained_effort, input.retained_cost").on("blur", function(j, retained_elt){
 
-                                  var retained_value = $(retained_elt).val();
-                                  var element_id = $(retained_elt).attr('id');
-                                  var element_name = $(retained_elt).attr('name');
+                                    var retained_value = $(retained_elt).val();
+                                    var element_id = $(retained_elt).attr('id');
+                                    var element_name = $(retained_elt).attr('name');
 
-                                  var theoretical_effort = $('#theoretical_effort_most_likely_' + mp_ratio_element_id).val();
-                                  var retained_effort = $('#retained_effort_most_likely_' + mp_ratio_element_id).val();
-                                  var theoretical_cost = $('#theoretical_cost_most_likely_' + mp_ratio_element_id).val();
-                                  var retained_cost = $('#retained_cost_most_likely_' + mp_ratio_element_id).val();
-                                  //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
-                                  //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                    var theoretical_effort = $('#theoretical_effort_most_likely_' + mp_ratio_element_id).val();
+                                    var retained_effort = $('#retained_effort_most_likely_' + mp_ratio_element_id).val();
+                                    var theoretical_cost = $('#theoretical_cost_most_likely_' + mp_ratio_element_id).val();
+                                    var retained_cost = $('#retained_cost_most_likely_' + mp_ratio_element_id).val();
+                                    //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                    //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
-                                  if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
-                                      // Get the element comments
-                                      var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).text();
-                                      //alert(" Comments = " + comments);
-                                      //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
+                                    if ((theoretical_effort != retained_effort) || (theoretical_cost != retained_cost)) {
+                                        // Get the element comments
+                                        var comments = $('#mp_ratio_element_comment_'+mp_ratio_element_id).text();
+                                        //alert(" Comments = " + comments);
+                                        //alert(" Comments = " + comments +  " " + "1 = "  + (comments === "") + "   " + "2 = "  + (comments === "-") + "   "  +"3 = "  + (comments === "_") + "   ");
 
-                                      if((comments === "") || (comments === "-") || (comments === "_") || (comments === "...") || (comments === "---")){
-                                          //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
-                                          //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                        if((comments === "") || (comments === "-") || (comments === "_") || (comments === "...") || (comments === "---")){
+                                            //alert(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
+                                            //console.log(" theoretical_effort =  " + theoretical_effort  +  " retained_effort =  " + retained_effort  +  " theoretical_cost =  " + theoretical_cost  + " retained_cost =  " + retained_cost);
 
-                                          disable_calculate_button = true;
+                                            disable_calculate_button = true;
 
-                                          if (theoretical_effort != retained_effort){
-                                              $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
-                                              $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
-                                          }
+                                            if (theoretical_effort != retained_effort){
+                                                $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+                                                $('#retained_effort_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
+                                            }
 
-                                          if (theoretical_cost != retained_cost) {
-                                              $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
-                                              $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
-                                          }
-                                          //return false; //pour arreter la boucle
-                                      }
-                                  }
-                              });
-                          }
-                      }
-                      }
-                  });
-              }
+                                            if (theoretical_cost != retained_cost) {
+                                                $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('color', 'red');
+                                                $('#retained_cost_most_likely_visible_' + mp_ratio_element_id).css('border-color', 'red');
+                                            }
+                                            //return false; //pour arreter la boucle
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        }
+                    });
+                }
 
-              if (disable_calculate_button == true){
-                  $("#warning_add_comments").show();
-                  $("#warning_add_comments").css('display', 'block');
+                if (disable_calculate_button == true){
+                    $("#warning_add_comments").show();
+                    $("#warning_add_comments").css('display', 'block');
 
-                  alert("Veuillez renseigner un commentaire pour valeurs modifiées de chacune des phases");
-                  //$("#wbs_calculate_button").attr('disabled', 'disabled');
-                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
+                    alert("Veuillez renseigner un commentaire pour valeurs modifiées de chacune des phases");
+                    //$("#wbs_calculate_button").attr('disabled', 'disabled');
+                    $("#wbs_calculate_button").attr('title','<%= I18n.t(:wbs_calculate_button_is_disabled) %>');
 
-                  return false; // cancel submit
-              }else{
-                  //alert("not need comment" + " " + disable_calculate_button);
-                  //$("#wbs_calculate_button").removeAttr('disabled');
-                  $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
-                  return true; // allow submit
-              }
-          }
-      });
-  });
+                    return false; // cancel submit
+                }else{
+                    //alert("not need comment" + " " + disable_calculate_button);
+                    //$("#wbs_calculate_button").removeAttr('disabled');
+                    $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
+                    return true; // allow submit
+                }
+            }
+        });
+    });
 
-  })
-</script>
+    })
+  </script>
+</section>
 
 

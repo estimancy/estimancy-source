@@ -33813,11 +33813,11 @@ $( document ).ready(function() {
     // });
 
     // Timecost Edition Slider
-    $('.edition-bloc-slider-slider').slider({
-        slide: function (e, value) {
-            $('.edition-bloc-slider-value').text(value);
-        }
-    });
+    // $('.edition-bloc-slider-slider').slider({
+    //     slide: function (e, value) {
+    //         $('.edition-bloc-slider-value').text(value);
+    //     }
+    // });
 });
 
 // # sourceMappingURL=main.js.map

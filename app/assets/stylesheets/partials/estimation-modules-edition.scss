@@ -110,7 +110,8 @@
         color: $grey-extradark;
         position: absolute;
         top: 0;
-        left: 5.3rem
+        //left: 5.3rem;
+        left: 150px;
       }
     }
 
@@ -138,7 +139,7 @@
     }
   }
 
-  .requirements-table {
+  .requirements-table, .phases-table {
     border-bottom: 1px solid #dee2e6;
 
     thead th {
@@ -173,6 +174,71 @@
     }
   }
 
+  .phases-table {
+    position: relative;
+
+    th, td {
+      text-align: right;
+      width: 14%;
+
+      &:first-child {
+        text-align: center;
+        width: auto;
+      }
+      &:nth-child(2) {
+        text-align: left;
+        width: auto;
+      }
+      &:nth-child(3) {
+        text-align: center;
+        width: auto;
+      }
+    }
+    th[scope='row'] {
+      color: #333;
+    }
+
+    .td-field {
+      display: none;
+      margin: -1.7rem 0;
+
+      .mdl-textfield__input {
+        text-align: right;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 21px;
+        text-align: right;
+        color: $grey-extradark;
+      }
+    }
+
+    tr.selected {
+      & > td:first-child {
+        &:before {
+          content: '';
+          position: absolute;
+          margin-top: -1.3rem;
+          left: 0;
+          width: calc(100% + 5rem);
+          height: 61px;
+          margin-left: -2.5rem;
+          margin-right: -2.5rem;
+          border: 1px solid #84CEE5;
+          box-sizing: border-box;
+          box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+          background-color: white
+        }
+      }
+
+      .td-field {
+        display: inline-block
+      }
+      .td-value {
+        display: none
+      }
+    }
+  }
+
   .new-requirement-form {
     margin-top: -42px;
     position: relative;
@@ -203,4 +269,13 @@
       }
     }
   }
+
+  // .phase-edition-form {
+  // 	position: absolute;
+  //   width: 100%;
+  //   left: 0;
+  //   margin-top: -40px;
+  //   background-color: white;
+  //   border: 1px solid blue;
+  // }
 }

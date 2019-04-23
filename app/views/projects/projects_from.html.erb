@@ -1,3 +1,109 @@
-<h1><%= I18n.t(:estimation_models) %></h1>
+<div style="margin-top: 100px"></div>
+<div class="page-edition-content pt-6">
+  <div class="d-flex align-items-center mt-4">
+    <h2>1. Sélectionnez le modèle de votre choix</h2>
+    <% if can? :manage_estimation_models, Project %>
+      <a href="<%= new_project_path(organization_id: @organization.id, is_model: true) %>" class="new-template-link">Créer un nouveau modèle</a>
+    <% end %>
+  </div>
+</div>
 
-<%= render partial: "projects/estimation_models", object: @estimation_models %>
+<div class="mb-6">
+  <div class="estimation-template-list">
+    <div class="estimation-template-list-filter">
+      <label for="templateSearchBar">RECHERCHER UN MODELE D’ESTIMATION</label>
+      <div class="input-group template-search-bar">
+        <div class="input-group-prepend template-search-bar-prepend">
+        <span class="input-group-text" id="search-icon">
+          <i class="material-icons">search</i>
+        </span>
+        </div>
+        <input type="text" id="myInput" onkeyup="myFunction();" class="form-control template-search-bar-input" placeholder="Nom du modèle d’estimation" aria-label="search" aria-describedby="search-icon">
+      </div>
+    </div>
+
+    <table id="myTable" class="estimation-template-table">
+      <thead>
+        <tr>
+          <th class="text-left"><%= I18n.t(:label_model_name) %></th>
+          <th class="text-left">Vers.</th>
+          <th class="text-left" style="width: 25%;"><%= I18n.t(:created_at) %></th>
+          <th class="text-left"><%= I18n.t(:project_area) %></th>
+          <th class="text-left"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @estimation_models.each do |project| %>
+          <% if can_see_estimation?(project) %>
+            <tr>
+              <td class="estimation-template-table-name-cell">
+                <% if can?(:create_project_from_template, Project) %>
+                  <%= link_to(project.title, change_new_estimation_data_path(template_id: project.id,
+                                                                             organization_id: project.organization_id,
+                                                                             demand_id: params[:demand_id],
+                                                                             action_name: "create_project_from_template"),
+                              title: I18n.t('button_duplicate_model'),
+                              remote: true) %>
+                <% else %>
+                  <% if can_show_estimation?(project) %>
+                    <%= link_to(project.title, edit_project_path(project, :anchor => 'tabs-1'), :title => I18n.t('edit')) %>
+                  <% else %>
+                    <%= project.title %>
+                  <% end %>
+                <% end %>
+              </td>
+              <td><%= project.version_number %></td>
+              <td><%= I18n.l(project.created_at) %></td>
+              <td class="text-left"><%= project.project_area %></td>
+              <td>
+                <div class="tools" style="float: right;">
+                  <a href="<%= edit_project_path(project) %>"></a>
+                  <% if can? :manage_estimation_models, Project %>
+                    <%= link_to(raw("<i class='material-icons'>copy</i>"),
+                                main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'),
+                                :title => I18n.t('button_duplicate_project'),
+                                :method => "POST") %>
+                  <% end %>
+
+                  <% if can_show_estimation?(project) %>
+                    <%= link_to(raw("<i class='material-icons'>map</i>"), {:controller => 'projects', :action => 'find_use_estimation_model', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'icon icon-map-marker pull-left', :id => 'find_use_estimation_model', :title => I18n.t('button_find_use')) %>
+                    <%= link_to(raw("<i class='material-icons'>edit</i>"), edit_project_path(project, is_model: true), :title => I18n.t('edit')) %>
+                  <% end %>
+
+                  <% if can? :manage_estimation_models, Project %>
+                    <%= link_to(raw("<i class='material-icons'>clear</i>"), confirm_deletion_path(project_id: project.id), :title => I18n.t('delete')) %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
