@@ -25,8 +25,10 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
     add_column :estimation_values, :organization_id, :integer, after: :id
 
     EstimationValue.all.each do |ev|
-      ev.organization_id = ev.module_project.organization_id
-      ev.save
+      unless ev.module_project.nil?
+        ev.organization_id = ev.module_project.organization_id
+        ev.save
+      end
     end
     add_index :estimation_values, [:organization_id, :module_project_id, :pe_attribute_id, :in_out], name: "organization_estimation_values"
 
@@ -37,8 +39,10 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
     add_column :wbs_activity_ratios, :organization_id, :integer, after: :id
 
     WbsActivityRatio.all.each do |ratio|
-      ratio.organization_id = ratio.wbs_activity.organization_id
-      ratio.save
+      unless ratio.wbs_activity.nil?
+        ratio.organization_id = ratio.wbs_activity.organization_id
+        ratio.save
+      end
     end
     add_index :wbs_activity_ratios, [:organization_id, :wbs_activity_id], name: "organization_wbs_activity_ratios"
 
