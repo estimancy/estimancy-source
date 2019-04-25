@@ -202,21 +202,21 @@ class ModuleProjectsController < ApplicationController
 
   #update the module_project top and left position after drag (from estimation_plan)
   def update_module_project_left_and_top_positions
-    module_projects = params[:module_projects_params]
-    module_projects.each do |mp_params|
-      mp_node = mp_params[1]
-      unless mp_node[:module_project_id].nil?
-        module_project = ModuleProject.find(mp_node[:module_project_id])
-        if module_project
-          # Update the Module-Project positions (left = position_x, top = position_y)
-          module_project.update_attributes(left_position: mp_node[:left_position].to_f, top_position: mp_node[:top_position].to_f)
-        end
-      end
-    end
-
-    respond_to do |format|
-      format.js {}
-    end
+    # module_projects = params[:module_projects_params]
+    # module_projects.each do |mp_params|
+    #   mp_node = mp_params[1]
+    #   unless mp_node[:module_project_id].nil?
+    #     module_project = ModuleProject.find(mp_node[:module_project_id])
+    #     if module_project
+    #       # Update the Module-Project positions (left = position_x, top = position_y)
+    #       module_project.update_attributes(left_position: mp_node[:left_position].to_f, top_position: mp_node[:top_position].to_f)
+    #     end
+    #   end
+    # end
+    #
+    # respond_to do |format|
+    #   format.js {}
+    # end
   end
 
 

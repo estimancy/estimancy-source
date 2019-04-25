@@ -3214,7 +3214,6 @@ class OrganizationsController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
 
-    @ot = @organization.organization_technologies.first
 
     @users = @organization.users
     @fields = @organization.fields
@@ -3292,8 +3291,6 @@ class OrganizationsController < ApplicationController
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
-      @ot = @organization.organization_technologies.first
-      @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles
       @groups = @organization.groups
       @organization_group = @organization.groups

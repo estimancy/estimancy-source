@@ -1,0 +1,184 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        jsPlumb.ready(function () {
+
+            // list of possible anchor locations for the blue source element
+            var sourceAnchors = [
+                [ 0, 1, 0, 1 ],
+                [ 0.25, 1, 0, 1 ],
+                [ 0.5, 1, 0, 1 ],
+                [ 0.75, 1, 0, 1 ],
+                [ 1, 1, 0, 1 ]
+            ];
+
+            var exampleColor = '#db0d21',
+
+                // connector = [ "Bezier", { cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],    //Flowchart
+                connector = [ "Straight", { cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne utilisee
+                // connector = [ "Flowchart", { cornerRadius: 5, cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne a tester
+                connectorStyle = {
+                    gradient: {stops: [
+                            [1, exampleColor],
+                            [0.5, '3498db'],
+                            [1, exampleColor]
+                        ]},
+                    lineWidth: 5,
+                    strokeStyle: exampleColor
+                },
+                hoverStyle = {
+                    strokeStyle: "3498db"
+                },
+                overlays = [
+                    ["Diamond", { fillStyle: "09098e", width: 15, length: 15 } ]
+                ],
+                connectionOverlays = [
+                    [ "Arrow", { width:10, length:10, location:-1, id:"arrow", foldback: 0.4 } ]
+                ],
+
+                container_box = "module_box";
+
+                anEndpoint = {
+                    endpoint: ["Rectangle", { width: 20 }],
+                    hoverPaintStyle: { fillStyle: "#3498db" },
+                    maxConnections: -1,
+                    connector: connector,
+                    connectorPaintStyle: connectorStyle,
+                    connectorHoverStyle: hoverStyle,
+                    connectorOverlays: overlays,
+
+                };
+
+            var instance = jsPlumb.getInstance({
+                DragOptions: { cursor: 'pointer', zIndex: 2000 },
+                Container: container_box, //"module_box", //Container: "canvas"
+                ConnectionOverlays: connectionOverlays,
+            });
+
+            // suspend drawing and initialise.
+            instance.batch(function () {
+                var endpoints = {};
+                <% mp_connections = {} %>
+                <% module_projects.each do |pmod| %>
+
+                  <% mp_id = "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>
+                  <% mp_connections["#{mp_id}"] = [] %>
+
+                  <% pmod.inverse_associated_module_projects.each do |assos_mp| %>
+                    <% mp_assos_id = "mp_#{assos_mp.pemodule.alias}_#{assos_mp.id}" %>
+                    <% mp_connections["#{mp_id}"] << mp_assos_id %>
+                  <% end %>
+                <% end %>
+
+                var js_module_project_connections = <%= mp_connections.to_json.html_safe %> ;
+                //console.log(js_module_project_connections);
+                // ask jsPlumb for a selector for the window class
+                divsWithWindowClass = jsPlumb.getSelector(".module_project");
+
+                // add endpoints to all of these - one for source, and one for target, configured so they don't sit
+                // on top of each other.
+                for (var i = 0; i < divsWithWindowClass.length; i++) {
+                    var id = instance.getId(divsWithWindowClass[i]);
+                    endpoints[id] = [
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["BottomCenter"], isTarget: false, isSource: true}),
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["TopCenter"], isTarget: true, isSource: false})
+                    ];
+                }
+
+                //then connect everything using the connections map declared above.
+                for (var e in endpoints) {
+                    if (js_module_project_connections[e]) {
+                        for (var j = 0; j < js_module_project_connections[e].length; j++) {
+                            instance.connect({
+                                source: endpoints[e][0],
+                                target: endpoints[js_module_project_connections[e][j]][1]
+                            });
+                        }
+                    }
+                }
+
+                // bind Connection listener; then create connections in database
+                instance.bind("connection", function(info, originalEvent) {
+                    //alert(info.targetId);
+                    var sourceId = info.sourceId;
+                    var targetId = info.targetId;
+                    var mp_source_id = $('#'+sourceId).data('module_project_id');
+                    var mp_target_id = $('#'+targetId).data('module_project_id');
+                    $.ajax({
+                        method: 'GET',
+                        url: "/update_module_project_dynamic_connections",
+                        data: {
+                            connect_or_detach_connection: "connect",
+                            source_id: mp_source_id,
+                            target_id: mp_target_id
+                        }
+                    });
+                });
+
+                // bind click listener; delete connections on click
+                instance.bind("click", function (connection) {
+                    var sourceId = connection.sourceId;
+                    var targetId = connection.targetId;
+                    var mp_source_id = $('#'+sourceId).data('module_project_id');
+                    var mp_target_id = $('#'+targetId).data('module_project_id');
+                    //delete connection
+                    instance.detach(connection);
+                    $.ajax({
+                        method: 'GET',
+                        url: "/update_module_project_dynamic_connections",
+                        data: {
+                            connect_or_detach_connection: "detach",
+                            source_id: mp_source_id,
+                            target_id: mp_target_id
+                        }
+                    });
+                });
+
+                // bind beforeDetach interceptor: will be fired when the click handler above calls detach, and the user
+                // will be prompted to confirm deletion.
+                instance.bind("beforeDetach", function (connection) {
+                    return confirm("Supprimer le lien de connexion ?");
+                });
+
+                // Set the drag action on all module_project
+                // instance.draggable(divsWithWindowClass);
+                //instance.draggable(divsWithWindowClass, {
+                instance.draggable($(".module_project"), {
+                    containment: ".module_box",
+                    scroll: false,
+                    drag:function(event, ui){
+                    },
+                    stop:function(event, ui){
+                        //alert("test");
+                        // Saving the nodes'(module_projects) parameters
+                        var nodes = [];
+                        $(".module_project").each(function (idx, elem) {
+                            var $elem = $(elem);
+                            nodes.push({
+                                module_project_id: $elem.data('module_project_id'),
+                                left_position: parseInt($elem.css("left"), 10),
+                                top_position: parseInt($elem.css("top"), 10),
+                                top_offset: $elem.offset().top,
+                                left_offset: $elem.offset().left
+                            });
+                        });
+                        $.ajax({
+                            method: "GET",
+                            url: "/update_module_project_left_and_top_positions",
+                            data:{
+                                module_projects_params: nodes,
+                                initialization_mp_id: $(".initialization_0_0").data('module_project_id')
+                            }
+                        })
+                    }
+                });
+
+                //The initialization module_project won't be draggable
+                // instance.setDraggable($(".initialization_0_0"), false);
+                jsPlumb.fire("jsPlumbDemoLoaded", instance);
+            });
+        });
+        //===================== END For JsPlumb connector ============================
+    });
+</script>

@@ -1,489 +1,500 @@
-<h3 id="kb">
-  <strong>
-    <%= @kb_model %>
-  </strong>
-  <hr>
-</h3>
+<div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
+  <%= @kb_model %>
+  <div class="edition-bloc-tools">
+    <button class="btn btn-secondary">Calculer</button>
+  </div>
+</div>
 
-<% module_project = current_module_project %>
-<%= form_tag kb.kb_model_save_efforts_path(@kb_model), method: "post" do %>
-  <div class="row-fluid">
-    <div class="span3">
+<div class="card card-widget">
+  <div class="card-body">
+    <div class="edition-bloc-title">
+      Calcul des phases
+    </div>
+    <div class="edition-bloc-content pb-4">
 
-      <div class="row-fluid">
-        <div class="span12">
-          <h5>
-            <strong>
-               <%= I18n.t(:project_number) %>
-              <span class="project_numbers">
+      <% module_project = current_module_project %>
+      <%= form_tag kb.kb_model_save_efforts_path(@kb_model), method: "post" do %>
+        <div class="row">
+          <div class="col">
+
+            <div class="row">
+              <div class="col">
+                <h5>
+                  <strong>
+                    <%= I18n.t(:project_number) %>
+                    <span class="project_numbers">
                 <%= @kb_input.values.size %>
               </span>
-            </strong>
-          </h5>
-        </div>
-      </div>
+                  </strong>
+                </h5>
+              </div>
+            </div>
 
-      <% if @kb_model.date_min %>
-        <div class="row-fluid">
-          <div class="span12">
-            <h5>
-              <strong>
-                 Date Min:
-                <span class="project_numbers">
+            <% if @kb_model.date_min %>
+              <div class="row-fluid">
+                <div class="span12">
+                  <h5>
+                    <strong>
+                      Date Min:
+                      <span class="project_numbers">
                   <%= @kb_model.date_min.strftime("%d %b %Y") %>
                 </span>
-              </strong>
-            </h5>
-          </div>
-        </div>
-      <% end %>
+                    </strong>
+                  </h5>
+                </div>
+              </div>
+            <% end %>
 
-      <% if @kb_model.date_max %>
-        <div class="row-fluid">
-          <div class="span12">
-            <h5>
-              <strong>
-                 Date Max:
-                <span class="project_numbers">
+            <% if @kb_model.date_max %>
+              <div class="row-fluid">
+                <div class="span12">
+                  <h5>
+                    <strong>
+                      Date Max:
+                      <span class="project_numbers">
                   <%= @kb_model.date_max.strftime("%d %b %Y") %>
                 </span>
-              </strong>
-            </h5>
-          </div>
-        </div>
-      <% end %>
+                    </strong>
+                  </h5>
+                </div>
+              </div>
+            <% end %>
 
-      <div class="row-fluid">
-        <div class="span12">
-          <% unless @kb_model.kb_datas.empty? %>
-            <p>
-              <% arr = ["a", "b", "c", "d"] %>
-              <% @kb_model.kb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
+            <div class="row-fluid">
+              <div class="span12">
+                <% unless @kb_model.kb_datas.empty? %>
+                  <p>
+                    <% arr = ["a", "b", "c", "d"] %>
+                    <% @kb_model.kb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
 
-                <% begin %>
-                  <% filter = @kb_model.send("filter_#{arr[i]}") %>
-                <% rescue %>
-                  <% filter = "-" %>
+                      <% begin %>
+                        <% filter = @kb_model.send("filter_#{arr[i]}") %>
+                      <% rescue %>
+                        <% filter = "-" %>
+                      <% end %>
+
+                    <div class="input string required project_title">
+                      <label class="string required control-label">
+                        <strong>
+                          <%= filter %>
+                        </strong>
+                      </label>
+                      <%= select_tag "filters[#{key}]",
+                                     options_for_select(@kb_model.kb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
+                                                        selected: @filters.nil? ? convert_project_category(@project, filter) : @filters[key]),
+                                     class: "string required input-xlarge filters",
+                                     prompt: I18n.t(:Indifferent),
+                                     disabled: !@kb_model.enabled_input %>
+
+                      <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, filter) : @filters[key] %>" />
+                    </div>
+                  <% end %>
+                  </p>
                 <% end %>
 
-                <div class="input string required project_title">
-                  <label class="string required control-label">
-                    <strong>
-                      <%= filter %>
-                    </strong>
-                  </label>
-                  <%= select_tag "filters[#{key}]",
-                                 options_for_select(@kb_model.kb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
-                                                    selected: @filters.nil? ? convert_project_category(@project, filter) : @filters[key]),
-                                 class: "string required input-xlarge filters",
-                                 prompt: I18n.t(:Indifferent),
-                                 disabled: !@kb_model.enabled_input %>
-
-                  <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? convert_project_category(@project, filter) : @filters[key] %>" />
-                </div>
-              <% end %>
-            </p>
-          <% end %>
-
-          <h5>
-            <strong>
-              <%= I18n.t(:equation) %>
-            </strong>
-          </h5>
-          <p>
+                <h5>
+                  <strong>
+                    <%= I18n.t(:equation) %>
+                  </strong>
+                </h5>
+                <p>
             <span id="formula">
               <%= @kb_input.formula %>
             </span>
-          </p>
+                </p>
 
-          <% if @kb_model.three_points_estimation %>
-            <% array = ["low", "most_likely", "high"] %>
-          <% else %>
-            <% array = ["most_likely"] %>
-          <% end %>
+                <% if @kb_model.three_points_estimation %>
+                  <% array = ["low", "most_likely", "high"] %>
+                <% else %>
+                  <% array = ["most_likely"] %>
+                <% end %>
 
 
-          <% array.each do |level| %>
+                <% array.each do |level| %>
 
-            <h5>
-              <strong>
-                <%= I18n.t(:size) %> (<%= level.humanize %>)
-              </strong>
-            </h5>
+                  <h5>
+                    <strong>
+                      <%= I18n.t(:size) %> (<%= level.humanize %>)
+                    </strong>
+                  </h5>
 
-            <%
-             module_project =  current_module_project
-             size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
+                  <%
+                    module_project =  current_module_project
+                    size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
 
-             begin
-                size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id, :module_project_id => module_project.id, :in_out => "input").first
-             rescue
-                size_current_ev = nil
-             end
+                    begin
+                      size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id, :module_project_id => module_project.id, :in_out => "input").first
+                   rescue
+                      size_current_ev = nil
+                    end
 
-             unless size_current_ev.nil?
-               ev_size_value = size_current_ev.string_data_probable[current_component.id]
+                    unless size_current_ev.nil?
+                      ev_size_value = size_current_ev.string_data_probable[current_component.id]
 
-               begin
-                 if ev_size_value.blank? || !@kb_model.enabled_input
-
-                   if !size_current_ev.estimation_value_id.nil?
-                     size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
-                   else
-                      size_possible_module_projects = module_project.possible_previous_mp_for_attribute(size_attr)
-
-                      mpsize = module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
                       begin
-                        size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                               :module_project_id => mpsize.id, :in_out => "output").first
-                      rescue
-                        begin
-                          mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
-                          size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                                                   :module_project_id => mpsize.id, :in_out => "output").first
-                        rescue
-                          size_previous_ev = nil
+                        if ev_size_value.blank? || !@kb_model.enabled_input
+
+                          if !size_current_ev.estimation_value_id.nil?
+                            size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
+                          else
+                             size_possible_module_projects = module_project.possible_previous_mp_for_attribute(size_attr)
+
+                             mpsize = module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+                             begin
+                               size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                                      :module_project_id => mpsize.id, :in_out => "output").first
+                             rescue
+                               begin
+                                 mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+                                 size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                                          :module_project_id => mpsize.id, :in_out => "output").first
+                               rescue
+                                 size_previous_ev = nil
+                               end
+                             end
+                          end
                         end
                       end
-                   end
-                 end
-               end
-             end
+                    end
 
-             @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
+                    @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
 
 
-             effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
+                    effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
 
-             begin
-              effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
-                                                       :module_project_id => module_project.id, :in_out => "input").first
-             rescue
-               effort_current_ev = nil
-             end
+                    begin
+                      effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                               :module_project_id => module_project.id, :in_out => "input").first
+                     rescue
+                       effort_current_ev = nil
+                    end
 
-             effort_possible_module_projects = module_project.possible_previous_mp_for_attribute(effort_attr)
+                    effort_possible_module_projects = module_project.possible_previous_mp_for_attribute(effort_attr)
 
-             if module_project.previous.size > 1
+                    if module_project.previous.size > 1
 
-               if effort_current_ev && !effort_current_ev.estimation_value_id.nil?
-                 ev = EstimationValue.find(effort_current_ev.estimation_value_id)
-               else
-                 begin
-                    ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
-                                               module_project_id: module_project.previous.last.id, in_out: "output").first
-                 rescue
-                    ev = nil
-                 end
-               end
+                      if effort_current_ev && !effort_current_ev.estimation_value_id.nil?
+                        ev = EstimationValue.find(effort_current_ev.estimation_value_id)
+                      else
+                        begin
+                          ev = EstimationValue.where(pe_attribute_id: effort_attr.id,
+                                                     module_project_id: module_project.previous.last.id, in_out: "output").first
+                       rescue
+                          ev = nil
+                        end
+                      end
 
-               if ev
-                 begin
-                   if ev.module_project.pemodule.alias == "effort_breakdown"
-                     @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
-                   else
-                     @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
-                   end
-                 rescue
-                   @previous_effort = 0
-                 end
-               end
-             end
-            %>
+                      if ev
+                        begin
+                          if ev.module_project.pemodule.alias == "effort_breakdown"
+                            @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+                          else
+                            @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+                          end
+                        rescue
+                          @previous_effort = 0
+                        end
+                      end
+                    end
+                  %>
 
-            <% unless @kb_model.enabled_input %>
-               <%= hidden_field_tag "size", @size %>
-               <%= text_field_tag "", convert_with_precision(@size, user_number_precision, true),
-                                 class: "string required input-xlarge",
-                                 disabled: true  %>
-            <% else %>
-              <%= number_field_tag "size", @size, class: "string required input-xlarge", step: "any" %>
-            <% end %>
+                  <% unless @kb_model.enabled_input %>
+                    <%= hidden_field_tag "size", @size %>
+                    <%= text_field_tag "", convert_with_precision(@size, user_number_precision, true),
+                                       class: "string required input-xlarge",
+                                       disabled: true  %>
+                  <% else %>
+                    <%= number_field_tag "size", @size, class: "string required input-xlarge", step: "any" %>
+                  <% end %>
 
-            <h5>
-              <strong>
-                Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
-              </strong>
-            </h5>
-            <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+                  <h5>
+                    <strong>
+                      Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
+                    </strong>
+                  </h5>
+                  <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
 
-            <% begin
-                output_effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
-                                                         :module_project_id => module_project.id, :in_out => "output").first
-               rescue
-                 output_effort_current_ev = nil
-               end
-            %>
+                  <% begin
+                       output_effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+                                                                :module_project_id => module_project.id, :in_out => "output").first
+                      rescue
+                        output_effort_current_ev = nil
+                     end
+                  %>
 
-            <% if output_effort_current_ev.nil?
-                  @effort = 0
-               else
-                  @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
-               end
-            %>
+                  <% if output_effort_current_ev.nil?
+                       @effort = 0
+                     else
+                       @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
+                     end
+                  %>
 
-            <% unless @kb_model.enabled_input %>
+                  <% unless @kb_model.enabled_input %>
               <span id="effort_label">
                 <%= hidden_field_tag "effort", @effort %>
                 <%= text_field_tag "", convert_with_precision(@effort, user_number_precision, true),
-                                     class: "string required input-xlarge effort",
-                                     disabled: true %>
+                                   class: "string required input-xlarge effort",
+                                   disabled: true %>
               </span>
-            <% else %>
-              <%= number_field_tag "effort",
-                                   @effort.nil? ? '' : @effort,
-                                   class: "string required input-xlarge", step: "any" %>
-            <% end %>
-          <% end %>
+                  <% else %>
+                    <%= number_field_tag "effort",
+                                         @effort.nil? ? '' : @effort,
+                                         class: "string required input-xlarge", step: "any" %>
+                  <% end %>
+                <% end %>
 
-          <hr>
+                <hr>
 
-          <% if module_project.previous.size > 1 %>
-            <h5>
-              <strong>
-                Benchmark
-              </strong>
-            </h5>
+                <% if module_project.previous.size > 1 %>
+                  <h5>
+                    <strong>
+                      Benchmark
+                    </strong>
+                  </h5>
 
-            <% if @previous_effort %>
-              <h5>
-                <strong>
-                  Effort (<%= module_project.previous.last %>)
-                </strong>
-              </h5>
-              <%= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
-              <%= hidden_field_tag "previous_effort", @previous_effort %>
+                  <% if @previous_effort %>
+                    <h5>
+                      <strong>
+                        Effort (<%= module_project.previous.last %>)
+                      </strong>
+                    </h5>
+                    <%= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+                    <%= hidden_field_tag "previous_effort", @previous_effort %>
 
-              <h5>
-                <strong>
-                  Ecart
-                </strong>
-              </h5>
-              <!-- # Affichage de l'écart en % -->
-              <%#= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
-              <% ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first %>
-              <% begin
-                  ecart_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
-                  ecart_percent = ecart_ev.send("string_data_probable")[current_component.id]
-                 rescue
-                   ecart_percent = nil
-                 end
-              %>
-              <%= ecart_percent.to_f.round(2) %> <%= '%' %>
-            <% end %>
-        <% end %>
+                    <h5>
+                      <strong>
+                        Ecart
+                      </strong>
+                    </h5>
+                    <!-- # Affichage de l'écart en % -->
+                    <%#= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+                    <% ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first %>
+                    <% begin
+                         ecart_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+                         ecart_percent = ecart_ev.send("string_data_probable")[current_component.id]
+                        rescue
+                          ecart_percent = nil
+                       end
+                    %>
+                    <%= ecart_percent.to_f.round(2) %> <%= '%' %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="span9">
+            <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
+            <hr>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="span9">
-      <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
-      <hr>
-    </div>
-  </div>
-  <div class="row-fluid">
-    <div class="span12">
-      <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-primary button_margin_right">
-          <%= I18n.t(:calculate_button) %>
-        </button>
+        <div class="row-fluid">
+          <div class="span12">
+            <% if can? :execute_estimation_plan, @project %>
+              <button type="submit" class="btn btn-primary button_margin_right">
+                <%= I18n.t(:calculate_button) %>
+              </button>
+            <% end %>
+            <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right pull-left", :method => "post" %>
+          </div>
+        </div>
       <% end %>
-      <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right pull-left", :method => "post" %>
-    </div>
-  </div>
-<% end %>
 
-<script>
-  $(document).ready(function(){
-    $(function() {
-      chart = $('#scatter_chart').highcharts({
-        chart: {
-          zoomType: 'xy'
-        },
-        title: {
-          text: "<%= @kb_model.name %>"
-        },
-        xAxis: {
-          title: {
-            enabled: true,
-            text: '<%= I18n.t(:size) %>',
-          },
-          min: 0
-        },
-        yAxis: {
-          title: {
-            //text: 'Effort (<%= @kb_model.effort_unit %>)'
-            text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
-          },
-          min: 0
-        },
-        series: [{
-          name: '<%= I18n.t("distribution_taille_effort") %>',
-          marker: {
-            radius: 3
-          },
-          type: 'scatter',
-          color: 'rgba(223, 83, 83, 1)',
-          tooltip: {
-            pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %>'
-          },
-          data: <%= @kb_input.values %>
-        },{
-          name: '<%= I18n.t("regression_lineaire") %>',
-          marker: {
-            radius: 0
-          },
-          type: 'line',
-          color: 'rgba(200, 200, 200, 1)',
-          data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
+      <script>
+          $(document).ready(function(){
+              $(function() {
+                  chart = $('#scatter_chart').highcharts({
+                      chart: {
+                          zoomType: 'xy'
+                      },
+                      title: {
+                          text: "<%= @kb_model.name %>"
+                      },
+                      xAxis: {
+                          title: {
+                              enabled: true,
+                              text: '<%= I18n.t(:size) %>',
+                          },
+                          min: 0
+                      },
+                      yAxis: {
+                          title: {
+                              //text: 'Effort (<%= @kb_model.effort_unit %>)'
+                              text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
+                          },
+                          min: 0
+                      },
+                      series: [{
+                          name: '<%= I18n.t("distribution_taille_effort") %>',
+                          marker: {
+                              radius: 3
+                          },
+                          type: 'scatter',
+                          color: 'rgba(223, 83, 83, 1)',
+                          tooltip: {
+                              pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %>'
+                          },
+                          data: <%= @kb_input.values %>
+                      },{
+                          name: '<%= I18n.t("regression_lineaire") %>',
+                          marker: {
+                              radius: 0
+                          },
+                          type: 'line',
+                          color: 'rgba(200, 200, 200, 1)',
+                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
 
-        },{
-          name: '<%= I18n.t("regression_lineaire_plus_80") %>',
-          marker: {
-            radius: 0
-          },
-          type: 'line',
-          color: 'rgba(83, 223, 83, 1)',
-          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
-        },{
-          name: '<%= I18n.t("regression_lineaire_moins_80") %>',
-          marker: {
-            radius: 0
-          },
-          type: 'line',
-          color: 'rgba(83, 223, 255, 1)',
-          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
-        },{
-          name: 'Effort précédent',
-          marker: {
-            radius: 5
-          },
-          type: 'scatter',
-          color: 'rgba(0, 0, 0, 1)',
-          data: <%= [
+                      },{
+                          name: '<%= I18n.t("regression_lineaire_plus_80") %>',
+                          marker: {
+                              radius: 0
+                          },
+                          type: 'line',
+                          color: 'rgba(83, 223, 83, 1)',
+                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+                      },{
+                          name: '<%= I18n.t("regression_lineaire_moins_80") %>',
+                          marker: {
+                              radius: 0
+                          },
+                          type: 'line',
+                          color: 'rgba(83, 223, 255, 1)',
+                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+                      },{
+                          name: 'Effort précédent',
+                          marker: {
+                              radius: 5
+                          },
+                          type: 'scatter',
+                          color: 'rgba(0, 0, 0, 1)',
+                          data: <%= [
                       [
                         @previous_effort.nil? ? 0 : @size,
                         @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
                       ]
                     ] %>
-        },{
-          name: '<%= I18n.t("effort_retained") %>',
-          marker: {
-            radius: 5
-          },
-          type: 'scatter',
-          color: 'rgba(0, 0, 0, 1)',
-          data: <%= [[@size, @effort.to_f.round(2)]] %>
-        }]
-      });
-    });
-    /**
-     * Sand-Signika theme for Highcharts JS
-     * @author Torstein Honsi
-     */
+                      },{
+                          name: '<%= I18n.t("effort_retained") %>',
+                          marker: {
+                              radius: 5
+                          },
+                          type: 'scatter',
+                          color: 'rgba(0, 0, 0, 1)',
+                          data: <%= [[@size, @effort.to_f.round(2)]] %>
+                      }]
+                  });
+              });
+              /**
+               * Sand-Signika theme for Highcharts JS
+               * @author Torstein Honsi
+               */
 
-    Highcharts.createElement('link', {
-      href: '//fonts.googleapis.com/css?family=Signika:400,700',
-      rel: 'stylesheet',
-      type: 'text/css'
-    }, null, document.getElementsByTagName('head')[0]);
+              Highcharts.createElement('link', {
+                  href: '//fonts.googleapis.com/css?family=Signika:400,700',
+                  rel: 'stylesheet',
+                  type: 'text/css'
+              }, null, document.getElementsByTagName('head')[0]);
 
-    // Add the background image to the container
-    Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
-      proceed.call(this);
-      this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
-    });
+              // Add the background image to the container
+              Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
+                  proceed.call(this);
+                  this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
+              });
 
-    Highcharts.theme = {
-      colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
-      chart: {
-        backgroundColor: null
-      },
-      title: {
-        style: {
-          color: 'black',
-          fontSize: '13px',
-          fontWeight: 'bold'
-        }
-      },
-      subtitle: {
-        style: {
-          color: 'black'
-        }
-      },
-      tooltip: {
-        borderWidth: 0
-      },
-      legend: {
-        itemStyle: {
-          fontWeight: 'bold',
-          fontSize: '13px'
-        }
-      },
-      xAxis: {
-        labels: {
-          style: {
-            color: '#6e6e70'
-          }
-        }
-      },
-      yAxis: {
-        labels: {
-          style: {
-            color: '#6e6e70'
-          }
-        }
-      },
-      plotOptions: {
-        series: {
-          shadow: true
-        },
-        candlestick: {
-          lineColor: '#404048'
-        },
-        map: {
-          shadow: false
-        }
-      },
+              Highcharts.theme = {
+                  colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+                  chart: {
+                      backgroundColor: null
+                  },
+                  title: {
+                      style: {
+                          color: 'black',
+                          fontSize: '13px',
+                          fontWeight: 'bold'
+                      }
+                  },
+                  subtitle: {
+                      style: {
+                          color: 'black'
+                      }
+                  },
+                  tooltip: {
+                      borderWidth: 0
+                  },
+                  legend: {
+                      itemStyle: {
+                          fontWeight: 'bold',
+                          fontSize: '13px'
+                      }
+                  },
+                  xAxis: {
+                      labels: {
+                          style: {
+                              color: '#6e6e70'
+                          }
+                      }
+                  },
+                  yAxis: {
+                      labels: {
+                          style: {
+                              color: '#6e6e70'
+                          }
+                      }
+                  },
+                  plotOptions: {
+                      series: {
+                          shadow: true
+                      },
+                      candlestick: {
+                          lineColor: '#404048'
+                      },
+                      map: {
+                          shadow: false
+                      }
+                  },
 
-      // Highstock specific
-      navigator: {
-        xAxis: {
-          gridLineColor: '#D0D0D8'
-        }
-      },
-      rangeSelector: {
-        buttonTheme: {
-          fill: 'white',
-          stroke: '#C0C0C8',
-          'stroke-width': 1,
-          states: {
-            select: {
-              fill: '#D0D0D8'
-            }
-          }
-        }
-      },
-      scrollbar: {
-        trackBorderColor: '#C0C0C8'
-      },
+                  // Highstock specific
+                  navigator: {
+                      xAxis: {
+                          gridLineColor: '#D0D0D8'
+                      }
+                  },
+                  rangeSelector: {
+                      buttonTheme: {
+                          fill: 'white',
+                          stroke: '#C0C0C8',
+                          'stroke-width': 1,
+                          states: {
+                              select: {
+                                  fill: '#D0D0D8'
+                              }
+                          }
+                      }
+                  },
+                  scrollbar: {
+                      trackBorderColor: '#C0C0C8'
+                  },
 
-      // General
-      background2: '#E0E0E8'
+                  // General
+                  background2: '#E0E0E8'
 
-    };
+              };
 
-    // Apply the theme
-    Highcharts.setOptions(Highcharts.theme);
-  });
+              // Apply the theme
+              Highcharts.setOptions(Highcharts.theme);
+          });
 
-  $(document).ready(function () {
-    $(".date-picker").datepicker({
-      language: '<%= set_user_language %>',
-      autoclose: true,
-      todayHighlight: true,
-      todayBtn: true
-    });
-  });
+          $(document).ready(function () {
+              $(".date-picker").datepicker({
+                  language: '<%= set_user_language %>',
+                  autoclose: true,
+                  todayHighlight: true,
+                  todayBtn: true
+              });
+          });
 
 
-</script>
+      </script>
+
+    </div>
+  </div>
+</div>

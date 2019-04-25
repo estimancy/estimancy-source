@@ -177,17 +177,10 @@
           <div class="page-header-buttons">
             <% if controller.action_name == "dashboard" %>
                 <a class="estimancy" href="<%= edit_project_path(@project) %>">
-                  <button type="button" class="btn btn-secondary">
+                  <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
                     Editer
                   </button>
                 </a>
-              <% unless @project.nil? %>
-                <a class="estimancy" href="#">
-                  <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
-                    Exporter
-                  </button>
-                </a>
-              <% end %>
             <% else %>
                 <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
                   <button type="button" class="btn btn-secondary">

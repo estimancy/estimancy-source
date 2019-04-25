@@ -1,320 +1,328 @@
-<%= form_tag skb.skb_model_update_size_path(@skb_model), method: "post" do %>
+<section class="estimation-modules-edition">
+  <%= form_tag skb.skb_model_update_size_path(@skb_model), method: "post" do %>
 
-  <%
+    <%
 
-     if @skb_model.date_min.nil? || @skb_model.date_max.nil?
-       if @skb_model.n_max.nil?
-         @skb_datas = @skb_model.skb_datas
+       if @skb_model.date_min.nil? || @skb_model.date_max.nil?
+         if @skb_model.n_max.nil?
+           @skb_datas = @skb_model.skb_datas
+         else
+           @skb_datas = @skb_model.skb_datas.take(@skb_model.n_max.to_i)
+         end
        else
-         @skb_datas = @skb_model.skb_datas.take(@skb_model.n_max.to_i)
-       end
-     else
-       if @skb_model.n_max.nil?
-         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s)
-       else
-         @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s).take(@skb_model.n_max.to_i)
-       end
-     end
-
-     @my_skb_datas = []
-     @my_skb_input = []
-     @project_list = []
-
-     @skb_datas.each_with_index do |i, index_i|
-       @skb_input.filters.values.each_with_index do |f|
-
-         # cond0 = @skb_input.filters.values[0].empty?
-         # cond1 = @skb_input.filters.values[1].empty?
-         #
-         # if (cond0 ? true : ((@skb_input.filters.values[0])) == (i.custom_attributes.values[0])) &&
-         #    (cond1 ? true : ((@skb_input.filters.values[1])) == (i.custom_attributes.values[1]))
-         # @project_list << i
-         # end
-         if i.custom_attributes.values.include?(f)
-           @project_list << i
+         if @skb_model.n_max.nil?
+           @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s)
+         else
+           @skb_datas = @skb_model.skb_datas.where("project_date >= ? AND project_date <= ?", @skb_model.date_min.to_s, @skb_model.date_max.to_s).take(@skb_model.n_max.to_i)
          end
        end
-     end
 
-     if @project_list.blank?
-       @project_list = @skb_model.skb_datas.uniq
-     end
+       @my_skb_datas = []
+       @my_skb_input = []
+       @project_list = []
 
-     @project_list = @project_list.uniq
+       @skb_datas.each_with_index do |i, index_i|
+         @skb_input.filters.values.each_with_index do |f|
 
-     @project_list.map do |i|
-       @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: simple_format(i.description.to_s) }
-     end
-     @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
-                        y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
-                        z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
-                        name: @project.to_s,
-                        description: simple_format(@project.description) }
-  %>
+           # cond0 = @skb_input.filters.values[0].empty?
+           # cond1 = @skb_input.filters.values[1].empty?
+           #
+           # if (cond0 ? true : ((@skb_input.filters.values[0])) == (i.custom_attributes.values[0])) &&
+           #    (cond1 ? true : ((@skb_input.filters.values[1])) == (i.custom_attributes.values[1]))
+           # @project_list << i
+           # end
+           if i.custom_attributes.values.include?(f)
+             @project_list << i
+           end
+         end
+       end
 
-  <h3 id="skb">
-    <strong>
+       if @project_list.blank?
+         @project_list = @skb_model.skb_datas.uniq
+       end
+
+       @project_list = @project_list.uniq
+
+       @project_list.map do |i|
+         @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: simple_format(i.description.to_s) }
+       end
+       @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
+                          y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
+                          z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
+                          name: @project.to_s,
+                          description: simple_format(@project.description) }
+    %>
+
+    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <%= @skb_model %>
-    </strong>
-    <hr>
-  </h3>
-
-  <div class="row-fluid">
-    <div class="span4">
-      <h5>
-        <strong>
-          <%= I18n.t :"Nombre de projets sélectionnée" %> :
-          Nombre de projets sélectionnée :
-          <span class="project_numbers">
-            <%= @project_list.size %>
-          </span>
-        </strong>
-      </h5>
+      <div class="edition-bloc-tools">
+        <% if can? :execute_estimation_plan, @project %>
+          <button type="submit" class="btn btn-secondary">
+            <%= I18n.t(:update) %>
+          </button>
+        <% end %>
+      </div>
     </div>
 
-    <div class="span4 pull-right">
-      <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-default btn-primary pull-right">
-          <%= I18n.t(:update) %>
-        </button>
-      <% end %>
-    </div>
+    <div class="card card-widget">
+      <div class="card-body">
+        <div class="edition-bloc-title">
+          Estimation par sélection graphique
+        </div>
+        <div class="edition-bloc-content pb-4">
 
-  </div>
-
-  <div class="row-fluid">
-    <% unless @skb_model.date_min.nil? %>
-      <div class="span4">
-        <h5>
-          <strong>
-            <%= I18n.t :from %>
-            <span class="project_numbers">
-              <%= @skb_model.date_min.strftime("%d %b %Y") %>
-            </span>
-          </strong>
-        </h5>
-      </div>
-    <% end %>
-
-    <% unless @skb_model.date_max.nil? %>
-      <div class="span4">
-        <h5>
-          <strong>
-            <%= I18n.t :to %>
-            <span class="project_numbers">
-              <%= @skb_model.date_max.strftime("%d %b %Y") %>
-            </span>
-          </strong>
-        </h5>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="row-fluid">
-
-    <div class="span3">
-      <% unless @skb_model.skb_datas.empty? %>
-          <p>
-            <% arr = ["a", "b", "c", "d"] %>
-            <% @skb_model.skb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
-            <div class="input string required project_title">
-              <label class="string required control-label">
+          <div class="row">
+            <div class="col-10">
+              <h5>
                 <strong>
-                  <%= @skb_model.send("filter_#{arr[i]}") %>
+                  <%= I18n.t :"Nombre de projets sélectionnée" %> :
+                  <span class="project_numbers">
+                    <%= @project_list.size %>
+                  </span>
                 </strong>
-              </label>
-              <%= select_tag "filters[#{key}]",
-                             options_for_select(@skb_model.skb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
-                                                selected: @skb_input.filters[key]),
-                             class: "string required input-xlarge filters",
-                             prompt: I18n.t(:Indifferent),
-                             disabled: !@skb_model.enabled_input %>
-
+              </h5>
             </div>
-          <% end %>
+          </div>
+          <hr>
+
+          <div class="row">
+            <% unless @skb_model.date_min.nil? %>
+              <div class="col-10">
+                <h5>
+                  <strong>
+                    <%= I18n.t :from %>
+                    <span class="project_numbers">
+                      <%= @skb_model.date_min.strftime("%d %b %Y") %>
+                    </span>
+                  </strong>
+                </h5>
+              </div>
+            <% end %>
+
+            <% unless @skb_model.date_max.nil? %>
+              <div class="col-2">
+                <h5>
+                  <strong>
+                    <%= I18n.t :to %>
+                    <span class="project_numbers">
+                      <%= @skb_model.date_max.strftime("%d %b %Y") %>
+                    </span>
+                  </strong>
+                </h5>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="row">
+
+            <div class="col">
+              <% unless @skb_model.skb_datas.empty? %>
+                <p>
+                    <% arr = ["a", "b", "c", "d"] %>
+                    <% @skb_model.skb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
+                    <div class="input string required project_title">
+                      <label class="string required control-label">
+                        <strong>
+                          <%= @skb_model.send("filter_#{arr[i]}") %>
+                        </strong>
+                      </label>
+                      <%= select_tag "filters[#{key}]",
+                                     options_for_select(@skb_model.skb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
+                                                        selected: @skb_input.filters[key]),
+                                     class: "form-control filters",
+                                     prompt: I18n.t(:Indifferent),
+                                     disabled: !@skb_model.enabled_input %>
+
+                    </div>
+                  <% end %>
+                </p>
+              <% end %>
+            </div>
+
+            <div class="col">
+              <h5>
+                <%= @skb_model.label_x %>
+              </h5>
+              <p>
+                <span class="skb_input_data">
+                  <%= @skb_input.data.nil? ? '-' : @skb_input.data %>
+                </span>
+              </p>
+            </div>
+
+            <% unless @skb_model.label_y.blank? %>
+              <div class="col">
+                <h5>
+                  <%= @skb_model.label_y %>
+                </h5>
+                <p>
+                  <span class="skb_input_processing">
+                    <%= @skb_input.processing.nil? ? '-' : @skb_input.processing %>
+                  </span>
+                </p>
+              </div>
+            <% end %>
+
+            <div class="col">
+              <h5>
+                <%= I18n.t :total_size %>
+              </h5>
+              <p>
+                <span class="skb_input_total">
+                  <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <p>
+            <%= I18n.t :move_your_cursor %>. You can also <a id="button2" href="#!">reset zoom</a>
           </p>
-      <% end %>
-    </div>
 
-    <div class="span2">
-      <h5>
-        <%= @skb_model.label_x %>
-      </h5>
-      <p>
-        <span class="skb_input_data">
-          <%= @skb_input.data.nil? ? '-' : @skb_input.data %>
-        </span>
-      </p>
-    </div>
+          <div class="row">
+            <div class="col">
+              <div id="yolo"></div>
+              <hr>
+              <% if can? :execute_estimation_plan, @project %>
+                <button type="submit" class="btn btn-default btn-primary pull-right">
+                  <%= I18n.t(:calculate_button) %>
+                </button>
+              <% end %>
+              <%= link_to I18n.t(:reset), skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
 
-    <% unless @skb_model.label_y.blank? %>
-      <div class="span2">
-        <h5>
-          <%= @skb_model.label_y %>
-        </h5>
-        <p>
-          <span class="skb_input_processing">
-            <%= @skb_input.processing.nil? ? '-' : @skb_input.processing %>
-          </span>
-        </p>
-      </div>
-    <% end %>
-
-    <div class="span2">
-      <h5>
-        <%= I18n.t :total_size %>
-      </h5>
-      <p>
-        <span class="skb_input_total">
-          <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
-        </span>
-      </p>
-    </div>
-  </div>
-
-  <p>
-    <%= I18n.t :move_your_cursor %>. You can also <a id="button2" href="#!">reset zoom</a>
-  </p>
-
-  <div class="row-fluid">
-    <div class="span12">
-      <div id="yolo"></div>
-      <hr>
-      <% if can? :execute_estimation_plan, @project %>
-        <button type="submit" class="btn btn-default btn-primary pull-right">
-          <%= I18n.t(:calculate_button) %>
-        </button>
-      <% end %>
-      <%= link_to I18n.t(:reset), skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
-
-      <script>
-
-        $('#button2').click(function() {
-          $('.highcharts-button').click();
-        });
-
-        $('#yolo').highcharts({
-          chart: {
-            type: 'bubble',
-            plotBorderWidth: 1,
-            zoomType: 'xy',
-            events: {
-              load: function() {
-                $('.highcharts-scrollbar').hide();
-              },
-              afterSetExtremes: function() {
-                $('.highcharts-button').hide();
-              },
-              click: function (e) {
-                // find the clicked values and the series
-                var x = Math.round(e.xAxis[0].value);
-                var y = Math.round(e.yAxis[0].value);
-                var series = this.series[0];
-                // Add it
-                series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= simple_format(@project.description.to_s) %>" });
-                series.data[0].remove(false, false);
-                $.ajax({
-                  url: "<%= skb.skb_model_save_size_path(@skb_model.id) %>",
-                  data: {
-                    data: x,
-                    processing: y,
-                  }
+              <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+              <script src="https://code.highcharts.com/highcharts.src.js"></script>
+              <script>
+                $('#button2').click(function() {
+                  $('.highcharts-button').click();
                 });
-              }
-            }
-          },
-          legend: {
-            enabled: true
-          },
-          title: {
-            text: '<%= @skb_model.name %>'
-          },
-          xAxis: {
-            gridLineWidth: 1,
-            title: {
-              text: '<%= @skb_model.label_x || 'Data' %>'
-            },
-            labels: {
-              format: '{value}'
-            }
-          },
-          yAxis: {
-            startOnTick: false,
-            endOnTick: false,
-            title: {
-              text: '<%= @skb_model.label_y || 'Transaction' %>'
-            },
-            labels: {
-              format: '{value}'
-            },
-            maxPadding: 0.2
-          },
-          tooltip: {
-            useHTML: true,
-            headerFormat: '<table>',
-            pointFormat:
-            '<h5><b>{point.name}</b></h5>' +
-            '<p>{point.description}<br>' +
-            '<%= @skb_model.label_x || 'Data' %>: {point.x}<br>' +
-            '<%= @skb_model.label_y || 'Transaction' %>: {point.y}</p>' +
-            '<p><%= I18n.t :total_size %>: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
-            footerFormat: '</table>',
-            followPointer: false
-          },
-          plotOptions: {
-            series: {
-              dataLabels: {
-                enabled: true,
-                format: '{point.name}'
-              }
-            }
-          },
-          series: [{
-            name: 'Size : <%= @project.to_s %>',
-            color: 'rgba(255, 50, 50, 0.8)',
-            data: <%= raw(@my_skb_input.to_json) %>,
-            events: {
-              selection: function (event) {
-                alert("?");
-                for (var s in this.series) {
-                  this.series[s].update({
-                    dataLabels: {
-                      style: {
-                        maxPadding: 4
+
+                $('#yolo').highcharts({
+                  chart: {
+                    type: 'bubble',
+                    plotBorderWidth: 1,
+                    zoomType: 'xy',
+                    events: {
+                      load: function() {
+                        $('.highcharts-scrollbar').hide();
+                      },
+                      afterSetExtremes: function() {
+                        $('.highcharts-button').hide();
+                      },
+                      click: function (e) {
+                        // find the clicked values and the series
+                        var x = Math.round(e.xAxis[0].value);
+                        var y = Math.round(e.yAxis[0].value);
+                        var series = this.series[0];
+                        // Add it
+                        series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= simple_format(@project.description.to_s) %>" });
+                        series.data[0].remove(false, false);
+                        $.ajax({
+                          url: "<%= skb.skb_model_save_size_path(@skb_model.id) %>",
+                          data: {
+                            data: x,
+                            processing: y,
+                          }
+                        });
                       }
-                    },
-                    bubble: {
-                      minSize: 100,
-                      maxSize: 100
                     }
-                  });
-                }
-              }
-            }
-          },{
-            name: "Historical database : '<%= @skb_model.name %>'",
-            color: 'rgba(50, 50, 255, 0.8)',
-            data: <%= raw(@my_skb_datas.to_json) %>,
-            events: {
-              selection: function (event) {
-                for (var s in this.series) {
-                  this.series[s].update({
-                    dataLabels: {
-                      style: {
-                        maxPadding: 4
+                  },
+                  legend: {
+                    enabled: true
+                  },
+                  title: {
+                    text: '<%= @skb_model.name %>'
+                  },
+                  xAxis: {
+                    gridLineWidth: 1,
+                    title: {
+                      text: '<%= @skb_model.label_x || 'Data' %>'
+                    },
+                    labels: {
+                      format: '{value}'
+                    }
+                  },
+                  yAxis: {
+                    startOnTick: false,
+                    endOnTick: false,
+                    title: {
+                      text: '<%= @skb_model.label_y || 'Transaction' %>'
+                    },
+                    labels: {
+                      format: '{value}'
+                    },
+                    maxPadding: 0.2
+                  },
+                  tooltip: {
+                    useHTML: true,
+                    headerFormat: '<table>',
+                    pointFormat:
+                    '<h5><b>{point.name}</b></h5>' +
+                    '<p>{point.description}<br>' +
+                    '<%= @skb_model.label_x || 'Data' %>: {point.x}<br>' +
+                    '<%= @skb_model.label_y || 'Transaction' %>: {point.y}</p>' +
+                    '<p><%= I18n.t :total_size %>: <b>{point.z} <%= @skb_model.size_unit %></b> </p>',
+                    footerFormat: '</table>',
+                    followPointer: false
+                  },
+                  plotOptions: {
+                    series: {
+                      dataLabels: {
+                        enabled: true,
+                        format: '{point.name}'
                       }
-                    },
-                    bubble: {
-                      minSize: 100,
-                      maxSize: 100
                     }
-                  });
-                }
-              }
-            }
-          }]
-        })
-      </script>
+                  },
+                  series: [{
+                    name: 'Size : <%= @project.to_s %>',
+                    color: 'rgba(255, 50, 50, 0.8)',
+                    data: <%= raw(@my_skb_input.to_json) %>,
+                    events: {
+                      selection: function (event) {
+                        alert("?");
+                        for (var s in this.series) {
+                          this.series[s].update({
+                            dataLabels: {
+                              style: {
+                                maxPadding: 4
+                              }
+                            },
+                            bubble: {
+                              minSize: 100,
+                              maxSize: 100
+                            }
+                          });
+                        }
+                      }
+                    }
+                  },{
+                    name: "Historical database : '<%= @skb_model.name %>'",
+                    color: 'rgba(50, 50, 255, 0.8)',
+                    data: <%= raw(@my_skb_datas.to_json) %>,
+                    events: {
+                      selection: function (event) {
+                        for (var s in this.series) {
+                          this.series[s].update({
+                            dataLabels: {
+                              style: {
+                                maxPadding: 4
+                              }
+                            },
+                            bubble: {
+                              minSize: 100,
+                              maxSize: 100
+                            }
+                          });
+                        }
+                      }
+                    }
+                  }]
+                })
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</section>

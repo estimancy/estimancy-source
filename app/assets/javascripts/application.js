@@ -9,9 +9,9 @@
 // require jquery_ujs
 // require jquery-ui
 // require jit
-//= require highcharts
-//= require highcharts/highcharts-more
-//= require_self
+// require highcharts
+// require highcharts/highcharts-more
+// require_self
 //= require_tree .
 //= require cookies_eu
 //= require Chart.bundle
