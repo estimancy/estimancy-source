@@ -51,8 +51,8 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_model = @guw_output.guw_model
     @guw_output.save
 
-    attr = PeAttribute.where(name: @guw_output.name,
-                             alias: @guw_output.name.underscore.gsub(" ", "_"),
+    attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_"),
+                             name: @guw_output.name,
                              description: @guw_output.name,
                              guw_model_id: @guw_output.guw_model_id).first_or_create!
 
@@ -65,8 +65,9 @@ class Guw::GuwOutputsController < ApplicationController
 
     @guw_model.module_projects.each do |module_project|
       ['input', 'output'].each do |in_out|
-        mpa = EstimationValue.create(pe_attribute_id: attr.id,
+        mpa = EstimationValue.create(organization_id: @guw_model.organization_id,
                                      module_project_id: module_project.id,
+                                     pe_attribute_id: attr.id,
                                      in_out: in_out,
                                      string_data_low: { :pe_attribute_name => @guw_output.name },
                                      string_data_most_likely: { :pe_attribute_name => @guw_output.name },
@@ -91,8 +92,8 @@ class Guw::GuwOutputsController < ApplicationController
 
     if attr.nil?
 
-      at = PeAttribute.create(name: @guw_output.name,
-                              alias: @guw_output.name.underscore.gsub(" ", "_"),
+      at = PeAttribute.create(alias: @guw_output.name.underscore.gsub(" ", "_"),
+                              name: @guw_output.name,
                               description: @guw_output.name,
                               guw_model_id: @guw_model.id)
 
@@ -121,8 +122,9 @@ class Guw::GuwOutputsController < ApplicationController
       if attr.estimation_values.empty?
         @guw_model.module_projects.each do |module_project|
           ['input', 'output'].each do |in_out|
-            mpa = EstimationValue.create(pe_attribute_id: attr.id,
+            mpa = EstimationValue.create(organization_id: @guw_model.organization_id,
                                          module_project_id: module_project.id,
+                                         pe_attribute_id: attr.id,
                                          in_out: in_out,
                                          string_data_low: { :pe_attribute_name => @guw_output.name },
                                          string_data_most_likely: { :pe_attribute_name => @guw_output.name },

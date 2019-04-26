@@ -273,10 +273,11 @@ class Kb::KbModelsController < ApplicationController
   def save_efforts
     authorize! :execute_estimation_plan, @project
 
-    @kb_model = Kb::KbModel.find(params[:kb_model_id])
-    @kb_input = @kb_model.kb_inputs.where(module_project_id: current_module_project.id).first_or_create
-
     module_project = current_module_project
+    organization_id = module_project.organization_id
+
+    @kb_model = Kb::KbModel.find(params[:kb_model_id])
+    @kb_input = @kb_model.kb_inputs.where(module_project_id: module_project.id).first_or_create
 
     if @kb_model.date_min.nil? || @kb_model.date_max.nil?
       if @kb_model.n_max.nil?
@@ -374,7 +375,8 @@ class Kb::KbModelsController < ApplicationController
     module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(module_project_id: module_project.id,
+      ev = EstimationValue.where(:organization_id => organization_id,
+                                 module_project_id: module_project.id,
                                  pe_attribute_id: am.pe_attribute.id,
                                  in_out: "output").first
 
@@ -393,7 +395,7 @@ class Kb::KbModelsController < ApplicationController
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
         elsif am.pe_attribute.alias == "retained_size"
-          ev = EstimationValue.where(:module_project_id => module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+          ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => am.pe_attribute.id).first
           ev.send("string_data_#{level}")[current_component.id] = params[:size].to_f
           ev.save
           tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
@@ -417,7 +419,7 @@ class Kb::KbModelsController < ApplicationController
     effort_attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
     unless effort_attribute.nil?
       input_effort = params[:previous_effort].to_f
-      input_effort_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "input").first
+      input_effort_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "input").first
       unless input_effort_ev.nil?
         ["low", "most_likely", "high", "probable"].each do |level|
           input_effort_ev.send("string_data_#{level}")[current_component.id] = input_effort
@@ -425,7 +427,7 @@ class Kb::KbModelsController < ApplicationController
         input_effort_ev.save
       end
 
-      output_effort_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "output").first
+      output_effort_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "output").first
       if output_effort_ev.nil?
         output_effort = 0
       else
@@ -442,7 +444,7 @@ class Kb::KbModelsController < ApplicationController
         ecart_percent = nil
       end
 
-      ecart_ev = EstimationValue.where(module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+      ecart_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
       unless ecart_ev.nil?
         ["low", "most_likely", "high", "probable"].each do |level|
           ecart_ev.send("string_data_#{level}")[current_component.id] = ecart_percent
@@ -467,12 +469,14 @@ class Kb::KbModelsController < ApplicationController
       size_current_ev = nil
 
     else
-      size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+      size_previous_ev = EstimationValue.where(:organization_id => organization_id,
                                                :module_project_id => module_project.previous.first.id,
+                                               :pe_attribute_id => size_attr.id,
                                                :in_out => "output").first
 
-      size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+      size_current_ev = EstimationValue.where(:organization_id => organization_id,
                                               :module_project_id => module_project.id,
+                                              :pe_attribute_id => size_attr.id,
                                               :in_out => "input").first
     end
 
@@ -482,8 +486,9 @@ class Kb::KbModelsController < ApplicationController
     if effort_attr.nil?
       effort_current_ev = nil
     else
-      effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id,
+      effort_current_ev = EstimationValue.where(:organization_id => organization_id,
                                                 :module_project_id => module_project.id,
+                                                :pe_attribute_id => effort_attr.id,
                                                 :in_out => "output").first
     end
 
@@ -497,12 +502,15 @@ class Kb::KbModelsController < ApplicationController
 
   def dot_export
     my_kb_model = Kb::KbModel.find(params[:kb_model_id]) #id
-    kb_input = Kb::KbInput.where(kb_model_id: my_kb_model.id, module_project_id: current_module_project.id).first
+    current_mp = current_module_project
+    organization_id = current_mp.organization_id
+
+    kb_input = Kb::KbInput.where(kb_model_id: my_kb_model.id, module_project_id: current_mp.id).first
     effort_attr = PeAttribute.find_by_alias("effort")
-    effort_current_ev = EstimationValue.where(:pe_attribute_id => effort_attr.id, :module_project_id => current_module_project.id, :in_out => "output").first
+    effort_current_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => current_mp.id, :pe_attribute_id => effort_attr.id, :in_out => "output").first
     size_attr = PeAttribute.find_by_alias("retained_size")
-    size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id, :module_project_id => current_module_project.previous.first.id, :in_out => "output").first
-    size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id, :module_project_id => current_module_project.id, :in_out => "input").first
+    size_previous_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => current_mp.previous.first.id, :pe_attribute_id => size_attr.id, :in_out => "output").first
+    size_current_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => current_mp.id, :pe_attribute_id => size_attr.id, :in_out => "input").first
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
     my_helper = 0

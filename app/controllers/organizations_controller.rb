@@ -2397,9 +2397,8 @@ class OrganizationsController < ApplicationController
       old_prj.save #Original project copy number will be incremented to 1
 
       old_prj.applications.each do |application|
-        app = Application.where(name: application.name, organization_id: new_organization.id).first
-        ap = ApplicationsProjects.create(application_id: app.id,
-                                         project_id: new_prj.id)
+        app = Application.where(organization_id: new_organization.id, name: application.name).first
+        ap = ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         # new_prj.application_id = app.id
         # new_prj.save(validate: false)
         ap.save
@@ -2432,7 +2431,7 @@ class OrganizationsController < ApplicationController
         end
       end
       #Other project securities for groups
-      new_prj.project_securities.where('group_id IS NOT NULL').each do |project_security|
+      new_prj.project_securities.where.not(group_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         new_group = new_organization.groups.where(copy_id: project_security.group_id).first
         if new_security_level.nil? || new_group.nil?
@@ -2443,7 +2442,7 @@ class OrganizationsController < ApplicationController
       end
 
       #Other project securities for users
-      new_prj.project_securities.where('user_id IS NOT NULL').each do |project_security|
+      new_prj.project_securities.where.not(user_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         if new_security_level.nil?
           project_security.destroy
@@ -2454,11 +2453,11 @@ class OrganizationsController < ApplicationController
 
       # For ModuleProject associations
       old_prj.module_projects.group(:id).each do |old_mp|
-        new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+        new_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: old_mp.id).first #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
         # ModuleProject Associations for the new project
         old_mp.associated_module_projects.each do |associated_mp|
-          new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+          new_associated_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
           new_mp.associated_module_projects << new_associated_mp
         end
 
@@ -2616,7 +2615,7 @@ class OrganizationsController < ApplicationController
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
               unless new_view_widget_mp.nil?
-                new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
+                new_estimation_value = new_view_widget_mp.estimation_values.where(organization_id: new_organization_id, pe_attribute_id: widget_pe_attribute_id, in_out: in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
                 widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
                                                  name: view_widget.name, show_name: view_widget.show_name,
@@ -2649,7 +2648,7 @@ class OrganizationsController < ApplicationController
                         new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
                         new_mpr_id = new_mpr.id
                         begin
-                          new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                          new_est_val_id = new_mpr.estimation_values.where(organization_id: new_organization_id, copy_id: est_val_id).first.id
                         rescue
                           new_est_val_id = nil
                         end
@@ -2697,7 +2696,8 @@ class OrganizationsController < ApplicationController
 
           # Update the group unit of works and attributes
           guw_group.guw_unit_of_works.each do |guw_uow|
-            new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+            #new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+            new_uow_mp = ModuleProject.where(organization_id: new_organization_id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first
             new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
             #PBS
@@ -2794,7 +2794,7 @@ class OrganizationsController < ApplicationController
           new_mp_pemodule_attributes.each do |attr|
             old_prj.pbs_project_elements.each do |old_component|
               new_prj_components.each do |new_component|
-                ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+                ev = new_mp.estimation_values.where(organization_id: new_organization_id, pe_attribute_id: attr.id, in_out: io).first
                 unless ev.nil?
 
                   ["low", "most_likely", "high", "probable"].each do |level|
@@ -2833,7 +2833,7 @@ class OrganizationsController < ApplicationController
                                 #puts "Ratio nul"
                               else
                                 wbs_activity = new_mp_ratio.wbs_activity
-                                new_element = new_mp.wbs_activity_elements.where(copy_id: element_id).first
+                                new_element = new_mp.wbs_activity_elements.where(organization_id: new_organization_id, wbs_activity_id: wbs_activity.id, copy_id: element_id).first
 
                                 if new_element
                                   temp_values[new_component.id][new_element.id] = values_hash

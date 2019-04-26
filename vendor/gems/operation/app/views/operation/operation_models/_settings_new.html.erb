@@ -4,22 +4,25 @@
   <div class="row-fluid">
     <div class="span6">
 
-      <% module_project_attributes = current_module_project.pemodule.pe_attributes %>
+      <% current_mp =  current_module_project %>
+      <% organization_id =  module_project.organization_id %>
+
+      <% module_project_attributes = current_mp.pemodule.pe_attributes %>
       <% attr = module_project_attributes.where(alias: "effort").first  %>
       <% if attr.nil? %>
         <% attr =  module_project_attributes.where(operation_model_id: @operation_model.id).first %>
       <% end %>
 
-      <%# out_attr = current_module_project.pemodule.pe_attributes.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).first %>
+      <%# out_attr = current_mp.pemodule.pe_attributes.where(alias: Operation::OperationModel::OUTPUT_ATTRIBUTES_ALIAS).first %>
       <% out_attr = module_project_attributes.where(operation_model_id: @operation_model.id).last %>
 
       <% input_attribute_ids = module_project_attributes.where(operation_model_id: @operation_model.id).map(&:id).flatten %>
       <% output_attribute_ids = input_attribute_ids %>
 
-      <% module_project_all_evs = current_module_project.estimation_values %>
+      <% module_project_all_evs = current_mp.estimation_values %>
 
       <% if module_project_all_evs.size != input_attribute_ids.size
-           current_inputs_evs = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
+           current_inputs_evs = current_mp.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids)
            module_project_all_evs = current_inputs_evs
       end %>
 
@@ -40,13 +43,15 @@
           <% precision = 2 %>
 
       <% else %>
-          <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(attr) %>
-          <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+          <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(attr) %>
+          <% previous_ev = EstimationValue.where(:organization_id => organization_id,
                                                  :module_project_id => possible_module_projects.last,
+                                                 :pe_attribute_id => attr.id,
                                                  :in_out => "output").first %>
 
-          <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
-                                                 :module_project_id => current_module_project.id,
+          <% current_ev = EstimationValue.where(:organization_id => organization_id,
+                                                 :module_project_id => current_mp.id,
+                                                 :pe_attribute_id => attr.id,
                                                  :in_out => "input").first %>
 
           <% precision = attr.precision.nil? ? user_number_precision : attr.precision %>
@@ -81,9 +86,10 @@
                       <% if !ev.estimation_value_id.nil? %>
                         <% previous_mp_ev = EstimationValue.find(ev.estimation_value_id) %>
                       <% else %>
-                        <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(ev.pe_attribute) %>
-                        <% previous_mp_ev = EstimationValue.where(:pe_attribute_id => ev.pe_attribute.id, :in_out => "output",
-                                                                  :module_project_id => possible_module_projects.last).first %>
+                        <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(ev.pe_attribute) %>
+                        <% previous_mp_ev = EstimationValue.where(:organization_id => organization_id,
+                                                                  :module_project_id => possible_module_projects.last,
+                                                                  :pe_attribute_id => ev.pe_attribute.id, :in_out => "output").first %>
                       <% end %>
 
                       <% previous_mp = previous_mp_ev.module_project %>
@@ -143,7 +149,7 @@
 
         <tr>
           <!--  TEST NOUVEAU PARAMS ENTREES  -->
-          <% if current_module_project.operation_model.three_points_estimation? %>
+          <% if current_mp.operation_model.three_points_estimation? %>
               <td>
                 <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>
@@ -206,7 +212,7 @@
             <% end %>
           </td>
 
-          <% if current_module_project.operation_model.three_points_estimation? %>
+          <% if current_mp.operation_model.three_points_estimation? %>
               <td>
                 <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>

@@ -270,17 +270,17 @@ class ModuleProject < ActiveRecord::Base
   # Get the module_project ratio-elements for WBS-ACTIVITY module
   def get_module_project_ratio_elements(wbs_activity_ratio, pbs_project_element, sort_result=true)
     # Module_project Ratio elements
-
+    current_mp = self
     wbs_activity = wbs_activity_ratio.wbs_activity
     organization = wbs_activity.nil? ? nil : wbs_activity.organization
 
     ####if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
     #create module_project ratio elements
-    wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
+    wbs_activity_ratio.wbs_activity_ratio_elements.where(organization_id: organization.id, wbs_activity_id: wbs_activity.id).each do |ratio_element|
       #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
       mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
                                                      pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                     module_project_id: self.id,
+                                                     module_project_id: current_mp.id,
                                                      wbs_activity_id: wbs_activity.id,
                                                      wbs_activity_ratio_id: wbs_activity_ratio.id,
                                                      wbs_activity_element_id: ratio_element.wbs_activity_element_id,
@@ -290,14 +290,14 @@ class ModuleProject < ActiveRecord::Base
       if mp_ratio_elt.nil?
         mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
                                                        pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                       module_project_id: self.id,
+                                                       module_project_id: current_mp.id,
                                                        wbs_activity_ratio_id: wbs_activity_ratio.id,
                                                        wbs_activity_ratio_element_id: ratio_element.id).first
 
         if !mp_ratio_elt.nil?
           mp_ratio_elt.update_attributes(organization_id: organization.id,
                                          pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                         module_project_id: self.id,
+                                         module_project_id: current_mp.id,
                                          wbs_activity_id: wbs_activity.id,
                                          wbs_activity_ratio_id: wbs_activity_ratio.id,
                                          wbs_activity_ratio_element_id: ratio_element.id,
@@ -310,7 +310,7 @@ class ModuleProject < ActiveRecord::Base
         else
           mp_ratio_elt = ModuleProjectRatioElement.create(organization_id: organization.id,
                                                           pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                          module_project_id: self.id,
+                                                          module_project_id: current_mp.id,
                                                           wbs_activity_ratio_id: wbs_activity_ratio.id,
                                                           wbs_activity_id: wbs_activity.id,
                                                           wbs_activity_ratio_element_id: ratio_element.id,
@@ -322,9 +322,13 @@ class ModuleProject < ActiveRecord::Base
         end
       end
 
-      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id,
-                                                                                 pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                                                 wbs_activity_ratio_id: wbs_activity_ratio.id)
+      #current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+      current_ratio_mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                                        pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                                                        module_project_id: current_mp.id,
+                                                                        wbs_activity_id: wbs_activity.id,
+                                                                        wbs_activity_ratio_id: wbs_activity_ratio.id)
+
       activity_elt = mp_ratio_elt.wbs_activity_element
       activity_elt_ancestor_ids = activity_elt.ancestor_ids
       new_ancestor_ids_list = []
@@ -346,7 +350,12 @@ class ModuleProject < ActiveRecord::Base
     # il faut supprimer les mp_ratio_elements dont les wsb_activity_element n'existent plus.
     wbs_activity_element_ids = wbs_activity_ratio.wbs_activity.wbs_activity_element_ids
 
-    mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
+    #mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
+    mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                        pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id,
+                                                        module_project_id: current_mp.id,
+                                                        wbs_activity_id: wbs_activity.id,
+                                                        wbs_activity_ratio_id: wbs_activity_ratio.id)
     ####end
 
     if sort_result
@@ -361,10 +370,13 @@ class ModuleProject < ActiveRecord::Base
 
   # get the module_project_ratio_variable
   def get_module_project_ratio_variables(wbs_activity_ratio, pbs_project_element)
-    module_project_ratio_variables = self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
-    wbs_activity_ratio_variables = wbs_activity_ratio.wbs_activity_ratio_variables
+    current_mp = self
     wbs_activity = wbs_activity_ratio.wbs_activity
     organization = wbs_activity.organization
+    wbs_activity_ratio_variables = wbs_activity_ratio.wbs_activity_ratio_variables.where(organization_id: organization.id)
+
+    #module_project_ratio_variables = current_mp.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+    module_project_ratio_variables = ModuleProjectRatioVariable.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.id, module_project_id: current_mp.id, wbs_activity_id: wbs_activity.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
 
     if module_project_ratio_variables.all.empty?
       if wbs_activity_ratio_variables.all.empty?
@@ -374,7 +386,7 @@ class ModuleProject < ActiveRecord::Base
       wbs_activity_ratio_variables.each do |ratio_variable|
         ModuleProjectRatioVariable.create(organization_id: organization.id,
                                           pbs_project_element_id: pbs_project_element.id,
-                                          module_project_id: self.id,
+                                          module_project_id: current_mp.id,
                                           wbs_activity_id: wbs_activity.id,
                                           wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
                                           name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
@@ -410,7 +422,7 @@ class ModuleProject < ActiveRecord::Base
                                               description: ratio_variable.description, is_modifiable: ratio_variable.is_modifiable)
         else
           ModuleProjectRatioVariable.create(organization_id: organization.id, wbs_activity_id: wbs_activity.id,
-                                            pbs_project_element_id: pbs_project_element.id, module_project_id: self.id,
+                                            pbs_project_element_id: pbs_project_element.id, module_project_id: current_mp.id,
                                             wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
                                             name: ratio_variable.name, description: ratio_variable.description, percentage_of_input: ratio_variable.percentage_of_input,
                                             is_modifiable: ratio_variable.is_modifiable, is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
@@ -419,16 +431,24 @@ class ModuleProject < ActiveRecord::Base
     end
 
     #module_project_ratio_variables = self.module_project_ratio_variables.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
-    self.module_project_ratio_variables.where(pbs_project_element_id: pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+    current_mp.module_project_ratio_variables.where(organization_id: organization.id,
+                                                    pbs_project_element_id: pbs_project_element.id,
+                                                    module_project_id: current_mp.id,
+                                                    wbs_activity_id: wbs_activity.id,
+                                                    wbs_activity_ratio_id: wbs_activity_ratio.id)
   end
 
 
 
   # Get the Efforts Attributes (E1, E2, E3, E4) estimations values
   def get_wbs_efforts_attributes_estimation_values(wbs_activity_ratio_id, pbs_id, input_low, input_ml, input_high)
+    current_mp = self
     wbs_activity_ratio = WbsActivityRatio.find(wbs_activity_ratio_id)
+    wbs_activity = wbs_activity_ratio.wbs_activity
+    organization = wbs_activity.organization
+
     wbs_effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
-    current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
+    current_inputs_evs = current_mp.estimation_values.where(organization_id: organization.id, pe_attribute_id: wbs_effort_ids, in_out: "input")
 
     if current_inputs_evs.empty?
       # WbsActivity::INPUT_EFFORTS_ALIAS.each_with_index do |effort_alias, index|
@@ -438,13 +458,14 @@ class ModuleProject < ActiveRecord::Base
 
 
       #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
-      self.pemodule.attribute_modules.each do |am|
+      current_mp.pemodule.attribute_modules.each do |am|
 
         if am.in_out == 'both'
           ['input', 'output'].each do |in_out|
-            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
-                                         :module_project_id => self.id,
+            ev = EstimationValue.where(organization_id: organization.id, :module_project_id => current_mp.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
+                     .first_or_create(organization_id: organization.id,
+                                      :pe_attribute_id => am.pe_attribute.id,
+                                         :module_project_id => current_mp.id,
                                          :in_out => in_out,
                                          :is_mandatory => am.is_mandatory,
                                          :description => am.description,
@@ -456,9 +477,10 @@ class ModuleProject < ActiveRecord::Base
                                          :project_value => am.project_value)
           end
         else
-          ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
-                    .first_or_create(:pe_attribute_id => am.pe_attribute.id,
-                                     :module_project_id => self.id,
+          ev = EstimationValue.where(organization_id: organization.id, :module_project_id => current_mp.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
+                    .first_or_create(organization_id: organization.id,
+                                     :pe_attribute_id => am.pe_attribute.id,
+                                     :module_project_id => current_mp.id,
                                      :in_out => am.in_out,
                                      :is_mandatory => am.is_mandatory,
                                      :display_order => am.display_order,
@@ -472,7 +494,7 @@ class ModuleProject < ActiveRecord::Base
 
 
         if am.pe_attribute.alias == "E1"
-          ev = self.estimation_values.where(:pe_attribute_id => am.pe_attribute.id, :in_out => "input").first
+          ev = current_mp.estimation_values.where(organization_id: organization.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "input").first
           ev[:string_data_low][pbs_id] = input_low
           ev[:string_data_most_likely][pbs_id] = input_ml
           ev[:string_data_high][pbs_id] = input_high
@@ -480,7 +502,9 @@ class ModuleProject < ActiveRecord::Base
 
           # update Wbs-activity_ratio_variable
           if wbs_activity_ratio
-            rtu_wbs_ratio_variable = wbs_activity_ratio.wbs_activity_ratio_variables.where(name: "RTU").first
+            rtu_wbs_ratio_variable = wbs_activity_ratio.wbs_activity_ratio_variables.where(organization_id: organization.id,
+                                                                                           wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                                                           name: "RTU").first
             if rtu_wbs_ratio_variable && !rtu_wbs_ratio_variable.percentage_of_input.include?("E1") && !rtu_wbs_ratio_variable.percentage_of_input.include?("E2") &&
                                          !rtu_wbs_ratio_variable.percentage_of_input.include?("E3") && !rtu_wbs_ratio_variable.percentage_of_input.include?("E4")
               rtu_wbs_ratio_variable.percentage_of_input = "E1"
@@ -490,7 +514,10 @@ class ModuleProject < ActiveRecord::Base
           end
 
           # update mp_ratio_variable
-          rtu_mp_ratio_variable = self.module_project_ratio_variables.where(name: "RTU").first
+          rtu_mp_ratio_variable = current_mp.module_project_ratio_variables.where(organization_id: organization.id,
+                                                                                  pbs_project_element_id: pbs_id,
+                                                                                  :module_project_id => current_mp.id,
+                                                                                  name: "RTU").first
           if rtu_mp_ratio_variable
             rtu_mp_ratio_variable.percentage_of_input = "E1"
             rtu_mp_ratio_variable.save
@@ -500,14 +527,15 @@ class ModuleProject < ActiveRecord::Base
       end
     end
 
-    current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
+    current_inputs_evs = current_mp.estimation_values.where(organization_id: organization.id, pe_attribute_id: wbs_effort_ids, in_out: "input")
   end
 
 
   # Récupère les estimation-values du module_project avec le filtre sur le netoyage des attributs
   def get_module_project_estimation_values
     module_project = self
-    all_estimation_values = module_project.estimation_values.where('in_out IS NOT NULL')
+    organization_id = module_project.organization_id
+    all_estimation_values = module_project.estimation_values.where(organization_id: organization_id).where.not(in_out: nil)
 
     begin
       case module_project.pemodule.alias
@@ -548,6 +576,7 @@ class ModuleProject < ActiveRecord::Base
   # Get Estimation_values or Create them if not exist
   def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids = [])
 
+    organization_id = self.organization_id
     current_inputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")     #self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
     current_outputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")  #self.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
@@ -569,8 +598,9 @@ class ModuleProject < ActiveRecord::Base
         unless am.pe_attribute.nil?
           if am.in_out == 'both'
             ['input', 'output'].each do |in_out|
-              ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => in_out)
-                       .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+              ev = EstimationValue.where(organization_id: organization_id, :module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => in_out)
+                       .first_or_create(organization_id: organization_id,
+                                        :pe_attribute_id => am.pe_attribute.id,
                                         :module_project_id => self.id,
                                         :in_out => in_out,
                                         :is_mandatory => am.is_mandatory,
@@ -583,8 +613,9 @@ class ModuleProject < ActiveRecord::Base
                                         :project_value => am.project_value)
             end
           else
-            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => am.in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+            ev = EstimationValue.where(organization_id: organization_id, :module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => am.in_out)
+                     .first_or_create(organization_id: organization_id,
+                                      :pe_attribute_id => am.pe_attribute.id,
                                       :module_project_id => self.id,
                                       :in_out => am.in_out,
                                       :is_mandatory => am.is_mandatory,
@@ -600,15 +631,15 @@ class ModuleProject < ActiveRecord::Base
       end
     end
 
-    self.estimation_values
+    self.estimation_values.where(organization_id: organization_id)
   end
 
 
   # Get Estimation_values or Create them if not exist
   def get_mp_estimation_values
-
+    organization_id = self.organization_id
     input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
-    current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
+    current_inputs_evs = self.estimation_values.where(organization_id: organization_id, pe_attribute_id: input_attribute_ids, in_out: "input")
 
     if current_inputs_evs.empty?
 
@@ -617,8 +648,9 @@ class ModuleProject < ActiveRecord::Base
 
         if am.in_out == 'both'
           ['input', 'output'].each do |in_out|
-            ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+            ev = EstimationValue.where(organization_id: organization_id, :module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
+                     .first_or_create(organization_id: organization_id,
+                                      :pe_attribute_id => am.pe_attribute.id,
                                       :module_project_id => self.id,
                                       :in_out => in_out,
                                       :is_mandatory => am.is_mandatory,
@@ -631,8 +663,9 @@ class ModuleProject < ActiveRecord::Base
                                       :project_value => am.project_value)
           end
         else
-          ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
-                   .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+          ev = EstimationValue.where(organization_id: organization_id, :module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
+                   .first_or_create(organization_id: organization_id,
+                                    :pe_attribute_id => am.pe_attribute.id,
                                     :module_project_id => self.id,
                                     :in_out => am.in_out,
                                     :is_mandatory => am.is_mandatory,
@@ -647,7 +680,7 @@ class ModuleProject < ActiveRecord::Base
       end
     end
 
-    self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
+    self.estimation_values.where(organization_id: organization_id, pe_attribute_id: input_attribute_ids, in_out: "input")
   end
 
 

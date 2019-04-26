@@ -366,13 +366,13 @@ class WbsActivitiesController < ApplicationController
       wai.save
     end
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,
-                                                                                         wbs_activity_ratio_id: @ratio_reference.id,
-                                                                                         pbs_project_element_id: @pbs_project_element.id)
+                                                                                         pbs_project_element_id: @pbs_project_element.id,
+                                                                                         wbs_activity_ratio_id: @ratio_reference.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
 
     level_estimation_value = Hash.new
-    current_pbs_estimations = current_module_project.estimation_values
+    current_pbs_estimations = current_module_project.estimation_values.where(organization_id: @organization.id)
     input_effort_for_global_ratio = 0.0
     effort_total_for_global_ratio = 0.0
     initialize_calculation = false
@@ -413,7 +413,7 @@ class WbsActivitiesController < ApplicationController
                   # type code here
               end
 
-              retained_attribute_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
+              retained_attribute_est_val = EstimationValue.where(:organization_id => @organization.id, :module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
               if retained_attribute_est_val
                 ["low", "most_likely", "high", "probable"].each do |level|
                   theoretical_est_val[:"string_data_#{level}"] = retained_attribute_est_val[:"string_data_#{level}"]
@@ -725,7 +725,7 @@ class WbsActivitiesController < ApplicationController
                 # type code here
             end
 
-            #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
+            #retained_est_val = EstimationValue.where(:organization_id => @organization.id, :pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
             ["low", "most_likely", "high"].each do |level|
               #28092017
@@ -1932,7 +1932,7 @@ class WbsActivitiesController < ApplicationController
 
       #== UPDATE THE RETAINED ATTRIBUTE ESTIMATION VALUES ===
       @module_project.pemodule.attribute_modules.each do |am|
-        @estimation_values = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
+        @estimation_values = EstimationValue.where(organization_id: @wbs_activity.organization_id, :module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
 
         pe_attribute_alias =  am.pe_attribute.alias
         output_effort_or_cost = Hash.new
@@ -2117,7 +2117,7 @@ class WbsActivitiesController < ApplicationController
   #
   #     #== UPDATE THE RETAINED ATTRIBUTE ESTIMATION VALUES ===
   #     @module_project.pemodule.attribute_modules.each do |am|
-  #       @estimation_values = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
+  #       @estimation_values = EstimationValue.where(organization_id: @wbs_activity.organization_id, :module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
   #
   #       pe_attribute_alias =  am.pe_attribute.alias
   #       output_effort_or_cost = Hash.new

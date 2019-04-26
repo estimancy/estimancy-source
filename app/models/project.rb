@@ -385,16 +385,18 @@ class Project < ActiveRecord::Base
   def update_project_views_and_widgets(old_mp, new_mp)
 
     new_prj = self
+    organization_id = new_prj.organization_id
 
     #We have to copy all the selected view's widgets in a new view for the current module_project
     if old_mp.view
       #Copy the views and widgets for the new project
-      new_view = View.new(organization_id: new_prj.organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
+      new_view = View.new(organization_id: organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
 
       if new_view.save
         old_mp_view_widgets = old_mp.view.views_widgets.all
         old_mp_view_widgets.each do |old_view_widget|
-          new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
+          new_view_widget_mp = ModuleProject.where(organization_id: organization_id, project_id: new_prj.id, copy_id: old_view_widget.module_project_id).first #find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
+
           new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
           widget_est_val = old_view_widget.estimation_value
           if old_view_widget.is_kpi_widget || widget_est_val.nil?
@@ -431,7 +433,7 @@ class Project < ActiveRecord::Base
                 mp_id = old_view_widget.equation[letter].last
 
                 begin
-                  new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                  new_mpr = new_prj.module_projects.where(organization_id: organization_id, copy_id: mp_id).first
                   new_mpr_id = new_mpr.id
                   begin
                     new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
@@ -462,7 +464,7 @@ class Project < ActiveRecord::Base
             in_out = widget_est_val.in_out
             widget_pe_attribute_id = widget_est_val.pe_attribute_id
             unless new_view_widget_mp.nil?
-              new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
+              new_estimation_value = new_view_widget_mp.estimation_values.where(organization_id: organization_id, pe_attribute_id: widget_pe_attribute_id , in_out: in_out).last
               estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
 
               new_view_widget = ViewsWidget.new(view_id: new_view.id,
@@ -572,25 +574,25 @@ class Project < ActiveRecord::Base
           end
 
           #For applications
-          old_prj.applications.each do |application|
+          old_prj.applications.where(organization_id: organization.id).each do |application|
             # Application.where(name: application.name, organization_id: @organization.id).first
             app = hash_apps[application.name]
             ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
           end
 
           # For ModuleProject associations
-          old_prj.module_projects.group(:id).each do |old_mp|
-            new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+          old_prj.module_projects.where(organization_id: organization.id).group(:id).each do |old_mp|
+            new_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
             # ModuleProject Associations for the new project
             old_mp.associated_module_projects.each do |associated_mp|
-              new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+              new_associated_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
               new_mp.associated_module_projects << new_associated_mp
             end
 
             ### Wbs activity
             #create module_project ratio elements
-            old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+            old_mp.module_project_ratio_elements.where(organization_id: organization.id).each do |old_mp_ratio_elt|
 
               mp_ratio_element = old_mp_ratio_elt.dup
               mp_ratio_element.module_project_id = new_mp.id
@@ -604,7 +606,7 @@ class Project < ActiveRecord::Base
               mp_ratio_element.save
             end
 
-            new_mp_ratio_elements = new_mp.module_project_ratio_elements
+            new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: organization.id)
             new_mp_ratio_elements.each do |mp_ratio_element|
 
               #unless mp_ratio_element.is_root?
@@ -651,7 +653,7 @@ class Project < ActiveRecord::Base
 
               # Update the group unit of works and attributes
               guw_group.guw_unit_of_works.each do |guw_uow|
-                new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+                new_uow_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first  #.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
                 new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
                 new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
@@ -674,7 +676,7 @@ class Project < ActiveRecord::Base
 
             new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
             old_prj_pbs_project_elements = old_prj.pbs_project_elements
-            new_mp_estimation_values = new_mp.estimation_values
+            new_mp_estimation_values = new_mp.estimation_values.where(organization_id: organization.id)
             hash_nmpevs = {}
 
             new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
