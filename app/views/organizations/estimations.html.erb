@@ -27,12 +27,13 @@
       </table>
 
       <div id="organization_projects">
-        <%= render_async main_app.organization_async_estimations_path(@organization) %>
+        <%= render_async main_app.organization_async_estimations_path(@organization) do %>
+          Veuillez patienter pendant le chargement des devis...
+        <% end %>
       </div>
     </div>
   </div>
 
-  <%#= submit_tag "recherchez", class: "hide" %>
   <%= submit_tag "", class: "invisible_button" %>
 
 <% end %>
