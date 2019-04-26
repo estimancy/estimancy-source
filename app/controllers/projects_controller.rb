@@ -2883,8 +2883,8 @@ public
         end
 
 
-        flash[:success] = I18n.t(:notice_project_successful_duplicated)
-        redirect_to edit_project_path(new_prj) and return
+        # flash[:success] = I18n.t(:notice_project_successful_duplicated)
+        # redirect_to edit_project_path(new_prj) and return
       else
         #if params[:action_name] == "create_project_from_template"
         if !params[:create_project_from_template].nil?

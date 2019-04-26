@@ -1,9 +1,29 @@
+<% if controller.action_name.in? %w(edit update duplicate) %>
+  <h4 class="ui-widget">
+    <% if params[:is_model] == "true" %>
+      <%= I18n.t(:edit_estimation_model, :value => "#{@project.title} (version:#{@project.version_number})") %>
+    <% else %>
+      <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
+    <% end %>
+  </h4>
+<% else %>
+  <h4>
+    ...
+  </h4>
+<% end %>
+
+<% unless controller.action_name == 'new' %>
+  <div style="margin-bottom: 35px; margin-top: -24px;">
+    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary", title: "Afficher le tableau de bord" %>
+  </div>
+<% end %>
+
 <%= simple_form_for(@project) do |f| %>
 
   <div class="tabs-project">
     <ul>
       <li><a href="#tabs-1"><%= I18n.t(:global_properties) %></a></li>
-      <% if action_name.in? %w(edit update) %>
+      <% if action_name.in? %w(edit update duplicate) %>
         <!--<li><a href="#tabs-2"><%# I18n.t(:wbs_product) %></a></li>-->
         <li class="tabs_4_with_estimation_plan"><a href="#tabs-4"><%= I18n.t(:estimation_plan) %></a></li>
         <li><a href="#tabs-5"><%= I18n.t(:securities) %></a></li>
@@ -210,7 +230,7 @@
       <%= f.association :provider, :label => "#{I18n.t 'provider'}", :as => :select, :collection => @providers, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
 
       <div class="actions-tabs">
-        <% if action_name.in?(['edit', 'update']) %>
+        <% if action_name.in?(['edit', 'update', 'duplicate']) %>
           <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
                 ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
                   can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
@@ -237,7 +257,7 @@
 
 
 
-    <% if action_name.in?(%w(edit update)) %>
+    <% if action_name.in?(%w(edit update duplicate)) %>
       <div id="tabs-2" class="hide">
         <div class="component_tree" id="project_wbs_product_section">
           <div class="tab-pane active">
