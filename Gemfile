@@ -150,6 +150,8 @@ gem 'time_diff', '~> 0.3.0'
 gem 'sinatra', :require => false
 gem 'slim'
 
+gem 'render_async'
+
 # For chart generation
 gem 'chartkick'
 gem 'highcharts-rails'

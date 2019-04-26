@@ -2012,7 +2012,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:spec_users, parameter: @organization)
   end
 
-  def estimations
+  def async_estimations
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
@@ -2134,6 +2134,12 @@ class OrganizationsController < ApplicationController
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+
+    render :partial => 'organizations/organization_projects', object: [@organization, @projects]
+  end
+
+  def estimations
+    @organization = Organization.find(params[:organization_id])
   end
 
 

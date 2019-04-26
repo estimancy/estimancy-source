@@ -251,7 +251,10 @@ Projestimate::Application.routes.draw do
     get "setting" => 'organizations#setting'
     get "module_estimation" => 'organizations#module_estimation'
     get "users" => 'organizations#users', as: 'organization_users'
+
     get "estimations" => 'organizations#estimations'
+    get "async_estimations" => 'organizations#async_estimations'
+
     get "report" => 'organizations#report'
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'
