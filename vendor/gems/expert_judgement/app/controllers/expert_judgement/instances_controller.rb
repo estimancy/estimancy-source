@@ -98,13 +98,10 @@ class ExpertJudgement::InstancesController < ApplicationController
 
   def save_efforts
     @expert_judgement_instance = ExpertJudgement::Instance.find(params[:instance_id])
+    current_organization = @current_organization
+
     params[:values].each do |value|
       attr_id = value.first
-
-      # ["input", "output"].each do |in_out|
-      #   ["low", "high", "most_likely"].each do |level|
-      #   end
-      # end
 
       attr_unit_coefficient = 1
       pe_attribute = PeAttribute.find(attr_id)
@@ -135,10 +132,10 @@ class ExpertJudgement::InstancesController < ApplicationController
         high_output = most_likely_output
       end
 
-      ejie = ExpertJudgement::InstanceEstimate.where(pbs_project_element_id: current_component.id,
-                                                     module_project_id: current_module_project.id,
-                                                     expert_judgement_instance_id: @expert_judgement_instance.id,
-                                                     pe_attribute_id: attr_id.to_i).first
+      ejie = ExpertJudgement::InstanceEstimate.where(expert_judgement_instance_id: @expert_judgement_instance.id,
+                                                     pe_attribute_id: attr_id.to_i,
+                                                     pbs_project_element_id: current_component.id,
+                                                     module_project_id: current_module_project.id).first
 
       if ejie.nil?
         ejie = ExpertJudgement::InstanceEstimate.create(pbs_project_element_id: current_component.id,
@@ -180,7 +177,8 @@ class ExpertJudgement::InstancesController < ApplicationController
         tmp_prbl = Array.new
 
         ["low", "most_likely", "high"].each do |level|
-          ev = EstimationValue.where(module_project_id: current_module_project.id,
+          ev = EstimationValue.where(organization_id: current_organization.id,
+                                     module_project_id: current_module_project.id,
                                      pe_attribute_id: attr_id.to_i,
                                      in_out: io).first
 
@@ -195,19 +193,20 @@ class ExpertJudgement::InstancesController < ApplicationController
           ev.save
         end
 
-        ev = EstimationValue.where(module_project_id: current_module_project.id,
+        ev = EstimationValue.where(organization_id: current_organization.id,
+                                   module_project_id: current_module_project.id,
                                    pe_attribute_id: attr_id.to_i,
                                    in_out: io).first
         ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
       end
     end
 
-    ViewsWidget::update_field(current_module_project, @current_organization, @project, current_component)
+    ViewsWidget::update_field(current_module_project, current_organization, @project, current_component)
 
     # Reset all view_widget results
     ViewsWidget.reset_nexts_mp_estimation_values(current_module_project, current_component)
     current_module_project.all_nexts_mp_with_links.each do |module_project|
-      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+      ViewsWidget::update_field(module_project, current_organization, @project, current_component, true)
     end
 
     redirect_to main_app.dashboard_path(@project)

@@ -105,8 +105,9 @@ class Guw::GuwModelsController < ApplicationController
               break
             end
 
+            organization_id = @current_organization.id
             @guw_model = Guw::GuwModel.where(name: tab[0][1].nil? ? nil : tab[0][1].value,
-                                             organization_id: @current_organization.id).first
+                                             organization_id: organization_id).first
             if @guw_model.nil?
               @guw_model = Guw::GuwModel.new( name: tab[0][1].nil? ? nil : tab[0][1].value,
                                               description: tab[1][1].nil? ? nil : tab[1][1].value,
@@ -200,8 +201,8 @@ class Guw::GuwModelsController < ApplicationController
           elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
             unless tab[0].nil?
-              coefficient = Guw::GuwCoefficient.where(name: tab[0][1].nil? ? nil : tab[0][1].value,
-                                                      guw_model_id: @guw_model.id).first
+              coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+                                                      name: tab[0][1].nil? ? nil : tab[0][1].value).first
 
               tab.each_with_index do |row, i|
                 if i >= 3 && !row.nil?
@@ -234,8 +235,8 @@ class Guw::GuwModelsController < ApplicationController
                                                      unit: row[6].nil? ? nil : row[6].value,
                                                      allow_subtotal: row[7].nil? ? false : row[7].value)
 
-                  attr = PeAttribute.where(name: guw_output.name,
-                                           alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
+                  attr = PeAttribute.where(alias: guw_output.name.to_s.underscore.gsub(" ", "_"),
+                                           name: guw_output.name,
                                            description: guw_output.name,
                                            guw_model_id: guw_output.guw_model_id).first_or_create!
 
@@ -246,10 +247,11 @@ class Guw::GuwModelsController < ApplicationController
                                              in_out: "both",
                                              guw_model_id: guw_output.guw_model_id).first_or_create!
 
-                  @guw_model.module_projects.each do |module_project|
+                  @guw_model.module_projects.where(organization_id: organization_id).each do |module_project|
                     ['input', 'output'].each do |in_out|
-                      mpa = EstimationValue.create(pe_attribute_id: attr.id,
+                      mpa = EstimationValue.create(organization_id: organization_id,
                                                    module_project_id: module_project.id,
+                                                   pe_attribute_id: attr.id,
                                                    in_out: in_out,
                                                    string_data_low: { :pe_attribute_name => @guw_output.name },
                                                    string_data_most_likely: { :pe_attribute_name => @guw_output.name },

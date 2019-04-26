@@ -102,8 +102,8 @@ module Guw
         end
 
         if is_organization_copy == true
-          guw_model.module_projects.each do |module_project|
-            module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+          guw_model.module_projects.where(organization_id: guw_model_organization.id).each do |module_project|
+            module_project.estimation_values.where(organization_id: guw_model_organization.id, pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
 
               estimation_value.pe_attribute_id = new_pe_attribute.id
               estimation_value.save

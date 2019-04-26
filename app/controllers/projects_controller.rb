@@ -370,10 +370,10 @@ class ProjectsController < ApplicationController
     end
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
-    @project_organization = @project.organization
+    @project_organization = @current_organization #@project.organization
     @module_projects = @project.module_projects
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    @initialization_module_project ||= ModuleProject.where(organization_id: @current_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first unless @initialization_module.nil?
 
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
@@ -394,7 +394,7 @@ class ProjectsController < ApplicationController
     @pbs_project_element = current_component
 
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
+    @initialization_module_project ||= ModuleProject.where(organization_id: @project_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first  unless @initialization_module.nil?
 
     # Get the max X and Y positions of modules
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
@@ -436,10 +436,10 @@ class ProjectsController < ApplicationController
       end
 
       array_attributes.each do |a|
-        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                 module_project_id: @module_project.id,
-                                                 pbs_project_element_id: @pbs_project_element.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 pbs_project_element_id: @pbs_project_element.id,
+                                                 module_project_id: @module_project.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -633,10 +633,10 @@ class ProjectsController < ApplicationController
       end
 
       array_attributes.each do |a|
-        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                 module_project_id: none_displayed_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 pbs_project_element_id: current_component.id,
+                                                 module_project_id: none_displayed_module_project.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "kb"
@@ -1986,13 +1986,13 @@ class ProjectsController < ApplicationController
       default_view = View.where("organization_id = ? AND pemodule_id = ? AND is_default_view = ?",  @project.organization_id, @pemodule.id, true).first
       #Then copy the default view widgets in the new created view
       unless default_view.nil?
-        new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @project.organization_id, initial_view_id: default_view.id)
+        new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id, initial_view_id: default_view.id)
         if new_copied_view.save
           #Then copy the widgets of the dafult view
           default_view.views_widgets.each do |view_widget|
             widget_est_val = view_widget.estimation_value
             in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
-            estimation_value = my_module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
+            estimation_value = my_module_project.estimation_values.where(:organization_id => @organization.id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
             estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
             widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id,
                                           estimation_value_id: estimation_value_id,
@@ -2394,7 +2394,7 @@ public
 
     # For Balancing-Module : Estimation will be calculated only for the current selected balancing attribute
     if current_mp_to_execute.pemodule.alias.to_s == Projestimate::Application::BALANCING_MODULE
-      balancing_attr_est_values = current_mp_to_execute.estimation_values.where('in_out = ? AND pe_attribute_id = ?', "output", current_balancing_attribute).last
+      balancing_attr_est_values = current_mp_to_execute.estimation_values.where(organization_id: @project.organization_id, pe_attribute_id: current_balancing_attribute, in_out: "output").last
       current_module = "#{current_mp_to_execute.pemodule.alias.camelcase.constantize}::#{current_mp_to_execute.pemodule.alias.camelcase.constantize}".gsub(' ', '').constantize
       input_data['pe_attribute_alias'.to_sym] = balancing_attr_est_values.pe_attribute.alias
 
@@ -2723,11 +2723,11 @@ public
           old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements
 
 
-          new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+          new_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
           # ModuleProject Associations for the new project
           old_mp_associated_module_projects.each do |associated_mp|
-            new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+            new_associated_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
             new_mp.associated_module_projects << new_associated_mp
           end
 
@@ -2801,7 +2801,7 @@ public
 
             # Update the group unit of works and attributes
             guw_group.guw_unit_of_works.each do |guw_uow|
-              new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+              new_uow_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first #find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
               new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
@@ -2824,10 +2824,10 @@ public
           end
 
           new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
-          new_mp_estimation_values = new_mp.estimation_values
+          new_mp_estimation_values = new_mp.estimation_values.where(organization_id: @organization.id, pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"])
           hash_nmpevs = {}
 
-          new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
+          new_mp_estimation_values.each do |nmpev|
             hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
           end
 
@@ -4013,7 +4013,7 @@ public
     end
 
     @attribute = PeAttribute.find_by_alias("effort")
-    @estimation_values = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', @attribute.id, "output").first
+    @estimation_values = @module_project.estimation_values.where(organization_id: @project_organization.id, pe_attribute_id: @attribute.id, in_out: "output").first
     @estimation_probable_results = @estimation_values.send('string_data_probable')
     @estimation_pbs_probable_results = @estimation_probable_results[@current_component.id]
   end
@@ -4240,7 +4240,9 @@ public
 
     @user = current_user
     @pemodules ||= Pemodule.all
-    @module_project = current_module_project
+    current_mp = current_module_project
+    @module_project = current_mp
+
     @show_hidden = 'true'
 
     status_comment_link = ""
@@ -4258,10 +4260,10 @@ public
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
 
     if @module_project.pemodule.alias == "expert_judgement"
-      if current_module_project.expert_judgement_instance.nil?
+      if current_mp.expert_judgement_instance.nil?
         @expert_judgement_instance = ExpertJudgement::Instance.first
       else
-        @expert_judgement_instance = current_module_project.expert_judgement_instance
+        @expert_judgement_instance = current_mp.expert_judgement_instance
       end
 
       array_attributes = Array.new
@@ -4281,21 +4283,21 @@ public
       @expert_judgement_attributes = PeAttribute.where(alias: array_attributes)
 
       array_attributes.each do |a|
-        ExpertJudgement::InstanceEstimate.where( pe_attribute_id: PeAttribute.find_by_alias(a).id,
-                                                 expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
-                                                 module_project_id: current_module_project.id,
-                                                 pbs_project_element_id: current_component.id).first_or_create!
+        ExpertJudgement::InstanceEstimate.where( expert_judgement_instance_id: @expert_judgement_instance.id.to_i,
+                                                 pe_attribute_id: PeAttribute.find_by_alias(a).id,
+                                                 pbs_project_element_id: current_component.id,
+                                                 module_project_id: current_mp.id).first_or_create!
       end
 
     elsif @module_project.pemodule.alias == "skb"
-      @kb_model = current_module_project.kb_model
+      @kb_model = current_mp.kb_model
       @kb_input = Kb::KbInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id).first_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
-      @ge_model = current_module_project.ge_model
+      @ge_model = current_mp.ge_model
       @ge_input = Ge::GeInput.where(module_project_id: @module_project.id,
                                     organization_id: @project_organization.id,
                                     ge_model_id: @ge_model.id).first_or_create
@@ -4346,18 +4348,18 @@ public
 
 
     elsif @module_project.pemodule.alias == "operation"
-      @operation_model = current_module_project.operation_model
+      @operation_model = current_mp.operation_model
     elsif @module_project.pemodule.alias == "guw"
 
-      #if current_module_project.guw_model.nil?
+      #if current_mp.guw_model.nil?
       #  @guw_model = Guw::GuwModel.first
       #else
-      @guw_model = current_module_project.guw_model
+      @guw_model = current_mp.guw_model
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_mp.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
-      @staffing_model = current_module_project.staffing_model
+      @staffing_model = current_mp.staffing_model
       trapeze_default_values = @staffing_model.trapeze_default_values
       @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: current_component.id).first
       if @staffing_custom_data.nil?

@@ -1,6 +1,18 @@
 class AddNewIndexes < ActiveRecord::Migration
 
+
   def up
+
+    #Modification des index de la migration 20170929094130
+    remove_index :module_project_ratio_variables, name: "organization_module_project_ratio_variables"
+    add_index :module_project_ratio_variables, [:organization_id, :pbs_project_element_id, :module_project_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_ratio_variable_id],
+              name: "organization_module_project_ratio_variables"
+
+    remove_index :module_project_ratio_elements, name: "organization_module_project_ratio_elements"
+    add_index :module_project_ratio_elements, [:organization_id, :pbs_project_element_id, :module_project_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id],
+              name: "organization_module_project_ratio_elements"
+
+    # Ajout de nouveaux index
     add_index :groups, [:organization_id, :name], name: "by_organization_name", unique: true unless index_exists?(:groups, [:organization_id, :name])
 
     add_index :groups_permissions, [:group_id, :permission_id], name: "by_group_permission"
@@ -46,10 +58,31 @@ class AddNewIndexes < ActiveRecord::Migration
 
     add_index :estimation_status_group_roles, [:group_id, :project_security_level_id, :estimation_status_id ], name: "by_group_psl_status"
 
+    add_index :pemodules, :alias
+
+    remove_index :projects, name: :organization_estimation_models
+
+    add_index :expert_judgement_instance_estimates, [:expert_judgement_instance_id, :pe_attribute_id, :pbs_project_element_id, :module_project_id], name: "by_instance_attribute_pbs_mp"
+
+    add_index :estimation_values, :copy_id
+
+    add_index :applications, [:organization_id, :name], name: "by_organization_name"
+
+    remove_index :wbs_activities, name: "organization_wbs_activities"
+
+    remove_index :wbs_activity_elements, :wbs_activity_id
+
+    remove_index :views_widgets, name: "module_project_views_widgets"
+    add_index :views_widgets, [:module_project_id, :estimation_value_id], name: "module_project_views_widgets"
+
   end
 
 
   def down
+
+    remove_index :module_project_ratio_variables, name: "organization_module_project_ratio_variables"
+    remove_index :module_project_ratio_elements, name: "organization_module_project_ratio_elements"
+
 
     remove_index :groups, name: "by_organization_name"
 
@@ -95,6 +128,22 @@ class AddNewIndexes < ActiveRecord::Migration
 
     remove_index :estimation_status_group_roles, name: "by_group_psl_status"
 
+    remove_index :pemodules, :alias
+
+    add_index :projects, [:organization_id, :is_model], name: :organization_estimation_models unless index_exists?(:projects, [:organization_id, :is_model], name: :organization_estimation_models)
+
+    remove_index :expert_judgement_instance_estimates,  name: "by_instance_attribute_pbs_mp"
+
+    remove_index :estimation_values, :copy_id
+
+    remove_index :applications, name: "by_organization_name"
+
+    add_index :wbs_activities, [:organization_id], name: "organization_wbs_activities" unless index_exists?(:wbs_activities, :organization_id, name: :organization_wbs_activities)
+
+    add_index :wbs_activity_elements, :wbs_activity_id unless index_exists?(:wbs_activity_elements, :wbs_activity_id)
+
+    remove_index :views_widgets, name: "module_project_views_widgets"
+    add_index :views_widgets, [:module_project_id, :pe_attribute_id, :estimation_value_id], name: "module_project_views_widgets"
   end
 
 end

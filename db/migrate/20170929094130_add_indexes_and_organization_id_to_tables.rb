@@ -89,7 +89,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       ratio_variable.wbs_activity_id = ratio_variable.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_variable.save
     end
-    add_index :module_project_ratio_variables, [:organization_id, :pbs_project_element_id, :module_project_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_ratio_variable_id],
+    add_index :module_project_ratio_variables, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_ratio_variable_id],
               name: "organization_module_project_ratio_variables"
 
     #== ModuleProjectRatioElements
@@ -101,7 +101,7 @@ class AddIndexesAndOrganizationIdToTables < ActiveRecord::Migration
       ratio_elt.wbs_activity_id = ratio_elt.wbs_activity_ratio.wbs_activity_id rescue nil
       ratio_elt.save
     end
-    add_index :module_project_ratio_elements, [:organization_id, :pbs_project_element_id, :module_project_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id],
+    add_index :module_project_ratio_elements, [:organization_id, :module_project_id, :pbs_project_element_id, :wbs_activity_id, :wbs_activity_ratio_id, :wbs_activity_element_id],
               name: "organization_module_project_ratio_elements"
 
     #=== OrganizationProfiles

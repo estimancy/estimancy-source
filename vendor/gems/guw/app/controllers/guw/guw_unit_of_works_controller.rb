@@ -3082,6 +3082,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     #we save the effort now in estimation values
     @module_project = current_module_project
     @guw_model = @module_project.guw_model
+    organization_id = @module_project.organization_id
 
     component = current_component
 
@@ -3126,7 +3127,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @module_project.pemodule.attribute_modules.each do |am|
           am_pe_attribute = am.pe_attribute
           unless am_pe_attribute.nil?
-            @evs = EstimationValue.where(:module_project_id => @module_project.id,
+            @evs = EstimationValue.where(organization_id: organization_id,
+                                         :module_project_id => @module_project.id,
                                          :pe_attribute_id => am_pe_attribute.id).all
             @evs.each do |ev|
               tmp_prbl = Array.new
@@ -3206,7 +3208,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                 selected: true)
 
         @hash_evs = Hash.new {|h,k| h[k] = Array.new }
-        EstimationValue.where(:module_project_id => @module_project.id).each do |tmp_ev|
+        EstimationValue.where(organization_id: organization_id, :module_project_id => @module_project.id).each do |tmp_ev|
           @hash_evs[tmp_ev.pe_attribute_id] << tmp_ev
         end
 
@@ -3216,8 +3218,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           unless am_pe_attribute.nil?
 
-            # @evs = EstimationValue.where(:module_project_id => @module_project.id,
-            #                              :pe_attribute_id => am_pe_attribute.id).all
+            # @evs = EstimationValue.where(organization_id: organization_id, :module_project_id => @module_project.id,
+            #                            :pe_attribute_id => am_pe_attribute.id).all
             @evs = @hash_evs[am_pe_attribute.id]
 
             @evs.each do |ev|
