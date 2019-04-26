@@ -8,15 +8,6 @@
       <table>
         <tr>
           <td colspan=2 style="text-align:right;">
-            <%# I18n.t(:label_filter_on_projects_version) %>
-            <%# select_tag 'filter_organization_projects_version',
-                            options_for_select([[I18n.t(:label_filter_on_project_version_2),2],
-                                               [I18n.t(:label_filter_on_project_version_1),1],
-                                               [I18n.t(:label_filter_on_project_version_3),3],
-                                               [I18n.t(:label_filter_on_project_version_4),4]],
-                                              :selected => params[:filter_version].blank? ? 4 : params[:filter_version]),
-                           'data-organization_id' => @organization.id, include_blank: false %>
-                            <!--'data-organization_id' => @organization.id, 'data-project_ids' => @projects.map(&:id).to_json, include_blank: false %>-->
 
             <% if can? :create_project_from_template, Project %>
               <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>

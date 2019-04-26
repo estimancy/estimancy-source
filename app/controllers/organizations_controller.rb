@@ -2013,11 +2013,8 @@ class OrganizationsController < ApplicationController
   end
 
   def async_estimations
-    @organization = Organization.find(params[:organization_id])
-    check_if_organization_is_image(@organization)
 
-    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
-    set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
+    @organization = Organization.find(params[:organization_id])
 
     if params[:filter_version].present?
       @filter_version = params[:filter_version]
@@ -2034,10 +2031,6 @@ class OrganizationsController < ApplicationController
       @min = 0
       @max = @object_per_page
     end
-
-    # @projects = @organization.organization_estimations[@min..@max].find{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }
-    # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p, estimation_status_id: p.estimation_status_id) }[@min..@max]
-    # @projects = @organization.organization_estimations.select{ |p| can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id) }[@min..@max]
 
     if session[:sort_action].blank?
       session[:sort_action] = "true"
@@ -2057,11 +2050,9 @@ class OrganizationsController < ApplicationController
 
     @search_column = session[:search_column]
     @search_value = session[:search_value]
-    #@search_hash =  {} #session[:search_hash] || {}
     @search_hash = (params['search'].blank? ? session[:search_hash] : params['search'])
     @search_hash ||=  {}
     @search_string = ""
-    final_results = []
 
     # Pour garder le tri même lors du rafraichissement de la page
     projects = @organization.projects.where(:is_model => [nil, false])
@@ -2077,11 +2068,6 @@ class OrganizationsController < ApplicationController
       #   res << p.project
       # end
     end
-
-    # Filtre sur les versions des estimations
-    # if !@filter_version.in?(['4', ''])
-    #   res = filter_estimation_versions(res, @filter_version)
-    # end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
@@ -2102,9 +2088,6 @@ class OrganizationsController < ApplicationController
     session[:search_column] = @search_column
     session[:search_value] = @search_value
     session[:search_hash] = @search_hash
-
-    # @projects = check_for_projects(@min, @max)
-    # @projects = check_for_projects(@min, @object_per_page)
 
     @fields_coefficients = {}
     @pfs = {}
@@ -2140,6 +2123,11 @@ class OrganizationsController < ApplicationController
 
   def estimations
     @organization = Organization.find(params[:organization_id])
+
+    check_if_organization_is_image(@organization)
+
+    set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
   end
 
 
