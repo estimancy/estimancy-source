@@ -63,17 +63,11 @@
       <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
         <tr>
           <th>Applications</th>
-
-          <th>Montants</th>
         </tr>
 
         <% @organization.applications.each do |app| %>
           <tr>
-            <td><%= link_to app, new_organization_budget_path(@organization, @budget, app) %></td>
-            <td>
-              <%= app.forfait_mco.to_f %>
-              <%= "€ " %>
-            </td>
+            <td><%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %></td>
           </tr>
         <% end %>
       </table>
