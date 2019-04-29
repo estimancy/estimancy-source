@@ -180,7 +180,7 @@
     <% end %>
 <% end %>
 
-<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
+<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
 
   <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
   <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
@@ -503,8 +503,8 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
-    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
+    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
   <% end %>
 
 <% end %>
