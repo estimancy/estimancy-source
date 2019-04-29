@@ -54,7 +54,7 @@ class AddIndexesToImproveResponseTime < ActiveRecord::Migration
 
     add_index :estimation_statuses, :organization_id, name: "by_organization"
 
-    add_index :estimation_status_group_roles, [:group_id, :project_security_level_id, :estimation_status_id ], name: "by_group_psl_status"
+    add_index :estimation_status_group_roles, [:organization_id, :group_id, :project_security_level_id, :estimation_status_id], name: "by_organization_group_psl_status"
 
     add_index :pemodules, :alias
 
@@ -127,7 +127,7 @@ class AddIndexesToImproveResponseTime < ActiveRecord::Migration
 
     remove_index :estimation_statuses, name: "by_organization"
 
-    remove_index :estimation_status_group_roles, name: "by_group_psl_status"
+    remove_index :estimation_status_group_roles, name: "by_organization_group_psl_status"
 
     remove_index :pemodules, :alias
 

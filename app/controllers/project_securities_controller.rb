@@ -38,6 +38,7 @@ class ProjectSecuritiesController < ApplicationController
 
   def create
     @project_security = ProjectSecurity.new(params[:project_security])
+    @project_security.organization_id = @current_organization.id
     @project_security.project_id = params[:project_security][:project_id]
     @project_security.user_id = params[:project_security][:user_id]
     @project_security.project_security_level = params[:project_security_level]

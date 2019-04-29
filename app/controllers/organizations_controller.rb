@@ -2370,7 +2370,7 @@ class OrganizationsController < ApplicationController
     user = current_user
 
     #begin
-    old_prj = Project.find(project_id)
+    old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
     new_organization = Organization.find(new_organization_id)
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
@@ -2418,14 +2418,14 @@ class OrganizationsController < ApplicationController
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
         unless old_prj.creator.nil?
-          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, organization_id: new_organization.id)
           unless creator_securities.nil?
             creator_securities.update_attribute(:user_id, user.id)
           end
         end
       end
       #Other project securities for groups
-      new_prj.project_securities.where.not(group_id: nil).each do |project_security|
+      new_prj.project_securities.where(organization_id: new_organization.id).where.not(group_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         new_group = new_organization.groups.where(copy_id: project_security.group_id).first
         if new_security_level.nil? || new_group.nil?
@@ -2436,7 +2436,7 @@ class OrganizationsController < ApplicationController
       end
 
       #Other project securities for users
-      new_prj.project_securities.where.not(user_id: nil).each do |project_security|
+      new_prj.project_securities.where(organization_id: new_organization.id).where.not(user_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         if new_security_level.nil?
           project_security.destroy
@@ -2446,7 +2446,7 @@ class OrganizationsController < ApplicationController
       end
 
       # For ModuleProject associations
-      old_prj.module_projects.group(:id).each do |old_mp|
+      old_prj.module_projects.where(organization_id: new_organization.id).group(:id).each do |old_mp|
         new_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: old_mp.id).first #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
         # ModuleProject Associations for the new project
@@ -2457,7 +2457,7 @@ class OrganizationsController < ApplicationController
 
         ##========================== NEW =======
         # Wbs activity create module_project ratio elements
-        old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+        old_mp.module_project_ratio_elements.where(organization_id: new_organization.id).each do |old_mp_ratio_elt|
           mp_ratio_element = old_mp_ratio_elt.dup
           mp_ratio_element.module_project_id = new_mp.id
           mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2477,12 +2477,12 @@ class OrganizationsController < ApplicationController
             mp_ratio_element.wbs_activity_ratio_element_id = nil
           else
             # wbs_activity_element
-            new_wbs_activity_element = new_wbs_activity.wbs_activity_elements.where(copy_id: old_mp_ratio_elt.wbs_activity_element_id).first
+            new_wbs_activity_element = new_wbs_activity.wbs_activity_elements.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_element_id).first
             new_wbs_activity_element_id = new_wbs_activity_element.nil? ? nil : new_wbs_activity_element.id
             mp_ratio_element.wbs_activity_element_id = new_wbs_activity_element_id
 
             # wbs_activity_ratio
-            new_wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(copy_id: old_mp_ratio_elt.wbs_activity_ratio_id).first
+            new_wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_ratio_id).first
 
             if new_wbs_activity_ratio.nil?
               mp_ratio_element.wbs_activity_ratio_id = nil
@@ -2491,7 +2491,7 @@ class OrganizationsController < ApplicationController
               mp_ratio_element.wbs_activity_ratio_id = new_wbs_activity_ratio.id
 
               # wbs_activity_ratio_element
-              new_wbs_activity_ratio_element = new_wbs_activity_ratio.wbs_activity_ratio_elements.where(copy_id: old_mp_ratio_elt.wbs_activity_ratio_element_id).first
+              new_wbs_activity_ratio_element = new_wbs_activity_ratio.wbs_activity_ratio_elements.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_ratio_element_id).first
               wbs_activity_ratio_element_id = new_wbs_activity_ratio_element.nil? ? nil : new_wbs_activity_ratio_element.id
 
               mp_ratio_element.wbs_activity_ratio_element_id = wbs_activity_ratio_element_id
@@ -2501,7 +2501,7 @@ class OrganizationsController < ApplicationController
           mp_ratio_element.save
         end
 
-        new_mp_ratio_elements = new_mp.module_project_ratio_elements
+        new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: new_organization.id)
         new_mp_ratio_elements.each do |mp_ratio_element|
           #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
 
@@ -2602,7 +2602,7 @@ class OrganizationsController < ApplicationController
         if old_mp.view
           old_mp_view_widgets = old_mp.view.views_widgets.all
           old_mp_view_widgets.each do |view_widget|
-            new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
+            new_view_widget_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: view_widget.module_project_id).first  #.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
             new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
             widget_est_val = view_widget.estimation_value
             unless widget_est_val.nil?
@@ -2639,7 +2639,7 @@ class OrganizationsController < ApplicationController
                       mp_id = view_widget.equation[letter].last
 
                       begin
-                        new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                        new_mpr = new_prj.module_projects.where(organization_id: new_organization_id, copy_id: mp_id).first
                         new_mpr_id = new_mpr.id
                         begin
                           new_est_val_id = new_mpr.estimation_values.where(organization_id: new_organization_id, copy_id: est_val_id).first.id

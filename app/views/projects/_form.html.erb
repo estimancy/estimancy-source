@@ -356,7 +356,8 @@
                             <%= group.name %>
                             <% @organization.project_security_levels.each do |prj_level| %>
                               <%
-                                 ps = ProjectSecurity.where(group_id: group.id,
+                                 ps = ProjectSecurity.where(organization_id: @organization.id,
+                                                            group_id: group.id,
                                                             project_id: @project.id,
                                                             project_security_level_id: prj_level.id,
                                                             is_model_permission: false,
@@ -429,7 +430,8 @@
                           <%= owner_key.value %>
                           <% @organization.project_security_levels.each do |prj_level| %>
                             <%
-                               ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,
+                               ps = ProjectSecurity.where(organization_id: @organization.id,
+                                                          user_id: owner.nil? ? nil : owner.id,
                                                           project_id: @project.id,
                                                           project_security_level_id: prj_level.id,
                                                           is_model_permission: true,
@@ -449,7 +451,8 @@
                             <%= user %>
                             <% @organization.project_security_levels.each do |prj_level| %>
                               <%
-                                 ps = ProjectSecurity.where(user_id: user.id,
+                                 ps = ProjectSecurity.where(organization_id: @organization.id,
+                                                            user_id: user.id,
                                                             project_id: @project.id,
                                                             project_security_level_id: prj_level.id,
                                                             is_model_permission: false,
@@ -513,7 +516,8 @@
                           <td>
                             <%= group.name %>
                             <% @organization.project_security_levels.each do |prj_level| %>
-                              <% ps = ProjectSecurity.where(group_id: group.id,
+                              <% ps = ProjectSecurity.where(organization_id: @organization.id,
+                                                            group_id: group.id,
                                                             project_id: @project.id,
                                                             project_security_level_id: prj_level.id,
                                                             is_model_permission: true,

@@ -81,7 +81,7 @@ class ProjectsController < ApplicationController
 
     @project_modules = @project.pemodules
     @project_security_levels = ProjectSecurityLevel.all
-    @module_project = ModuleProject.find_by_project_id(@project.id)
+    @module_project = ModuleProject.where(organization_id: @project.organization_id, project_id: @project.id).first
   end
 
   def rapport
@@ -840,7 +840,7 @@ class ProjectsController < ApplicationController
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
-    @acquisition_categories = @organization.platform_categories
+    @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
     @providers = @organization.providers
 
@@ -864,7 +864,7 @@ class ProjectsController < ApplicationController
     end
 
     #For user
-    current_user_ps = @project.project_securities.build
+    current_user_ps = @project.project_securities.where(organization_id: @organization.id).build
     # if params[:project][:creator_id].blank?
       current_user_ps.user_id = estimation_owner.id
     # else
@@ -877,7 +877,7 @@ class ProjectsController < ApplicationController
 
     #For group
     defaut_group = AdminSetting.where(key: "Groupe using estimation").first_or_create!(value: "*USER")
-    defaut_group_ps = @project.project_securities.build
+    defaut_group_ps = @project.project_securities.where(organization_id: @organization.id).build
     defaut_group_ps.group_id = Group.where(organization_id: @organization.id, name: defaut_group.value).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
     defaut_group_ps.project_security_level = full_control_security_level
     defaut_group_ps.is_model_permission = false
@@ -885,7 +885,7 @@ class ProjectsController < ApplicationController
     defaut_group_ps.save
 
     if @is_model == "true"
-      new_current_user_ps = @project.project_securities.build
+      new_current_user_ps = @project.project_securities.where(organization_id: @organization.id).build
       # if params[:project][:creator_id].blank?
         new_current_user_ps.user_id = estimation_owner.id
       # else
@@ -896,7 +896,7 @@ class ProjectsController < ApplicationController
       new_current_user_ps.is_estimation_permission = false
       new_current_user_ps.save
 
-      new_defaut_group_ps = @project.project_securities.build
+      new_defaut_group_ps = @project.project_securities.where(organization_id: @organization.id).build
       new_defaut_group_ps.group_id = Group.where(organization_id: @organization.id, name: defaut_group.value).first_or_create(description: "Groupe créé par défaut dans l'organisation pour la gestion des administrateurs").id
       new_defaut_group_ps.project_security_level = full_control_security_level
       new_defaut_group_ps.is_model_permission = true
@@ -1088,7 +1088,7 @@ class ProjectsController < ApplicationController
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
-    @acquisition_categories = @organization.platform_categories
+    @acquisition_categories = @organization.acquisition_categories
     @project_categories = @organization.project_categories
     @providers = @organization.providers
 
@@ -1221,7 +1221,7 @@ class ProjectsController < ApplicationController
       # Après les modifications pour les Trigger
       if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
         new_project_securities = []
-        all_project_securities = @project.project_securities
+        all_project_securities = @project.project_securities.where(organization_id: @organization.id)
 
         # GROUP
         unless params["group_securities"].nil?
@@ -1231,12 +1231,14 @@ class ProjectsController < ApplicationController
 
           params["group_securities"].each do |psl|
             params["group_securities"][psl.first].each do |group|
-              ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
+              ps = @project.project_securities.where(organization_id: @organization.id,
+                                                     group_id: group.first.to_i, project_security_level_id: psl.first,
                                                      is_model_permission: false, is_estimation_permission: true).first
               if ps
                 group_securities_a_garder << ps
               else
-                group_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
+                group_securities_to_add << @project.project_securities.create(organization_id: @organization.id,
+                                                                              group_id: group.first.to_i, project_security_level_id: psl.first,
                                                                               is_model_permission: false, is_estimation_permission: true,
                                                                               originator_id: @current_user.id, event_organization_id: @organization.id)
               end
@@ -1254,12 +1256,14 @@ class ProjectsController < ApplicationController
           params["group_securities_from_model"].each do |psl|
             params["group_securities_from_model"][psl.first].each do |group|
 
-              ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
+              ps = @project.project_securities.where(organization_id: @organization.id,
+                                                     group_id: group.first.to_i, project_security_level_id: psl.first,
                                                      is_model_permission: true, is_estimation_permission: false).first
               if ps
                 group_from_model_securities_a_garder << ps
               else
-                group_from_model_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
+                group_from_model_securities_to_add << @project.project_securities.create(organization_id: @organization.id,
+                                                                                         group_id: group.first.to_i, project_security_level_id: psl.first,
                                                                                         is_model_permission: true, is_estimation_permission: false,
                                                                                         originator_id: @current_user.id, event_organization_id: @organization.id)
               end
@@ -1276,12 +1280,14 @@ class ProjectsController < ApplicationController
           user_securities_to_add = []
           params["user_securities"].each do |psl|
             params["user_securities"][psl.first].each do |user|
-              ps = @project.project_securities.where(user_id: user.first.to_i, project_security_level_id: psl.first,
+              ps = @project.project_securities.where(organization_id: @organization.id,
+                                                     user_id: user.first.to_i, project_security_level_id: psl.first,
                                                      is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true).first
               if ps
                 user_securities_a_garder << ps
               else
-                user_securities_to_add << @project.project_securities.create(user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true,
+                user_securities_to_add << @project.project_securities.create(organization_id: @organization.id,
+                                                                             user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true,
                                                                              originator_id: @current_user.id, event_organization_id: @organization.id)
               end
             end
@@ -1301,12 +1307,14 @@ class ProjectsController < ApplicationController
               owner_key = AdminSetting.find_by_key("Estimation Owner")
               owner = User.where(initials: owner_key.value).first
 
-              ps = @project.project_securities.where(user_id: owner.id.to_i, project_security_level_id: psl.first,
+              ps = @project.project_securities.where(organization_id: @organization.id,
+                                                     user_id: owner.id.to_i, project_security_level_id: psl.first,
                                                       is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false).first
               if ps
                 user_from_model_securities_a_garder << ps
               else
-                user_from_model_securities_to_add << @project.project_securities.create(user_id: owner.id.to_i, project_security_level_id: psl.first,
+                user_from_model_securities_to_add << @project.project_securities.create(organization_id: @organization.id,
+                                                                                        user_id: owner.id.to_i, project_security_level_id: psl.first,
                                                                                          is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false,
                                                                                          originator_id: @current_user.id, event_organization_id: @organization.id)
               end
@@ -1321,8 +1329,8 @@ class ProjectsController < ApplicationController
       end
 
       # Get the max X and Y positions of modules
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+      @module_positions = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+      @module_positions_x = @project.module_projects.where(organization_id: @organization.id).order(:position_x).all.map(&:position_x).max
 
       #Get the project Organization before update
       project_organization = @project.organization
@@ -1451,13 +1459,16 @@ class ProjectsController < ApplicationController
   #copy model project security to all projects based on this model
   def copy_security
     model_project = Project.find(params[:project_id])
+
     model_project.projects_from_model.each do |project|
+      organization_id = project.organization_id
 
       # ProjectSecurity.delete_all("project = ?", project.id)
-      project.project_securities.delete_all
+      project.project_securities.where(organization_id: organization_id).delete_all
 
-      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false).all.each do |ps|
-        ProjectSecurity.create(project_id: project.id,
+      model_project.project_securities.where(organization_id: organization_id, is_model_permission: true, is_estimation_permission: false).all.each do |ps|
+        ProjectSecurity.create(organization_id: organization_id,
+                               project_id: project.id,
                                user_id: nil,
                                project_security_level_id: ps.project_security_level_id,
                                group_id: ps.group_id,
@@ -1465,10 +1476,11 @@ class ProjectsController < ApplicationController
                                is_estimation_permission: true)
       end
 
-      model_project.project_securities.where(is_model_permission: true, is_estimation_permission: false, user_id: model_project.creator_id).all.each do |ps|
+      model_project.project_securities.where(organization_id: organization_id, user_id: model_project.creator_id, is_model_permission: true, is_estimation_permission: false).all.each do |ps|
         owner_user = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value.to_s)
 
-        ProjectSecurity.create(project_id: project.id,
+        ProjectSecurity.create(organization_id: organization_id,
+                               project_id: project.id,
                                user_id: owner_user.id,
                                project_security_level_id: ps.project_security_level_id,
                                group_id: ps.group_id,
@@ -1683,9 +1695,9 @@ class ProjectsController < ApplicationController
     set_page_title I18n.t(:project_security)
     @user = User.find(params[:user_id])
     @project = Project.find(params[:project_id])
-    @prj_scrt = ProjectSecurity.find_by_user_id_and_project_id(@user.id, @project.id)
+    @prj_scrt = ProjectSecurity.where(organization_id: @project.organization_id, user_id: @user.id, project_id: @project.id).first #.find_by_user_id_and_project_id(@user.id, @project.id)
     if @prj_scrt.nil?
-      @prj_scrt = ProjectSecurity.create(:user_id => @user.id, :project_id => @project.id)
+      @prj_scrt = ProjectSecurity.create(organization_id: @project.organization_id, :user_id => @user.id, :project_id => @project.id)
     end
 
     respond_to do |format|
@@ -1700,9 +1712,9 @@ class ProjectsController < ApplicationController
     set_page_title I18n.t(:project_security)
     @group = Group.find(params[:group_id])
     @project = Project.find(params[:project_id])
-    @prj_scrt = ProjectSecurity.find_by_group_id_and_project_id(@group.id, @project.id)
+    @prj_scrt = ProjectSecurity.where(organization_id: @project.organization_id, group_id: @group.id, project_id: @project.id).first #.find_by_group_id_and_project_id(@group.id, @project.id)
     if @prj_scrt.nil?
-      @prj_scrt = ProjectSecurity.create(:group_id => @user.id, :project_id => @project.id)
+      @prj_scrt = ProjectSecurity.create(organization_id: @project.organization_id, :group_id => @group.id, :project_id => @project.id)
     end
 
     respond_to do |format|
@@ -1716,7 +1728,7 @@ class ProjectsController < ApplicationController
     #TODO check if No authorize is required
     set_page_title I18n.t(:project_security)
     @user = User.find(params[:user_id].to_i)
-    @prj_scrt = ProjectSecurity.find_by_user_id_and_project_id(@user.id, @project.id)
+    @prj_scrt = ProjectSecurity.where(organization_id: @project.organization_id, user_id: @user.id, project_id: @project.id).first #.find_by_user_id_and_project_id(@user.id, @project.id)
     @prj_scrt.update_attribute('project_security_level_id', params[:project_security_level])
 
     respond_to do |format|
@@ -1729,7 +1741,7 @@ class ProjectsController < ApplicationController
     #TODO check if No authorize is required
     set_page_title I18n.t(:project_security)
     @group = Group.find(params[:group_id].to_i)
-    @prj_scrt = ProjectSecurity.find_by_group_id_and_project_id(@group.id, @project.id)
+    @prj_scrt = ProjectSecurity.where(organization_id: @project.organization_id, group_id: @group.id, project_id: @project.id).first #.find_by_group_id_and_project_id(@group.id, @project.id)
     @prj_scrt.update_attribute('project_security_level_id', params[:project_security_level])
 
     respond_to do |format|
@@ -1749,7 +1761,7 @@ class ProjectsController < ApplicationController
       authorize! :alter_estimation_plan, @project
     end
 
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.where(organization_id: @organization.id, pemodule_id: @initialization_module.id).first #.find_by_pemodule_id(@initialization_module.id)
 
     if params[:pbs_project_element_id] && params[:pbs_project_element_id] != ''
       @pbs_project_element = PbsProjectElement.find(params[:pbs_project_element_id])
@@ -1762,11 +1774,11 @@ class ProjectsController < ApplicationController
       @pemodules ||= Pemodule.all
 
       #Max pos or 1
-      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-      @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
+      @module_positions = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+      @module_positions_x = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id).all.map(&:position_x).uniq.max
 
       # Get the module_project creation order : for this, we have to count the number of MP with same pemodule in this project
-      mp_creation_order = @project.module_projects.where(pemodule_id: @pemodule.id).all.map(&:creation_order).max
+      mp_creation_order = @project.module_projects.where(organization_id: @organization.id, pemodule_id: @pemodule.id).all.map(&:creation_order).max
 
       #When adding a module in the "timeline", it creates an entry in the table ModuleProject for the current project, at position 2 (the one being reserved for the input module).
       my_module_project = ModuleProject.new(:project_id => @project.id, :organization_id => @organization.id, :pemodule_id => @pemodule.id,
@@ -2655,7 +2667,7 @@ public
         #if params[:action_name] == "create_project_from_template"
         owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
         if !params[:create_project_from_template].nil?
-          creator_securities = new_prj.project_securities
+          creator_securities = new_prj.project_securities.where(organization_id: @organization.id)
           creator_securities.each do |ps|
             if ps.is_model_permission == true
               # Amelioration Creer à partir d'un modele
@@ -2720,7 +2732,7 @@ public
         old_prj.module_projects.group(:id).each do |old_mp|
 
           old_mp_associated_module_projects = old_mp.associated_module_projects
-          old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements
+          old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements.where(organization_id: @organization.id)
 
 
           new_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
@@ -2748,7 +2760,7 @@ public
                 mp_ratio_element.save
               end
 
-              new_mp_ratio_elements = new_mp.module_project_ratio_elements
+              new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: @organization.id)
               new_mp_ratio_elements.each do |mp_ratio_element|
                 #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
 

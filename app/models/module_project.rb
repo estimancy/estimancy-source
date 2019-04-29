@@ -108,7 +108,7 @@ class ModuleProject < ActiveRecord::Base
     unless current_nexts.blank?
       current_nexts.each do |next_mp|
         i = i + 1
-        if i >= self.project.module_projects.size
+        if i >= self.project.module_projects.where(organization_id: self.organization_id).size
           break
         else
           current_mp_link = next_mp.all_nexts_mp_with_links(all_nexts_mp, i)

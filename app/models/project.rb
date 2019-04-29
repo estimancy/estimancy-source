@@ -436,7 +436,7 @@ class Project < ActiveRecord::Base
                   new_mpr = new_prj.module_projects.where(organization_id: organization_id, copy_id: mp_id).first
                   new_mpr_id = new_mpr.id
                   begin
-                    new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                    new_est_val_id = new_mpr.estimation_values.where(organization_id: organization_id, copy_id: est_val_id).first.id
                   rescue
                     new_est_val_id = nil
                   end

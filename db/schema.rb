@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190417141811) do
+ActiveRecord::Schema.define(version: 20190426141910) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -36,6 +36,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.integer  "organization_id", limit: 4
     t.integer  "copy_id",         limit: 4
   end
+
+  add_index "acquisition_categories", ["organization_id", "name"], name: "by_organization_acquisition_name", using: :btree
 
   create_table "acquisition_categories_project_areas", id: false, force: :cascade do |t|
     t.integer  "acquisition_category_id", limit: 4
@@ -65,6 +67,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.boolean  "is_ignored"
   end
 
+  add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
+
   create_table "applications_projects", id: false, force: :cascade do |t|
     t.integer "application_id", limit: 4
     t.integer "project_id",     limit: 4
@@ -74,6 +78,9 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.integer "associated_module_project_id", limit: 4
     t.integer "module_project_id",            limit: 4
   end
+
+  add_index "associated_module_projects", ["associated_module_project_id"], name: "by_associated_mp", using: :btree
+  add_index "associated_module_projects", ["module_project_id"], name: "by_module_project", using: :btree
 
   create_table "attribute_categories", force: :cascade do |t|
     t.string   "name",             limit: 255
@@ -225,7 +232,7 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.text     "transaction_id",            limit: 65535
   end
 
-  add_index "estimation_status_group_roles", ["group_id", "project_security_level_id", "estimation_status_id"], name: "by_group_psl_status", using: :btree
+  add_index "estimation_status_group_roles", ["organization_id", "group_id", "project_security_level_id", "estimation_status_id"], name: "by_organization_group_psl_status", using: :btree
 
   create_table "estimation_statuses", force: :cascade do |t|
     t.integer  "organization_id",                         limit: 4
@@ -1479,6 +1486,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.text     "transaction_id",        limit: 65535
   end
 
+  add_index "permissions", ["alias", "object_associated"], name: "by_alias_object_associated", using: :btree
+
   create_table "permissions_project_security_levels", force: :cascade do |t|
     t.integer  "permission_id",             limit: 4
     t.integer  "project_security_level_id", limit: 4
@@ -1505,6 +1514,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.integer  "copy_id",         limit: 4
   end
 
+  add_index "platform_categories", ["organization_id", "name"], name: "by_organization_platform_name", using: :btree
+
   create_table "profiles", force: :cascade do |t|
     t.string   "name",           limit: 255
     t.text     "description",    limit: 65535
@@ -1530,6 +1541,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.integer  "copy_id",         limit: 4
   end
 
+  add_index "project_areas", ["organization_id", "name"], name: "by_organization_area_name", using: :btree
+
   create_table "project_categories", force: :cascade do |t|
     t.string   "name",            limit: 255
     t.text     "description",     limit: 65535
@@ -1542,6 +1555,8 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.integer  "organization_id", limit: 4
     t.integer  "copy_id",         limit: 4
   end
+
+  add_index "project_categories", ["organization_id", "name"], name: "by_organization_category_name", using: :btree
 
   create_table "project_fields", force: :cascade do |t|
     t.integer  "project_id",      limit: 4
@@ -1560,6 +1575,7 @@ ActiveRecord::Schema.define(version: 20190417141811) do
   end
 
   create_table "project_securities", force: :cascade do |t|
+    t.integer  "organization_id",           limit: 4
     t.integer  "project_id",                limit: 4
     t.integer  "user_id",                   limit: 4
     t.integer  "project_security_level_id", limit: 4
@@ -1573,10 +1589,10 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.text     "transaction_id",            limit: 65535
   end
 
-  add_index "project_securities", ["group_id", "is_model_permission", "is_estimation_permission"], name: "ability_project_securities", using: :btree
-  add_index "project_securities", ["project_id"], name: "by_project", using: :btree
-  add_index "project_securities", ["project_security_level_id"], name: "by_psl", using: :btree
-  add_index "project_securities", ["user_id", "is_model_permission", "is_estimation_permission"], name: "by_user_is_permission", using: :btree
+  add_index "project_securities", ["organization_id", "group_id", "is_model_permission", "is_estimation_permission"], name: "by_organization_group_is_permission", using: :btree
+  add_index "project_securities", ["organization_id", "group_id", "project_id", "project_security_level_id", "is_model_permission", "is_estimation_permission"], name: "by_organization_group_project_psl_is_permission", using: :btree
+  add_index "project_securities", ["organization_id", "user_id", "is_model_permission", "is_estimation_permission"], name: "by_organization_user_is_permission", using: :btree
+  add_index "project_securities", ["organization_id", "user_id", "project_id", "project_security_level_id", "is_model_permission", "is_estimation_permission"], name: "by_organization_user_project_psl_is_permission", using: :btree
 
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
@@ -2005,7 +2021,7 @@ ActiveRecord::Schema.define(version: 20190417141811) do
     t.string   "validation_text",              limit: 255
   end
 
-  add_index "views_widgets", ["module_project_id", "pe_attribute_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree
+  add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree
 
   create_table "wbs_activities", force: :cascade do |t|
     t.string   "uuid",                     limit: 255
@@ -2035,7 +2051,6 @@ ActiveRecord::Schema.define(version: 20190417141811) do
   end
 
   add_index "wbs_activities", ["organization_id", "name"], name: "index_wbs_activities_on_organization_id_and_name", unique: true, using: :btree
-  add_index "wbs_activities", ["organization_id"], name: "organization_wbs_activities", using: :btree
   add_index "wbs_activities", ["owner_id"], name: "index_wbs_activities_on_owner_id", using: :btree
 
   create_table "wbs_activity_elements", force: :cascade do |t|
@@ -2065,7 +2080,6 @@ ActiveRecord::Schema.define(version: 20190417141811) do
 
   add_index "wbs_activity_elements", ["ancestry"], name: "index_wbs_activity_elements_on_ancestry", using: :btree
   add_index "wbs_activity_elements", ["organization_id", "wbs_activity_id", "ancestry"], name: "organization_wbs_activity_elements", using: :btree
-  add_index "wbs_activity_elements", ["wbs_activity_id"], name: "index_wbs_activity_elements_on_wbs_activity_id", using: :btree
 
   create_table "wbs_activity_inputs", force: :cascade do |t|
     t.integer "wbs_activity_ratio_id",  limit: 4

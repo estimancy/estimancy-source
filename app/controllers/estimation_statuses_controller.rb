@@ -77,7 +77,7 @@ class EstimationStatusesController < ApplicationController
       params[:status_group_role][status.id.to_s] ||= {}
       @organization.groups.each do |group|
         params[:status_group_role][status.id.to_s][group.id.to_s] ||= []
-        est_status_groups = status.estimation_status_group_roles.where(group_id: group.id)
+        est_status_groups = status.estimation_status_group_roles.where(organization_id: @organization.id, group_id: group.id)
         unless params[:status_group_role][status.id.to_s][group.id.to_s].blank?
           relation = status.estimation_status_group_roles.where(organization_id: @organization.id, group_id: group.id,
                                                                 project_security_level_id: params[:status_group_role][status.id.to_s][group.id.to_s].to_i).first
@@ -92,7 +92,7 @@ class EstimationStatusesController < ApplicationController
 
         # on met à jour les relations
         relations_to_destroy = est_status_groups.map(&:id) - relations_a_garder.map(&:id) - relations_to_add.map(&:id)
-        status.estimation_status_group_roles.where(id: relations_to_destroy).destroy_all
+        status.estimation_status_group_roles.where(organization_id: @organization.id, id: relations_to_destroy).destroy_all
       end
       status.save
     end
