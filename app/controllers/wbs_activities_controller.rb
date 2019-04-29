@@ -1143,7 +1143,7 @@ class WbsActivitiesController < ApplicationController
 
 
     @wbs_activity_ratio = @ratio_reference
-    redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
+    # redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
   end
 
 
