@@ -52,9 +52,9 @@
           <td><%= bt.budget_type_statuses.map{ |i| i.estimation_status.name }.join(", ") %></td>
           <td><%= bt.color %></td>
           <td clas="center">
-            <%= link_to '', edit_organization_application_budget_type_path(@organization, @application, bt), :class => 'icon-pencil' %>
+            <%= link_to '', edit_organization_budget_application_budget_type_path(@organization, @application, bt), :class => 'icon-pencil' %>
             <% if can? :manage, BudgetType %>
-              <%= link_to '', organization_application_budget_type_path(@organization, @application, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+              <%= link_to '',organization_budget_application_budget_type_path(@organization, @application, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
             <% end %>
           </td>
         </tr>

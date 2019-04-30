@@ -31,6 +31,9 @@ Projestimate::Application.routes.draw do
 
   #get 'file_uploader/destroy'
 
+  post 'generate_report_excel' => 'budgets#generate_report_excel', :as => 'generate_report_excel'
+
+
   resources :autorization_log_events
 
 
@@ -245,7 +248,8 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
-    post 'generate_budget_report' => 'budgets#budget_report', :as => 'generate_budget_report'
+    post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
+
 
     get 'demand_dashboard' => 'demands#demand_dashboard'
     get 'budget_dashboard' => "organizations#budget_dashboard"

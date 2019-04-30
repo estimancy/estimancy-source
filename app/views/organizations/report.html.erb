@@ -5,6 +5,7 @@
     <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
     <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
     <li><a href="#tabs-budget-report"><%= "Budget Report" %></a></li>
+    <li><a href="#tabs-budget-report-excel"><%= "Budget Report Excel" %></a></li>
   </ul>
 
 
@@ -39,6 +40,29 @@
       </div>
     <% end %>
 
+  </div>
+
+  <div id="tabs-budget-report-excel" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    excel
+      <%= form_tag generate_report_excel_path, method: "post" do %>
+
+        <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+        <div class="span3">
+          <%= label_tag "Budgets" %>
+          <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent) %>
+        </div>
+
+        <div class="span3">
+          <%= label_tag "Applications" %>
+          <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent) %>
+        </div>
+
+        <div class="container-fluid">
+          <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+        </div>
+
+      <% end %>
   </div>
 
   <div id="tabs-budget-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">

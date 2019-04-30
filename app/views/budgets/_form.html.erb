@@ -38,6 +38,8 @@
 
 
 
+      <br/>
+
       </div>
 
       <script>
@@ -55,10 +57,6 @@
       <% @organization.applications.each do |app| %>
         <% sum += app.forfait_mco.to_f %>
       <% end %>
-
-      <div class="pull-right"><%= "Montant total des applications: " %>
-        <%= sum.to_s + " €" %>
-      </div>
 
       <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
         <tr>
