@@ -163,10 +163,6 @@ module OrganizationsHelper
   end
 
   def column_content(pfs, column, project, fields_coefficients)
-    OrganizationsHelper.column_content(pfs, column, project, fields_coefficients)
-  end
-
-  def column_content(pfs, column, project, fields_coefficients)
     if column.field_id
       value = column.project_field_value(pfs, project, fields_coefficients)
     else

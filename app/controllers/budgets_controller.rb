@@ -90,63 +90,28 @@ class BudgetsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @budget = Budget.find(params[:budget_id])
     @application = Application.find(params[:application_id])
+
     redirect_to organization_report_path(@organization, application_id: @application.id, budget_id: @budget.id, :anchor => 'tabs-budget-report')
   end
 
   def generate_report_excel
-    @organization = Organization.find(params[:organization_id])
+    organization = Organization.find(params[:organization_id])
+    budget = Budget.find(params[:budget_id])
+    application = Application.find(params[:application_id])
 
-    unless params[:budget_id].nil?
-      @budget = Budget.find(params[:budget_id])
+    data = Budget::fetch_project_field_data(organization, budget , application)
+
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook.worksheets[0]
+
+    i = 0
+    data.each do |k,v|
+      worksheet.add_cell(i, 0, k)
+      worksheet.add_cell(i, 1, v.sum)
+      i = i + 1
     end
 
-    unless params[:application_id].nil?
-      @application = Application.find(params[:application_id])
-    end
-
-    bt_hash = Hash.new {|h,k| h[k] = [] }
-
-    unless params[:application_id].nil? || params[:budget_id].nil?
-      BudgetTypeStatus.where(application_id: @application.id,
-                             organization_id: @current_organization.id).all.each do |bts|
-
-        projects = Project.where(application_id: @application.id ,
-                                 organization_id: @current_organization.id,
-                                 estimation_status_id: bts.estimation_status_id,
-                                 is_model: false).all
-        projects_sum = 0
-
-        projects.each do |project|
-          unless @budget.field_id.nil?
-
-            field = Field.where(organization_id: project.organization_id, name: Field.find(@budget.field_id).name).first
-            project_field = ProjectField(project_id: project.id, field_id: field.id)
-
-            unless project_field.nil?
-              value = project_field.value
-            else
-              value = 0
-            end
-
-            projects_sum += value
-
-            unless bts.budget_type.nil?
-              bt_hash[bts.budget_type.name] << projects_sum.round(2)
-            end
-          end
-        end
-      end
-
-      workbook = RubyXL::Workbook.new
-      worksheet = workbook.worksheets[0]
-
-      bt_hash.each do |k,v|
-        worksheet.add_cell(k, v)
-      end
-
-      send_data(workbook.stream.string, filename: "#{@budget.to_s}-#{@application.to_s}.xlsx" , type: "application/vnd.ms-excel")
-    end
-
+    send_data(workbook.stream.string, filename: "#{@budget.to_s}-#{@application.to_s}.xlsx" , type: "application/vnd.ms-excel")
   end
 
   def save_budget
