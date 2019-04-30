@@ -107,6 +107,5 @@ class AddIndexesToGuwModels < ActiveRecord::Migration
     #Guw::GuwComplexityCoefficientElement
     remove_index :guw_guw_complexity_coefficient_elements, name: :guw_complexity_coefficient_elements #if index_exists?(:guw_guw_complexity_coefficient_elements, [:guw_complexity_id, :guw_coefficient_element_id, :guw_output_id], name: :guw_complexity_coefficient_elements)
 
-
   end
 end

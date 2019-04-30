@@ -58,10 +58,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                module_project_id: params[:module_project_id],
                                                guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
 
-    module_project = ModuleProject.find(params[:module_project_id])
-    @project = module_project.project
-
     @organization = @guw_model.organization
+    module_project = ModuleProject.where(organization_id: @organization.id, id: params[:module_project_id]).first #.find(params[:module_project_id])
+    @project = module_project.project
 
     @guw_unit_of_work.guw_model_id = @guw_model.id
     @guw_unit_of_work.pbs_project_element_id = current_component.id
