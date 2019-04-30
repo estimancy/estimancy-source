@@ -57,20 +57,26 @@
       <% @organization.applications.each do |app| %>
         <% sum += app.forfait_mco.to_f %>
       <% end %>
-
-      <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-        <tr>
-          <th>Applications</th>
-        </tr>
-
-        <% @organization.applications.each do |app| %>
+      <% if controller.action_name == "edit" %>
+        <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
           <tr>
-            <td><%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %></td>
+            <th>Applications</th>
           </tr>
-        <% end %>
-      </table>
-      <%= hidden_field_tag :application_id, params[:application_id] %>
-      <br/>
+
+          <% @organization.applications.each do |app| %>
+            <tr>
+              <td>
+                <%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %>
+              </td>
+              <td>
+                <%= app.budget_types.map(&:name).join(', ') %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+        <%= hidden_field_tag :application_id, params[:application_id] %>
+        <br/>
+      <% end %>
 
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>

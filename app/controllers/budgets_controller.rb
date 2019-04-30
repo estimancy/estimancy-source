@@ -107,11 +107,11 @@ class BudgetsController < ApplicationController
     i = 0
     data.each do |k,v|
       worksheet.add_cell(i, 0, k)
-      worksheet.add_cell(i, 1, v.sum)
+      worksheet.add_cell(i, 1, v)
       i = i + 1
     end
 
-    send_data(workbook.stream.string, filename: "#{@budget.to_s}-#{@application.to_s}.xlsx" , type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@budget.name}-#{@application.name}.xlsx" , type: "application/vnd.ms-excel")
   end
 
   def save_budget

@@ -6,6 +6,7 @@ class Budget < ActiveRecord::Base
 
   def self.fetch_project_field_data(organization, budget, application)
     bt_hash = Hash.new {|h,k| h[k] = [] }
+    bt_sum = Hash.new
 
     BudgetTypeStatus.where(application_id: application.id,
                            organization_id: organization.id).all.each do |bts|
@@ -23,7 +24,11 @@ class Budget < ActiveRecord::Base
           project_field = ProjectField.where(project_id: project.id, field_id: field.id).first
 
           unless project_field.nil?
-            value = project_field.value
+            begin
+              value = project_field.value.to_f / field.coefficient
+            rescue
+              value = 0
+            end
           else
             value = 0
           end
@@ -35,7 +40,12 @@ class Budget < ActiveRecord::Base
           end
         end
       end
+
+      bt_hash.each do |k,v|
+        bt_sum[k] = v.sum
+      end
+
     end
-    bt_hash
+    bt_sum
   end
 end
