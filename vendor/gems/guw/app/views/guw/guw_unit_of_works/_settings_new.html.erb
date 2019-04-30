@@ -322,7 +322,7 @@
 
   <script>
     var my_array = [];
-    $(document).ready(function(){
+    $(document).on('ready turbolinks:load', function() {
       $(".new_guw_button").on('click', function(e){
         $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
         $("#hidden_position").val($(this).data("display-order"));
@@ -765,7 +765,7 @@
 
 
       <script>
-          $(document).ready(function(){
+          $(document).on('ready turbolinks:load', function() {
 
 //            $(".up,.down").click(function(){
 //              var row = $(this).parents("tr.movable:first");

@@ -25,7 +25,7 @@
 $('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
 
 var my_array = [];
-$(document).ready(function(){
+$(document).on('ready turbolinks:load', function() {
   var new_line = "<%= @guw_unit_of_work.id %>"
   my_array.push(new_line);
   $("#modified_guw_line_ids").val(my_array);

@@ -17,7 +17,7 @@
  #
  #############################################################################**/
 
-$(document).ready(function() {
+$(document).on('ready turbolinks:load', function() {
     //====================================================
 
     //$(".module_project11").draggable({

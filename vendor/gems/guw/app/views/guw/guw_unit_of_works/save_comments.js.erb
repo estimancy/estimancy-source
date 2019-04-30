@@ -49,7 +49,7 @@ if (history.pushState) {
 }
 
 var my_array = [];
-$(document).ready(function(){
+$(document).on('ready turbolinks:load', function() {
   $("table#guw input").keyup(function(e) {
     var new_line = $(this).closest("tr").data("guw-id");
     my_array.push(new_line);
