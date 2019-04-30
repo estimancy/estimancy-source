@@ -104,33 +104,7 @@ class BudgetsController < ApplicationController
       @application = Application.find(params[:application_id])
     end
 
-    @bt_hash = Hash.new {|h,k| h[k] = [] }
-
-    @fields_coefficients = {}
-    @pfs = {}
-    @projects = @organization.projects
-
-    fields = @organization.fields
-    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
-      begin
-        if pf.field_id.in?(fields.map(&:id))
-          if pf.project && pf.views_widget
-            if pf.project_id == pf.views_widget.module_project.project_id
-              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
-            else
-              pf.delete
-            end
-          else
-            pf.delete
-          end
-        else
-          pf.delete
-        end
-
-      rescue
-        #puts "erreur"
-      end
-    end
+    bt_hash = Hash.new {|h,k| h[k] = [] }
 
     unless params[:application_id].nil? || params[:budget_id].nil?
       BudgetTypeStatus.where(application_id: @application.id,
@@ -141,20 +115,23 @@ class BudgetsController < ApplicationController
                                  estimation_status_id: bts.estimation_status_id,
                                  is_model: false).all
         projects_sum = 0
+
         projects.each do |project|
           unless @budget.field_id.nil?
 
             field = Field.where(organization_id: project.organization_id, name: Field.find(@budget.field_id).name).first
-            column = QueryColumn.new(field.name.to_sym,
-                                     sortable: "",
-                                     caption: "",
-                                     field_id: field.id,
-                                     organization_id: @current_organization.id)
-            value = OrganizationsHelper.column_content(@pfs, column, project, @fields_coefficients).gsub("<td><span class=\"pull-right\">", '').gsub("</span></td>", "").gsub(",", ".").to_f
+            project_field = ProjectField(project_id: project.id, field_id: field.id)
 
-            projects_sum += value.round(2)
+            unless project_field.nil?
+              value = project_field.value
+            else
+              value = 0
+            end
+
+            projects_sum += value
+
             unless bts.budget_type.nil?
-              @bt_hash[bts.budget_type.name] << projects_sum.round(2)
+              bt_hash[bts.budget_type.name] << projects_sum.round(2)
             end
           end
         end
@@ -162,10 +139,12 @@ class BudgetsController < ApplicationController
 
       workbook = RubyXL::Workbook.new
       worksheet = workbook.worksheets[0]
-      @bt_hash.each do |k,v|
+
+      bt_hash.each do |k,v|
         worksheet.add_cell(k, v)
       end
-      send_data(workbook.stream.string, filename: "2020-CLIC.xlsx" , type: "application/vnd.ms-excel")
+
+      send_data(workbook.stream.string, filename: "#{@budget.to_s}-#{@application.to_s}.xlsx" , type: "application/vnd.ms-excel")
     end
 
   end
