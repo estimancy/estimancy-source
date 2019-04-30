@@ -39,7 +39,7 @@
     <% end %>
 
     <%= javascript_tag do %>
-        $(document).ready(function(){
+        $(document).on('ready turbolinks:load', function() {
             $('#query-columns').closest('form').submit(function(){
                 $('#selected_columns option').prop('selected', true);
 

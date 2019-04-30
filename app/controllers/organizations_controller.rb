@@ -1962,7 +1962,6 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:Parameter, parameter: @organization)
 
-    @technologies = @organization.organization_technologies
     @fields = @organization.fields
     @work_element_types = @organization.work_element_types
 
@@ -2001,7 +2000,6 @@ class OrganizationsController < ApplicationController
     @guw_models = @organization.guw_models.order("name asc")
     @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
-    @technologies = @organization.organization_technologies.order("name asc")
   end
 
   def users
@@ -3459,8 +3457,6 @@ class OrganizationsController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.where(organization_id: @organization.id).all
 
-    @ot = @organization.organization_technologies.first
-
     @users = @organization.users
     @fields = @organization.fields
 
@@ -3538,8 +3534,6 @@ class OrganizationsController < ApplicationController
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.all(:conditions => {:organization_id => @organization.id})
-      @ot = @organization.organization_technologies.first
-      @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles
       @groups = @organization.groups
       @organization_group = @organization.groups
