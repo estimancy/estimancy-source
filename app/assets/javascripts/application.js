@@ -11,4 +11,5 @@
 //= require chartkick
 //= require jquery
 //= require jquery_ujs
+//= require select_list_move
 //= require main

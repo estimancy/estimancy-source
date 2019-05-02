@@ -54,7 +54,7 @@
 
       <% if can? :execute_estimation_plan, @project %>
 <!--  <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
-        <%= link_to raw("<i class='material-icons'>clear</i>"), "#!", onclick: "multiraz()" %>
+        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()" %>
       <% end %>
     </div>
   </div>

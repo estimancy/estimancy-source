@@ -76,17 +76,6 @@
     <div class="estimation-list-filter">
       <span><%= @all_projects.count %> <%= I18n.t("elements") %></span>
       <span>
-        <div class="dropdown">
-          <a class="dropdown-toggle estimation-list-sort" href="#" id="sortDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <%= I18n.t("from_most_recent_to_least_recent") %>
-          </a>
-          <div class="dropdown-menu sort-list" aria-labelledby="sortDropdown">
-            <a class="dropdown-item sort-item" href="#"><%= I18n.t("from_most_recent_to_least_recent") %></a>
-            <a class="dropdown-item sort-item" href="#"><%= I18n.t("from_least_recent_to_most_recent") %></a>
-          </div>
-        </div>
-      </span>
-      <span>
         <a href="#"><%= I18n.t("display_archives") %></a>
       </span>
     </div>
