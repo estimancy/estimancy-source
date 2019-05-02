@@ -1,66 +1,50 @@
-  <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
+<%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
 
-    <%= f.error_notification %>
+  <%= f.error_notification %>
 
-    <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
-    <%= hidden_field_tag(:project_id, params[:template_id]) %>
-    <%= hidden_field_tag(:demand_id, params[:demand_id]) %>
+  <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
+  <%= hidden_field_tag(:project_id, params[:template_id]) %>
+  <%= hidden_field_tag(:demand_id, params[:demand_id]) %>
 
-    <div id="notifications"></div>
+  <% if @project_template.use_automatic_quotation_number %>
+    <%#= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
+    <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'form-control'}, readonly: true %>
+  <% else %>
+      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'form-control', :autofocus => (controller.action_name == 'new')} %>
+  <% end %>
 
-    <table>
-      <tr>
-        <td>
-          <% if @project_template.use_automatic_quotation_number %>
-            <%#= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
-            <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large'}, readonly: true %>
-          <% else %>
-              <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %>
-          <% end %>
-        </td>
-        <td>
-          <%= f.input :version_number, :input_html => {:class => 'input-large'} %>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <% apps = @project_template.applications %>
-          <% if @current_organization.applications.empty? and apps.empty? %>
-            <%= f.input :application_name, :input_html => {:class => 'input-large', value: @project_template.application_name}, :label => I18n.t(:label_product_name) %>
-          <% else %>
-            <%= f.input :application_id, as: :select,
-                        collection: apps.empty? ? @current_organization.applications.active : apps.map{|i| [i.name, i.id]},
-                        label: I18n.t(:label_product_name),
-                        input_html: {:class => 'input-large'},
-                        selected: @project_template.application_id %>
-          <% end %>
-        </td>
-      </tr>
-     </table>
-    <%= f.input :description, :label => "#{I18n.t 'description'}", :input_html => {:class => 'from_model_text_area', :rows => 5} %>
-    <table>
-      <tr>
-        <td>
-          <%= f.input :start_date, :as => :string, label: I18n.t(:start_date), :input_html => { :class => 'date-picker', :value => I18n.l(Time.now.to_date) } %>
-        </td>
-        <script>
-            $(document).ready(function () {
-                $(".date-picker").datepicker({
-                    language: '<%= set_user_language %>',
-                    autoclose: true,
-                    todayHighlight: true,
-                    todayBtn: true
-                });
-            });
-        </script>
-      </tr>
-    </table>
+  <%= f.input :version_number, :input_html => { :class => 'form-control' } %>
 
-    <div class="actions-tabs">
-      <% if can? :create_project_from_template, Project %>
-          <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
-          <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
-      <% end %>
-    </div>
+  <% apps = @project_template.applications %>
+  <% if @current_organization.applications.empty? and apps.empty? %>
+    <%= f.input :application_name, :input_html => {:class => 'form-control', value: @project_template.application_name}, :label => I18n.t(:label_product_name) %>
+  <% else %>
+    <%= f.input :application_id, as: :select,
+                collection: apps.empty? ? @current_organization.applications.active : apps.map{|i| [i.name, i.id]},
+                label: I18n.t(:label_product_name),
+                input_html: {:class => 'form-control'},
+                selected: @project_template.application_id %>
+  <% end %>
+
+  <%= f.input :description, :label => "#{I18n.t 'description'}", :input_html => {:class => 'from_model_text_area form-control', :rows => 5} %>
+  <%= f.input :start_date, :as => :string, label: I18n.t(:start_date), :input_html => { :class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+
+  <div class="modal-footer">
+    <% if can? :create_project_from_template, Project %>
+      <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
+      <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+    <% end %>
   </div>
+
+  <script>
+      $(document).ready(function () {
+          $(".date-picker").datepicker({
+              language: '<%= set_user_language %>',
+              autoclose: true,
+              todayHighlight: true,
+              todayBtn: true
+          });
+      });
+  </script>
+
 <% end %>
