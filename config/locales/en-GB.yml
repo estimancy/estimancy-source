@@ -247,6 +247,20 @@ en-gb:
   home: "My last estimate"
   all_projects: "All projects"
   create_new_project: "Create a new project"
+
+  # Estimation dashboard
+  create_project : "Create an estimation"
+  projects_list: "Estimation list"
+  to_the_latest_estimations_consulted : "to the latest estimations consulted"
+  from_most_recent_to_least_recent: "From most recent to least recent"
+  from_least_recent_to_most_recent: "From least recent to most recent"
+  elements: "Elements"
+  display_archives: "Display archives"
+  export_to_pdf : "Export to PDF"
+  duplicate_estimation: "Duplicate estimation"
+  create_new_version: "Create new version"
+
+
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"
 
