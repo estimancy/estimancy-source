@@ -270,6 +270,23 @@ en:
   duplicate_estimation: "Duplicate estimation"
   create_new_version: "Create new version"
 
+  # edit estimation
+  demand_number: "Demand number"
+
+  # guw/_settings_new
+  add_a_group: "Add a group"
+  rename: "Rename"
+
+  # wbs_activities
+  show_hide_wbs_header: "Show hide wbs header"
+  show_only_ratio: "Show only ratio"
+  variable_percentage_relation_to_input: "Definition of variables and their percentage in relation to the input value"
+  ratios_wbs: "TABLE OF RATIOS AND CALCULATION FORMULA OF EACH PHASE OF THE WBS"
+
+  # header
+  advanced_research: "Advanced research"
+  estimation_name, version_number, author... : "Estimation name, version number, author..."
+  home_estimancy: "Home Estimancy"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"

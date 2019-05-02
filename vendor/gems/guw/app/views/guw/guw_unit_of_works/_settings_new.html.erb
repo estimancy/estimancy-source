@@ -117,7 +117,7 @@
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <%= @module_project %>
       <div class="edition-bloc-tools">
-        <a href="#"><i class="material-icons">add</i>Ajouter un groupe</a>
+        <a href="#"><i class="material-icons">add</i><%= I18n.t("add_a_group") %></a>
         <button class="btn btn-secondary"><%= I18n.t :recalculate_all %></button>
       </div>
     </div>
@@ -132,7 +132,7 @@
       <div class="card-body">
         <div class="edition-bloc-title">
           <%= uowg %>
-          <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link">Renommer</a>
+          <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= I18n.t :rename %></a>
         </div>
         <div class="edition-bloc-content pb-4">
           <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">

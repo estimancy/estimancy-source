@@ -20,7 +20,7 @@
         <a class="navbar-brand" href="<%= main_app.all_organizations_path %>">
           <div class="home-button">
             <img class="logo" src=/assets/logo_arrows_white_small.png>
-            <div class="home-button-text">Accueil Estimancy</div>
+            <div class="home-button-text"><%= I18n.t("home_estimancy") %></div>
           </div>
         </a>
         <div class="container">
@@ -50,9 +50,9 @@
                   <i class="material-icons">search</i>
                 </span>
               </div>
-              <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="Nom de l’estimation, Numéro de version, Auteur..." aria-label="search" aria-describedby="search-icon">
+              <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder=<%= I18n.t (':estimation_name, version_number, author...') %> aria-label="search" aria-describedby="search-icon">
               <div class="input-group-append global-search-bar-append">
-                <a class="input-group-text" href="#">RECHERCHE AVANCEE</a>
+                <a class="input-group-text" href="#"><%= I18n.t :advanced_research %></a>
               </div>
             </div>
           <% end %>
