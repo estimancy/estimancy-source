@@ -1,146 +1,166 @@
-<%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
+<section class="estimation-modules-edition">
+  <div style="flex: 1">
+    <h2>
+      HAHA - 1.0
+      <small style="color: #f89406">
+        <b>
+          <%= @project.estimation_status %>
+        </b>
+      </small>
+    </h2>
+  </div>
 
-  <% if @ge_model.ge_factors.size > 0 %>
+  <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
+
+    <% if @ge_model.ge_factors.size > 0 %>
       <h4>
         <b>
           <%= I18n.t(:select_factor_value) %>
         </b>
       </h4>
 
-      <div class="row-fluid col-wrap">
-        <div class="accordion" id="accordion_factor">
+      <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
+        <% factor_values_per_type.each do |type, factor_values| %>
 
-          <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
-              <% factor_values_per_type.each do |type, factor_values| %>
+        <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
+          <% factor_value = factor_values.first %>
+          <% value = factor_value.last[0] %>
+          <%= hidden_field_tag("#{scale_prod}_factor[#{value.factor_alias}]", value.id) %>
 
-              <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
-                <% factor_value = factor_values.first %>
-                <% value = factor_value.last[0] %>
-                <%= hidden_field_tag("#{scale_prod}_factor[#{value.factor_alias}]", value.id) %>
+        <% else %>
 
-              <% else %>
+          <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
+          <% if type_max_length <= 1 %>
+            <% factor_values.each do |key, values| %>
+              <% unless values.first.nil? %>
+                <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+              <% end %>
+            <% end %>
+          <% else %>
+            <div class="row">
+              <div class="col">
+                <h6><%= type %></h6>
+                  <div class="row">
+                    <div class="col-4">
+                      <div class="card card-widget">
+                        <div class="card-body">
+                          <div class="effort-table">
+                            <% factor_values.each do |key, values| %>
+                              <% if values.length == 1 %>
+                                <% unless values.first.nil? %>
+                                  <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+                                <% end %>
+                              <% elsif values.length > 1 %>
+                                <% ge_factor = values[0].ge_factor %>
+                                <div class="col">
+                                  <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
+                                    <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
+                                  <% else %>
+                                    <span title="<%= ge_factor.long_name %> :  <%= ge_factor.description %>">
+                                      <%= key.humanize.upcase %>
+                                    </span>
+                                  <% end %>
 
-                <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
-                <% if type_max_length <= 1 %>
-                  <% factor_values.each do |key, values| %>
-                    <% unless values.first.nil? %>
-                      <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
-                    <% end %>
-                  <% end %>
+                                  <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, module_project_id: @module_project.id , project_id: @project.id, organization_id: @ge_model.organization_id).first_or_create %>
 
-                <% else %>
-                  <% factor_type = type.gsub(/( )/, '_').downcase %>
-                  <div class="span4 factor_group">
-                    <div class="accordion-group" style="border: none;">
-                      <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_factor" href="#<%= factor_type %>">
-                          <b><%= type %></b>
-                        </a>
-                      </div>
-                      <div id="<%= factor_type %>" class="accordion-body collapse in" style="overflow: inherit;">
-                        <div class="accordion-inner">
-
-                          <% factor_values.each do |key, values| %>
-
-                            <% if values.length == 1 %>
-                              <% unless values.first.nil? %>
-                                <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
-                              <% end %>
-
-                            <% elsif values.length > 1 %>
-                              <% ge_factor = values[0].ge_factor %>
-                              <div class="span12">
-
-                                <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
-                                  <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
-                                <% else %>
-                                  <span title="<%= ge_factor.long_name %> :  <%= ge_factor.description %>">
-                                    <%= key.humanize.upcase %>
+                                  <span class="attribute_tooltip" id='<%= "ge_model_factor_description_#{key}" %>' title="<%= model_factor_description.description %>" style="margin-left: 10px;">
+                                    <%= link_to (model_factor_description.description.nil? || model_factor_description.description.blank?) ? '...' :  model_factor_description.description.truncate(50),
+                                                ge.edit_ge_model_factor_description_path(model_factor_description, project_id: @project.id), remote: true %>
                                   </span>
-                                <% end %>
 
-                                <% model_factor_description = Ge::GeModelFactorDescription.where(ge_model_id: @ge_model.id, ge_factor_id: ge_factor.id, factor_alias: ge_factor.alias, module_project_id: @module_project.id , project_id: @project.id, organization_id: @ge_model.organization_id).first_or_create %>
+                                  <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
+                                  <% ids_list = values.map{ |f| f.id } %>
+                                  <% js_factor_data = Hash.new %>
+                                  <% values.map{ |f| js_factor_data["#{f.id}"] = f.value_text }  %>
+                                  <% @ge_input_values["#{key}"].nil? ? (selected_value = 0) : (selected_value = @ge_input_values["#{key}"][:ge_factor_value_id]) %>
 
-                                <span class="attribute_tooltip" id='<%= "ge_model_factor_description_#{key}" %>' title="<%= model_factor_description.description %>" style="margin-left: 10px;">
-                                  <%= link_to (model_factor_description.description.nil? || model_factor_description.description.blank?) ? '...' :  model_factor_description.description.truncate(50),
-                                              ge.edit_ge_model_factor_description_path(model_factor_description, project_id: @project.id), remote: true %>
-                                </span>
+                                  <!-- Get the default value -->
+                                  <% default_value = 0 %>
+                                  <% default_array = values.select{ |v| v.default? } %>
+                                  <% unless default_array.empty? %>
+                                    <% default_value = default_array.first.id %>
+                                  <% end %>
 
-                                <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
-                                <% ids_list = values.map{ |f| f.id } %>
-                                <% js_factor_data = Hash.new %>
-                                <% values.map{ |f| js_factor_data["#{f.id}"] = f.value_text }  %>
-                                <% @ge_input_values["#{key}"].nil? ? (selected_value = 0) : (selected_value = @ge_input_values["#{key}"][:ge_factor_value_id]) %>
+                                  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
-                                <!-- Get the default value -->
-                                <% default_value = 0 %>
-                                <% default_array = values.select{ |v| v.default? } %>
-                                <% unless default_array.empty? %>
-                                  <% default_value = default_array.first.id %>
-                                <% end %>
+                                  <div class="edition-bloc-slider">
+                                    <span class="edition-bloc-slider-value-<%= key %>"></span>
+                                    <div role="wrapper" class="gj-slider gj-slider-md">
+                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %>" value="" />
+                                    </div>
+                                    <script>
+                                        $(document).ready(function(){
+                                            $('.edition-bloc-slider-slider-<%= key %>').slider({
+                                                slide: function (e, value) {
+                                                    $('.edition-bloc-slider-value-<%= key %>').text(value);
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                  </div>
 
-                                <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="factor-slider" value="" />
-                                <hr>
-                              </div>
+                                  <hr>
+                                </div>
 
-                              <script type="text/javascript">
+                                <script type="text/javascript">
 
-                                var data_ids = <%= raw ids_list.to_json.html_safe %> ;
-                                var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
-                                var value_from = parseInt(<%= ids_list.index(selected_value) %>);
-                                var default_value = parseInt(<%= ids_list.index(default_value) %>);
+                                    var data_ids = <%= raw ids_list.to_json.html_safe %> ;
+                                    var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
+                                    var value_from = parseInt(<%= ids_list.index(selected_value) %>);
+                                    var default_value = parseInt(<%= ids_list.index(default_value) %>);
 
-                                <!-- Get the default value if value_from is NaN -->
-                                if(isNaN(value_from)){
-                                  value_from = default_value;
-                                }
+                                    <!-- Get the default value if value_from is NaN -->
+                                    if(isNaN(value_from)){
+                                        value_from = default_value;
+                                    }
 
-                                $('#<%= "factor_#{key}" %>').ionRangeSlider({
-                                  values: data_ids, //Array of factor_values ids
-                                  from: value_from,
-                                  grid: true,
-                                  hide_min_max: true,
-                                  prettify: function (num) {
-                                    return data_text_hash[num];
-                                  },
+                                    $('#<%= "factor_#{key}" %>').ionRangeSlider({
+                                        values: data_ids, //Array of factor_values ids
+                                        from: value_from,
+                                        grid: true,
+                                        hide_min_max: true,
+                                        prettify: function (num) {
+                                            return data_text_hash[num];
+                                        },
 
-                                  //When value change, need to calculate again the Person Month effort value
-                                  onFinish: function (data) {
-                                    //console.log("Action: " + $('form#ge_form').attr('action'));
-                                    //console.log("Params: " + $('form#ge_form').serialize());
+                                        //When value change, need to calculate again the Person Month effort value
+                                        onFinish: function (data) {
+                                            //console.log("Action: " + $('form#ge_form').attr('action'));
+                                            //console.log("Params: " + $('form#ge_form').serialize());
 
-                                    var valuesToSubmit = $('form#ge_form').serialize();
-                                    $.ajax({
-                                      type: "POST",
-                                      //url: $('form#ge_form').attr('action'), //given url of the form
-                                      url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
-                                      data: valuesToSubmit,
-                                      dataType: "script",
-                                      format: "js",
-                                      cache: true
+                                            var valuesToSubmit = $('form#ge_form').serialize();
+                                            $.ajax({
+                                                type: "POST",
+                                                //url: $('form#ge_form').attr('action'), //given url of the form
+                                                url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+                                                data: valuesToSubmit,
+                                                dataType: "script",
+                                                format: "js",
+                                                cache: true
+                                            });
+                                            return false;
+                                        }
                                     });
-                                    return false;
-                                  }
-                                });
 
-                              </script>
+                                </script>
+                              <% end %>
                             <% end %>
-                          <% end %>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                <% end %>
-              <% end %>
+                </div>
+              </div>
             <% end %>
           <% end %>
-        </div>
-      </div>
-  <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
 
   <br>
   <div class="row-fluid">
-    <div class="span6">
+    <div class="col-6">
 
       <% ge_effort_size_translation = { "effort" => I18n.t(:ge_effort), "retained_size" => I18n.t(:ge_size) } %>
       <% ["ent1", "ent2", "ent3", "ent4"].each_with_index do |input, index|
@@ -385,7 +405,7 @@
       </table>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
       <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
       <% unless @ge_model.output_pe_attribute.nil? %>
         <% attr = @ge_model.output_pe_attribute %>
@@ -542,3 +562,5 @@
     <hr>
   </div>
 <% end %>
+</section>
+

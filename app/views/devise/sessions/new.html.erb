@@ -11,6 +11,7 @@
       </div>
       <input placeholder="Votre identifiant" class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
     </div>
+
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="material-icons-outlined">vpn_key</i></div>
@@ -18,10 +19,12 @@
         <input placeholder="Votre mot de passe" class="mdl-textfield__input" type="password" id="password" name="user[password]" style="width: 360px;">
         <span class="mdl-textfield__error">Mot de passe inconnu. Réessayez ou cliquez sur “Mot de passe oublié”.</span>
       </div>
-      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3 mdl-js-ripple-effect--ignore-events is-upgraded" for="checkbox-1" data-upgraded=",MaterialCheckbox,MaterialRipple">
+
+      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="checkbox-1">
         <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input">
         <span class="mdl-checkbox__label">Se souvenir de moi</span>
-        <span class="mdl-checkbox__focus-helper"></span><span class="mdl-checkbox__box-outline"><span class="mdl-checkbox__tick-outline"></span></span><span class="mdl-checkbox__ripple-container mdl-js-ripple-effect mdl-ripple--center" data-upgraded=",MaterialRipple"><span class="mdl-ripple"></span></span></label>
+      </label>
+
       <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
         Se connecter</button>
       <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
@@ -33,8 +36,6 @@
     <% end %>
   </section>
 </div>
-
-
 
 
 <script>

@@ -188,6 +188,16 @@
 
   <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
+    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
+      <%= I18n.t(:wbs_activities) %>
+      <div class="edition-bloc-tools">
+        <% if can?(:execute_estimation_plan, @project) %>
+          <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-secondary" %>
+          <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+    </div>
+
     <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
     <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
       <div class="float_left">

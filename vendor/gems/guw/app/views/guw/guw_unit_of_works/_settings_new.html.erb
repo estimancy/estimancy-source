@@ -54,7 +54,7 @@
 
       <% if can? :execute_estimation_plan, @project %>
 <!--  <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
-        <%= link_to raw("<i class='material-icons'>clear</i>"), "#!", onclick: "multiraz()" %>
+        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()" %>
       <% end %>
     </div>
   </div>
@@ -117,7 +117,7 @@
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <%= @module_project %>
       <div class="edition-bloc-tools">
-        <a href="#"><i class="material-icons">add</i><%= I18n.t("add_a_group") %></a>
+        <a href="<%= guw.new_guw_unit_of_work_group_path %>"><i class="material-icons">add</i><%= I18n.t("add_a_group") %></a>
         <button class="btn btn-secondary"><%= I18n.t :recalculate_all %></button>
       </div>
     </div>
@@ -481,40 +481,27 @@
                 <%= hidden_field_tag :module_project_id, current_module_project.id %>
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
-                <p>
-                  <h5>
-                    <%= I18n.t(:uw_name) %>
-                  </h5>
-                  <%= text_field_tag :name, "", class: "form-control uo_name" %>
-                </p>
+                <%= I18n.t(:uw_name) %>
+                <%= text_field_tag :name, "", class: "form-control uo_name" %>
 
-                <p>
-                  <h5>
-                    <%= I18n.t(:comments) %>
-                  </h5>
-                  <%= text_area_tag :comments, "", rows: "5", class: "form-control uo_comment" %>
-                </p>
+                <%= I18n.t(:comments) %>
+                <%= text_area_tag :comments, "", rows: "5", class: "form-control uo_comment" %>
 
-                <p>
-                  <h5>
-                    <%= I18n.t(:type) %>
-                  </h5>
-                  <% unless @guw_types.nil? %>
-                    <%= select_tag :guw_type_id,
-                                   options_for_select(@guw_types.map{|i| [i.name, i.id]}),
-                                   include_blank: false,
-                                   class: "form-control uo_type" %>
-                  <% end %>
-                </p>
 
-                <p>
-                  <h5>
-                    <%= I18n.t(:group) %>
-                  </h5>
-                  <%= select_tag :guw_unit_of_work_group_id,
-                                 options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
-                                 class: "form-control input-xlarge" %>
-                </p>
+                <%= I18n.t(:type) %>
+                <% unless @guw_types.nil? %>
+                  <%= select_tag :guw_type_id,
+                                 options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+                                 include_blank: false,
+                                 class: "form-control uo_type" %>
+                <% end %>
+
+
+                <%= I18n.t(:group) %>
+                <%= select_tag :guw_unit_of_work_group_id,
+                               options_for_select(@current_module_project_guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort),
+                               class: "form-control input-xlarge" %>
+
               </div>
             </div>
           </div>
@@ -709,15 +696,6 @@
 
       <script>
           $(document).ready(function(){
-
-//            $(".up,.down").click(function(){
-//              var row = $(this).parents("tr.movable:first");
-//              if ($(this).is(".up")) {
-//                row.insertBefore(row.prev());
-//              } else {
-//                row.insertAfter(row.next());
-//              }
-//            });
 
               $(".up,.down").click(function() {
                   var row = $(this).parents("tr.movable:first");
