@@ -6,7 +6,8 @@
   letter-spacing: 0.02em;
   color: $brand-sixth-color;
   margin-left: 30px;
-  min-height: 211px;
+  min-height: 231px;
+  max-height: 231px;
 
   &:before {
     border-left: 2px solid #0099C9;

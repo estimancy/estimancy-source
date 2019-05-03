@@ -101,7 +101,6 @@
                         <% if can_show_estimation?(@project.original_model) %>
                           <% unless @project.original_model.nil? %>
                             <%= link_to(@project.original_model, dashboard_path(@project.original_model)) %>
-
                           <% end %>
                         <% else %>
                           <%= @project.original_model %>
@@ -225,240 +224,242 @@
         <br>
         <br>
 
-        <div id="plan" class="edition-page-group py-4"><span><%= I18n.t("estimation_plan") %></span></div>
-        <div class="card card-content-bloc estimation-edition">
-          <div class="card-body">
-            <div class="edition-bloc-title">
-              <%= I18n.t("estimation_plan") %>
-            </div>
-            <div class="edition-bloc-content">
-              <div class="p-3" style="background-color: #F8F9FA">
-                <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
-                                                                            "Base de connaissance de taille" => @skb_models,
-                                                                            "Modules d'opération" => @operation_models,
-                                                                            "Modules de Jugement d'Expert" => @ej_modules,
-                                                                            "Modules Activités / Profils" => @wbs_instances,
-                                                                            "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
-                                                                            "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
-                                                                            "Module d'Effort Génériques (ax^b)" => @ge_models}),
-                               :prompt => '', class: 'form-control',
-                               :disabled => !( (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:alter_estimation_plan, @project) || can_modify_estimation?(@project))) ) %>
+        <% if controller.action_name == "edit" || controller.action_name == "update" %>
+          <div id="plan" class="edition-page-group py-4"><span><%= I18n.t("estimation_plan") %></span></div>
+          <div class="card card-content-bloc estimation-edition">
+            <div class="card-body">
+              <div class="edition-bloc-title">
+                <%= I18n.t("estimation_plan") %>
               </div>
+              <div class="edition-bloc-content">
+                <div class="p-3" style="background-color: #F8F9FA">
+                  <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                              "Base de connaissance de taille" => @skb_models,
+                                                                              "Modules d'opération" => @operation_models,
+                                                                              "Modules de Jugement d'Expert" => @ej_modules,
+                                                                              "Modules Activités / Profils" => @wbs_instances,
+                                                                              "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
+                                                                              "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
+                                                                              "Module d'Effort Génériques (ax^b)" => @ge_models}),
+                                 :prompt => 'Add a new module', class: 'form-control',
+                                 :disabled => !( (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:alter_estimation_plan, @project) || can_modify_estimation?(@project))) ) %>
+                </div>
 
-              <div class="p-3" style="background-color: #F8F9FA">
-                <%= render 'module_projects/new_estimation_plan' %>
+                <div class="p-3" style="background-color: #F8F9FA">
+                  <%= render 'module_projects/new_estimation_plan' %>
+                </div>
+
               </div>
-
             </div>
           </div>
-        </div>
 
-        <br>
-        <br>
+          <br>
+          <br>
 
-        <div id="security" class="edition-page-group py-4"><span><%= I18n.t("securities") %></span></div>
-        <div class="card card-content-bloc estimation-edition">
-          <div class="card-body">
-            <div class="edition-bloc-content">
+          <div id="security" class="edition-page-group py-4"><span><%= I18n.t("securities") %></span></div>
+          <div class="card card-content-bloc estimation-edition">
+            <div class="card-body">
+              <div class="edition-bloc-content">
 
-              <h3>
-                <%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
-              </h3>
+                <h3>
+                  <%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
+                </h3>
 
-              <table class="table access-table">
-                <thead>
-                <tr>
-                  <th><%= I18n.t(:group_name)%></th>
-                  <% @organization.project_security_levels.each do |prj_level| %>
-                    <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
-                  <% end %>
-                </tr>
-                </thead>
-
-                <tbody>
-                <% @organization.groups.each do |group| %>
+                <table class="table access-table">
+                  <thead>
                   <tr>
-                    <td>
-                      <%= group.name %>
-                      <% @organization.project_security_levels.each do |prj_level| %>
-                        <%
-                          ps = ProjectSecurity.where(group_id: group.id,
-                                                     project_id: @project.id,
-                                                     project_security_level_id: prj_level.id,
-                                                     is_model_permission: false,
-                                                     is_estimation_permission: true).first
-                        %>
-                      <td>
-                        <div class="custom-control custom-checkbox">
-                          <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false, class: "custom-control-input") %>
-                          <label class="custom-control-label" for="group_securities_<%= prj_level.id %>_<%= group.id %>"></label>
-                        </div>
-                      </td>
-                    <% end %>
-                  </tr>
-                <% end %>
-                </tbody>
-              </table>
-
-              <div class="pull-right">
-                <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                  <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
-                  <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
-                <% end %>
-
-                <% if @project.is_model %>
-                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
-                <% else %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
-                <% end %>
-              </div>
-
-              <h3>
-                <%= @project.is_model ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_user_security_resume) %>
-              </h3>
-
-              <table class="table access-table">
-                <thead>
-                <tr>
-                  <th><%= I18n.t(:name)%></th>
-                  <% @organization.project_security_levels.each do |prj_level| %>
-                    <th class="filter-select">
-                      <span title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
-                    </th>
-                  <% end %>
-                </tr>
-                </thead>
-
-                <tbody>
-                <% if @project.is_model %>
-                  <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
-                  <% owner = User.where(initials: owner_key.value).first %>
-                  <%= hidden_field_tag "user_securities_#{owner.id}" %>
-                  <tr>
-                    <%= owner_key.value %>
+                    <th><%= I18n.t(:group_name)%></th>
                     <% @organization.project_security_levels.each do |prj_level| %>
-                      <%
-                        ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,
-                                                   project_id: @project.id,
-                                                   project_security_level_id: prj_level.id,
-                                                   is_model_permission: true,
-                                                   is_estimation_permission: false).first
-                      %>
-                      <% unless owner.nil? %>
-                        <td>
-                          <div class="custom-control custom-checkbox">
-                            <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.name, ps.nil? ? false : true, label: false, class: "custom-control-input") %>
-                            <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= owner.id %>"></label>
-                          </div>
-                        </td>
-                      <% end %>
+                      <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
                     <% end %>
                   </tr>
-                <% else %>
-                  <% @organization.users.each do |user| %>
+                  </thead>
+
+                  <tbody>
+                  <% @organization.groups.each do |group| %>
                     <tr>
                       <td>
-                        <%= user %>
-                      </td>
-                      <% @organization.project_security_levels.each do |prj_level| %>
-                        <%
-                          ps = ProjectSecurity.where(user_id: user.id,
-                                                     project_id: @project.id,
-                                                     project_security_level_id: prj_level.id,
-                                                     is_model_permission: false,
-                                                     is_estimation_permission: true).first
-                        %>
+                        <%= group.name %>
+                        <% @organization.project_security_levels.each do |prj_level| %>
+                          <%
+                            ps = ProjectSecurity.where(group_id: group.id,
+                                                       project_id: @project.id,
+                                                       project_security_level_id: prj_level.id,
+                                                       is_model_permission: false,
+                                                       is_estimation_permission: true).first
+                          %>
                         <td>
                           <div class="custom-control custom-checkbox">
-                            <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true, class: "custom-control-input") %>
-                            <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= user.id %>"></label>
+                            <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false, class: "custom-control-input") %>
+                            <label class="custom-control-label" for="group_securities_<%= prj_level.id %>_<%= group.id %>"></label>
                           </div>
                         </td>
                       <% end %>
                     </tr>
                   <% end %>
                   </tbody>
-                <% end %>
-                </table>
-
-              <div class="pull-right">
-                <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                  <%= submit_tag I18n.t('save'), :name => "user_security_levels", :class => 'btn btn-primary' %>
-                  <%= submit_tag I18n.t('apply'), :name => "user_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
-                <% end %>
-
-                <% if @project.is_model %>
-                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
-                <% else %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
-                <% end %>
-              </div>
-
-
-              <% if @project.is_model == true %>
-                <h3>
-                  <%= @project.is_model ? I18n.t(:label_from_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
-                </h3>
-
-                <table class="table table-list">
-                  <thead>
-                  <tr>
-                    <th><%= I18n.t(:group_name)%></th>
-                    <% @organization.project_security_levels.each do |prj_level| %>
-                      <th><span title="<%= display_security_level_description(prj_level) %>"><%= prj_level.name %></span></th>
-                    <% end %>
-                  </tr>
-                  </thead>
-                  <% @organization.groups.each do |group| %>
-                    <tr>
-                      <td>
-                        <%= group.name %>
-                        <% @organization.project_security_levels.each do |prj_level| %>
-                          <% ps = ProjectSecurity.where(group_id: group.id,
-                                                        project_id: @project.id,
-                                                        project_security_level_id: prj_level.id,
-                                                        is_model_permission: true,
-                                                        is_estimation_permission: false).first %>
-                        <td>
-                          <div class="custom-control custom-checkbox">
-                            <%= check_box_tag("group_securities_from_model[#{prj_level.id}][groupuser.id}]", group.id, !ps.nil?, class: "custom-control-input") %>
-                            <label class="custom-control-label" for="group_securities_from_model_<%= prj_level.id %>_<%= group.id %>"></label>
-                          </div>
-                        </td>
-                      <% end %>
-                    </tr>
-                  <% end %>
                 </table>
 
                 <div class="pull-right">
                   <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                    <%= submit_tag I18n.t('save'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                  <% end %>
+
+                  <% if @project.is_model %>
+                    <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                  <% else %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
                   <% end %>
                 </div>
 
-                <% if @project.is_model %>
-                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-                <% else %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                <h3>
+                  <%= @project.is_model ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_user_security_resume) %>
+                </h3>
+
+                <table class="table access-table">
+                  <thead>
+                  <tr>
+                    <th><%= I18n.t(:name)%></th>
+                    <% @organization.project_security_levels.each do |prj_level| %>
+                      <th class="filter-select">
+                        <span title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
+                      </th>
+                    <% end %>
+                  </tr>
+                  </thead>
+
+                  <tbody>
+                  <% if @project.is_model %>
+                    <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                    <% owner = User.where(initials: owner_key.value).first %>
+                    <%= hidden_field_tag "user_securities_#{owner.id}" %>
+                    <tr>
+                      <%= owner_key.value %>
+                      <% @organization.project_security_levels.each do |prj_level| %>
+                        <%
+                          ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,
+                                                     project_id: @project.id,
+                                                     project_security_level_id: prj_level.id,
+                                                     is_model_permission: true,
+                                                     is_estimation_permission: false).first
+                        %>
+                        <% unless owner.nil? %>
+                          <td>
+                            <div class="custom-control custom-checkbox">
+                              <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.name, ps.nil? ? false : true, label: false, class: "custom-control-input") %>
+                              <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= owner.id %>"></label>
+                            </div>
+                          </td>
+                        <% end %>
+                      <% end %>
+                    </tr>
+                  <% else %>
+                    <% @organization.users.each do |user| %>
+                      <tr>
+                        <td>
+                          <%= user %>
+                        </td>
+                        <% @organization.project_security_levels.each do |prj_level| %>
+                          <%
+                            ps = ProjectSecurity.where(user_id: user.id,
+                                                       project_id: @project.id,
+                                                       project_security_level_id: prj_level.id,
+                                                       is_model_permission: false,
+                                                       is_estimation_permission: true).first
+                          %>
+                          <td>
+                            <div class="custom-control custom-checkbox">
+                              <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true, class: "custom-control-input") %>
+                              <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= user.id %>"></label>
+                            </div>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                    </tbody>
+                  <% end %>
+                  </table>
+
+                <div class="pull-right">
+                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                    <%= submit_tag I18n.t('save'), :name => "user_security_levels", :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :name => "user_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                  <% end %>
+
+                  <% if @project.is_model %>
+                    <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                  <% else %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
+                  <% end %>
+                </div>
+
+
+                <% if @project.is_model == true %>
+                  <h3>
+                    <%= @project.is_model ? I18n.t(:label_from_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
+                  </h3>
+
+                  <table class="table table-list">
+                    <thead>
+                    <tr>
+                      <th><%= I18n.t(:group_name)%></th>
+                      <% @organization.project_security_levels.each do |prj_level| %>
+                        <th><span title="<%= display_security_level_description(prj_level) %>"><%= prj_level.name %></span></th>
+                      <% end %>
+                    </tr>
+                    </thead>
+                    <% @organization.groups.each do |group| %>
+                      <tr>
+                        <td>
+                          <%= group.name %>
+                          <% @organization.project_security_levels.each do |prj_level| %>
+                            <% ps = ProjectSecurity.where(group_id: group.id,
+                                                          project_id: @project.id,
+                                                          project_security_level_id: prj_level.id,
+                                                          is_model_permission: true,
+                                                          is_estimation_permission: false).first %>
+                          <td>
+                            <div class="custom-control custom-checkbox">
+                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][groupuser.id}]", group.id, !ps.nil?, class: "custom-control-input") %>
+                              <label class="custom-control-label" for="group_securities_from_model_<%= prj_level.id %>_<%= group.id %>"></label>
+                            </div>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                  </table>
+
+                  <div class="pull-right">
+                    <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                      <%= submit_tag I18n.t('save'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                    <% end %>
+                  </div>
+
+                  <% if @project.is_model %>
+                    <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+                  <% else %>
+                    <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  <% end %>
+
                 <% end %>
 
-              <% end %>
-
+              </div>
             </div>
           </div>
-        </div>
 
-        <div id="history" class="edition-page-group py-4"><span><%= I18n.t("label_project_history") %></span></div>
-        <div class="card card-content-bloc estimation-edition">
-          <div class="card-body">
-            <div class="edition-bloc-content">
-              <%= hidden_field_tag "current_showed_project_id", @project.id %>
-              <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
-              <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
+          <div id="history" class="edition-page-group py-4"><span><%= I18n.t("label_project_history") %></span></div>
+          <div class="card card-content-bloc estimation-edition">
+            <div class="card-body">
+              <div class="edition-bloc-content">
+                <%= hidden_field_tag "current_showed_project_id", @project.id %>
+                <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
+                <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
+              </div>
             </div>
           </div>
-        </div>
+        <% end %>
       </div>
 
       <div class="col-2">
@@ -468,15 +469,17 @@
             <li class="nav-item">
               <a class="nav-link group" href="#global1"><span><%= I18n.t("global_properties") %></span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link group" href="#plan"><span><%= I18n.t("estimation_plan") %></span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link group" href="#security"><span><%= I18n.t("securities") %></span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link group" href="#history"><span><%= I18n.t("label_project_history") %></span></a>
-            </li>
+            <% if controller.action_name == "edit" || controller.action_name == "update" %>
+              <li class="nav-item">
+                <a class="nav-link group" href="#plan"><span><%= I18n.t("estimation_plan") %></span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link group" href="#security"><span><%= I18n.t("securities") %></span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link group" href="#history"><span><%= I18n.t("label_project_history") %></span></a>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>
