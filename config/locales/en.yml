@@ -285,8 +285,15 @@ en:
 
   # header
   advanced_research: "Advanced research"
-  estimation_name, version_number, author... : "Estimation name, version number, author..."
+  estimation_name, version_number, author : "Estimation name, version number, author"
   home_estimancy: "Home Estimancy"
+  model: "Model"
+  property: "Property"
+  demands: "Demands"
+  values: "Values"
+  return: "Return"
+  to_the_list: "to the list"
+  see_the_detail: "See the detail"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"

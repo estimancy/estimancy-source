@@ -51,7 +51,7 @@
                   <i class="material-icons">search</i>
                 </span>
               </div>
-              <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder=<%= I18n.t (':estimation_name, version_number, author...') %> aria-label="search" aria-describedby="search-icon">
+              <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
               <div class="input-group-append global-search-bar-append">
                 <a class="input-group-text" href="#"><%= I18n.t :advanced_research %></a>
               </div>
@@ -169,29 +169,29 @@
 
       <div class="page-header page-edition-header">
         <div class="container text-center">
-          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
           <ul class="progressbar">
-            <li class="complete">Modèle<div class="losange"></div></li>
-            <li class="complete">Propriétés<div class="losange"></div></li>
-            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Valeurs<div class="losange"></div></li>
+            <li class="complete"><%= I18n.t :model %><div class="losange"></div></li>
+            <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>"><%= I18n.t :values %><div class="losange"></div></li>
           </ul>
           <div class="page-header-buttons">
             <% if controller.action_name == "dashboard" %>
                 <a class="estimancy" href="<%= edit_project_path(@project) %>">
                   <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
-                    Editer
+                    <%= I18n.t :edit %>
                   </button>
                 </a>
             <% else %>
                 <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
                   <button type="button" class="btn btn-secondary">
-                    Précedent
+                    <%= I18n.t :previous %>
                   </button>
                 </a>
               <% unless @project.nil? %>
                   <a class="estimancy" href="<%= dashboard_path(@project) %>">
                     <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
-                      Résultats
+                      <%= I18n.t :results %>
                     </button>
                   </a>
               <% end %>
@@ -207,8 +207,8 @@
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
           <ul class="progressbar">
             <li class="complete">Modèle<div class="losange"></div></li>
-            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>">Propriétés<div class="losange"></div></li>
-            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Valeurs<div class="losange"></div></li>
+            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :properties %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">><%= I18n.t :values %><div class="losange"></div></li>
           </ul>
           <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
         </div>
@@ -220,7 +220,7 @@
           <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>">Demandes</a>
+          <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
         </li>
       </ul>
 

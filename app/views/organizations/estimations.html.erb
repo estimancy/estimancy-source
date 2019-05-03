@@ -12,7 +12,7 @@
   <% end %>
 </div>
 
-<p><%= I18n.t("to_the_latest_estimations_consulted") %>
+<p>
   <span class="font-weight-bold"><%= I18n.t("quick_access") %></span> <%= I18n.t("to_the_latest_estimations_consulted") %>
 </p>
 
@@ -136,7 +136,7 @@
                     </div>
                     <a href="<%= dashboard_path(project) %>">
                       <button type="button" class="btn btn-secondary">
-                        Voir le détail
+                        <%= I18n.t :see_the_detail  %>
                       </button>
                     </a>
                   </div>

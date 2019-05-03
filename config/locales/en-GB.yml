@@ -271,12 +271,20 @@ en-gb:
   show_hide_wbs_header: "Show hide wbs header"
   show_only_ratio: "Show only ratio"
   variable_percentage_relation_to_input: "Definition of variables and their percentage in relation to the input value"
-  ratios_wbs: "TABLE OF RATIOS AND CALCULATION FORMULA OF EACH PHASE OF THE WBS"
+  ratios_wbs: "Table of ratios and calculation formula of each phase of the WBS"
 
   # header
   advanced_research: "Advanced research"
-  estimation_name, version_number, author...: "Estimation name, version number, author..."
+  estimation_name, version_number, author: "Estimation name, version number, author"
   home_estimancy: "Home Estimancy"
+  model: "Model"
+  property: "Property"
+  properties: "Properties"
+  values: "Values"
+  demands: "Demands"
+  return: "Return"
+  to_the_list: "to the list"
+  see_the_detail: "See the detail"
 
 
   label_user_security_resume: "User securities resume"
