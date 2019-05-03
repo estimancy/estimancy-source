@@ -281,10 +281,16 @@ en:
   show_hide_wbs_header: "Show hide wbs header"
   show_only_ratio: "Show only ratio"
   variable_percentage_relation_to_input: "Definition of variables and their percentage in relation to the input value"
-  ratios_wbs: "TABLE OF RATIOS AND CALCULATION FORMULA OF EACH PHASE OF THE WBS"
+  ratios_wbs: "Table of ratios and calculation formula of each phase of the WBS"
+  results_entering_the_module: "RESULTS ENTERING THE MODULE"
+  from: "From"
+  after_calculation: "AFTER CALCULATION"
+  select_the_model_of_your_choix: "Select the model of your choice"
+  create_new_model: "Create new model"
+  search_an_estimate_model: "SEARCH AN ESTIMATE MODEL"
 
   # header
-  advanced_research: "Advanced research"
+  advanced_research: "ADVANCED RESEARCH"
   estimation_name, version_number, author : "Estimation name, version number, author"
   home_estimancy: "Home Estimancy"
   model: "Model"
@@ -294,6 +300,17 @@ en:
   return: "Return"
   to_the_list: "to the list"
   see_the_detail: "See the detail"
+
+  #demand
+  demand_type: "Demand type"
+  create_a_demand: "Create a demand"
+  export_billing: "Export Billing"
+  SLA_synthesis: "SLA synthesis"
+
+  # all_organizations
+  welcome: "Welcome"
+  select_an_organization: "Select an organization"
+  create_a_new_organization: "Create new organization"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"

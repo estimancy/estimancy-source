@@ -1,14 +1,13 @@
 <div class="d-flex align-items-center mt-4">
   <div style="flex: 1">
     <h1>
-      Liste des demandes
+      <%= I18n.t :demands_list %>
     </h1>
   </div>
-  <%= link_to "Créer une demande", new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to "Exporter la facturation", organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to "Synthèse SLA", organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t :create_a_demand, new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t :export_billing, organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t :SLA_synthesis, organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
 </div>
-
 
 
 <table class="table table-list">
@@ -16,19 +15,19 @@
   <thead>
     <tr>
       <th>
-        Name
+        <%= I18n.t :name %>
       </th>
       <th>
-        Type de demande
+        <%= I18n.t :demand_type %>
       </th>
       <th>
         Application
       </th>
       <th>
-        Statut
+        <%= I18n.t :state %>
       </th>
       <th>
-        Besoin Métier
+        <%= I18n.t :business_need %>
       </th>
       <th>
         Date
