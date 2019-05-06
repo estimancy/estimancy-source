@@ -23,13 +23,13 @@
           <dd><span class="label label-info"> <%= ruby_version %> </span></dd>
           <dt>Rails</dt>
           <dd><span class="label label-info"> <%= rails_version %> </span></dd>
-          <dt>Environnement</dt>
+          <dt><%= I18n.t :environment %></dt>
           <dd><span class="label label-info"> <%= environment %> </span></dd>
           <dt>SGBD</dt>
           <dd><span class="label label-info"> <%= database_adapter %> </span></dd>
-          <dt>Domaine</dt>
+          <dt><%= I18n.t :field %></dt> <%# Domaine %>
           <dd><span class="label label-info"> <%= root_url %> </span></dd>
-          <dt>Navigateur</dt>
+          <dt><%= I18n.t :browser %></dt>
           <dd><span class="label label-info"> <%= browser %> <%= version_browser %> (<%= platform %>)</span></dd>
           <dt>OS</dt>
           <dd><span class="label label-info"> <%= os %></span></dd>
@@ -41,9 +41,9 @@
         <h2><%= I18n.t(:contact_us) %></h2>
         <hr class="bs-docs-separator">
         <ul>
-          <li> <b>Par e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li><br/>
-          <li> <b>Par télephone : </b> +33 977 21 67 89 </li><br/>
-          <li> <b>Par Skype : </b> </li><br/>
+          <li> <b><%= I18n.t :via %> e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li><br/>
+          <li> <b><%= I18n.t :via %> télephone : </b> +33 977 21 67 89 </li><br/>
+          <li> <b><%= I18n.t :via %> Skype : </b> </li><br/>
 
             <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
             <div id="SkypeButton_Call_PSEUDO_1" class="skype">

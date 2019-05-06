@@ -2,7 +2,7 @@
   <ul>
     <li>
       <a href="#tabs-1">
-        Nouveau livrable
+        <%= I18n.t :new_livrable %>
       </a>
     </li>
   </ul>
@@ -13,7 +13,7 @@
 
       <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
       <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge' } %>
-      <%= f.input :service_id, as: :select, collection: @organization.services{|i| [i.name, i.id]} , :label => "Service associé", :input_html => {:class => 'input-xxlarge' } %>
+      <%= f.input :service_id, as: :select, collection: @organization.services{|i| [i.name, i.id]} , :label => "#{I18n.t :associated_service}", :input_html => {:class => 'input-xxlarge' } %>
 
       <%= f.input :state, :label => I18n.t('state'), :input_html => {:class => 'input-xxlarge' } %>
 

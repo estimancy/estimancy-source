@@ -300,7 +300,73 @@ en-gb:
   # all_organizations
   welcome: "Welcome"
   select_an_organization: "Select an organization"
-  create_a_new_organization: "Create new organization"
+  create_new_organization: "Create new organization"
+
+  # user
+  user_list: Users list
+
+  # organization/settings
+  entry_date: "Entry date"
+  release_date : "Release date"
+
+  # organization/setting_demands
+  severity: "Severity"
+  create_demand_status: "Create a demand status"
+  number: "Number"
+  color: "Couleur"
+  create_demand_type: "Create a demand type"
+  cost_source: "Cost source"
+  starting_status: "Starting status"
+  create_a_livrable: "Create a livrable"
+  states: "States"
+  associated_service: "Associated service"
+  create_a_service: "Create a service"
+  criticality: "Criticality"
+  new_demand_status: "New demand status"
+
+  # guw_models
+  new_generic_size_model: "New generic size model"
+  other_settings: "Other settings"
+  type_of_configuration: "Type of configuration"
+  allow_technologies: "Allow technologies"
+  enable_data_visualization: "Enable data visualization"
+  display_default: "Default display"
+  configuration_of_the_import_type: "Configuration of the import type"
+  enable_import: "Enable import"
+  IA_server: "IA server"
+  IA_optional: "IA optional"
+  enable_import_via_excel: "Enable import via Excel"
+  enable_import_via_jira: "Enable import via JIRA"
+  enable_import_via_Redmine: "Enable import via Redmine"
+  server_address: "Server address"
+  old_configuration: "Old configuration"
+  new_configuration: "New configuration"
+  column: "Column"
+  criteria: "Criteria"
+  coeff_complexity: "Complexity Coeff."
+
+  # contact support
+  contactsupport: "Contact Support"
+  your_configuration : "Your configuration"
+  environment: "Environment"
+  field: "Field"
+  browser: "Browser"
+  via: "Via"
+
+  # security audit utilities view
+  begin_date: "Start date"
+  close_date: "End date"
+  view_audit_history: "View audit history"
+  delete_all_history: "Delete all history"
+
+  # maintenances
+  object: Object
+
+  # organizations/form
+  select_size_module: "Select the size module"
+
+  # applications/form
+  budget_label: "Budget label"
 
 
   label_user_security_resume: "User securities resume"
