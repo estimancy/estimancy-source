@@ -1,4 +1,4 @@
-<div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-9' : 'col-8' %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
+<div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-10' : "#{current_module_project.show_results_view ? 'col-8' : 'col-10'}" %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
 
   <% if current_module_project.pemodule.alias != "initialization" %>
     <%= render(:partial => 'projects/setting_module') %>
@@ -57,19 +57,22 @@
           <% end %>
         <% end %>
 
+
+        <% @label_widget_hash.each do |k| %>
+          <div class="widget-group-label">
+            <span>
+              <%= @label_widget_hash[k] %>
+            </span>
+          </div>
+        <% end %>
+
+        <% @widgets = @kpi_widget_hash.merge(@data_widget_hash) %>
         <div class="widget-list-content">
           <div class="widget-group">
-            <% @label_widget_hash.keys[0..2].each do |k| %>
-              <div class="widget-group-label">
-                <span>
-                  <%= @label_widget_hash[k] %>
-                </span>
-              </div>
-            <% end %>
             <ul class="widget-group-list">
-              <% @data_widget_hash.keys.each do |k| %>
-                <% view_widget = @data_widget_hash[k].first %>
-                <% value = @data_widget_hash[k].last %>
+              <% @widgets.keys.each do |k| %>
+                <% view_widget = @widgets[k].first %>
+                <% value = @widgets[k].last %>
                 <% unless value.is_a?(Hash) %>
                   <li>
                     <div class="card card-widget card-indicator card-indicator-with-module">

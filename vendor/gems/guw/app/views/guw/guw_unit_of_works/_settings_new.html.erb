@@ -19,8 +19,9 @@
 
   <% @guw_coefficients = @guw_model.guw_coefficients %>
 
-  <div class="d-flex align-items-center mt-4">
-    <div style="flex: 1">
+
+  <div class="row">
+    <div class="col-9">
       <h2>
         <%= @project.to_s %>
         <small style="color: <%= @project.status_background_color %>">
@@ -30,32 +31,14 @@
         </small>
       </h2>
     </div>
-
-    <div class="tools">
-      <% if can? :execute_estimation_plan, @project %>
-        <%= link_to raw("<i class='material-icons'>group</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model) %>
-      <% end %>
-
-      <% if can? :execute_estimation_plan, @project %>
-        <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
-          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!", "data-toggle": "modal", "data-target": "#extract" %>
+    <div class="col-3">
+      <small class="tools float-right">
+        <% if current_module_project.show_results_view %>
+          <%= link_to 'Cacher les résultats', show_module_project_results_view_path(module_project_id: current_module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{current_module_project.pemodule.title}"), remote: true %>
+        <% else %>
+          <%= link_to 'Afficher les résultats', show_module_project_results_view_path(module_project_id: current_module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{current_module_project.pemodule.title}"), remote: true %>
         <% end %>
-      <% end %>
-
-      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
-        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post" %>
-      <% else %>
-        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_path(@guw_model), method: "post" %>
-      <% end %>
-
-      <% if @guw_model.view_data == true %>
-        <%= link_to raw("<i class='material-icons'>screen_share</i>"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank %>
-      <% end %>
-
-      <% if can? :execute_estimation_plan, @project %>
-<!--  <button type="submit" name="commit[all]" class="guw_submit" data-disable-with="<%#= I18n.t :please_wait %>"><i class='material-icons'>flash_on</i></button>-->
-        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()" %>
-      <% end %>
+      </small>
     </div>
   </div>
 
@@ -111,6 +94,34 @@
                                deported: false).each do |guw_coef| %>
     <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
   <% end %>
+
+  <div class="row">
+    <div class="col-12 tools">
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to raw("<i class='material-icons'>group</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "float-right" %>
+      <% end %>
+
+      <% if can? :execute_estimation_plan, @project %>
+        <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
+          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!", "data-toggle": "modal", "data-target": "#extract", class: "float-right" %>
+        <% end %>
+      <% end %>
+
+      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right" %>
+      <% else %>
+        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right" %>
+      <% end %>
+
+      <% if @guw_model.view_data == true %>
+        <%= link_to raw("<i class='material-icons'>screen_share</i>"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank %>
+      <% end %>
+
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()", class: "float-right" %>
+      <% end %>
+    </div>
+  </div>
 
   <section class="estimation-modules-edition">
 

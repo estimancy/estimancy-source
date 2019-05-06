@@ -1,35 +1,37 @@
-<div class="col-2 pl-4 ml-n3">
-  <div id="results-sidebar" class="py-6">
-    <div class="results-sidebar-title">Résultats entrant dans le module</div>
-    <p>
-      <% unless current_module_project.preceding.nil? %>
-        Depuis <a href="#"><%= current_module_project.preceding.name %></a>
-        <% current_module_project.estimation_values.where(in_out: "input").all.each do |ev| %>
-          <% value = ev.string_data_probable[current_component.id] %>
-          <% unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
-            <span class="results-sidebar-value"><%= ev %><span><%= value.to_f %></span></span>
-          <% end %>
-        <% end %>
-      <% end %>
-    </p>
-    <div class="results-sidebar-divider"></div>
-    <div class="results-sidebar-title">RéSULTATS <span><%= current_module_project %></span> APRES CALCUL</div>
-    <ul class="results-sidebar-after-calculation flex-column">
-      <% current_module_project.estimation_values.where(in_out: "output").all.each do |ev| %>
-        <li>
-          <% value = ev.string_data_probable[current_component.id] %>
-          <% unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
-            <div class="card card-widget module-indicator module-indicator-without-module">
-              <div class="card-body">
-                <div class="module-indicator-type"></div>
-                <div class="module-indicator-text"><%= ev %></div>
-                <div class="module-indicator-quantity"><span><%= value %></span></div>
+<% if current_module_project.show_results_view %>
+  <div class="col-2 pl-4">
+    <div id="results-sidebar" class="py-6">
+<!--      <div class="results-sidebar-title">Résultats entrant dans le module</div>-->
+<!--      <p>-->
+        <%# unless current_module_project.preceding.nil? %>
+<!--          Depuis <a href="#"><%#= current_module_project.preceding.name %></a>-->
+          <%# current_module_project.estimation_values.where(in_out: "input").all.each do |ev| %>
+            <%# value = ev.string_data_probable[current_component.id] %>
+            <%# unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
+<!--              <span class="results-sidebar-value"><%#= ev %><span><%#= value.to_f %></span></span>-->
+            <%# end %>
+          <%# end %>
+        <%# end %>
+<!--      </p>-->
+<!--      <div class="results-sidebar-divider"></div>-->
+      <div class="results-sidebar-title">Résultats</div>
+      <ul class="results-sidebar-after-calculation flex-column">
+        <% current_module_project.estimation_values.where(in_out: "output").all.each do |ev| %>
+          <li>
+            <% value = ev.string_data_probable[current_component.id] %>
+            <% unless value.nil? || value.blank? || value.is_a?(Hash) || value == 0.0 %>
+              <div class="card card-widget module-indicator module-indicator-without-module">
+                <div class="card-body">
+                  <div class="module-indicator-type"></div>
+                  <div class="module-indicator-text"><%= ev %> (unité) </div>
+                  <div class="module-indicator-quantity"><span><%= value %></span></div>
+                </div>
               </div>
-            </div>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-    <div class="results-sidebar-divider"></div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+      <div class="results-sidebar-divider"></div>
+    </div>
   </div>
-</div>
+<% end %>

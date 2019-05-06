@@ -65,8 +65,11 @@ html {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+    /* Modif Estimancy 0 au lieu de -15 a cause du dashboard qui débordait à droite */
   margin-right: -15px;
-  margin-left: -15px;
+    /* Fin Modif Estimancy */
+
+    margin-left: -15px;
 }
 
 .no-gutters {

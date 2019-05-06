@@ -173,7 +173,7 @@
           <ul class="progressbar">
             <li class="complete"><%= I18n.t :model %><div class="losange"></div></li>
             <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
-            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>"><%= I18n.t :values %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Dashboard<div class="losange"></div></li>
           </ul>
           <div class="page-header-buttons">
             <% if controller.action_name == "dashboard" %>
@@ -185,7 +185,7 @@
             <% else %>
               <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
                 <button type="button" class="btn btn-secondary">
-                  <%= I18n.t :previous %>
+                  <%= I18n.t :model %>
                 </button>
               </a>
               <% unless @project.nil? || @project.new_record? %>
@@ -207,8 +207,8 @@
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
           <ul class="progressbar">
             <li class="complete">Modèle<div class="losange"></div></li>
-            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :properties %><div class="losange"></div></li>
-            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">><%= I18n.t :values %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Dashboard<div class="losange"></div></li>
           </ul>
           <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
         </div>
