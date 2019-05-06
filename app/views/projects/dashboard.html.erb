@@ -38,19 +38,19 @@
             <% module_project_view_widgets.each do |view_widget| %>
               <% if view_widget.is_label_widget? %>
                 <% view_widget_data = get_label_widget_data(view_widget.id) %>
-                <% @label_widget_hash[view_widget.name] = view_widget_data[:string_data_probable] %>
+                <% @label_widget_hash[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
               <% elsif view_widget.is_kpi_widget? %>
                 <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
-                <% @kpi_widget_hash[view_widget.name] = view_widget_data %>
+                <% @kpi_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
               <% else %>
                 <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
                   <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
                   <% if view_widget.widget_type == "text" %>
-                    <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                    <% @data_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
                   <% end %>
                 <% else %>
                   <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
-                  <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                  <% @data_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
                 <% end %>
               <% end %>
             <% end %>
@@ -67,18 +67,26 @@
               </div>
             <% end %>
             <ul class="widget-group-list">
-              <% @data_widget_hash.keys.reverse.each do |k| %>
-                <% value = @data_widget_hash[k] %>
+              <% @data_widget_hash.keys.each do |k| %>
+                <% view_widget = @data_widget_hash[k].first %>
+                <% value = @data_widget_hash[k].last %>
                 <% unless value.is_a?(Hash) %>
                   <li>
                     <div class="card card-widget card-indicator card-indicator-with-module">
                       <div class="card-body">
-                        <div class="card-indicator-type"><%= I18n.t("module_name") %></div>
+                        <div class="card-indicator-type"><%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %></div>
                         <div class="card-indicator-text"><%= k %></div>
                         <div class="<%= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">
                           <span>
                             <%= value.nil? ? '-' : value %>
                           </span>
+                            <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                              <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                              <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                            <% end %>
+                            <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                              <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                            <% end %>
                         </div>
                       </div>
                     </div>
