@@ -41,7 +41,7 @@
 
     <% if can? :manage, BudgetType %>
       <div class="buttons">
-        <%= link_to I18n.t('create_button'), new_organization_application_budget_type_path(@organization, @application), :class => 'btn' %>
+        <%= link_to I18n.t('create_button'), new_organization_application_path(@organization, @application), :class => 'btn' %>
       </div>
     <% end %>
 
@@ -49,7 +49,7 @@
 
     <table class="table table-list">
       <tr>
-        <th>Libelle du budget</th>
+        <th><%= I18n.t :budget_label %></th>     <%# Libelle du budget %>
         <th>Actions</th>
       </tr>
       <% @application.budget_types.each do |bt| %>

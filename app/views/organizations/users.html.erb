@@ -2,7 +2,7 @@
   <div class="d-flex align-items-center mt-4">
     <div style="flex: 1">
       <h1>
-        Liste des utilisateurs
+        <%= I18n.t :user_list %>
       </h1>
     </div>
     <% if can? :manage, User, :organization_id => @organization.id %>

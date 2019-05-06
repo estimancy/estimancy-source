@@ -281,10 +281,16 @@ en:
   show_hide_wbs_header: "Show hide wbs header"
   show_only_ratio: "Show only ratio"
   variable_percentage_relation_to_input: "Definition of variables and their percentage in relation to the input value"
-  ratios_wbs: "TABLE OF RATIOS AND CALCULATION FORMULA OF EACH PHASE OF THE WBS"
+  ratios_wbs: "Table of ratios and calculation formula of each phase of the WBS"
+  results_entering_the_module: "RESULTS ENTERING THE MODULE"
+  from: "From"
+  after_calculation: "AFTER CALCULATION"
+  select_the_model_of_your_choix: "Select the model of your choice"
+  create_new_model: "Create new model"
+  search_an_estimate_model: "SEARCH AN ESTIMATE MODEL"
 
   # header
-  advanced_research: "Advanced research"
+  advanced_research: "ADVANCED RESEARCH"
   estimation_name, version_number, author : "Estimation name, version number, author"
   home_estimancy: "Home Estimancy"
   model: "Model"
@@ -294,6 +300,83 @@ en:
   return: "Return"
   to_the_list: "to the list"
   see_the_detail: "See the detail"
+
+  #demand
+  demand_type: "Demand type"
+  create_a_demand: "Create a demand"
+  export_billing: "Export Billing"
+  SLA_synthesis: "SLA synthesis"
+
+  # all_organizations
+  welcome: "Welcome"
+  select_an_organization: "Select an organization"
+  create_new_organization: "Create new organization"
+
+  # user
+  user_list: Users list
+
+  # organization/settings
+  entry_date: "Entry date"
+  release_date: "Release date"
+
+  # organization/setting_demands
+  severity: Severity
+  create_demand_status: "Create a demand status"
+  number: "Number"
+  color: "Couleur"
+  create_demand_type: "Create a demand type"
+  cost_source: "Cost source"
+  starting_status: "Starting status"
+  create_a_livrable: "Create a livrable"
+  states: "States"
+  associated_service: "Associated service"
+  create_a_service: "Create a service"
+  criticality: "Criticality"
+  new_demand_status: "New demand status"
+
+  # guw_models
+  new_generic_size_model: "New generic size model"
+  other_settings: "Other settings"
+  type_of_configuration: "Type of configuration"
+  allow_technologies: "Allow technologies"
+  enable_data_visualization: "Enable data visualization"
+  display_default: "Default display"
+  configuration_of_the_import_type: "Configuration of the import type"
+  enable_import: "Enable import"
+  IA_server: "IA server"
+  IA_optional: "IA optional"
+  enable_import_via_excel: "Enable import via Excel"
+  enable_import_via_jira: "Enable import via JIRA"
+  enable_import_via_Redmine: "Enable import via Redmine"
+  server_address: "Server address"
+  old_configuration: "Old configuration"
+  new_configuration: "New configuration"
+  column: "Column"
+  criteria: "Criteria"
+  coeff_complexity: "Complexity Coeff."
+
+  # contact support
+  contactsupport: "Contact Support"
+  your_configuration: "Your configuration"
+  environment: "Environment"
+  field: "Field"
+  browser: "Browser"
+  via: "Via"
+
+  # security audit utilities view
+  begin_date: "Start date"
+  close_date: "End date"
+  view_audit_history: "View audit history"
+  delete_all_history: "Delete all history"
+
+  # maintenances
+  object: Object
+
+  # organizations/form
+  select_size_module: "Select the size module"
+
+  # applications/form
+  budget_label: "Budget label"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"

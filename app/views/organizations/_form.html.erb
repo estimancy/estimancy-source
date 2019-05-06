@@ -42,13 +42,10 @@
             <%= f.input :headband_title, :label => I18n.t('headband_title'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
             <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
 
-
           </div>
         </div>
 
-
       <br>
-
 
         <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
           <% if action_name == 'edit' %>
@@ -76,8 +73,9 @@
           <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => I18n.t(:currency), :required => true %>
           <%= f.input :cost_per_hour, :label => I18n.t('cost_per_hour'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
 
+          <%# Sélectionnez le module de taille %>
           <hr>
-            Sélectionnez le module de taille
+            <%= I18n.t :select_size_module %>
           <br>
 
           <table class="table table-list">

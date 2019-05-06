@@ -1,9 +1,10 @@
 <div style="margin-top: 100px"></div>
 <div class="page-edition-content pt-6">
   <div class="d-flex align-items-center mt-4">
-    <h2>1. Sélectionnez le modèle de votre choix</h2>
+    <%#= 1. Sélectionnez le modèle de votre choix %>
+    <h2><%= I18n.t :select_the_model_of_your_choix  %></h2>
     <% if can? :manage_estimation_models, Project %>
-      <a href="<%= new_project_path(organization_id: @organization.id, is_model: true) %>" class="new-template-link">Créer un nouveau modèle</a>
+      <a href="<%= new_project_path(organization_id: @organization.id, is_model: true) %>" class="new-template-link"><%= I18n.t :create_new_model %></a>
     <% end %>
   </div>
 </div>
@@ -11,7 +12,8 @@
 <div class="mb-6">
   <div class="estimation-template-list">
     <div class="estimation-template-list-filter">
-      <label for="templateSearchBar">RECHERCHER UN MODELE D’ESTIMATION</label>
+      <%# RECHERCHER UN MODELE D’ESTIMATION %>
+      <label for="templateSearchBar"><%= I18n.t :search_an_estimate_model %></label>
       <div class="input-group template-search-bar">
         <div class="input-group-prepend template-search-bar-prepend">
         <span class="input-group-text" id="search-icon">

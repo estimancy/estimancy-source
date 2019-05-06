@@ -9,12 +9,12 @@
 
 
       <div class="input string optional user_initials">
-        <label class="string control-label" for="objet">Objet</label>
+        <label class="string control-label" for="objet"><%= I18n.t :object %></label>
         <input class="string input-xxlarge" id="objet" name="objet" size="50" type="text">
       </div>
 
       <div class="input string optional user_initials">
-        <label class="string optional control-label" for="message">Message de maintenance</label>
+        <label class="string optional control-label" for="message"><%= I18n.t :maintenance_message %></label>
         <%= text_area_tag "message", "", class: "tinymce optional", rows: "15" %>
       </div>
 

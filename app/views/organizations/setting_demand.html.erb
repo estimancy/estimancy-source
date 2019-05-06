@@ -3,21 +3,21 @@
     <li><a href="#demands_statuses"><%= I18n.t(:demands_statuses) %></a></li>
     <li><a href="#demandes_types"><%= I18n.t(:demands_types) %></a></li>
     <li><a href="#services"><%= I18n.t(:services) %></a></li>
-    <li><a href="#criticality">Criticité</a></li>
-    <li><a href="#severity">Sévérité</a></li>
+    <li><a href="#criticality"><%= I18n.t :criticality %></a></li>
+    <li><a href="#severity"><%= I18n.t :severity %></a></li>
     <li><a href="#livrables"><%= I18n.t(:livrable) %></a></li>
   </ul>
 
   <div id="criticality">
 
-    <%= link_to "Sévérité", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
+    <%= link_to "#{I18n.t :severity}", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
 
     <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
       <thead>
       <tr>
         <th>
-          Nom
+          <%= I18n.t :name %>
         </th>
       </tr>
       </thead>
@@ -36,7 +36,7 @@
       <thead>
       <tr>
         <th>
-          Nom
+          <%= I18n.t :name %>
         </th>
       </tr>
       </thead>
@@ -52,26 +52,27 @@
 
   <div id="demands_statuses">
     <% if @organization.demand_statuses.length > 0 %>
-      <%= link_to "Créer une statut de demande", new_organization_demand_status_path(@organization), class: "btn btn-primary btn-estimancy" %>
+      <%# créer une statut de demande %>
+      <%= link_to "#{I18n.t :create_demand_status}", new_organization_demand_status_path(@organization), class: "btn btn-primary btn-estimancy" %>
       <hr>
 
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
         <thead>
         <tr>
           <th>
-            Nom
+            <%= I18n.t :name %>
           </th>
           <th>
-            Type de demande
+            <%= I18n.t :demand_type %>
           </th>
           <th>
-            Numéro
+            <%= I18n.t :number %>
           </th>
           <th>
             Alias
           </th>
           <th>
-            Couleur
+            <%= I18n.t :color  %>
           </th>
         </tr>
         </thead>
@@ -91,16 +92,16 @@
   </div>
 
   <div id="demandes_types">
-
-    <%= link_to "Créer une type de demande", new_organization_demand_type_path(@organization), class: "btn btn-primary btn-estimancy" %>
+    <%# "Créer une type de demande %>
+    <%= link_to "#{I18n.t :create_demand_type}", new_organization_demand_type_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
     <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
       <thead>
       <tr>
-        <th>Nom</th>
-        <th>Description</th>
-        <th>Provenance des coûts</th>
-        <th>Statut de départ</th>
+        <th><%= I18n.t :name %></th>
+        <th><%= I18n.t :description %></th>
+        <th><%= I18n.t :cost_source %></th>  <%# provenance des couts %>
+        <th><%= I18n.t :starting_status  %></th>
         <th>Actions</th>
       </tr>
       </thead>
@@ -125,22 +126,22 @@
   </div>
 
   <div id="livrables">
-    <%= link_to "Créer un livrable", new_organization_livrable_path(@organization), class: "btn btn-primary btn-estimancy" %>
+    <%= link_to "#{I18n.t :create_a_livrable}", new_organization_livrable_path(@organization), class: "btn btn-primary btn-estimancy" %>
     <hr>
     <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">
       <thead>
         <tr>
           <th>
-            Name
+            <%= I18n.t :name %>
           </th>
           <th>
-            Description
+            <%= I18n.t :description %>
           </th>
           <th>
-            Etats
+            <%= I18n.t :states %> <%# états %>
           </th>
           <th>
-            Service associé
+            <%= I18n.t :associated_service %>
           </th>
         </tr>
       </thead>
@@ -165,7 +166,7 @@
 
   <div id="services">
 
-      <%= link_to "Créer un service", new_organization_service_path(@organization), class: "btn btn-primary btn-estimancy" %>
+      <%= link_to "#{I18n.t :create_a_service}", new_organization_service_path(@organization), class: "btn btn-primary btn-estimancy" %>
       <hr>
 
       <table id="table_list_1" class="table tablesorter Pager table-striped table-bordered table-condensed">

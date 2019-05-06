@@ -1,19 +1,19 @@
 
   <div class="d-flex align-items-center mt-4">
     <div style="flex: 1">
-      <h1>Sélectionnez une organisation</h1>
+      <h1><%= I18n.t :select_an_organization %></h1>
     </div>
     <% if can? :manage, Organization %>
       <a href="<%= new_organization_path %>">
         <button type="button" class="btn btn-primary">
-          Créer une nouvelle organisation
+          <%= I18n.t :create_new_organization %>
         </button>
       </a>
     <% end %>
   </div>
 
   <p>
-    Bienvenue <span class="font-weight-bold"><%= current_user %></span>
+    <%= I18n.t :welcome %> <span class="font-weight-bold"><%= current_user %></span>
   </p>
 
   <ul class="portal-page-widget-list mt-5 mb-6">
