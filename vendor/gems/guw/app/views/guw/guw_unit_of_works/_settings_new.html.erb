@@ -10,15 +10,22 @@
   </div>
 
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
-                                                          project_id: @project.id,
-                                                          module_project_id: current_module_project.id,
-                                                          pbs_project_element_id: current_component.id) %>
+  <% current_mp = current_module_project %>
+  <% current_psb =  current_component %>
+  <% organization_id = @guw_model.organization_id %>
+  <% project_id = @project.id %>
+
+  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
+                                                          guw_model_id: @guw_model.id,
+                                                          project_id: project_id,
+                                                          module_project_id: current_mp.id,
+                                                          pbs_project_element_id: current_psb.id) %>
+
   <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
-                                                                  project_id: @project.id,
+                                                                  project_id: project_id,
                                                                   module_project_id: current_module_project.id,
-                                                                  pbs_project_element_id: current_component.id) %>
-  <% @guw_coefficients = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id) #@guw_model.guw_coefficients %>
+                                                                  pbs_project_element_id: current_psb.id) %>
+  <% @guw_coefficients = Guw::GuwCoefficient.where(organization_id: organization_id, guw_model_id: @guw_model.id) #@guw_model.guw_coefficients %>
 
   <div class="row-fluid">
     <div class="span12">
@@ -36,12 +43,12 @@
 
       <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn", method: "post" %>
 
-      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+      <% if current_mp.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
         <%= link_to "Exporter avec phases", guw.guw_model_export_with_wbs_path(@guw_model), class: "btn", method: "post" %>
       <% end %>
 
       <% if @guw_model.view_data == true %>
-        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_psb.id, module_project_id: current_mp.id), method: "get", class: "btn btn-primary", target: :_blank %>
       <% end %>
 
       <% if can? :execute_estimation_plan, @project %>
@@ -54,7 +61,7 @@
   <div class="row-fluid">
     <hr>
     <div class="pull-right">
-      <% @guw_outputs = @guw_model.guw_outputs %>
+      <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
       <% guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>
 
       <% guw_outputs_with_subtotal.each do |guw_output| %>
@@ -63,7 +70,12 @@
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
             <%= @unit_of_work_groups.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+              i.guw_unit_of_works.where(organization_id: organization_id,
+                                        guw_model_id: @guw_model.id,
+                                        project_id: project_id,
+                                        module_project_id: current_mp.id,
+                                        pbs_project_element_id: current_psb.id,
+                                        selected: true).flatten.map do |i|
                 i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : (i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
@@ -77,7 +89,12 @@
           <span class="ajusted_size">
             <!-- Vue  ModuleProjectGuwUnitOfWork -->
             <%= @unit_of_work_groups.map do |i|
-              i.guw_unit_of_works.where(selected: true).flatten.map do |i|
+              i.guw_unit_of_works.where(organization_id: organization_id,
+                                        guw_model_id: @guw_model.id,
+                                        project_id: project_id,
+                                        module_project_id: current_mp.id,
+                                        pbs_project_element_id: current_psb.id,
+                                        selected: true).flatten.map do |i|
                 i.size.is_a?(Numeric) ? i.size.to_f : (i.size.nil? ? 0 : i.size["#{guw_output.id}"].to_f)
               end
             end.flatten.compact.sum.to_f.round(3) %>
@@ -90,8 +107,8 @@
         <%= I18n.t(:number_of_uw_selected_lines) %> :
         <span class="selected_of_unit_of_work">
           <%
-             @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
-             @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups
+             @current_module_project_guw_unit_of_works = current_mp.guw_unit_of_works.where(organization_id: organization_id, guw_model_id: @guw_model.id, project_id: project_id)
+             @current_module_project_guw_unit_of_work_groups = current_mp.guw_unit_of_work_groups.where(organization_id: organization_id, guw_model_id: @guw_model.id, project_id: project_id)
           %>
           <%=
               "#{@current_module_project_guw_unit_of_works.where(selected: true).size} /
@@ -114,8 +131,8 @@
       <% end %>
     <% end %>
 
-    <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
-    <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
+    <% @guw_model_guw_coefficients = @guw_coefficients %>
+    <% @deported_guw_model_guw_coefficients = @guw_coefficients.where(deported: true) %>
     <%# @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
     <% @deported_guw_coefficients = @guw_coefficients.where(deported: true) %>
 
@@ -129,19 +146,23 @@
     <% end %>
 
     <% @hash_guw_outputs = {} %>
-    <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+    <% Guw::GuwOutput.where(organization_id: organization_id,
+                            guw_model_id: @guw_model.id,
                             name: @guw_model.orders.map(&:first)).each do |guw_output| %>
       <% @hash_guw_outputs[guw_output.name] = guw_output %>
     <% end %>
 
     <% @hash_guw_output_types = {} %>
-    <%Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
+    <%Guw::GuwOutputType.where(organization_id: organization_id, guw_model_id: @guw_model.id).each do |guw_output_type| %>
       <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
     <% end %>
 
     <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
     <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-    <% coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id) %>
+    <% coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                  guw_model_id: @guw_model.id,
+                                                                  project_id: project_id,
+                                                                  module_project_id: current_mp.id) %>
 
     <% coeff_elt_uow.each do |gceuw| %>
       <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
@@ -158,7 +179,10 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-      <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
+      <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(organization_id: organization_id,
+                                                                guw_model_id: @guw_model.id,
+                                                                project_id: project_id,
+                                                                module_project_id: current_mp.id).order("display_order ASC") %>
       <% selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
       <%# @uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
@@ -219,7 +243,7 @@
       </div>
 
       <div id="collapse<%= uowg.id %>" class="accordion-body collapse in" style="overflow-x: scroll; padding-bottom: 10px;">
-        <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
+        <% @guw_types = @guw_model.guw_types.where(organization_id: organization_id).includes(:guw_complexities) %>
 
         <div class="accordion-inner">
           <table class="table table-bordered table-condensed group_<%= uowg.id %>" id="guw">
@@ -275,7 +299,7 @@
             </tr>
 
             <% @hash_guw_complexities = {} %>
-            <% Guw::GuwComplexity.all.each do |guw_complexity| %>
+            <% Guw::GuwComplexity.where(organization_id: organization_id, guw_model_id: @guw_model.id).all.each do |guw_complexity| %>
               <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
             <% end %>
 
@@ -583,7 +607,7 @@
 
                 <%= hidden_field_tag :organization_id, @current_organization.id %>
                 <%= hidden_field_tag :project_id, @project.id %>
-                <%= hidden_field_tag :module_project_id, current_module_project.id %>
+                <%= hidden_field_tag :module_project_id, current_mp.id %>
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
                 <p>

@@ -106,10 +106,10 @@ class Guw::GuwModelsController < ApplicationController
             end
 
             organization_id = @current_organization.id
-            @guw_model = Guw::GuwModel.where(name: tab[0][1].nil? ? nil : tab[0][1].value,
-                                             organization_id: organization_id).first
+            @guw_model = Guw::GuwModel.where(organization_id: organization_id, name: tab[0][1].nil? ? nil : tab[0][1].value).first
             if @guw_model.nil?
-              @guw_model = Guw::GuwModel.new( name: tab[0][1].nil? ? nil : tab[0][1].value,
+              @guw_model = Guw::GuwModel.new( organization_id: @current_organization.id,
+                                              name: tab[0][1].nil? ? nil : tab[0][1].value,
                                               description: tab[1][1].nil? ? nil : tab[1][1].value,
                                               coefficient_label: tab[2][1].nil? ? nil : tab[2][1].value,
                                               weightings_label: tab[3][1].nil? ? nil : tab[3][1].value,
@@ -118,7 +118,6 @@ class Guw::GuwModelsController < ApplicationController
                                               retained_size_unit: tab[6][1].nil? ? nil : tab[6][1].value,
                                               hour_coefficient_conversion: tab[7][1].nil? ? nil : tab[7][1].value,
                                               default_display: tab[9][1].nil? ? nil : tab[9][1].value,
-                                              organization_id: @current_organization.id,
                                               allow_technology: false,
                                               allow_ml: (tab[8][1].nil? ? false : tab[8][1].value == "false") ? false : true,
                                               view_data: false)
@@ -179,9 +178,10 @@ class Guw::GuwModelsController < ApplicationController
 
             tab.each_with_index do |row, i|
               if i != 0 && !row.nil?
-                Guw::GuwAttribute.create(name: row[0].value,
-                                         description: row[1].value,
-                                         guw_model_id: @guw_model.id)
+                Guw::GuwAttribute.create(organization_id: organization_id,
+                                         guw_model_id: @guw_model.id,
+                                         name: row[0].value,
+                                         description: row[1].value)
               end
             end
 
@@ -192,6 +192,7 @@ class Guw::GuwModelsController < ApplicationController
                 Guw::GuwCoefficient.create(name: row[0].nil? ? nil : row[0].value,
                                            description: row[1].nil? ? nil : row[1].value,
                                            coefficient_type: row[2].nil? ? nil : row[2].value,
+                                           organization_id: organization_id,
                                            guw_model_id: @guw_model.id,
                                            allow_intermediate_value: ((row[3].nil? ? nil : row[3].value) == 0) ? false : true,
                                            deported: ((row[4].nil? ? nil : row[4].value) == 0) ? false : true)
@@ -201,7 +202,8 @@ class Guw::GuwModelsController < ApplicationController
           elsif index >= 3 && index <= (3 + @guw_model.guw_coefficients.size - 1)
 
             unless tab[0].nil?
-              coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+              coefficient = Guw::GuwCoefficient.where(organization_id: organization_id,
+                                                      guw_model_id: @guw_model.id,
                                                       name: tab[0][1].nil? ? nil : tab[0][1].value).first
 
               tab.each_with_index do |row, i|
@@ -211,6 +213,7 @@ class Guw::GuwModelsController < ApplicationController
                                                        description: row[2].nil? ? nil : row[2].value,
                                                        display_order: row[4].nil? ? nil : row[4].value,
                                                        guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
+                                                       organization_id: organization_id,
                                                        guw_model_id: @guw_model.id,
                                                        default_value: (row[5].nil? ? 1 : row[5].value.to_s == "true") ? 1 : 0,
                                                        default: (row[5].nil? ? 1 : row[5].value.to_s == "true") ? 1 : 0,
@@ -228,6 +231,7 @@ class Guw::GuwModelsController < ApplicationController
                 unless row[0].blank?
                   guw_output = Guw::GuwOutput.create(name: row[0].nil? ? nil : row[0].value,
                                                      output_type: row[1].nil? ? nil : row[1].value,
+                                                     organization_id: organization_id,
                                                      guw_model_id: @guw_model.id,
                                                      allow_intermediate_value: (row[2].value == 0) ? false : true,
                                                      standard_coefficient: row[4].nil? ? nil : row[4].value,
@@ -276,6 +280,7 @@ class Guw::GuwModelsController < ApplicationController
                                             color_priority: tab[0][4].nil? ? nil : tab[0][4].value,
                                             color_code: tab[1][4].nil? ? nil : tab[1][4].value,
                                             allow_line_color: tab[2][4].value == "true" ? true : false,
+                                            organization_id: organization_id,
                                             guw_model_id: @guw_model.id)
 
             [2,7,12].each do |column_index|
@@ -283,7 +288,9 @@ class Guw::GuwModelsController < ApplicationController
               default_value = (tab[9][column_index + 1].nil? ? nil : tab[9][column_index + 1].value) == "true" ? true : false
 
               unless name.blank?
-                @guw_complexity = Guw::GuwComplexity.new(name: name,
+                @guw_complexity = Guw::GuwComplexity.new(organization_id: organization_id,
+                                                         guw_model_id: @guw_model.id,
+                                                         name: name,
                                                          default_value: default_value,
                                                          guw_type_id: @guw_type.id,
                                                          bottom_range: tab[11][column_index + 1].nil? ? nil : tab[11][column_index + 1].value,
@@ -301,31 +308,38 @@ class Guw::GuwModelsController < ApplicationController
 
                 @guw_model.guw_outputs.order("display_order ASC").each_with_index do |guw_output, i|
 
-                  Guw::GuwOutputComplexityInitialization.create(guw_complexity_id: @guw_complexity.id,
+                  Guw::GuwOutputComplexityInitialization.create(organization_id: organization_id,
+                                                                guw_model_id: @guw_model.id,
+                                                                guw_complexity_id: @guw_complexity.id,
                                                                 guw_output_id: guw_output.id,
                                                                 init_value: tab[13][column_index + i].nil? ? nil : tab[13][column_index + i].value)
 
-                  Guw::GuwOutputComplexity.create(guw_complexity_id: @guw_complexity.id,
+                  Guw::GuwOutputComplexity.create(organization_id: organization_id,
+                                                  guw_model_id: @guw_model.id,
+                                                  guw_complexity_id: @guw_complexity.id,
                                                   guw_output_id: guw_output.id,
                                                   value: tab[14][column_index + i].nil? ? nil : tab[14][column_index + i].value)
 
                   @guw_model.guw_outputs.order("display_order ASC").each_with_index do |aguw_output, j|
 
-                    oa = Guw::GuwOutputAssociation.new(guw_complexity_id: @guw_complexity.id,
+                    oa = Guw::GuwOutputAssociation.new(organization_id: organization_id,
+                                                       guw_model_id: @guw_model.id,
+                                                       guw_complexity_id: @guw_complexity.id,
                                                        guw_output_associated_id: aguw_output.id,
                                                        guw_output_id: guw_output.id,
                                                        value: tab[15 + j][column_index + i].nil? ? nil : tab[15 + j][column_index + i].value)
                     oa.save
 
-                    Guw::GuwOutputType.create(guw_model_id: @guw_model.id,
+                    Guw::GuwOutputType.create(organization_id: organization_id,
+                                              guw_model_id: @guw_model.id,
                                               guw_output_id: aguw_output.id,
                                               guw_type_id: @guw_type.id,
                                               display_type: tab[15 + j][1].nil? ? nil : tab[15 + j][1].value)
                   end
 
-                  nb_output = @guw_model.guw_outputs.order("display_order ASC").size
+                  nb_output = @guw_model.guw_outputs.where(organization_id: organization_id, guw_model_id: @guw_model.id).order("display_order ASC").size
                   next_item = 15 + nb_output
-                  @guw_model.guw_coefficients.each do |guw_coefficient|
+                  @guw_model.guw_coefficients.where(organization_id: organization_id).each do |guw_coefficient|
                     guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
 
                       next_item = next_item + 1
@@ -336,7 +350,9 @@ class Guw::GuwModelsController < ApplicationController
                         value = ""
                       end
 
-                      Guw::GuwComplexityCoefficientElement.create(guw_complexity_id: @guw_complexity.id,
+                      Guw::GuwComplexityCoefficientElement.create(organization_id: organization_id,
+                                                                  guw_model_id: @guw_model.id,
+                                                                  guw_complexity_id: @guw_complexity.id,
                                                                   guw_coefficient_element_id: guw_coefficient_element.id,
                                                                   guw_output_id: guw_output.id,
                                                                   guw_type_id: @guw_type.id,
@@ -368,13 +384,17 @@ class Guw::GuwModelsController < ApplicationController
 
               unless name.nil?
                 @guw_att_complexity = Guw::GuwTypeComplexity.create(name: name,
+                                                                    organization_id: organization_id,
+                                                                    guw_model_id: @guw_model.id,
                                                                     guw_type_id: @guw_type.id,
                                                                     value: tab[row_number][column_index + 1].nil? ? nil : tab[row_number][column_index + 1].value)
 
                 @guw_model.guw_attributes.each_with_index do |att, j|
 
                   unless tab[row_number + j + 2].nil?
-                    Guw::GuwAttributeComplexity.create(guw_type_complexity_id: @guw_att_complexity.id,
+                    Guw::GuwAttributeComplexity.create(organization_id: organization_id,
+                                                       guw_model_id: @guw_model.id,
+                                                       guw_type_complexity_id: @guw_att_complexity.id,
                                                        guw_attribute_id: att.id,
                                                        guw_type_id: @guw_type.id,
                                                        enable_value: ((tab[row_number + j + 2][column_index].nil? ? nil : tab[row_number + j + 2][column_index].value) == 0) ? false : true,
@@ -383,8 +403,10 @@ class Guw::GuwModelsController < ApplicationController
                                                        value: tab[row_number + j + 2][column_index + 3].nil? ? nil : tab[row_number + j + 2][column_index + 3].value,
                                                        value_b: tab[row_number + j + 2][column_index + 4].nil? ? nil : tab[row_number + j + 2][column_index + 4].value)
 
-                    Guw::GuwAttributeType.where(guw_type_id: @guw_type.id,
-                                                guw_attribute_id: att.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
+                    Guw::GuwAttributeType.where(organization_id: organization_id,
+                                                guw_model_id: @guw_model.id,
+                                                guw_attribute_id: att.id,
+                                                guw_type_id: @guw_type.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
 
                   end
                 end
@@ -1740,12 +1762,12 @@ class Guw::GuwModelsController < ApplicationController
 
       hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
         if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-          guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+          guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
           unless guw_coefficient.nil?
             unless guw_coefficient.guw_coefficient_elements.empty?
-              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                guw_coefficient_id: guw_coefficient.id,
-                                                                module_project_id: current_module_project.id).first
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id,
+                                                                guw_unit_of_work_id: guow.id,
+                                                                guw_coefficient_id: guw_coefficient.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
                 worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)

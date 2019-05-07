@@ -1524,12 +1524,15 @@ class OrganizationsController < ApplicationController
 
             hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
-                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
                                                                       guw_coefficient_id: guw_coefficient.id,
-                                                                      module_project_id: mp.id).first
+                                                                      project_id: project.id,
+                                                                      module_project_id: mp.id,
+                                                                      guw_unit_of_work_id: guow.id).first
 
                     if guw_coefficient.coefficient_type == "Pourcentage"
                       worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
@@ -1540,9 +1543,8 @@ class OrganizationsController < ApplicationController
                     end
                   end
                 end
-              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-                guw_output = Guw::GuwOutput.where(name: i[0],
-                                                  guw_model_id: @guw_model.id).first
+              elsif Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first
                 unless guow.guw_type.nil?
                   unless guw_output.nil?
                     v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
@@ -1555,12 +1557,18 @@ class OrganizationsController < ApplicationController
             ii = 0
             @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
               guw_type = guow.guw_type
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+              guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: @organization.id,
+                                                        guw_model_id: @guw_model.id,
                                                         guw_attribute_id: guw_attribute.id,
-                                                        guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+                                                        guw_type_id: guw_type.nil? ? nil : guw_type.id,
+                                                        project_id: project.id,
+                                                        module_project_id: mp.id,
+                                                        guw_unit_of_work_id: guow.id).first
 
               unless guowa.nil?
-                gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                gat = Guw::GuwAttributeType.where(organization_id: @organization.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  guw_type_id: guw_type.id,
                                                   guw_attribute_id: guowa.guw_attribute_id).first
                 worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
                 worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
@@ -1578,9 +1586,9 @@ class OrganizationsController < ApplicationController
             end
 
             unless @wbs_activity.nil?
-              kk = header.size - @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
+              kk = header.size - @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
 
-              @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+              @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.where(organization_id: @organization.id).first
               @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, mp)
               @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
 
@@ -1588,14 +1596,14 @@ class OrganizationsController < ApplicationController
 
               calculator = Dentaku::Calculator.new
 
-              @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+              @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RTU (jh)").first
 
                 if guw_output_effort.nil?
-                  guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
+                  guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RIS (jh)").first
                 end
-                guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
+                guw_output_test = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Assiette Test (jh)").first
 
                 mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
@@ -1604,7 +1612,10 @@ class OrganizationsController < ApplicationController
                   guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
                   guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
 
-                  corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+                  corresponding_ratio_elt = WbsActivityRatioElement.where(organization_id: @organization.id,
+                                                                          wbs_activity_id: @wbs_activity.id,
+                                                                          wbs_activity_ratio_id: @wbs_activity_ratio.id,
+                                                                          wbs_activity_element_id: wbs_activity_element.id).first
 
                   final_formula = corresponding_ratio_elt.formula
                                       .gsub("RTU", guw_output_effort_value.to_s)
@@ -1716,9 +1727,10 @@ class OrganizationsController < ApplicationController
     worksheet = workbook.worksheets[0]
     ind = 0
 
-    @current_organization.projects.each do |project|
+    @organization = @current_organization
+    @organization.projects.each do |project|
 
-      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
+      module_project = project.module_projects.where(organization_id: @organization.id).select{|i| i.pemodule.alias == "guw" }.first
 
       unless module_project.nil?
         @guw_model = module_project.guw_model
@@ -1811,13 +1823,13 @@ class OrganizationsController < ApplicationController
 
             hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
                     unless module_project.nil?
-                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                        guw_coefficient_id: guw_coefficient.id,
-                                                                        module_project_id: module_project.id).first
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: module_project.id,
+                                                                        guw_unit_of_work_id: guow.id,
+                                                                        guw_coefficient_id: guw_coefficient.id).first
 
                       if guw_coefficient.coefficient_type == "Pourcentage"
                         worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
@@ -1921,7 +1933,7 @@ class OrganizationsController < ApplicationController
       end
     end
 
-    send_data(workbook.stream.string, filename: "#{@current_organization.name}-#{@guw_model.name}-#{Time.now.strftime('%Y-%m-%d-%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@organization.name}-#{@guw_model.name}-#{Time.now.strftime('%Y-%m-%d-%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def report
@@ -2611,7 +2623,7 @@ class OrganizationsController < ApplicationController
         ###end
 
         #Update the Unit of works's groups
-        new_mp.guw_unit_of_work_groups.each do |guw_group|
+        new_mp.guw_unit_of_work_groups.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_group|
           new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
           new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
 
@@ -2623,7 +2635,7 @@ class OrganizationsController < ApplicationController
                                       project_id: new_prj.id, organization_id: new_organization_id)
 
           # Update the group unit of works and attributes
-          guw_group.guw_unit_of_works.each do |guw_uow|
+          guw_group.guw_unit_of_works.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_uow|
             #new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
             new_uow_mp = ModuleProject.where(organization_id: new_organization_id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first
             new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
@@ -2705,7 +2717,7 @@ class OrganizationsController < ApplicationController
             new_mp.wbs_activity_inputs.where(wbs_activity_id: old_wbs_activity_id).each do |activity_input|
               activity_input.wbs_activity_id = new_wbs_activity.id
 
-              wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(copy_id: activity_input.wbs_activity_ratio_id).first
+              wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(organization_id: new_organization_id, copy_id: activity_input.wbs_activity_ratio_id).first
               if wbs_activity_ratio.nil?
                 activity_input.wbs_activity_ratio_id = nil
               else
@@ -2808,55 +2820,10 @@ class OrganizationsController < ApplicationController
                         new_level_value[new_component.id.to_i] = old_level_value[old_component.id.to_i]
                         ev.send("string_data_#{level}=", new_level_value)
 
-                        # case level
-                        #   when "low"
-                        #     ev_low = ev.string_data_low.delete(old_component.id)
-                        #     ev.string_data_low[new_component.id.to_i] = ev_low
-                        #   when "most_likely"
-                        #     ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                        #     ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                        #   when "high"
-                        #     ev_high = ev.string_data_high.delete(old_component.id)
-                        #     ev.string_data_high[new_component.id.to_i] = ev_high
-                        #   when "probable"
-                        #     ev_probable = ev.string_data_probable.delete(old_component.id)
-                        #     ev.string_data_probable[new_component.id.to_i] = ev_probable
-                        # end
-
                       end
                     end
 
                   end  ###
-
-                  #puts "hello"
-                  #puts "hello2"
-
-                  # ev_low = ev.string_data_low.delete(old_component.id)
-                  # ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                  # ev_high = ev.string_data_high.delete(old_component.id)
-                  # ev_probable = ev.string_data_probable.delete(old_component.id)
-                  #
-                  # puts "low = #{ ev.string_data_low}"
-                  # puts "ml = #{ ev.string_data_most_likely}"
-                  # puts "high = #{ ev.string_data_high}"
-                  # puts "probable = #{ ev.string_data_probable}"
-
-                  # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id.to_i]
-                  # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id.to_i]
-                  # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id.to_i]
-                  # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id.to_i]
-
-                  # ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                  # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                  # ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                  # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
-
-                  # ev.string_data_low.delete(old_component.id)
-                  # ev.string_data_most_likely.delete(old_component.id)
-                  # ev.string_data_high.delete(old_component.id)
-                  # ev.string_data_probable.delete(old_component.id)
-
-                  # update ev attribute links (input attribute link from preceding module_project)
 
                   unless ev.estimation_value_id.nil?
                     project_id = new_prj.id

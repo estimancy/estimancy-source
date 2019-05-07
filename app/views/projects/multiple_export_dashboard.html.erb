@@ -483,14 +483,16 @@
                         <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
                           <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
                           <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
-                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: module_project.id,
+                                                                                 guw_unit_of_work_id: uow.id,
                                                                                  guw_coefficient_id: @guw_coefficient.id,
                                                                                  guw_coefficient_element_id: nil).last %>
                             <td class="center">
                               <%= ceuw.percent %><br><%= ceuw.comments %>
                             </td>
                           <% else %>
-                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: module_project.id,
+                                                                                 guw_unit_of_work_id: uow.id,
                                                                                  guw_coefficient_id: @guw_coefficient.id).last %>
                             <td class="center">
                               <% begin %>
@@ -501,8 +503,8 @@
                             </td>
                           <% end %>
 
-                        <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
-                          <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                        <% elsif Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwOutput %>
+                          <% go = Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: i[0]).first %>
                           <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
                                                             guw_output_id: go.id,
                                                             guw_type_id: uow.guw_type.id).first %>

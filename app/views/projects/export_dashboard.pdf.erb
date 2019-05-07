@@ -163,6 +163,8 @@
 
 <div class="alwaysbreak"></div>
 
+<% @organization = @current_organization %>
+
 <% @module_projects.each do |module_project| %>
   <% if module_project.pemodule.alias == "effort_breakdown" %>
   <% elsif module_project.pemodule.alias == "guw" %>
@@ -376,17 +378,22 @@
                     <td class="center">
                       <p><%= uow.intermediate_percent %><br><%= uow.intermediate_weight %></p>
                     </td>
-                  <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
-                    <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                  <% elsif Guw::GuwCoefficient.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwCoefficient %>
+                    <% @guw_coefficient = Guw::GuwCoefficient.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first %>
                     <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
-                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                           guw_model_id: @guw_model.id,
                                                                            guw_coefficient_id: @guw_coefficient.id,
-                                                                           guw_coefficient_element_id: nil).last %>
+                                                                           guw_coefficient_element_id: nil,
+                                                                           project_id: @project.id,
+                                                                           module_project_id: module_project.id,
+                                                                           guw_unit_of_work_id: uow.id).last %>
                       <td class="center">
                         <%= ceuw.nil? ? '-' : ceuw.percent %><br><%= ceuw.nil? ? '-' : ceuw.comments %>
                       </td>
                     <% else %>
-                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                      <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: module_project.id,
+                                                                           guw_unit_of_work_id: uow.id,
                                                                            guw_coefficient_id: @guw_coefficient.id).last %>
                       <td class="center">
                         <% begin %>
@@ -397,8 +404,8 @@
                       </td>
                     <% end %>
 
-                  <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
-                    <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                  <% elsif Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwOutput %>
+                    <% go = Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: i[0]).first %>
                     <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
                                                       guw_output_id: go.id,
                                                       guw_type_id: uow.guw_type.id).first %>

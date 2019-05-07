@@ -22,7 +22,11 @@
 class Guw::GuwUnitOfWorkGroupsController < ApplicationController
 
   def index
-    @guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
+    module_project = current_module_project
+    @guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: module_project.organization_id,
+                                                             project_id: module_project.project_id,
+                                                             module_project_id: module_project.id,
+                                                             pbs_project_element_id: current_component.id).all
     set_page_title I18n.t(:label_Group)
   end
 
