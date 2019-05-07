@@ -301,6 +301,7 @@ en-gb:
   welcome: "Welcome"
   select_an_organization: "Select an organization"
   create_new_organization: "Create new organization"
+  user_account_settings: "User account settings"
 
   # user
   user_list: Users list
@@ -370,6 +371,7 @@ en-gb:
 
   # users/form
   allow_quick_access: "Allow Quick Access"
+  allow_full_screen_dashboard: "Allow Full Screen"
 
 
   label_user_security_resume: "User securities resume"

@@ -108,6 +108,11 @@
                     </td>
                   </tr>
                   <tr>
+                    <td colspand="2">
+                      <%= f.input :allow_full_screen_dashboard, :label => I18n.t(:allow_full_screen_dashboard), :input_html => {:class => 'input-xxlarge'}  %>
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="2">
                       <% if @user.locked_at.nil? %>
                         <%= I18n.t(:unlocked) %>
