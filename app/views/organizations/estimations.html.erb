@@ -12,64 +12,67 @@
   <% end %>
 </div>
 
-<p>
-  <span class="font-weight-bold"><%= I18n.t("quick_access") %></span> <%= I18n.t("to_the_latest_estimations_consulted") %>
-</p>
+<% if @current_user.quick_access %>
+  <p>
+    <span class="font-weight-bold"><%= I18n.t("quick_access") %></span> <%= I18n.t("to_the_latest_estimations_consulted") %>
+  </p>
 
-<div class="mb-5">
-  <div class="quickview-list">
-    <% current_user.recent_projects.uniq.take(4).reverse.each do |project_id| %>
-      <% project = Project.find(project_id) %>
-      <% unless project.nil? %>
-        <div class="card card-cliquable estimation-quickview w-25">
-          <a href="<%= dashboard_path(project) %>">
-            <div class="card-body">
-              <h5 class="estimation-quickview-title"><%= project.title %></h5>
-              <h6 class="estimation-quickview-status mb-2" style="color: <%= project.status_background_color %>;">
-                <%= project.estimation_status.name %>
-              </h6>
-              <div class="d-flex"><span class="estimation-quickview-date mb-2 "><%= project.start_date %></span><span class="estimation-quickview-version mb-2 "><%= project.version_number %></span></div>
-              <p class="estimation-quickview-text"><%= simple_format project.description %></p>
+  <div class="mb-5">
+    <div class="quickview-list">
+        <% current_user.recent_projects.uniq.take(4).reverse.each do |project_id| %>
+          <% project = Project.find(project_id) %>
+          <% unless project.nil? %>
+            <div class="card card-cliquable estimation-quickview w-25">
+              <a href="<%= dashboard_path(project) %>">
+                <div class="card-body">
+                  <h5 class="estimation-quickview-title"><%= project.title %></h5>
+                  <h6 class="estimation-quickview-status mb-2" style="color: <%= project.status_background_color %>;">
+                    <%= project.estimation_status.name %>
+                  </h6>
+                  <div class="d-flex"><span class="estimation-quickview-date mb-2 "><%= project.start_date %></span><span class="estimation-quickview-version mb-2 "><%= project.version_number %></span></div>
+                  <p class="estimation-quickview-text"><%= simple_format project.description %></p>
 
-              <% @data_widget_hash = {} %>
-              <% @project_module_projects = project.module_projects %>
-              <% @project_module_projects.each do |module_project| %>
-                <% module_project_view = module_project.view %>
-                <% unless module_project_view.nil? %>
-                  <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
-                  <% module_project_view_widgets.each do |view_widget| %>
-                    <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                      <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
-                      <% if view_widget.widget_type == "text" %>
-                        <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                  <% @data_widget_hash = {} %>
+                  <% @project_module_projects = project.module_projects %>
+                  <% @project_module_projects.each do |module_project| %>
+                    <% module_project_view = module_project.view %>
+                    <% unless module_project_view.nil? %>
+                      <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+                      <% module_project_view_widgets.each do |view_widget| %>
+                        <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                          <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                          <% if view_widget.widget_type == "text" %>
+                            <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                          <% end %>
+                        <% else %>
+                          <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                          <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                        <% end %>
                       <% end %>
-                    <% else %>
-                      <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
-                      <% @data_widget_hash[view_widget.name] = view_widget_data %>
                     <% end %>
                   <% end %>
-                <% end %>
-              <% end %>
 
-              <div class="d-flex justify-content-between">
-                <% unless @data_widget_hash.keys.reverse[1..2].nil? %>
-                  <% @data_widget_hash.keys.reverse[1..2].each do |k| %>
-                    <% value = @data_widget_hash[k] %>
-                    <% unless value.is_a?(Hash) %>
-                      <span class="estimation-quickview-quantity">
-                        <%= value.nil? ? '-' : value %>
-                      </span>
+                  <div class="d-flex justify-content-between">
+                    <% unless @data_widget_hash.keys.reverse[1..2].nil? %>
+                      <% @data_widget_hash.keys.reverse[1..2].each do |k| %>
+                        <% value = @data_widget_hash[k] %>
+                        <% unless value.is_a?(Hash) %>
+                          <span class="estimation-quickview-quantity">
+                            <%= value.nil? ? '-' : value %>
+                          </span>
+                        <% end %>
+                      <% end %>
                     <% end %>
-                  <% end %>
-                <% end %>
-              </div>
+                  </div>
+                </div>
+              </a>
             </div>
-          </a>
-        </div>
-      <% end %>
-    <% end %>
+          <% end %>
+        <% end %>
+
+    </div>
   </div>
-</div>
+<% end %>
 
 <div class="mb-5">
   <div class="estimation-list">

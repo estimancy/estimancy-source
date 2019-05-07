@@ -103,6 +103,11 @@
                     </tr>
                   <% end %>
                   <tr>
+                    <td colspand="2">
+                      <%= f.input :quick_access, :label => I18n.t(:allow_quick_access), :input_html => {:class => 'input-xxlarge'}  %>
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="2">
                       <% if @user.locked_at.nil? %>
                         <%= I18n.t(:unlocked) %>
