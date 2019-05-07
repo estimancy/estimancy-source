@@ -10,6 +10,7 @@ namespace :guw do
     # rake db:migrate:down VERSION=20171027100650
     # rake db:migrate:up VERSION=20171027100650
 
+    # 1
     ModuleProject.all.each do |mp|
       unless mp.project.nil?
         project = mp.project
@@ -18,6 +19,7 @@ namespace :guw do
       end
     end
 
+    # 2
     EstimationValue.all.each do |ev|
       unless ev.module_project.nil?
         ev.organization_id = ev.module_project.organization_id
@@ -26,6 +28,7 @@ namespace :guw do
     end
 
 
+    # 3 (attention c'est long)
     Guw::GuwCoefficientElementUnitOfWork.all.each do |ceuow|
       ActiveRecord::Base.transaction do
         guw_unit_of_work = ceuow.guw_unit_of_work
@@ -37,12 +40,13 @@ namespace :guw do
           ceuow.guw_model_id = guw_unit_of_work.guw_model_id
           ceuow.project_id = guw_unit_of_work.project_id
           ceuow.module_project_id = guw_unit_of_work.module_project_id
-          ceuow.save
+          ceuow.save(validate: false)
         end
       end
     end
 
 
+    # 4 (attention, c'est long)
     Guw::GuwUnitOfWorkAttribute.all.each do |uow_attr|
       ActiveRecord::Base.transaction do
         guw_unit_of_work = uow_attr.guw_unit_of_work
@@ -51,7 +55,7 @@ namespace :guw do
           uow_attr.guw_model_id = guw_unit_of_work.guw_model_id
           uow_attr.project_id = guw_unit_of_work.project_id
           uow_attr.module_project_id = guw_unit_of_work.module_project_id
-          uow_attr.save
+          uow_attr.save(validate: false)
         end
       end
     end
@@ -64,7 +68,7 @@ namespace :guw do
           uow_gr.organization_id = module_project.organization_id
           uow_gr.guw_model_id = module_project.guw_model_id
           uow_gr.project_id = module_project.project_id
-          uow_gr.save
+          uow_gr.save(validate: false)
         end
       end
     end
@@ -76,7 +80,7 @@ namespace :guw do
         guw_model = coef.guw_model
         unless guw_model.nil?
           coef.organization_id = guw_model.organization_id
-          coef.save
+          coef.save(validate: false)
         end
       end
     end
@@ -86,7 +90,7 @@ namespace :guw do
         guw_model = coef_elt.guw_model
         unless guw_model.nil?
           coef_elt.organization_id = guw_model.organization_id
-          coef_elt.save
+          coef_elt.save(validate: false)
         end
       end
     end
@@ -96,7 +100,7 @@ namespace :guw do
         guw_model = type.guw_model
         unless guw_model.nil?
           type.organization_id = guw_model.organization_id
-          type.save
+          type.save(validate: false)
         end
       end
     end
@@ -106,7 +110,7 @@ namespace :guw do
         guw_model = output.guw_model
         unless guw_model.nil?
           output.organization_id = guw_model.organization_id
-          output.save
+          output.save(validate: false)
         end
       end
     end
@@ -117,7 +121,7 @@ namespace :guw do
         guw_model = output_type.guw_model
         unless guw_model.nil?
           output_type.organization_id = guw_model.organization_id
-          output_type.save
+          output_type.save(validate: false)
         end
       end
     end
@@ -127,7 +131,7 @@ namespace :guw do
         guw_model = wu.guw_model
         unless guw_model.nil?
           wu.organization_id = guw_model.organization_id
-          wu.save
+          wu.save(validate: false)
         end
       end
     end
@@ -138,7 +142,7 @@ namespace :guw do
         unless guw_type.nil?
           cplx.organization_id = guw_type.organization_id
           cplx.guw_model_id = guw_type.guw_model_id
-          cplx.save
+          cplx.save(validate: false)
         end
       end
     end
@@ -150,7 +154,7 @@ namespace :guw do
         unless complexity.nil?
           output_ass.organization_id = complexity.organization_id
           output_ass.guw_model_id = complexity.guw_model_id
-          output_ass.save
+          output_ass.save(validate: false)
         end
       end
     end
@@ -162,7 +166,7 @@ namespace :guw do
         unless guw_complexity.nil?
           cplx_tech.organization_id = guw_complexity.organization_id
           cplx_tech.guw_model_id = guw_complexity.guw_model_id
-          cplx_tech.save
+          cplx_tech.save(validate: false)
         end
       end
     end
@@ -174,7 +178,7 @@ namespace :guw do
         unless guw_complexity.nil?
           cplx_wu.organization_id = guw_complexity.organization_id
           cplx_wu.guw_model_id = guw_complexity.guw_model_id
-          cplx_wu.save
+          cplx_wu.save(validate: false)
         end
       end
     end
@@ -186,7 +190,7 @@ namespace :guw do
         unless guw_complexity.nil?
           output_cplx.organization_id = guw_complexity.organization_id
           output_cplx.guw_model_id = guw_complexity.guw_model_id
-          output_cplx.save
+          output_cplx.save(validate: false)
         end
       end
     end
@@ -197,7 +201,7 @@ namespace :guw do
         unless guw_complexity.nil?
           oci.organization_id = guw_complexity.organization_id
           oci.guw_model_id = guw_complexity.guw_model_id
-          oci.save
+          oci.save(validate: false)
         end
       end
     end
@@ -209,7 +213,7 @@ namespace :guw do
         unless guw_complexity.nil?
           cplx_ce.organization_id = guw_complexity.organization_id
           cplx_ce.guw_model_id = guw_complexity.guw_model_id
-          cplx_ce.save
+          cplx_ce.save(validate: false)
         end
       end
     end
@@ -219,7 +223,7 @@ namespace :guw do
         guw_model = attr.guw_model
         unless guw_model.nil?
           attr.organization_id = guw_model.organization_id
-          attr.save
+          attr.save(validate: false)
         end
       end
     end
@@ -230,7 +234,7 @@ namespace :guw do
         unless guw_type.nil?
           attr_type.organization_id = guw_type.organization_id
           attr_type.guw_model_id = guw_type.guw_model_id
-          attr_type.save
+          attr_type.save(validate: false)
         end
       end
     end
@@ -241,7 +245,7 @@ namespace :guw do
         unless guw_type.nil?
           attr_cplx.organization_id = guw_type.organization_id
           attr_cplx.guw_model_id = guw_type.guw_model_id
-          attr_cplx.save
+          attr_cplx.save(validate: false)
         end
       end
     end
@@ -252,7 +256,7 @@ namespace :guw do
         unless guw_type.nil?
           type_cplx.organization_id = guw_type.organization_id
           type_cplx.guw_model_id = guw_type.guw_model_id
-          type_cplx.save
+          type_cplx.save(validate: false)
         end
       end
     end
