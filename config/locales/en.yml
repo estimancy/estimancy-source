@@ -378,6 +378,9 @@ en:
   # applications/form
   budget_label: "Budget label"
 
+  # users/form
+  allow_quick_access: "Allow Quick Access"
+
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"
 
