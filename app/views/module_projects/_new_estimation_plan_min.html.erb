@@ -2,7 +2,9 @@
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
   <div id="modules-sidebar" class="py-6">
     <div class="title">
-      <a class="estimancy" href="<%= activate_module_project_path(@project.module_projects.first) %>">Afficher <br> le tableau de bord</a>
+      <a class="estimancy" href="<%= activate_module_project_path(@project.module_projects.first) %>">
+        <b>Tableau de bord</b>
+      </a>
     </div>
     <ul class="nav flex-column">
       <% module_projects.each_with_index do |pmod, index| %>
