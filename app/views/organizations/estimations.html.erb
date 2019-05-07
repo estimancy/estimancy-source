@@ -19,7 +19,12 @@
 
   <div class="mb-5">
     <div class="quickview-list">
-        <% current_user.recent_projects.uniq.take(4).reverse.each do |project_id| %>
+      <% if current_user.allow_full_screen_dashboard %>
+        <% recent_projects = current_user.recent_projects.uniq.take(5) %>
+      <% else %>
+        <% recent_projects = current_user.recent_projects.uniq.take(4) %>
+      <% end %>
+        <% recent_projects.reverse.each do |project_id| %>
           <% project = Project.find(project_id) %>
           <% unless project.nil? %>
             <div class="card card-cliquable estimation-quickview w-25">
@@ -69,7 +74,6 @@
             </div>
           <% end %>
         <% end %>
-
     </div>
   </div>
 <% end %>
