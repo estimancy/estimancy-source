@@ -3351,6 +3351,15 @@ public
     acq_ids = AcquisitionCategory.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
     @projects_search_results << Project.where(organization_id: @current_organization.id, acquisition_category_id: acq_ids, is_model: false).all
 
+    stt_ids = EstimationStatus.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
+    @projects_search_results << Project.where(organization_id: @current_organization.id, estimation_status_id: stt_ids , is_model: false).all
+
+    @projects_search_results << Project.where(organization_id: @current_organization.id, title: params[:advanced_search] , is_model: false).all
+
+    @projects_search_results << Project.where(organization_id: @current_organization.id, version_number: params[:advanced_search] , is_model: false).all
+
+    @projects_search_results << Project.where(organization_id: @current_organization.id, description: params[:advanced_search], is_model: false).all
+
     @projects_search_results = @projects_search_results.flatten
 
     @fields_coefficients = {}
