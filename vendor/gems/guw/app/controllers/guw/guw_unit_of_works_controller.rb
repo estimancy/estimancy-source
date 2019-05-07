@@ -828,7 +828,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     update_view_widgets_and_project_fields
   end
 
-
   def change_selected_state
     authorize! :execute_estimation_plan, @project
 
