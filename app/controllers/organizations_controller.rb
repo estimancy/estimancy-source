@@ -1741,7 +1741,8 @@ class OrganizationsController < ApplicationController
 
         unless @wbs_activity.nil?
           @component = current_component
-          @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
+          @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
+                                                        module_project_id: module_project,
                                                         guw_model_id: @guw_model)
 
           hash = @guw_model.orders

@@ -2,7 +2,7 @@ class AddNewIndexesToGuw < ActiveRecord::Migration
 
   def up
 
-    #guw_guw_unit_of_work_attributes
+    #guw_guw_coefficient_element_unit_of_works
     add_column :guw_guw_coefficient_element_unit_of_works, :organization_id, :integer, after: :id
     add_column :guw_guw_coefficient_element_unit_of_works, :guw_model_id, :integer, after: :organization_id
     add_column :guw_guw_coefficient_element_unit_of_works, :project_id, :integer, after: :guw_model_id
@@ -18,6 +18,7 @@ class AddNewIndexesToGuw < ActiveRecord::Migration
     add_column :guw_guw_unit_of_work_attributes, :guw_model_id, :integer, after: :organization_id
     add_column :guw_guw_unit_of_work_attributes, :project_id, :integer, after: :guw_model_id
     add_column :guw_guw_unit_of_work_attributes, :module_project_id, :integer, after: :project_id
+    remove_index :guw_guw_unit_of_work_attributes, name: "guw_unit_of_work_attributes"
     add_index :guw_guw_unit_of_work_attributes, [:organization_id, :guw_model_id, :guw_attribute_id, :guw_type_id, :project_id, :module_project_id, :guw_unit_of_work_id], name: "by_organization_guw_model_attr_type_project_mp_uow"
 
     #Guw::GuwUnitOfWorkGroup
@@ -146,6 +147,7 @@ class AddNewIndexesToGuw < ActiveRecord::Migration
     remove_column :guw_guw_unit_of_work_attributes, :guw_model_id
     remove_column :guw_guw_unit_of_work_attributes, :project_id
     remove_column :guw_guw_unit_of_work_attributes, :module_project_id
+    add_index :guw_guw_unit_of_work_attributes, [:guw_type_id, :guw_attribute_id, :guw_unit_of_work_id], name: :guw_unit_of_work_attributes unless index_exists?(:guw_guw_unit_of_work_attributes, [:guw_type_id, :guw_attribute_id, :guw_unit_of_work_id], name: :guw_unit_of_work_attributes)
     remove_index :guw_guw_unit_of_work_attributes, name: "by_organization_guw_model_attr_type_project_mp_uow"
 
     ##Guw::GuwUnitOfWorkGroup

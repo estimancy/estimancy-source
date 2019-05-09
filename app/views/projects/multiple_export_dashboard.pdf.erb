@@ -97,7 +97,7 @@
       <%
          current_organization = project.organization
          pbs_project_element = current_component
-         module_projects = project.module_projects
+         module_projects = project.module_projects.where(organization_id: current_organization.id)
 
          module_projects.each do |module_project|
            view_widgets = ViewsWidget.where(module_project_id: module_project.id).all
@@ -310,10 +310,10 @@
               <th>Montant en €</th>
             </tr>
 
-            <% @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first %>
+            <% @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.where(organization_id: current_organization.id).first %>
             <% @module_project_ratio_elements = module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component) %>
 
-            <% @wbs_activity.wbs_activity_elements.each do |wbs_activity_element| %>
+            <% @wbs_activity.wbs_activity_elements.where(organization_id: current_organization.id).each do |wbs_activity_element| %>
               <% mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first %>
               <% unless mp_ratio_element.nil? %>
                 <tr>
@@ -377,6 +377,7 @@
 
           <% @guw_model = module_project.guw_model %>
           <% @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where( organization_id: current_organization.id,
+                                                                           guw_model_id: @guw_model.id,
                                                                            project_id: project.id,
                                                                            module_project_id: module_project.id,
                                                                            pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id).all %>
@@ -389,7 +390,7 @@
           </h5>
 
           <% unless @unit_of_work_groups.nil? %>
-            <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
+            <% @guw_types = @guw_model.guw_types.where(organization_id: current_organization.id).includes(:guw_complexities) %>
             <% @unit_of_work_groups.each do |uowg| %>
               <h4>
                 <%= uowg.name %>
@@ -408,8 +409,8 @@
                   </th>
                   <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                     <% unless i[1].blank? %>
-                      <% if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient %>
-                        <% guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id, deported: false).first %>
+                      <% if Guw::GuwCoefficient.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwCoefficient %>
+                        <% guw_coefficient = Guw::GuwCoefficient.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0], deported: false).first %>
                         <% unless guw_coefficient.nil? %>
                           <th class="span1">
                                 <span class="pull-left">
@@ -418,7 +419,7 @@
                           </th>
                         <% end %>
                       <% elsif i[0] == "Coefficient" %>
-                        <% unless @guw_model.guw_coefficients.where(deported: true).map(&:id).empty? %>
+                        <% unless @guw_model.guw_coefficients.where(organization_id: current_organization.id, deported: true).map(&:id).empty? %>
                           <th class="span1">
                                 <span>
                                   <%= i[0] %>
@@ -467,18 +468,26 @@
                           <td class="center">
                             <p><%= uow.intermediate_percent %><br><%= uow.intermediate_weight %></p>
                           </td>
-                        <% elsif Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwCoefficient %>
-                          <% @guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first %>
+                        <% elsif Guw::GuwCoefficient.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwCoefficient %>
+                          <% @guw_coefficient = Guw::GuwCoefficient.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0]).first %>
                           <% if @guw_coefficient.coefficient_type == "Pourcentage" || @guw_coefficient.coefficient_type == "Coefficient" %>
-                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
+                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: current_organization.id,
+                                                                                 guw_model_id: @guw_model.id,
                                                                                  guw_coefficient_id: @guw_coefficient.id,
-                                                                                 guw_coefficient_element_id: nil).last %>
+                                                                                 guw_coefficient_element_id: nil,
+                                                                                 project_id: project.id,
+                                                                                 module_project_id: module_project.id,
+                                                                                 guw_unit_of_work_id: uow.id).last %>
                             <td class="center">
                               <%= ceuw.percent %><br><%= ceuw.comments %>
                             </td>
                           <% else %>
-                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: uow.id,
-                                                                                 guw_coefficient_id: @guw_coefficient.id).last %>
+                            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: current_organization.id,
+                                                                                 guw_model_id: @guw_model.id,
+                                                                                 guw_coefficient_id: @guw_coefficient.id,
+                                                                                 project_id: project.id,
+                                                                                 module_project_id: module_project.id,
+                                                                                 guw_unit_of_work_id: uow.id).last %>
                             <td class="center">
                               <% begin %>
                                 <%= ceuw.guw_coefficient_element.name %>
@@ -488,9 +497,10 @@
                             </td>
                           <% end %>
 
-                        <% elsif Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first.class == Guw::GuwOutput %>
-                          <% go = Guw::GuwOutput.where(name: i[0], guw_model_id: @guw_model.id).first %>
-                          <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                        <% elsif Guw::GuwOutput.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwOutput %>
+                          <% go = Guw::GuwOutput.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, name: i[0]).first %>
+                          <% got = Guw::GuwOutputType.where(organization_id: current_organization.id,
+                                                            guw_model_id: @guw_model.id,
                                                             guw_output_id: go.id,
                                                             guw_type_id: uow.guw_type.id).first %>
                           <td class="center">
@@ -515,8 +525,11 @@
                     </tr>
                   <% end %>
 
-                  <% uow.guw_unit_of_work_attributes.where(guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
-                    <% gat = Guw::GuwAttributeType.where(guw_type_id: uow.guw_type.id, guw_attribute_id: uowa.guw_attribute_id).first %>
+                  <% uow.guw_unit_of_work_attributes.where(organization_id: current_organization.id, guw_model_id: @guw_model.id, guw_type_id: uow.guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa| %>
+                    <% gat = Guw::GuwAttributeType.where(organization_id: current_organization.id,
+                                                         guw_model_id: @guw_model.id,
+                                                         guw_attribute_id: uowa.guw_attribute_id,
+                                                         guw_type_id: uow.guw_type.id).first %>
                     <% unless uow.guw_type.nil? %>
                       <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: uow.guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
                     <% end %>
