@@ -32,7 +32,7 @@
             <div class="organisation-widget-buttons">
               <a href="#"></a>
               <% if can? :manage, Organization %>
-                <a href="<%= edit_organization_path(organization) %>">
+                <a href="<%= edit_organization_path(organization) %>" title="<%= I18n.t :edit %>">
                   <i class="material-icons">
                     edit
                   </i>

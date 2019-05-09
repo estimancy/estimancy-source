@@ -18,9 +18,9 @@
             </div>
             <div class="tools">
               <% mp = @project.module_projects.where(pemodule_id: initialization_module.id).first %>
-              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>"><i class="material-icons" >add_box</i></a>
-              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>"><i class="material-icons" >text_fields</i></a>
-              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>"><i class="material-icons" >dashboard</i></a>
+              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
+              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
+              <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
             </div>
           </div>
 
@@ -124,9 +124,9 @@
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-bloc-tools d-flex justify-content-end mb-2">
-                          <a href="#"><i class="material-icons">get_app</i></a>
-                          <a href="#"><i class="material-icons">edit</i></a>
-                          <a href="#"><i class="material-icons">delete</i></a>
+                          <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
+                          <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                          <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
                         </div>
                         <div class="effort-table">
                           <%= get_view_widget_data(module_project.id, vw.id)[:value_to_show] %>

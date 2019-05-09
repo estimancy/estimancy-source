@@ -383,6 +383,15 @@ en:
   allow_quick_access: "Allow Quick Access"
   allow_full_screen_dashboard: "Allow Full Screen"
 
+  # icons
+  get_app: "Get App"
+  add_box: "Add Box"
+  text_fields: "Text Fields"
+  dashboard: "Dashboard"
+  action: "Action"
+  menu_super_administrateur: "Menu Super Administrateur"
+  import_export: "Import Export"
+  save_alt: "Save Alt"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"
