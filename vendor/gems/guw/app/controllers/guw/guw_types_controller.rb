@@ -55,7 +55,9 @@ class Guw::GuwTypesController < ApplicationController
   def create
     @guw_type = Guw::GuwType.new(params[:guw_type])
     @guw_type.guw_model_id = params[:guw_type][:guw_model_id]
+    @guw_type.organization_id = @current_organization.id
     @guw_type.save
+
     @guw_model = @guw_type.guw_model
     @organization = @guw_model.organization
 

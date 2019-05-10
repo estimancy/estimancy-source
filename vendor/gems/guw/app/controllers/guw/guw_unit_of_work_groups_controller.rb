@@ -59,7 +59,9 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @organization = @project.organization
 
     @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.guw_model_id = module_project.guw_model_id
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
+
     @guw_unit_of_work_group.save
 
     redirect_to main_app.dashboard_path(@project)
@@ -76,7 +78,7 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @guw_unit_of_work_group.module_project_id = module_project.id
     @guw_unit_of_work_group.organization_id = params[:organization_id]
     @guw_unit_of_work_group.project_id = params[:project_id]
-    @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.guw_model_id = module_project.guw_model_id
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
 
     @guw_unit_of_work_group.save
