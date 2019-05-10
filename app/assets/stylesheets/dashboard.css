@@ -531,7 +531,7 @@ ul{
     /*padding-bottom: 56.25%; /!* 16:9 *!/*/
 
     /*min-height: 20em;*/
-    /*height: 20em;*/
+    height: 15em;
     max-height: 35em;
 
     position: relative;
