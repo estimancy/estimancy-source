@@ -586,6 +586,7 @@
   </div>
 </div>
 
+
 <div class="modal hide fade" tabindex="-1" role="dialog" id="new_guw" aria-labelledby="new_guw_label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -607,7 +608,7 @@
 
                 <%= hidden_field_tag :organization_id, @current_organization.id %>
                 <%= hidden_field_tag :project_id, @project.id %>
-                <%= hidden_field_tag :module_project_id, current_mp.id %>
+                <%= hidden_field_tag :module_project_id, current_module_project.id %>
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
                 <p>
