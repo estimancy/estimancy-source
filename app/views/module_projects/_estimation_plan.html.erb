@@ -1,300 +1,76 @@
-<script id="code">
-    $(document).ready(function(){
 
+<%# module_projects = @project.module_projects %>
+<% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
+<% @alphabet = %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) %>
 
-        //On surcharge Link avec GradientLink
-        function GradientLink() {
-            go.Link.call(this);
-            this.startColor = "orange";
-            this.endColor = "green";
-        }
-        go.Diagram.inherit(GradientLink, go.Link);
+<% unless module_projects.empty? %>
 
-        Object.defineProperty(GradientLink.prototype, "startColor", {
-            get: function() { return this._startColor; },
-            set: function(value) {
-                if (this._startColor !== value) {
-                    this._startColor = value;
-                    this.updateBrush();
-                }
-            }
-        });
+  <!-- The INITIALIZATION module -->
+  <%#= render :partial => 'module_projects/initialization_module' %>
 
-        Object.defineProperty(GradientLink.prototype, "endColor", {
-            get: function() { return this._endColor; },
-            set: function(value) {
-                if (this._endColor !== value) {
-                    this._endColor = value;
-                    this.updateBrush();
-                }
-            }
-        });
-
-        GradientLink.prototype.updateBrush = function() {
-            var path = this.path;
-            if (path !== null) {
-                if (this.startColor === this.endColor) {
-                    path.stroke = this.startColor;
-                } else if (this.pointsCount >= 2) {
-                    var br = new go.Brush(go.Brush.Linear);
-                    var p0 = this.getPoint(0);
-                    var pn = this.getPoint(this.pointsCount - 1);
-                    var dx = pn.x - p0.x;
-                    var dy = pn.y - p0.y;
-                    var ex = (dx > 0) ? 1.0 : 0.0;
-                    var ey = (dy > 0) ? 1.0 : 0.0;
-                    br.end = new go.Spot(ex, ey);
-                    br.start = br.end.opposite();
-                    br.addColorStop(0.0, this.startColor);
-                    br.addColorStop(1.0, this.endColor);
-                    path.stroke = br;
-                }
-            }
-        };
-
-        GradientLink.prototype.computePoints = function() {
-            var result = go.Link.prototype.computePoints.call(this);
-            if (result) this.updateBrush();
-            return result;
-        };
-
-        // end GradientLink
-
-        var $ = go.GraphObject.make;  // for conciseness in defining templates
-        myDiagram =
-            $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
-                {
-                    "LinkDrawn": true,  // this DiagramEvent listener is defined below
-                    "LinkRelinked": true,
-                    "undoManager.isEnabled": true  // enable undo & redo
-                });
-
-        function nodeStyle() {
-            return [
-                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-                {
-                    locationSpot: go.Spot.Center
-                }
-            ];
-        }
-
-        function makePort(name, align, spot, output, input) {
-            var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
-            return $(go.Shape,
-                {
-                    fill: "transparent",  // changed to a color in the mouseEnter event handler
-                    strokeWidth: 0,  // no stroke
-                    width: horizontal ? NaN : 8,  // if not stretching horizontally, just 8 wide
-                    height: !horizontal ? NaN : 8,  // if not stretching vertically, just 8 tall
-                    alignment: align,  // align the port on the main Shape
-                    stretch: (horizontal ? go.GraphObject.Horizontal : go.GraphObject.Vertical),
-                    portId: name,  // declare this object to be a "port"
-                    fromSpot: spot,  // declare where links may connect at this port
-                    fromLinkable: output,  // declare whether the user may draw links from here
-                    toSpot: spot,  // declare where links may connect at this port
-                    toLinkable: input,  // declare whether the user may draw links to here
-                    cursor: "pointer",  // show a different cursor to indicate potential link point
-                    mouseEnter: function(e, port) {  // the PORT argument will be this Shape
-                        if (!e.diagram.isReadOnly) port.fill = "rgba(255,0,255,0.5)";
-                    },
-                    mouseLeave: function(e, port) {
-                        port.fill = "transparent";
-                    }
-                });
-        }
-
-        var cxElement = document.getElementById("contextMenu");
-
-        function showContextMenu(obj, diagram, tool) {
-            // Show only the relevant buttons given the current state.
-            var cmd = diagram.commandHandler;
-            document.getElementById("modify").style.display = cmd.canCutSelection() ? "block" : "none";
-            document.getElementById("delete").style.display = cmd.canDeleteSelection() ? "block" : "none";
-
-
-            cxElement.style.display = "block";
-            var mousePt = diagram.lastInput.viewPoint;
-            cxElement.style.left = mousePt.x + "px";
-            cxElement.style.top = mousePt.y + "px";
-        }
-
-        //utiliser HTMLInfo pour afficher des élement en HTML
-        var myContextMenu = $(go.HTMLInfo, {
-            show: showContextMenu,
-            mainElement: cxElement
-        });
-
-        // define the Node templates for regular nodes
-        myDiagram.nodeTemplate =
-            $(go.Node, "Table", nodeStyle(),
-              $(go.Panel, "Auto",
-                  { contextMenu: myContextMenu },
-                  $(go.Shape,
-                    {
-                        geometryString:
-                            "F M0 0 100 0 100 100 10 100 0 80z",
-                        fill: "#ffffff",
-                        strokeWidth: 1,
-                    }, new go.Binding("stroke", "color", brushConverterNode), new go.Binding("figure", "figure")),
-                $(go.TextBlock,
-                    {
-                        font: "bold 10pt Helvetica, Arial, sans-serif",
-                        stroke: "#5472D3",
-                        textAlign: "left",
-                        editable: false
-                    }, {
-                        margin: 20,
-                        maxSize: new go.Size(160, 80),
-                        minSize: new go.Size(160, 80),
-                        wrap: go.TextBlock.WrapFit,
-                        editable: false,
-                        isMultiline: false
-                    },
-                    new go.Binding("text").makeTwoWay())
-                ),
-                makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
-                makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false));
-
-        myDiagram.contextMenu = myContextMenu;
-        // myDiagram.allowMove = false;
-
-        cxElement.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-            return false;
-        }, false);
-
-        function brushConverterNode(e) {
-            return e;
-        }
-
-        // replace the default Link template in the linkTemplateMap
-        myDiagram.linkTemplate =
-            $(GradientLink,
-                new go.Binding("startColor"),
-                new go.Binding("endColor"),
-                {
-                    routing: go.Link.AvoidsNodes,
-                    curve: go.Link.JumpOver,
-                    corner: 0,
-                    toShortLength: 4,
-                    fromEndSegmentLength: 20,
-                    toEndSegmentLength: 20,
-                    relinkableFrom: false,
-                    relinkableTo: false,
-                    reshapable: false,
-                    resegmentable: false,
-                    // mouse-overs subtly highlight links:
-                    // mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-                    // mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
-                    selectionAdorned: false
-                },
-                new go.Binding("points").makeTwoWay(),
-                $(go.Shape,
-                    { isPanelMain: true, strokeWidth: 1, name: "HIGHLIGHT" }),
-                $(go.Shape,  // the link path shape
-                    { isPanelMain: true, strokeWidth: 1 }),
-                    // new go.Binding("stroke", "isSelected", function(sel) {
-                    //     return sel ? "dodgerblue" : $(go.Brush, "Linear", { 0.0: brushConverterLink, 1: brushConverterLink })
-                    // }).ofObject()),
-                $(go.Shape,  // the arrowhead
-                    { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-                $(go.Panel, "Auto", { visible: true, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-                    new go.Binding("visible", "visible").makeTwoWay(), $(go.Shape, "RoundedRectangle", { fill: "#F8F8F8", strokeWidth: 0 }),
-                $(go.TextBlock, "Yes",
-                    {
-                        textAlign: "center",
-                        font: "8pt helvetica, arial, sans-serif",
-                        stroke: "#333333",
-                        editable: false
-                    },
-                    new go.Binding("text").makeTwoWay())
-                )
-            );
-
-        data =
-            {
-                class: "go.GraphLinksModel",
-                linkFromPortIdProperty: "fromPort",
-                linkToPortIdProperty: "toPort",
-                nodeDataArray: [
-                    { key: "pf", loc: "100 0", text: "Point de Fonction <br>", color: "#5472D3" },
-                    { key: "cocomo", loc: "100 170", text: "Cocomo", color: "#7C43BD" },
-                    { key: "staffing", "loc":"100 340", text:"Staffing", color: "#439889" },
-                    { key: "wbs", "loc":"100 510", text:"WBS", color: "#F9683A" },
-                    { key: "isbsg", "loc":"100 680", text:"ISBSG", color: "#4FB3BF" }
-        ],
-            "linkDataArray": [
-            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TB", startColor: "#5472D3", endColor: "#5472D3" },
-            {"from": "pf", "to": "cocomo", "fromPort": "B", "toPort": "T", text: "TN", startColor: "#5472D3", endColor: "#7C43BD" },
-            {"from": "cocomo", "to": "staffing", "fromPort": "B", "toPort": "T", text: "EB", startColor: "#7C43BD", endColor: "#439889" },
-            {"from": "staffing", "to": "wbs", "fromPort": "B", "toPort": "T", text: "EN", startColor: "#439889", endColor: "#F9683A" },
-            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "EN", startColor: "#F9683A", endColor: "#4FB3BF" },
-            {"from": "wbs", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "C", startColor: "#F9683A", endColor: "#4FB3BF" },
-            {"from": "cocomo", "to": "isbsg", "fromPort": "B", "toPort": "T", text: "E", startColor: "#7C43BD", endColor: "#4FB3BF" },
-        ]};
-
-        // Load !
-        myDiagram.model = go.Model.fromJson(data);
-  });
-</script>
-
-<div style="position: relative;">
-  <div id="myDiagramDiv" style="flex-grow: 1; height: 1000px;"></div>
-  <div id="contextMenu">
-    <ul>
-      <li id="modify" onclick="cxcommand(event)"><%= link_to "Modifier", edit_module_project_path(@project.module_projects.last, organization_id: @organization.id) %></li>
-      <li id="delete" onclick="cxcommand(event)"><a href="#" target="_self">Supprimer</a></li>
+  <!-- Others modules -->
+  <% module_projects.each do |pmod| %>
+    <ul class="table-columns">
+      <% pmod.estimation_values.where.not(estimation_value_id: nil).each do |ev| %>
+        <li class="table-column table-column-type-integer jtk-droppable jtk-managed jtk-connected span2" primary-key="true" data-port-id="id" id="jsPlumb_2_3">
+          <%= ev %>
+        </li>
+      <% end %>
     </ul>
-  </div>
-</div>
+    <% if @pbs_project_element %>
+      <% if pmod.pbs_project_elements.map(&:id).include?(@pbs_project_element.id) %>
+        <% pbs_class = 'highlight' %>
+      <% else %>
+        <% pbs_class= "" %>
+      <% end %>
+    <% end %>
 
-<style type="text/css">
-  /* CSS for the traditional context menu */
-  #contextMenu {
-    z-index: 10002;
-    position: absolute;
-    left: 5px;
-    border: 1px solid #444;
-    background-color: #F5F5F5;
-    display: none;
-    box-shadow: 0 0 10px rgba( 0, 0, 0, .4 );
-    font-size: 12px;
-    font-family: sans-serif;
-    font-weight: bold;
-  }
-  #contextMenu ul {
-    list-style: none;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-  }
-  #contextMenu li a {
-    position: relative;
-    min-width: 60px;
-    color: #444;
-    display: inline-block;
-    padding: 6px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  #contextMenu li:hover {
-    background: #CEDFF2;
-    color: #EEE;
-  }
-  #contextMenu li ul li {
-    display: none;
-  }
-  #contextMenu li ul li a {
-    position: relative;
-    min-width: 60px;
-    padding: 6px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  #contextMenu li:hover ul li {
-    display: block;
-    margin-left: 0px;
-    margin-top: 0px;
-  }
-</style>
+    <% if pmod.id == @initialization_module_project.id %>
+      <% left_position = pmod.left_position.nil? ? "40%" : "#{pmod.left_position.to_f}px" %>
+      <% top_position = pmod.top_position.nil? ? "0px" : "#{pmod.top_position.to_f}px" %>
+    <% else %>
+      <% left_position = pmod.left_position.nil? ? "#{pmod.position_x.to_i*40}%" : "#{pmod.left_position.to_f}px" %>
+      <% top_position = pmod.top_position.nil? ? "#{pmod.position_y.to_i*10}em" : "#{pmod.top_position.to_f}px" %>
+    <% end %>
+
+    <div class="<%= pbs_class %> module_project <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>" style="top: <%= top_position %>; left: <%= left_position %>">
+
+      <% if pmod.id != @initialization_module_project.id %>
+        <%= link_to pmod, edit_module_project_path(pmod, organization_id: @organization.id), class: "a_white" %>
+      <% else %>
+        <%= link_to pmod, "#", class: "a_white" %> <%#= pmod %>
+      <% end %>
+
+      <br>
+
+      <%# unless @project.locked? %>
+      <% if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
+        <%#= link_to '', pemodules_left_path(pmod.id), :class => 'icon-arrow-left a_white' %>
+        <%#= link_to '', pemodules_up_path(pmod.id), :class => 'icon-arrow-up a_white' %>
+        <%#= link_to '', pemodules_down_path(pmod.id), :class => 'icon-arrow-down a_white' %>
+        <%#= link_to '', pemodules_right_path(pmod.id), :class => 'icon-arrow-right a_white' %>
+
+        <% if pmod.id == @initialization_module_project.id %>
+          <%= link_to '', '#', :title => "#{@project}: \n #{@initialization_module.description}", :class => "icon-info attribute_tooltip a_white" %>
+        <% else %>
+          <%= link_to '', '#', :title => "#{pmod.pemodule.title}: \n #{pmod.pemodule.description}", :class => "icon-info attribute_tooltip a_white" %>
+          <%= link_to('', pmod, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash a_white') %>
+        <% end %>
+
+        <% if pmod.show_results_view %>
+          <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% else %>
+          <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% end %>
+      <% end %>
+
+      <%# end %>
+    </div>
+  <% end %>
+
+  <%# if can_alter_estimation?(@project) && can?(:alter_estimation_plan, @project) %>
+  <%= render :partial => 'module_projects/dynamic_estimation_paths', :locals => { :module_projects => module_projects, estimation_view: "estimation_plan" } %>
+  <%# end %>
+<% else %>
+  <%= content_tag(:div, I18n.t(:notice_no_estimation_plan_defined), :class => 'alert alert-info') %>
+<% end %>
