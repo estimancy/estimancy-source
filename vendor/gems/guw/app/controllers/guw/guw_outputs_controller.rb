@@ -50,6 +50,7 @@ class Guw::GuwOutputsController < ApplicationController
     @guw_output = Guw::GuwOutput.new(params[:guw_output])
     @guw_model = @guw_output.guw_model
     @guw_output.save
+    organization_id = @guw_model.organization_id
 
     attr = PeAttribute.where(alias: @guw_output.name.underscore.gsub(" ", "_"),
                              name: @guw_output.name,
@@ -63,9 +64,9 @@ class Guw::GuwOutputsController < ApplicationController
                                in_out: "both",
                                guw_model_id: @guw_output.guw_model_id).first_or_create!
 
-    @guw_model.module_projects.each do |module_project|
+    @guw_model.module_projects.where(organization_id: organization_id).each do |module_project|
       ['input', 'output'].each do |in_out|
-        mpa = EstimationValue.create(organization_id: @guw_model.organization_id,
+        mpa = EstimationValue.create(organization_id: organization_id,
                                      module_project_id: module_project.id,
                                      pe_attribute_id: attr.id,
                                      in_out: in_out,
