@@ -1,11 +1,8 @@
 
 <script>
-    $(document).ready(function(){
-
+    $(document).on('ready', function() {
         jsPlumb.ready(function () {
-
             $( ".tabs-project, #tabs-4").tabs({
-
                 beforeActivate: function (event, ui) {
                     //console.log("ID = "+ ui.newPanel.attr('id'));
                     if(ui.newPanel.attr('id') == "tabs-4"){
@@ -13,62 +10,65 @@
                         window.location.reload(true);
                     }
                 },
-
                 activate: function(event, ui) {
                     var scrollTop = $(window).scrollTop();
                     var active = $('.tabs-project').tabs('option', 'active');
                     window.location.hash = $(".tabs-project ul>li a").eq(active).attr("href");
                     $(window).scrollTop(scrollTop);
                 }
-
             });
-
-            exampleColor = '#3498db', //'#ffa500' //'#00f',
-
+            var sourceAnchors = [
+                    [0.2, 0, 0, -1, 0, 0, "foo"],
+                    [1, 0.2, 1, 0, 0, 0, "bar"],
+                    [0.8, 1, 0, 1, 0, 0, "baz"],
+                    [0, 0.8, -1, 0, 0, 0, "qux"]
+                ],
+                targetAnchors = [
+                    [0.6, 0, 0, -1],
+                    [1, 0.6, 1, 0],
+                    [0.4, 1, 0, 1],
+                    [0, 0.4, -1, 0]
+                ],
+                exampleColor = '#3498db', //'#ffa500' //'#00f',
+                exampleDropOptions = {
+                    tolerance: 'touch',
+                    hoverClass: 'dropHover',
+                    activeClass: 'dragActive'
+                },
                 //connector = [ "Bezier", { cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],    //Flowchart
-                // connector = [ "Straight", { cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne utilisee
-                connector = [ "Flowchart", { cornerRadius: 5, cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne a tester
-
+                connector = [ "Straight", { cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne utilisee
+                //connector = [ "Flowchart", { cornerRadius: 5, cssClass: "connectorClass", hoverClass: "connectorHoverClass" } ],   // ligne a tester
                 connectorStyle = {
                     gradient: {stops: [
                             [0, exampleColor],
                             [0.5, '#3498db'],   //[0.5, '#ffa500'],  //#ffa500 pour avoir la couleur orange partout (ou orange/bleu)
                             [1, exampleColor]
                         ]},
-                    lineWidth: 2, //5,
+                    lineWidth: 1, //5,
                     strokeStyle: exampleColor
                 },
                 hoverStyle = {
                     strokeStyle: "#3498db" //"#ffa500"
                 },
                 overlays = [
-                    ["Diamond", { fillStyle: "#09098e", width: 30, length: 30 } ]  //["Diamond", { fillStyle: "#09098e", width: 15, length: 15 } ]
+                    ["Diamond", { fillStyle: "#09098e", width: 7, length: 7 } ]  //["Diamond", { fillStyle: "#09098e", width: 15, length: 15 } ]
                 ],
                 connectionOverlays = [
-                    [ "Arrow", { width: 7, length: 7, location: -3, id: "arrow", foldback: 0.4 } ]
+                    [ "Arrow", { width:10, length:10, location:-1, id:"arrow", foldback:0.4 } ]
                 ],
                 endpoint_radius = 5,  //4
                 container_box = "module_box";
-
             <% if estimation_view == "estimation_plan_min" %>
             endpoint_radius = 1;
             overlays = [];
             container_box = "module_box_min"
-
             <% end %>
-
-            var endpoint = ["Rectangle", { cssClass: "endpointClass", radius: endpoint_radius, hoverClass: "endpointHoverClass" } ]
-            endpointStyle = { fillStyle: exampleColor },
-
+            var endpoint = ["Dot", { cssClass: "endpointClass", radius: endpoint_radius, hoverClass: "endpointHoverClass" } ], //endpoint = ["Dot", { cssClass: "endpointClass", radius: 10, hoverClass: "endpointHoverClass" } ],
+                endpointStyle = { fillStyle: exampleColor },
                 anEndpoint = {
-                    endpoint: ["Rectangle",
-                        {
-                            cssClass: "endpointClass",
-                            radius: endpoint_radius,
-                            hoverClass: "endpointHoverClass" }
-                    ],
-                    paintStyle: { fillStyle: "#3498db" },
-                    hoverPaintStyle: { fillStyle: "#3498db" },
+                    endpoint: endpoint,
+                    paintStyle: endpointStyle,
+                    hoverPaintStyle: { fillStyle: "#3498db" },  //hoverPaintStyle: { fillStyle: "#ffa500" },
                     //isSource: true,  isTarget: true,
                     maxConnections: -1,
                     connector: connector,
@@ -76,64 +76,47 @@
                     connectorHoverStyle: hoverStyle,
                     connectorOverlays: overlays
                 };
-
             var instance = jsPlumb.getInstance({
                 DragOptions: { cursor: 'pointer', zIndex: 2000 },
                 Container: container_box, //"module_box", //Container: "canvas"
                 ConnectionOverlays: connectionOverlays,
             });
-
             // suspend drawing and initialise.
             instance.batch(function () {
-
                 var endpoints = {};
-
                 <% mp_connections = {} %>
                 <% module_projects.each do |pmod| %>
+                <%# mp_id = "mp_#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %>
                 <% mp_id = "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>
                 <% mp_connections["#{mp_id}"] = [] %>
-
+                <%# pmod.associated_module_projects.each do |assos_mp| %>
                 <% pmod.inverse_associated_module_projects.each do |assos_mp| %>
+                <%# mp_assos_id = "mp_#{assos_mp.pemodule.alias}_#{assos_mp.position_x}_#{assos_mp.position_y}" %>
                 <% mp_assos_id = "mp_#{assos_mp.pemodule.alias}_#{assos_mp.id}" %>
                 <% mp_connections["#{mp_id}"] << mp_assos_id %>
                 <% end %>
                 <% end %>
-
                 var js_module_project_connections = <%= mp_connections.to_json.html_safe %> ;
-
+                //console.log(js_module_project_connections);
                 // ask jsPlumb for a selector for the window class
                 divsWithWindowClass = jsPlumb.getSelector(".module_box .module_project");
-
                 <% if estimation_view == "estimation_plan_min" %>
                 divsWithWindowClass = jsPlumb.getSelector(".module_box_min .module_project_min");
                 <% end %>
-
                 // add endpoints to all of these - one for source, and one for target, configured so they don't sit
                 // on top of each other.
-                for (var i = 0; i < divsWithWindowClass.length * 2; i++) {
+                for (var i = 0; i < divsWithWindowClass.length; i++) {
                     var id = instance.getId(divsWithWindowClass[i]);
                     endpoints[id] = [
-                        instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
-                        instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false}),
+                        // note the three-arg version of addEndpoint; lets you re-use some common settings easily.
+                        //instance.addEndpoint(id, anEndpoint, {anchor: sourceAnchors}),
+                        //instance.addEndpoint(id, anEndpoint, {anchor: targetAnchors})
+                        //instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
+                        //instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false})
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["BottomCenter", "RightMiddle"], isTarget: false, isSource: true}),
+                        instance.addEndpoint(id, anEndpoint, {anchor: ["TopCenter", "LeftMiddle"], isTarget: true, isSource: false})
                     ];
                 }
-
-                <% EstimationValue.where(organization_id: @current_organization,
-                                         module_project_id: @project.module_projects.map(&:id)).each_with_index do |mp, i| %>
-                // var id = instance.getId(divsWithWindowClass[i]);
-                endpoints[<%= i %>] = [
-                    // note the three-arg version of addEndpoint; lets you re-use some common settings easily.
-                    //instance.addEndpoint(id, anEndpoint, {anchor: sourceAnchors}),
-                    //instance.addEndpoint(id, anEndpoint, {anchor: targetAnchors})
-
-                    //instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
-                    //instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false})
-
-                    instance.addEndpoint(id, anEndpoint, {anchor: "Bottom", isTarget: false, isSource: true}),
-                    instance.addEndpoint(id, anEndpoint, {anchor: "Top", isTarget: true, isSource: false}),
-                ];
-                <% end %>
-
                 //then connect everything using the connections map declared above.
                 for (var e in endpoints) {
                     if (js_module_project_connections[e]) {
@@ -145,18 +128,14 @@
                         }
                     }
                 }
-
                 <% if estimation_view == "estimation_plan" %>
-
                 // bind Connection listener; then create connections in database
                 instance.bind("connection", function(info, originalEvent) {
                     //alert(info.targetId);
                     var sourceId = info.sourceId;
                     var targetId = info.targetId;
-
                     var mp_source_id = $('#'+sourceId).data('module_project_id');
                     var mp_target_id = $('#'+targetId).data('module_project_id');
-
                     $.ajax({
                         method: 'GET',
                         url: "/update_module_project_dynamic_connections",
@@ -167,19 +146,14 @@
                         }
                     });
                 });
-
                 // bind click listener; delete connections on click
                 instance.bind("click", function (connection) {
-
                     var sourceId = connection.sourceId;
                     var targetId = connection.targetId;
-
                     var mp_source_id = $('#'+sourceId).data('module_project_id');
                     var mp_target_id = $('#'+targetId).data('module_project_id');
-
                     //delete connection
                     instance.detach(connection);
-
                     $.ajax({
                         method: 'GET',
                         url: "/update_module_project_dynamic_connections",
@@ -190,27 +164,21 @@
                         }
                     });
                 });
-
                 // bind beforeDetach interceptor: will be fired when the click handler above calls detach, and the user
                 // will be prompted to confirm deletion.
                 instance.bind("beforeDetach", function (connection) {
                     return confirm("Supprimer le lien de connexion ?");
                 });
-
                 // Set the drag action on all module_project
                 //instance.draggable(divsWithWindowClass);
-
                 //instance.draggable(divsWithWindowClass, {
                 instance.draggable($(".module_project"), {
                     containment: ".module_box",
                     scroll: false,
-
                     drag:function(event, ui){
                     },
-
                     stop:function(event, ui){
                         //alert("test");
-
                         // Saving the nodes'(module_projects) parameters
                         var nodes = [];
                         $(".module_project").each(function (idx, elem) {
@@ -223,7 +191,6 @@
                                 left_offset: $elem.offset().left
                             });
                         });
-
                         $.ajax({
                             method: "GET",
                             url: "/update_module_project_left_and_top_positions",
@@ -234,49 +201,32 @@
                         })
                     }
                 });
-
                 //The initialization module_project won't be draggable
                 instance.setDraggable($(".initialization_0_0"), false);
-
                 <% end %>
-
                 jsPlumb.fire("jsPlumbDemoLoaded", instance);
             });
         });
-
-
         //===================== END For JsPlumb connector ============================
-
-
         //===== update the module_box_min heigh =====
-
         var heights = $("div.module_project_min").map(function ()
         {
             return (parseInt($(this).css("top"), 10) + (2 * $(this).height()) );
         }).get();
-
         var maxHeight = Math.max.apply(null, heights);
-
         $("div.module_box_min").height(maxHeight);
-
         //==== end update the module_box_min heigh =====
-
-
-
         //====== For JsPlumb connections
-
         function hideJsplumbConnections(){
             $('.module_project').each(function(index){
                 jsPlumb.hide(this.id, true);
             });
         }
-
         function showJsplumbConnections(){
             $('.module_project').each(function(index){
                 jsPlumb.show(this.id, true);
             });
         }
-
         // Saves the position of all nodes / connections as a json in a textarea.
         function saveAllJsplumbConnections() {
             // Saving all of the nodes' parameters
@@ -289,7 +239,6 @@
                     positionY: parseInt($elem.css("top"), 10)
                 });
             });
-
             // Saving all of the connections' parameters
             var connections = [];
             $.each(jsPlumb.getConnections(), function (idx, connection) {
@@ -298,15 +247,11 @@
                     pageTargetId: connection.targetId
                 });
             });
-
             var nodes_graph = {};
             nodes_graph.agents = nodes;
             nodes_graph.connections = connections;
             var nodes_graph_json = JSON.stringify(nodes_graph);
-
             $('#json-output').val(nodes_graph_json);
         }
-
-
     });
 </script>
