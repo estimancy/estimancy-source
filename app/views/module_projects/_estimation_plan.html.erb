@@ -10,13 +10,7 @@
 
   <!-- Others modules -->
   <% module_projects.each do |pmod| %>
-    <ul class="table-columns">
-      <% pmod.estimation_values.where.not(estimation_value_id: nil).each do |ev| %>
-        <li class="table-column table-column-type-integer jtk-droppable jtk-managed jtk-connected span2" primary-key="true" data-port-id="id" id="jsPlumb_2_3">
-          <%= ev %>
-        </li>
-      <% end %>
-    </ul>
+
     <% if @pbs_project_element %>
       <% if pmod.pbs_project_elements.map(&:id).include?(@pbs_project_element.id) %>
         <% pbs_class = 'highlight' %>
