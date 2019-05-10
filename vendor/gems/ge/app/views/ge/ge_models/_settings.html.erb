@@ -1,4 +1,4 @@
-<section class="estimation-modules-edition">
+<section class="estimation-modules-edition ge-model-estimation">
   <div style="flex: 1">
     <h2>
       HAHA - 1.0
@@ -19,32 +19,57 @@
         </b>
       </h4>
 
-      <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
-        <% factor_values_per_type.each do |type, factor_values| %>
-
-        <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
-          <% factor_value = factor_values.first %>
-          <% value = factor_value.last[0] %>
-          <%= hidden_field_tag("#{scale_prod}_factor[#{value.factor_alias}]", value.id) %>
-
-        <% else %>
-
-          <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
-          <% if type_max_length <= 1 %>
-            <% factor_values.each do |key, values| %>
-              <% unless values.first.nil? %>
-                <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+      <div class="effort-bloc">
+        <ul class="nav nav-pills tabs">
+          <% index = 0 %>
+          <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
+            <% factor_values_per_type.each do |type, factor_values| %>
+              <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
+                <% factor_value = factor_values.first %>
+                <% value = factor_value.last[0] %>
+                <%= hidden_field_tag("#{scale_prod}_factor[#{value.factor_alias}]", value.id) %>
+              <% else %>
+                <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
+                <% if type_max_length <= 1 %>
+                  <% factor_values.each do |key, values| %>
+                    <% unless values.first.nil? %>
+                      <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <% index = index + 1 %>
+                  <li class="nav-item">
+                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab"><%= type.downcase.gsub(" ", "-") %></a>
+                  </li>
+                <% end %>
               <% end %>
             <% end %>
-          <% else %>
-            <div class="row">
-              <div class="col">
-                <h6><%= type %></h6>
-                  <div class="row">
-                    <div class="col-4">
-                      <div class="card card-widget">
-                        <div class="card-body">
-                          <div class="effort-table">
+          <% end %>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+          <% index = 0 %>
+          <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
+            <% factor_values_per_type.each do |type, factor_values| %>
+              <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
+                <% factor_value = factor_values.first %>
+                <% value = factor_value.last[0] %>
+                <%= hidden_field_tag("#{scale_prod}_factor[#{value.factor_alias}]", value.id) %>
+              <% else %>
+                <% type_max_length = factor_values.max_by{ |k,v| v.length }.last.length %>
+                <% if type_max_length <= 1 %>
+                  <% factor_values.each do |key, values| %>
+                    <% unless values.first.nil? %>
+                      <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <% index = index + 1 %>
+                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
+                    <div class="card card-widget">
+                      <div class="card-body">
+                        <div class="effort-table">
+                          <div class="row">
                             <% factor_values.each do |key, values| %>
                               <% if values.length == 1 %>
                                 <% unless values.first.nil? %>
@@ -52,7 +77,7 @@
                                 <% end %>
                               <% elsif values.length > 1 %>
                                 <% ge_factor = values[0].ge_factor %>
-                                <div class="col">
+                                <div class="col-2">
                                   <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
                                     <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
                                   <% else %>
@@ -68,7 +93,6 @@
                                                 ge.edit_ge_model_factor_description_path(model_factor_description, project_id: @project.id), remote: true %>
                                   </span>
 
-                                  <%#= select_tag("#{scale_prod}_factor[#{key}]", options_for_select(values.map{ |f| [f.value_text, f.id]}, :selected => (@ge_input_values["#{key}"][:ge_factor_value_id] unless @ge_input_values["#{key}"].nil?)), { class: "slide input-xlarge" }) %>
                                   <% ids_list = values.map{ |f| f.id } %>
                                   <% js_factor_data = Hash.new %>
                                   <% values.map{ |f| js_factor_data["#{f.id}"] = f.value_text }  %>
@@ -101,7 +125,6 @@
 
                                   <hr>
                                 </div>
-
                                 <script type="text/javascript">
 
                                     var data_ids = <%= raw ids_list.to_json.html_safe %> ;
@@ -150,94 +173,94 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                <% end %>
+              <% end %>
             <% end %>
           <% end %>
-        <% end %>
-      <% end %>
+        </div>
+      </div>
     <% end %>
 
-  <br>
-  <div class="row-fluid">
-    <div class="col-6">
+    <br>
+    <div class="row">
+      <div class="col">
 
-      <% ge_effort_size_translation = { "effort" => I18n.t(:ge_effort), "retained_size" => I18n.t(:ge_size) } %>
-      <% ["ent1", "ent2", "ent3", "ent4"].each_with_index do |input, index|
-            ge_effort_size_translation["#{input}"] = I18n.t("entree#{index+1}")
-      end %>
+        <% ge_effort_size_translation = { "effort" => I18n.t(:ge_effort), "retained_size" => I18n.t(:ge_size) } %>
+        <% ["ent1", "ent2", "ent3", "ent4"].each_with_index do |input, index|
+              ge_effort_size_translation["#{input}"] = I18n.t("entree#{index+1}")
+        end %>
 
-      <% ["sort1", "sort2", "sort3", "sort4"].each_with_index do |output, index|
-            ge_effort_size_translation["#{output}"] = I18n.t("sortie#{index+1}")
-      end %>
+        <% ["sort1", "sort2", "sort3", "sort4"].each_with_index do |output, index|
+              ge_effort_size_translation["#{output}"] = I18n.t("sortie#{ index+1 }")
+        end %>
 
-      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size") %>
-      <% unless @ge_model.input_pe_attribute.nil? %>
-          <% attr = @ge_model.input_pe_attribute %>
-      <% end %>
-      <%# input_attribute_ids = [attr.id] %>
+        <% attr = current_module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size") %>
+        <% unless @ge_model.input_pe_attribute.nil? %>
+            <% attr = @ge_model.input_pe_attribute %>
+        <% end %>
+        <%# input_attribute_ids = [attr.id] %>
 
-      <% out_attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
-      <% unless @ge_model.output_pe_attribute_id.nil? %>
-          <% out_attr = @ge_model.output_pe_attribute %>
-      <% end %>
-      <%# output_attribute_ids = [out_attr.id] %>
-      <%# if @ge_model.transform_size_and_effort
-           input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
-           output_attribute_ids = input_attribute_ids
-      end %>
+        <% out_attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+        <% unless @ge_model.output_pe_attribute_id.nil? %>
+            <% out_attr = @ge_model.output_pe_attribute %>
+        <% end %>
+        <%# output_attribute_ids = [out_attr.id] %>
+        <%# if @ge_model.transform_size_and_effort
+             input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+             output_attribute_ids = input_attribute_ids
+        end %>
 
-      <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-      <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+        <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
 
-      <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
-          <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::DEFECTS_INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-          <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::DEFECTS_TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
-      <% end %>
+        <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
+            <% input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::DEFECTS_INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+            <% output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::DEFECTS_TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+        <% end %>
 
-      <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
-      <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
+        <% current_inputs_evs = current_module_project.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
+        <% current_outputs_evs = current_module_project.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
 
-      <%# if current_inputs_evs.empty? %>
-      <% if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length) %>
-          <!-- Get estimation_value of the input attribute to use -->
-          <% all_estimation_values = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids) %>
-          <% current_inputs_evs = all_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
-          <% current_outputs_evs = all_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
-      <% end %>
+        <%# if current_inputs_evs.empty? %>
+        <% if (input_attribute_ids.length != current_inputs_evs.length) || (output_attribute_ids.length != current_outputs_evs.length) %>
+            <!-- Get estimation_value of the input attribute to use -->
+            <% all_estimation_values = current_module_project.get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids) %>
+            <% current_inputs_evs = all_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input") %>
+            <% current_outputs_evs = all_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output") %>
+        <% end %>
 
-      <h4>
-        <b>
-          <%= I18n.t :inputs %>
-        </b>
-      </h4>
+        <h4>
+          <b>
+            <%= I18n.t :inputs %>
+          </b>
+        </h4>
 
-      <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(attr) %>
-      <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
-                                             :module_project_id => possible_module_projects.last,
-                                             :in_out => "output").first %>
+        <% possible_module_projects = current_module_project.possible_previous_mp_for_attribute(attr) %>
+        <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+                                               :module_project_id => possible_module_projects.last,
+                                               :in_out => "output").first %>
 
-      <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
-                                             :module_project_id => current_module_project.id,
-                                             :in_out => "input").first %>
+        <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+                                               :module_project_id => current_module_project.id,
+                                               :in_out => "input").first %>
 
-      <% component_id = current_component.id %>
-      <% precision = attr.precision.nil? ? user_number_precision : attr.precision %>
+        <% component_id = current_component.id %>
+        <% precision = attr.precision.nil? ? user_number_precision : attr.precision %>
 
-      <% initial_entry_values = {} %>
-      <% entry_values = {} %>
+        <% initial_entry_values = {} %>
+        <% entry_values = {} %>
 
-      <% v_low = Ge::GeModel::display_size(previous_ev, current_ev, "low", component_id, @ge_model) %>
-      <% v_most_likely = Ge::GeModel::display_size(previous_ev, current_ev, "most_likely", component_id, @ge_model) %>
-      <% v_high = Ge::GeModel::display_size(previous_ev, current_ev, "high", component_id, @ge_model) %>
+        <% v_low = Ge::GeModel::display_size(previous_ev, current_ev, "low", component_id, @ge_model) %>
+        <% v_most_likely = Ge::GeModel::display_size(previous_ev, current_ev, "most_likely", component_id, @ge_model) %>
+        <% v_high = Ge::GeModel::display_size(previous_ev, current_ev, "high", component_id, @ge_model) %>
 
-      <% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
+        <% previous_level_values = { "low" => v_low, "most_likely" => v_most_likely, "high" => v_high }  %>
 
-      <% ['low', 'most_likely', 'high'].each do |level| %>
-          <% entry_values["#{level}"] = Hash.new %>
-          <% initial_entry_values["#{level}"] = Hash.new %>
+        <% ['low', 'most_likely', 'high'].each do |level| %>
+            <% entry_values["#{level}"] = Hash.new %>
+            <% initial_entry_values["#{level}"] = Hash.new %>
 
-          <% unless current_inputs_evs.empty? %>
+            <% unless current_inputs_evs.empty? %>
 
               <% current_inputs_evs.each do |ev| %>
 
@@ -300,267 +323,246 @@
                   <% end %>
               <% end %>
 
-          <% end %>
-      <% end %>
+            <% end %>
+        <% end %>
 
 
-      <table class="table table-condensed table-striped">
-        <tr>
-          <% if @ge_model.three_points_estimation == true %>
-            <th><%= I18n.t(:bottom)%></th>
-          <% end %>
-          <th><%= I18n.t(:probable)%></th>
-          <% if @ge_model.three_points_estimation == true %>
-            <th><%= I18n.t(:top)%></th>
-          <% end %>
-        </tr>
+        <table class="table estimation-table">
+          <tr>
+            <% if @ge_model.three_points_estimation == true %>
+              <th><%= I18n.t(:bottom)%></th>
+            <% end %>
+            <th><%= I18n.t(:probable)%></th>
+            <% if @ge_model.three_points_estimation == true %>
+              <th><%= I18n.t(:top)%></th>
+            <% end %>
+          </tr>
 
-        <tr>
-          <!--  TEST NOUVEAU PARAMS ENTREES  -->
-          <% if current_module_project.ge_model.three_points_estimation? %>
+          <tr>
+            <!--  TEST NOUVEAU PARAMS ENTREES  -->
+            <% if current_module_project.ge_model.three_points_estimation? %>
               <td>
-                <% if current_inputs_evs.empty? %>
+                <%= ge_effort_size_translation[ev.pe_attribute.alias] %>
+              </td>
+              <td>
+                <div class="row">
+                  <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>
-                <% else %>
+                  <% else %>
                     <!-- nouvelles entrees -->
                     <% current_inputs_evs.each do |ev| %>
-                        <% entry_low_value =  entry_values["low"][ev.id] %>
-                        <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
-
-                        <div class="row-fluid">
-                          <div class="span9">
-                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-                            <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
-                            <% else %>
-                                <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
-                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                            <% end %>
-
-                            <%= get_ge_model_value_unit(@ge_model, ev) %>
-                          </div>
-                        </div>
+                      <% entry_low_value =  entry_values["low"][ev.id] %>
+                      <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                      <div class="col">
+                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                            <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                        <% else %>
+                            <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
+                            <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                        <% end %>
+                        <%= get_ge_model_value_unit(@ge_model, ev) %>
+                      </div>
                     <% end %>
-                <% end %>
+                  <% end %>
+                </div>
               </td>
-          <% end %>
+            <% end %>
 
-          <td>
-            <!-- Nouvelles entrees -->
-            <% if current_inputs_evs.empty? %>
-                <%= "Le module ne contient aucun attribut" %>
-            <% else %>
-                <% current_inputs_evs.each do |ev| %>
+            <td>
+              Inputs
+            </td>
+
+            <td>
+              <div class="row">
+                <% if current_inputs_evs.empty? %>
+                  <%= "Le module ne contient aucun attribut" %>
+                <% else %>
+                  <% current_inputs_evs.each do |ev| %>
                     <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                     <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
-
-                    <div class="row-fluid">
-                      <div class="span9">
-                        <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
+                      <div class="col">
                         <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                            <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
+                          <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
                         <% else %>
-                            <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
-                            <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
+                          <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
+                          <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
                       <% end %>
-
                         <%= get_ge_model_value_unit(@ge_model, ev) %>
                       </div>
-                    </div>
+                  <% end %>
                 <% end %>
-            <% end %>
-          </td>
+              </div>
+            </td>
 
-          <% if current_module_project.ge_model.three_points_estimation? %>
+            <% if current_module_project.ge_model.three_points_estimation? %>
               <td>
-                <% if current_inputs_evs.empty? %>
-                    <%= "Le module ne contient aucun attribut" %>
-                <% else %>
+                Input
+              </td>
+
+              <td>
+                <div class="row">
+                  <% if current_inputs_evs.empty? %>
+                      <%= "Le module ne contient aucun attribut" %>
+                  <% else %>
                     <!-- nouvelles entrees -->
                     <% current_inputs_evs.each do |ev| %>
-                        <% entry_high_value = entry_values["high"][ev.id] %>
-                        <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                      <% entry_high_value = entry_values["high"][ev.id] %>
+                      <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                        <div class="col">
+                          <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                            <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                          <% else %>
+                            <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
+                            <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                          <% end %>
 
-                        <div class="row-fluid">
-                          <div class="span9">
-                            <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-
-                            <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", style: "width: 60px; text-align: right" %>
-                            <% else %>
-                                <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
-                                <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, style: "width: 60px; text-align: right" %>
-                            <% end %>
-
-                            <%= get_ge_model_value_unit(@ge_model, ev) %>
-                          </div>
+                          <%= get_ge_model_value_unit(@ge_model, ev) %>
                         </div>
                     <% end %>
-                <% end %>
+                  <% end %>
+                </div>
               </td>
-          <% end %>
+            <% end %>
+          </tr>
+        </table>
+      </div>
 
-          <!--  FIN ENTREES   -->
-        </tr>
-      </table>
-    </div>
+      <div class="col-6">
+        <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+        <% unless @ge_model.output_pe_attribute.nil? %>
+          <% attr = @ge_model.output_pe_attribute %>
+        <% end %>
 
-    <div class="col-6">
-      <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
-      <% unless @ge_model.output_pe_attribute.nil? %>
-        <% attr = @ge_model.output_pe_attribute %>
-      <% end %>
+        <%
+           begin
+              ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first
+           rescue
+             ev = nil
+           end
+        %>
+        <% theorical_effort_attr = PeAttribute.find_by_alias("theoretical_effort") %>
+        <% theorical_ev = EstimationValue.where(pe_attribute_id: theorical_effort_attr.id, module_project_id: current_module_project.id, in_out: "output").last %>
+        <% component_id = current_component.id %>
 
-      <%
-         begin
-            ev = EstimationValue.where(:pe_attribute_id => attr.id, :module_project_id => current_module_project.id, in_out: "output").first
-         rescue
-           ev = nil
-         end
-      %>
-      <% theorical_effort_attr = PeAttribute.find_by_alias("theoretical_effort") %>
-      <% theorical_ev = EstimationValue.where(pe_attribute_id: theorical_effort_attr.id, module_project_id: current_module_project.id, in_out: "output").last %>
-      <% component_id = current_component.id %>
+        <h4>
+          <b>
+            <%= I18n.t(:outputs)%>
+          </b>
+        </h4>
 
-      <h4>
-        <b>
-          <%= I18n.t(:outputs)%>
-        </b>
-      </h4>
+        <table class="table estimation-table">
+          <tr>
+            <%# if @ge_model.three_points_estimation == true %>
+<!--              <th><%#= I18n.t(:bottom)%></th>-->
+            <%# end %>
+            <th><%= I18n.t(:probable)%></th>
+            <%# if @ge_model.three_points_estimation == true %>
+<!--              <th><%#= I18n.t(:top)%></th>-->
+            <%# end %>
+<!--            <th>-->
+              <%#= I18n.t(:ratio) %>
+<!--            </th>-->
+          </tr>
 
-      <table class="table table-condensed table-striped">
-        <tr>
-          <% if @ge_model.three_points_estimation == true %>
-            <th><%= I18n.t(:bottom)%></th>
-          <% end %>
-          <th><%= I18n.t(:probable)%></th>
-          <% if @ge_model.three_points_estimation == true %>
-            <th><%= I18n.t(:top)%></th>
-          <% end %>
-          <th>
-            <%= I18n.t(:ratio) %>
-          </th>
-        </tr>
+          <!--  NOUVEAU PARAMS SORTIE  -->
+          <tr>
 
-        <!--  NOUVEAU PARAMS SORTIE  -->
-        <tr>
-          <% if @ge_model.three_points_estimation == true %>
-              <td>
+<!--            <td>-->
+              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+<!--            </td>-->
+              <div class="row">
                 <% current_outputs_evs.each do |ev| %>
+                  <% unless ev.nil? %>
                     <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
-
-                    <div class="row-fluid">
-                      <div class="span9">
-                        <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-
+                      <div class="col">
                         <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                            <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "input-mini" %>
+                            <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control" %>
                         <% else %>
-                            <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
-                            <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "input-mini", disabled: true %>
+                            <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
+                            <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
 
                         <%= get_ge_model_value_unit(@ge_model, ev) %>
                       </div>
-                    </div>
+                  <% end %>
                 <% end %>
-              </td>
-          <% end %>
+              </div>
+            </td>
 
-          <td>
-            <% current_outputs_evs.each do |ev| %>
-              <% unless ev.nil? %>
-                <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
-
-                <div class="row-fluid">
-                  <div class="span9">
-                    <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-
-                    <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                        <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "input-mini" %>
-                    <% else %>
-                        <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
-                        <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}",  class: "input-mini", disabled: true %>
-                    <% end %>
-
-                    <%= get_ge_model_value_unit(@ge_model, ev) %>
-                  </div>
-                </div>
-              <% end %>
-            <% end %>
-          </td>
-
-          <% if @ge_model.three_points_estimation == true %>
+            <% if @ge_model.three_points_estimation == true %>
+<!--              <td>-->
+                <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+<!--              </td>-->
               <td>
-                <% current_outputs_evs.each do |ev| %>
-                  <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                <div class="row">
 
-                  <div class="row-fluid">
-                    <div class="span9">
-                      <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-                      <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                          <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini" %>
-                      <% else %>
+                  <% current_outputs_evs.each do |ev| %>
+                    <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+
+                      <div class="col">
+                        <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                          <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control" %>
+                        <% else %>
                           <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
-                          <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}",  class: "input-mini", disabled: true %>
-                    <% end %>
-
-                      <%= get_ge_model_value_unit(@ge_model, ev) %>
-                    </div>
-                  </div>
-                <% end %>
-              </td>
-          <% end %>
-
-          <!--  LES RATIOS   -->
-          <td>
-            <% current_outputs_evs.each do |ev| %>
-                <div class="row-fluid">
-                  <div class="span9">
-                    <%= ge_effort_size_translation[ev.pe_attribute.alias] %> :
-                    <span id='<%="ratio_#{ev.id}"%>' style="margin-left: 10px;">
-                        <% begin %>
-                            <%# output = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-                            <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
-
-                            <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
-                                <% corresponding_input_ev = current_inputs_evs.includes(:pe_attribute).where(:pe_attributes => { alias: "ent1"}, in_out: "input").first
-                                   entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
-                                %>
-                            <% else %>
-                                <%  corresponding_input_attribute_alias = Ge::GeModel::CORRESPONDING_INPUTS_WITH_OUTPUTS[ev.pe_attribute.alias]
-                                    corresponding_input_attribute = PeAttribute.where(alias: corresponding_input_attribute_alias).first
-                                    corresponding_input_ev = current_inputs_evs.where(pe_attribute_id: corresponding_input_attribute.id).first
-                                    entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
-                                %>
-                            <% end %>
-
-                            <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
-
-                            <%=  (output.to_f/input.to_f).round(user_number_precision) %>
-                        <% rescue %>
-                            -
+                          <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
+
+                        <%= get_ge_model_value_unit(@ge_model, ev) %>
+                    </div>
+                  <% end %>
+                </div>
+              </td>
+            <% end %>
+
+<!--            <td>-->
+              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+<!--            </td>-->
+            <td>
+              <div class="row">
+                <% current_outputs_evs.each do |ev| %>
+                  <div class="col">
+                    <span id='<%="ratio_#{ev.id}"%>' style="margin-left: 10px;">
+                      <% begin %>
+                        <%# output = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
+                        <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
+
+                        <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
+                            <% corresponding_input_ev = current_inputs_evs.includes(:pe_attribute).where(:pe_attributes => { alias: "ent1"}, in_out: "input").first
+                               entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
+                            %>
+                        <% else %>
+                            <%  corresponding_input_attribute_alias = Ge::GeModel::CORRESPONDING_INPUTS_WITH_OUTPUTS[ev.pe_attribute.alias]
+                                corresponding_input_attribute = PeAttribute.where(alias: corresponding_input_attribute_alias).first
+                                corresponding_input_ev = current_inputs_evs.where(pe_attribute_id: corresponding_input_attribute.id).first
+                                entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
+                            %>
+                        <% end %>
+
+                        <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
+
+                        <%# (output.to_f/input.to_f).round(user_number_precision) %>
+                      <% rescue %>
+                          -
+                      <% end %>
                     </span>
                   </div>
-                </div>
-            <% end %>
-          </td>
-        </tr>
-        <!--  FIN NOUVEAU PARAMS   -->
-
-      </table>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
-    <% if can? :execute_estimation_plan, @project %>
-      <button type="submit" class="btn btn-primary pull-right">
-        <%= I18n.t(:calculate_button) %>
-      </button>
-    <% end %>
-
-    <br>
-    <hr>
-  </div>
-<% end %>
+    <div class="row">
+      <div class="col">
+        <% if can? :execute_estimation_plan, @project %>
+          <button type="submit" class="btn btn-primary pull-right">
+            <%= I18n.t(:calculate_button) %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </section>
 

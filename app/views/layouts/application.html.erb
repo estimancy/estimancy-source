@@ -25,37 +25,41 @@
           </div>
         </a>
         <div class="container">
-          <div class="project-block">
-            <div class="dropdown">
-              <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                <%= @current_organization %>
-              </a>
-              <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
-                <% @organizations.each do |organization| %>
-                  <a class="dropdown-item project-item <%= (@current_organization.id == organization.id) ? 'active' : '' %>" href="<%= main_app.organization_estimations_path(organization) %>">
-                    <div class="project-title"><%= organization.name %></div>
-                    <div class="project-subtitle"><%= organization.headband_title %></div>
-                  </a>
-                <% end %>
+          <% unless controller.action_name == "all_organizations" %>
+            <div class="project-block">
+              <div class="dropdown">
+                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <%= @current_organization %>
+                </a>
+                <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
+                  <% @organizations.each do |organization| %>
+                    <a class="dropdown-item project-item <%= (@current_organization.id == organization.id) ? 'active' : '' %>" href="<%= main_app.organization_estimations_path(organization) %>">
+                      <div class="project-title"><%= organization.name %></div>
+                      <div class="project-subtitle"><%= organization.headband_title %></div>
+                    </a>
+                  <% end %>
+                </div>
               </div>
-            </div>
-            <div class="project-subtitle-selected">
-              <%= raw(@current_organization.nil? ? nil : @current_organization.headband_title) %>
-            </div>
+              <div class="project-subtitle-selected">
+                <%= raw(@current_organization.nil? ? nil : @current_organization.headband_title) %>
+              </div>
+            <% end %>
           </div>
 
-          <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" do %>
-            <div class="input-group global-search-bar">
-              <div class="input-group-prepend global-search-bar-prepend">
-                <span class="input-group-text" id="search-icon">
-                  <i class="material-icons">search</i>
-                </span>
+          <% unless controller.action_name == "all_organizations" %>
+            <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" do %>
+              <div class="input-group global-search-bar">
+                <div class="input-group-prepend global-search-bar-prepend">
+                  <span class="input-group-text" id="search-icon">
+                    <i class="material-icons">search</i>
+                  </span>
+                </div>
+                <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
+                <div class="input-group-append global-search-bar-append">
+                  <a class="input-group-text" href="#"><%= I18n.t :advanced_research %></a>
+                </div>
               </div>
-              <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
-              <div class="input-group-append global-search-bar-append">
-                <a class="input-group-text" href="#"><%= I18n.t :advanced_research %></a>
-              </div>
-            </div>
+            <% end %>
           <% end %>
         </div>
 

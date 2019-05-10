@@ -9,6 +9,12 @@
 //@import "default/fonts";
 //@import "default/normalize";
 
+.ge-model-estimation {
+  .card-body {
+    display: block;
+  }
+}
+
 .estimation-edition-estimation {
   border-top: 3px solid $brand-third-color;
 
