@@ -1,4 +1,4 @@
-<% module_projects = @project.module_projects.includes(:pemodule) %>
+<% module_projects = @project.module_projects.where(organization_id: @project.organization_id).includes(:pemodule) %>
 
 <% unless module_projects.empty? %>
     <!-- The Initialization module -->
