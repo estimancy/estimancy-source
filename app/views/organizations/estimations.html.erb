@@ -108,9 +108,9 @@
             <% @project_module_projects = project.module_projects %>
             <td class="estimation-table-overview-cell">
               <div class="tools">
-                <a href="<%= edit_project_path(project) %>"><i class="material-icons">edit</i></a>
+                <a href="<%= edit_project_path(project) %>"><i class="material-icons" title="<%= I18n.t :edit %>">edit</i></a>
                 <div class="dropdown">
-                  <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<%= I18n.t :action %>">
                     <i class="material-icons">more_vert</i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
