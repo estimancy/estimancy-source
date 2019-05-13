@@ -102,9 +102,7 @@
               <div class="col-9 pl-6">
                 <div class="edition-bloc-slider">
                   <span class="edition-bloc-slider-value"></span>
-                  <div role="wrapper" class="gj-slider gj-slider-md">
-                    <input name='percents' id="percent" min="50" max="200" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
-                  </div>
+                  <input name='percents' id="percent" min=50 max=200 class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
                   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                   <script>
                       $(document).ready(function(){
@@ -292,7 +290,7 @@
                 set_staffing_values({
                     min: "<%= @staffing_model.min_range %>",
                     max: "<%= @staffing_model.max_range %>",
-                    from: "<%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>",
+                    from: $('#percent').val(),
                     grid: true,
                     postfix: "%"
                 });
@@ -311,6 +309,8 @@
 
             // Get The Max-Staff value according to selected value from the Slider
             function set_staffing_values(data) {
+
+                console.log(data);
 
                 var effort = $(".reference_effort").html();
                 var duration = $(".reference_duration").html();
