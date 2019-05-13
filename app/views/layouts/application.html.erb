@@ -175,8 +175,8 @@
         <div class="container text-center">
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
           <ul class="progressbar">
-            <li class="complete"><%= I18n.t :model %><div class="losange"></div></li>
             <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Modules<div class="losange"></div></li>
             <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Dashboard<div class="losange"></div></li>
           </ul>
           <div class="page-header-buttons">
@@ -210,8 +210,8 @@
         <div class="container text-center">
           <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
           <ul class="progressbar">
-            <li class="complete">Modèle<div class="losange"></div></li>
             <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
+            <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Module<div class="losange"></div></li>
             <li class="<%= controller.action_name == "dashboard" ? "complete" : "" %>">Dashboard<div class="losange"></div></li>
           </ul>
           <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
