@@ -11,10 +11,10 @@
     <div class="well well-rounded" style="border-width: 1px; width: auto">
       <table>
         <tr>
-          <td><%= f.input :name, label: I18n.t(:name) %></td>
+          <td><%= f.input :name, label: I18n.t(:name), class: "form-control" %></td>
           <td>
             <label class="checkbox"></label>
-            <%= f.input :show_name, label: I18n.t(:show_name) %>
+            <%= f.input :show_name, label: I18n.t(:show_name), class: "form-control" %>
           </td>
         </tr>
 
@@ -94,7 +94,7 @@
         <% if can?(:alter_estimation_plan, @project)%>
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% end %>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
       </div>
     </div>
   </div>

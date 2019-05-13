@@ -86,8 +86,9 @@
         <a href="#"><%= I18n.t("display_archives") %></a>
       </span>
     </div>
-    <table class="estimation-table">
-      <thead>
+    <div style="display: flex;">
+      <table class="estimation-table">
+        <thead>
         <tr>
           <% selected_inline_columns = update_selected_inline_columns(Project) %>
           <% selected_inline_columns.each do |column| %>
@@ -95,9 +96,9 @@
           <% end %>
           <th></th>
         </tr>
-      </thead>
+        </thead>
 
-      <tbody>
+        <tbody>
         <% @projects.each_with_index do |project, index| %>
           <tr>
 
@@ -266,8 +267,9 @@
             </td>
           </tr>
         <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

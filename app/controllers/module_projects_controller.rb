@@ -27,6 +27,8 @@ class ModuleProjectsController < ApplicationController
   def associate_module_projects_inputs_outputs
 
     @module_project = ModuleProject.find(params[:mp])
+    @module_project.display_order = params[:display_order]
+    @module_project.save
 
     #Estimation-Values association
     if params[:preceding].present?

@@ -519,6 +519,7 @@
         </div>
 
         <div class="modal-footer modal-drag">
+          <%= submit_tag I18n.t('close'), data: { :"dismiss" => "modal" }, class: "btn btn-secondary" %>
           <%= submit_tag I18n.t('save'), data: { :"disable-with" => "#{ I18n.t :please_wait }" }, class: "btn btn-primary" %>
         </div>
       <% end %>
@@ -579,7 +580,6 @@
       <%= form_tag guw.ml_data_path, :method => 'POST', :multipart => true, :class => 'simple_form', remote: true do %>
 
         <div class="modal-header modal-drag">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">
             Importer les données
           </h4>
@@ -589,9 +589,9 @@
 
           <%= hidden_field_tag "guw_model_id", @guw_model.id %>
           <%= I18n.t(:data_import) %>
-          <h5>
+          <label>
             <%= I18n.t(:excel_file_import) %>
-          </h5>
+          </label>
           <%= file_field_tag :file %>
         </div>
 
@@ -612,93 +612,97 @@
       <%= form_tag guw.extract_from_url_path, :method => 'POST', :multipart => true, :class => 'simple_form' do %>
 
           <div class="modal-header modal-drag">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">
               <%= I18n.t(:requirements_import) %>
             </h4>
           </div>
 
           <div class="modal-body" style="height: inherit;">
+            <div class="row-fluid">
+              <div class="span12">
+                <div class="form-inputs">
+                  <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
-            <%= hidden_field_tag "guw_model_id", @guw_model.id %>
+                  <label><%= I18n.t(:import_type) %></label>
+                  <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]), class: "form-control" %>
 
-            <h5><%= I18n.t(:import_type) %></h5>
-            <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]) %>
+                  <label><%= I18n.t(:source_type) %></label>
 
-            <h5><%= I18n.t(:source_type) %></h5>
+                  <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+                    <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+                    <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+                    <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
+                    <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
+                    <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
+                    <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
+                    <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% else %>
+                    <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                  <% end %>
 
-            <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-              <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-              <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% else %>
-              <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "span8" %>
-            <% end %>
+                  <div class ="hide" id="file-block" >
+                    <label>
+                      <%= I18n.t(:excel_file_import) %>
+                    </label>
+                    <%= file_field_tag :file, class: "form-control", style: "padding: 3px;" %>
+                  </div >
 
-            <div class ="hide" id="file-block" >
-              <h5>
-                <%= I18n.t(:excel_file_import) %>
-              </h5>
-              <%= file_field_tag :file %>
-            </div >
+                  <div class="hide" id="url-block">
+                    <label>
+                      <%= I18n.t(:request_list_links) %>
+                    </label>
+                    <%= text_field_tag :url, "" %>
+                  </div>
 
-            <div class="hide" id="url-block">
-              <h5>
-                <%= I18n.t(:request_list_links) %>
-              </h5>
-              <%= text_field_tag :url, "", class: "span8" %>
-            </div>
+                  <div class="hide" id="type-block">
+                    <label>
+                      <%= I18n.t(:component_type_identified_by_AI) %>
+                    </label>
 
-            <div class="hide" id="type-block">
-              <h5>
-                <%= I18n.t(:component_type_identified_by_AI) %>
-              </h5>
+                    <div id="excel-type-block">
+                      <% if @guw_model.allow_ml_excel == false %>
+                        <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "form-control" %>
+                      <% else %>
+                        <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "form-control" %>
+                      <% end %>
+                    </div>
 
-              <div id="excel-type-block">
-                <% if @guw_model.allow_ml_excel == false %>
-                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_excel", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
+                    <div id="jira-type-block">
+                      <% if @guw_model.allow_ml_jira == false %>
+                        <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "form-control" %>
+                      <% else %>
+                        <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "form-control" %>
+                      <% end %>
+                    </div>
+
+                    <div id="redmine-type-block">
+                      <% if @guw_model.allow_ml_redmine == false %>
+                        <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "form-control" %>
+                      <% else %>
+                        <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "form-control" %>
+                      <% end %>
+                    </div>
+
+                  </div>
+                  <div id ="groups-block" class="hide">
+                    <label>
+                      <%= I18n.t(:host_group) %>
+                    </label>
+                    <%= text_field_tag :group_name, "", class: "form-control" %>
+                  </div>
+                </div>
               </div>
-
-              <div id="jira-type-block">
-                <% if @guw_model.allow_ml_jira == false %>
-                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_jira", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
-              </div>
-
-              <div id="redmine-type-block">
-                <% if @guw_model.allow_ml_redmine == false %>
-                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements"]), class: "span8" %>
-                <% else %>
-                  <%= select_tag "kind_redmine", options_for_select(["Données", "Traitements", "Données + Traitements", "Ne pas activer l'IA"]), class: "span8" %>
-                <% end %>
-              </div>
-
-            </div>
-            <div id ="groups-block" class="hide">
-              <h5>
-                <%= I18n.t(:host_group) %>
-              </h5>
-              <%= text_field_tag :group_name, "", class: "span8" %>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
+            <%= submit_tag I18n.t(:close), :class => 'btn btn-secondary', data: { :"dismiss" => "modal" } %>
             <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', data: { :"disable-with" => I18n.t(:please_wait) } %>
           </div>
 
