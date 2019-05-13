@@ -191,7 +191,10 @@
               <%= link_to I18n.t(:reset), skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
 
               <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-              <script src="https://code.highcharts.com/highcharts.src.js"></script>
+              <script src="https://code.highcharts.com/highcharts.js"></script>
+              <script src="https://code.highcharts.com/highcharts-more.js"></script>
+              <script src="https://code.highcharts.com/modules/exporting.js"></script>
+              <script src="https://code.highcharts.com/modules/export-data.js"></script>
               <script>
                 $('#button2').click(function() {
                   $('.highcharts-button').click();
