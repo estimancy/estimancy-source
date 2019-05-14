@@ -2814,7 +2814,7 @@ public
             new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
             guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
                                         project_id: new_prj.id,
-                                        guw_model_id: new_mp.guw_model_id,
+                                        guw_model_id: old_mp.guw_model_id,
                                         organization_id: new_prj.organization_id)
 
             # Update the group unit of works and attributes
@@ -2834,7 +2834,7 @@ public
                 unless new_guw_coeff_elt_uow.nil?
                   new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
                   new_guw_coeff_elt_uow.module_project_id = new_mp.id
-                  new_guw_coeff_elt_uow.guw_model_id = new_mp.guw_model_id
+                  new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
                   new_guw_coeff_elt_uow.save
                 end
               end
