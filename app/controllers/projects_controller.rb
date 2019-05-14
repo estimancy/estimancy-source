@@ -2899,6 +2899,7 @@ public
           end
         end
 
+        @project = new_prj
 
         # flash[:success] = I18n.t(:notice_project_successful_duplicated)
         # redirect_to edit_project_path(new_prj) and return
