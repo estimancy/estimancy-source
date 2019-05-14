@@ -102,14 +102,16 @@
               <div class="col-9 pl-6">
                 <div class="edition-bloc-slider">
                   <span class="edition-bloc-slider-value"></span>
-                  <input name='percents' id="percent" min=50 max=200 class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
+                  <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
                   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                   <script>
                       $(document).ready(function(){
                           $('.edition-bloc-slider-slider').slider({
                               slide: function (e, value) {
                                   $('.edition-bloc-slider-value').text(value);
-                              }
+                              },
+                              min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
+                              max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>
                           });
                       });
                   </script>
