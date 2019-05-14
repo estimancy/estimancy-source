@@ -1,4 +1,4 @@
-<% @project = Project.find(params[:project_id]) %>
+<% @project = Project.find(params[:id]) %>
 
 <% if controller.action_name.in? %w(edit update duplicate) %>
   <h4 class="ui-widget">
