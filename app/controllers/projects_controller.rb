@@ -2902,7 +2902,7 @@ public
         @project = new_prj
 
         # flash[:success] = I18n.t(:notice_project_successful_duplicated)
-        # redirect_to edit_project_path(new_prj) and return
+        redirect_to edit_project_path(new_prj), turbolinks: true and return
       else
         #if params[:action_name] == "create_project_from_template"
         if !params[:create_project_from_template].nil?
