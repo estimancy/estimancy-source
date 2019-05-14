@@ -20,7 +20,8 @@
       </h4>
 
       <div class="effort-bloc">
-        <ul class="nav nav-pills tabs">
+        <!--<ul class="nav nav-pills tabs">-->
+        <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
           <% index = 0 %>
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
             <% factor_values_per_type.each do |type, factor_values| %>
@@ -39,7 +40,7 @@
                 <% else %>
                   <% index = index + 1 %>
                   <li class="nav-item">
-                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab"><%= type.downcase.gsub(" ", "-") %></a>
+                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" data-toggle="pill" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>"><%= type.downcase.gsub(" ", "-") %></a>
                   </li>
                 <% end %>
               <% end %>
@@ -65,7 +66,7 @@
                   <% end %>
                 <% else %>
                   <% index = index + 1 %>
-                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
+                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-table">
@@ -110,7 +111,7 @@
                                   <div class="edition-bloc-slider">
                                     <span class="edition-bloc-slider-value-<%= key %>"></span>
                                     <div role="wrapper" class="gj-slider gj-slider-md">
-                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %>" value="" />
+                                      <input type="range" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %>" value="" />
                                     </div>
                                     <script>
                                         $(document).ready(function(){
@@ -126,7 +127,6 @@
                                   <hr>
                                 </div>
                                 <script type="text/javascript">
-
                                     var data_ids = <%= raw ids_list.to_json.html_safe %> ;
                                     var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
                                     var value_from = parseInt(<%= ids_list.index(selected_value) %>);
