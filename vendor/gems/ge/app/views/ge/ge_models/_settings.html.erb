@@ -116,6 +116,7 @@
                                       <% slide_max_value =  ids_list.last %>
                                       <%#= hidden_field_tag("#{scale_prod}_factor[#{key}]", default_value) %>
                                       <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
+
                                     </div>
                                     <script>
                                         $(document).ready(function(){
@@ -151,7 +152,6 @@
 
                                             $('#<%= "factor_#{key}" %>').on("change", function(data){
                                                 //When value change, need to calculate again the Person Month effort value
-
                                                 //console.log("Action: " + $('form#ge_form').attr('action'));
                                                 //console.log("Params: " + $('form#ge_form').serialize());
 
@@ -499,7 +499,7 @@
                               <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "form-control" %>
                           <% else %>
                               <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
-                              <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "form-control", disabled: true %>
+                              <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "form-control", disabled: true %>
                           <% end %>
                         </div>
 
@@ -520,7 +520,7 @@
                             <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control" %>
                         <% else %>
                             <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
-                            <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
+                            <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
                       </div>
                   <% end %>
@@ -543,7 +543,7 @@
                           <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control" %>
                         <% else %>
                           <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
-                          <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
+                          <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
                     </div>
                   <% end %>
