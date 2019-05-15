@@ -312,8 +312,6 @@
             // Get The Max-Staff value according to selected value from the Slider
             function set_staffing_values(data) {
 
-                console.log(data);
-
                 var effort = $(".reference_effort").html();
                 var duration = $(".reference_duration").html();
                 var staffing_trapeze = $(".reference_staffing_trapeze").html();
@@ -330,11 +328,11 @@
                 $(".new_duration").val(new_duration.toFixed(2));
 
                 x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-                    x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-                        x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-                            x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-                                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-                                    y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+                x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
 
                 var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
 
@@ -373,7 +371,6 @@
     <% rescue Exception => e %>
       <%= e %>
     <% end %>
-
         <script>
             refresh_chart();
             function refresh_chart() {
@@ -446,9 +443,9 @@
 //          enabled: false
 //        }
 //      }]
-                });
-            }
-        </script>
+            });
+        }
+    </script>
   </section>
-  <% end %>
+<% end %>
 
