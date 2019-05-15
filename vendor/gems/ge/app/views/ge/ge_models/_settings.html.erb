@@ -111,61 +111,106 @@
                                   <div class="edition-bloc-slider">
                                     <span class="edition-bloc-slider-value-<%= key %>"></span>
                                     <div role="wrapper" class="gj-slider gj-slider-md">
-                                      <input type="range" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %>" value="" />
+                                      <% slide_current_value =  selected_value.nil? ? default_value : selected_value %>
+                                      <% slide_min_value =  ids_list.first %>
+                                      <% slide_max_value =  ids_list.last %>
+                                      <%#= hidden_field_tag("#{scale_prod}_factor[#{key}]", default_value) %>
+                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
                                     </div>
                                     <script>
                                         $(document).ready(function(){
+                                            var data_ids = <%= raw ids_list.to_json.html_safe %> ;
+                                            var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
+                                            var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);
+                                            var default_value = parseInt(<%= default_value %>);
+                                            var ids_length = data_ids["length"];
+                                            var slide_current_value = parseInt(<%= slide_current_value %>);
+                                            var min_value = parseInt(<%= slide_min_value %>);
+                                            var max_value = parseInt(<%= slide_max_value %>);
+
+                                            //console.log("slide_selected_value = "+ value_from);
+                                            //console.log("slide_default_value = "+ default_value);
+                                            //console.log("slide_current_value = "+ slide_current_value);
+
+                                            <!-- Get the default value if value_from is NaN -->
+                                            if(isNaN(value_from)){
+                                                value_from = default_value;
+                                            }
+
                                             $('.edition-bloc-slider-slider-<%= key %>').slider({
+                                                range: true,
+                                                min: min_value,
+                                                max: max_value,
+                                                values: data_ids,
+                                                value: slide_current_value,
+
                                                 slide: function (e, value) {
-                                                    $('.edition-bloc-slider-value-<%= key %>').text(value);
+                                                    $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
                                                 }
                                             });
+
+                                            $('#<%= "factor_#{key}" %>').on("change", function(data){
+                                                //When value change, need to calculate again the Person Month effort value
+
+                                                //console.log("Action: " + $('form#ge_form').attr('action'));
+                                                //console.log("Params: " + $('form#ge_form').serialize());
+
+                                                var valuesToSubmit = $('form#ge_form').serialize();
+                                                $.ajax({
+                                                    type: "POST",
+                                                    //url: $('form#ge_form').attr('action'), //given url of the form
+                                                    url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+                                                    data: valuesToSubmit,
+                                                    dataType: "script",
+                                                    format: "js",
+                                                    cache: true
+                                                });
+                                                return false;
+                                            })
+
                                         });
                                     </script>
                                   </div>
 
                                   <hr>
                                 </div>
+
                                 <script type="text/javascript">
-                                    var data_ids = <%= raw ids_list.to_json.html_safe %> ;
-                                    var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
-                                    var value_from = parseInt(<%= ids_list.index(selected_value) %>);
-                                    var default_value = parseInt(<%= ids_list.index(default_value) %>);
-
-                                    <!-- Get the default value if value_from is NaN -->
-                                    if(isNaN(value_from)){
-                                        value_from = default_value;
-                                    }
-
-                                    $('#<%= "factor_#{key}" %>').ionRangeSlider({
-                                        values: data_ids, //Array of factor_values ids
-                                        from: value_from,
-                                        grid: true,
-                                        hide_min_max: true,
-                                        prettify: function (num) {
-                                            return data_text_hash[num];
-                                        },
-
-                                        //When value change, need to calculate again the Person Month effort value
-                                        onFinish: function (data) {
-                                            //console.log("Action: " + $('form#ge_form').attr('action'));
-                                            //console.log("Params: " + $('form#ge_form').serialize());
-
-                                            var valuesToSubmit = $('form#ge_form').serialize();
-                                            $.ajax({
-                                                type: "POST",
-                                                //url: $('form#ge_form').attr('action'), //given url of the form
-                                                url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
-                                                data: valuesToSubmit,
-                                                dataType: "script",
-                                                format: "js",
-                                                cache: true
-                                            });
-                                            return false;
-                                        }
-                                    });
-
+//                                    var data_ids = <%#= raw ids_list.to_json.html_safe %> ;
+//                                    var data_text_hash = <%#= raw js_factor_data.to_json.html_safe %>;
+//                                    var value_from = parseInt(<%#= ids_list.index(selected_value) %>);
+//                                    var default_value = parseInt(<%#= ids_list.index(default_value) %>);
+//                                    var ids_length = data_ids["length"];
+//
+//                                    $('#<%#= "factor_#{key}" %>').ionRangeSlider({
+//                                        values: data_ids, //Array of factor_values ids
+//                                        from: value_from,
+//                                        grid: true,
+//                                        hide_min_max: true,
+//                                        prettify: function (num) {
+//                                            return data_text_hash[num];
+//                                        },
+//
+//                                        //When value change, need to calculate again the Person Month effort value
+//                                        onFinish: function (data) {
+//                                            //console.log("Action: " + $('form#ge_form').attr('action'));
+//                                            //console.log("Params: " + $('form#ge_form').serialize());
+//
+//                                            var valuesToSubmit = $('form#ge_form').serialize();
+//                                            $.ajax({
+//                                                type: "POST",
+//                                                //url: $('form#ge_form').attr('action'), //given url of the form
+//                                                url: '<%#= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+//                                                data: valuesToSubmit,
+//                                                dataType: "script",
+//                                                format: "js",
+//                                                cache: true
+//                                            });
+//                                            return false;
+//                                        }
+//                                    });
                                 </script>
+
                               <% end %>
                             <% end %>
                           </div>
@@ -411,7 +456,6 @@
       </div>
 
 
-
       <div class="col-6">
         <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
         <% unless @ge_model.output_pe_attribute.nil? %>
@@ -436,19 +480,10 @@
         </h4>
 
         <div class="table estimation-table">
-
-
-            <!--<th>-->
-              <!--<%#= I18n.t(:ratio) %>-->
-            <!--</th>-->
-
-
           <!--  NOUVEAU PARAMS SORTIE  -->
           <div>
-<!--            <td>-->
-              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+<!--            <td>--> <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
 <!--            </td>-->
-
             <% ev_for_output_unit = current_outputs_evs.first %>
             <% if @ge_model.three_points_estimation == true %>
                 <div class="row">
@@ -515,20 +550,32 @@
                 </div>
 
             <% end %>
+            <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!--            <td>-->
-              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
-<!--            </td>-->
+    <div class="row">
+      <div class="col-6"></div>
+      <div class="col-6">
+        <div class="row">
+            <div class="col">
+              <h4>
+                <b>
+                  <%= I18n.t(:ratio)%>
+                </b>
+              </h4>
+            </div>
 
-              <div class="row">
-                <% current_outputs_evs.each do |ev| %>
-                  <div class="col">
+            <% current_outputs_evs.each do |ev| %>
+              <div class="col" style="margin-top: 1.6em;">
                     <span id='<%="ratio_#{ev.id}"%>' style="margin-left: 10px;">
                       <% begin %>
                         <%# output = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-                        <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
+                          <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
 
-                        <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
+                          <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
                             <% corresponding_input_ev = current_inputs_evs.includes(:pe_attribute).where(:pe_attributes => { alias: "ent1"}, in_out: "input").first
                                entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
                             %>
@@ -540,21 +587,17 @@
                             %>
                         <% end %>
 
-                        <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
-
-                        <%# (output.to_f/input.to_f).round(user_number_precision) %>
+                          <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
+                          <%= (output.to_f/input.to_f).round(user_number_precision) %>
                       <% rescue %>
                           -
                       <% end %>
                     </span>
-                  </div>
-                <% end %>
               </div>
-          </div>
+            <% end %>
         </div>
       </div>
     </div>
-
 
     <div class="row">
       <div class="col">
