@@ -169,88 +169,88 @@
       </div>
     </header>
 
-    <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id,
-                                  project_id: @project.id).first %>
-    <% if (controller_name == "projects" && controller.action_name.in?(["edit", "new", "update", "create"])) %>
-      <div class="page-header page-edition-header">
-        <div class="container text-center">
-          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
-          <ul class="progressbar">
-            <li class=""><%= I18n.t :property %><div class="losange"></div></li>
-            <li class="">Modules<div class="losange"></div></li>
-            <li class="">Dashboard<div class="losange"></div></li>
-          </ul>
-          <div class="page-header-buttons">
-            <% unless @project.nil? || @project.new_record? %>
-              <a class="estimancy" href="<%= dashboard_path(@project) %>">
-                <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
-                  <%= I18n.t :results %>
-                </button>
-              </a>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard"])) %>
-      <div class="page-header page-edition-header">
-        <div class="container text-center">
-          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
-          <ul class="progressbar">
-            <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
-            <li class="<%= current_module_project.id == @imp.id ? "complete" : "" %>">Modules<div class="losange"></div></li>
-            <li class="">Dashboard<div class="losange"></div></li>
-          </ul>
-          <div class="page-header-buttons">
-            <% if controller.action_name == "dashboard" %>
-                <a class="estimancy" href="<%= edit_project_path(@project) %>">
-                  <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
-                    <%= I18n.t :edit %>
-                  </button>
-                </a>
-            <% else %>
-              <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
-                <button type="button" class="btn btn-secondary">
-                  <%= I18n.t :model %>
-                </button>
-              </a>
+    <% unless @current_organization.nil? %>
+      <% if (controller_name == "projects" && controller.action_name.in?(["edit", "new", "update", "create"])) %>
+      <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
+        <div class="page-header page-edition-header">
+          <div class="container text-center">
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
+            <ul class="progressbar">
+              <li class=""><%= I18n.t :property %><div class="losange"></div></li>
+              <li class="">Modules<div class="losange"></div></li>
+              <li class="">Dashboard<div class="losange"></div></li>
+            </ul>
+            <div class="page-header-buttons">
               <% unless @project.nil? || @project.new_record? %>
                 <a class="estimancy" href="<%= dashboard_path(@project) %>">
-                  <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
+                  <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
                     <%= I18n.t :results %>
                   </button>
                 </a>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </div>
-      </div>
+      <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard"])) %>
+        <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
 
-    <% elsif controller.action_name == "projects_from" %>
-
-      <div class="page-header page-edition-header">
-        <div class="container text-center">
-          <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
-          <ul class="progressbar">
-            <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
-            <li class="">Modules<div class="losange"></div></li>
-            <li class="">Dashboard<div class="losange"></div></li>
-          </ul>
-          <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
+        <div class="page-header page-edition-header">
+          <div class="container text-center">
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
+            <ul class="progressbar">
+              <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
+              <li class="<%= current_module_project.id == @imp.id ? "complete" : "" %>">Modules<div class="losange"></div></li>
+              <li class="">Dashboard<div class="losange"></div></li>
+            </ul>
+            <div class="page-header-buttons">
+              <% if controller.action_name == "dashboard" %>
+                  <a class="estimancy" href="<%= edit_project_path(@project) %>">
+                    <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
+                      <%= I18n.t :edit %>
+                    </button>
+                  </a>
+              <% else %>
+                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
+                  <button type="button" class="btn btn-secondary">
+                    <%= I18n.t :model %>
+                  </button>
+                </a>
+                <% unless @project.nil? || @project.new_record? %>
+                  <a class="estimancy" href="<%= dashboard_path(@project) %>">
+                    <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
+                      <%= I18n.t :results %>
+                    </button>
+                  </a>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
         </div>
-      </div>
 
-    <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"]) %>
-      <ul class="nav nav-pills global-nav">
-        <li class="nav-item">
-          <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
-        </li>
-      </ul>
+      <% elsif controller.action_name == "projects_from" %>
 
-    <% else %>
+        <div class="page-header page-edition-header">
+          <div class="container text-center">
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+            <ul class="progressbar">
+              <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
+              <li class="">Modules<div class="losange"></div></li>
+              <li class="">Dashboard<div class="losange"></div></li>
+            </ul>
+            <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
+          </div>
+        </div>
 
+      <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"]) %>
+        <ul class="nav nav-pills global-nav">
+          <li class="nav-item">
+            <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
+          </li>
+        </ul>
+      <% end %>
     <% end %>
 
     <% if controller.action_name == "dashboard" %>
