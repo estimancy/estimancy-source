@@ -1,0 +1,94 @@
+
+  <div class="d-flex align-items-center mt-4">
+    <div class="tools">
+      <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
+      <% end %>
+    </div>
+  </div>
+
+  <br>
+
+  <% @label_widget_hash = {} %>
+  <% @kpi_widget_hash = {} %>
+  <% @data_widget_hash = {} %>
+
+  <% module_project_view = module_project.view %>
+  <% unless module_project_view.nil? %>
+      <% module_project_view_widgets = module_project_view.views_widgets.where(widget_type: "text").order('position').all %>
+      <% module_project_view_widgets.each do |view_widget| %>
+          <% if view_widget.is_label_widget? %>
+              <% view_widget_data = get_label_widget_data(view_widget.id) %>
+              <% @label_widget_hash[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
+          <% elsif view_widget.is_kpi_widget? %>
+              <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
+              <% @kpi_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
+          <% else %>
+              <%# view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+              <% view_widget_data = get_view_widget_data(module_project.id, view_widget.id) %>
+              <% value_to_show = view_widget_data[:value_to_show] %>
+              <% @data_widget_hash[view_widget.name] = [view_widget, value_to_show] %>
+          <% end %>
+      <% end %>
+  <% end %>
+
+
+  <% @label_widget_hash.each do |k| %>
+      <div class="widget-group-label">
+        <span>
+          <%= @label_widget_hash[k] %>
+        </span>
+      </div>
+  <% end %>
+
+
+  <% @widgets = @kpi_widget_hash.merge(@data_widget_hash) %>
+  <div class="widget-list-content">
+    <div class="widget-group">
+      <ul class="results-sidebar-after-calculation flex-column">
+        <% @widgets.keys.each do |k| %>
+            <% view_widget = @widgets[k].first %>
+            <% value = @widgets[k].last %>
+            <% unless value.is_a?(Hash) %>
+                <li>
+                  <div class="card card-widget card-indicator card-indicator-with-module">
+                  <!--<div class="card card-widget module-indicator module-indicator-without-module">-->
+                    <div class="card-body">
+                      <div class="card-indicator-type"></div>
+                      <div class="card-indicator-text">
+                        <%= k %>
+                        <!-- Show the selected Ratio name -->
+                        <% if view_widget.show_wbs_activity_ratio %>
+                            <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity,
+                                                                 wbs_activity_ratio_id: view_widget.module_project.wbs_activity_ratio_id,
+                                                                 module_project_id: view_widget.module_project_id,
+                                                                 pbs_project_element_id: current_component.id).first %>
+
+                            <% selected_ratio = view_widget.module_project.get_wbs_activity_ratio(current_component.id) %>
+                            <br>
+                            <span><%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %></span>
+                        <% end %>
+                      </div>
+
+                      <div class="<%= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">
+                          <span>
+                            <%= value.nil? ? '-' : value %>
+                          </span>
+                        <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                            <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                            <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                        <% end %>
+                        <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                            <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+            <% end %>
+        <% end %>
+      </ul>
+    </div>
+  </div>

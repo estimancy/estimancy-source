@@ -1,4 +1,7 @@
 <section class="estimation-modules-edition">
+
+  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
+
   <%= form_tag skb.skb_model_update_size_path(@skb_model), method: "post" do %>
 
     <%

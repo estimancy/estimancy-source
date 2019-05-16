@@ -1,26 +1,6 @@
 <section class="estimation-modules-edition">
 
-  <div class="row">
-    <div class="col-9">
-      <h2>
-        <%= @project.to_s %>
-        <small style="color: <%= @project.status_background_color %>">
-          <b>
-            <%= @project.estimation_status.to_s %>
-          </b>
-        </small>
-      </h2>
-    </div>
-    <div class="col-3">
-      <small class="tools float-right">
-        <% if current_module_project.show_results_view %>
-          <%= link_to 'Cacher les résultats', show_module_project_results_view_path(module_project_id: current_module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{current_module_project.pemodule.title}"), remote: true %>
-        <% else %>
-          <%= link_to 'Afficher les résultats', show_module_project_results_view_path(module_project_id: current_module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{current_module_project.pemodule.title}"), remote: true %>
-        <% end %>
-      </small>
-    </div>
-  </div>
+  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
 
   <!-- Params -->
   <% pbs_project_element = current_component %>

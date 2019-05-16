@@ -2397,3 +2397,6 @@ en:
 
   budget_type: "Budget type"
   color: "Color"
+  hide_module_results: "Hide module results"
+  show_module_results: "Show module results"
+  label_results: "Results"
