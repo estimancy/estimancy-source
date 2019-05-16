@@ -377,16 +377,16 @@ class ApplicationController < ActionController::Base
   # Get the selected Pbs_Project_Element
   def current_component
     if @project
-      # begin
+      begin
         pbs = PbsProjectElement.find_by_id(session[:pbs_project_element_id])
         if pbs.pe_wbs_project.project_id == @project.id
           @component = pbs
         else
           @component = @project.root_component
         end
-      # rescue
-      #   @component = @project.root_component
-      # end
+      rescue
+        @component = @project.root_component
+      end
     end
   end
 

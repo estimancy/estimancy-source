@@ -100,7 +100,7 @@ class User < ActiveRecord::Base
 
   has_many :projects, :foreign_key => 'creator_id', :class_name => 'Project'
 
-  serialize :ten_latest_projects, Array
+  serialize :recent_projects, Array
 
   # Security Audit management
   # has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}
