@@ -181,7 +181,7 @@ module Ge
         result_value = nil
       end
 
-      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: I18n.l('number.format.delimiter'), locale: (user.language.locale rescue "fr"))} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: ' ', locale: (user.language.locale rescue "fr"))} #{unit}"
     end
 
 

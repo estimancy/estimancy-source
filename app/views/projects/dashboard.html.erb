@@ -29,7 +29,8 @@
         <% @widgets = {} %>
         <% @project_module_projects = @project.module_projects %>
 
-        <% @project_module_projects.each do |module_project| %>
+        <%# @project_module_projects.each do |module_project| %>
+          <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
           <% module_project_view = module_project.view %>
           <% unless module_project_view.nil? %>
             <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
@@ -53,7 +54,7 @@
               <% end %>
             <% end %>
           <% end %>
-        <% end %>
+        <%# end %>
 
         <div class="widget-list-content">
           <div class="widget-group">
