@@ -57,18 +57,18 @@
                     <% end %>
                   <% end %>
 
-                  <div class="d-flex justify-content-between">
-                    <% unless @data_widget_hash.keys.reverse[1..2].nil? %>
-                      <% @data_widget_hash.keys.reverse[1..2].each do |k| %>
-                        <% value = @data_widget_hash[k] %>
-                        <% unless value.is_a?(Hash) %>
-                          <span class="estimation-quickview-quantity">
-                            <%= value.nil? ? '-' : value %>
-                          </span>
-                        <% end %>
-                      <% end %>
-                    <% end %>
-                  </div>
+<!--                  <div class="d-flex justify-content-between">-->
+                    <%# unless @data_widget_hash.keys.reverse[1..2].nil? %>
+                      <%# @data_widget_hash.keys.reverse[1..2].each do |k| %>
+                        <%# value = @data_widget_hash[k] %>
+                        <%# unless value.is_a?(Hash) %>
+<!--                          <span class="estimation-quickview-quantity">-->
+                            <%#= value.nil? ? '-' : value %>
+<!--                          </span>-->
+                        <%# end %>
+                      <%# end %>
+                    <%# end %>
+<!--                  </div>-->
                 </div>
               </a>
             </div>
