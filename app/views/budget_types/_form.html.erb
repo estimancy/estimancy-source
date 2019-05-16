@@ -1,9 +1,5 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:budget_type) %> </a></li>
-  </ul>
+<%= I18n.t(:budget_type) %>
 
-  <div id="tabs-1">
     <%= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
 
       <%= f.error_notification %>
@@ -32,7 +28,7 @@
         </div>
       <% end %>
 
-      <br/>
+
 
       <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
 
@@ -49,5 +45,3 @@
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
       </div>
     <% end %>
-  </div>
-</div>
