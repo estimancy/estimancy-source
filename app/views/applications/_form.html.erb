@@ -1,7 +1,7 @@
 <div class="tabs">
   <ul>
     <li><a href="#tabs-1"><%= I18n.t(:application) %> </a></li>
-    <li><a href="#tabs-2">Budgets </a></li>
+    <li><a href="#tabs-2">Types du budget</a></li>
   </ul>
 
   <div id="tabs-1">
@@ -39,26 +39,22 @@
 
   <div id="tabs-2">
 
-    <% if can? :manage, BudgetType %>
-      <div class="buttons">
-        <%= link_to I18n.t('create_button'), new_organization_application_path(@organization, @application), :class => 'btn' %>
-      </div>
-    <% end %>
-
-    <hr>
-
-    <table class="table table-list">
+    <table class="table">
       <tr>
-        <th><%= I18n.t :budget_label %></th>     <%# Libelle du budget %>
+        <th>Libelle du budget</th>
+        <th>Estimation statuses</th>
+        <th>Budget Colors</th>
         <th>Actions</th>
       </tr>
       <% @application.budget_types.each do |bt| %>
         <tr>
           <td><%= bt.name %></td>
-          <td class="center">
-            <%= link_to '', edit_organization_application_budget_type_path(@organization, @application, bt), :class => 'icon-pencil' %>
+          <td><%= bt.budget_type_statuses.map{ |i| i.estimation_status.name }.join(", ") %></td>
+          <td><%= bt.color %></td>
+          <td clas="center">
+            <%= link_to '', edit_organization_budget_application_budget_type_path(@organization, @application, bt), :class => 'icon-pencil' %>
             <% if can? :manage, BudgetType %>
-              <%= link_to '', organization_application_budget_type_path(@organization, @application, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+              <%= link_to '',organization_budget_application_budget_type_path(@organization, @application, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
             <% end %>
           </td>
         </tr>

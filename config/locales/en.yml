@@ -1089,7 +1089,10 @@ en:
   error_project_checkout_failed: "An error has occurred during the checkout of project"
   notice_module_project_successful_updated: "Module Project was successfully updated"
   notice_module_project_successful_created: "Module Project was successfully created"
-  notice_attribute_module_successful_created: "Attribute module was successfully created."
+  notice_attribute_module_successful_created: "Attribute module was successfully created"
+  notice_budget_successful_updated: "Budget was successfully updated"
+  notice_budget_successful_created: "Budget was successfully created"
+  notice_budget_successful_deleted: "Budget was successfully deleted"
 
   #mail
   mail_salutation: "Dear %{value},"
@@ -2387,3 +2390,10 @@ en:
   max_value_message_placeholder: ""
 
   budget_type: "Budget Type"
+  budget: "Budgets"
+  start_date_budget: "Start date"
+  end_date_budget: "End date"
+  sum_budget: "Sum"
+
+  budget_type: "Budget type"
+  color: "Color"

@@ -1346,7 +1346,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
                                                           guw_model_id: @guw_model.id).first
                   end
-                  pc = ce.value.to_f
+
+                  if ce.nil?
+                    pc = 1
+                  else
+                    pc = ce.value.to_f
+                  end
                 else
                   pc = ceuw.percent.to_f
                 end

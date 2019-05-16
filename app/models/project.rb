@@ -131,7 +131,7 @@ class Project < ActiveRecord::Base
                                              organization_id: self.organization_id).first
 
     Rails.cache.fetch(key, force: true) do
-      Project.get_unarchived_project_ids(archived_status, self.organization_id)
+      # Project.get_unarchived_project_ids(archived_status, self.organization_id)
     end
   end
 

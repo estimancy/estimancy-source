@@ -2,6 +2,8 @@
   <%= simple_form_for(@project) do |f| %>
 
     <%= hidden_field_tag :project_id, @project.id %>
+    <%= hidden_field_tag :organization_id, @organization.id %>
+
     <% can_alter_model = can?(:manage_estimation_models, Project) %>
 
     <div class="row pb-5">

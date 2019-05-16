@@ -1,8 +1,9 @@
 <%
-  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).uniq.compact.max
   @guw_types = @guw_model.guw_types
   @guw_type = @guw_unit_of_work.guw_type
+  @module_project = current_module_project
 %>
 
 <% @hash_guw_outputs = {} %>
@@ -18,7 +19,7 @@
 <% end %>
 
 <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: @module_project.id).each do |gceuw| %>
   <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
 <% end %>
 
@@ -28,16 +29,17 @@
 <% end %>
 
 <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).order("updated_at ASC").each do |gceuw| %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
   <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
 <% end %>
 
 $("#new_guw").modal('toggle');
 
+<% @guw_unit_of_work_guw_unit_of_work_group = @guw_unit_of_work.guw_unit_of_work_group %>
 <% if @position.blank? %>
-  $('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
+  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
 <% else %>
-  $('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr').eq(<%= @position.to_i + 1 %>).after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
+  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr').eq(<%= @position.to_i + 1 %>).after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
 <% end %>
 
 $(".selected_of_unit_of_work").html("<%= @selected_of_unit_of_works %>");

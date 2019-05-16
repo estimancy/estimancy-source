@@ -1,0 +1,96 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:budget) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for([@organization, @budget]) do |f| %>
+
+      <%= f.error_notification %>
+      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
+      <div class="container-fluid">
+        <div class="span4"><%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %></div>
+        <div class="span2"><%= f.input :sum, :label => I18n.t('sum_budget'), :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %></div>
+        <div class="span2">
+          <%= f.input :start_date,
+                      :as => :string,
+                      :label => I18n.t(:start_date_budget),
+                      :input_html => { :class => 'date-picker',
+                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+        </div>
+        <div class="span2">
+          <%= f.input :end_date,
+                      :as => :string,
+                      :label => I18n.t(:end_date_budget),
+                      :input_html => { :class => 'date-picker',
+                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+        </div>
+
+        <div class="span2">
+          <%= f.input :field_id,
+                      as: :select,
+                      collection: @organization.fields.map{|i| [i.name, i.id]},
+                      label: 'Champs personnalisé',
+                      selected: @budget.field_id,
+                      input_html: { selected: I18n.t(:Indifferent),:class => 'input-large' } %>
+        </div>
+
+
+
+      <br/>
+
+      </div>
+
+      <script>
+          $(document).ready(function () {
+              $(".date-picker").datepicker({
+                  language: '<%= set_user_language %>',
+                  autoclose: true,
+                  todayHighlight: true,
+                  todayBtn: true
+              });
+          });
+      </script>
+
+      <% sum = 0.0 %>
+      <% @organization.applications.each do |app| %>
+        <% sum += app.forfait_mco.to_f %>
+      <% end %>
+      <% if controller.action_name == "edit" %>
+        <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+          <tr>
+            <th>Applications</th>
+          </tr>
+
+          <% @organization.applications.each do |app| %>
+            <tr>
+              <td>
+                <%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %>
+              </td>
+              <td>
+                <%= app.budget_types.map(&:name).join(', ') %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+        <%= hidden_field_tag :application_id, params[:application_id] %>
+        <br/>
+      <% end %>
+
+      <div class="actions-tabs">
+        <% if can? :manage, BudgetType %>
+          <% if action_name.in?(%w(new create)) %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <% elsif action_name == 'edit' || action_name=='update' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

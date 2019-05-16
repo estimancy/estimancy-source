@@ -1,6 +1,6 @@
 <%
-  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).uniq.compact.max
   @guw_types = @guw_model.guw_types
   @guw_type = @guw_unit_of_work.guw_type
 %>

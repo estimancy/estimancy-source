@@ -53,6 +53,7 @@ class User < ActiveRecord::Base
   def self.current
     Thread.current[:user]
   end
+
   def self.current=(user)
     Thread.current[:user] = user
   end
@@ -99,7 +100,7 @@ class User < ActiveRecord::Base
 
   has_many :projects, :foreign_key => 'creator_id', :class_name => 'Project'
 
-  serialize :recent_projects, Array
+  serialize :ten_latest_projects, Array
 
   # Security Audit management
   # has_paper_trail only: [:super_admin], meta: { organization_id: :organization_id}

@@ -31,6 +31,9 @@ Projestimate::Application.routes.draw do
 
   #get 'file_uploader/destroy'
 
+  post 'generate_report_excel' => 'budgets#generate_report_excel', :as => 'generate_report_excel'
+
+
   resources :autorization_log_events
 
 
@@ -241,9 +244,15 @@ Projestimate::Application.routes.draw do
 
   resources :currencies
 
+
+
   resources :organizations do
 
+    post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
+
+
     get 'demand_dashboard' => 'demands#demand_dashboard'
+    get 'budget_dashboard' => "organizations#budget_dashboard"
 
     resources :severities
     resources :criticabilities
@@ -265,8 +274,12 @@ Projestimate::Application.routes.draw do
 
     resources :applications
 
-    resources :applications do
-      resources :budget_types
+    resources :budgets
+
+    resources :budgets do
+      resources :applications do
+        resources :budget_types
+      end
     end
 
     resources :fields
@@ -467,6 +480,8 @@ Projestimate::Application.routes.draw do
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
+
+
 
 end
 

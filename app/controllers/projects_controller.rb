@@ -208,11 +208,11 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 10, "Statut")
     worksheet_wbs.add_cell(0, 11, "Ratio")
     worksheet_wbs.add_cell(0, 12, "Phase")
-    worksheet_wbs.add_cell(0, 11, "TJM")
-    worksheet_wbs.add_cell(0, 12, "Charge calculée")
-    worksheet_wbs.add_cell(0, 13, "Charge retenue")
-    worksheet_wbs.add_cell(0, 14, "Coût calculé")
-    worksheet_wbs.add_cell(0, 15, "Coût retenu")
+    worksheet_wbs.add_cell(0, 13, "TJM")
+    worksheet_wbs.add_cell(0, 14, "Charge calculée")
+    worksheet_wbs.add_cell(0, 15, "Charge retenue")
+    worksheet_wbs.add_cell(0, 16, "Coût calculé (€)")
+    worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
       mpre_project = mpre.module_project.project
@@ -270,7 +270,7 @@ class ProjectsController < ApplicationController
               unless fc.nil?
                 vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
                   unless pf.field.coefficient.nil?
-                    @total_cost[project.id] << (pf.value.to_f / pf.field.coefficient.to_f)
+                    @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
                   end
                 end
               end
@@ -292,7 +292,7 @@ class ProjectsController < ApplicationController
     worksheet_synt.add_cell(0, 9, "Date")
     worksheet_synt.add_cell(0, 10, "Statut")
     worksheet_synt.add_cell(0, 11, "Charge totale")
-    worksheet_synt.add_cell(0, 12, "Coût total")
+    worksheet_synt.add_cell(0, 12, "Coût total (€)")
     worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
 
     pi = 1
@@ -862,7 +862,9 @@ class ProjectsController < ApplicationController
 
     @project.creator_id = current_user.id
     @project.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_by, username: current_user.name)} \r\n"
-    @organization = Organization.find(params[:project][:organization_id])
+
+    @organization = Organization.find(params[:organization_id])
+    @project.organization_id = @organization.id
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
@@ -955,11 +957,9 @@ class ProjectsController < ApplicationController
           else
             @product_name = @project.application.name
           end
-          pbs_project_element = pe_wbs_project_product.pbs_project_elements.build(organization_id: @organization.id,
-                                                                                  :name => "#{@product_name.blank? ? @project_title : @product_name}",
+          pbs_project_element = pe_wbs_project_product.pbs_project_elements.build(:name => "#{@product_name.blank? ? @project_title : @product_name}",
                                                                                   :is_root => true, :start_date => Time.now, :position => 0,
-                                                                                  :work_element_type_id => default_work_element_type.id,
-                                                                                  :organization_technology_id => @organization.organization_technologies.first_or_create(name: "Java", alias: "Java", organization_id: @organization.id, productivity_ratio: 1, state: "draft").id)
+                                                                                  :work_element_type_id => default_work_element_type.id)
           pbs_project_element.add_to_transaction
           pbs_project_element.save!
           pe_wbs_project_product.save!
@@ -1013,7 +1013,6 @@ class ProjectsController < ApplicationController
 
         #raise ActiveRecord::Rollback
       rescue ActiveRecord::UnknownAttributeError, ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => error
-        p error
         flash[:error] = "#{I18n.t (:error_project_creation_failed)} #{@project.errors.full_messages.to_sentence}"
         redirect_to (@project.is_model ? organization_setting_path(@organization, anchor: "tabs-estimation-models") : organization_estimations_path(@organization))
       end
@@ -2750,6 +2749,8 @@ public
           ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         end
 
+        old_prj_pbs_project_elements = old_prj.pbs_project_elements
+
         # For ModuleProject associations
         old_prj.module_projects.group(:id).each do |old_mp|
 
@@ -2765,37 +2766,44 @@ public
             new_mp.associated_module_projects << new_associated_mp
           end
 
-          ### Wbs activity
-          #create module_project ratio elements
-          old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
-            mp_ratio_element = old_mp_ratio_elt.dup
-            mp_ratio_element.module_project_id = new_mp.id
-            mp_ratio_element.copy_id = old_mp_ratio_elt.id
+          Thread.new do
+            ActiveRecord::Base.connection_pool.with_connection do
 
-            pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
-            unless pbs.nil?
-              mp_ratio_element.pbs_project_element_id = pbs.id
-            end
-            mp_ratio_element.save
-          end
+              ### Wbs activity
+              #create module_project ratio elements
+              old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
+                mp_ratio_element = old_mp_ratio_elt.dup
+                mp_ratio_element.module_project_id = new_mp.id
+                mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
-          new_mp_ratio_elements = new_mp.module_project_ratio_elements
-          new_mp_ratio_elements.each do |mp_ratio_element|
-            #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+                pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+                unless pbs.nil?
+                  mp_ratio_element.pbs_project_element_id = pbs.id
+                end
+                mp_ratio_element.save
+              end
 
-            #unless mp_ratio_element.is_root?
-            new_ancestor_ids_list = []
-            mp_ratio_element.ancestor_ids.each do |ancestor_id|
-              ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
-              if ancestor
-                ancestor_id = ancestor.id
-                new_ancestor_ids_list.push(ancestor_id)
+              new_mp_ratio_elements = new_mp.module_project_ratio_elements
+              new_mp_ratio_elements.each do |mp_ratio_element|
+                #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+
+                #unless mp_ratio_element.is_root?
+                new_ancestor_ids_list = []
+                mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                  ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                  if ancestor
+                    ancestor_id = ancestor.id
+                    new_ancestor_ids_list.push(ancestor_id)
+                  end
+                end
+                mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+                #end
+                mp_ratio_element.save
               end
             end
-            mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
-            #end
-            mp_ratio_element.save
+            # ActiveRecord::Base.connection.close
           end
+
 
           ### End wbs_activity
 
@@ -2851,7 +2859,6 @@ public
           end
 
           new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
-          old_prj_pbs_project_elements = old_prj.pbs_project_elements
           new_mp_estimation_values = new_mp.estimation_values
           hash_nmpevs = {}
 

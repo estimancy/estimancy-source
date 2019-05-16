@@ -346,11 +346,11 @@ frsncf:
   #Project settings
   activity_categories: "Catégories d'activités"
   acquisition_categories: "Services"
-  platform_categories: "Localisation"
+  platform_categories: "Urgence devis"
   project_categories: "Catégories de projets"
   project_areas: "Domaine"
   acquisition_category: "Service"
-  platform_category: "Localisation"
+  platform_category: "Urgence Devis"
   project_category: "Catégorie de projet"
   project_area: "Domaine"
   label_acquisition: "Service"
@@ -366,8 +366,8 @@ frsncf:
   new_project_category: "Créer une catégorie de projet"
 
   #Platform categories
-  edit_platform_category: "Editer la localisation \"%{value}\" ..."
-  new_platform_category: "Créer une localisation"
+  edit_platform_category: "Editer un item \"%{value}\" ..."
+  new_platform_category: "Créer un item"
 
   #Acquisition categories
   edit_acquisition_category: "Editer le service \"%{value}\" ..."
@@ -836,10 +836,10 @@ frsncf:
   notice_permission_successful_deleted: "Permission supprimée avec succès."
   notice_permission_successful_saved: "Permissions sauvegardées avec succès"
   notice_permission_successful_cancelled: "Vos modifications ont été annulées"
-  warning_platform_category_cant_be_edit: "Cette platform category ne peut pas être modifié, les modifications précédentes n'ont pas encore été validé."
-  notice_platform_category_successful_created: "Platform category a été créé avec succès."
-  notice_platform_category_successful_updated: "Platform category a été mis à jour avec succès.."
-  notice_platform_category_successful_deleted: "Platform category a été supprimé avec succès."
+  warning_platform_category_cant_be_edit: "Cet item ne peut pas être modifié, les modifications précédentes n'ont pas encore été validé."
+  notice_platform_category_successful_created: "Cet item a été créé avec succès."
+  notice_platform_category_successful_updated: "Cet item a été mis à jour avec succès.."
+  notice_platform_category_successful_deleted: "Cet item a été supprimé avec succès."
   warning_project_area_cant_be_edit: "Cette zone du projet ne peut pas être modifiée, les modifications précédentes n'ont pas encore été validé."
   notice_project_area_successful_created: "Project area a été créé avec succès."
   notice_project_area_successful_updated: "Project area a été mis à jour avec succès.."
@@ -927,6 +927,9 @@ frsncf:
   notice_module_project_successful_updated: "Module Project a été mis à jour avec succès"
   notice_module_project_successful_created: "Module Project a été créé avec succès"
   notice_attribute_module_successful_created: "L'attribut du module a été créé avec succès"
+  notice_budget_successful_updated: "Budget a été mis à jour avec succès"
+  notice_budget_successful_created: "Budget a été créé avec succès"
+  notice_budget_successful_deleted: "Budget a été supprimé avec succès"
 
   #mail
   mail_salutation: "Bonjour %{value},"
@@ -1394,7 +1397,7 @@ frsncf:
   notice_cannot_view_organization_attributes: "Vous n'avez pas les autorisations nécessaires pour voir les attributs"
   notice_cannot_view_project_areas: "Vous n'avez pas les autorisations nécessaires pour voir les domaines de projets"
   notice_cannot_view_project_categories: "Vous n'avez pas les autorisations nécessaires pour voir les catégories de projets"
-  notice_cannot_view_platform_categories: "Vous n'avez pas les autorisations nécessaires pour voir les localisation"
+  notice_cannot_view_platform_categories: "Vous n'avez pas les autorisations nécessaires pour voir la liste des urgences"
   notice_cannot_view_work_element_types: "Vous n'avez pas les autorisations nécessaires pour voir les types d'éléments de travail"
   notice_cannot_view_acquisition_categories: "Vous n'avez pas les autorisations nécessaires pour voir les services"
   notice_cannot_view_organization_technologies: "Vous n'avez pas les autorisations nécessaires pour voir les technologies"
@@ -1901,7 +1904,7 @@ frsncf:
   use_real_base_percentage: "Utiliser les valeurs des pourcentages réel"
   project_area_edition: "Editer un secteur de projet"
   project_category_edition: "Editer une catégorie de projet"
-  platform_category_edition: "Editer une localisation"
+  platform_category_edition: "Editer un item d'urgence"
   acquisition_category_edition: "Editer une catégorie d'acquisition"
   work_element_type_edition: "Editer un type d'élément de travail"
   technology_edition: "Editer une technologie"
@@ -2249,3 +2252,12 @@ frsncf:
   "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
 
   min_value_message: La valeur minmale doit être inférieure à la valeur maximale.
+
+  budget: "Budgets"
+
+  start_date_budget: "Date de début"
+  end_date_budget: "Date de fin"
+  sum_budget: "Montant"
+
+  budget_type: "Type du budget"
+  color: "Couleur"

@@ -230,7 +230,7 @@ class ModuleProjectsController < ApplicationController
     authorize! :alter_estimation_plan, @project
 
     #re-set positions
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
     @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
     position_x = @module_project.position_x
 
