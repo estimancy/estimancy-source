@@ -43,9 +43,10 @@
                 <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
               <% else %>
                 <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                  <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
                   <% if view_widget.widget_type == "text" %>
-                    <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
+                    <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                    <% value_to_show = view_widget_data[:value_to_show] %>
+                    <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
                   <% end %>
                 <% else %>
                   <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
