@@ -68,9 +68,7 @@
 
                             <% selected_ratio = view_widget.module_project.get_wbs_activity_ratio(current_component.id) %>
                             <br>
-                            <span class="widget_name" style="float: right; width: auto">
-                                        <%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %>
-                            </span>
+                            <span><%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %></span>
                         <% end %>
                       </div>
 

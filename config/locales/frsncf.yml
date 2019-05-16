@@ -2254,14 +2254,12 @@ frsncf:
   min_value_message: La valeur minmale doit être inférieure à la valeur maximale.
 
   budget: "Budgets"
-
   start_date_budget: "Date de début"
   end_date_budget: "Date de fin"
   sum_budget: "Montant"
 
   budget_type: "Type du budget"
   color: "Couleur"
-  min_value_message: "La valeur minmale doit être inférieure à la valeur maximale."
   hide_module_results: "Cacher les résultats du module"
   show_module_results: "Afficher les résultats du module"
   label_results: "Résultats"
