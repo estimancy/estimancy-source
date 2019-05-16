@@ -1,6 +1,7 @@
 <div class="tabs">
   <ul>
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
+    <li><a href="#tabs-budgets"><%= I18n.t(:budget) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
     <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
@@ -98,6 +99,46 @@
     <% end %>
   </div>
 
+  <div id="tabs-budgets">
+    <% if can? :manage, Application %>
+      <%= link_to I18n.t('create_button'), new_organization_budget_path(@organization), :class => 'btn' %>
+    <% end %>
+
+    <br>
+
+    <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= "Montant" %></th>
+        <th><%= "Date début" %></th>
+        <th><%= "Date fin" %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+        <% @organization.budgets.each do |b| %>
+          <% sum = 0.0 %>
+          <tr>
+            <td class="center"><%= b.name %></td>
+              <% unless b.sum.nil? %>
+                <td class="center"><%= b.sum %><%= " €" %></td>
+              <% else %>
+                <td> </td>
+              <% end %>
+            <td class="center"><%= b.start_date %></td>
+            <td class="center"><%= b.end_date %></td>
+              <td class="center">
+              <%= link_to '', edit_organization_budget_path(@organization, b), :class => 'icon-pencil' %>
+              <%= link_to '', organization_budget_path(@organization, b), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
   <div id="tabs-project-areas">
     <% if can? :show_project_areas, ProjectArea %>
 
@@ -158,7 +199,6 @@
       <div class="red_color"><%= I18n.t(:notice_cannot_view_project_areas) %></div>
     <% end %>
   </div>
-
 
   <div id="tabs-project-categories">
     <% if can? :show_project_categories, ProjectCategory %>

@@ -72,6 +72,7 @@ class Organization < ActiveRecord::Base
   has_many :platform_categories, dependent: :destroy
   has_many :acquisition_categories, dependent: :destroy
   has_many :budget_types, dependent: :destroy
+  has_many :budgets, dependent: :destroy
 
   has_many :work_element_types, dependent: :destroy
 

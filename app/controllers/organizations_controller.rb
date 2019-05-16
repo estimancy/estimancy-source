@@ -1771,7 +1771,7 @@ class OrganizationsController < ApplicationController
             worksheet.add_cell(0, index, val)
           end
 
-          worksheet.change_row_bold(0,true)
+          # worksheet.change_row_bold(0,true)
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
@@ -1929,6 +1929,12 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:report, parameter: @organization)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
+    @projects = @current_organization.projects.where(is_model: false)
+
+    unless params[:budget_id].nil? || params[:application_id].nil?
+      @application = Application.find(params[:application_id])
+      @budget = Budget.find(params[:budget_id])
+    end
   end
 
   def authorization
@@ -3214,6 +3220,7 @@ class OrganizationsController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
 
+    @ot = @organization.organization_technologies.first
 
     @users = @organization.users
     @fields = @organization.fields
@@ -3291,6 +3298,8 @@ class OrganizationsController < ApplicationController
     else
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
+      @ot = @organization.organization_technologies.first
+      @technologies = OrganizationTechnology.all
       @organization_profiles = @organization.organization_profiles
       @groups = @organization.groups
       @organization_group = @organization.groups
