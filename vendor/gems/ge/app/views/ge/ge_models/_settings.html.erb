@@ -1,14 +1,6 @@
 <section class="estimation-modules-edition ge-model-estimation">
-  <div style="flex: 1">
-    <h2>
-      <%= @project %>
-      <small style="color: #f89406">
-        <b>
-          <%= @project.estimation_status %>
-        </b>
-      </small>
-    </h2>
-  </div>
+
+  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
 

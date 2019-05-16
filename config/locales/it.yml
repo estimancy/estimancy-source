@@ -1635,3 +1635,6 @@ it:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+  hide_module_results: "Hide module results"
+  show_module_results: "Show module results"
+  label_results: "Results"

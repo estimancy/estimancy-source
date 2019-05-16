@@ -2387,3 +2387,6 @@ en:
   max_value_message_placeholder: ""
 
   budget_type: "Budget Type"
+  hide_module_results: "Hide module results"
+  show_module_results: "Show module results"
+  label_results: "Results"

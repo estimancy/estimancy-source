@@ -2248,4 +2248,7 @@ frsncf:
   "Autoriser l'export PDF": "Autoriser l'export PDF"
   "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
 
-  min_value_message: La valeur minmale doit être inférieure à la valeur maximale.
+  min_value_message: "La valeur minmale doit être inférieure à la valeur maximale."
+  hide_module_results: "Cacher les résultats du module"
+  show_module_results: "Afficher les résultats du module"
+  label_results: "Résultats"
