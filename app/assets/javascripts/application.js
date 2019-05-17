@@ -15,3 +15,4 @@
 //= require projects.js
 //= require poppers
 //= require main
+//= require jquery-number

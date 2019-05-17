@@ -266,3 +266,5 @@ gem 'chartkick'
 #AppSignal
 # gem 'appsignal'
 gem 'carrierwave', '~> 0.11.2'
+
+gem 'jquery-number-rails'
