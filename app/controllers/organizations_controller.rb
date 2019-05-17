@@ -2084,7 +2084,15 @@ class OrganizationsController < ApplicationController
     # statuts = EstimationStatus.where(name: ["En cours", "En relecture","A valider", "Brouillon","Préliminaire", "A revoir"]).all
     # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
 
-    @all_projects = @organization.projects.where(:is_model => [nil, false])
+    organization_projects = @organization.projects.where(:is_model => [nil, false])
+    if params[:archive_only] == "1"
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abadonnée"]).map(&:id)
+      @all_projects = organization_projects.where(estimation_status_id: esids)
+    else
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abadonnée"]).map(&:id)
+      @all_projects = organization_projects.where.not(estimation_status_id: esids)
+    end
+
     organization_projects = get_sorted_estimations(@organization.id, @all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
