@@ -236,7 +236,8 @@ fr:
         limit3: "Affichage de l'effort en mois à partir de"
     errors:
       <<: *errors
-  #  Menu
+
+  # Menu
   projects: "Projets"
   label_menu_projects: "Projets"
   project: "Projet"
@@ -244,6 +245,145 @@ fr:
   home: "Ma dernière estimation"
   all_projects: "Toutes les estimations"
   create_new_project: "Nouvelle estimation"
+
+
+  # Estimation dashboard
+  create_project: "Créer une estimation"
+  projects_list: "Liste des estimations"
+  quick_access: "Accès rapide"
+  to_the_latest_estimations_consulted: "aux dernières estimations consultées"
+  from_most_recent_to_least_recent: "Du plus récent au moins récent"
+  from_least_recent_to_most_recent: "Du moins récent au plus récent"
+  elements: "Eléments"
+  display_archives: "Afficher les archives"
+  export_to_pdf: "Exporter en PDF"
+  duplicate_estimation: "Dupliquer l'estimation"
+  create_new_version: "Créer une nouvelle version"
+
+  # edit estimation
+  demand_number: "Numéro de la demande"
+
+  # guw/_settings_new
+  add_a_group: "Ajouter un groupe"
+  rename: "Renommer"
+
+  # wbs_activities
+  show_hide_wbs_header: "Afficher l'entête wbs masqué"
+  show_only_ratio: "Afficher seulement ratio"
+  variable_percentage_relation_to_input: "Définition des variables et leur pourcentage par rapport à la valeur d'entrée"
+  ratios_wbs: "Tableau des ratios et formule de calcul de chaque phase de la WBS"
+  results_entering_the_module: "RÉSULTATS ENTRANT DANS LE MODULE"
+  from: "De"
+  after_calculation: "APRES CALCUL"
+  select_the_model_of_your_choix: "Sélectionnez le modèle de votre choix"
+  create_new_model: "Créer un nouveau modèle"
+  search_an_estimate_model: "RECHERCHER UN MODÈLE D'ESTIMATION"
+
+  # header
+  advanced_research: "RECHERCHE AVANCÉE"
+  estimation_name, version_number, author: "Nom de l'estimation, numéro de la version, auteur"
+  home_estimancy: "Accueil Estimancy"
+  model: "Modèle"
+  property: "Propriété"
+  demands: "Demandes"
+  values: "Valeurs"
+  return: "Retour"
+  to_the_list: "à la liste"
+  see_the_detail: "Voir le détail"
+
+  # demand
+  demand_type: "Type de la demande"
+  create_a_demand: "Créer une demande"
+  export_billing: "Exporter la facturation"
+  SLA_synthesis: "Synthèse SLA"
+
+  # all_organizations
+  welcome: "Bienvenue"
+  select_an_organization: "Sélectionner une organisation"
+  create_new_organization: "Créer une organisation"
+  user_account_settings: "Paramètre du compte utilisateur"
+
+  # user
+  user_list: Liste des utilisateurs
+
+  # organization/settings
+  entry_date: "Date d'entrée"
+  release_date: "Date de sortie"
+
+  # organization/setting_demands
+  severity: Sévérité
+  create_demand_status: "Créer un statut de demande"
+  number: "Numéro"
+  color: "Couleur"
+  create_demand_type: "Créer un type de demande"
+  cost_source: "Source de coût"
+  starting_status: "Statut de début"
+  create_a_livrable: "Créer un livrable"
+  states: "Statuts"
+  associated_service: "Service associé"
+  create_a_service: "Créer un service"
+  criticality: "Criticité"
+  new_demand_status: "Nouveau statut de demande"
+
+  # guw_models
+  new_generic_size_model: "Nouveau modèle de taille générique"
+  other_settings: "Autres réglages"
+  type_of_configuration: "Type de configuration"
+  allow_technologies: "Autoriser technologies"
+  enable_data_visualization: "Activer la visualisation des données"
+  display_default: "Affichage par défaut"
+  configuration_of_the_import_type: "Configuration du type d'importation"
+  enable_import: "Activer l'importation"
+  IA_server: "Serveur IA"
+  IA_optional: "Optionnel IA"
+  enable_import_via_excel: "Activer l'importation via Excel"
+  enable_import_via_jira: "Activer l'importation via JIRA"
+  enable_import_via_Redmine: "Activer l'importation via Redmine"
+  server_address: "Adresse du serveur"
+  old_configuration: "Ancienne configuration"
+  new_configuration: "Nouvelle configuration"
+  column: "Colonne"
+  criteria: "Critères"
+  coeff_complexity: "Complexité du coefficient"
+
+  # contact support
+  contactsupport: "Support du contact"
+  your_configuration: "Votre configuration"
+  environment: "Environment"
+  field: "Field"
+  browser: "Browser"
+  via: "Via"
+
+  # security audit utilities view
+  begin_date: "Date de début"
+  close_date: "Date de fin"
+  view_audit_history: "Voir l'historique d'audit"
+  delete_all_history: "Supprimer l'historique"
+
+  # maintenances
+  object: Objet
+
+  # organizations/form
+  select_size_module: "Sélectionner le module de taille"
+
+  # applications/form
+  budget_label: "Etiquette du budget"
+
+  # users/form
+  allow_quick_access: "Autoriser l'accès rapide"
+  allow_full_screen_dashboard: "Autoriser plein d'écran"
+
+  # icons
+  get_app: "Obtenir App"
+  add_box: "Ajouter Box"
+  text_fields: "Champs de texte"
+  dashboard: "Tableau de bord"
+  action: "Action"
+  menu_super_administrateur: "Menu Super Administrateur"
+  import_export: "Importer Exporter"
+  save_alt: "Sauvegarder Alt"
+
+
   label_user_security_resume: "Gestion des droits utilisateurs de l'estimation"
   label_group_security_resume: "Gestion des droits des groupes de l'estimation"
 
@@ -2285,14 +2425,14 @@ fr:
   component_type_identified_by_AI: "Types de composant à identifier par l'IA"
   host_group: "Groupe d'accueil"
 
-  "Autoriser l'export PDF": "Autoriser l'export PDF"
+  allow_export_pdf: "Autoriser l'export PDF"
 
   forfait_mco : "Forfait MCO"
 
   month_number : "Nombre du mois"
 
 
-  "Nombre de projets sélectionnée": "Nombre de projets sélectionnée"
+  nb_selected_projects: "Nombre de projets sélectionnée"
   average_rates: "Taux moyen"
   revised: "révisé"
   begin: "Début"
