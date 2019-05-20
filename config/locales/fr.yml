@@ -2434,7 +2434,6 @@ fr:
 
   month_number : "Nombre du mois"
 
-
   nb_selected_projects: "Nombre de projets sélectionnée"
   average_rates: "Taux moyen"
   revised: "révisé"
@@ -2450,6 +2449,9 @@ fr:
 
   budget_type: "Type du budget"
   color: "Couleur"
+
   hide_module_results: "Cacher les résultats du module"
   show_module_results: "Afficher les résultats du module"
   label_results: "Résultats"
+
+

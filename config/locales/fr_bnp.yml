@@ -2398,3 +2398,7 @@ fr_bnp:
   gap: "Ecart"
   Secteur de projets: "Secteur de projets"
   budget_type: "Type du budget"
+
+  hide_module_results: "Cacher les résultats du module"
+  show_module_results: "Afficher les résultats du module"
+  label_results: "Résultats"
